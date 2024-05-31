@@ -1,0 +1,117 @@
+@page "/pages/candidates/search"
+@using Cfo.Cats.Application.Features.Candidates.DTOs
+@using Cfo.Cats.Application.Features.Candidates.Queries.Search
+@using Cfo.Cats.Application.Features.Participants.Commands.Enrol
+@using Cfo.Cats.Server.UI.Pages.Candidates.Components
+@using Microsoft.EntityFrameworkCore.Diagnostics.Internal
+
+
+<MudContainer Style="width: 100%; min-width: 480px">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar Color="Color.Primary">
+                    <MudIconButton Icon="@Icons.Material.Filled.Person" Style="color: white" />
+                </MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">@GetTitle()</MudText>
+                
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudContainer Class="pb-6">
+                @if (SearchResults is null)
+                {
+                    <CandidateFinderComponent OnCandidatesFound="CandidatesFoundHandler" Query="Query"/>
+                }
+
+                @if (SearchResults is not null && SelectedCandidate is null)
+                {
+                    <CandidateResultsComponent
+                        SearchResults="SearchResults"
+                        Query="Query"
+                        OnCandidateEnrolled="CandidateEnrolledHandler"
+                        OnCancelled="OnCancelClicked"/>
+                }
+                
+                @if (SelectedCandidate is not null)
+                {
+                    <MudContainer Class="d-flex flex-column align-center justify-center">
+                        <MudIconButton Icon="@Icons.Material.Filled.Done" Color="@Color.Success" Size="Size.Large" />
+                        <MudText Typo="Typo.h6">Success</MudText>
+                        
+                        <MudContainer Class="d-flex px-0 mt-8 justify-space-between">
+                            <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="OnCancelClicked">Back to Search</MudButton>
+                            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="() => NavigateToEnrolment(SelectedCandidate.Identifier)">Proceed with the enrolment</MudButton>
+                        </MudContainer>
+                    </MudContainer>
+
+                }
+
+            </MudContainer>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+
+@code 
+{
+
+    private void NavigateToEnrolment(string participantId)
+    {
+        NavMan.NavigateTo($"/pages/enrolments/{participantId}");
+    }
+    
+    private CandidateSearchQuery? Query { get; set; }
+    private CandidateDto[]? SearchResults { get; set; }
+    private CandidateDto? SelectedCandidate { get; set; }
+
+    [CascadingParameter] 
+    public UserProfile UserProfile { get; set; } = default!;
+
+    private void OnCancelClicked()
+    {
+        SearchResults = null;
+    }
+
+    protected override void OnInitialized()
+    {
+        Query = new()
+        {
+            CurrentUser = UserProfile!,
+            ExternalIdentifier = string.Empty,
+            FirstName = string.Empty,
+            LastName = string.Empty,
+            DateOfBirth = null
+        };
+    }
+
+    private void CandidatesFoundHandler(CandidateDto[] candidates)
+    {
+        SearchResults = candidates;
+    }
+
+    private void CandidateEnrolledHandler()
+    {
+        this.SelectedCandidate = SearchResults![0];
+    }
+
+    private string GetTitle()
+    {
+        if (SearchResults == null)
+        {
+            return "Find a candidate to enrol";
+        }
+
+        if (SelectedCandidate is not null)
+        {
+            return "Confirm selected candidate";
+        }
+
+        return "Search results";
+
+    }
+
+
+}

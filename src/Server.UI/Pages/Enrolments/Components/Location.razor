@@ -1,0 +1,59 @@
+﻿@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Locations.Queries.GetAll
+@using Cfo.Cats.Application.Features.Locations.DTOs
+
+<MudForm @ref="Form">
+    <MudTextField T="string" Label="Location" Value='"Risley"' Disabled />
+
+    <MudCheckBox T="bool" @bind-Value="enrolFromOtherLocation" Label="Enrol at alternative location" />
+
+    @if (enrolFromOtherLocation)
+    {
+        <MudSelect T="LocationDto" @bind-Value="selectedLocation" Label="Alternative Location" AnchorOrigin="Origin.BottomCenter" Required>
+            @foreach (var location in Locations)
+            {
+                <MudSelectItem Value="location">
+                    @location.Name
+                </MudSelectItem>
+            }
+        </MudSelect>
+    }
+
+    <MudTextFieldExtended T="string" Label="Reason for alternative location enrolment" Disabled="!enrolFromOtherLocation" Required="enrolFromOtherLocation"/>
+</MudForm>
+
+@code {
+    
+    [CascadingParameter]
+    public UserProfile? UserProfile { get; set; }
+
+    private LocationDto? selectedLocation;
+    bool enrolFromOtherLocation;
+
+    MudForm? Form { get; set; }
+
+    LocationDto[] Locations { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await Mediator.Send(new GetAllLocationsQuery()
+        {
+            UserProfile = UserProfile!
+        });
+
+        if (response.Succeeded)
+        {
+            Locations = response.Data!;
+            selectedLocation = Locations.First();
+        }
+        
+        await base.OnInitializedAsync();
+    }
+
+    public bool Validate()
+    {
+        Form?.Validate();
+        return Form?.IsValid ?? false;
+    }
+
+}

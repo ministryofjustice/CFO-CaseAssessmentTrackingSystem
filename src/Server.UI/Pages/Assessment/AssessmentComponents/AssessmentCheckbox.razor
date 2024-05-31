@@ -1,0 +1,21 @@
+﻿
+
+
+@code {
+
+	public string Statement = string.Empty;
+	public bool Toggle;
+
+	public AssessmentCheckbox()
+	{ }
+
+	public AssessmentCheckbox(string statement) : this()
+	{
+		Statement = statement;
+	}
+
+	public AssessmentCheckbox(string statement, bool toggle) : this(statement)
+	{
+		Toggle = toggle;
+	}
+}

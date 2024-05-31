@@ -1,0 +1,57 @@
+﻿@using System.Net.Http
+@using System.Net.Http.Json
+@using Cfo.Cats.Server.UI.Services
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Localization
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.JSInterop
+@using MudBlazor
+@using MudExtensions
+@using MudExtensions.Enums
+@using BlazorTime
+@using MediatR
+@using Cfo.Cats.Server.UI.Fluxor
+@using AutoMapper
+@using FluentValidation;
+@using Cfo.Cats.Domain
+@using Cfo.Cats.Application.Common.Exceptions
+@using Cfo.Cats.Application.Common.Extensions
+@using Cfo.Cats.Application.Common.Interfaces
+@using Cfo.Cats.Application.Common.Models
+@using Cfo.Cats.Application.Common.Security
+@using Cfo.Cats.Infrastructure.PermissionSet;
+@using Cfo.Cats.Infrastructure.Constants
+@using Cfo.Cats.Infrastructure.Extensions
+@using Cfo.Cats.Infrastructure.Configurations
+@using Cfo.Cats.Server.UI.Models
+@using Cfo.Cats.Server.UI
+@using Cfo.Cats.Server.UI.Components
+@using Cfo.Cats.Server.UI.Components.Autocompletes
+@using Cfo.Cats.Server.UI.Components.Dialogs
+@using Cfo.Cats.Server.UI.Components.Identity
+@using Cfo.Cats.Server.UI.Pages.Identity.Authentication
+@using Cfo.Cats.Server.UI.Components.Localization
+@using Cfo.Cats.Server.UI.Components.OptionSelect
+@using Cfo.Cats.Server.UI.Components.Redirections
+@using Cfo.Cats.Server.UI.Components.Shared
+@using Cfo.Cats.Server.UI.Components.Shared.Themes
+@using Cfo.Cats.Server.UI.Components.Shared.Layout
+@using Cfo.Cats.Server.UI.Services.Layout
+@using Cfo.Cats.Server.UI.Extensions
+
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IConfiguration Config
+@inject IAuthorizationService AuthService 
+@inject IMediator Mediator;
+@inject NavigationManager NavMan;
+@inject IValidationService Validator
+@inject IMapper Mapper

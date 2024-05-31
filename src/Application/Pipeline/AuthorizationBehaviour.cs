@@ -1,0 +1,101 @@
+using Cfo.Cats.Application.Common.Exceptions;
+using Cfo.Cats.Application.Common.Interfaces.Identity;
+using Cfo.Cats.Application.Common.Security;
+
+namespace Cfo.Cats.Application.Pipeline;
+
+public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IRequest<TResponse>
+{
+    private readonly ICurrentUserService currentUserService;
+    private readonly IIdentityService identityService;
+
+    public AuthorizationBehaviour(
+        ICurrentUserService currentUserService,
+        IIdentityService identityService
+    )
+    {
+        this.currentUserService = currentUserService;
+        this.identityService = identityService;
+    }
+
+    public async Task<TResponse> Handle(
+        TRequest request,
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken
+    )
+    {
+        var authorizeAttributes = request
+            .GetType()
+            .GetCustomAttributes<RequestAuthorizeAttribute>()
+            .ToArray();
+        if (authorizeAttributes.Any())
+        {
+            // Must be authenticated user
+            var userId = currentUserService.UserId;
+            if (userId is null or 0)
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            // DefaultRole-based authorization
+            var authorizeAttributesWithRoles = authorizeAttributes
+                .Where(a => !string.IsNullOrWhiteSpace(a.Roles))
+                .ToArray();
+
+            if (authorizeAttributesWithRoles.Any())
+            {
+                var authorized = false;
+
+                foreach (var roles in authorizeAttributesWithRoles.Select(a => a.Roles.Split(',')))
+                {
+                    foreach (var role in roles)
+                    {
+                        var isInRole = await identityService.IsInRoleAsync(
+                            userId.Value,
+                            role.Trim(),
+                            cancellationToken
+                        );
+                        if (isInRole)
+                        {
+                            authorized = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Must be a member of at least one role in roles
+                if (!authorized)
+                {
+                    throw new ForbiddenException("You are not authorized to access this resource.");
+                }
+            }
+
+            // Policy-based authorization
+            var authorizeAttributesWithPolicies = authorizeAttributes
+                .Where(a => !string.IsNullOrWhiteSpace(a.Policy))
+                .ToArray();
+            if (authorizeAttributesWithPolicies.Any())
+            {
+                foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
+                {
+                    var authorized = await identityService.AuthorizeAsync(
+                        userId.Value,
+                        policy,
+                        cancellationToken
+                    );
+
+                    if (!authorized)
+                    {
+                        throw new ForbiddenException(
+                            "You are not authorized to access this resource."
+                        );
+                    }
+                }
+            }
+        }
+
+        // User is authorized / authorization not required
+        return await next().ConfigureAwait(false);
+    }
+}

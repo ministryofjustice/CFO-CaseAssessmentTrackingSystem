@@ -1,0 +1,67 @@
+﻿@using Severity = Severity
+@using Toolbelt.Blazor.HotKeys2
+@using Cfo.Cats.Server.UI.Services.UserPreferences
+@using Cfo.Cats.Server.UI.Constants
+@inherits LayoutComponentBase
+
+@inject LayoutService LayoutService
+@inject HotKeys HotKeys
+@inject IStringLocalizer<SharedResource> L
+
+<PageTitle>CATS</PageTitle>
+<MudRTLProvider RightToLeft="false">
+    <MudDialogProvider/>
+    <MudSnackbarProvider/>
+    <MudThemeProvider @ref="@mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="@LayoutService.SetDarkMode"/>
+    @Body
+</MudRTLProvider>
+
+@code
+{
+
+
+    private MudThemeProvider mudThemeProvider = null!;
+    private bool defaultDarkMode;
+
+
+    public void Dispose()
+    {
+        LayoutService.MajorUpdateOccured -= LayoutServiceOnMajorUpdateOccured;
+        GC.SuppressFinalize(this);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            await ApplyUserPreferences();
+            await mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
+            StateHasChanged();
+        }
+    }
+
+    private async Task ApplyUserPreferences()
+    {
+        defaultDarkMode = await mudThemeProvider.GetSystemPreference();
+        await LayoutService.ApplyUserPreferences(defaultDarkMode);
+    }
+
+    protected override void OnInitialized()
+    {
+        LayoutService.MajorUpdateOccured += LayoutServiceOnMajorUpdateOccured;
+        LayoutService.SetBaseTheme(Theme.ApplicationTheme());
+    }
+
+    private async Task OnSystemPreferenceChanged(bool newValue)
+    {
+        await LayoutService.OnSystemPreferenceChanged(newValue);
+    }
+
+    private void LayoutServiceOnMajorUpdateOccured(object? sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+
+}

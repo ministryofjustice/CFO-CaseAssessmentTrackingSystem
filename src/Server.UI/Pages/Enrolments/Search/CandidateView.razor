@@ -1,0 +1,49 @@
+﻿
+@*
+<MudText>
+    We couldn't find an exact match. Did you intend to search for this candidate?
+</MudText>
+*@
+
+<MudContainer>
+    <MudCard Style="max-width: 360px">
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar Color="Color.Secondary">JD</MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.caption">
+                    John Doe <b>(NMS01234)</b>
+                </MudText>
+                <MudText Typo="Typo.body2">01/01/1998</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent Class="pt-0">
+            <MudDivider Class="my-2" />
+            <MudList>
+                <MudListItem IconSize="Size.Small" Avatar="@Icons.Material.Filled.Place">
+                    <MudText Typo="Typo.caption">
+                        HMP Risley <b>(Prison)</b>
+                    </MudText>
+                </MudListItem>
+            </MudList>
+        </MudCardContent>
+        <MudCardActions Style="align-items: stretch" Class="d-flex flex-column px-0 py-0">
+            <MudButton Class="rounded-0" Variant="Variant.Filled" Color="Color.Primary" OnClick="async() => await OnEnrol.InvokeAsync()" Disabled="!Confirmation">Select Person</MudButton>
+            <MudButton Class="rounded-t-0" Variant="Variant.Filled" Color="Color.Error" OnClick="async() => await OnCancel.InvokeAsync()">Cancel</MudButton>
+        </MudCardActions>
+    </MudCard>
+    <MudCheckBox Class="mt-4" @bind-Value="Confirmation" T="bool" Label="I confirm the details above reflect the CFO Consent form." />
+</MudContainer>
+
+@code {
+    public bool Confirmation { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    [Parameter]
+    public EventCallback OnEnrol { get; set; }
+
+    
+}

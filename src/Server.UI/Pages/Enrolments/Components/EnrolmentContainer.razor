@@ -1,0 +1,29 @@
+﻿<MudContainer Style="width: 100%; min-width: 480px">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar Color="Color.Primary">
+                    <MudIconButton Icon="@Icons.Material.Filled.Person" Style="color: white" />
+                </MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                @TitleContent
+            </CardHeaderContent>
+        </MudCardHeader>
+
+        <MudCardContent>
+            <MudContainer Class="pb-6">
+                @ChildContent
+            </MudContainer>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    [Parameter]
+    public RenderFragment? TitleContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+}

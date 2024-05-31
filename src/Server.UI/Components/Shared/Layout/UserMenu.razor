@@ -1,0 +1,95 @@
+﻿@using Cfo.Cats.Server.UI.Services
+@using Cfo.Cats.Server.UI.Services.JsInterop
+@using System.Security.Claims
+@inherits FluxorComponent
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+@inject IState<UserProfileState> UserProfileState
+@inject IStringLocalizer<HeaderMenu> L
+
+
+<MudTooltip Arrow="true" Text="@L["User Profile"]">
+    <MudMenu AnchorOrigin="Origin.BottomRight"
+             Icon="@Icons.Material.Filled.PermIdentity"
+             Color="Color.Tertiary"
+             Class="mx-1"
+             LockScroll="true"
+             TransformOrigin="Origin.TopRight">
+        <ChildContent>
+            <div class="pb-4"
+                 style="min-width: 260px;margin-bottom:0px!important">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Class="ma-4">
+                    @if (IsLoading || UserProfile is null)
+                    {
+                    <MudProgressCircular Size="Size.Small" Color="Color.Default" Indeterminate="true"/>
+                    <MudStack Justify="Justify.Center" Spacing="0">
+                        <MudSkeleton Width="120px"/>
+                        <MudSkeleton Width="120px"/>
+                    </MudStack>
+                    }
+                    else
+                    {
+                    <MudAvatar>
+                        @if (string.IsNullOrEmpty(UserProfile.ProfilePictureDataUrl))
+                        {
+                        @(string.IsNullOrEmpty(UserProfile.UserName) ? "" : UserProfile.UserName.First())
+                        }
+                        else
+                        {
+                        <MudImage Src="@UserProfile.ProfilePictureDataUrl"></MudImage>
+                        }
+                    </MudAvatar>
+
+                    <MudStack Justify="Justify.SpaceBetween" Spacing="0">
+                        <MudText Typo="Typo.body1">@UserProfile.DisplayName</MudText>
+                        <MudText Typo="Typo.body2">@UserProfile.Email</MudText>
+                    </MudStack>
+                    }
+                </MudStack>
+
+
+                <MudDivider Class="my-2" />
+                <MudMenuItem Href="/user/profile">
+                    <div class="d-flex">
+                        <MudIcon Class="mx-2"
+                                 Color="@Color.Tertiary"
+                                 Icon="@Icons.Material.Filled.Person" />
+                        <MudText>@L["Profile"]</MudText>
+                    </div>
+                </MudMenuItem>
+                <MudMenuItem>
+                    <div class="d-flex">
+                        <MudIcon Class="mx-2"
+                                 Icon="@Icons.Material.Filled.Settings" />
+                        <MudText>@L["Settings"]</MudText>
+                    </div>
+                </MudMenuItem>
+                <div class="mt-4 mx-4">
+                    <form action="@IdentityComponentsEndpointRouteBuilderExtensions.Logout" method="post">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="ReturnUrl" value="/" />
+                        <MudButton Color="Color.Secondary"
+                                   ButtonType="ButtonType.Submit"
+                                   FullWidth="true"
+                                   StartIcon="@Icons.Material.Filled.Logout"
+                                   Variant="Variant.Outlined">
+                            @L["Logout"]
+                        </MudButton>
+                    </form>
+                </div>
+            </div>
+        </ChildContent>
+    </MudMenu>
+    <form method="post" hidden>
+        <AntiforgeryToken />
+    </form>
+</MudTooltip>
+
+@code
+{
+
+    [Parameter] public EventCallback<EventArgs> OnSettingClick { get; set; }
+    private bool IsLoading => UserProfileState.Value.IsLoading;
+    private UserProfile? UserProfile => UserProfileState.Value.UserProfile;
+
+}

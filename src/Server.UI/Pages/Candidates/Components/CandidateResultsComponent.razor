@@ -1,0 +1,96 @@
+@using Cfo.Cats.Application.Features.Candidates.DTOs
+@using Cfo.Cats.Application.Features.Candidates.Queries.Search
+@using Cfo.Cats.Application.Features.Participants.Commands.Enrol
+
+@if (_selectedType is not null)
+{
+    <DynamicComponent Type="_selectedType" Parameters="_selectedParameters"/>
+}
+
+
+@*
+        @if (SearchResults is { Length: 1 })
+        {
+          
+            
+            <MudText Typo="Typo.h6">
+                We found a match
+            </MudText>
+
+            
+            <MudListItem IconSize="Size.Small" Avatar="@Icons.Material.Filled.Place">
+                <MudText Typo="Typo.caption">
+                    @SearchResults[0].CurrentLocation
+                </MudText>
+            </MudListItem>
+            
+            <CandidateComparisonComponent Comparisons="_comparisons" />
+
+                        
+            @if (SearchResults[0].EnrolmentStatus is null)
+            {
+                <MudCheckBox Class="mt-4" @bind-Value="Confirmation" T="bool" Label="I confirm the details above reflect the CFO Consent form."/>
+            }
+        }
+       *@
+
+
+
+@code {
+
+    private Type? _selectedType = null;
+    private IDictionary<string, object>? _selectedParameters;
+    private List<ComparisonRow>? _comparisons;
+    
+    private bool Confirmation { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback OnCancelled { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback OnCandidateEnrolled { get; set; }
+
+    [Parameter, EditorRequired] public CandidateDto[] SearchResults { get; set; } = default!;
+    [Parameter, EditorRequired] public CandidateSearchQuery Query { get; set; } = default!;
+
+    protected override void OnParametersSet()
+    {
+        _selectedParameters = new Dictionary<string, object>()
+        {
+            {
+                "OnCanceled", EventCallback.Factory.Create(this, HandleOnCancelledClick)
+            }
+        };
+
+        if (SearchResults is { Length: 0 })
+        {
+            _selectedType = typeof(NoResults);
+        }
+        else if (SearchResults is { Length: > 1 })
+        {
+            _selectedType = typeof(TooManyResults);
+        }
+        else if (SearchResults is
+                 [
+                     { EnrolmentStatus: not null }
+                 ])
+        {
+            _selectedParameters.Add("Candidate", SearchResults[0]);
+            _selectedType = typeof(AlreadyEnrolled);
+        }
+        else
+        {
+            _selectedParameters.Add("Candidate", SearchResults[0]);
+            _selectedParameters.Add("Query", Query);
+            _selectedParameters.Add("OnParticipantEnrolled", EventCallback.Factory.Create(this, OnParticipantEnrolledHandler));
+            _selectedType = typeof(MatchFound);
+        }
+    }
+
+    private Task HandleOnCancelledClick()
+        => OnCancelled.InvokeAsync();
+
+
+    private Task OnParticipantEnrolledHandler()
+        => OnCandidateEnrolled.InvokeAsync();
+}

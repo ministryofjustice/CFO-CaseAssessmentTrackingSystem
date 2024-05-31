@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <data name="Add" xml:space="preserve">
+        <value>Add</value>
+    </data>
+    <data name="Actions" xml:space="preserve">
+        <value>Actions</value>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="Clear" xml:space="preserve">
+        <value>Clear</value>
+    </data>
+    <data name="Close" xml:space="preserve">
+        <value>Close</value>
+    </data>
+    <data name="Confirm" xml:space="preserve">
+        <value>Confirm</value>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="Download" xml:space="preserve">
+        <value>Download</value>
+    </data>
+    <data name="Downloading" xml:space="preserve">
+        <value>Downloading</value>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>Edit</value>
+    </data>
+    <data name="Export" xml:space="preserve">
+        <value>Export to Excel</value>
+    </data>
+    <data name="Import" xml:space="preserve">
+        <value>Import from Excel</value>
+    </data>
+    <data name="New" xml:space="preserve">
+        <value>New</value>
+    </data>
+    <data name="Next" xml:space="preserve">
+        <value>Next</value>
+    </data>
+    <data name="No" xml:space="preserve">
+        <value>No</value>
+    </data>
+    <data name="NoAllowed" xml:space="preserve">
+        <value>No Allowed</value>
+    </data>
+    <data name="OK" xml:space="preserve">
+        <value>OK</value>
+    </data>
+    <data name="Previous" xml:space="preserve">
+        <value>Previous</value>
+    </data>
+    <data name="Refresh" xml:space="preserve">
+        <value>Refresh</value>
+    </data>
+    <data name="Reset" xml:space="preserve">
+        <value>Reset</value>
+    </data>
+    <data name="Save" xml:space="preserve">
+        <value>Save</value>
+    </data>
+    <data name="SaveChanges" xml:space="preserve">
+        <value>Save Changes</value>
+    </data>
+    <data name="Search" xml:space="preserve">
+        <value>Search</value>
+    </data>
+    <data name="Signin" xml:space="preserve">
+        <value>Sign In</value>
+    </data>
+    <data name="SigninWith" xml:space="preserve">
+        <value>Sign in with {0}</value>
+    </data>
+    <data name="Upload" xml:space="preserve">
+        <value>Upload</value>
+    </data>
+    <data name="Uploading" xml:space="preserve">
+        <value>Uploading...</value>
+    </data>
+    <data name="Yes" xml:space="preserve">
+        <value>Yes</value>
+    </data>
+    <data name="Action" xml:space="preserve">
+        <value>Action</value>
+    </data>
+</root>

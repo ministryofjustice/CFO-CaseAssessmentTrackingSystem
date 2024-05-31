@@ -1,0 +1,15 @@
+root = true
+
+# All files
+[*]
+indent_style = space
+
+# Xml files
+[*.xml]
+indent_size = 2
+
+
+# Naming rule for fields in C# code
+[*.cs]
+csharp_naming_style.field_prefix_style = underscore_prefix
+csharp_naming_requires_prefix.field_prefix_style = true

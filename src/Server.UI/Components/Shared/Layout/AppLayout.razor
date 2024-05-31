@@ -1,0 +1,109 @@
+﻿@using Severity = Severity
+@using Toolbelt.Blazor.HotKeys2
+@using Cfo.Cats.Server.UI.Services.UserPreferences
+@using Cfo.Cats.Server.UI.Constants
+@layout MainLayout
+@inherits LayoutComponentBase
+
+@inject LayoutService LayoutService
+@inject HotKeys HotKeys
+@inject IStringLocalizer<SharedResource> L
+<MudLayout>
+    <AuthorizeView>
+        <NotAuthorized>
+            <RedirectToLogin />
+        </NotAuthorized>
+        <Authorized>
+            <HeaderMenu NavigationMenuDrawerOpen="navigationMenuDrawerOpen"
+                        OpenSearchDialog="OpenSearchDialog"
+                        IsDarkMode="@LayoutService.IsDarkMode"
+                        ToggleNavigationMenuDrawer="ToggleNavigationMenuDrawer"
+                        RightToLeft="false"
+                        RightToLeftToggle="LayoutService.ToggleRightToLeft"
+                        OnSettingClick="@(() => themingDrawerOpen = true)" />
+                        <NavigationMenu DrawerOpen="navigationMenuDrawerOpen" Roles="@userProfile?.AssignedRoles"
+                                        DrawerOpenChanged="NavigationMenuDrawerOpenChangedHandler"  />
+            <ThemesMenu ThemingDrawerOpen="themingDrawerOpen"
+                        ThemingDrawerOpenChanged="ThemingDrawerOpenChangedHandler"
+                        UserPreferences="@LayoutService.UserPreferences"
+                        UserPreferencesChanged="LayoutService.UpdateUserPreferences" />
+            <ThemesButton OnClick="@(() => themingDrawerOpen = true)" />
+            <MudMainContent>
+                <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mb-4 mt-4">
+                    <ErrorBoundary @ref="ErrorBoundary">
+                        <ChildContent>
+                            <CascadingValue Value="@userProfile">
+                                @Body
+                            </CascadingValue>
+                        </ChildContent>
+                        <ErrorContent Context="exception">
+                            <CustomError Exception="exception"></CustomError>
+                        </ErrorContent>
+                    </ErrorBoundary>
+                </MudContainer>
+            </MudMainContent>
+            <UserLoginState />
+        </Authorized>
+    </AuthorizeView>
+</MudLayout>
+
+
+@code
+{
+    private bool commandPaletteOpen;
+    private bool navigationMenuDrawerOpen = true;
+    private bool themingDrawerOpen;
+    private UserProfile? userProfile;
+    private ErrorBoundary? ErrorBoundary { set; get; }
+    [CascadingParameter] 
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthState;
+        userProfile = state.User.GetUserProfileFromClaim();
+    }
+    protected override void OnParametersSet()
+    {
+        ResetBoundary();
+    }
+
+    private void ResetBoundary()
+    {
+        // On each page navigation, reset any error state
+        ErrorBoundary?.Recover();
+    }
+
+    protected void NavigationMenuDrawerOpenChangedHandler(bool state)
+    {
+        navigationMenuDrawerOpen = state;
+    }
+
+    protected void ThemingDrawerOpenChangedHandler(bool state)
+    {
+        themingDrawerOpen = state;
+    }
+
+    protected void ToggleNavigationMenuDrawer()
+    {
+        navigationMenuDrawerOpen = !navigationMenuDrawerOpen;
+    }
+
+    private async Task OpenSearchDialog()
+    {
+        if (!commandPaletteOpen)
+        {
+            var options = new DialogOptions
+                {
+                    NoHeader = true,
+                    MaxWidth = MaxWidth.Medium,
+                    FullWidth = true
+                };
+
+            var commandPalette = DialogService.Show<SearchDialog>("", options);
+            commandPaletteOpen = true;
+
+            await commandPalette.Result;
+            commandPaletteOpen = false;
+        }
+    }
+}

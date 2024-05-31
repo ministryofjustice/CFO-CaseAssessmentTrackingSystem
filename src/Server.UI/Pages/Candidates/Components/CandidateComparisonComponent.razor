@@ -1,0 +1,86 @@
+<style>
+    .added {
+        background-color: #d4edda;
+        text-decoration: underline;
+    }
+    .removed {
+        background-color: #f8d7da;
+        text-decoration: line-through;
+    }
+</style>
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudForm Model="@Comparisons" ReadOnly="true">
+            @foreach (var item in diffResults)
+            {
+                <MudItem xs="12">
+                    <MudTextField Label="@item.row.FieldName" For="(() => item.row.FieldName)" Immediate="true" Value="@item.row.NewText" />
+                    @if (item.HasDifferences)
+                    {
+                        <MudText Color="Color.Error" Class="mb-2">
+                            Differences -  @((MarkupString)item.HighlightedDiff)
+                        </MudText>
+                    }
+                </MudItem>
+            }
+        </MudForm>
+
+    </MudItem>
+</MudGrid>
+
+
+@code {
+
+    [Parameter] public List<ComparisonRow> Comparisons { get; set; } = new();
+    
+    private readonly List<(ComparisonRow row, string HighlightedDiff, bool HasDifferences)> diffResults = new();
+
+
+    protected override void OnParametersSet()
+    {
+        diffResults.Clear();
+        foreach (var comparison in Comparisons)
+        {
+            var diff = HighlightDifferences(comparison.OriginalText, comparison.NewText);
+            bool hasDifferences = HasDifferences(comparison.OriginalText, comparison.NewText);
+            diffResults.Add((comparison, diff, hasDifferences));
+        }
+    }
+    
+    private static string HighlightDifferences(string str1, string str2)
+    {
+        int maxLength = Math.Max(str1.Length, str2.Length);
+        var result = new System.Text.StringBuilder();
+        
+        for (int i = 0; i < maxLength; i++)
+        {
+            if (i >= str1.Length)
+            {
+                // Extra characters in str2
+                result.Append($"<span class='added'>{str2[i]}</span>");
+            }
+            else if (i >= str2.Length)
+            {
+                // Extra characters in str1
+                result.Append($"<span class='removed'>{str1[i]}</span>");
+            }
+            else if (str1[i] != str2[i])
+            {
+                // Different characters
+                result.Append($"<span class='removed'>{str1[i]}</span>");
+                result.Append($"<span class='added'>{str2[i]}</span>");
+            }
+            else
+            {
+                // Same characters
+                result.Append(str1[i]);
+            }
+        }
+
+        return result.ToString();
+    }
+    
+    public static bool HasDifferences(string str1, string str2) => str1.Equals(str2, StringComparison.CurrentCultureIgnoreCase) == false;
+
+}

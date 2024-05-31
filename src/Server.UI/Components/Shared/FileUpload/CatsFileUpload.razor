@@ -1,0 +1,29 @@
+<div class="d-flex gap-2">
+    <MudFileUpload Files="[]" T="IReadOnlyList<IBrowserFile>" Class="flex-none" Accept="@Accept" FilesChanged="OnFilesChanged" SuppressOnChangeWhenInvalid="true">
+        <ButtonTemplate>
+            <MudLoadingButton HtmlTag="label"
+                              Variant="Variant.Filled"
+                              Color="Color.Primary"
+                              StartIcon="@Icons.Material.Filled.CloudUpload"
+                              for="@context.Id"
+                              Loading="Loading">
+                @UploadText
+            </MudLoadingButton>
+
+        </ButtonTemplate>
+    </MudFileUpload>
+
+    <MudTooltip Text="Maximum upload size of 4MB. Supported file types: .pdf, .jpeg, .png">
+        <MudIconButton Color="Color.Info" Icon="@Icons.Material.Filled.Info" />
+    </MudTooltip>
+</div>
+
+<MudChipSet AllClosable="true" OnClose="OnFileDelete">
+    @foreach(var file in Files)
+    {
+        <MudChip Icon="@Icons.Material.Filled.AttachFile"
+                 Value="file.Key" 
+                 Text="@file.Value.Name" 
+                 Disabled="Loading" />
+    }
+</MudChipSet>

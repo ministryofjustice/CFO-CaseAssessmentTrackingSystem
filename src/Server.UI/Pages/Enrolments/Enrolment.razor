@@ -1,0 +1,140 @@
+
+
+@page "/pages/enrolments/{ParticipantId}"
+
+@attribute [Authorize]
+
+
+
+@* Hack: The Stepper component doesn't expose any way of programatically showing/hiding the header. *@
+@if (hideHeading)
+{
+    <style>
+        .enrolment-view > div:first-child {
+            display: none !important;
+        }
+    </style>
+}
+
+<EnrolmentContainer>
+    <TitleContent>
+        <MudContainer Class="d-flex px-0 gap-2 align-center">
+            <MudText Typo="Typo.h6">Enrolling John Doe</MudText>
+            <MudText Typo="Typo.subtitle1">(DOB 01/01/1990)</MudText>
+            <MudText Typo="Typo.h6">at HMP Risley</MudText>
+        </MudContainer>
+    </TitleContent>
+    <ChildContent>
+        <CatsMudStepper HeaderTextView="HeaderTextView.All"
+                        HeaderBadgeView="HeaderBadgeView.GreyOutIncomplete"
+                        Color="Color.Primary" @ref="Stepper"
+                        Variant="Variant.Filled"
+                        OnChangeAsync="OnChangeAsync"
+                        ActiveStepChanged="StepChanged"
+                        ContentClass="mb-8"
+                        DisableRipple
+                        DisablePreviousButton="Stepper?.IsResultStep ?? false"
+                        MobileView="false"
+                        HeaderSize="Size.Large"
+                        Class="enrolment-view gap-12">
+
+            <StaticContent>
+                @* You can render content here, and it will always be displayed. *@
+            </StaticContent>
+
+            <ChildContent>
+                <CatsMudStep Condition="() => Location?.Validate() ?? false" Title="Location" Icon="@Icons.Material.Filled.Map" Optional="false">
+                    <Location @ref="Location"/>
+                </CatsMudStep>
+                <CatsMudStep Condition="() => Consent?.Validate() ?? false" Title="Consent" Icon="@Icons.Material.Filled.Approval" Optional="false">
+					<Consent @ref="Consent" />
+                </CatsMudStep>
+                <CatsMudStep Condition="() => RightToWork?.Validate() ?? false" Title="Right to Work" Icon="@Icons.Material.Filled.HomeWork" Optional="false">
+                    <RightToWork @ref="RightToWork" />
+                </CatsMudStep>
+                <MudStep Title="Demographics" Icon="@Icons.Material.Filled.EmojiPeople" Optional="false">
+                    <Demographics />
+                </MudStep>
+                <MudStep IsResultStep="true">
+                    <MudContainer Class="d-flex flex-column align-center justify-center mb-8">
+                        <MudIconButton Icon="@Icons.Material.Filled.Done" Color="@Color.Success" Size="Size.Large" />
+                        <MudText Typo="Typo.h6">Enrolment Started!</MudText>
+                    </MudContainer>
+                    <MudText Typo="Typo.caption">
+                        Further information is required to finalise this enrolment. 
+                        Would you like to continue now?
+                    </MudText>
+                    <MudText Typo="Typo.caption">
+                        You can finalise the enrolment at a later time by visiting the cases screen.
+                    </MudText>
+                </MudStep>
+            </ChildContent>
+
+            <ActionContent>
+                @if (Stepper?.IsResultStep is false)
+                {
+                    <MudButton hidden="@(showSaveAndExit is false)" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Small" OnClick="SaveAndExit">Save & exit</MudButton>
+                    <MudSpacer />
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small" OnClick="ReturnToSearch">Return to Search</MudButton>
+                    <MudSpacer />
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="BeginAssessment">Continue</MudButton>
+                }
+            </ActionContent>
+        </CatsMudStepper>
+    </ChildContent>
+</EnrolmentContainer>
+
+@code {
+
+    [Parameter]
+    public required string ParticipantId { get; set; }
+    
+    [CascadingParameter]
+    public UserProfile? UserProfile { get; set; }
+
+    bool hideHeading = false;
+    bool showSaveAndExit = true;
+
+    CatsMudStepper? Stepper { get; set; }
+    Consent? Consent { get; set; }
+    RightToWork? RightToWork { get; set; }
+    Location? Location { get; set; }
+
+    private void StepChanged(int index)
+    {
+        hideHeading = Stepper?.IsResultStep ?? false;
+        StateHasChanged();
+    }
+
+    private async Task SaveAndExit()
+    {
+        var parameters = new DialogParameters<ConfirmationDialog>();
+        parameters.Add(x => x.ContentText, "Are you sure you want to save and exit?");
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Save & Exit", parameters);
+        var result = await dialog.Result;
+
+        if(!result.Canceled)
+        {
+            NavMan.NavigateTo("/");
+        }
+    }
+
+    private void BeginAssessment()
+    {
+        NavMan.NavigateTo($"/Cases/{ParticipantId}");
+    }
+
+    private void ReturnToSearch()
+    {
+        NavMan.NavigateTo("/Enrolments/Search");
+    }
+
+    private async Task<bool> OnChangeAsync(StepChangeDirection direction, int targetIndex)
+    {
+        return await Task.FromResult(true);
+    }
+
+}

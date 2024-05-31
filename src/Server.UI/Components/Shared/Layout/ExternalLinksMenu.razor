@@ -1,0 +1,47 @@
+﻿@inject NavigationManager NavigationManager
+@inject IStringLocalizer<ExternalLinksMenu> L
+
+
+<MudTooltip Arrow="true" Text="@L["External Links"]">
+    <MudMenu AnchorOrigin="Origin.BottomRight"
+             Icon="@Icons.Material.Filled.Web"
+             Color="Color.Tertiary"
+             Class="mx-1"
+             LockScroll="true"
+             TransformOrigin="Origin.TopRight">
+             <MudMenuItem Href="https://www.creatingfutureopportunities.gov.uk/" Target="_blank">CFO Website</MudMenuItem>
+             <MudMenuItem Icon="@Icons.Material.Filled.Map" Href="https://www.creatingfutureopportunities.gov.uk/map/" Target="_blank">CFO Delivery Map</MudMenuItem>
+             <MudMenuItem Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/" Target="_blank">Github Repository</MudMenuItem>
+    </MudMenu>
+    <form method="post" hidden>
+        <AntiforgeryToken />
+    </form>
+</MudTooltip>
+
+@code
+{
+
+    [Parameter] public EventCallback<EventArgs> OnSettingClick { get; set; }
+    
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+    private string? DisplayName { get; set; }
+    private string? Email { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthenticationState is not null)
+        {
+            var authState = await AuthenticationState;
+            var user = authState?.User;
+
+            if (user?.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                Email = user.GetEmail();
+                DisplayName = user.GetDisplayName();
+            }
+        }
+    }
+
+}

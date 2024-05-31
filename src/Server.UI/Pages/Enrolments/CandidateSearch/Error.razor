@@ -1,0 +1,26 @@
+﻿
+
+<MudContainer Class="d-flex flex-column align-center justify-center">
+    <MudIconButton Icon="@Icons.Material.Filled.Error" Color="@Color.Error" Size="Size.Large"></MudIconButton>
+    <MudText Typo="Typo.h6">Error</MudText>
+    @foreach (var error in Errors)
+    {
+        <MudText>@error</MudText>
+    }
+    <MudContainer Class="d-flex px-0 mt-8 justify-space-between">
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="BackToSearch">Back to Search</MudButton>
+    </MudContainer>
+</MudContainer>
+
+@code 
+{
+    [Inject]
+    public NavigationManager Navigation { get; set; } = default!;
+
+    [Parameter]
+    public string[] Errors { get; set; } = [];
+
+    private void BackToSearch()
+        => Navigation.NavigateTo($"/Enrolments/Search", true);
+
+}

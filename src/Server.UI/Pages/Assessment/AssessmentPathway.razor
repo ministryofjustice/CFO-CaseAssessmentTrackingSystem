@@ -1,0 +1,54 @@
+﻿@using Blazored.FluentValidation;
+@using Cfo.Cats.Application.Features.Assessments.DTOs
+@using Cfo.Cats.Application.Features.Assessments.DTOs.AssessmentModelQuestions
+@using Cfo.Cats.Server.UI.Components.Stepper
+@using Cfo.Cats.Server.UI.Pages.Assessment.AssessmentQuestions
+
+@if (Model != null)
+{
+    <CatsMudStep Icon="@Model.Pathway.Icon" Title="@Model.Pathway.Name" Condition="@Validate">
+        <ChildContent>
+            <EditForm @ref="@form" Model="@Model">
+                <FluentValidationValidator @ref="@fluentValidator"/>
+
+                <CascadingValue Value="@Model">
+                    <MudGrid Class="mb-4 px-10">
+                        @foreach (var question in Model.Questions)
+                        {
+                            <MudItem xs="12">
+                                @if (question is AssessmentToggleQuestionDto atq)
+                                {
+                                    <AssessmentToggleQuestion Dto="atq" @bind-Value="@(atq.SelectedOption)"/>
+                                }
+
+                                @if (question is AssessmentMultipleChoiceQuestionDto amcq)
+                                {
+                                    <AssessmentMultipleChoiceQuestion Dto="@amcq" @bind-Value="@(amcq.Toggles)"/>
+                                }
+                            </MudItem>
+                            @if (question != Model.LastQuestion)
+                            {
+                                <MudDivider/>
+                            }
+                        }
+                    </MudGrid>
+                </CascadingValue>
+            </EditForm>
+        </ChildContent>
+    </CatsMudStep>
+}
+
+@code {
+
+    private EditForm form = new();
+    private FluentValidationValidator fluentValidator = new();
+    
+	[Parameter, EditorRequired]
+	public AssessmentPathwayDto? Model { get; set; } 
+
+	private bool Validate()
+	{
+        var isValid = form.EditContext!.Validate();
+		return isValid;
+	}
+}

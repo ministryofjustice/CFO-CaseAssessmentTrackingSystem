@@ -1,0 +1,79 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>Cfo.Cats.Server.UI</RootNamespace>
+    <AssemblyName>Cfo.Cats.Server.UI</AssemblyName>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <UserSecretsId>8118d19e-a6db-4446-bdb6-fa62b17f843d</UserSecretsId>
+    <LangVersion>default</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazor-ApexCharts" Version="3.3.0" />
+    <PackageReference Include="Blazored.FluentValidation" Version="2.1.0" />
+    <PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="6.9.2" />
+    <PackageReference Include="Faker.Net" Version="2.0.163" />
+    <PackageReference Include="Humanizer.Core.uk" Version="2.14.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="MudBlazor" Version="6.19.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj" />
+    <ProjectReference Include="..\Migrators\Migrators.SqLite\Migrators.SqLite.csproj" />
+    <ProjectReference Include="..\Server\Server.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Pages\Dashboard\Dashboard.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Dashboard.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Remove="Pages\Assessment\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\Pages\Dashboard\Dashboard.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Dashboard.resx</DependentUpon>
+    </Compile>
+    <Compile Remove="Pages\Assessment\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Pages\Assessment\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Pages\Assessment\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Assessment\Assessment.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentComponents\AssessmentCheckbox.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentComponents\AssessmentQuestionBase.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentPathway.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentQuestions\AssessmentMultipleChoiceQuestion.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentQuestions\AssessmentToggleQuestion.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentResultStep.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Enrolments\CandidateSearch\CandidateSearch.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Enrolments\CandidateSearch\Error.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Enrolments\CandidateSearch\Success.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Enrolments\Components\Consent.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Enrolments\Components\Demographics.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Enrolments\Components\EnrolmentContainer.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Enrolments\Components\Location.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Enrolments\Components\RightToWork.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Enrolments\Enrolment.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Enrolments\Search\CandidateFinder.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Enrolments\Search\CandidateSearch.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Enrolments\Search\CandidateView.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Enrolments\_Imports.razor" />
+  </ItemGroup>
+
+
+</Project>

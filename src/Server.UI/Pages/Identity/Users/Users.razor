@@ -1,0 +1,888 @@
+﻿@page "/identity/users"
+@using Severity = Severity
+@using LazyCache
+@using Cfo.Cats.Application.Features.Identity.DTOs
+@using Cfo.Cats.Domain.Identity
+@using Cfo.Cats.Server.UI.Pages.Identity.Roles.Components
+@using Cfo.Cats.Server.UI.Pages.Identity.Users.Components
+@using System.Security.Claims
+@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Application.Common.Interfaces.MultiTenant
+@using BlazorDownloadFile
+@using System.ComponentModel
+@using System.Linq.Expressions
+@using Cfo.Cats.Infrastructure.Constants.Role
+@using System.Reflection
+@using Cfo.Cats.Infrastructure.Constants.ClaimTypes
+
+@attribute [Authorize(Policy = Permissions.Users.View)]
+@inherits OwningComponentBase
+
+@inject IUsersStateContainer UsersStateContainer
+@inject IBlazorDownloadFileService BlazorDownloadFileService
+@inject IUserService UserService
+@inject ITenantService TenantsService
+@inject IAppCache Cache
+@inject IExcelService ExcelService
+@inject IMapper Mapper
+@inject IStringLocalizer<Users> L
+@inject ILogger<Users> Logger
+<PageTitle>@Title</PageTitle>
+
+<MudDataGrid @ref="table"
+             FixedHeader="true"
+             FixedFooter="false"
+             Height="calc(100vh - 300px)"
+             @bind-RowsPerPage="defaultPageSize"
+             Hover="true"
+             MultiSelection="true"
+             @bind-SelectedItems="selectedItems"
+             Loading="@loading"
+             ServerData="@(ServerReload)">
+    <ToolBarContent>
+        <div class="d-flex align-start flex-grow-1">
+            <div class="d-flex gap-4">
+                <MudIcon Icon="@Icons.Material.Filled.SwitchAccount" Size="Size.Large"/>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.caption">@Title</MudText>
+                </div>
+            </div>
+            <div class="flex-grow-1"></div>
+            <div class="d-flex flex-column justify-end">
+                <div class="d-flex">
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                        <MudButton DisableElevation Variant="Variant.Outlined"
+                                   Size="Size.Small"
+                                   Disabled="@loading"
+                                   OnClick="@(OnRefresh)"
+                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
+                                   Style="margin-right: 4px; margin-bottom:4px">
+                            @ConstantString.Refresh
+                        </MudButton>
+                        @if (canCreate)
+                        {
+                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Add"
+                                       Size="Size.Small"
+                                       Style="margin-right: 4px; margin-bottom:4px"
+                                       OnClick="OnCreate"
+                                       IconColor="Color.Surface">
+                                @ConstantString.New
+                            </MudButton>
+                        }
+                        @if (canDelete)
+                        {
+                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Error"
+                                       StartIcon="@Icons.Material.Filled.Delete"
+                                       Disabled="@(!(selectedItems.Count > 0))"
+                                       Size="Size.Small"
+                                       Style="margin-right: 4px; margin-bottom:4px"
+                                       OnClick="OnDeleteChecked"
+                                       IconColor="Color.Surface">
+                                @ConstantString.Delete
+                            </MudButton>
+                        }
+                        @if (canExport)
+                        {
+                            <MudLoadingButton DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                                              StartIcon="@Icons.Material.Filled.Download"
+                                              Size="Size.Small"
+                                              @bind-Loading="exporting" LoadingAdornment="Adornment.Start" OnClick="OnExport"
+                                              Style="margin-right: 4px; margin-bottom:4px"
+                                              IconColor="Color.Surface">
+                                @ConstantString.Export
+                            </MudLoadingButton>
+                        }
+                        @if (canImport)
+                        {
+                            <MudFileUpload T="IBrowserFile" FilesChanged="OnImportData" Accept=".xlsx" Style="margin-top:0px;">
+                                <ButtonTemplate>
+                                    <MudButton HtmlTag="label"
+                                               Size="Size.Small"
+                                               Variant="Variant.Outlined"
+                                               Color="Color.Primary"
+                                               Disabled="@loading"
+                                               StartIcon="@Icons.Material.Filled.Upload"
+                                               for="@context">
+                                        @if (uploading)
+                                        {
+                                            <MudProgressCircular Size="Size.Small" Indeterminate="true"/>
+                                            @ConstantString.Uploading
+                                        }
+                                        else
+                                        {
+                                            @ConstantString.Import
+                                        }
+                                    </MudButton>
+                                </ButtonTemplate>
+                            </MudFileUpload>
+                        }
+                    </MudHidden>
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                        @if (canCreate)
+                        {
+                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Add"
+                                       Size="Size.Small"
+                                       Style="margin-right: 4px; margin-bottom:4px"
+                                       OnClick="OnCreate"
+                                       IconColor="Color.Surface">
+                                @ConstantString.New
+                            </MudButton>
+                        }
+                        @if (canDelete)
+                        {
+                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Error"
+                                       StartIcon="@Icons.Material.Filled.Delete"
+                                       Disabled="@(!(selectedItems.Count > 0))"
+                                       Size="Size.Small"
+                                       Style="margin-right: 4px; margin-bottom:4px"
+                                       OnClick="OnDeleteChecked"
+                                       IconColor="Color.Surface">
+                                @ConstantString.Delete
+                            </MudButton>
+                        }
+                    </MudHidden>
+                </div>
+                @if (canSearch)
+                {
+                    <MudStack Row="true" AlignItems="AlignItems.Stretch">
+                        <MudSelect T="string" Placeholder="Search for role name" Value="@searchRole" Clearable="true" ValueChanged="@(OnSearchRole)" Style="width:150px">
+                            @foreach (var str in roles)
+                            {
+                                <MudSelectItem Value="@str">@str</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                            <MudTextField T="string" Immediate="false" ValueChanged="@(OnSearch)" Value="@searchString" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                            </MudTextField>
+                        </MudHidden>
+                    </MudStack>
+                }
+
+            </div>
+        </div>
+    </ToolBarContent>
+    <Columns>
+        <SelectColumn ShowInFooter="false"></SelectColumn>
+        <TemplateColumn CellStyle="width:60px" Title="@ConstantString.Actions" Sortable="false">
+            <CellTemplate>
+                @if (canEdit || canDelete || canManageRoles || canRestPassword || canActive || canManagePermissions)
+                {
+                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" DisableElevation="true" Size="Size.Small"
+                             Dense="true"
+                             EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                        @if (canEdit)
+                        {
+                            <MudMenuItem OnAction="@(() => OnEdit(context.Item))">@ConstantString.Edit</MudMenuItem>
+                        }
+                        @if (canDelete)
+                        {
+                            <MudMenuItem OnAction="@(() => OnDelete(context.Item))">@ConstantString.Delete</MudMenuItem>
+                        }
+                        @if (canManagePermissions)
+                        {
+                            <MudMenuItem OnAction="@(() => OnSetPermissions(context.Item))">@L["Set Permissions"]</MudMenuItem>
+                        }
+                        @if (canActive)
+                        {
+                            @if (context.Item.IsActive)
+                            {
+                                <MudMenuItem OnAction=@(() => OnSetActive(context.Item))>@L["Set Inactive"]</MudMenuItem>
+                            }
+                            else
+                            {
+                                <MudMenuItem OnAction=@(() => OnSetActive(context.Item))>@L["Set Active"]</MudMenuItem>
+                            }
+                        }
+                        @if (canRestPassword)
+                        {
+                            <MudMenuItem OnAction=@(() => OnResetPassword(context.Item))>@L["Reset Password"]</MudMenuItem>
+                        }
+                    </MudMenu>
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Filled" DisableElevation="true"
+                               StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary" Size="Size.Small"
+                               Color="Color.Surface">
+                        @ConstantString.NoAllowed
+                    </MudButton>
+                }
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.TenantId" Title="@L[currentDto.GetMemberDescription(x => x.TenantName)]">
+            <CellTemplate>
+                <div>
+                    <MudText Typo="Typo.body2">@context.Item.TenantName</MudText>
+                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.Item.TenantId</MudText>
+                </div>
+            </CellTemplate>
+            <FooterTemplate>
+                @L["Selected"]: @selectedItems.Count
+            </FooterTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.UserName" Title="@L[currentDto.GetMemberDescription(x => x.UserName)]">
+            <CellTemplate>
+                <div class="d-flex align-items-center">
+                    <MudBadge Color="@(IsOnline(context.Item.UserName) ? Color.Success : Color.Error)" Overlap="false" Dot="true" Bordered="true">
+                        <MudAvatar>
+                            @if (string.IsNullOrEmpty(context.Item.ProfilePictureDataUrl))
+                            {
+                                @context.Item.UserName.First()
+                            }
+                            else
+                            {
+                                <MudImage Src="@context.Item.ProfilePictureDataUrl"></MudImage>
+                            }
+                        </MudAvatar>
+                    </MudBadge>
+                    <div class="pl-3">
+                        <MudText Class="ml-2 align-self-center">@context.Item.UserName</MudText>
+                        <MudText Typo="Typo.body2" Class="ml-2 align-self-center mud-text-secondary">@context.Item.Email</MudText>
+                    </div>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Email" Title="@L["Display Name / PhoneNumber"]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.DisplayName</MudText>
+                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.Item.PhoneNumber</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.SuperiorId" Title="@L[currentDto.GetMemberDescription(x => x.SuperiorName)]">
+            <CellTemplate>
+                @context.Item.SuperiorName
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Provider" Title="@L[currentDto.GetMemberDescription(x => x.Provider)]"/>
+
+        <PropertyColumn Sortable="false" Property="x => x.AssignedRoles" Title="@L[currentDto.GetMemberDescription(x => x.AssignedRoles)]">
+            <CellTemplate>
+                @if (context.Item.AssignedRoles is not null)
+                {
+                    foreach (var str in context.Item.AssignedRoles)
+                    {
+                        <MudChip Size="Size.Small" Variant="Variant.Text">@str</MudChip>
+                    }
+                }
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.IsActive" Title="@L[currentDto.GetMemberDescription(x => x.IsActive)]">
+            <CellTemplate>
+                <div>
+                    @if (context.Item.IsActive)
+                    {
+                        <MudChip Color="Color.Success" Size="Size.Small" Icon="@Icons.Material.Filled.CheckCircleOutline">@L["Active"]</MudChip>
+                        @if (context.Item.LockoutEnd is not null)
+                        {
+                            <div class="d-flex">
+                                <p>@L["Lockout End"]: </p>
+                                <ToLocal DateTime="@context.Item.LockoutEnd.Value.UtcDateTime.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <MudChip Class="flex-grow-0" Color="Color.Surface" Size="Size.Small" Icon="@Icons.Material.Filled.HighlightOff">@L["Inactive"]</MudChip>
+                        @if (context.Item.LockoutEnd is not null)
+                        {
+                            <div class="d-flex">
+                                <p>@L["Lockout End"]: </p>
+                                <ToLocal DateTime="@context.Item.LockoutEnd.Value.UtcDateTime.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
+                            </div>
+                        }
+                    }
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+
+    </Columns>
+
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })"/>
+    </PagerContent>
+</MudDataGrid>
+
+<PermissionsDrawer OnAssignAllChanged="OnAssignAllChangedHandler" Waiting="@processing" OnOpenChanged="OnOpenChangedHandler" Open="showPermissionsDrawer" Permissions="permissions" OnAssignChanged="OnAssignChangedHandler"></PermissionsDrawer>
+
+<style>
+    .mud-table-toolbar {
+        height: 120px !important;
+    }
+</style>
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+    private UserManager<ApplicationUser> userManager;
+    private RoleManager<ApplicationRole> roleManager;
+    private int defaultPageSize = 15;
+    private HashSet<ApplicationUserDto> selectedItems = new();
+    private readonly ApplicationUserDto currentDto = new();
+    private string searchString = string.Empty;
+    private string Title { get; set; } = "Users";
+    private List<PermissionModel> permissions = new();
+    private IList<Claim> assignedClaims = default!;
+
+    private TimeSpan RefreshInterval => TimeSpan.FromSeconds(60);
+    private LazyCacheEntryOptions Options => new LazyCacheEntryOptions().SetAbsoluteExpiration(RefreshInterval, ExpirationMode.LazyExpiration);
+
+    private MudDataGrid<ApplicationUserDto> table = null!;
+    private bool processing;
+    private bool showPermissionsDrawer;
+    private bool canCreate;
+    private bool canSearch;
+    private bool canEdit;
+    private bool canDelete;
+    private bool canActive;
+    private bool canManageRoles;
+    private bool canRestPassword;
+    private bool canManagePermissions;
+    private bool canImport;
+    private bool canExport;
+    private bool loading;
+    private bool exporting;
+    private bool uploading;
+    private List<string?> roles = new();
+    private string? searchRole;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Title = L[currentDto.GetClassDescription()];
+        roleManager = ScopedServices.GetRequiredService<RoleManager<ApplicationRole>>();
+        userManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
+        var state = await AuthState;
+        canCreate = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Create)).Succeeded;
+        canSearch = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Search)).Succeeded;
+        canEdit = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Edit)).Succeeded;
+        canDelete = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Delete)).Succeeded;
+        canActive = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Active)).Succeeded;
+        canManageRoles = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.ManageRoles)).Succeeded;
+        canRestPassword = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.RestPassword)).Succeeded;
+        canManagePermissions = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.ManagePermissions)).Succeeded;
+        canImport = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Import)).Succeeded;
+        canExport = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Export)).Succeeded;
+        roles = await roleManager.Roles.Select(x => x.Name).ToListAsync();
+    }
+
+    private bool IsOnline(string username)
+    {
+        return UsersStateContainer.UsersByConnectionId.Any(x => x.Value.Equals(username, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private async Task<GridData<ApplicationUserDto>> ServerReload(GridState<ApplicationUserDto> state)
+    {
+        try
+        {
+            loading = true;
+            Expression<Func<ApplicationUser, bool>> searchPredicate = x =>
+                x.UserName!.ToLower().Contains(searchString) ||
+                x.Email!.ToLower().Contains(searchString) ||
+                x.DisplayName!.ToLower().Contains(searchString) ||
+                x.PhoneNumber!.ToLower().Contains(searchString) ||
+                x.TenantName!.ToLower().Contains(searchString) ||
+                x.Provider!.ToLower().Contains(searchString);
+            var query = userManager.Users.Where(searchPredicate);
+            if (!string.IsNullOrEmpty(searchRole))
+            {
+                query = query.Where(x => x.UserRoles.Any(y => y.Role.Name == searchRole));
+            }
+
+            var items = await query
+                .Include(x => x.UserRoles)
+                .Include(x => x.Superior)
+                .EfOrderBySortDefinitions(state)
+                .Skip(state.Page * state.PageSize).Take(state.PageSize).ProjectTo<ApplicationUserDto>(Mapper.ConfigurationProvider).ToListAsync();
+            var total = await userManager.Users.CountAsync(searchPredicate);
+            return new GridData<ApplicationUserDto> { TotalItems = total, Items = items };
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task OnSearch(string text)
+    {
+        if (loading)
+            return;
+        searchString = text.ToLower();
+        await table.ReloadServerData();
+    }
+
+    private async Task OnSearchRole(string role)
+    {
+        if (loading)
+            return;
+        searchRole = role;
+        await table.ReloadServerData();
+    }
+
+    private async Task OnRefresh()
+    {
+        await table.ReloadServerData();
+    }
+
+    private async Task OnCreate()
+    {
+        var model = new ApplicationUserDto { Provider = "Local", Email = "", UserName = "", AssignedRoles = new[] { RoleName.Basic } };
+        var parameters = new DialogParameters<UserFormDialog>
+        {
+            { x => x.Model, model }
+        };
+        var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<UserFormDialog>(L["Create a new user"], parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            var applicationUser = new ApplicationUser
+            {
+                Provider = model.Provider,
+                DisplayName = model.DisplayName,
+                UserName = model.UserName,
+                TenantId = model.TenantId,
+                TenantName = model.TenantName,
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber,
+                SuperiorId = model.SuperiorId,
+                ProfilePictureDataUrl = model.ProfilePictureDataUrl,
+                IsActive = false
+            };
+            var state = await userManager.CreateAsync(applicationUser);
+            if (state.Succeeded)
+            {
+                if (model.AssignedRoles is not null && model.AssignedRoles.Length > 0)
+                {
+                    await userManager.AddToRolesAsync(applicationUser, model.AssignedRoles);
+                }
+                else
+                {
+                    await userManager.AddToRoleAsync(applicationUser, RoleName.Basic);
+                }
+
+                Snackbar.Add($"{ConstantString.CreateSuccess}", Severity.Info);
+                Logger.LogInformation("Create a user succeeded. Username: {@UserName:l}, UserId: {@UserId}", applicationUser.UserName, applicationUser.Id);
+                UserService.Refresh();
+                await OnRefresh();
+            }
+            else
+            {
+                Snackbar.Add($"{string.Join(",", state.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task OnEdit(ApplicationUserDto item)
+    {
+        var parameters = new DialogParameters<UserFormDialog>
+        {
+            { x => x.Model, item }
+        };
+        var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<UserFormDialog>(L["Edit the user"], parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            var user = await userManager.Users.FirstOrDefaultAsync (u => u.Id == item.Id!) 
+                       ?? throw new NotFoundException($"The application user [{item.Id}] was not found.");
+            var state = await AuthState;
+            user.Email = item.Email;
+            user.PhoneNumber = item.PhoneNumber;
+            user.ProfilePictureDataUrl = item.ProfilePictureDataUrl;
+            user.DisplayName = item.DisplayName;
+            user.Provider = item.Provider;
+            user.UserName = item.UserName;
+            user.IsActive = item.IsActive;
+            user.TenantId = item.TenantId;
+            user.TenantName = item.TenantName;
+            user.SuperiorId = item.SuperiorId;
+            var identityResult = await userManager.UpdateAsync(user);
+            if (identityResult.Succeeded)
+            {
+                var roles = await userManager.GetRolesAsync(user!);
+                if (roles.Count > 0 && item.AssignedRoles is not null && item.AssignedRoles.Any())
+                {
+                    await userManager.RemoveFromRolesAsync(user, roles);
+                }
+
+                if (item.AssignedRoles is not null && item.AssignedRoles.Length > 0)
+                {
+                    await userManager.AddToRolesAsync(user, item.AssignedRoles);
+                }
+
+                Snackbar.Add($"{ConstantString.SaveSuccess}", Severity.Info);
+                await OnRefresh();
+                UserService.Refresh();
+            }
+            else
+            {
+                Snackbar.Add($"{string.Join(",", identityResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task OnDelete(ApplicationUserDto dto)
+    {
+        var deleteContent = ConstantString.DeleteConfirmation;
+        var parameters = new DialogParameters<ConfirmationDialog>
+        {
+            { x => x.ContentText, string.Format(deleteContent, dto.UserName) }
+        };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, DisableBackdropClick = true };
+        var dialog = DialogService.Show<ConfirmationDialog>(ConstantString.DeleteConfirmationTitle, parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            // Requesting the current user id
+            var state = await AuthState;
+            var currentUserId = state.User.GetUserId();
+
+            // Checks if the current user is trying to remove his own account
+            if (currentUserId != null && currentUserId.Equals(dto.Id))
+            {
+                Snackbar.Add("You cannot delete your own account!", Severity.Error);
+                return;
+            }
+
+            // Trying to find the user that needs to be deleted in the database (nullable check)
+            var requestedDeletedUser = await userManager.Users.FirstOrDefaultAsync(u => u.Id == dto.Id);
+            if (requestedDeletedUser == null)
+            {
+                Snackbar.Add("The user doesn't seem to exist in the database!", Severity.Error);
+                return;
+            }
+
+            // Trying to remove the requested user
+            var deleteResult = await userManager.DeleteAsync(requestedDeletedUser);
+            if (!deleteResult.Succeeded)
+            {
+                Snackbar.Add($"{string.Join(",", deleteResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
+                return;
+            }
+
+            Logger.LogInformation("Delete the user succeeded. Username: {@UserName:l}, UserId: {@UserId}", requestedDeletedUser.UserName, requestedDeletedUser.Id);
+            Snackbar.Add($"{ConstantString.DeleteSuccess}", Severity.Info);
+            await OnRefresh();
+            UserService.Refresh();
+        }
+    }
+
+    private async Task OnDeleteChecked()
+    {
+        var state = await AuthState;
+        var currentUserId = state.User.GetUserId();
+        var isSelectedItemContainCurrentUser = selectedItems.Any(x => x.Id == currentUserId);
+
+        if (isSelectedItemContainCurrentUser)
+        {
+            if (selectedItems.Count == 1)
+            {
+                Snackbar.Add("You cannot delete your own account!", Severity.Error);
+                return;
+            }
+
+            selectedItems.Remove(selectedItems.First(x => x.Id == currentUserId));
+        }
+
+        var deleteContent = ConstantString.DeleteConfirmation;
+        var parameters = new DialogParameters<ConfirmationDialog>
+        {
+            { x => x.ContentText, string.Format(deleteContent, selectedItems.Count) }
+        };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, DisableBackdropClick = true };
+        var dialog = DialogService.Show<ConfirmationDialog>(L["Delete"], parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            var deleteId = selectedItems.Select(x => x.Id).ToArray();
+            var deleteUsers = await userManager.Users.Where(x => deleteId.Contains(x.Id)).ToListAsync();
+
+            foreach (var deleteUser in deleteUsers)
+            {
+                var deleteResult = await userManager.DeleteAsync(deleteUser);
+                if (!deleteResult.Succeeded)
+                {
+                    Snackbar.Add($"{string.Join(",", deleteResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
+                    return;
+                }
+
+                Logger.LogInformation("Delete the user succeeded. Username: {@UserName:l}, UserId: {@UserId}", deleteUser.UserName, deleteUser.Id);
+            }
+
+            Snackbar.Add($"{ConstantString.DeleteSuccess}", Severity.Info);
+            await OnRefresh();
+            UserService.Refresh();
+        }
+    }
+
+    private async Task OnSetActive(ApplicationUserDto item)
+    {
+        var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == item.Id!) 
+                   ?? throw new NotFoundException($"Application user not found {item.Id}.");
+        user.IsActive = !item.IsActive;
+        var state = await userManager.UpdateAsync(user);
+        item.IsActive = !item.IsActive;
+        if (state.Succeeded)
+        {
+            Snackbar.Add($"{ConstantString.UpdateSuccess}", Severity.Info);
+        }
+        else
+        {
+            Snackbar.Add($"{string.Join(",", state.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
+        }
+    }
+
+    private async Task OnResetPassword(ApplicationUserDto item)
+    {
+        var model = new ResetPasswordFormModel { Id = item.Id, DisplayName = item.DisplayName, UserName = item.UserName, ProfilePictureDataUrl = item.ProfilePictureDataUrl };
+        var parameters = new DialogParameters<ResetPasswordDialog>
+        {
+            { x => x.Model, model }
+        };
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = DialogService.Show<ResetPasswordDialog>(L["Set Password"], parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            var user = await userManager.Users.FirstOrDefaultAsync (u => u.Id == item.Id!);
+            var token = await userManager.GeneratePasswordResetTokenAsync(user!);
+            var state = await userManager.ResetPasswordAsync(user!, token, model!.Password!);
+            if (state.Succeeded)
+            {
+                Snackbar.Add($"{L["Reset password successfully"]}", Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add($"{string.Join(",", state.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task OnSetPermissions(ApplicationUserDto item)
+    {
+        showPermissionsDrawer = true;
+        permissions = new List<PermissionModel>();
+        permissions = await GetAllPermissions(item);
+    }
+
+    private Task OnOpenChangedHandler(bool state)
+    {
+        showPermissionsDrawer = state;
+        return Task.CompletedTask;
+    }
+
+    private async Task<List<PermissionModel>> GetAllPermissions(ApplicationUserDto dto)
+    {
+        async Task<IList<Claim>> GetClaims(int userId)
+        {
+            var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == dto.Id) ?? throw new NotFoundException($"not found application user: {userId}");
+            var claims = await userManager.GetClaimsAsync(user);
+            return claims;
+        }
+
+        var key = $"get-claims-by-{dto.Id}";
+        assignedClaims = await Cache.GetOrAddAsync(key, async () => await GetClaims(dto.Id), Options);
+        var allPermissions = new List<PermissionModel>();
+        var modules = typeof(Permissions).GetNestedTypes();
+        foreach (var module in modules)
+        {
+            var moduleName = string.Empty;
+            var moduleDescription = string.Empty;
+            if (module.GetCustomAttributes(typeof(DisplayNameAttribute), true)
+                    .FirstOrDefault() is DisplayNameAttribute displayNameAttribute)
+                moduleName = displayNameAttribute.DisplayName;
+
+            if (module.GetCustomAttributes(typeof(DescriptionAttribute), true)
+                    .FirstOrDefault() is DescriptionAttribute descriptionAttribute)
+                moduleDescription = descriptionAttribute.Description;
+
+            var fields = module.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+            allPermissions.AddRange(from field in fields
+                select field.GetValue(null)
+                into propertyValue
+                where propertyValue is not null
+                select propertyValue.ToString()
+                into claimValue
+                select new PermissionModel
+                {
+                    UserId = dto.Id,
+                    ClaimValue = claimValue,
+                    ClaimType = ApplicationClaimTypes.Permission,
+                    Group = moduleName,
+                    Description = moduleDescription,
+                    Assigned = assignedClaims.Any(x => x.Value == claimValue)
+                });
+        }
+
+        return allPermissions;
+    }
+
+    private async Task OnAssignAllChangedHandler(List<PermissionModel> models)
+    {
+        try
+        {
+            processing = true;
+            var userId = models.First().UserId;
+            var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == userId!) ?? throw new NotFoundException($"not found application user: {userId}");
+            foreach (var model in models)
+            {
+                if (model.Assigned)
+                {
+                    if (model.ClaimType is not null)
+                    {
+                        await userManager.AddClaimAsync(user, new Claim(model.ClaimType, model.ClaimValue));
+                    }
+                }
+                else
+                {
+                    var removed = assignedClaims.FirstOrDefault(x => x.Value == model.ClaimValue);
+                    if (removed is not null)
+                    {
+                        await userManager.RemoveClaimAsync(user, removed);
+                    }
+                }
+            }
+
+            Snackbar.Add($"{L["Authorization has been changed"]}", Severity.Info);
+            await Task.Delay(300);
+            var key = $"get-claims-by-{user.Id}";
+            Cache.Remove(key);
+        }
+        finally
+        {
+            processing = false;
+        }
+    }
+
+    private async Task OnAssignChangedHandler(PermissionModel model)
+    {
+        try
+        {
+            processing = true;
+            var userId = model.UserId!;
+            var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == userId) ?? throw new NotFoundException($"Application user Not Found {userId}.");
+            ;
+            model.Assigned = !model.Assigned;
+            if (model is { Assigned: true, ClaimType: not null, ClaimValue: not null })
+            {
+                await userManager.AddClaimAsync(user, new Claim(model.ClaimType, model.ClaimValue));
+                Snackbar.Add($"{L["Permission assigned successfully"]}", Severity.Info);
+            }
+            else
+            {
+                var removed = assignedClaims.FirstOrDefault(x => x.Value == model.ClaimValue);
+                if (removed is not null)
+                {
+                    await userManager.RemoveClaimAsync(user, removed);
+                }
+
+                Snackbar.Add($"{L["Permission removed successfully"]}", Severity.Info);
+            }
+
+            var key = $"get-claims-by-{user.Id}";
+            Cache.Remove(key);
+        }
+        finally
+        {
+            processing = false;
+        }
+    }
+
+    private async Task OnExport()
+    {
+        try
+        {
+            exporting = true;
+            Expression<Func<ApplicationUser, bool>> searchPredicate = x =>
+                (x.UserName!.Contains(searchString) ||
+                 x.Email!.Contains(searchString) ||
+                 x.DisplayName!.Contains(searchString) ||
+                 x.PhoneNumber!.Contains(searchString) ||
+                 x.TenantName!.Contains(searchString) ||
+                 x.Provider!.Contains(searchString)) &&
+                (searchRole == null || (searchRole != null && x.UserRoles.Any(x => x.Role.Name == searchRole)));
+            var items = await userManager.Users.Where(searchPredicate)
+                .Select(x => new ApplicationUserDto
+                {
+                    Id = x.Id,
+                    UserName = x.UserName!,
+                    DisplayName = x.DisplayName,
+                    Email = x.Email!,
+                    PhoneNumber = x.PhoneNumber,
+                    TenantId = x.TenantId,
+                    TenantName = x.TenantName
+                }).ToListAsync();
+            var result = await ExcelService.ExportAsync(items,
+                new Dictionary<string, Func<ApplicationUserDto, object?>>
+                {
+                    { L["Id"], item => item.Id },
+                    { L["User Name"], item => item.UserName },
+                    { L["Display Name"], item => item.DisplayName },
+                    { L["Email"], item => item.Email },
+                    { L["Phone Number"], item => item.PhoneNumber },
+                    { L["Tenant Id"], item => item.TenantId },
+                    { L["Tenant Name"], item => item.TenantName }
+                }, L["Users"]);
+            var downloadResult = await BlazorDownloadFileService.DownloadFile($"{L["Users"]}.xlsx", result, "application/octet-stream");
+            Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+        }
+        finally
+        {
+            exporting = false;
+        }
+    }
+
+    private async Task OnImportData(IBrowserFile? file)
+    {
+        uploading = true;
+        var stream = new MemoryStream();
+        await file.OpenReadStream(GlobalVariable.MaxAllowedSize).CopyToAsync(stream);
+        var result = await ExcelService.ImportAsync(stream.ToArray(), new Dictionary<string, Func<DataRow, ApplicationUser, object?>>
+        {
+            { L["User Name"], (row, item) => item.UserName = row[L["User Name"]]?.ToString() },
+            { L["Display Name"], (row, item) => item.DisplayName = row[L["Display Name"]]?.ToString() },
+            { L["Email"], (row, item) => item.Email = row[L["Email"]]?.ToString() },
+            { L["Phone Number"], (row, item) => item.PhoneNumber = row[L["Phone Number"]]?.ToString() },
+            { L["Tenant Name"], (row, item) => item.TenantName = row[L["Tenant Name"]]?.ToString() },
+            { L["Tenant Id"], (row, item) => item.TenantId = row[L["Tenant Id"]]?.ToString() }
+        }, L["Users"]);
+
+        if (result.Succeeded)
+        {
+            foreach (var user in result.Data!)
+            {
+                if (!userManager.Users.Any(x => x.UserName == user.UserName))
+                {
+                    var tenantId = TenantsService.DataSource.Any(x => x.Name == user.TenantName) ? TenantsService.DataSource.First(x => x.Name == user.TenantName).Id : TenantsService.DataSource.First().Id;
+                    user.TenantId = tenantId;
+                    var iResult = await userManager.CreateAsync(user);
+                    if (iResult.Succeeded)
+                    {
+                        await userManager.AddToRolesAsync(user, new[] { RoleName.Basic });
+                    }
+                    else
+                    {
+                        Snackbar.Add($"{string.Join(',', iResult.Errors.Select(x => x.Description))}", Severity.Error);
+                    }
+                }
+            }
+
+            await table.ReloadServerData();
+            Snackbar.Add($"{ConstantString.ImportSuccess}", Severity.Info);
+        }
+        else
+        {
+            foreach (var msg in result.Errors)
+            {
+                Snackbar.Add($"{msg}", Severity.Error);
+            }
+        }
+
+        uploading = false;
+    }
+
+}

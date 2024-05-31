@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <data name="Add" xml:space="preserve">
+        <value>Ychwanegu</value>
+    </data>
+    <data name="Actions" xml:space="preserve">
+        <value>Gweithredoedd</value>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Canslo</value>
+    </data>
+    <data name="Clear" xml:space="preserve">
+        <value>Clirio</value>
+    </data>
+    <data name="Close" xml:space="preserve">
+        <value>Cau</value>
+    </data>
+    <data name="Confirm" xml:space="preserve">
+        <value>Cadarnhau</value>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Dileu</value>
+    </data>
+    <data name="Download" xml:space="preserve">
+        <value>Llwytho i lawr</value>
+    </data>
+    <data name="Downloading" xml:space="preserve">
+        <value>Llwytho i lawr...</value>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>Golygu</value>
+    </data>
+    <data name="Export" xml:space="preserve">
+        <value>Allforio i Excel</value>
+    </data>
+    <data name="Import" xml:space="preserve">
+        <value>Mewnforio o Excel</value>
+    </data>
+    <data name="New" xml:space="preserve">
+        <value>Newydd</value>
+    </data>
+    <data name="Next" xml:space="preserve">
+        <value>Nesaf</value>
+    </data>
+    <data name="No" xml:space="preserve">
+        <value>Nac oes</value>
+    </data>
+    <data name="NoAllowed" xml:space="preserve">
+        <value>Dim hawl</value>
+    </data>
+    <data name="OK" xml:space="preserve">
+        <value>Iawn</value>
+    </data>
+    <data name="Previous" xml:space="preserve">
+        <value>Blasu</value>
+    </data>
+    <data name="Refresh" xml:space="preserve">
+        <value>Adnewyddu</value>
+    </data>
+    <data name="Reset" xml:space="preserve">
+        <value>Ailosod</value>
+    </data>
+    <data name="Save" xml:space="preserve">
+        <value>Cadw</value>
+    </data>
+    <data name="SaveChanges" xml:space="preserve">
+        <value>Cadw Newidiadau</value>
+    </data>
+    <data name="Search" xml:space="preserve">
+        <value>Chwilio</value>
+    </data>
+    <data name="Signin" xml:space="preserve">
+        <value>Cofrestru</value>
+    </data>
+    <data name="SigninWith" xml:space="preserve">
+        <value>Cofrestru gyda {0}</value>
+    </data>
+    <data name="Upload" xml:space="preserve">
+        <value>Llwytho i fyny</value>
+    </data>
+    <data name="Uploading" xml:space="preserve">
+        <value>Llwytho i fyny...</value>
+    </data>
+    <data name="Yes" xml:space="preserve">
+        <value>Ydw</value>
+    </data>
+    <data name="Action" xml:space="preserve">
+        <value>Gweithred</value>
+    </data>
+</root>
