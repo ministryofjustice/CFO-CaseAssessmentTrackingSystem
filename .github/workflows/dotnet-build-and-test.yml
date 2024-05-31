@@ -1,0 +1,50 @@
+name: Manual Build and Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Check if the branch is main
+      - name: Check branch
+        run: |
+          if [ "${{ github.ref }}" != "refs/heads/main" ]; then
+            echo "This workflow can only be triggered from the main branch."
+            exit 1
+          fi
+
+      # Set up .NET environment
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'  # specify the version of .NET you need
+
+      # Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Build the project
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      # Run unit tests
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+      # Publish the build artifacts
+      - name: Publish
+        run: dotnet publish --configuration Release --output ./publish
+
+      # Archive build artifacts
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifacts
+          path: ./publish
