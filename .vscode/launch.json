@@ -1,0 +1,36 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Blazor Server App",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build (UI)",
+            "program": "${workspaceFolder}/src/Server.UI/bin/Debug/net8.0/Cfo.Cats.Server.UI.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/Server.UI/",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/src/Server.UI/Views"
+            }
+        },
+        {
+            "name": "Launch Build Console App",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build (Build Project)",
+            "program": "${workspaceFolder}/build/bin/Debug/net8.0/Build.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/build",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }
+    ]
+}
