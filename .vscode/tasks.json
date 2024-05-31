@@ -1,0 +1,33 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build (UI)",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/Server.UI/Server.UI.csproj"
+            ],
+            "problemMatcher": "$msCompile",
+            "group":{
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Build (Build Project)",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/build/Build.csproj"
+            ],
+            "problemMatcher": "$msCompile",
+            "group":{
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
