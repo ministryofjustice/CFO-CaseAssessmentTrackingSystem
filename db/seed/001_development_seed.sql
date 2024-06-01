@@ -3,13 +3,8 @@ INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified,
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.', N'CFO Evolution', N'Top level tenant for Evolution Programme', N'2024-05-31 12:30:38.3850497', null, null, null);
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.1.', N'Alpha', N'Alpha', N'2024-05-31 12:30:38.3850635', null, null, null);
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.', N'Bravo', N'Top level tenant for provider Bravo', N'2024-05-31 12:30:38.3850637', null, null, null);
-INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.1.', N'Bravo (A)', N'Bravo (A)', N'2024-05-31 12:30:38.3850640', null, null, null);
-INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.2.', N'Bravo (B)', N'Bravo (B)', N'2024-05-31 12:30:38.3850641', null, null, null);
-INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.3.', N'Bravo (C)', N'Bravo (C)', N'2024-05-31 12:30:38.3850643', null, null, null);
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.3.', N'Charlie', N'Charlie', N'2024-05-31 12:30:38.3850645', null, null, null);
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.4.', N'Delta', N'Top level tenant for Delta', N'2024-05-31 12:30:38.3850647', null, null, null);
-INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.4.1.', N'Delta (A)', N'Delta (A)', N'2024-05-31 12:30:38.3850648', null, null, null);
-INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.4.2.', N'Delta (B)', N'Delta (B)', N'2024-05-31 12:30:38.3850650', null, null, null);
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.5.', N'Echo', N'Echo', N'2024-05-31 12:30:38.3850651', null, null, null);
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.6.', N'Foxtrot', N'Foxtrot', N'2024-05-31 12:30:38.3850653', null, null, null);
 
