@@ -105,24 +105,21 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         var temporaryAuditEntries = new List<AuditTrail>();
         foreach (var entry in context.ChangeTracker.Entries<IAuditableEntity>())
         {
-            if (
-                entry.Entity is AuditTrail
-                || entry.State == EntityState.Detached
-                || entry.State == EntityState.Unchanged
-            )
+            if (entry.State is EntityState.Detached or EntityState.Unchanged)
             {
                 continue;
             }
 
-            var auditEntry = new AuditTrail
+            AuditType auditType = entry.State switch
             {
-                TableName = entry.Entity.GetType().Name,
-                UserId = userId,
-                DateTime = dateTime.Now,
-                AffectedColumns = new List<string>(),
-                NewValues = new Dictionary<string, object?>(),
-                OldValues = new Dictionary<string, object?>()
+                EntityState.Deleted => AuditType.Delete,
+                EntityState.Modified => AuditType.Update,
+                EntityState.Added => AuditType.Create,
+                _ => throw new ArgumentOutOfRangeException($"No audit setup for {entry.State}")
             };
+
+            var auditEntry = AuditTrail.Create(entry.Entity.GetType().Name, userId, auditType);
+  
             foreach (var property in entry.Properties)
             {
                 if (property.IsTemporary)
@@ -141,7 +138,6 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        auditEntry.AuditType = AuditType.Create;
                         if (property.CurrentValue is not null)
                         {
                             auditEntry.NewValues[propertyName] = property.CurrentValue;
@@ -150,7 +146,6 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                         break;
 
                     case EntityState.Deleted:
-                        auditEntry.AuditType = AuditType.Delete;
                         if (property.OriginalValue is not null)
                         {
                             auditEntry.OldValues[propertyName] = property.OriginalValue;
@@ -171,7 +166,6 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                                 )
                             ):
                         auditEntry.AffectedColumns.Add(propertyName);
-                        auditEntry.AuditType = AuditType.Update;
                         auditEntry.OldValues[propertyName] = property.OriginalValue;
                         if (property.CurrentValue is not null)
                         {

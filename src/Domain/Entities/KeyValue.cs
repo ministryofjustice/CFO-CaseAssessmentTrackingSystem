@@ -7,7 +7,11 @@ namespace Cfo.Cats.Domain.Entities
 {
     public class KeyValue : BaseAuditableEntity<int>, IAuditTrial
     {
-       
+
+        private KeyValue()
+        {
+        }
+
         public Picklist Name { get; set; } = Picklist.ReferralSource;
         public string? Value { get; set; }
         public string? Text { get; set; }

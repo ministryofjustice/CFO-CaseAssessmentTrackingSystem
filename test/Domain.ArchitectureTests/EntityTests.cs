@@ -23,11 +23,6 @@ public class EntityTests
 
         foreach (var type in entityTypes)
         {
-            if (type == typeof(AuditTrail))
-            {
-                continue;
-            }
-            
             var constructors = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
 
             if (constructors.Any(c => c.IsPrivate && c.GetParameters().Length == 0) == false)
