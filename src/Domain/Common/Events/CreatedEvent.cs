@@ -2,7 +2,7 @@
 
 namespace Cfo.Cats.Domain.Common.Events;
 
-public class CreatedEvent<T>(T entity) : DomainEvent
+public abstract class CreatedEvent<T>(T entity) : DomainEvent
     where T : IEntity
 {
     public T Entity { get; } = entity;

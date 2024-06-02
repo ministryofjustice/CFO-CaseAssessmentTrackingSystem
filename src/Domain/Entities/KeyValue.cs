@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Common.Events;
 
 namespace Cfo.Cats.Domain.Entities
 {
@@ -18,5 +19,12 @@ namespace Cfo.Cats.Domain.Entities
         ReferralSource = 0
 
     }
+    
+    public sealed class KeyValueCreatedEvent(KeyValue entity) : CreatedEvent<KeyValue>(entity)
+    {
+    }
 
+    public sealed class KeyValueUpdatedEvent(KeyValue entity) : UpdatedEvent<KeyValue>(entity)
+    {
+    }
 }
