@@ -3,4 +3,4 @@ using Cfo.Cats.Domain.Entities.Administration;
 
 namespace Cfo.Cats.Domain.Events;
 
-public sealed class TenantCreatedEvent(Tenant entity) : CreatedEvent<Tenant>(entity);
+public sealed class ContractCreatedDomainEvent(Contract entity) : CreatedDomainEvent<Contract>(entity);

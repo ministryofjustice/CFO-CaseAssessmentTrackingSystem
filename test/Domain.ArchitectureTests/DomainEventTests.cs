@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace Cfo.Cats.Domain.ArchitectureTests;
 
-public class EntityTests
+public class DomainEventTests
 {
     private static readonly Assembly DomainAssembly = typeof(IEntity).Assembly;
     
@@ -35,4 +35,26 @@ public class EntityTests
             .BeTrue($"The following types failed the test:\n {formattedFailedTypes}");
     
     }
+
+    [Test]
+    public void DomainEvents_Should_HaveDomainEventPostfix()
+    {
+        var result = Types.InAssembly(DomainAssembly)
+            .That()
+            .Inherit(typeof(DomainEvent))
+            .Should()
+            .HaveNameEndingWith("DomainEvent")
+            .Or()
+            .HaveNameEndingWith("DomainEvent`1") // this allows for our generic type
+            .GetResult();
+        
+        var failedTypes = result.FailingTypes?.Select(t => t.FullName).ToList();
+        
+        var formattedFailedTypes = failedTypes == null ? "None" : string.Join("\n", failedTypes);
+        
+        result.IsSuccessful
+            .Should()
+            .BeTrue($"The following types failed the test:\n {formattedFailedTypes}");
+    }
+
 }

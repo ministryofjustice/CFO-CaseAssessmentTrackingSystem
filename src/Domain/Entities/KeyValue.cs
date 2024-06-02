@@ -20,11 +20,11 @@ namespace Cfo.Cats.Domain.Entities
 
     }
     
-    public sealed class KeyValueCreatedEvent(KeyValue entity) : CreatedEvent<KeyValue>(entity)
+    public sealed class KeyValueCreatedDomainEvent(KeyValue entity) : CreatedDomainEvent<KeyValue>(entity)
     {
     }
 
-    public sealed class KeyValueUpdatedEvent(KeyValue entity) : UpdatedEvent<KeyValue>(entity)
+    public sealed class KeyValueUpdatedDomainEvent(KeyValue entity) : UpdatedDomainEvent<KeyValue>(entity)
     {
     }
 }

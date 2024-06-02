@@ -78,7 +78,7 @@ public class ImportKeyValuesCommandHandler :
                         continue;
                     }
 
-                    item.AddDomainEvent(new KeyValueCreatedEvent(item));
+                    item.AddDomainEvent(new KeyValueCreatedDomainEvent(item));
                     await _context.KeyValues.AddAsync(item, cancellationToken);
                 }
                 else
