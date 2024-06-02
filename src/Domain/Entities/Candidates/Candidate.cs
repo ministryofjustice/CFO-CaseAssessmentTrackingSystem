@@ -8,6 +8,10 @@ namespace Cfo.Cats.Domain.Entities.Candidates;
 
 public class Candidate : BaseAuditableEntity<string>
 {
+    private Candidate()
+    {
+    }
+
     private List<CandidateIdentifier> _identifiers = new();
     
     public string FirstName { get; private set; }
