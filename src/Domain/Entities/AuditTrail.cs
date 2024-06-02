@@ -9,6 +9,7 @@ namespace Cfo.Cats.Domain.Entities;
 
 public class AuditTrail : IEntity<int>
 {
+
     public int Id { get; set; }
     public int? UserId { get; set; }
     public virtual ApplicationUser? Owner { get; set; }
