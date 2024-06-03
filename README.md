@@ -5,7 +5,6 @@ HMPPS Creating Future Opportunities (CFO) utilise the Case Assessment and Tracki
 # Interfaces/Systems (Backend interface for surfacing the data to the front end) 
 
 * Dotnet Core v8 - https://dotnet.microsoft.com/en-us/download
-* Dotnet Core v5 - (for Identity Server 4.0)
 * ASP.NET Core
 
 # Mechanism (How does it communicate with other systems? Frequency of data pull/push, reporting, events etc) 
