@@ -5,6 +5,7 @@ using Cfo.Cats.Application.Features.Locations.DTOs;
 
 namespace Cfo.Cats.Application.Features.Locations.Queries.GetAll;
 
+[RequestAuthorize(Roles = "Admin, Basic")]
 public class GetAllLocationsQuery : ICacheableRequest<Result<LocationDto[]>>
 {
     public required UserProfile UserProfile { get; set; }

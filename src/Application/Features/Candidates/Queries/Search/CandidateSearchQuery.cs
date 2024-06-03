@@ -4,6 +4,7 @@ using Cfo.Cats.Application.Features.Candidates.DTOs;
 
 namespace Cfo.Cats.Application.Features.Candidates.Queries.Search;
 
+[RequestAuthorize(Roles = "Admin, Basic")]
 public class CandidateSearchQuery : ICacheableRequest<IEnumerable<CandidateDto>>
 {
     public required string ExternalIdentifier { get; set; }

@@ -1,9 +1,11 @@
-﻿using Cfo.Cats.Application.Features.Tenants.Caching;
+﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Tenants.Caching;
 using Cfo.Cats.Application.Features.Tenants.DTOs;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Cfo.Cats.Application.Features.Tenants.Queries.Pagination;
 
+[RequestAuthorize(Roles = "Admin, Basic")]
 public class TenantsWithPaginationQuery
     : PaginationFilter,
         ICacheableRequest<PaginatedData<TenantDto>>

@@ -22,13 +22,15 @@ public class RequestTests
     {
         var result = Types.InAssembly(ApplicationAssembly)
             .That()
+            .AreNotInterfaces()
+            .And()
             .ImplementInterface(typeof(IRequest<>))
             .Or()
             .ImplementInterface(typeof(ICacheableRequest<>))
             .Or()
             .ImplementInterface(typeof(ICacheInvalidatorRequest<>))
             .Should()
-            .HaveCustomAttribute(typeof(AuthorAttribute))
+            .HaveCustomAttribute(typeof(RequestAuthorizeAttribute))
             .Or()
             .HaveCustomAttribute(typeof(AllowAnonymousAttribute))
             .GetResult();
@@ -42,6 +44,5 @@ public class RequestTests
             .BeTrue($"The following types failed the test:\n {formattedFailedTypes}");
 
     }
-
 
 }
