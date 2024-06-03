@@ -5,6 +5,7 @@ using Cfo.Cats.Application.Features.Participants.DTOs;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands.Enrol;
 
+[RequestAuthorize(Roles = "Admin, Basic")]
 public class EnrolParticipantCommand : ICacheInvalidatorRequest<Result<string>>
 {
     /// <summary>
