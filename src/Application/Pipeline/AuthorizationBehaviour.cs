@@ -29,68 +29,79 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
             .GetType()
             .GetCustomAttributes<RequestAuthorizeAttribute>()
             .ToArray();
-        if (authorizeAttributes.Any())
+        
+        if (authorizeAttributes.Any() == false)
         {
-            // Must be authenticated user
-            var userId = currentUserService.UserId;
-            if (userId is null or 0)
+            // if we have no authorization attribute, then we must explicitly allow all or error
+            var anyUserAttributes = request.GetType()
+                .GetCustomAttributes<AllowAnonymousAttribute>()
+                .SingleOrDefault();
+
+            if (anyUserAttributes == null)
             {
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("Invalid authorization configuration.");
             }
+        }
 
-            // DefaultRole-based authorization
-            var authorizeAttributesWithRoles = authorizeAttributes
-                .Where(a => !string.IsNullOrWhiteSpace(a.Roles))
-                .ToArray();
+        // Must be authenticated user
+        var userId = currentUserService.UserId;
+        if (userId is null or 0)
+        {
+            throw new UnauthorizedAccessException();
+        }
 
-            if (authorizeAttributesWithRoles.Any())
+        // DefaultRole-based authorization
+        var authorizeAttributesWithRoles = authorizeAttributes
+            .Where(a => !string.IsNullOrWhiteSpace(a.Roles))
+            .ToArray();
+
+        if (authorizeAttributesWithRoles.Any())
+        {
+            var authorized = false;
+
+            foreach (var roles in authorizeAttributesWithRoles.Select(a => a.Roles.Split(',')))
             {
-                var authorized = false;
-
-                foreach (var roles in authorizeAttributesWithRoles.Select(a => a.Roles.Split(',')))
+                foreach (var role in roles)
                 {
-                    foreach (var role in roles)
-                    {
-                        var isInRole = await identityService.IsInRoleAsync(
-                            userId.Value,
-                            role.Trim(),
-                            cancellationToken
-                        );
-                        if (isInRole)
-                        {
-                            authorized = true;
-                            break;
-                        }
-                    }
-                }
-
-                // Must be a member of at least one role in roles
-                if (!authorized)
-                {
-                    throw new ForbiddenException("You are not authorized to access this resource.");
-                }
-            }
-
-            // Policy-based authorization
-            var authorizeAttributesWithPolicies = authorizeAttributes
-                .Where(a => !string.IsNullOrWhiteSpace(a.Policy))
-                .ToArray();
-            if (authorizeAttributesWithPolicies.Any())
-            {
-                foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
-                {
-                    var authorized = await identityService.AuthorizeAsync(
+                    var isInRole = await identityService.IsInRoleAsync(
                         userId.Value,
-                        policy,
+                        role.Trim(),
                         cancellationToken
                     );
-
-                    if (!authorized)
+                    if (isInRole)
                     {
-                        throw new ForbiddenException(
-                            "You are not authorized to access this resource."
-                        );
+                        authorized = true;
+                        break;
                     }
+                }
+            }
+
+            // Must be a member of at least one role in roles
+            if (!authorized)
+            {
+                throw new ForbiddenException("You are not authorized to access this resource.");
+            }
+        }
+
+        // Policy-based authorization
+        var authorizeAttributesWithPolicies = authorizeAttributes
+            .Where(a => !string.IsNullOrWhiteSpace(a.Policy))
+            .ToArray();
+        if (authorizeAttributesWithPolicies.Any())
+        {
+            foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
+            {
+                var authorized = await identityService.AuthorizeAsync(
+                    userId.Value,
+                    policy,
+                    cancellationToken
+                );
+
+                if (!authorized)
+                {
+                    throw new ForbiddenException(
+                        "You are not authorized to access this resource."
+                    );
                 }
             }
         }

@@ -1,11 +1,13 @@
 
 
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.KeyValues.Caching;
 using Cfo.Cats.Application.Features.KeyValues.DTOs;
 using Cfo.Cats.Application.Features.KeyValues.Specifications;
 
 namespace Cfo.Cats.Application.Features.KeyValues.Queries.PaginationQuery;
 
+[RequestAuthorize(Roles = "Admin, Basic")]
 public class KeyValuesWithPaginationQuery : KeyValueAdvancedFilter, ICacheableRequest<PaginatedData<KeyValueDto>>
 {
     public KeyValueAdvancedSpecification Specification => new(this);

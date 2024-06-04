@@ -8,7 +8,7 @@ public class DeleteKeyValueCommandHandler(IApplicationDbContext context) : IRequ
         var items = await context.KeyValues.Where(x => request.Id.Contains(x.Id)).ToListAsync(cancellationToken);
         foreach (var item in items)
         {
-            var changeEvent = new UpdatedEvent<KeyValue>(item);
+            var changeEvent = new KeyValueUpdatedDomainEvent(item);
             item.AddDomainEvent(changeEvent);
             context.KeyValues.Remove(item);
         }

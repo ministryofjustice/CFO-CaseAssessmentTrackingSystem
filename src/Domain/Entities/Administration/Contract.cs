@@ -29,7 +29,7 @@ public class Contract : BaseAuditableEntity<string>, ILifetimeEntity
         Description = description;
         Lifetime = new Lifetime(startDate, endDate);
         
-        AddDomainEvent( new ContractCreatedEvent(this) );
+        AddDomainEvent( new ContractCreatedDomainEvent(this) );
     }
     public int LotNumber { get; private set; }
 

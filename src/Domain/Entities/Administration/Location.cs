@@ -19,7 +19,7 @@ public class Location : BaseAuditableEntity<int>, ILifetimeEntity
     private readonly List<Location> _childLocations = new();
     
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    protected Location()
+    private Location()
     {
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -33,7 +33,7 @@ public class Location : BaseAuditableEntity<int>, ILifetimeEntity
         _contractId = contractId;
         _lifetime = new Lifetime(lifetimeStart, lifetimeEnd);
         
-        this.AddDomainEvent(new LocationCreatedEvent(this));
+        this.AddDomainEvent(new LocationCreatedDomainEvent(this));
     }
 
     public static Location Create(string name, int genderProvisionId, int locationTypeId, string? contractId,
@@ -48,7 +48,7 @@ public class Location : BaseAuditableEntity<int>, ILifetimeEntity
 
     public LocationType LocationType => LocationType.FromValue(_locationTypeId);
 
-    public virtual Contract Contract { get; private set; }
+    public virtual Contract? Contract { get; private set; }
 
     public Lifetime Lifetime => _lifetime;
     

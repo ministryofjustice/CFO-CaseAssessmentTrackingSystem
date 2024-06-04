@@ -2,6 +2,7 @@
 
 namespace Cfo.Cats.Application.Common.Security;
 
+
 public class RequestAuthorizeAttribute : Attribute
 {
     /// <summary>

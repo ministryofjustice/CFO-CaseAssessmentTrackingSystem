@@ -1,11 +1,17 @@
 using System.ComponentModel;
 using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Common.Events;
 
 namespace Cfo.Cats.Domain.Entities
 {
     public class KeyValue : BaseAuditableEntity<int>, IAuditTrial
     {
+
+        private KeyValue()
+        {
+        }
+
         public Picklist Name { get; set; } = Picklist.ReferralSource;
         public string? Value { get; set; }
         public string? Text { get; set; }
@@ -18,5 +24,12 @@ namespace Cfo.Cats.Domain.Entities
         ReferralSource = 0
 
     }
+    
+    public sealed class KeyValueCreatedDomainEvent(KeyValue entity) : CreatedDomainEvent<KeyValue>(entity)
+    {
+    }
 
+    public sealed class KeyValueUpdatedDomainEvent(KeyValue entity) : UpdatedDomainEvent<KeyValue>(entity)
+    {
+    }
 }

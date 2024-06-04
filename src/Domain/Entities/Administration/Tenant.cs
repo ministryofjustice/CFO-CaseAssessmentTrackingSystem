@@ -17,7 +17,7 @@ public class Tenant : BaseAuditableEntity<string>
         Name = name;
         Description = description;
         
-        AddDomainEvent(new TenantCreatedEvent(this));
+        AddDomainEvent(new TenantCreatedDomainEvent(this));
     }
 
     public static Tenant Create(string id, string name, string description)

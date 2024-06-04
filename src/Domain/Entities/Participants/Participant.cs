@@ -32,7 +32,7 @@ public class Participant : OwnerPropertyEntity<string>
             ReferralComments = referralComments
         };
 
-        p.AddDomainEvent(new ParticipantCreatedEvent(p));
+        p.AddDomainEvent(new ParticipantCreatedDomainEvent(p));
 
         return p;
     }
@@ -56,7 +56,7 @@ public class Participant : OwnerPropertyEntity<string>
     {
         if (userId != OwnerId)
         {
-            AddDomainEvent(new ParticipantAssignedEvent(this, OwnerId, userId));
+            AddDomainEvent(new ParticipantAssignedDomainEvent(this, OwnerId, userId));
             OwnerId = userId;
         }
     }
