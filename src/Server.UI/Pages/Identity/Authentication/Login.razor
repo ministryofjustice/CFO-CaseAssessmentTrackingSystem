@@ -88,10 +88,6 @@
                     </div>
                 </div>
                 <div Class="d-flex justify-space-between align-center mb-1">
-                    <label class="form-label">
-                        <InputCheckbox @bind-Value="Input.RememberMe" class="form-check-input" />
-                        @L["Remember me"]
-                    </label>
                     <MudLink Href="@Forgot.PageUrl">@L["Forgot password?"]</MudLink>
                 </div>
             
@@ -123,8 +119,7 @@
     private InputModel Input { get; set; } = new()
         {
             UserName = "",
-            Password = "",
-            RememberMe = true
+            Password = ""
         };
 
     protected override async Task OnInitializedAsync()
@@ -141,7 +136,7 @@
     {
         // This doesn't count login failures towards account lockout
         // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-        var result = await SignInManager.PasswordSignInAsync(Input.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+        var result = await SignInManager.PasswordSignInAsync(Input.UserName, Input.Password, false, lockoutOnFailure: true);
         if (result.Succeeded)
         {
             Logger.LogInformation($"{Input.UserName} logged in.");
@@ -149,14 +144,11 @@
         }
         else if (result.RequiresTwoFactor)
         {
-            //var user = await UserManager.FindByNameAsync(Input.UserName);
             var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
-            var token = await UserManager.GenerateTwoFactorTokenAsync(user, "Email");
-            await Sender.Publish(new SendFactorCodeNotification(user.Email, user.UserName, token));
+            var token = await UserManager.GenerateTwoFactorTokenAsync(user!, "Email");
+            await Sender.Publish(new SendFactorCodeNotification(user.Email!, user.UserName!, token));
 
-            RedirectManager.RedirectTo(LoginWith2fa.PageUrl, new() { ["returnUrl"] = ReturnUrl, ["rememberMe"] = Input.RememberMe });
-
-
+            RedirectManager.RedirectTo(LoginWith2fa.PageUrl, new() { ["returnUrl"] = ReturnUrl, ["rememberMe"] = false });
         }
         else if (result.IsLockedOut)
         {
@@ -177,6 +169,5 @@
         [Required(ErrorMessage = "Password cannot be empty")]
         [StringLength(30, ErrorMessage = "Password must be at least 6 characters long.", MinimumLength = 6)]
         public string Password { get; set; } = "";
-        public bool RememberMe { get; set; } = true;
     }
 }

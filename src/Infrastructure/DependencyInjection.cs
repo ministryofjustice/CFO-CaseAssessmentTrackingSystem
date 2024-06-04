@@ -31,7 +31,9 @@ public static class DependencyInjection
         IConfiguration configuration
     )
     {
-        services.AddSettings(configuration).AddDatabase(configuration).AddServices();
+        services.AddSettings(configuration)
+            .AddDatabase(configuration)
+            .AddServices(configuration);
 
         services.AddAuthenticationService(configuration).AddFusionCacheService();
 
@@ -125,7 +127,7 @@ public static class DependencyInjection
         }
     }
 
-    private static IServiceCollection AddServices(this IServiceCollection services)
+    private static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<PicklistService>()
             .AddSingleton<IPicklistService>(sp =>
@@ -143,6 +145,8 @@ public static class DependencyInjection
                 service.Initialize();
                 return service;
             });
+        
+        services.Configure<NotifyOptions>(configuration.GetSection(NotifyOptions.Notify));
 
         return services
             .AddSingleton<ISerializer, SystemTextJsonSerializer>()
@@ -150,7 +154,7 @@ public static class DependencyInjection
             .AddScoped<ITenantProvider, TenantProvider>()
             .AddScoped<IValidationService, ValidationService>()
             .AddScoped<IDateTime, DateTimeService>()
-            .AddScoped<IMailService, MailService>()
+            .AddScoped<ICommunicationsService, CommunicationsService>()
             .AddScoped<IExcelService, ExcelService>()
             .AddScoped<IUploadService, UploadService>();
     }
