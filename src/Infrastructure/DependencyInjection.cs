@@ -164,13 +164,21 @@ public static class DependencyInjection
         IConfiguration configuration
     )
     {
+        
+        services.Configure<AllowlistOptions>(configuration.GetSection(nameof(AllowlistOptions)));
+        
         services
             .AddIdentityCore<ApplicationUser>()
             .AddRoles<ApplicationRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddSignInManager()
+            //.AddSignInManager()
             .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
             .AddDefaultTokenProviders();
+        
+       services.AddScoped<SignInManager<ApplicationUser>, CustomSigninManager<ApplicationUser>>();
+       services.AddScoped<ISecurityStampValidator, SecurityStampValidator<ApplicationUser>>();
+
+        
         services.Configure<IdentityOptions>(options =>
         {
             var identitySettings = configuration
