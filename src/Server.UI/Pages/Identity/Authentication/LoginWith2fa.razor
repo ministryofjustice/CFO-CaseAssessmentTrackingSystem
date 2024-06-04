@@ -40,13 +40,6 @@
                     </div>
                 </div>
             </div>
-            
-            <div class="checkbox mb-3">
-                <label for="remember-machine" class="form-label">
-                    <InputCheckbox @bind-Value="Input.RememberMachine" />
-                    Remember this machine
-                </label>
-            </div>
             <div>
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
@@ -58,13 +51,6 @@
             </div>
         </EditForm>
     </div>
-
-    @* 
-    <MudText Typo="Typo.body1">
-        @L["Don't have access to your authenticator device? You can"]
-    </MudText>
-    <a class="mud-button-root mud-button mud-button-text mud-button-text-default mud-button-text-size-medium mud-ripple" href="@($"{LoginWithRecoveryCode.PageUrl}?ReturnUrl={ReturnUrl}")">log in with a recovery code</a>. 
-    *@
 </div>
 
 @code {
@@ -100,7 +86,7 @@
             message = L["Error: Invalid authenticator code."];
             return;
         }
-        var result = await SignInManager.TwoFactorSignInAsync("Email", authenticatorCode, true, true);
+        var result = await SignInManager.TwoFactorSignInAsync("Email", authenticatorCode, false, false);
         var userId = await UserManager.GetUserIdAsync(user);
         if (result.Succeeded)
         {
@@ -126,8 +112,5 @@
         [DataType(DataType.Text)]
         [Display(Name = "Authenticator code")]
         public string? TwoFactorCode { get; set; }
-
-        [Display(Name = "Remember this machine")]
-        public bool RememberMachine { get; set; }
     }
 }
