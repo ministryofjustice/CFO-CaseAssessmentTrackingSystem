@@ -2,7 +2,7 @@
 
 namespace Cfo.Cats.Domain.Common.Contracts;
 
-internal interface ILifetimeEntity
+internal interface ILifetime
 {
     Lifetime Lifetime { get; }
 }

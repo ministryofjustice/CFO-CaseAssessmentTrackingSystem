@@ -1,6 +1,6 @@
 @using Cfo.Cats.Application.Features.Candidates.DTOs
 @using Cfo.Cats.Application.Features.Candidates.Queries.Search
-@using Cfo.Cats.Application.Features.Participants.Commands.Enrol
+@using Cfo.Cats.Application.Features.Participants.Commands
 @using Severity=MudBlazor.Severity
 
 <MudContainer Class="d-flex flex-column align-center justify-center">
@@ -54,7 +54,7 @@
     
     private MudForm? _form;
 
-    private EnrolParticipantCommand? Model;
+    private CreateCandidate.Command? Model;
     
     private bool _confirmation = false;
     private List<ComparisonRow>? _comparisons;
@@ -88,7 +88,7 @@
         {
             _comparisons.Add(new( "Identifier", identifier, Query.ExternalIdentifier ));
         }
-        Model = new EnrolParticipantCommand()
+        Model = new CreateCandidate.Command
         {
             Identifier = Candidate.Identifier,
             CurrentUser = UserProfile!

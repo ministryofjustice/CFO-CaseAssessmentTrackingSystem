@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Domain.Entities.Participants;
+﻿using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Domain.Events;
 
@@ -12,4 +13,12 @@ public sealed class ParticipantAssignedDomainEvent(Participant participant, int?
     public Participant Item = participant;
     public int? FromOwner = from;
     public int? NewOwner = to;
+}
+
+public sealed class ParticipantTransitionedEvent(Participant participant, EnrolmentStatus from, EnrolmentStatus to) 
+    : DomainEvent
+{
+    public Participant Item = participant;
+    public EnrolmentStatus From = from;
+    public EnrolmentStatus To = to;
 }
