@@ -7,7 +7,7 @@ using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Domain.Entities.Administration;
 
-public class Location : BaseAuditableEntity<int>, ILifetimeEntity
+public class Location : BaseAuditableEntity<int>, ILifetime
 {
 
     private string _name;

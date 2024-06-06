@@ -22,6 +22,7 @@ internal static class DatabaseSchema
         public const string Participant = nameof(Participant);
         public const string Tenant = nameof(Tenant);
         public const string KeyValue = nameof(KeyValue);
+        public const string ParticipantEnrolmentHistory = nameof(ParticipantEnrolmentHistory);
     }
 
 }

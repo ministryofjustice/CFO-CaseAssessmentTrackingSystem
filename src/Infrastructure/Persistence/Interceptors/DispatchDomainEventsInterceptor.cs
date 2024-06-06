@@ -15,70 +15,46 @@ public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
         this.mediator = mediator;
     }
 
-    public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
-        DbContextEventData eventData,
-        InterceptionResult<int> result,
-        CancellationToken cancellationToken = default
-    )
+    public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
     {
-        await DispatchDomainEventsForDelete(eventData.Context);
+        var context = eventData.Context;
+        var domainEventEntities = context!.ChangeTracker
+            .Entries<IEntity>()
+            .Select(po => po.Entity)
+            .Where(po => po.DomainEvents.Any())
+            .ToList();
+
+        var domainEvents = domainEventEntities
+            .SelectMany(x => x.DomainEvents)
+            .ToList();
+
+        if (domainEvents.Any())
+        {
+            await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+            try
+            {
+                var saveResult = await base.SavingChangesAsync(eventData, result, cancellationToken);
+
+                foreach (var entity in domainEventEntities)
+                {
+                    entity.ClearDomainEvents();
+                }
+
+                foreach (var e in domainEvents)
+                {
+                    await mediator.Publish(e, cancellationToken);
+                }
+
+                await transaction.CommitAsync(cancellationToken);
+                return saveResult;
+            }
+            catch
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw;
+            }
+        }
+
         return await base.SavingChangesAsync(eventData, result, cancellationToken);
-    }
-
-    public override async ValueTask<int> SavedChangesAsync(
-        SaveChangesCompletedEventData eventData,
-        int result,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var resultValueTask = await base.SavedChangesAsync(eventData, result, cancellationToken);
-        await DispatchDomainEventsForChanged(eventData.Context);
-        return resultValueTask;
-    }
-
-    public async Task DispatchDomainEventsForDelete(DbContext? context)
-    {
-        if (context == null)
-        {
-            return;
-        }
-
-        var entities = context
-            .ChangeTracker.Entries<IEntity>()
-            .Where(e => e.Entity.DomainEvents.Any() && e.State == EntityState.Deleted)
-            .Select(e => e.Entity)
-            .ToList();
-
-        var domainEvents = entities.SelectMany(e => e.DomainEvents);
-
-        entities.ForEach(e => e.ClearDomainEvents());
-
-        foreach (var domainEvent in domainEvents)
-        {
-            await mediator.Publish(domainEvent);
-        }
-    }
-
-    public async Task DispatchDomainEventsForChanged(DbContext? context)
-    {
-        if (context == null)
-        {
-            return;
-        }
-
-        var entities = context
-            .ChangeTracker.Entries<IEntity>()
-            .Where(e => e.Entity.DomainEvents.Any())
-            .Select(e => e.Entity)
-            .ToList();
-
-        var domainEvents = entities.SelectMany(e => e.DomainEvents).ToList();
-
-        entities.ForEach(e => e.ClearDomainEvents());
-
-        foreach (var domainEvent in domainEvents)
-        {
-            await mediator.Publish(domainEvent);
-        }
     }
 }

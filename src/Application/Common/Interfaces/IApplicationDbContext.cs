@@ -24,6 +24,8 @@ public interface IApplicationDbContext
     
     public DbSet<Candidate> Candidates { get; }
 
+    public DbSet<ParticipantEnrolmentHistory> ParticipantEnrolmentHistories { get; }
+    
     ChangeTracker ChangeTracker { get; }
 
     DbSet<DataProtectionKey> DataProtectionKeys { get; }
