@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Common.Exceptions;
 using Cfo.Cats.Domain.Entities.Candidates;
 using Cfo.Cats.Domain.Events;
 
@@ -12,11 +13,11 @@ namespace Cfo.Cats.Domain.Entities.Participants;
 
 public class Participant : OwnerPropertyEntity<string>
 {
-
-    // EF Core Constructor
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private Participant()
     {
     }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public static Participant CreateFrom(Candidate candidate, string referralSource, string? referralComments)
     {
@@ -33,7 +34,6 @@ public class Participant : OwnerPropertyEntity<string>
         };
 
         p.AddDomainEvent(new ParticipantCreatedDomainEvent(p));
-
         return p;
     }
 
@@ -50,14 +50,37 @@ public class Participant : OwnerPropertyEntity<string>
     
     public ConsentStatus? ConsentStatus { get; private set; }
 
-    public Candidate Candidate { get; set; } = default!;
+    public Candidate Candidate { get; private set; } = default!;
 
-    public void AssignTo(int? userId)
+    /// <summary>
+    /// Transitions this participant to the new enrolment status, if valid
+    /// </summary>
+    /// <param name="to">The new enrolment status</param>
+    /// <returns>This entity.</returns>
+    /// <exception cref="InvalidEnrolmentTransition">If the new enrolment status is not valid</exception>
+    public Participant TransitionTo(EnrolmentStatus to)
     {
-        if (userId != OwnerId)
+        if (EnrolmentStatus!.CanTransitionTo(to))
         {
-            AddDomainEvent(new ParticipantAssignedDomainEvent(this, OwnerId, userId));
-            OwnerId = userId;
+            AddDomainEvent(new ParticipantTransitionedEvent(this, EnrolmentStatus, to));
+            EnrolmentStatus = to;
+            return this;
         }
+        throw new InvalidEnrolmentTransition(EnrolmentStatus, to);
+    }
+
+    /// <summary>
+    /// Assigns the participant to the new user id
+    /// </summary>
+    /// <param name="to"></param>
+    /// <returns></returns>
+    public Participant AssignTo(int? to)
+    {
+        if (to != OwnerId)
+        {
+            AddDomainEvent(new ParticipantAssignedDomainEvent(this, OwnerId, to));
+            OwnerId = to;
+        }
+        return this;
     }
 }

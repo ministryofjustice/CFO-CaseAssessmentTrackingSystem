@@ -6,7 +6,7 @@ using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Domain.Entities.Administration;
 
-public class Contract : BaseAuditableEntity<string>, ILifetimeEntity
+public class Contract : BaseAuditableEntity<string>, ILifetime
 {
     private List<Location> _locations = new();
     private readonly string? _tenantId;
