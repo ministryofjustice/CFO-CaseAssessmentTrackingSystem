@@ -20,7 +20,7 @@ public class RequestLoggerTests
     [Test]
     public async Task ShouldCallGetUserNameAsyncOnceIfAuthenticated()
     {
-        currentUserService.Setup(x => x.UserId).Returns(1);
+        currentUserService.Setup(x => x.UserId).Returns("Administrator");
         var requestLogger = new LoggingPreProcessor<CreateCandidate.Command>(logger.Object, currentUserService.Object);
         await requestLogger.Process(
             new CreateCandidate.Command { Identifier = "aABBB" },
@@ -35,7 +35,7 @@ public class RequestLoggerTests
         await requestLogger.Process(
             new CreateCandidate.Command { Identifier = "aABBB" } ,
             new CancellationToken());
-        identityService.Verify(i => i.GetUserNameAsync(It.IsAny<int>(), CancellationToken.None), Times.Never);
+        identityService.Verify(i => i.GetUserNameAsync(It.IsAny<string>(), CancellationToken.None), Times.Never);
     }
     
 }

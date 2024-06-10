@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Identity;
+using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

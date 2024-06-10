@@ -5,26 +5,14 @@ namespace Cfo.Cats.Application.Common.Interfaces.Identity;
 
 public interface IIdentityService
 {
-    Task<string?> GetUserNameAsync(int userId, CancellationToken cancellation = default);
-    Task<bool> IsInRoleAsync(int userId, string role, CancellationToken cancellation = default);
-    Task<bool> AuthorizeAsync(
-        int userId,
-        string policyName,
-        CancellationToken cancellation = default
-    );
-    Task<Result> DeleteUserAsync(int userId, CancellationToken cancellation = default);
-    Task<IDictionary<string, string?>> FetchUsers(
-        string roleName,
-        CancellationToken cancellation = default
-    );
-    Task UpdateLiveStatus(int userId, bool isLive, CancellationToken cancellation = default);
-    Task<ApplicationUserDto> GetApplicationUserDto(
-        string userName,
-        CancellationToken cancellation = default
-    );
-    string GetUserName(int userId);
-    Task<List<ApplicationUserDto>?> GetUsers(
-        string? tenantId,
-        CancellationToken cancellation = default
-    );
+    Task<string?> GetUserNameAsync(string userId, CancellationToken cancellation = default);
+    Task<bool> IsInRoleAsync(string userId, string role, CancellationToken cancellation = default);
+    Task<bool> AuthorizeAsync(string userId, string policyName, CancellationToken cancellation = default);
+    Task<Result> DeleteUserAsync(string userId, CancellationToken cancellation = default);
+    Task<IDictionary<string, string?>> FetchUsers(string roleName, CancellationToken cancellation = default);
+    Task UpdateLiveStatus(string userId, bool isLive, CancellationToken cancellation = default);
+    Task<ApplicationUserDto?> GetApplicationUserDto(string userName, CancellationToken cancellation = default);
+    string GetUserName(string userId);
+    Task<List<ApplicationUserDto>?> GetUsers(string? tenantId, CancellationToken cancellation = default);
+    void RemoveApplicationUserCache(string userName);
 }

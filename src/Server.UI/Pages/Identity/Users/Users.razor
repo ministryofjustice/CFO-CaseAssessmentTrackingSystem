@@ -677,7 +677,7 @@
 
     private async Task<List<PermissionModel>> GetAllPermissions(ApplicationUserDto dto)
     {
-        async Task<IList<Claim>> GetClaims(int userId)
+        async Task<IList<Claim>> GetClaims(string userId)
         {
             var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == dto.Id) ?? throw new NotFoundException($"not found application user: {userId}");
             var claims = await userManager.GetClaimsAsync(user);

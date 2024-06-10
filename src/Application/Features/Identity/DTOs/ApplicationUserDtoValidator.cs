@@ -1,4 +1,4 @@
-﻿namespace Cfo.Cats.Application.Features.Identity.DTOs;
+namespace Cfo.Cats.Application.Features.Identity.DTOs;
 
 public class ApplicationUserDtoValidator : AbstractValidator<ApplicationUserDto>
 {
@@ -8,35 +8,29 @@ public class ApplicationUserDtoValidator : AbstractValidator<ApplicationUserDto>
     {
         _localizer = localizer;
         RuleFor(v => v.TenantId)
-            .MaximumLength(128)
-            .WithMessage(_localizer["Tenant id must be less than 128 characters"])
-            .NotEmpty()
-            .WithMessage(_localizer["Tenant name cannot be empty"]);
+            .MaximumLength(128).WithMessage(_localizer["Tenant id must be less than 128 characters"])
+            .NotEmpty().WithMessage(_localizer["Tenant name cannot be empty"]);
         RuleFor(v => v.Provider)
-            .MaximumLength(128)
-            .WithMessage(_localizer["Provider must be less than 100 characters"])
-            .NotEmpty()
-            .WithMessage(_localizer["Provider cannot be empty"]);
+            .MaximumLength(128).WithMessage(_localizer["Provider must be less than 100 characters"])
+            .NotEmpty().WithMessage(_localizer["Provider cannot be empty"]);
         RuleFor(x => x.UserName)
-            .NotEmpty()
-            .WithMessage(_localizer["User name cannot be empty"])
-            .Length(2, 100)
-            .WithMessage(_localizer["User name must be between 2 and 100 characters"]);
-        RuleFor(x => x.Email)
-            .NotEmpty()
-            .WithMessage(_localizer["E-mail cannot be empty"])
-            .MaximumLength(100)
-            .WithMessage(_localizer["E-mail must be less than 100 characters"])
+            .NotEmpty().WithMessage(_localizer["User name cannot be empty"])
+            .Length(2, 100).WithMessage(_localizer["User name must be between 2 and 100 characters"]);
+
+        RuleFor(x => x.UserName)
             .EmailAddress()
-            .WithMessage(_localizer["E-mail must be a valid email address"]);
+            .WithMessage(_localizer["User name should be an email address"]);
+        
+        RuleFor(x => x.Email)
+            .NotEmpty().WithMessage(_localizer["E-mail cannot be empty"])
+            .MaximumLength(100).WithMessage(_localizer["E-mail must be less than 100 characters"])
+            .EmailAddress().WithMessage(_localizer["E-mail must be a valid email address"]);
 
         RuleFor(x => x.DisplayName)
-            .MaximumLength(128)
-            .WithMessage(_localizer["Display name must be less than 128 characters"]);
+            .MaximumLength(128).WithMessage(_localizer["Display name must be less than 128 characters"]);
 
         RuleFor(x => x.PhoneNumber)
-            .MaximumLength(20)
-            .WithMessage(_localizer["Phone number must be less than 20 digits"]);
+            .MaximumLength(20).WithMessage(_localizer["Phone number must be less than 20 digits"]);
         _localizer = localizer;
     }
 }
