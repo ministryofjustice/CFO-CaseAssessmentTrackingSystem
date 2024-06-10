@@ -8,11 +8,11 @@ public sealed class ParticipantCreatedDomainEvent(Participant participant) : Dom
     public Participant Item = participant;
 }
 
-public sealed class ParticipantAssignedDomainEvent(Participant participant, int? from, int? to) : DomainEvent
+public sealed class ParticipantAssignedDomainEvent(Participant participant, string? from, string? to) : DomainEvent
 {
     public Participant Item = participant;
-    public int? FromOwner = from;
-    public int? NewOwner = to;
+    public string? FromOwner = from;
+    public string? NewOwner = to;
 }
 
 public sealed class ParticipantTransitionedEvent(Participant participant, EnrolmentStatus from, EnrolmentStatus to) 

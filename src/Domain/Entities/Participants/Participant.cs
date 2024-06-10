@@ -74,7 +74,7 @@ public class Participant : OwnerPropertyEntity<string>
     /// </summary>
     /// <param name="to"></param>
     /// <returns></returns>
-    public Participant AssignTo(int? to)
+    public Participant AssignTo(string? to)
     {
         if (to != OwnerId)
         {

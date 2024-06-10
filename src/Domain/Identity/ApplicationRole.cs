@@ -2,7 +2,7 @@
 
 namespace Cfo.Cats.Domain.Identity;
 
-public class ApplicationRole : IdentityRole<int>
+public class ApplicationRole : IdentityRole
 {
     public ApplicationRole()
     {

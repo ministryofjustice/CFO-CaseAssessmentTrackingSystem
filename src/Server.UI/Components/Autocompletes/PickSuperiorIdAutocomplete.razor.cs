@@ -1,85 +1,65 @@
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Features.Identity.DTOs;
+using MudBlazor;
 
 namespace Cfo.Cats.Server.UI.Components.Autocompletes;
 
 public class PickSuperiorIdAutocomplete : MudAutocomplete<string>
 {
-    private List<ApplicationUserDto>? userList;
+    private List<ApplicationUserDto>? _userList;
+    [Parameter] public string? TenantId { get; set; }
+    [Parameter] public string? OwnerName { get; set; }
 
-    [Parameter]
-    public string? TenantId { get; set; }
-
-    [Parameter]
-    public string OwnerName { get; set; } = string.Empty;
-
-    [Inject]
-    private IIdentityService IdentityService { get; set; } = default!;
-
-    public override Task SetParametersAsync(ParameterView parameters)
+    [Inject] private IUserService UserService { get; set; } = default!;
+    public PickSuperiorIdAutocomplete()
     {
         SearchFuncWithCancel = SearchKeyValues;
-        ToStringFunc = ToString;
+        ToStringFunc = ConvertIdToUserName;
         Clearable = true;
         Dense = true;
         ResetValueOnEmptyText = true;
         ShowProgressIndicator = true;
-        MaxItems = 50;
-        return base.SetParametersAsync(parameters);
+        MaxItems = 200;
     }
 
-    private async Task<IEnumerable<string>> SearchKeyValues(
-        string value,
-        CancellationToken cancellation
-    )
+    protected override async Task OnParametersSetAsync()
     {
-        // if text is null or empty, show complete list
-        userList = await IdentityService.GetUsers(TenantId, cancellation);
-        List<int> result = new();
-
-        if (string.IsNullOrEmpty(value) && userList is not null)
-        {
-            result = userList.Select(x => x.Id).Take(MaxItems ?? 50).ToList();
-        }
-        else if (userList is not null)
-        {
-            result = userList
-                .Where(x =>
-                    !x.UserName.Equals(OwnerName, StringComparison.OrdinalIgnoreCase)
-                    && (
-                        x.UserName.Contains(value, StringComparison.OrdinalIgnoreCase)
-                        || x.Email.Contains(value, StringComparison.OrdinalIgnoreCase)
-                    )
-                )
-                .Select(x => x.Id)
-                .Take(MaxItems ?? 50)
-                .ToList();
-            ;
-        }
-
-        return result.Select(e => e.ToString());
+        await LoadUserDataAsync();
     }
 
-    private string ToString(string str)
+    private Task LoadUserDataAsync()
     {
-        
-        if (
-            userList is not null
-            && !string.IsNullOrEmpty(str)
-            && int.TryParse(str, out int id)
-            && userList.Any(x => x.Id == id)
-        )
+        _userList =  UserService.DataSource
+            .Where(x => TenantId == null || x.TenantId == TenantId)
+            .ToList();
+        return Task.CompletedTask;
+    }
+
+    private Task<IEnumerable<string>> SearchKeyValues(string value, CancellationToken cancellation)
+    {
+        if (_userList == null)
+            return Task.FromResult<IEnumerable<string>>(new List<string>());
+
+        var query = _userList.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(value))
         {
-            var userDto = userList.First(x => x.Id == id);
-            return userDto.UserName;
+            query = query.Where(x => x.UserName.Contains(value, StringComparison.OrdinalIgnoreCase) ||
+                                     x.Email.Contains(value, StringComparison.OrdinalIgnoreCase));
         }
 
-        /*if (userList is null && !string.IsNullOrEmpty(str))
+        if (!string.IsNullOrWhiteSpace(OwnerName))
         {
-            var userName = IdentityService.GetUserName(str);
-            return userName;
-        }*/
+            query = query.Where(x => !x.UserName.Equals(OwnerName, StringComparison.OrdinalIgnoreCase));
+        }
 
-        return string.Empty;
+        var result = query.Select(x => x.Id).Take(MaxItems ?? 50).ToList();
+
+        return Task.FromResult(result.AsEnumerable());
+    }
+
+    private string ConvertIdToUserName(string id)
+    {
+        return _userList?.FirstOrDefault(x => x.Id.Equals(id, StringComparison.OrdinalIgnoreCase))?.UserName ?? string.Empty;
     }
 }

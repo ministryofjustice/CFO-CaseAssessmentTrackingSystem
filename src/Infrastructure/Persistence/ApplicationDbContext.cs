@@ -14,7 +14,7 @@ public class ApplicationDbContext
     : IdentityDbContext<
         ApplicationUser,
         ApplicationRole,
-        int,
+        string,
         ApplicationUserClaim,
         ApplicationUserRole,
         ApplicationUserLogin,

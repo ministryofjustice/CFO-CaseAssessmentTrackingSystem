@@ -350,7 +350,7 @@
 
     private async Task<List<PermissionModel>> GetAllPermissions(ApplicationRoleDto dto)
     {
-        async Task<IList<Claim>> GetClaims(int roleId)
+        async Task<IList<Claim>> GetClaims(string roleId)
         {
             var role = await RoleManager.Roles.FirstOrDefaultAsync(r => r.Id == dto.Id) ?? throw new NotFoundException($"not found application role: {roleId}");
             var claims = await RoleManager.GetClaimsAsync(role);

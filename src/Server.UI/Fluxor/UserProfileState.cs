@@ -11,9 +11,9 @@ public class UserProfileState
         IsLoading = true;
         UserProfile = new UserProfile
         {
-            Email = "",
-            UserId = 0,
-            UserName = ""
+            Email = string.Empty,
+            UserId = string.Empty,
+            UserName = string.Empty
         };
     }
 
@@ -24,9 +24,9 @@ public class UserProfileState
             userProfile
             ?? new UserProfile
             {
-                Email = "",
-                UserId = 0,
-                UserName = ""
+                Email = string.Empty,
+                UserId = string.Empty,
+                UserName = string.Empty
             };
     }
 

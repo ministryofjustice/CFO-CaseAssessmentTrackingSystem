@@ -8,6 +8,6 @@ public class PermissionModel
     public string ClaimValue { get; set; } = "";
     public bool Assigned { get; set; }
 
-    public int? RoleId { get; set; }
-    public int? UserId { get; set; }
+    public string? RoleId { get; set; }
+    public string? UserId { get; set; }
 }

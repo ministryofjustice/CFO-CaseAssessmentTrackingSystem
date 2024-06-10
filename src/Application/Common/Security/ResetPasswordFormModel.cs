@@ -2,7 +2,7 @@
 
 public class ResetPasswordFormModel
 {
-    public int? Id { get; set; }
+    public string? Id { get; set; }
     public string? UserName { get; set; }
     public string? DisplayName { get; set; }
     public string? ProfilePictureDataUrl { get; set; }

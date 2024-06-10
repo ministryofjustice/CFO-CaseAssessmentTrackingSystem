@@ -34,11 +34,12 @@ public class ApplicationUserClaimsPrincipalFactory
             );
         }
 
-        if (user.SuperiorId.HasValue)
+        if (!string.IsNullOrEmpty(user.SuperiorId))
         {
-            ((ClaimsIdentity)principal.Identity)?.AddClaims(
-                new[] { new Claim(ApplicationClaimTypes.SuperiorId, $"{user.SuperiorId}") }
-            );
+            ((ClaimsIdentity)principal.Identity)?.AddClaims(new[]
+            {
+                new Claim(ApplicationClaimTypes.SuperiorId, user.SuperiorId)
+            });
         }
 
         if (!string.IsNullOrEmpty(user.DisplayName))

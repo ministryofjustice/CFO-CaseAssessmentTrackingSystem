@@ -8,94 +8,74 @@ INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified,
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.5.', N'Echo', N'Echo', N'2024-05-31 12:30:38.3850651', null, null, null);
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.6.', N'Foxtrot', N'Foxtrot', N'2024-05-31 12:30:38.3850653', null, null, null);
 
-GO
+INSERT INTO dbo.ApplicationRole (Id, Description, Name, NormalizedName, ConcurrencyStamp) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Admin Group', N'Admin', N'ADMIN', N'e6340a9c-8144-4f9d-8489-2e21af06bc56');
+INSERT INTO dbo.ApplicationRole (Id, Description, Name, NormalizedName, ConcurrencyStamp) VALUES ('ce8f8584-8a76-4c98-a490-72ff71117060', N'Basic User Group', N'Basic', N'BASIC', N'67781ee3-3fbc-4214-bec7-3fba39ea0eb3');
 
-SET IDENTITY_INSERT ApplicationRole ON;
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.AuditTrails.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.AuditTrails.Search');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.AuditTrails.Export');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Dashboards.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Dictionaries.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Dictionaries.Create');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Dictionaries.Edit');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Dictionaries.Delete');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Dictionaries.Search');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Dictionaries.Export');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Dictionaries.Import');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Enrolments.Search');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Hangfire.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Hangfire.Jobs');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Logs.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Logs.Search');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Logs.Export');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Logs.Purge');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.RoleClaims.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.RoleClaims.Create');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.RoleClaims.Edit');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.RoleClaims.Delete');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.RoleClaims.Search');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Roles.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Roles.Create');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Roles.Edit');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Roles.Delete');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Roles.Search');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Roles.Export');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Roles.Import');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Roles.Permissions');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Roles.Navigation');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Tenants.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Tenants.Create');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Tenants.Edit');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Tenants.Delete');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Tenants.Search');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Tenants.Export');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Users.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Users.Create');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Users.Edit');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Users.Delete');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Users.Search');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Users.Import');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Dictionaries.Export');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Users.ManageRoles');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Users.RestPassword');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Users.Active');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'Permission', N'Permissions.Users.Permissions');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('ce8f8584-8a76-4c98-a490-72ff71117060', N'Permission', N'Permissions.AuditTrails.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('ce8f8584-8a76-4c98-a490-72ff71117060', N'Permission', N'Permissions.Dashboards.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('ce8f8584-8a76-4c98-a490-72ff71117060', N'Permission', N'Permissions.Dictionaries.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('ce8f8584-8a76-4c98-a490-72ff71117060', N'Permission', N'Permissions.Hangfire.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('ce8f8584-8a76-4c98-a490-72ff71117060', N'Permission', N'Permissions.Logs.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('ce8f8584-8a76-4c98-a490-72ff71117060', N'Permission', N'Permissions.RoleClaims.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('ce8f8584-8a76-4c98-a490-72ff71117060', N'Permission', N'Permissions.Roles.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('ce8f8584-8a76-4c98-a490-72ff71117060', N'Permission', N'Permissions.Tenants.View');
+INSERT INTO dbo.ApplicationRoleClaim (RoleId, ClaimType, ClaimValue) VALUES ('ce8f8584-8a76-4c98-a490-72ff71117060', N'Permission', N'Permissions.Users.View');
 
-INSERT INTO dbo.ApplicationRole (Id, Description, Name, NormalizedName, ConcurrencyStamp) VALUES (1, N'Admin Group', N'Admin', N'ADMIN', N'e6340a9c-8144-4f9d-8489-2e21af06bc56');
-INSERT INTO dbo.ApplicationRole (Id, Description, Name, NormalizedName, ConcurrencyStamp) VALUES (2, N'Basic User Group', N'Basic', N'BASIC', N'67781ee3-3fbc-4214-bec7-3fba39ea0eb3');
+INSERT INTO dbo.ApplicationUser (Id, DisplayName, Provider, TenantId, TenantName, ProfilePictureDataUrl, IsActive, IsLive, RefreshToken, RefreshTokenExpiryTime, SuperiorId, UserName, NormalizedUserName, Email, NormalizedEmail, EmailConfirmed, PasswordHash, SecurityStamp, ConcurrencyStamp, PhoneNumber, PhoneNumberConfirmed, TwoFactorEnabled, LockoutEnd, LockoutEnabled, AccessFailedCount) 
+VALUES ('b6228bae-476d-4816-ba62-f12687d40a96', N'Support Worker', N'Local', N'1.', N'CFO', N'https://avatars.githubusercontent.com/u/9332472?s=400&u=73c208bf07ba967d5407aae9068580539cfc80a2&v=4', 1, 0, null, N'0001-01-01 00:00:00.0000000', null, N'support.worker@justice.gov.uk', N'SUPPORT.WORKER@JUSTICE.GOV.UK', N'support.worker@justice.gov.uk', N'SUPPORT.WORKER@JUSTICE.GOV.UK', 1, N'AQAAAAIAAYagAAAAEAVdTO5H3lP4OTTB1CzJun94RqDWYMHHxDYYLCcf3zER/g2IRxukunJEOYggb0xWZg==', N'5OAC7CKMMFBY3SMD4MZ7GKVDZRZ7CVUZ', N'49dbf347-de6b-4579-997b-3cfd4d79afa0', null, 0, 0, null, 1, 0);
 
-SET IDENTITY_INSERT ApplicationRole OFF;
-
-GO
-
-SET IDENTITY_INSERT ApplicationRoleClaim ON;
-
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (1, null, null, 1, N'Permission', N'Permissions.AuditTrails.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (2, null, null, 1, N'Permission', N'Permissions.AuditTrails.Search');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (3, null, null, 1, N'Permission', N'Permissions.AuditTrails.Export');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (4, null, null, 1, N'Permission', N'Permissions.Dashboards.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (5, null, null, 1, N'Permission', N'Permissions.Dictionaries.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (6, null, null, 1, N'Permission', N'Permissions.Dictionaries.Create');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (7, null, null, 1, N'Permission', N'Permissions.Dictionaries.Edit');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (8, null, null, 1, N'Permission', N'Permissions.Dictionaries.Delete');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (9, null, null, 1, N'Permission', N'Permissions.Dictionaries.Search');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (10, null, null, 1, N'Permission', N'Permissions.Dictionaries.Export');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (11, null, null, 1, N'Permission', N'Permissions.Dictionaries.Import');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (12, null, null, 1, N'Permission', N'Permissions.Enrolments.Search');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (13, null, null, 1, N'Permission', N'Permissions.Hangfire.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (14, null, null, 1, N'Permission', N'Permissions.Hangfire.Jobs');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (15, null, null, 1, N'Permission', N'Permissions.Logs.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (16, null, null, 1, N'Permission', N'Permissions.Logs.Search');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (17, null, null, 1, N'Permission', N'Permissions.Logs.Export');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (18, null, null, 1, N'Permission', N'Permissions.Logs.Purge');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (19, null, null, 1, N'Permission', N'Permissions.RoleClaims.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (20, null, null, 1, N'Permission', N'Permissions.RoleClaims.Create');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (21, null, null, 1, N'Permission', N'Permissions.RoleClaims.Edit');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (22, null, null, 1, N'Permission', N'Permissions.RoleClaims.Delete');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (23, null, null, 1, N'Permission', N'Permissions.RoleClaims.Search');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (24, null, null, 1, N'Permission', N'Permissions.Roles.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (25, null, null, 1, N'Permission', N'Permissions.Roles.Create');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (26, null, null, 1, N'Permission', N'Permissions.Roles.Edit');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (27, null, null, 1, N'Permission', N'Permissions.Roles.Delete');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (28, null, null, 1, N'Permission', N'Permissions.Roles.Search');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (29, null, null, 1, N'Permission', N'Permissions.Roles.Export');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (30, null, null, 1, N'Permission', N'Permissions.Roles.Import');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (31, null, null, 1, N'Permission', N'Permissions.Roles.Permissions');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (32, null, null, 1, N'Permission', N'Permissions.Roles.Navigation');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (33, null, null, 1, N'Permission', N'Permissions.Tenants.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (34, null, null, 1, N'Permission', N'Permissions.Tenants.Create');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (35, null, null, 1, N'Permission', N'Permissions.Tenants.Edit');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (36, null, null, 1, N'Permission', N'Permissions.Tenants.Delete');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (37, null, null, 1, N'Permission', N'Permissions.Tenants.Search');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (38, null, null, 1, N'Permission', N'Permissions.Tenants.Export');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (39, null, null, 1, N'Permission', N'Permissions.Users.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (40, null, null, 1, N'Permission', N'Permissions.Users.Create');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (41, null, null, 1, N'Permission', N'Permissions.Users.Edit');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (42, null, null, 1, N'Permission', N'Permissions.Users.Delete');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (43, null, null, 1, N'Permission', N'Permissions.Users.Search');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (44, null, null, 1, N'Permission', N'Permissions.Users.Import');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (45, null, null, 1, N'Permission', N'Permissions.Dictionaries.Export');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (46, null, null, 1, N'Permission', N'Permissions.Users.ManageRoles');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (47, null, null, 1, N'Permission', N'Permissions.Users.RestPassword');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (48, null, null, 1, N'Permission', N'Permissions.Users.Active');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (49, null, null, 1, N'Permission', N'Permissions.Users.Permissions');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (50, null, null, 2, N'Permission', N'Permissions.AuditTrails.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (51, null, null, 2, N'Permission', N'Permissions.Dashboards.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (52, null, null, 2, N'Permission', N'Permissions.Dictionaries.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (53, null, null, 2, N'Permission', N'Permissions.Hangfire.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (54, null, null, 2, N'Permission', N'Permissions.Logs.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (55, null, null, 2, N'Permission', N'Permissions.RoleClaims.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (56, null, null, 2, N'Permission', N'Permissions.Roles.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (57, null, null, 2, N'Permission', N'Permissions.Tenants.View');
-INSERT INTO dbo.ApplicationRoleClaim (Id, Description, [Group], RoleId, ClaimType, ClaimValue) VALUES (58, null, null, 2, N'Permission', N'Permissions.Users.View');
-
-SET IDENTITY_INSERT ApplicationRoleClaim OFF;
-
-GO
-
-SET IDENTITY_INSERT ApplicationUser ON;
-
-INSERT INTO dbo.ApplicationUser (Id, DisplayName, Provider, TenantId, TenantName, ProfilePictureDataUrl, IsActive, IsLive, RefreshToken, RefreshTokenExpiryTime, SuperiorId, UserName, NormalizedUserName, Email, NormalizedEmail, EmailConfirmed, PasswordHash, SecurityStamp, ConcurrencyStamp, PhoneNumber, PhoneNumberConfirmed, TwoFactorEnabled, LockoutEnd, LockoutEnabled, AccessFailedCount) VALUES (1, N'Support Worker', N'Local', N'1.', N'CFO', N'https://avatars.githubusercontent.com/u/9332472?s=400&u=73c208bf07ba967d5407aae9068580539cfc80a2&v=4', 1, 0, null, N'0001-01-01 00:00:00.0000000', null, N'support.worker@justice.gov.uk', N'SUPPORT.WORKER@JUSTICE.GOV.UK', N'support.worker@justice.gov.uk', N'SUPPORT.WORKER@JUSTICE.GOV.UK', 1, N'AQAAAAIAAYagAAAAEAVdTO5H3lP4OTTB1CzJun94RqDWYMHHxDYYLCcf3zER/g2IRxukunJEOYggb0xWZg==', N'5OAC7CKMMFBY3SMD4MZ7GKVDZRZ7CVUZ', N'49dbf347-de6b-4579-997b-3cfd4d79afa0', null, 0, 0, null, 1, 0);
-
-SET IDENTITY_INSERT ApplicationUser OFF;
-
-GO
-
-INSERT INTO dbo.ApplicationUserRole (UserId, RoleId) VALUES (1, 1);
+INSERT INTO dbo.ApplicationUserRole (UserId, RoleId) VALUES ('b6228bae-476d-4816-ba62-f12687d40a96', 'a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136');
 
 
-GO
 
 INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution1', 1, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'North West', N'1.', N'2024-05-31 12:30:38.9702330', null, null, null);
 INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution2', 2, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'North East', N'1.', N'2024-05-31 12:30:38.9702326', null, null, null);

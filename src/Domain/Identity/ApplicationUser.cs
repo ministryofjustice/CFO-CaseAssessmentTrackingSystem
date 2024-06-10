@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using Cfo.Cats.Domain.Entities;
 using Cfo.Cats.Domain.Entities.Administration;
-using Microsoft.AspNetCore.Identity;
 
 namespace Cfo.Cats.Domain.Identity;
 
-public class ApplicationUser : IdentityUser<int>
+public class ApplicationUser : IdentityUser
 {
     public ApplicationUser()
     {
@@ -33,6 +31,6 @@ public class ApplicationUser : IdentityUser<int>
     public virtual ICollection<ApplicationUserLogin> Logins { get; set; }
     public virtual ICollection<ApplicationUserToken> Tokens { get; set; }
 
-    public int? SuperiorId { get; set; } = null;
+    public string? SuperiorId { get; set; } = null;
     public ApplicationUser? Superior { get; set; } = null;
 }

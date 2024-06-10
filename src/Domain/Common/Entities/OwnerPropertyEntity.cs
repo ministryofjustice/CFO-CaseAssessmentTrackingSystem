@@ -7,5 +7,5 @@ public abstract class OwnerPropertyEntity<TId> : BaseAuditableEntity<TId>
 {
     public virtual ApplicationUser? Owner { get; set; }
     
-    public int? OwnerId { get; set; }
+    public string? OwnerId { get; set; }
 }
