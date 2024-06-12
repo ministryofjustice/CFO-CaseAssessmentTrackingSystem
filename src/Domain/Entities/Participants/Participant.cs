@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Common.Exceptions;
+using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Candidates;
 using Cfo.Cats.Domain.Events;
 
@@ -13,6 +14,9 @@ namespace Cfo.Cats.Domain.Entities.Participants;
 
 public class Participant : OwnerPropertyEntity<string>
 {
+    private int? currentLocationId;
+    
+    
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private Participant()
     {
@@ -30,9 +34,10 @@ public class Participant : OwnerPropertyEntity<string>
             FirstName = candidate.FirstName,
             LastName = candidate.LastName,
             ReferralSource = referralSource,
-            ReferralComments = referralComments
+            ReferralComments = referralComments,
+            CurrentLocation = candidate.CurrentLocation
         };
-
+        
         p.AddDomainEvent(new ParticipantCreatedDomainEvent(p));
         return p;
     }
@@ -50,7 +55,7 @@ public class Participant : OwnerPropertyEntity<string>
     
     public ConsentStatus? ConsentStatus { get; private set; }
 
-    public Candidate Candidate { get; private set; } = default!;
+    public Location CurrentLocation { get; private set; }
 
     /// <summary>
     /// Transitions this participant to the new enrolment status, if valid
@@ -80,6 +85,17 @@ public class Participant : OwnerPropertyEntity<string>
         {
             AddDomainEvent(new ParticipantAssignedDomainEvent(this, OwnerId, to));
             OwnerId = to;
+        }
+        return this;
+    }
+
+    public Participant MoveToLocation(Location to)
+    {
+        if (CurrentLocation.Id != to.Id)
+        {
+            AddDomainEvent(new ParticipantMovedDomainEvent(this, CurrentLocation, to));
+            CurrentLocation = to;
+            currentLocationId = to.Id;
         }
         return this;
     }

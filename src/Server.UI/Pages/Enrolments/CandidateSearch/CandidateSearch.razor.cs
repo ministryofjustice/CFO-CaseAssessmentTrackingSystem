@@ -20,7 +20,7 @@ public partial class CandidateSearch
             return;
         }
 
-        var participant = await Mediator.Send(new CreateCandidate.Command() { Identifier = ""});
+        var participant = await Mediator.Send(new CreateParticipant.Command() { Identifier = ""});
         
         //await CaseService!.AddDummyCase(Candidate.Identifier);
         Snackbar.Add("Enrolment started!", Severity.Success);

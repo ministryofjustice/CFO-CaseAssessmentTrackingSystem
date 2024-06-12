@@ -1,6 +1,8 @@
 
 
 @page "/pages/enrolments/{ParticipantId}"
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
 
 @attribute [Authorize]
 
@@ -19,9 +21,9 @@
 <EnrolmentContainer>
     <TitleContent>
         <MudContainer Class="d-flex px-0 gap-2 align-center">
-            <MudText Typo="Typo.h6">Enrolling John Doe</MudText>
-            <MudText Typo="Typo.subtitle1">(DOB 01/01/1990)</MudText>
-            <MudText Typo="Typo.h6">at HMP Risley</MudText>
+            <MudText Typo="Typo.h6">Enrolling @_participant?.FirstName @_participant?.LastName</MudText>
+            <MudText Typo="Typo.subtitle1">(DOB @_participant?.DateOfBirth)</MudText>
+            <MudText Typo="Typo.h6">at @_participant?.CurrentLocation</MudText>
         </MudContainer>
     </TitleContent>
     <ChildContent>
@@ -89,6 +91,8 @@
 
 @code {
 
+    private ParticipantDto? _participant;
+    
     [Parameter]
     public required string ParticipantId { get; set; }
     
@@ -102,6 +106,20 @@
     Consent? Consent { get; set; }
     RightToWork? RightToWork { get; set; }
     Location? Location { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_participant == null)
+        {
+            var query = new GetParticipantById.Query()
+            {
+                Id = this.ParticipantId
+            };
+
+            var result = await Mediator.Send(query);
+            _participant = result;
+        }
+    }
 
     private void StepChanged(int index)
     {

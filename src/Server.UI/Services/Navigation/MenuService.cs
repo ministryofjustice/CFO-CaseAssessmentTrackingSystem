@@ -31,14 +31,8 @@ public class MenuService : IMenuService
                             new()
                             {
                                 Title = "All",
-                                Href = "/pages/cases",
-                                PageStatus = PageStatus.ComingSoon
-                            },
-                            new()
-                            {
-                                Title = "Pending",
-                                Href = "/pages/cases/pending",
-                                PageStatus = PageStatus.ComingSoon
+                                Href = "/pages/participants",
+                                PageStatus = PageStatus.Completed
                             },
                         }
                     },

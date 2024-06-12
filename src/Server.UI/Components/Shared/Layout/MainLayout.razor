@@ -11,6 +11,7 @@
 <PageTitle>CATS</PageTitle>
 <MudRTLProvider RightToLeft="false">
     <MudDialogProvider/>
+    <MudDialogProvider />
     <MudSnackbarProvider/>
     <MudThemeProvider @ref="@mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="@LayoutService.SetDarkMode"/>
     @Body

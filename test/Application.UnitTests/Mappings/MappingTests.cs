@@ -44,6 +44,13 @@ public class MappingTests
         }
     }
 
+    [Test]
+    public void LocationDtoShouldMapCorrectlyToLocationTypeDto()
+    {
+           
+        
+    }
+
     private object GetInstanceOf(Type type)
     {
         if (type.GetConstructor(Type.EmptyTypes) != null)

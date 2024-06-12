@@ -668,7 +668,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DataProtectionKeys");
+                    b.ToTable("DataProtectionKeys", (string)null);
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.Contract", b =>
@@ -677,7 +677,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .WithMany()
                         .HasForeignKey("_tenantId");
 
-                    b.OwnsOne("Cfo.Cats.Domain.ValueObjects.Lifetime", "Lifetime", b1 =>
+                    b.OwnsOne("Cfo.Cats.Domain.Entities.Administration.Contract.Lifetime#Cfo.Cats.Domain.ValueObjects.Lifetime", "Lifetime", b1 =>
                         {
                             b1.Property<string>("ContractId")
                                 .HasColumnType("nvarchar(12)");
@@ -692,7 +692,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.HasKey("ContractId");
 
-                            b1.ToTable("Contract");
+                            b1.ToTable("Contract", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ContractId");
@@ -715,7 +715,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasForeignKey("_parentLocationId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.OwnsOne("Cfo.Cats.Domain.ValueObjects.Lifetime", "Lifetime", b1 =>
+                    b.OwnsOne("Cfo.Cats.Domain.Entities.Administration.Location.Lifetime#Cfo.Cats.Domain.ValueObjects.Lifetime", "Lifetime", b1 =>
                         {
                             b1.Property<int>("LocationId")
                                 .HasColumnType("int");
@@ -730,7 +730,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.HasKey("LocationId");
 
-                            b1.ToTable("Location");
+                            b1.ToTable("Location", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("LocationId");
@@ -762,7 +762,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("Cfo.Cats.Domain.ValueObjects.CandidateIdentifier", "Identifiers", b1 =>
+                    b.OwnsMany("Cfo.Cats.Domain.Entities.Candidates.Candidate.Identifiers#Cfo.Cats.Domain.ValueObjects.CandidateIdentifier", "Identifiers", b1 =>
                         {
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()

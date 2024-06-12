@@ -52,8 +52,6 @@ public class CandidateDto
                     options => options.MapFrom(candidate => candidate.LastName))
                 .ForMember(candidateDto => candidateDto.CurrentLocation,
                     options => options.MapFrom(candidate => candidate.CurrentLocation.Name))
-                .ForMember(candidateDto => candidateDto.EnrolmentStatus, 
-                    options => options.MapFrom(candidate => candidate.Participant!.EnrolmentStatus))
                 .ForMember(candidateDto => candidateDto.ExternalIdentifiers, 
                     options => options.MapFrom(candidate => candidate.Identifiers.Select(p => p.IdentifierValue).ToArray()));
                 

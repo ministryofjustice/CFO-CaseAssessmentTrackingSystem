@@ -54,7 +54,7 @@
     
     private MudForm? _form;
 
-    private CreateCandidate.Command? Model;
+    private CreateParticipant.Command? Model;
     
     private bool _confirmation = false;
     private List<ComparisonRow>? _comparisons;
@@ -88,7 +88,7 @@
         {
             _comparisons.Add(new( "Identifier", identifier, Query.ExternalIdentifier ));
         }
-        Model = new CreateCandidate.Command
+        Model = new CreateParticipant.Command
         {
             Identifier = Candidate.Identifier,
             CurrentUser = UserProfile!

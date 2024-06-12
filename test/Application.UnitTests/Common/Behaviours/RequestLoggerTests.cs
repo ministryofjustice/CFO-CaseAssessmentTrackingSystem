@@ -15,15 +15,15 @@ public class RequestLoggerTests
 {
     private readonly Mock<ICurrentUserService> currentUserService = new();
     private readonly Mock<IIdentityService> identityService = new();
-    private readonly Mock<ILogger<CreateCandidate.Command>> logger = new();
+    private readonly Mock<ILogger<CreateParticipant.Command>> logger = new();
     
     [Test]
     public async Task ShouldCallGetUserNameAsyncOnceIfAuthenticated()
     {
         currentUserService.Setup(x => x.UserId).Returns("Administrator");
-        var requestLogger = new LoggingPreProcessor<CreateCandidate.Command>(logger.Object, currentUserService.Object);
+        var requestLogger = new LoggingPreProcessor<CreateParticipant.Command>(logger.Object, currentUserService.Object);
         await requestLogger.Process(
-            new CreateCandidate.Command { Identifier = "aABBB" },
+            new CreateParticipant.Command { Identifier = "aABBB" },
             new CancellationToken());
         currentUserService.Verify(i => i.UserName, Times.Once);
     }
@@ -31,9 +31,9 @@ public class RequestLoggerTests
     [Test]
     public async Task ShouldNotCallGetUserNameAsyncOnceIfUnauthenticated()
     {
-        var requestLogger = new LoggingPreProcessor<CreateCandidate.Command>(logger.Object, currentUserService.Object);
+        var requestLogger = new LoggingPreProcessor<CreateParticipant.Command>(logger.Object, currentUserService.Object);
         await requestLogger.Process(
-            new CreateCandidate.Command { Identifier = "aABBB" } ,
+            new CreateParticipant.Command { Identifier = "aABBB" } ,
             new CancellationToken());
         identityService.Verify(i => i.GetUserNameAsync(It.IsAny<string>(), CancellationToken.None), Times.Never);
     }

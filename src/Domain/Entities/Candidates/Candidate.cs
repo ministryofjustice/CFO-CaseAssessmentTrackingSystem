@@ -22,9 +22,6 @@ public class Candidate : BaseAuditableEntity<string>
     public int CurrentLocationId { get; private set; }
 
     public Location CurrentLocation { get; private set; } 
-
-    public Participant? Participant { get; private set; }
-
     
     public IReadOnlyCollection<CandidateIdentifier> Identifiers => _identifiers.AsReadOnly();
 
