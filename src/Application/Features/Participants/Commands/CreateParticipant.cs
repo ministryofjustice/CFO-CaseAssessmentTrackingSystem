@@ -5,7 +5,7 @@ using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
 
-public static class CreateCandidate
+public static class CreateParticipant
 {
     [RequestAuthorize(Roles = "Admin, Default")]
     public class Command: ICacheInvalidatorRequest<Result<string>>

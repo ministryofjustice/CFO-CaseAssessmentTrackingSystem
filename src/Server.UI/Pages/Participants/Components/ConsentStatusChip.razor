@@ -1,0 +1,28 @@
+@using Cfo.Cats.Domain.Common.Enums;
+@using MudBlazor
+@inherits MudChip   
+
+<MudChip @attributes="UserAttributes" Class="@Class" Style="@Style" Color="@Color">
+    <MudIcon Icon="@Icon" />
+    @Status.Name
+</MudChip>
+
+@code {
+
+
+    [Parameter, EditorRequired]
+    public ConsentStatus Status { get; set;}
+
+    public string Icon => GetIconForStatus(Status);
+
+    private string GetIconForStatus(ConsentStatus status)
+    {
+        // Replace with your actual status enum and icon mapping
+        return status switch
+        {
+            _ when status == ConsentStatus.PendingStatus  => Icons.Material.Filled.Autorenew,
+            _ when status == ConsentStatus.GrantedStatus => Icons.Material.Filled.Check,
+            _ => Icons.Material.Filled.HelpOutline
+        };
+    }
+}    

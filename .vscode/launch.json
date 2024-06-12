@@ -31,6 +31,13 @@
             "cwd": "${workspaceFolder}/build",
             "stopAtEntry": false,
             "console": "internalConsole"
+        },
+        {
+            "name": ".net Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}",
+            "justMyCode": false
         }
     ]
 }

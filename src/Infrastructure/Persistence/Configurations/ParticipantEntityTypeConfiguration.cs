@@ -52,9 +52,13 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             cs => cs!.Value,
             cs => ConsentStatus.FromValue(cs));
 
-        builder.HasOne(e => e.Candidate)
-            .WithOne(c => c.Participant)
-            .HasForeignKey<Participant>(p => p.Id)
-            .IsRequired(false);
+        builder.HasOne(e => e.CurrentLocation)
+            .WithMany()
+            .HasForeignKey("_currentLocationId")
+            .HasConstraintName("FK_Participant_Location");
+
+        builder.Property<int>("_currentLocationId")
+            .HasColumnName("CurrentLocationId");
+
     }
 }
