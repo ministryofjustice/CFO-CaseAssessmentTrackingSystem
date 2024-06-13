@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240610102810_Initial")]
+    [Migration("20240613124653_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -369,9 +369,15 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("_currentLocationId")
+                        .HasColumnType("int")
+                        .HasColumnName("CurrentLocationId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
+
+                    b.HasIndex("_currentLocationId");
 
                     b.ToTable("Participant", (string)null);
                 });
@@ -804,15 +810,18 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Participant", b =>
                 {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Candidates.Candidate", "Candidate")
-                        .WithOne("Participant")
-                        .HasForeignKey("Cfo.Cats.Domain.Entities.Participants.Participant", "Id");
-
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId");
 
-                    b.Navigation("Candidate");
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "CurrentLocation")
+                        .WithMany()
+                        .HasForeignKey("_currentLocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_Participant_Location");
+
+                    b.Navigation("CurrentLocation");
 
                     b.Navigation("Owner");
                 });
@@ -903,11 +912,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.Location", b =>
                 {
                     b.Navigation("ChildLocations");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Candidates.Candidate", b =>
-                {
-                    b.Navigation("Participant");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationRole", b =>

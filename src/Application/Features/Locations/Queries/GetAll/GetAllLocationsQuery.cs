@@ -1,11 +1,11 @@
-﻿using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
-using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Locations.Caching;
 using Cfo.Cats.Application.Features.Locations.DTOs;
+using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Locations.Queries.GetAll;
 
-[RequestAuthorize(Roles = "Admin, Basic")]
+[RequestAuthorize(Policy = PolicyNames.AuthorizedUser)]
 public class GetAllLocationsQuery : ICacheableRequest<Result<LocationDto[]>>
 {
     public required UserProfile UserProfile { get; set; }

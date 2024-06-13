@@ -1,6 +1,7 @@
 ﻿@page "/"
+@using Cfo.Cats.Application.SecurityConstants
 
-@attribute [Authorize(Policy = Permissions.Dashboards.View)]
+@attribute [Authorize(Policy = PolicyNames.AuthorizedUser)]
 
 <PageTitle>@Title</PageTitle>
 

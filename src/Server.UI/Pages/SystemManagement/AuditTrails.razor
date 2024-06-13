@@ -4,8 +4,9 @@
 @using Cfo.Cats.Application.Features.AuditTrails.Queries.PaginationQuery
 @using Cfo.Cats.Application.Features.AuditTrails.Specifications
 @using Cfo.Cats.Application.Features.AuditTrails.Caching
+@using Cfo.Cats.Application.SecurityConstants
 
-@attribute [Authorize(Policy = Permissions.AuditTrails.View)]
+@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.ServiceDesk}")]
 
 @inject IStringLocalizer<AuditTrails> L
 @inject IState<UserProfileState> UserProfileState

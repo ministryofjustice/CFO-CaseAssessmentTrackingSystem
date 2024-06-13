@@ -7,11 +7,12 @@
 @using Cfo.Cats.Application.Features.KeyValues.Commands.Import
 @using Cfo.Cats.Application.Features.KeyValues.Queries.Export
 @using Cfo.Cats.Application.Features.KeyValues.Queries.PaginationQuery
+@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.SystemManagement.Components
 @using Severity=MudBlazor.Severity
 
 
-@attribute [Authorize(Policy = Permissions.Dictionaries.View)]
+@attribute [Authorize(Policy = PolicyNames.SystemFunctionsRead)]
 @inject IStringLocalizer<Dictionaries> L
 @inject IBlazorDownloadFileService BlazorDownloadFileService
 
@@ -217,12 +218,12 @@
     {
         Title = L[SelectedItem.GetClassDescription()];
         var state = await AuthState;
-        _canCreate = (await AuthService.AuthorizeAsync(state.User, Permissions.Dictionaries.Create)).Succeeded;
-        _canSearch = (await AuthService.AuthorizeAsync(state.User, Permissions.Dictionaries.Search)).Succeeded;
-        _canEdit = (await AuthService.AuthorizeAsync(state.User, Permissions.Dictionaries.Edit)).Succeeded;
-        _canDelete = (await AuthService.AuthorizeAsync(state.User, Permissions.Dictionaries.Delete)).Succeeded;
-        _canImport = (await AuthService.AuthorizeAsync(state.User, Permissions.Dictionaries.Import)).Succeeded;
-        _canExport = (await AuthService.AuthorizeAsync(state.User, Permissions.Dictionaries.Export)).Succeeded;
+        _canCreate = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        _canSearch = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
+        _canEdit = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        _canDelete = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        _canImport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowImport)).Succeeded;
+        _canExport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowExport)).Succeeded;
     }
 
     private async Task<GridData<KeyValueDto>> ServerReload(GridState<KeyValueDto> state)

@@ -6,11 +6,11 @@
 @using Cfo.Cats.Server.UI.Pages.Identity.Roles.Components
 @using System.Security.Claims
 @using System.ComponentModel
-@using System.Linq.Dynamic.Core
 @using System.Reflection
+@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Infrastructure.Constants.ClaimTypes
 
-@attribute [Authorize(Policy = Permissions.Roles.View)]
+@attribute [Authorize(Policy = PolicyNames.SystemFunctionsRead)]
 @inherits OwningComponentBase
 
 
@@ -236,13 +236,13 @@
         RoleManager = ScopedServices.GetRequiredService<RoleManager<ApplicationRole>>();
         Title = L[_currentDto.GetClassDescription()];
         var state = await AuthState;
-        _canCreate = (await AuthService.AuthorizeAsync(state.User, Permissions.Roles.Create)).Succeeded;
-        _canSearch = (await AuthService.AuthorizeAsync(state.User, Permissions.Roles.Search)).Succeeded;
-        _canEdit = (await AuthService.AuthorizeAsync(state.User, Permissions.Roles.Edit)).Succeeded;
-        _canDelete = (await AuthService.AuthorizeAsync(state.User, Permissions.Roles.Delete)).Succeeded;
-        _canManagePermissions = (await AuthService.AuthorizeAsync(state.User, Permissions.Roles.ManagePermissions)).Succeeded;
-        _canImport = false; // (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Import)).Succeeded;
-        _canExport = false; // (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Export)).Succeeded;
+        _canCreate = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        _canSearch = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
+        _canEdit = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        _canDelete = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        _canManagePermissions = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        _canImport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowImport)).Succeeded;
+        _canExport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowExport)).Succeeded;
     }
 
     private async Task<GridData<ApplicationRoleDto>> ServerReload(GridState<ApplicationRoleDto> state)
@@ -360,37 +360,7 @@
         var key = $"get-claims-by-{dto.Id}";
         _assignedClaims = await Cache.GetOrAddAsync(key, async () => await GetClaims(dto.Id), Options);
         var allPermissions = new List<PermissionModel>();
-        var modules = typeof(Permissions).GetNestedTypes();
-        foreach (var module in modules)
-        {
-            var moduleName = string.Empty;
-            var moduleDescription = string.Empty;
-            if (module.GetCustomAttributes(typeof(DisplayNameAttribute), true)
-                    .FirstOrDefault() is DisplayNameAttribute displayNameAttribute)
-                moduleName = displayNameAttribute.DisplayName;
-
-            if (module.GetCustomAttributes(typeof(DescriptionAttribute), true)
-                    .FirstOrDefault() is DescriptionAttribute descriptionAttribute)
-                moduleDescription = descriptionAttribute.Description;
-
-            var fields = module.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-            allPermissions.AddRange(from field in fields
-                select field.GetValue(null)
-                into propertyValue
-                where propertyValue is not null
-                select propertyValue.ToString()
-                into claimValue
-                select new PermissionModel
-                {
-                    RoleId = dto.Id,
-                    ClaimValue = claimValue,
-                    ClaimType = ApplicationClaimTypes.Permission,
-                    Group = moduleName,
-                    Description = moduleDescription,
-                    Assigned = _assignedClaims.Any(x => x.Value == claimValue)
-                });
-        }
-
+       
         return allPermissions;
     }
 
