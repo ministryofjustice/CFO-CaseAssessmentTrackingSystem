@@ -6,10 +6,11 @@
 @using Cfo.Cats.Application.Features.Tenants.Commands.AddEdit
 @using Cfo.Cats.Application.Features.Tenants.Commands.Delete
 @using Cfo.Cats.Application.Features.Tenants.Queries.Export
+@using Cfo.Cats.Application.SecurityConstants
 @using DocumentFormat.OpenXml.Office2010.PowerPoint
 @using Severity = MudBlazor.Severity
 
-@attribute [Authorize(Policy = Permissions.Tenants.View)]
+@attribute [Authorize(Policy = PolicyNames.SystemFunctionsRead)]
 
 @inject IMediator Mediator
 @inject IMapper Mapper
@@ -209,11 +210,11 @@
     {
         Title = L[currentDto.GetClassDescription()];
         var state = await AuthState;
-        canCreate = (await AuthService.AuthorizeAsync(state.User, Permissions.Tenants.Create)).Succeeded;
-        canEdit = (await AuthService.AuthorizeAsync(state.User, Permissions.Tenants.Edit)).Succeeded;
-        canDelete = (await AuthService.AuthorizeAsync(state.User, Permissions.Tenants.Delete)).Succeeded;
-        canExport = (await AuthService.AuthorizeAsync(state.User, Permissions.Tenants.Export)).Succeeded;
-        canSearch = (await AuthService.AuthorizeAsync(state.User, Permissions.Tenants.Search)).Succeeded;
+        canCreate = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
+        canEdit = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
+        canDelete = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
+        canExport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
+        canSearch = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
     }
 
     private async Task<GridData<TenantDto>> ServerReload(GridState<TenantDto> state)

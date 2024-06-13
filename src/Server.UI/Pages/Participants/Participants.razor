@@ -5,8 +5,10 @@
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Application.Features.Participants.Specifications
+@using Cfo.Cats.Application.SecurityConstants
 @inject IStringLocalizer<Participants> L
-@attribute [Authorize(Policy = Permissions.Participants.View)]
+
+@attribute [Authorize(Policy = PolicyNames.AuthorizedUser)]
 
 <PageTitle>@Title</PageTitle>
 <style>
@@ -149,7 +151,7 @@
     {
         Title = L["Participants"];
         var state = await AuthState;
-        _canSearch = (await AuthService.AuthorizeAsync(state.User, Permissions.Participants.Search)).Succeeded;
+        _canSearch = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowCandidateSearch)).Succeeded;
     }
 
     private async Task<GridData<ParticipantDto>> ServerReload(GridState<ParticipantDto> state)

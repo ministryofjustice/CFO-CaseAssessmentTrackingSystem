@@ -380,6 +380,42 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Participant",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    MiddleName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
+                    ReferralSource = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ReferralComments = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EnrolmentStatus = table.Column<int>(type: "int", nullable: false),
+                    ConsentStatus = table.Column<int>(type: "int", nullable: false),
+                    CurrentLocationId = table.Column<int>(type: "int", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OwnerId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Participant", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Participant_ApplicationUser_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Participant_Location",
+                        column: x => x.CurrentLocationId,
+                        principalTable: "Location",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CandidateIdentifier",
                 columns: table => new
                 {
@@ -398,40 +434,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         principalTable: "Candidate",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Participant",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    MiddleName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
-                    ReferralSource = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ReferralComments = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EnrolmentStatus = table.Column<int>(type: "int", nullable: false),
-                    ConsentStatus = table.Column<int>(type: "int", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OwnerId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Participant", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Participant_ApplicationUser_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "ApplicationUser",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Participant_Candidate_Id",
-                        column: x => x.Id,
-                        principalTable: "Candidate",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -520,6 +522,11 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 column: "ParentLocationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Participant_CurrentLocationId",
+                table: "Participant",
+                column: "CurrentLocationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Participant_OwnerId",
                 table: "Participant",
                 column: "OwnerId");
@@ -573,10 +580,10 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 name: "ApplicationRole");
 
             migrationBuilder.DropTable(
-                name: "ApplicationUser");
+                name: "Candidate");
 
             migrationBuilder.DropTable(
-                name: "Candidate");
+                name: "ApplicationUser");
 
             migrationBuilder.DropTable(
                 name: "Location");

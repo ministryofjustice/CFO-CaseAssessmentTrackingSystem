@@ -1,8 +1,9 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.KeyValues.Queries.Export;
 
-[RequestAuthorize(Roles = "Admin, Basic")]
+[RequestAuthorize(Roles = RoleNames.SystemSupport)]
 public class ExportKeyValuesQuery : IRequest<byte[]>
 {
     public string? Keyword { get; set; }

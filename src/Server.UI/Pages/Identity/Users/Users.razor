@@ -11,11 +11,11 @@
 @using BlazorDownloadFile
 @using System.ComponentModel
 @using System.Linq.Expressions
-@using Cfo.Cats.Infrastructure.Constants.Role
 @using System.Reflection
+@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Infrastructure.Constants.ClaimTypes
 
-@attribute [Authorize(Policy = Permissions.Users.View)]
+@attribute [Authorize(Policy = PolicyNames.SystemFunctionsRead)]
 @inherits OwningComponentBase
 
 @inject IUsersStateContainer UsersStateContainer
@@ -355,16 +355,16 @@
         roleManager = ScopedServices.GetRequiredService<RoleManager<ApplicationRole>>();
         userManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
         var state = await AuthState;
-        canCreate = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Create)).Succeeded;
-        canSearch = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Search)).Succeeded;
-        canEdit = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Edit)).Succeeded;
-        canDelete = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Delete)).Succeeded;
-        canActive = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Active)).Succeeded;
-        canManageRoles = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.ManageRoles)).Succeeded;
-        canRestPassword = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.RestPassword)).Succeeded;
-        canManagePermissions = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.ManagePermissions)).Succeeded;
-        canImport = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Import)).Succeeded;
-        canExport = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Export)).Succeeded;
+        canCreate = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        canSearch = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
+        canEdit = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        canDelete = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        canActive = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        canManageRoles = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        canRestPassword = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        canManagePermissions = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        canImport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowImport)).Succeeded;
+        canExport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowExport)).Succeeded;
         roles = await roleManager.Roles.Select(x => x.Name).ToListAsync();
     }
 
@@ -428,7 +428,7 @@
 
     private async Task OnCreate()
     {
-        var model = new ApplicationUserDto { Provider = "Local", Email = "", UserName = "", AssignedRoles = new[] { RoleName.Basic } };
+        var model = new ApplicationUserDto { Provider = "Local", Email = "", UserName = "", AssignedRoles = new[] { RoleNames.SupportWorker } };
         var parameters = new DialogParameters<UserFormDialog>
         {
             { x => x.Model, model }
@@ -460,7 +460,7 @@
                 }
                 else
                 {
-                    await userManager.AddToRoleAsync(applicationUser, RoleName.Basic);
+                    await userManager.AddToRoleAsync(applicationUser, RoleNames.SupportWorker);
                 }
 
                 Snackbar.Add($"{ConstantString.CreateSuccess}", Severity.Info);
@@ -687,37 +687,7 @@
         var key = $"get-claims-by-{dto.Id}";
         assignedClaims = await Cache.GetOrAddAsync(key, async () => await GetClaims(dto.Id), Options);
         var allPermissions = new List<PermissionModel>();
-        var modules = typeof(Permissions).GetNestedTypes();
-        foreach (var module in modules)
-        {
-            var moduleName = string.Empty;
-            var moduleDescription = string.Empty;
-            if (module.GetCustomAttributes(typeof(DisplayNameAttribute), true)
-                    .FirstOrDefault() is DisplayNameAttribute displayNameAttribute)
-                moduleName = displayNameAttribute.DisplayName;
-
-            if (module.GetCustomAttributes(typeof(DescriptionAttribute), true)
-                    .FirstOrDefault() is DescriptionAttribute descriptionAttribute)
-                moduleDescription = descriptionAttribute.Description;
-
-            var fields = module.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-            allPermissions.AddRange(from field in fields
-                select field.GetValue(null)
-                into propertyValue
-                where propertyValue is not null
-                select propertyValue.ToString()
-                into claimValue
-                select new PermissionModel
-                {
-                    UserId = dto.Id,
-                    ClaimValue = claimValue,
-                    ClaimType = ApplicationClaimTypes.Permission,
-                    Group = moduleName,
-                    Description = moduleDescription,
-                    Assigned = assignedClaims.Any(x => x.Value == claimValue)
-                });
-        }
-
+       
         return allPermissions;
     }
 
@@ -862,7 +832,7 @@
                     var iResult = await userManager.CreateAsync(user);
                     if (iResult.Succeeded)
                     {
-                        await userManager.AddToRolesAsync(user, new[] { RoleName.Basic });
+                        await userManager.AddToRolesAsync(user, new[] { RoleNames.SupportWorker });
                     }
                     else
                     {

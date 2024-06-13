@@ -1,10 +1,11 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Candidates.Caching;
 using Cfo.Cats.Application.Features.Candidates.DTOs;
+using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Candidates.Queries.Search;
 
-[RequestAuthorize(Roles = "Admin, Basic")]
+[RequestAuthorize(Policy = PolicyNames.AllowCandidateSearch)]
 public class CandidateSearchQuery : ICacheableRequest<IEnumerable<CandidateDto>>
 {
     public required string ExternalIdentifier { get; set; }

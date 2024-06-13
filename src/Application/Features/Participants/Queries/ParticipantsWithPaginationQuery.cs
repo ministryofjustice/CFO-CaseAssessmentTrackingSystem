@@ -2,11 +2,12 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Specifications;
+using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
 
-[RequestAuthorize(Policy = "Permissions.Participants.View")]
+[RequestAuthorize(Policy = PolicyNames.AllowCandidateSearch)]
 public class ParticipantsWithPaginationQuery
     : ParticipantAdvancedFilter, ICacheableRequest<PaginatedData<ParticipantDto>>
 {
