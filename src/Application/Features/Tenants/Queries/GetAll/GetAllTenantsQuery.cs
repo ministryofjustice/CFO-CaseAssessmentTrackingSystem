@@ -1,10 +1,11 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Tenants.Caching;
 using Cfo.Cats.Application.Features.Tenants.DTOs;
+using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Tenants.Queries.GetAll;
 
-[RequestAuthorize(Roles = "Admin, Basic")]
+[RequestAuthorize(Policy = PolicyNames.SystemFunctionsRead)]
 public class GetAllTenantsQuery : ICacheableRequest<IEnumerable<TenantDto>>
 {
     public string CacheKey => TenantCacheKey.GetAllCacheKey;

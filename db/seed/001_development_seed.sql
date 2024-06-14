@@ -3,8 +3,13 @@ INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified,
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.', N'CFO Evolution', N'Top level tenant for Evolution Programme', N'2024-05-31 12:30:38.3850497', null, null, null);
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.1.', N'Alpha', N'Alpha', N'2024-05-31 12:30:38.3850635', null, null, null);
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.', N'Bravo', N'Top level tenant for provider Bravo', N'2024-05-31 12:30:38.3850637', null, null, null);
+INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.1.', N'Bravo (A)', N'Bravo (A)', N'2024-05-31 12:30:38.3850637', null, null, null);
+INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.2.', N'Bravo (B)', N'Bravo (B)', N'2024-05-31 12:30:38.3850637', null, null, null);
+INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.3.', N'Bravo (C)', N'Bravo (C)', N'2024-05-31 12:30:38.3850637', null, null, null);
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.3.', N'Charlie', N'Charlie', N'2024-05-31 12:30:38.3850645', null, null, null);
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.4.', N'Delta', N'Top level tenant for Delta', N'2024-05-31 12:30:38.3850647', null, null, null);
+INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.4.1.', N'Delta (A)', N'Delta (A)', N'2024-05-31 12:30:38.3850647', null, null, null);
+INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.4.2.', N'Delta (A)', N'Delta (B)', N'2024-05-31 12:30:38.3850647', null, null, null);
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.5.', N'Echo', N'Echo', N'2024-05-31 12:30:38.3850651', null, null, null);
 INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.6.', N'Foxtrot', N'Foxtrot', N'2024-05-31 12:30:38.3850653', null, null, null);
 
@@ -24,15 +29,15 @@ INSERT INTO dbo.ApplicationUserRole (UserId, RoleId) VALUES ('b6228bae-476d-4816
 
 
 
-INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution1', 1, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'North West', N'1.', N'2024-05-31 12:30:38.9702330', null, null, null);
-INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution2', 2, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'North East', N'1.', N'2024-05-31 12:30:38.9702326', null, null, null);
-INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution3', 3, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'Yorkshire and Humberside', N'1.', N'2024-05-31 12:30:38.9702322', null, null, null);
-INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution4', 4, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'West Midlands', N'1.', N'2024-05-31 12:30:38.9702315', null, null, null);
-INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution5', 5, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'East Midlands', N'1.', N'2024-05-31 12:30:38.9702311', null, null, null);
-INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution6', 6, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'East Of England', N'1.', N'2024-05-31 12:30:38.9702308', null, null, null);
-INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution7', 7, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'London', N'1.', N'2024-05-31 12:30:38.9702304', null, null, null);
-INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution8', 8, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'South West', N'1.', N'2024-05-31 12:30:38.9702300', null, null, null);
-INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution9', 9, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'South East', N'1.', N'2024-05-31 12:30:38.9702153', null, null, null);
+INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution1', 1, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'North West', N'1.1.1.', N'2024-05-31 12:30:38.9702330', null, null, null);
+INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution2', 2, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'North East', N'1.1.2.1.', N'2024-05-31 12:30:38.9702326', null, null, null);
+INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution3', 3, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'Yorkshire and Humberside', N'1.1.3.', N'2024-05-31 12:30:38.9702322', null, null, null);
+INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution4', 4, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'West Midlands', N'1.1.2.2.', N'2024-05-31 12:30:38.9702315', null, null, null);
+INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution5', 5, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'East Midlands', N'1.1.2.3.', N'2024-05-31 12:30:38.9702311', null, null, null);
+INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution6', 6, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'East Of England', N'1.1.4.1.', N'2024-05-31 12:30:38.9702308', null, null, null);
+INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution7', 7, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'London', N'1.1.5.', N'2024-05-31 12:30:38.9702304', null, null, null);
+INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution8', 8, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'South West', N'1.1.6.', N'2024-05-31 12:30:38.9702300', null, null, null);
+INSERT INTO dbo.Contract (Id, LotNumber, LifetimeStart, LifetimeEnd, Description, TenantId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Evolution9', 9, N'2024-05-01 00:00:00.0000000', N'2029-03-31 23:59:59.0000000', N'South East', N'1.1.4.2.', N'2024-05-31 12:30:38.9702153', null, null, null);
 
 GO
 
@@ -208,3 +213,9 @@ WHEN NOT MATCHED BY TARGET THEN
 
 
 SET IDENTITY_INSERT dbo.Location OFF;
+
+
+-- grant access to the contract tenant to their locations
+insert into dbo.TenantLocation
+select l.Id, c.TenantId from dbo.Location l
+inner join dbo.Contract c on l.ContractId = c.Id
