@@ -9,11 +9,8 @@
 @using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Application.Common.Interfaces.MultiTenant
 @using BlazorDownloadFile
-@using System.ComponentModel
 @using System.Linq.Expressions
-@using System.Reflection
 @using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Infrastructure.Constants.ClaimTypes
 
 @attribute [Authorize(Policy = PolicyNames.SystemFunctionsRead)]
 @inherits OwningComponentBase

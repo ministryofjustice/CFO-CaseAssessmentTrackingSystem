@@ -5,6 +5,12 @@ namespace Cfo.Cats.Domain.Entities.Administration;
 
 public class Tenant : BaseAuditableEntity<string>
 {
+
+    private readonly List<Location> _locations = new();
+
+    public IReadOnlyCollection<Location> Locations => _locations.AsReadOnly();
+
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private Tenant()
     {
@@ -27,4 +33,23 @@ public class Tenant : BaseAuditableEntity<string>
 
     public string? Name { get; private set; }
     public string? Description { get; private set; }
+
+    public Tenant AddLocation(Location location)
+    {
+        if(_locations.Contains(location) == false)
+        {
+            _locations.Add(location);
+        }
+        return this;
+    }
+
+    public Tenant RemoveLocation(Location location)
+    {
+        if(_locations.Contains(location))
+        {
+            _locations.Remove(location);
+        }
+        return this;
+    }
+
 }
