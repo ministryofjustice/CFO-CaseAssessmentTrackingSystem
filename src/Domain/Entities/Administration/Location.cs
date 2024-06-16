@@ -34,7 +34,7 @@ public class Location : BaseAuditableEntity<int>, ILifetime
         _contractId = contractId;
         _lifetime = new Lifetime(lifetimeStart, lifetimeEnd);
         
-        this.AddDomainEvent(new LocationCreatedDomainEvent(this));
+        this.AddDomainEvent(new LocationCreatedDomainEvent(this, contractId));
     }
 
     public static Location Create(string name, int genderProvisionId, int locationTypeId, string? contractId,

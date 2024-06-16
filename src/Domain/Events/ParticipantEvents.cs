@@ -16,7 +16,7 @@ public sealed class ParticipantAssignedDomainEvent(Participant participant, stri
     public string? NewOwner { get; } = to;
 }
 
-public sealed class ParticipantTransitionedEvent(Participant participant, EnrolmentStatus from, EnrolmentStatus to) 
+public sealed class ParticipantTransitionedDomainEvent(Participant participant, EnrolmentStatus from, EnrolmentStatus to) 
     : DomainEvent
 {
     public Participant Item { get; }= participant;

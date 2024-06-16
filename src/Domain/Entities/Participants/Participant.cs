@@ -67,7 +67,7 @@ public class Participant : OwnerPropertyEntity<string>
     {
         if (EnrolmentStatus!.CanTransitionTo(to))
         {
-            AddDomainEvent(new ParticipantTransitionedEvent(this, EnrolmentStatus, to));
+            AddDomainEvent(new ParticipantTransitionedDomainEvent(this, EnrolmentStatus, to));
             EnrolmentStatus = to;
             return this;
         }
