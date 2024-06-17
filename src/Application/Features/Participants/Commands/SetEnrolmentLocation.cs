@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
@@ -8,37 +9,32 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public static class SetEnrolmentLocation
 {
     [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
-    public class Command : ICacheInvalidatorRequest<Result<string>>
+    public class Command(string identifier, LocationDto currentLocation, LocationDto enrolmentLocation, string? justificationReason)
+        : ICacheInvalidatorRequest<Result<string>>
     {
-        public Command(string identifier, int currentLocationId, int enrolmentLocationId, string? justificationReason)
-        {
-            this.Identifier = identifier;
-            this.CurrentLocationId = currentLocationId;
-            this.EnrolmentLocationId = enrolmentLocationId;
-            this.JustificationReason = justificationReason;
-        }
 
         /// <summary>
         /// The identifier of the participant whose enrolment details we are changing
         /// </summary>
-        public string Identifier { get; set; }
-        
+        public string Identifier { get; set; } = identifier;
+
         /// <summary>
         /// The location to assign the enrolment to
         /// </summary>
-        public int CurrentLocationId { get; set; }
-        
+        public LocationDto CurrentLocation { get; set; } = currentLocation;
+
         /// <summary>
         /// The location to assign the enrolment to
         /// </summary>
-        public int EnrolmentLocationId { get; set; }
-        
+        public LocationDto EnrolmentLocation { get; set; } = enrolmentLocation;
+
         /// <summary>
         /// A justification for enrolling a participant in a location
         /// other than where we think they are
         /// </summary>
-        public string? JustificationReason { get; set; }
-        
+        public string? JustificationReason { get; set; } = justificationReason;
+
+        public bool EnrolFromOtherLocation { get; set; } = enrolmentLocation.Id != currentLocation.Id;
         
         public string CacheKey => ParticipantCacheKey.GetCacheKey($"Id:{this.Identifier}");
         public CancellationTokenSource? SharedExpiryTokenSource 
@@ -56,7 +52,7 @@ public static class SetEnrolmentLocation
                 throw new NotFoundException("Cannot find participant", request.Identifier);
             }
 
-            participant.SetEnrolmentLocation(request.EnrolmentLocationId, request.JustificationReason);
+            participant.SetEnrolmentLocation(request.EnrolmentLocation.Id, request.JustificationReason);
             await context.SaveChangesAsync(cancellationToken);
             return participant.Id;
         }
@@ -66,13 +62,13 @@ public static class SetEnrolmentLocation
     {
         public Validator()
         {
-            RuleFor(x => x.CurrentLocationId)
-                .GreaterThan(0);
+            RuleFor(x => x.CurrentLocation)
+                .NotNull();
 
-            RuleFor(x => x.EnrolmentLocationId)
-                .GreaterThan(0);
+            RuleFor(x => x.EnrolmentLocation)
+                .NotNull();
             
-            When(x => x.CurrentLocationId != x.EnrolmentLocationId, () => {
+            When(x => x.CurrentLocation != x.EnrolmentLocation, () => {
                 RuleFor(x => x.JustificationReason)
                     .NotNull()
                     .NotEmpty()

@@ -1,85 +1,69 @@
 ﻿@using Cfo.Cats.Application.Features.Locations.DTOs
-@using Cfo.Cats.Application.Features.Locations.Queries.GetAll
-@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Commands
-@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Severity=MudBlazor.Severity
 
-
-@if (Participant is not null)
+@if (Model is not null && Locations is not [])
 {
-    <MudForm @ref="Form">
-        <MudTextField T="string" Label="Location" Value="@Participant.CurrentLocation.Name" Disabled />
+    <MudForm @ref="_form" Validation="@(Validator.ValidateValue(Model))">
+        <MudTextField T="string" Label="Location" Value="@Model.CurrentLocation.Name" Disabled/>
 
-        <MudCheckBox T="bool" @bind-Value="enrolFromOtherLocation" Label="Enrol at alternative location" />
+        <MudCheckBox T="bool" @bind-Value="Model.EnrolFromOtherLocation" Label="Enrol at alternative location"/>
 
-        @if (enrolFromOtherLocation)
-        {
-            <MudSelect T="LocationDto" @bind-Value="selectedLocation" Label="Alternative Location" AnchorOrigin="Origin.BottomCenter" Required>
-                @foreach (var location in Locations.Where(l => l.Name != Participant.CurrentLocation.Name))
-                {
-                    <MudSelectItem Value="location">
-                        @location.Name
-                    </MudSelectItem>
-                }
-            </MudSelect>
-            <MudTextFieldExtended T="string" @bind-Value="_justification" Label="Reason for alternative location enrolment" Disabled="!enrolFromOtherLocation" Required="enrolFromOtherLocation"/>
-        }
-
+        <MudSelect T="LocationDto" @bind-Value="Model.EnrolmentLocation" Label="Alternative Location" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var location in Locations.Where(l => l.Name != Model.CurrentLocation.Name))
+            {
+                <MudSelectItem Value="location">
+                    @location.Name
+                </MudSelectItem>
+            }
+        </MudSelect>
+        <MudTextFieldExtended T="string" @bind-Value="Model.JustificationReason" Label="Reason for alternative location enrolment" Disabled="!Model.EnrolFromOtherLocation"/>
     </MudForm>
-
 }
 
-
 @code {
+
+    MudForm? _form;
     
-    [CascadingParameter]
-    public UserProfile? UserProfile { get; set; }
+    SetEnrolmentLocation.Validator _modelValidator = new();
 
-    [Parameter, EditorRequired]
-    public ParticipantDto Participant { get; set; } = null!;
-    
-    private LocationDto? selectedLocation;
-    private string? _justification;
-    bool enrolFromOtherLocation;
+    [EditorRequired]
+    [Parameter]
+    public SetEnrolmentLocation.Command? Model { get; set; } 
 
-    MudForm? Form { get; set; }
-
-    LocationDto[] Locations { get; set; } = [];
-
-    protected override async Task OnInitializedAsync()
-    {
-        var response = await Mediator.Send(new GetAllLocationsQuery()
-        {
-            UserProfile = UserProfile!
-        });
-
-        if (response.Succeeded)
-        {
-            Locations = response.Data!;
-            selectedLocation = Participant.EnrolmentLocation;
-            enrolFromOtherLocation = Participant.EnrolmentLocation is not null && Participant.EnrolmentLocation.Id != Participant.CurrentLocation.Id;
-            _justification = Participant.EnrolmentLocationJustification;
-        }
-        
-        await base.OnInitializedAsync();
-    }
+    [EditorRequired]
+    [Parameter]
+    public LocationDto[]? Locations { get; set; } 
 
     public async Task<bool> Validate()
     {
-        await Form!.Validate();
-
-        if (Form.IsValid)
+        try
         {
-            SetEnrolmentLocation.Command command = new SetEnrolmentLocation.Command(
-                Participant.Id,
-                Participant.CurrentLocation.Id,
-                selectedLocation?.Id ?? Participant.CurrentLocation.Id,
-                _justification
-            );
-            var result = await Mediator.Send(command);
-        }
+            await _form!.Validate().ConfigureAwait(false);
 
-        return Form.IsValid;
+            if (_form.IsValid)
+            {
+                var result = await Mediator.Send(Model);
+                if (result.Succeeded)
+                {
+                    Snackbar.Add("Location details saved", Severity.Info);
+                }
+                else
+                {
+                    Snackbar.Add(result.ErrorMessage, Severity.Error);
+                }
+            }
+
+            return _form.IsValid;
+        }
+        catch
+        {
+            return false;
+        }
     }
+
+
+
+    
 
 }

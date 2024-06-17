@@ -1,6 +1,9 @@
 
 
 @page "/pages/enrolments/{ParticipantId}"
+@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Locations.Queries.GetAll
+@using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
 
@@ -46,7 +49,7 @@
 
             <ChildContent>
                 <CatsMudStep Condition="() => Location!.Validate()" Title="Location" Icon="@Icons.Material.Filled.Map" Optional="false">
-                    <Location @ref="Location" Participant="_participant"/>
+                    <Location @ref="Location" Model="@SetEnrolmentCommand" Locations="@Locations" />
                 </CatsMudStep>
                 <CatsMudStep Condition="() => Consent!.Validate()" Title="Consent" Icon="@Icons.Material.Filled.Approval" Optional="false">
 					<Consent @ref="Consent" />
@@ -107,6 +110,9 @@
     RightToWork? RightToWork { get; set; }
     Location? Location { get; set; }
 
+    private SetEnrolmentLocation.Command SetEnrolmentCommand { get; set; } = null!;
+    private LocationDto[] Locations { get; set; } = [];
+
     protected override async Task OnParametersSetAsync()
     {
         if (_participant == null)
@@ -118,6 +124,19 @@
 
             var result = await Mediator.Send(query);
             _participant = result;
+
+            SetEnrolmentCommand = new SetEnrolmentLocation.Command(
+                _participant.Id,
+                _participant.CurrentLocation,
+                _participant.EnrolmentLocation ?? _participant.CurrentLocation,
+                _participant.EnrolmentLocationJustification
+            );
+
+            Locations = await Mediator.Send(new GetAllLocationsQuery()
+            {
+                UserProfile = this.UserProfile!
+            });
+
         }
     }
 
