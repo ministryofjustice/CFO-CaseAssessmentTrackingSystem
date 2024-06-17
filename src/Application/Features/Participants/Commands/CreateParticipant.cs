@@ -1,5 +1,6 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Participants.Caching;
+using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Candidates;
 using Cfo.Cats.Domain.Entities.Participants;
 
@@ -7,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 
 public static class CreateParticipant
 {
-    [RequestAuthorize(Roles = "Admin, Default")]
+    [RequestAuthorize(Policy = PolicyNames.AllowCandidateSearch)]
     public class Command: ICacheInvalidatorRequest<Result<string>>
     {
         /// <summary>

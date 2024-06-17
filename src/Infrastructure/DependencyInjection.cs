@@ -231,6 +231,11 @@ public static class DependencyInjection
                     policy.RequireAuthenticatedUser();
                 });
 
+                options.AddPolicy(PolicyNames.AllowEnrol, policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SupportWorker);
+                });
+                
                 options.AddPolicy(PolicyNames.AllowImport, policy => {
                     policy.RequireAuthenticatedUser();
                     policy.RequireAssertion((context) => {

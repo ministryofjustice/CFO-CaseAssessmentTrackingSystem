@@ -14,7 +14,7 @@ namespace Cfo.Cats.Domain.Entities.Participants;
 
 public class Participant : OwnerPropertyEntity<string>
 {
-    private int? currentLocationId;
+    private int _currentLocationId;
     
     
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -35,7 +35,7 @@ public class Participant : OwnerPropertyEntity<string>
             LastName = candidate.LastName,
             ReferralSource = referralSource,
             ReferralComments = referralComments,
-            CurrentLocation = candidate.CurrentLocation
+            _currentLocationId = candidate.CurrentLocationId
         };
         
         p.AddDomainEvent(new ParticipantCreatedDomainEvent(p));
@@ -95,7 +95,7 @@ public class Participant : OwnerPropertyEntity<string>
         {
             AddDomainEvent(new ParticipantMovedDomainEvent(this, CurrentLocation, to));
             CurrentLocation = to;
-            currentLocationId = to.Id;
+            _currentLocationId = to.Id;
         }
         return this;
     }

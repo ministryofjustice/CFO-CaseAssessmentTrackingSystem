@@ -27,6 +27,8 @@ public static class PolicyNames
     /// </summary>
     public const string AllowImport = nameof(AllowExport);
 
+    public const string AllowEnrol = nameof(AllowEnrol);
+
     /// <summary>
     /// 
     /// </summary>

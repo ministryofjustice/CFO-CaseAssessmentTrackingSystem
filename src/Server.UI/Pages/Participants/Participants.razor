@@ -74,6 +74,13 @@
                          Dense="true"
                          EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                     
+                    @if (context.Item.EnrolmentStatus == EnrolmentStatus.PendingStatus)
+                    {
+                        // we are pending. Allow a continuation of the enrolment process.
+                        <MudMenuItem OnClick="@(()=> OnResumeEnrolment(context.Item))">
+                            @ConstantString.ResumeEnrolment
+                        </MudMenuItem>
+                    }
 
 
                     <MudMenuItem>@ConstantString.Edit</MudMenuItem>
@@ -112,11 +119,11 @@
                 <div class="d-flex align-items-center">
                     @if (context.Item.CurrentLocation.LocationType.IsCustody)
                     {
-                    <MudIcon Icon="@Icons.Material.Filled.Castle" Title="Custody" />
+                        <MudIcon Icon="@Icons.Material.Filled.Castle" Title="Custody" />
                     }
                     else
                     {
-                    <MudIcon Icon="@Icons.Material.Filled.MapsHomeWork" Title="Community" />
+                        <MudIcon Icon="@Icons.Material.Filled.MapsHomeWork" Title="Community" />
                     }
                     <span class="ml-2">@context.Item.CurrentLocation.Name</span>
                 </div>
@@ -142,7 +149,12 @@
     {
         return participant.ConsentStatus == EnrolmentStatus.PendingStatus;
     }
-    
+
+    private void OnResumeEnrolment(ParticipantDto participant)
+    {
+        NavMan.NavigateTo($"/pages/enrolments/{participant.Id}");
+    }
+
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
 

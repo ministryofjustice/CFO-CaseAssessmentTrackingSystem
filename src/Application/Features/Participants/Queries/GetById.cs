@@ -2,12 +2,13 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Specifications;
+using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetParticipantById
 {
-    [RequestAuthorize(Roles = "Admin")]
+    [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
     public class Query : ICacheableRequest<ParticipantDto>
     {
         public required string Id { get; set; }
