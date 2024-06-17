@@ -56,9 +56,18 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             .WithMany()
             .HasForeignKey("_currentLocationId")
             .HasConstraintName("FK_Participant_Location");
-
+        
         builder.Property<int>("_currentLocationId")
             .HasColumnName("CurrentLocationId");
+        
+        builder.HasOne(e => e.EnrolmentLocation)
+            .WithMany()
+            .HasForeignKey("_enrolmentLocationId")
+            .HasConstraintName("FK_Participant_EnrolmentLocation");
+
+        builder.Property<int?>("_enrolmentLocationId")
+            .HasColumnName("EnrolmentLocationId");
+        
 
     }
 }

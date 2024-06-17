@@ -50,7 +50,7 @@ public class CatsMudStepper : MudStepper
         // Validate component if required.
         if (ActiveStep is CatsMudStep step)
         {
-            var valid = step.Condition?.Invoke() ?? true;
+            var valid = await step.Condition!.Invoke();
             return await Task.FromResult(valid is false);
         }
 

@@ -36,8 +36,10 @@
 
     MudForm? Form { get; set; }
 
-    public bool Validate()
+    public async Task<bool> Validate()
     {
+        await Task.CompletedTask;
+        
         Form?.Validate();
         return Form?.IsValid ?? false;
     }

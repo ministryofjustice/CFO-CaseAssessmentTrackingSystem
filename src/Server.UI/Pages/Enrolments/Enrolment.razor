@@ -45,13 +45,13 @@
             </StaticContent>
 
             <ChildContent>
-                <CatsMudStep Condition="() => Location?.Validate() ?? false" Title="Location" Icon="@Icons.Material.Filled.Map" Optional="false">
-                    <Location @ref="Location"/>
+                <CatsMudStep Condition="() => Location!.Validate()" Title="Location" Icon="@Icons.Material.Filled.Map" Optional="false">
+                    <Location @ref="Location" Participant="_participant"/>
                 </CatsMudStep>
-                <CatsMudStep Condition="() => Consent?.Validate() ?? false" Title="Consent" Icon="@Icons.Material.Filled.Approval" Optional="false">
+                <CatsMudStep Condition="() => Consent!.Validate()" Title="Consent" Icon="@Icons.Material.Filled.Approval" Optional="false">
 					<Consent @ref="Consent" />
                 </CatsMudStep>
-                <CatsMudStep Condition="() => RightToWork?.Validate() ?? false" Title="Right to Work" Icon="@Icons.Material.Filled.HomeWork" Optional="false">
+                <CatsMudStep Condition="() => RightToWork.Validate()" Title="Right to Work" Icon="@Icons.Material.Filled.HomeWork" Optional="false">
                     <RightToWork @ref="RightToWork" />
                 </CatsMudStep>
                 <MudStep Title="Demographics" Icon="@Icons.Material.Filled.EmojiPeople" Optional="false">
@@ -113,7 +113,7 @@
         {
             var query = new GetParticipantById.Query()
             {
-                Id = this.ParticipantId
+                Id = ParticipantId
             };
 
             var result = await Mediator.Send(query);

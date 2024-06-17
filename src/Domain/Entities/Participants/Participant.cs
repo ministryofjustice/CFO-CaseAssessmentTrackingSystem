@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace Cfo.Cats.Domain.Entities.Participants;
 public class Participant : OwnerPropertyEntity<string>
 {
     private int _currentLocationId;
+    private int? _enrolmentLocationId;
     
     
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -56,7 +58,18 @@ public class Participant : OwnerPropertyEntity<string>
     public ConsentStatus? ConsentStatus { get; private set; }
 
     public Location CurrentLocation { get; private set; }
+    
+    /// <summary>
+    /// The location where this participant was enrolled.
+    /// </summary>
+    public Location? EnrolmentLocation { get; private set; }
 
+    /// <summary>
+    /// If the location differed from the current location
+    /// </summary>
+    public string? EnrolmentLocationJustification { get; private set; }
+    
+    
     /// <summary>
     /// Transitions this participant to the new enrolment status, if valid
     /// </summary>
@@ -72,6 +85,16 @@ public class Participant : OwnerPropertyEntity<string>
             return this;
         }
         throw new InvalidEnrolmentTransition(EnrolmentStatus, to);
+    }
+
+    public Participant SetEnrolmentLocation(int locationId, string? justificationReason)
+    {
+        if (_enrolmentLocationId != locationId)
+        {
+            _enrolmentLocationId = locationId;
+            EnrolmentLocationJustification = justificationReason;
+        }
+        return this;
     }
 
     /// <summary>

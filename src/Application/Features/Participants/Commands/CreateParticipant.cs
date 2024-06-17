@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 
 public static class CreateParticipant
 {
-    [RequestAuthorize(Policy = PolicyNames.AllowCandidateSearch)]
+    [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
     public class Command: ICacheInvalidatorRequest<Result<string>>
     {
         /// <summary>

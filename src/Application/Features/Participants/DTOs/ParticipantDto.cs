@@ -21,6 +21,12 @@ public class ParticipantDto
     [Description("Current Location")]
     public LocationDto CurrentLocation { get; set; } = default!;
     
+    [Description("Enrolment Location")]
+    public LocationDto? EnrolmentLocation { get; set; }
+    
+    [Description("Enrolment Justification Reason")]
+    public string? EnrolmentLocationJustification { get; set; }
+
     private class Mapping : Profile
     {
         public Mapping()

@@ -1,33 +1,45 @@
 ﻿@using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Locations.Queries.GetAll
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.Features.Locations.DTOs
 
-<MudForm @ref="Form">
-    <MudTextField T="string" Label="Location" Value='"Risley"' Disabled />
 
-    <MudCheckBox T="bool" @bind-Value="enrolFromOtherLocation" Label="Enrol at alternative location" />
+@if (Participant is not null)
+{
+    <MudForm @ref="Form">
+        <MudTextField T="string" Label="Location" Value="@Participant.CurrentLocation.Name" Disabled />
 
-    @if (enrolFromOtherLocation)
-    {
-        <MudSelect T="LocationDto" @bind-Value="selectedLocation" Label="Alternative Location" AnchorOrigin="Origin.BottomCenter" Required>
-            @foreach (var location in Locations)
-            {
-                <MudSelectItem Value="location">
-                    @location.Name
-                </MudSelectItem>
-            }
-        </MudSelect>
-    }
+        <MudCheckBox T="bool" @bind-Value="enrolFromOtherLocation" Label="Enrol at alternative location" />
 
-    <MudTextFieldExtended T="string" Label="Reason for alternative location enrolment" Disabled="!enrolFromOtherLocation" Required="enrolFromOtherLocation"/>
-</MudForm>
+        @if (enrolFromOtherLocation)
+        {
+            <MudSelect T="LocationDto" @bind-Value="selectedLocation" Label="Alternative Location" AnchorOrigin="Origin.BottomCenter" Required>
+                @foreach (var location in Locations.Where(l => l.Name != Participant.CurrentLocation.Name))
+                {
+                    <MudSelectItem Value="location">
+                        @location.Name
+                    </MudSelectItem>
+                }
+            </MudSelect>
+            <MudTextFieldExtended T="string" @bind-Value="_justification" Label="Reason for alternative location enrolment" Disabled="!enrolFromOtherLocation" Required="enrolFromOtherLocation"/>
+        }
+
+    </MudForm>
+
+}
+
 
 @code {
     
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; }
 
+    [Parameter, EditorRequired]
+    public ParticipantDto Participant { get; set; } = null!;
+    
     private LocationDto? selectedLocation;
+    private string? _justification;
     bool enrolFromOtherLocation;
 
     MudForm? Form { get; set; }
@@ -44,16 +56,30 @@
         if (response.Succeeded)
         {
             Locations = response.Data!;
-            selectedLocation = Locations.First();
+            selectedLocation = Participant.EnrolmentLocation;
+            enrolFromOtherLocation = Participant.EnrolmentLocation is not null && Participant.EnrolmentLocation.Id != Participant.CurrentLocation.Id;
+            _justification = Participant.EnrolmentLocationJustification;
         }
         
         await base.OnInitializedAsync();
     }
 
-    public bool Validate()
+    public async Task<bool> Validate()
     {
-        Form?.Validate();
-        return Form?.IsValid ?? false;
+        await Form!.Validate();
+
+        if (Form.IsValid)
+        {
+            SetEnrolmentLocation.Command command = new SetEnrolmentLocation.Command(
+                Participant.Id,
+                Participant.CurrentLocation.Id,
+                selectedLocation?.Id ?? Participant.CurrentLocation.Id,
+                _justification
+            );
+            var result = await Mediator.Send(command);
+        }
+
+        return Form.IsValid;
     }
 
 }
