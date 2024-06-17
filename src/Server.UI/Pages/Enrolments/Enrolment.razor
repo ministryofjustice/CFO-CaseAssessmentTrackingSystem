@@ -52,7 +52,7 @@
                     <Location @ref="Location" Model="@SetEnrolmentCommand" Locations="@Locations" />
                 </CatsMudStep>
                 <CatsMudStep Condition="() => Consent!.Validate()" Title="Consent" Icon="@Icons.Material.Filled.Approval" Optional="false">
-					<Consent @ref="Consent" />
+					<Consent @ref="Consent" Model="@AddConsentCommand" />
                 </CatsMudStep>
                 <CatsMudStep Condition="() => RightToWork.Validate()" Title="Right to Work" Icon="@Icons.Material.Filled.HomeWork" Optional="false">
                     <RightToWork @ref="RightToWork" />
@@ -111,6 +111,8 @@
     Location? Location { get; set; }
 
     private SetEnrolmentLocation.Command SetEnrolmentCommand { get; set; } = null!;
+    private AddConsent.Command AddConsentCommand { get; set; } = null!;
+    
     private LocationDto[] Locations { get; set; } = [];
 
     protected override async Task OnParametersSetAsync()
@@ -131,6 +133,11 @@
                 _participant.EnrolmentLocation ?? _participant.CurrentLocation,
                 _participant.EnrolmentLocationJustification
             );
+
+            AddConsentCommand = new AddConsent.Command()
+            {
+                ParticipantId = ParticipantId
+            };
 
             Locations = await Mediator.Send(new GetAllLocationsQuery()
             {

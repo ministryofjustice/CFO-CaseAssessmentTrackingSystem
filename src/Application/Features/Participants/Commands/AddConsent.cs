@@ -1,14 +1,18 @@
+using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.SecurityConstants;
+
 namespace Cfo.Cats.Application.Features.Participants.Commands;
 
 public static class AddConsent
 {
+    [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
     public class Command : IRequest<Result<string>>
     {
         [Description("Participant Id")]
-        public string ParticipantId { get; set; }
+        public required string ParticipantId { get; set; }
         
         [Description("Consent Date")]
-        public DateTime ConsentDate { get; set; }
+        public DateTime? ConsentDate { get; set; }
         
         public UploadRequest? UploadRequest { get; set; }
     }
@@ -17,9 +21,9 @@ public static class AddConsent
     {
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
+            //todo: attach the upload to the participants account
             var result = await uploadService.UploadAsync(request.UploadRequest!);
             return result;
-
         }
     }
 
