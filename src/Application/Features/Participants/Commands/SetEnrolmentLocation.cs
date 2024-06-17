@@ -52,6 +52,11 @@ public static class SetEnrolmentLocation
                 throw new NotFoundException("Cannot find participant", request.Identifier);
             }
 
+            if (participant.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
+            {
+                throw new ConflictException($"Participant {request.Identifier} is already enrolled");
+            }
+
             participant.SetEnrolmentLocation(request.EnrolmentLocation.Id, request.JustificationReason);
             await context.SaveChangesAsync(cancellationToken);
             return participant.Id;

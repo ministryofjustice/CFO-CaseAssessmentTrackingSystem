@@ -1,4 +1,6 @@
-﻿using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
+﻿using Amazon.Runtime;
+using Amazon.S3;
+using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
@@ -134,6 +136,16 @@ public static class DependencyInjection
 
         services.Configure<NotifyOptions>(configuration.GetSection(NotifyOptions.Notify));
 
+        if(configuration.GetSection("AWS") is {} section && section.Exists())
+        {
+            var options = configuration.GetAWSOptions();
+            options.Credentials = new BasicAWSCredentials(section.GetRequiredValue("AccessKey"), section.GetRequiredValue("SecretKey"));
+            services.AddDefaultAWSOptions(options);
+            services.AddAWSService<IAmazonS3>();
+            
+        }
+        
+        
         return services
             .AddSingleton<ISerializer, SystemTextJsonSerializer>()
             .AddScoped<ICurrentUserService, CurrentUserService>()
@@ -282,10 +294,14 @@ public static class DependencyInjection
                 service.Initialize();
                 return service;
             });
+        
 
         return services;
     }
 
+    public static string GetRequiredValue(this IConfiguration configuration, string name) =>
+        configuration[name] ?? throw new InvalidOperationException($"Configuration missing value for: {(configuration is IConfigurationSection s ? s.Path + ":" + name : name)}");
+    
     private static IServiceCollection AddFusionCacheService(this IServiceCollection services)
     {
         services.AddMemoryCache();
