@@ -1,46 +1,77 @@
 @using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Severity=MudBlazor.Severity
 @using Cfo.Cats.Domain.Common.Enums
 
 @if (Model is not null)
 {
-    <MudForm @ref="Form">
-        <MudDatePicker Label="Date of Consent" Editable="true" bind MaxDate="DateTime.UtcNow.Date" @bind-Date="Model.ConsentDate" Required/>
-        <div class="mb-4 mt-8">
+    if (ConsentDto is not null && ConsentDto.Length > 0)
+    {
+        <MudText Typo="Typo.body2">
+            Consent Files already uploaded
+        </MudText>
+        
+        <MudList>
+            @foreach (var c in ConsentDto)
+            {
+                <MudListItem>
+                    <MudText Typo="Typo.body2">
+                        @c.FileName 
+                    </MudText>
+                </MudListItem>
+            }    
+        </MudList>
+        
+        
+        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" @onclick="() => ConsentDto = null">
+            Add New
+        </MudButton>
+    }
+    else
+    {
+        <MudForm @ref="Form">
+            <MudDatePicker Label="Date of Consent" Editable="true" bind MaxDate="DateTime.UtcNow.Date" @bind-Date="Model.ConsentDate" Required/>
+            <div class="mb-4 mt-8">
 
-            <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1">
-                <ButtonTemplate>
-                    <MudButton HtmlTag="label"
-                               Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               StartIcon="@Icons.Material.Filled.CloudUpload"
-                               for="@context.Id">
-                        Upload Files
-                    </MudButton>
-                </ButtonTemplate>
-            </MudFileUpload>
+                <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1">
+                    <ButtonTemplate>
+                        <MudButton HtmlTag="label"
+                                   Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.CloudUpload"
+                                   for="@context.Id">
+                            Upload Files
+                        </MudButton>
+                    </ButtonTemplate>
+                </MudFileUpload>
 
-            <MudSelect T="string" Label="Document Version" AnchorOrigin="Origin.BottomCenter" Required>
-                @foreach (var version in documentVersions)
-                {
-                    <MudSelectItem Value="@version"/>
-                }
-            </MudSelect>
-        </div>
+                <MudSelect T="string" Label="Document Version" AnchorOrigin="Origin.BottomCenter" Required>
+                    @foreach (var version in documentVersions)
+                    {
+                        <MudSelectItem Value="@version"/>
+                    }
+                </MudSelect>
+            </div>
 
-        <MudCheckBox @ref="certify" Disabled="fileCount == 0" T="bool" Required="true" RequiredError="You must upload a document and certify" Label="I certify that any documents uploaded are the original or true copies of the original documents, and will not be used to claim payments / results against any other Government contract"/>
-    </MudForm>
+            <MudCheckBox @ref="Certify" Disabled="fileCount == 0" T="bool" Required="true" RequiredError="You must upload a document and certify" Label="I certify that any documents uploaded are the original or true copies of the original documents, and will not be used to claim payments / results against any other Government contract"/>
+        </MudForm>
+    }
+   
 }
 
 @code {
     
     
-    MudCheckBox<bool> certify { get; set; } = default!;
+    MudCheckBox<bool> Certify { get; set; } = default!;
 
     [EditorRequired]
     [Parameter]
     public AddConsent.Command? Model { get; set; }
+    
+    [Parameter]
+    public ConsentDto[]? ConsentDto { get; set; }
 
-    List<string> documentVersions = new List<string>
+    List<string> documentVersions = new()
     {
         "Version 1.1",
         "Version 1.0",
@@ -65,11 +96,24 @@
 
     public async Task<bool> Validate()
     {
+        if (ConsentDto is not null && ConsentDto.Length > 0)
+        {
+            return true;
+        }
+
         await Form!.Validate();
 
         if (Form.IsValid)
         {
-            await Mediator.Send(Model!);
+           var result = await Mediator.Send(Model!);
+           if (result.Succeeded)
+           {
+               Snackbar.Add("Consent form uploaded", Severity.Success);
+           }
+           else
+           {
+               Snackbar.Add($"Error uploading consent {result.ErrorMessage}", Severity.Error);
+           }
         }
 
         return Form.IsValid;

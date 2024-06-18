@@ -27,13 +27,23 @@ public class ParticipantDto
     [Description("Enrolment Justification Reason")]
     public string? EnrolmentLocationJustification { get; set; }
 
+    public ConsentDto[] Consents { get; set; }
+    
     private class Mapping : Profile
     {
         public Mapping()
         {
+
+            CreateMap<Consent, ConsentDto>()
+                .ForMember(c => c.DocumentId, options => options.MapFrom(source => source.Document!.Id))
+                .ForMember(c => c.FileName, options => options.MapFrom(source => source.Document!.Title));
+            
+            
             CreateMap<Participant, ParticipantDto>()
                 .ForMember(target => target.CurrentLocation,
-                options => options.MapFrom(source => source.CurrentLocation));
+                options => options.MapFrom(source => source.CurrentLocation))
+                .ForMember(target => target.Consents,
+                options => options.MapFrom(source => source.Consents.ToArray()));
         }
     }
 }

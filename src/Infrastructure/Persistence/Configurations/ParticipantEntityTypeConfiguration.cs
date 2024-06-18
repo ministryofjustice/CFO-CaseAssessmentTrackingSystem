@@ -87,5 +87,15 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
 
         });
 
+        builder.Navigation(p => p.Consents)
+            .AutoInclude();
+
+        builder.Navigation(p => p.EnrolmentLocation)
+            .AutoInclude();
+        
+        builder.Navigation(p => p.CurrentLocation)
+            .AutoInclude();
+
+
     }
 }

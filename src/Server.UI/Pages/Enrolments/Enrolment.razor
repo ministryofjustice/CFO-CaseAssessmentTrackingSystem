@@ -51,15 +51,12 @@
                 <CatsMudStep Condition="() => Location!.Validate()" Title="Location" Icon="@Icons.Material.Filled.Map" Optional="false">
                     <Location @ref="Location" Model="@SetEnrolmentCommand" Locations="@Locations" />
                 </CatsMudStep>
-                <CatsMudStep Condition="() => Consent!.Validate()" Title="Consent" Icon="@Icons.Material.Filled.Approval" Optional="false">
-					<Consent @ref="Consent" Model="@AddConsentCommand" />
+                <CatsMudStep Condition="() => Consent!.Validate()" Title="Consent"  Icon="@Icons.Material.Filled.Approval" Optional="false">
+					<Consent @ref="Consent" Model="@AddConsentCommand" ConsentDto="_participant?.Consents" />
                 </CatsMudStep>
                 <CatsMudStep Condition="() => RightToWork.Validate()" Title="Right to Work" Icon="@Icons.Material.Filled.HomeWork" Optional="false">
                     <RightToWork @ref="RightToWork" />
                 </CatsMudStep>
-                <MudStep Title="Demographics" Icon="@Icons.Material.Filled.EmojiPeople" Optional="false">
-                    <Demographics />
-                </MudStep>
                 <MudStep IsResultStep="true">
                     <MudContainer Class="d-flex flex-column align-center justify-center mb-8">
                         <MudIconButton Icon="@Icons.Material.Filled.Done" Color="@Color.Success" Size="Size.Large" />
