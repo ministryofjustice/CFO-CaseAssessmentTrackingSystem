@@ -271,7 +271,7 @@
             {
                 image.Mutate(i => i.Resize(new ResizeOptions { Mode = ResizeMode.Crop, Size = new Size(128, 128) }));
                 image.Save(outStream, PngFormat.Instance);
-                var result = await UploadService.UploadAsync(new UploadRequest(Guid.NewGuid() + ".png", UploadType.ProfilePicture, outStream.ToArray()));
+                var result = await UploadService.UploadAsync($"users/{Model.UserId}", new UploadRequest(Guid.NewGuid() + ".png", UploadType.ProfilePicture, outStream.ToArray()));
                 Model.ProfilePictureDataUrl = result;
                 var user = await userManager.Users.FirstOrDefaultAsync (u => u.Id == Model.UserId!);
                 user!.ProfilePictureDataUrl = Model.ProfilePictureDataUrl;

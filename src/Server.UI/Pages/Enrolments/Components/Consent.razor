@@ -69,7 +69,7 @@
 
         if (Form.IsValid)
         {
-            await Mediator.Send(Model);
+            await Mediator.Send(Model!);
         }
 
         return Form.IsValid;

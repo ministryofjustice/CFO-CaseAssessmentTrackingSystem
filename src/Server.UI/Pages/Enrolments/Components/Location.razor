@@ -9,8 +9,8 @@
 
         <MudCheckBox T="bool" @bind-Value="Model.EnrolFromOtherLocation" Label="Enrol at alternative location"/>
 
-        <MudSelect T="LocationDto" @bind-Value="Model.EnrolmentLocation" Label="Alternative Location" AnchorOrigin="Origin.BottomCenter">
-            @foreach (var location in Locations.Where(l => l.Name != Model.CurrentLocation.Name))
+        <MudSelect T="LocationDto" @bind-Value="Model.EnrolmentLocation" Label="Alternative Location" AnchorOrigin="Origin.BottomCenter" Disabled="!Model.EnrolFromOtherLocation">
+            @foreach (var location in Locations!)
             {
                 <MudSelectItem Value="location">
                     @location.Name

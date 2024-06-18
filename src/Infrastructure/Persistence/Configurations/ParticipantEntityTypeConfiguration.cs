@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Domain.Common.Enums;
+﻿using Amazon.Runtime.Documents;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -67,7 +68,24 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
 
         builder.Property<int?>("_enrolmentLocationId")
             .HasColumnName("EnrolmentLocationId");
-        
+
+        builder.OwnsMany(c => c.Consents, a => {
+            a.WithOwner()
+                .HasForeignKey("CandidateId");
+
+            a.ToTable(DatabaseSchema.Tables.Consent);
+
+            a.Property(c => c.ConsentDate)
+                .IsRequired();
+
+            a.HasOne(c => c.Document)
+                .WithMany()
+                .HasForeignKey("_documentId");
+
+            a.Property("_documentId")
+                .HasColumnName("DocumentId");
+
+        });
 
     }
 }

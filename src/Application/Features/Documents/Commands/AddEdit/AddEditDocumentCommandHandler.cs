@@ -30,7 +30,7 @@ public class AddEditDocumentCommandHandler : IRequestHandler<AddEditDocumentComm
             document.AddDomainEvent(new DocumentUpdatedDomainEvent(document));
             if (request.UploadRequest != null)
             {
-                document.URL = await _uploadService.UploadAsync(request.UploadRequest);
+                document.URL = await _uploadService.UploadAsync("", request.UploadRequest);
             }
 
             document.Title = request.Title;
@@ -45,7 +45,7 @@ public class AddEditDocumentCommandHandler : IRequestHandler<AddEditDocumentComm
             var document = _mapper.Map<Document>(request);
             if (request.UploadRequest != null)
             {
-                document.URL = await _uploadService.UploadAsync(request.UploadRequest);
+                document.URL = await _uploadService.UploadAsync("", request.UploadRequest);
             }
 
             document.AddDomainEvent(new DocumentCreatedDomainEvent(document));

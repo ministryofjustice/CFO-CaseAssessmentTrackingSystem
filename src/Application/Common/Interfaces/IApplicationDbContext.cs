@@ -23,7 +23,7 @@ public interface IApplicationDbContext
     public DbSet<KeyValue> KeyValues { get; }
     
     public DbSet<Candidate> Candidates { get; }
-
+    
     public DbSet<ParticipantEnrolmentHistory> ParticipantEnrolmentHistories { get; }
     
     ChangeTracker ChangeTracker { get; }

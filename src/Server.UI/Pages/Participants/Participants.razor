@@ -67,7 +67,6 @@
         </div>
     </ToolBarContent>
     <Columns>
-        <SelectColumn ShowInFooter="false"></SelectColumn>
         <TemplateColumn CellClass="width:60px;" Title="@ConstantString.Actions" Sortable="false">
             <CellTemplate>
                 <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
@@ -82,17 +81,14 @@
                         </MudMenuItem>
                     }
 
-
-                    <MudMenuItem>@ConstantString.Edit</MudMenuItem>
-                    <MudMenuItem>@ConstantString.Delete</MudMenuItem>
                 </MudMenu>
             </CellTemplate>
         </TemplateColumn>
-        <PropertyColumn Property="x => x.Id" Title="@L[_currentDto.GetMemberDescription(x => x.Id)]">
+        <PropertyColumn Property="x => x.LastName" Title="@L["Participant"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.Id</MudText>
                     <MudText Typo="Typo.body2">@context.Item.FirstName @context.Item.LastName</MudText>
+                    <MudText Typo="Typo.body2">@context.Item.Id</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
@@ -114,7 +110,9 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn  Property="x => x.CurrentLocation" Title="@L[_currentDto.GetMemberDescription(x => x.CurrentLocation)]">
+        <PropertyColumn Property="x => x.CurrentLocation" 
+                        Title="@L[_currentDto.GetMemberDescription(x => x.CurrentLocation)]"
+                        SortBy="x => x.CurrentLocation.Name">
             <CellTemplate>
                 <div class="d-flex align-items-center">
                     @if (context.Item.CurrentLocation.LocationType.IsCustody)
@@ -126,6 +124,27 @@
                         <MudIcon Icon="@Icons.Material.Filled.MapsHomeWork" Title="Community" />
                     }
                     <span class="ml-2">@context.Item.CurrentLocation.Name</span>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.EnrolmentLocation"
+                        Title="@L[_currentDto.GetMemberDescription(x => x.EnrolmentLocation)]"
+                        SortBy="x => x.EnrolmentLocation?.Name">
+            <CellTemplate>
+                <div class="d-flex align-items-center">
+                    
+                    @if (context.Item.EnrolmentLocation is not null)
+                    {
+                        @if (context.Item.EnrolmentLocation.LocationType.IsCustody)
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.Castle" Title="Custody" />
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.MapsHomeWork" Title="Community" />
+                        }
+                        <span class="ml-2">@context.Item.EnrolmentLocation?.Name</span>
+                    }
                 </div>
             </CellTemplate>
         </PropertyColumn>

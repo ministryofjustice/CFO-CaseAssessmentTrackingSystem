@@ -9,6 +9,7 @@ using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Common.Exceptions;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Candidates;
+using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
@@ -17,6 +18,8 @@ public class Participant : OwnerPropertyEntity<string>
 {
     private int _currentLocationId;
     private int? _enrolmentLocationId;
+    private List<Consent> _consents = new();
+
     
     
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -68,7 +71,8 @@ public class Participant : OwnerPropertyEntity<string>
     /// If the location differed from the current location
     /// </summary>
     public string? EnrolmentLocationJustification { get; private set; }
-    
+
+    public IReadOnlyCollection<Consent> Consents => _consents.AsReadOnly();
     
     /// <summary>
     /// Transitions this participant to the new enrolment status, if valid
@@ -110,6 +114,11 @@ public class Participant : OwnerPropertyEntity<string>
             OwnerId = to;
         }
         return this;
+    }
+
+    public void AddConsent(DateTime consentDate, Guid documentId)
+    {
+        _consents.Add(Consent.Create( this.Id, consentDate, documentId ));
     }
 
     public Participant MoveToLocation(Location to)

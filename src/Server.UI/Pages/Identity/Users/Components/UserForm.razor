@@ -151,7 +151,7 @@
                 var filename = e.File.Name;
                 var fi = new FileInfo(filename);
                 var ext = fi.Extension;
-                var result = await UploadService.UploadAsync(new UploadRequest(Guid.NewGuid() + ext, UploadType.ProfilePicture, outStream.ToArray()));
+                var result = await UploadService.UploadAsync($"/users/{Model.Id}" ,new UploadRequest(Guid.NewGuid() + ext, UploadType.ProfilePicture, outStream.ToArray()));
                 Model.ProfilePictureDataUrl = result;
                 //Do your validations here
                 Snackbar.Add(ConstantString.UploadSuccess, Severity.Info);

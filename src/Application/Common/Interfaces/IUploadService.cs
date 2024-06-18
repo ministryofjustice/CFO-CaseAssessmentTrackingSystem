@@ -2,5 +2,5 @@
 
 public interface IUploadService
 {
-    Task<string> UploadAsync(UploadRequest request);
+    Task<Result<string>> UploadAsync(string folder, UploadRequest request);
 }
