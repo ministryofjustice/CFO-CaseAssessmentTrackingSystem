@@ -30,16 +30,7 @@ public static class DependencyInjection
                 options.ResourcesPath = LocalizationConstants.ResourcesPath
             );
 
-        services
-            .AddHangfire(configuration =>
-                configuration
-                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-                    .UseSimpleAssemblyNameTypeSerializer()
-                    .UseRecommendedSerializerSettings()
-                    .UseInMemoryStorage()
-            )
-            .AddHangfireServer()
-            .AddMvc();
+        services.AddMvc();
 
         services.AddControllers();
 

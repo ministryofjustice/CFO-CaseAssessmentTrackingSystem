@@ -145,14 +145,7 @@ public static class DependencyInjection
         app.UseRequestLocalization(localizationOptions);
         app.UseMiddleware<LocalizationCookiesMiddleware>();
         app.UseExceptionHandler();
-        app.UseHangfireDashboard(
-            "/jobs",
-            new DashboardOptions
-            {
-                Authorization = new[] { new HangfireDashboardAuthorizationFilter() },
-                AsyncAuthorization = new[] { new HangfireDashboardAsyncAuthorizationFilter() }
-            }
-        );
+       
         app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
         app.MapHub<ServerHub>(ISignalRHub.Url);
 
