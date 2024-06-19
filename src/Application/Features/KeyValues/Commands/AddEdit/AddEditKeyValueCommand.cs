@@ -1,10 +1,11 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.KeyValues.Caching;
 using Cfo.Cats.Application.Features.KeyValues.DTOs;
+using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.KeyValues.Commands.AddEdit;
 
-[RequestAuthorize(Roles = "Admin, Basic")]
+[RequestAuthorize(Policy = PolicyNames.SystemFunctionsWrite)]
 public class AddEditKeyValueCommand : ICacheInvalidatorRequest<Result<int>>
 {
     [Description("Id")] public int Id { get; set; }
