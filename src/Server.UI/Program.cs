@@ -13,7 +13,6 @@ builder.WebHost.UseStaticWebAssets();
 builder
     .Services.AddApplication()
     .AddInfrastructure(builder.Configuration)
-    .AddServer(builder.Configuration)
     .AddServerUi(builder.Configuration);
 
 var app = builder.Build();

@@ -1,29 +1,24 @@
-﻿@using Severity = Severity
-@using Toolbelt.Blazor.HotKeys2
-@using Cfo.Cats.Server.UI.Services.UserPreferences
+﻿@inherits LayoutComponentBase
 @using Cfo.Cats.Server.UI.Constants
-@inherits LayoutComponentBase
+@implements IDisposable
 
 @inject LayoutService LayoutService
-@inject HotKeys HotKeys
-@inject IStringLocalizer<SharedResource> L
 
-<PageTitle>CATS</PageTitle>
-<MudRTLProvider RightToLeft="false">
-    <MudDialogProvider/>
+<PageTitle>@ApplicationSettings.AppName</PageTitle>
+<MudRTLProvider RightToLeft="@LayoutService.IsRTL">
+    <MudThemeProvider />
+    <MudPopoverProvider />
     <MudDialogProvider />
-    <MudSnackbarProvider/>
-    <MudThemeProvider @ref="@mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="@LayoutService.SetDarkMode"/>
+    <MudSnackbarProvider />
+    <MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="@LayoutService.SetDarkMode"/>
     @Body
 </MudRTLProvider>
 
 @code
 {
 
-
-    private MudThemeProvider mudThemeProvider = null!;
-    private bool defaultDarkMode;
-
+    private MudThemeProvider _mudThemeProvider = null!;
+    private bool _defaultDarkMode;
 
     public void Dispose()
     {
@@ -37,15 +32,14 @@
         if (firstRender)
         {
             await ApplyUserPreferences();
-            await mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
             StateHasChanged();
         }
     }
 
     private async Task ApplyUserPreferences()
     {
-        defaultDarkMode = await mudThemeProvider.GetSystemPreference();
-        await LayoutService.ApplyUserPreferences(defaultDarkMode);
+        _defaultDarkMode = await _mudThemeProvider.GetSystemPreference();
+        await LayoutService.ApplyUserPreferences(_defaultDarkMode);
     }
 
     protected override void OnInitialized()
@@ -54,15 +48,9 @@
         LayoutService.SetBaseTheme(Theme.ApplicationTheme());
     }
 
-    private async Task OnSystemPreferenceChanged(bool newValue)
-    {
-        await LayoutService.OnSystemPreferenceChanged(newValue);
-    }
-
     private void LayoutServiceOnMajorUpdateOccured(object? sender, EventArgs e)
     {
         StateHasChanged();
     }
-
 
 }

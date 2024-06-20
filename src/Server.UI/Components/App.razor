@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Components.Web
+﻿@using Microsoft.AspNetCore.Http
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,6 +17,7 @@
     <Routes @rendermode="RenderModeForPage" />
     <script src="_framework/blazor.web.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="_content/BlazorDownloadFile/BlazorDownloadFileScript.js"><script>
     <script src="_content/CodeBeam.MudBlazor.Extensions/MudExtensions.min.js"></script>
     <script src="_content/BlazorTime/blazorTime.js"></script>
   
@@ -25,8 +26,8 @@
 </html>
 
 @code {
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
+
     private IComponentRenderMode? RenderModeForPage => HttpContext.Request.Path.StartsWithSegments("/pages/authentication")
         ? null
         : new InteractiveServerRenderMode(false);
@@ -35,4 +36,5 @@
     {
         return base.OnInitializedAsync();
     }
+
 }

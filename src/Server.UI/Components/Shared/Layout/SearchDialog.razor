@@ -12,11 +12,11 @@
                           Placeholder="@L["Search..."]"
                           TextChanged="@(SearchPages)"
                           Immediate="true"/>
-            <MudList Clickable="true"
+            <MudList T="string" ReadOnly="false"
                      Style="height: 300px; overflow-y: auto">
                 @foreach (var (key, value) in pagesFiltered)
                 {
-                    <MudListItem OnClick="@(() => Navigation.NavigateTo(value))">
+                    <MudListItem T="string" OnClick="@(() => Navigation.NavigateTo(value))">
                         <MudHighlighter HighlightedText="@search"
                                         Text="@key"/>
                     </MudListItem>

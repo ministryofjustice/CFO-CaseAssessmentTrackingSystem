@@ -1,5 +1,4 @@
 ﻿@page "/identity/roles"
-@using Severity = Severity
 @using LazyCache
 @using Cfo.Cats.Application.Features.Identity.DTOs
 @using Cfo.Cats.Domain.Identity
@@ -41,7 +40,7 @@
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                        <MudButton DisableElevation Variant="Variant.Outlined"
+                        <MudButton Variant="Variant.Outlined"
                                    Size="Size.Small"
                                    OnClick="OnRefresh"
                                    Disabled="@_loading"
@@ -51,7 +50,7 @@
                         </MudButton>
                         @if (_canCreate)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.Add"
                                        Size="Size.Small"
                                        OnClick="OnCreate"
@@ -62,7 +61,7 @@
                         }
                         @if (_canDelete)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Error"
+                            <MudButton Variant="Variant.Outlined" Color="Color.Error"
                                        StartIcon="@Icons.Material.Filled.Delete"
                                        Disabled="@(!(_selectedItems.Count > 0))"
                                        OnClick="OnDeleteChecked"
@@ -75,7 +74,7 @@
 
                         @if (_canExport)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.Download"
                                        Size="Size.Small"
                                        Style="margin-right: 4px; margin-bottom:4px"
@@ -92,8 +91,7 @@
                                                Variant="Variant.Outlined"
                                                Color="Color.Primary"
                                                Disabled="@_loading"
-                                               StartIcon="@Icons.Material.Filled.Upload"
-                                               for="@context">
+                                               StartIcon="@Icons.Material.Filled.Upload">
                                         @if (_uploading)
                                         {
                                             <MudProgressCircular Size="Size.Small" Indeterminate="true"/>
@@ -111,7 +109,7 @@
                     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
                         @if (_canCreate)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.Add"
                                        Size="Size.Small"
                                        OnClick="OnCreate"
@@ -122,7 +120,7 @@
                         }
                         @if (_canDelete)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Error"
+                            <MudButton Variant="Variant.Outlined" Color="Color.Error"
                                        StartIcon="@Icons.Material.Filled.Delete"
                                        Disabled="@(!(_selectedItems.Count > 0))"
                                        OnClick="OnDeleteChecked"
@@ -151,7 +149,7 @@
             <CellTemplate>
                 @if (_canEdit || _canDelete || _canManagePermissions)
                 {
-                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" DisableElevation="true" Size="Size.Small"
+                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                              Dense="true"
                              EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                         @if (_canEdit)
@@ -170,8 +168,7 @@
                 }
                 else
                 {
-                    <MudButton Variant="Variant.Filled" DisableElevation="true"
-                               StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary" Size="Size.Small"
+                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary" Size="Size.Small"
                                Color="Color.Surface">
                         @ConstantString.NoAllowed
                     </MudButton>
@@ -448,7 +445,7 @@
         {
             { x => x.ContentText, string.Format(deleteContent, dto.Name) }
         };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, DisableBackdropClick = true };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
         var dialog = DialogService.Show<ConfirmationDialog>(ConstantString.DeleteConfirmationTitle, parameters, options);
         var result = await dialog.Result;
         if (!result.Canceled)
@@ -476,7 +473,7 @@
         {
             { x => x.ContentText, string.Format(deleteContent, _selectedItems.Count) }
         };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, DisableBackdropClick = true };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
         var dialog = DialogService.Show<ConfirmationDialog>(ConstantString.DeleteConfirmationTitle, parameters, options);
         var result = await dialog.Result;
         if (!result.Canceled)

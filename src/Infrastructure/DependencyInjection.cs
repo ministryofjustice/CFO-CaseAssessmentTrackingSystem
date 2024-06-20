@@ -27,7 +27,8 @@ public static class DependencyInjection
             .AddDatabase(configuration)
             .AddServices(configuration);
 
-        services.AddAuthenticationService(configuration).AddFusionCacheService();
+        services.AddAuthenticationService(configuration)
+            .AddFusionCacheService();
 
         services.AddSingleton<IUsersStateContainer, UsersStateContainer>();
 
@@ -45,6 +46,10 @@ public static class DependencyInjection
             .AddSingleton<IIdentitySettings>(s =>
                 s.GetRequiredService<IOptions<IdentitySettings>>().Value
             );
+        
+        services.Configure<AppConfigurationSettings>(configuration.GetSection(AppConfigurationSettings.Key))
+            .AddSingleton(s => s.GetRequiredService<IOptions<AppConfigurationSettings>>().Value)
+            .AddSingleton<IApplicationSettings>(s => s.GetRequiredService<IOptions<AppConfigurationSettings>>().Value);
 
         services
             .Configure<DatabaseSettings>(configuration.GetSection(DatabaseSettings.Key))
@@ -80,13 +85,9 @@ public static class DependencyInjection
             );
         }
 
-        services.AddScoped<
-            IDbContextFactory<ApplicationDbContext>,
-            BlazorContextFactory<ApplicationDbContext>
-        >();
+        services.AddScoped<IDbContextFactory<ApplicationDbContext>, BlazorContextFactory<ApplicationDbContext>>();
         services.AddTransient<IApplicationDbContext>(provider =>
-            provider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext()
-        );
+            provider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
         services.AddScoped<ApplicationDbContextInitializer>();
 
         return services;
@@ -157,10 +158,7 @@ public static class DependencyInjection
             .AddScoped<IUploadService, UploadService>();
     }
 
-    private static IServiceCollection AddAuthenticationService(
-        this IServiceCollection services,
-        IConfiguration configuration
-    )
+    private static IServiceCollection AddAuthenticationService(this IServiceCollection services, IConfiguration configuration)
     {
 
         services.Configure<AllowlistOptions>(configuration.GetSection(nameof(AllowlistOptions)));

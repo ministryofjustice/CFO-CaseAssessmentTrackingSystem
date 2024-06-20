@@ -15,7 +15,6 @@
 @using Microsoft.JSInterop
 @using MudBlazor
 @using MudExtensions
-@using MudExtensions.Enums
 @using BlazorTime
 @using MediatR
 @using Cfo.Cats.Server.UI.Fluxor
@@ -35,6 +34,7 @@
 @using Cfo.Cats.Server.UI.Components
 @using Cfo.Cats.Server.UI.Components.Autocompletes
 @using Cfo.Cats.Server.UI.Components.Dialogs
+@using Cfo.Cats.Server.UI.Components.Fusion
 @using Cfo.Cats.Server.UI.Components.Identity
 @using Cfo.Cats.Server.UI.Pages.Identity.Authentication
 @using Cfo.Cats.Server.UI.Components.Localization
@@ -45,12 +45,16 @@
 @using Cfo.Cats.Server.UI.Components.Shared.Layout
 @using Cfo.Cats.Server.UI.Services.Layout
 @using Cfo.Cats.Server.UI.Extensions
-
+@using Severity=MudBlazor.Severity
+@using Color = MudBlazor.Color
+@inject IApplicationSettings ApplicationSettings
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject IConfiguration Config
 @inject IAuthorizationService AuthService 
-@inject IMediator Mediator;
-@inject NavigationManager NavMan;
 @inject IValidationService Validator
+@inject IJSRuntime JS
+@inject IMediator Mediator
 @inject IMapper Mapper
+@inject NavigationManager Navigation
+@inject DialogServiceHelper DialogServiceHelper

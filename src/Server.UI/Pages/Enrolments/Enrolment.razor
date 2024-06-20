@@ -37,7 +37,7 @@
                         OnChangeAsync="OnChangeAsync"
                         ActiveStepChanged="StepChanged"
                         ContentClass="mb-8"
-                        DisableRipple
+                        Ripple="true"
                         DisablePreviousButton="Stepper?.IsResultStep ?? false"
                         MobileView="false"
                         HeaderSize="Size.Large"
@@ -159,18 +159,18 @@
 
         if(!result.Canceled)
         {
-            NavMan.NavigateTo("/");
+            Navigation.NavigateTo("/");
         }
     }
 
     private void BeginAssessment()
     {
-        NavMan.NavigateTo($"/Cases/{ParticipantId}");
+        Navigation.NavigateTo($"/Cases/{ParticipantId}");
     }
 
     private void ReturnToSearch()
     {
-        NavMan.NavigateTo("/Enrolments/Search");
+        Navigation.NavigateTo("/Enrolments/Search");
     }
 
     private async Task<bool> OnChangeAsync(StepChangeDirection direction, int targetIndex)

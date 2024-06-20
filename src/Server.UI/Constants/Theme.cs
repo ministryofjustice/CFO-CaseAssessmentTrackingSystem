@@ -6,7 +6,7 @@ public static class Theme
     {
         var theme = new MudTheme()
         {
-            Palette = new PaletteLight
+            PaletteLight = new PaletteLight
             {
                 Primary = "#722660", // the default CFO Purple
                 Secondary = "#494f56",

@@ -1,6 +1,5 @@
 @using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.Features.Participants.DTOs
-@using Severity=MudBlazor.Severity
 @using Cfo.Cats.Domain.Common.Enums
 
 @if (Model is not null)
@@ -11,10 +10,10 @@
             Consent Files already uploaded
         </MudText>
         
-        <MudList>
+        <MudList T="string">
             @foreach (var c in ConsentDto)
             {
-                <MudListItem>
+                <MudListItem T="string">
                     <MudText Typo="Typo.body2">
                         @c.FileName 
                     </MudText>
@@ -33,16 +32,42 @@
             <MudDatePicker Label="Date of Consent" Editable="true" bind MaxDate="DateTime.UtcNow.Date" @bind-Date="Model.ConsentDate" Required/>
             <div class="mb-4 mt-8">
 
-                <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1">
-                    <ButtonTemplate>
-                        <MudButton HtmlTag="label"
-                                   Variant="Variant.Filled"
-                                   Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.CloudUpload"
-                                   for="@context.Id">
-                            Upload Files
+                @*<MudFileUpload T="IBrowserFile" FilesChanged="OnImportData" Accept=".xlsx" >
+                    <ActivatorContent>
+                        <MudButton Size="Size.Small"
+                            Variant="Variant.Outlined"
+                            Color="Color.Primary"
+                            Disabled="@_loading"
+                            StartIcon="@Icons.Material.Filled.Upload">
+                            @if (_uploading)
+                            {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                            @ConstantString.Uploading
+                            }
+                            else
+                            {
+                            @ConstantString.Import
+                            }
                         </MudButton>
-                    </ButtonTemplate>
+                    </ActivatorContent>
+                </MudFileUpload>*@
+                
+                <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1" Accept=".pdf, .png, .jpg, .jpeg">
+                    <ActivatorContent>
+                        <MudButton Variant="Variant.Outlined"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Upload">
+                            @if (_uploading)
+                            {
+                                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                                @ConstantString.Uploading
+                            }
+                            else
+                            {
+                                @ConstantString.Upload
+                            }
+                        </MudButton>
+                    </ActivatorContent>
                 </MudFileUpload>
 
                 <MudSelect T="string" Label="Document Version" AnchorOrigin="Origin.BottomCenter" Required>
@@ -61,6 +86,7 @@
 
 @code {
     
+    private bool _uploading = false;
     
     MudCheckBox<bool> Certify { get; set; } = default!;
 
@@ -79,17 +105,16 @@
 
     int fileCount = 0;
 
-    private async Task UploadFiles(IBrowserFile? file)
+    private async Task UploadFiles(IBrowserFile file)
     {
-        if (file is not null)
-        {
-            await using var stream = file.OpenReadStream();
-            using var memoryStream = new MemoryStream();
-            await stream.CopyToAsync(memoryStream);
-            
-            Model!.UploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
-            fileCount = 1;
-        }
+        _uploading = true;
+        await using var stream = file.OpenReadStream();
+        using var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+        
+        Model!.UploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
+        fileCount = 1;
+        _uploading = false;
     }
 
     private MudForm? Form { get; set; }

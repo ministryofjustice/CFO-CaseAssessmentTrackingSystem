@@ -9,8 +9,6 @@
 @using Cfo.Cats.Application.Features.KeyValues.Queries.PaginationQuery
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.SystemManagement.Components
-@using Severity=MudBlazor.Severity
-
 
 @attribute [Authorize(Policy = PolicyNames.SystemFunctionsRead)]
 @inject IStringLocalizer<Dictionaries> L
@@ -44,7 +42,7 @@
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                        <MudButton DisableElevation Variant="Variant.Outlined"
+                        <MudButton Variant="Variant.Outlined"
                                    Size="Size.Small"
                                    OnClick="OnRefresh"
                                    Disabled="@_loading"
@@ -54,7 +52,7 @@
                         </MudButton>
                         @if (_canCreate)
                         {
-                        <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary"
                                    StartIcon="@Icons.Material.Filled.Add"
                                    Size="Size.Small"
                                    OnClick="OnCreate"
@@ -65,7 +63,7 @@
                         }
                         @if (_canDelete)
                         {
-                        <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Secondary"
+                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
                                    StartIcon="@Icons.Material.Filled.Delete"
                                    Disabled="@(!(_selectedItems.Count > 0))"
                                    OnClick="OnDeleteChecked"
@@ -77,7 +75,7 @@
                         }
                         @if (_canImport)
                         {
-                        <MudButton Disabled="@_uploading" DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                        <MudButton Disabled="@_uploading" Variant="Variant.Outlined" Color="Color.Primary"
                                    StartIcon="@Icons.Material.Filled.Upload"
                                    Size="Size.Small"
                                    Style="margin-right:4px; margin-bottom:4px"
@@ -99,7 +97,7 @@
                         }
                         @if (_canExport)
                         {
-                        <MudButton Disabled="@_downloading" DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                        <MudButton Disabled="@_downloading" Variant="Variant.Outlined" Color="Color.Primary"
                                    StartIcon="@Icons.Material.Filled.Download"
                                    Size="Size.Small"
                                    Style="margin-right: 4px; margin-bottom:4px"
@@ -120,7 +118,7 @@
                     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
                         @if (_canCreate)
                         {
-                        <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary"
                                    StartIcon="@Icons.Material.Filled.Add"
                                    Size="Size.Small"
                                    OnClick="OnCreate"
@@ -131,7 +129,7 @@
                         }
                         @if (_canDelete)
                         {
-                        <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Secondary"
+                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
                                    StartIcon="@Icons.Material.Filled.Delete"
                                    Disabled="@(!(_selectedItems.Count > 0))"
                                    OnClick="OnDeleteChecked"
@@ -306,8 +304,7 @@
         {
             CloseButton = true,
             MaxWidth = MaxWidth.ExtraSmall,
-            FullWidth = true,
-            DisableBackdropClick = true
+            FullWidth = true
         };
         var dialog = DialogService.Show<DeleteConfirmation>(ConstantString.DeleteConfirmationTitle, parameters, options);
         var state = await dialog.Result;
@@ -330,8 +327,7 @@
         {
             CloseButton = true,
             MaxWidth = MaxWidth.ExtraSmall,
-            FullWidth = true,
-            DisableBackdropClick = true
+            FullWidth = true
         };
         var dialog = DialogService.Show<DeleteConfirmation>(ConstantString.DeleteConfirmationTitle, parameters, options);
         var state = await dialog.Result;

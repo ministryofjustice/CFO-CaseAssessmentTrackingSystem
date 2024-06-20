@@ -1,8 +1,8 @@
 @using Cfo.Cats.Domain.Common.Enums;
 @using MudBlazor
-@inherits MudChip   
+@inherits MudChip<string>   
 
-<MudChip @attributes="UserAttributes" Class="@Class" Style="@Style" Color="@Color">
+<MudChip T="string" @attributes="UserAttributes" Class="@Class" Style="@Style" Color="@Color">
     <MudIcon Icon="@Icon" />
     @Status.Name
 </MudChip>

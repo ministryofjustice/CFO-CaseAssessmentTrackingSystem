@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
+﻿using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
+using IMiddleware=Microsoft.AspNetCore.Http.IMiddleware;
 
-namespace Cfo.Cats.Server.Middlewares;
+namespace Cfo.Cats.Server.UI.Middlewares;
 
 #nullable disable
 public class LocalizationCookiesMiddleware : IMiddleware

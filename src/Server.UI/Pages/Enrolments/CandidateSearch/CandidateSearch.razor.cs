@@ -42,7 +42,7 @@ public partial class CandidateSearch
     }
 
     public void NavigateToEnrolment(string participantId) 
-        => NavMan.NavigateTo($"/Enrolments/{participantId}");
+        => Navigation.NavigateTo($"/Enrolments/{participantId}");
 
     private Type selectedType = typeof(CandidateFinder);
 

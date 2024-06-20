@@ -1,7 +1,5 @@
 ﻿@page "/user/profile"
-@using Color = Color
 @using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode
-@using Severity = Severity
 @using Size = SixLabors.ImageSharp.Size
 @using SixLabors.ImageSharp.Processing
 @using SixLabors.ImageSharp
@@ -48,7 +46,7 @@
                                                 {
                                                     @foreach (var role in Model.AssignedRoles)
                                                     {
-                                                        <MudChip Size="MudBlazor.Size.Small">@role</MudChip>
+                                                        <MudChip T="string" Size="MudBlazor.Size.Small">@role</MudChip>
                                                     }
                                                 }
                                             </div>
@@ -66,7 +64,7 @@
                                                 {
                                                     @foreach (var role in Model.AssignedRoles)
                                                     {
-                                                        <MudChip Size="MudBlazor.Size.Small">@role</MudChip>
+                                                        <MudChip T="string" Size="MudBlazor.Size.Small">@role</MudChip>
                                                     }
                                                 }
                                             </div>
@@ -76,8 +74,7 @@
                                         <MudFileUpload T="IBrowserFile" Accept=".jpg, .jpeg, .png, .webp" FilesChanged="UploadPhoto" Style="margin-top:-10px;margin-left:-15px">
                                             <ButtonTemplate>
                                                 <MudIconButton HtmlTag="label"
-                                                               Icon="@Icons.Material.Filled.PhotoCamera"
-                                                               for="@context">
+                                                               Icon="@Icons.Material.Filled.PhotoCamera">
                                                 </MudIconButton>
                                             </ButtonTemplate>
                                         </MudFileUpload>

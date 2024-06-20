@@ -1,9 +1,7 @@
 ﻿@using Cfo.Cats.Server.UI.Models.NavigationMenu
 @using Cfo.Cats.Server.UI.Services.Navigation
-
 @inject IMenuService MenuService
 @inject LayoutService LayoutService
-@inject NavigationManager NavigationManager
 @inject IStringLocalizer<NavigationMenu> L
 
 <MudDrawer Breakpoint="Breakpoint.Md"
@@ -14,7 +12,11 @@
            Variant="DrawerVariant.Responsive"
            Anchor="Anchor.Right"
            ClipMode="DrawerClipMode.Always">
-  
+    <MudDrawerHeader Class="align-center d-flex align-center pa-0">
+        <MudText Typo="Typo.subtitle2">
+            <b>@L[ApplicationSettings.AppName]</b>
+        </MudText>
+    </MudDrawerHeader>
 
     <MudNavMenu>
         @foreach (var section in MenuSections.Where(x => x.Roles == null || x.Roles.Any(x => Roles.Contains(x))))
@@ -22,7 +24,7 @@
             @if (section is not null)
             {
 
-                <div class="@(LayoutService.IsRtl ? "mr-6" : "ml-6") my-3">
+                <div class="@(LayoutService.IsRTL ? "mr-6" : "ml-6") my-3">
                     <MudText Typo="Typo.caption">
                         <b>
                             @(L[section.Title])
@@ -40,20 +42,18 @@
                             <MudNavGroup Icon="@sectionItem.Icon" Title="@L[sectionItem.Title]" Expanded="Expanded(sectionItem)">
                                 @foreach (var menuItem in sectionItem.MenuItems.Where(x => x.Roles == null || x.Roles.Any(x => Roles.Contains(x))))
                                 {
-
                                     <MudNavLink Disabled="@(menuItem.PageStatus != PageStatus.Completed)" Href="@(menuItem.Href)" Target="@(menuItem.Target)" Match="NavLinkMatch.All">
                                         <div class="d-flex">
                                             @(L[menuItem.Title])
                                             @if (menuItem.PageStatus != PageStatus.Completed)
                                             {
-                                                <MudSpacer />
-                                                <MudChip Class="mr-4" Color="@Color.Primary" Size="Size.Small" Variant="Variant.Text">
+                                                <MudSpacer/>
+                                                <MudChip T="string" Class="mr-4" Color="@Color.Primary" Size="Size.Small" Variant="Variant.Text">
                                                     @(L[menuItem.PageStatus.GetDescription()])
                                                 </MudChip>
                                             }
                                         </div>
                                     </MudNavLink>
-
                                 }
                             </MudNavGroup>
                         }
@@ -64,8 +64,8 @@
                                     @(L[sectionItem.Title])
                                     @if (sectionItem.PageStatus != PageStatus.Completed)
                                     {
-                                        <MudSpacer />
-                                        <MudChip Class="mr-4" Color="@Color.Primary" Size="Size.Small" Variant="Variant.Text">
+                                        <MudSpacer/>
+                                        <MudChip T="string" Class="mr-4" Color="@Color.Primary" Size="Size.Small" Variant="Variant.Text">
                                             @(L[sectionItem.PageStatus.GetDescription()])
                                         </MudChip>
                                     }
@@ -76,19 +76,24 @@
                 }
             }
         }
+        <MudText Typo="Typo.caption">
+            <b>
+                @L["Online Users"]
+            </b>
+        </MudText>
+        <OnlineUsersTracker />    
     </MudNavMenu>
-
+    
     <MudDivider Class="mt-auto"></MudDivider>
     <MudNavMenu Class="d-flex justify-space-between pa-4">
-        <MudLink Href="#" Style="font-size:0.625rem;line-height:1.125rem;color:#6F6F6F !important">@L["Creating Future Opportunities"]</MudLink>
-        <MudText Class="" Style="font-size:0.625rem;line-height:1.125rem;color:#6F6F6F !important">@L["version 1.0"]</MudText>
+        <MudLink Href="#" Style="font-size:0.625rem;line-height:1.125rem;color:#6F6F6F !important">@L[ApplicationSettings.Copyright]</MudLink>
+        <MudText Class="" Style="font-size:0.625rem;line-height:1.125rem;color:#6F6F6F !important">@L["version"] @ApplicationSettings.Version</MudText>
     </MudNavMenu>
 
 </MudDrawer>
 
 
-
-@if (LayoutService.IsRtl)
+@if (LayoutService.IsRTL)
 {
     <style>
         .mud-nav-link.active:not(.mud-nav-link-disabled) {
@@ -117,20 +122,18 @@ else
 @code
 {
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
-    [EditorRequired][Parameter] public EventCallback<bool> DrawerOpenChanged { get; set; }
+    [EditorRequired] [Parameter] public EventCallback<bool> DrawerOpenChanged { get; set; }
 
-    [EditorRequired][Parameter] public bool DrawerOpen { get; set; }
+    [EditorRequired] [Parameter] public bool DrawerOpen { get; set; }
 
     private IEnumerable<MenuSectionModel> MenuSections => MenuService.Features;
-    [EditorRequired]
-    [Parameter]
-    public string[] Roles { get; set; }= Array.Empty<string>();
+    [EditorRequired] [Parameter] public string[] Roles { get; set; } = Array.Empty<string>();
 
     private bool Expanded(MenuSectionItemModel menu)
     {
-        var href = NavigationManager.Uri[(NavigationManager.BaseUri.Length - 1)..];
+        var href = Navigation.Uri[(Navigation.BaseUri.Length - 1)..];
         return menu is { IsParent: true, MenuItems: not null } &&
                menu.MenuItems.Any(x => !string.IsNullOrEmpty(x.Href) && x.Href.Equals(href));
     }
-   
+
 }

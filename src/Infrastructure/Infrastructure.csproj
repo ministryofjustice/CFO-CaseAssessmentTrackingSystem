@@ -40,28 +40,5 @@
     <ItemGroup>
         <ProjectReference Include="..\Application\Application.csproj"/>
     </ItemGroup>
-    <ItemGroup>
-        <EmbeddedResource Update="Resources\ConstantString.resx">
-            <LastGenOutput>ConstantString.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Update="Resources\ConstantString.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ConstantString.resx</DependentUpon>
-        </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="Persistence/DataSeeds/**/*.*">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Constants\Role\"/>
-    </ItemGroup>
 
 </Project>

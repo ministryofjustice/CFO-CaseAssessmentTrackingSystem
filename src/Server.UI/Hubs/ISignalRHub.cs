@@ -1,4 +1,4 @@
-﻿namespace Cfo.Cats.Server.Common.Interfaces;
+namespace Cfo.Cats.Server.UI.Hubs;
 
 public interface ISignalRHub
 {

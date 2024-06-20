@@ -1,9 +1,8 @@
 ﻿using System.Collections.Concurrent;
-using Cfo.Cats.Server.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Cfo.Cats.Server.Hubs;
+namespace Cfo.Cats.Server.UI.Hubs;
 
 [Authorize(AuthenticationSchemes = "Identity.Application")]
 public class ServerHub : Hub<ISignalRHub>

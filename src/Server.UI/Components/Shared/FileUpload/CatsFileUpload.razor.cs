@@ -35,7 +35,7 @@ public partial class CatsFileUpload : ComponentBase
         StateHasChanged();
     }
 
-    public async Task OnFileDelete(MudChip chip)
+    /*public async Task OnFileDelete(MudChip<string> chip)
     {
         Loading = true;
 
@@ -46,22 +46,21 @@ public partial class CatsFileUpload : ComponentBase
             throw new NotImplementedException();
             /*await DocumentsService!.DeleteFileAsync(fileId);
             Files.Remove(fileId);
-            await FilesChanged.InvokeAsync(Files.Count);*/
+            await FilesChanged.InvokeAsync(Files.Count);#1#
         }
 
         Loading = false;
-    }
+    }*/
 
-    private static Guid GetChipValue(MudChip chip)
+    private void OnFileDelete(MudChip<string> chip)
     {
-        string? value = chip.Value.ToString();
+        string? value = chip.Value?.ToString();
 
         if (value is not null)
         {
-            return Guid.Parse(value);
+            //return Guid.Parse(value);
         }
 
-        return Guid.Empty;
+        //return Guid.Empty;
     }
-
 }

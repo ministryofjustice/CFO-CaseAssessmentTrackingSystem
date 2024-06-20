@@ -9,7 +9,7 @@
         To your knowledge, is any Right to Work (RTW) documentation required for the enrolment of this person?
     </MudText>
 
-    <MudButtonGroup DisableElevation OverrideStyles="false" Class="my-4">
+    <MudButtonGroup OverrideStyles="false" Class="my-4">
         <MudButton Color="Color.Primary" Variant="@(isRequired ? Variant.Filled : Variant.Outlined)" OnClick="() => isRequired = true">Yes, Right to Work is required</MudButton>
         <MudButton Color="Color.Primary" Variant="@(isRequired ? Variant.Outlined : Variant.Filled)" OnClick="() => isRequired = false">No, Right to Work is not required</MudButton>
     </MudButtonGroup>

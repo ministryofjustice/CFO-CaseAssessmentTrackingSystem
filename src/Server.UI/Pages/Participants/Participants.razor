@@ -16,7 +16,7 @@
         height: 120px !important;
     }
 </style>
-
+<ActiveUserSession PageComponent="@($"{nameof(Participants)}/")" />
 <MudDataGrid ServerData="@(ServerReload)"
              FixedHeader="true"
              FixedFooter="true"
@@ -171,7 +171,7 @@
 
     private void OnResumeEnrolment(ParticipantDto participant)
     {
-        NavMan.NavigateTo($"/pages/enrolments/{participant.Id}");
+        Navigation.NavigateTo($"/pages/enrolments/{participant.Id}");
     }
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
