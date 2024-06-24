@@ -19,6 +19,7 @@ public static class ConstantString
         return rm.GetString(key, CultureInfo.CurrentCulture) ?? key;
     }
 
+    public static string Rename => Localize("Rename");
     public static string Refresh => Localize("Refresh");
     public static string Edit => Localize("Edit");
     public static string Submit => Localize("Submit");

@@ -7,36 +7,34 @@ using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
 
-[RequestAuthorize(Policy = PolicyNames.AllowCandidateSearch)]
-public class ParticipantsWithPaginationQuery
-    : ParticipantAdvancedFilter, ICacheableRequest<PaginatedData<ParticipantDto>>
+public static class ParticipantsWithPagination
 {
+    [RequestAuthorize(Policy = PolicyNames.AllowCandidateSearch)]
+    public class Query : ParticipantAdvancedFilter, ICacheableRequest<PaginatedData<ParticipantDto>>
+    {
 
-    public ParticipantAdvancedSpecification Specification => new(this);
+        public ParticipantAdvancedSpecification Specification => new(this);
     
-    public string CacheKey => ParticipantCacheKey.GetCacheKey($"{this}");
-    public MemoryCacheEntryOptions? Options => ParticipantCacheKey.MemoryCacheEntryOptions;
+        public string CacheKey => ParticipantCacheKey.GetCacheKey($"{this}");
+        public MemoryCacheEntryOptions? Options => ParticipantCacheKey.MemoryCacheEntryOptions;
 
-    public override string ToString() =>
-        $"ListView:{ListView}, Search:{Keyword}, {OrderBy}, {SortDirection}, {PageNumber}, {CurrentUser!.UserId}";
+        public override string ToString() =>
+            $"ListView:{ListView}, Search:{Keyword}, {OrderBy}, {SortDirection}, {PageNumber}, {CurrentUser!.UserId}";
+    }
+    
+    internal class Handler(IApplicationDbContext context, IMapper mapper) : IRequestHandler<Query, PaginatedData<ParticipantDto>>
+    {
+        public async Task<PaginatedData<ParticipantDto>> Handle(Query request, CancellationToken cancellationToken)
+        {
+            var data = await context.Participants.OrderBy($"{request.OrderBy} {request.SortDirection}")
+                .ProjectToPaginatedDataAsync<Participant, ParticipantDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
+            return data;
+        }
+    }
+    
 }
 
-public class ParticipantsPaginationQueryHandler
-    : IRequestHandler<ParticipantsWithPaginationQuery, PaginatedData<ParticipantDto>>
-{
-    private readonly IApplicationDbContext _context;
-    private readonly IMapper _mapper;
-    
-    public ParticipantsPaginationQueryHandler(IApplicationDbContext context, IMapper mapper)
-    {
-        _context = context;
-        _mapper = mapper;
-    }
 
-    public async Task<PaginatedData<ParticipantDto>> Handle(ParticipantsWithPaginationQuery request, CancellationToken cancellationToken)
-    {
-        var data = await _context.Participants.OrderBy($"{request.OrderBy} {request.SortDirection}")
-            .ProjectToPaginatedDataAsync<Participant, ParticipantDto>(request.Specification, request.PageNumber, request.PageSize, _mapper.ConfigurationProvider, cancellationToken);
-        return data;
-    }
-}
+
+
+

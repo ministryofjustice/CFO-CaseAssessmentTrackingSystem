@@ -55,11 +55,15 @@
         pagesFiltered = new Dictionary<string, string>();
 
         if (!string.IsNullOrWhiteSpace(value))
+        {
             pagesFiltered = pages
                 .Where(x => x.Key
                     .Contains(value, StringComparison.InvariantCultureIgnoreCase))
                 .ToDictionary(x => x.Key, x => x.Value);
+        }
         else
+        {
             pagesFiltered = pages;
+        }
     }
 }

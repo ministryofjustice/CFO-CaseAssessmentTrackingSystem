@@ -1,4 +1,4 @@
-@using Cfo.Cats.Application.Features.Tenants.Commands.AddEdit
+@using Cfo.Cats.Application.Features.Tenants.Commands.Rename
 @inherits MudComponentBase
 
 @inject IValidationService Validator
@@ -6,29 +6,16 @@
 
 <MudDialog>
     <DialogContent>
-        <MudForm Model="Model" @ref="form" Validation="@(Validator.ValidateValue(Model))">
+        <MudForm Model="Model" @ref="_form" Validation="@(Validator.ValidateValue(Model))">
             <MudGrid>
-                <MudItem xs="12">
-                    <MudTextField Label="@L[Model.GetMemberDescription(x => x.Id)]" @bind-Value="Model.Id"
-                                  For="@(() => Model.Id)"
-                                  ReadOnly="true"
-                                  Required="true"
-                                  RequiredError="@L["Tenant id is required!"]">
-                    </MudTextField>
-                </MudItem>
                 <MudItem xs="12">
                     <MudTextField Label="@L[Model.GetMemberDescription(x => x.Name)]" @bind-Value="Model.Name"
                                   For="@(() => Model.Name)"
+                                  ReadOnly="false"
                                   Required="true"
-                                  RequiredError="@L["Tenant name is required!"]">
+                                  RequiredError="@L["Tenant Name is required!"]">
                     </MudTextField>
                 </MudItem>
-                <MudItem xs="12">
-                    <MudTextField Label="@L[Model.GetMemberDescription(x => x.Description)]" @bind-Value="Model.Description"
-                                  For="@(() => Model.Description)">
-                    </MudTextField>
-                </MudItem>
-
             </MudGrid>
         </MudForm>
     </DialogContent>
@@ -38,22 +25,27 @@
     </DialogActions>
 </MudDialog>
 
-@code {
+@code 
+{
     [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
-
-    [EditorRequired] [Parameter] public AddEditTenantCommand Model { get; set; } = default!;
-
-    private MudForm? form;
+    [EditorRequired] [Parameter] public RenameTenant.Command Model { get; set; } = default!;
+    
+    private MudForm? _form;
     private bool saving;
 
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+    
     private async Task Submit()
     {
         try
         {
             saving = true;
-            await form!.Validate().ConfigureAwait(false);
+            await _form!.Validate().ConfigureAwait(false);
 
-            if (!form!.IsValid)
+            if (!_form!.IsValid)
             {
                 return;
             }
@@ -74,10 +66,5 @@
             saving = false;
         }
     }
-
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
-
+    
 }

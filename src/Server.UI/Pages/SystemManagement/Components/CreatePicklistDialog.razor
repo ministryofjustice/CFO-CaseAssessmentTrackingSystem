@@ -59,7 +59,9 @@
             _saving = true;
             await _form!.Validate().ConfigureAwait(false);
             if (!_form!.IsValid)
+            {
                 return;
+            }
             var result = await Mediator.Send(Model);
 
             if (result.Succeeded)

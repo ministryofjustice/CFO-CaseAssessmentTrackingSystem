@@ -16,7 +16,7 @@
                 }
                 else
                 {
-                    <MudMenuItem OnAction="() => ChangeLanguageAsync(language.Name)">@language.DisplayName</MudMenuItem>
+                    <MudMenuItem OnClick="() => ChangeLanguageAsync(language.Name)">@language.DisplayName</MudMenuItem>
                 }
             }
         }
@@ -41,9 +41,13 @@
         Navigation.NavigateTo(Navigation.BaseUri + "?culture=" + languageCode, true);
 
         if (new CultureInfo(languageCode).TextInfo.IsRightToLeft)
+        {
             await LayoutService.SetRightToLeft();
+        }
         else
+        {
             await LayoutService.SetLeftToRight();
+        }
 
         await Task.CompletedTask;
     }

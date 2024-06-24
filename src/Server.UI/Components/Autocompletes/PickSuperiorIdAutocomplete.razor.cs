@@ -38,7 +38,9 @@ public class PickSuperiorIdAutocomplete : MudAutocomplete<string>
     private Task<IEnumerable<string>> SearchKeyValues(string value, CancellationToken cancellation)
     {
         if (_userList == null)
+        {
             return Task.FromResult<IEnumerable<string>>(new List<string>());
+        }
 
         var query = _userList.AsQueryable();
 

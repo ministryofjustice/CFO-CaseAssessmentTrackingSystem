@@ -2,6 +2,7 @@
 using Cfo.Cats.Domain.Entities.Candidates;
 using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Entities.Participants;
+using Cfo.Cats.Domain.Identity;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -25,6 +26,8 @@ public interface IApplicationDbContext
     public DbSet<Candidate> Candidates { get; }
     
     public DbSet<ParticipantEnrolmentHistory> ParticipantEnrolmentHistories { get; }
+    
+    public DbSet<ApplicationUser> Users { get; }
     
     ChangeTracker ChangeTracker { get; }
 

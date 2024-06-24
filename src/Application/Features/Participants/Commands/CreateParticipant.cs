@@ -78,7 +78,8 @@ public static class CreateParticipant
 
  
         }
-        private async Task<bool> NotAlreadyExist(string identifier, CancellationToken cancellationToken) => await _dbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken) == false;
+        private async Task<bool> NotAlreadyExist(string identifier, CancellationToken cancellationToken) 
+            => await _dbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken) == false;
 
     }
 }

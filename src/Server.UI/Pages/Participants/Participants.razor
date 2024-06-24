@@ -80,6 +80,9 @@
                             @ConstantString.ResumeEnrolment
                         </MudMenuItem>
                     }
+                    <MudMenuItem OnClick="@(()=> Edit(context.Item))">
+                        @ConstantString.Edit
+                    </MudMenuItem>
 
                 </MudMenu>
             </CellTemplate>
@@ -162,7 +165,7 @@
     private bool _canSearch;
     private ParticipantDto _currentDto = new();
 
-    private ParticipantsWithPaginationQuery Query { get; set; } = new();
+    private ParticipantsWithPagination.Query Query { get; set; } = new();
 
     private bool CanSubmitToProvider(ParticipantDto participant)
     {
@@ -172,6 +175,11 @@
     private void OnResumeEnrolment(ParticipantDto participant)
     {
         Navigation.NavigateTo($"/pages/enrolments/{participant.Id}");
+    }
+
+    private void Edit(ParticipantDto participant)
+    {
+        Navigation.NavigateTo($"/pages/participants/{participant.Id}");
     }
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;

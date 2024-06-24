@@ -5,6 +5,7 @@
 @using Cfo.Cats.Application.Features.Tenants.Caching
 @using Cfo.Cats.Application.Features.Tenants.Commands.AddEdit
 @using Cfo.Cats.Application.Features.Tenants.Commands.Delete
+@using Cfo.Cats.Application.Features.Tenants.Commands.Rename
 @using Cfo.Cats.Application.Features.Tenants.Queries.Export
 @using Cfo.Cats.Application.SecurityConstants
 @using DocumentFormat.OpenXml.Office2010.PowerPoint
@@ -132,11 +133,12 @@
                              EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                         @if (canEdit)
                         {
-                            <MudMenuItem OnAction="@(() => OnEdit(context.Item))">@ConstantString.Edit</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => OnRename(context.Item))">@ConstantString.Rename</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => OnEdit(context.Item))">@ConstantString.Edit</MudMenuItem>
                         }
                         @if (canDelete)
                         {
-                            <MudMenuItem OnAction="@(() => OnDelete(context.Item))">@ConstantString.Delete</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => OnDelete(context.Item))">@ConstantString.Delete</MudMenuItem>
                         }
                     </MudMenu>
                 }
@@ -257,6 +259,23 @@
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
         var dialog = DialogService.Show<TenantFormDialog>
             (L["Create a new Tenant"], parameters, options);
+        var state = await dialog.Result;
+        if (!state.Canceled)
+        {
+            await table.ReloadServerData();
+        }
+    }
+
+    private async Task OnRename(TenantDto dto)
+    {
+        var command = Mapper.Map<RenameTenant.Command>(dto);
+        var parameters = new DialogParameters<RenameTenantDialog>
+        {
+            { x => x.Model, command }
+        };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<RenameTenantDialog>
+            (L["Rename the Tenant"], parameters, options);
         var state = await dialog.Result;
         if (!state.Canceled)
         {

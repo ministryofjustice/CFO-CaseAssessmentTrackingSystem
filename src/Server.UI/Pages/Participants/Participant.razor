@@ -1,0 +1,96 @@
+@page "/pages/participants/{upci}"
+@using Cfo.Cats.Application.Features.Documents.Queries
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+
+<style>
+    .pdf-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .full-size-object {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<h3>Participant</h3>
+
+@upci
+
+<MudGrid Style="height: 100vh; width: 100vw;">
+    <MudItem xs="6" Style="height: 100%; width: 100%;">
+        <MudText Typo="Typo.h2">
+            Participant
+        </MudText>
+        @if (_participantDto is not null)
+        {
+            <MudList T="string">
+                <MudListItem T="string" Text="@_participantDto.Id"></MudListItem>
+                <MudListItem T="string" Text="@_participantDto.FirstName"></MudListItem>
+                <MudListItem T="string" Text="@_participantDto.LastName"></MudListItem>
+                <MudListItem T="string" Text="@_participantDto.DateOfBirth.ToString()"></MudListItem>
+                <MudListItem T="string" Text="@_participantDto.CurrentLocation.Name"></MudListItem>
+            </MudList>
+        }
+    </MudItem>
+    <MudItem xs="6" Style="height: 100%; width: 100%;">
+        <MudPaper Class="pdf-container">
+            @if (pdfBase64 != null)
+            {
+                <object data="data:application/pdf;base64,@pdfBase64" type="application/pdf" class="full-size-object">
+                    <p>PDF cannot be displayed.</p>
+                </object>
+            }
+            else
+            {
+            <p>Loading...</p>
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+
+
+
+@code {
+
+    private ParticipantDto? _participantDto = null;
+    
+    
+    [Parameter]
+    public string upci { get; set; } = null!;
+    
+    
+
+    private string? pdfBase64;
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        _participantDto = await Mediator.Send(new GetParticipantById.Query()
+        {
+            Id = upci 
+        });
+        
+        
+        var query = new GetDocumentById.Query()
+        {
+            Id = Guid.Parse("D57F004D-2863-4ED1-93D0-881D66DD9D73")
+        };
+
+        var result = await Mediator.Send(query);
+
+        using (var memoryStream = new MemoryStream())
+        {
+            await result.FileStream.CopyToAsync(memoryStream);
+            var bytes = memoryStream.ToArray();
+            pdfBase64 = Convert.ToBase64String(bytes);
+        }
+        StateHasChanged();
+    }
+
+}

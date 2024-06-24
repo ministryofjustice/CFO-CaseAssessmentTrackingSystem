@@ -1,30 +1,22 @@
 @using Cfo.Cats.Server.UI.Services.Fusion;
 @using ActualLab.Fusion
 @using ActualLab.Fusion.Blazor
-@using Humanizer
 @using ActualLab.Fusion.UI
 
 @inherits ComputedStateComponent<UserInfo[]>
 @inject IOnlineUserTracker OnlineUserTracker
+
 @inject IStringLocalizer<ActiveUserSession> L
 @if (State.HasValue && State.LastNonErrorValue.Any())
 {
     <div class="d-flex flex-row gap-2 my-3 gap-2 my-3">
-        @foreach (var user in State.LastNonErrorValue.OrderBy(u => u.Id != userId))
+        @foreach (var user in State.LastNonErrorValue.OrderBy(u => u.Id != userId)
+                      .Where(u => u.TenantId.StartsWith(_me?.TenantId ?? "xxx")))
         {
-            <MudBadge Color="Color.Primary" Overlap="true" Bordered="true">
-                @if (string.IsNullOrEmpty(user.ProfilePictureDataUrl))
-                {
-                    <MudAvatar title="@user.Name">
-                        @user.Name.First()
-                    </MudAvatar>
-                }
-                else
-                {
-                    <MudAvatar title="@user.Name">
-                        <MudImage Src="@user.ProfilePictureDataUrl"></MudImage>
-                    </MudAvatar>
-                }
+            <MudBadge Color="Color.Success" Overlap="true" Bordered="true">
+                <MudAvatar Title="@($"{user.DisplayName} ({user.TenantName})")" Variant="Variant.Filled" Size="Size.Large">
+                    @user.Initials()
+                </MudAvatar>
             </MudBadge>
         }
     </div>
@@ -37,7 +29,7 @@
 
 @code {
 
-    private UserProfile _me;
+    private UserProfile? _me;
 
     private string sessionId = Guid.NewGuid().ToString();
     private string? userId;
@@ -62,6 +54,8 @@
         user.PhoneNumber,
         user.AssignedRoles ?? Array.Empty<string>(),
         UserPresence.Available));
+
+        _me = user;
     }
 
     protected override ComputedState<UserInfo[]>.Options GetStateOptions()

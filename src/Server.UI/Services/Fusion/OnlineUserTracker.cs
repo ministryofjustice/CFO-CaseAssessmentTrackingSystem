@@ -74,11 +74,16 @@ public class UserInfoEqualityComparer : EqualityComparer<UserInfo?>
     public override bool Equals(UserInfo? x, UserInfo? y)
     {
         // Check whether the compared objects reference the same data.
-        if (ReferenceEquals(x, y)) return true;
+        if (ReferenceEquals(x, y))
+        {
+            return true;
+        }
 
         // Check whether any of the compared objects is null.
         if (ReferenceEquals(x, null) || ReferenceEquals(y, null))
+        {
             return false;
+        }
 
         // Check whether the UserInfo properties are equal.
         return x.Id == y.Id;// Assuming Id is a relevant property for equality
@@ -87,7 +92,10 @@ public class UserInfoEqualityComparer : EqualityComparer<UserInfo?>
     public override int GetHashCode(UserInfo? obj)
     {
         // Check whether the object is null
-        if (ReferenceEquals(obj, null)) return 0;
+        if (ReferenceEquals(obj, null))
+        {
+            return 0;
+        }
 
         // Get hash code for the Id field if it is not null.
         return obj.Id == null ? 0 : obj.Id.GetHashCode();

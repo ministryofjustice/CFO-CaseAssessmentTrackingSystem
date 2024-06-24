@@ -57,7 +57,7 @@
                 <CatsMudStep Condition="() => RightToWork.Validate()" Title="Right to Work" Icon="@Icons.Material.Filled.HomeWork" Optional="false">
                     <RightToWork @ref="RightToWork" />
                 </CatsMudStep>
-                <MudStep IsResultStep="true">
+                <MudStepExtended IsResultStep="true">
                     <MudContainer Class="d-flex flex-column align-center justify-center mb-8">
                         <MudIconButton Icon="@Icons.Material.Filled.Done" Color="@Color.Success" Size="Size.Large" />
                         <MudText Typo="Typo.h6">Enrolment Started!</MudText>
@@ -69,7 +69,7 @@
                     <MudText Typo="Typo.caption">
                         You can finalise the enrolment at a later time by visiting the cases screen.
                     </MudText>
-                </MudStep>
+                </MudStepExtended>
             </ChildContent>
 
             <ActionContent>

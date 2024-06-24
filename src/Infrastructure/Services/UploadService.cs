@@ -59,6 +59,21 @@ public class UploadService : IUploadService
             }
         }
     }
+    public async Task<Result<Stream>> DownloadAsync(string key)
+    {
+        var getRequest = new GetObjectRequest()
+        {
+            BucketName = _bucketName,
+            Key = key
+        };
+
+        using var response = await _client.GetObjectAsync(getRequest)
+            .ConfigureAwait(false);
+        var stream = new MemoryStream();
+        await response.ResponseStream.CopyToAsync(stream);
+        stream.Position = 0;
+        return stream;
+    }
 
     private static Dictionary<string, object> CreateScopeInformation(string folder, UploadRequest uploadRequest)
     {

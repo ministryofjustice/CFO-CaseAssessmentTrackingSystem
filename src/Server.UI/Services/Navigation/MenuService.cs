@@ -119,13 +119,6 @@ public class MenuService : IMenuService
                                 Title = "Audit Trails",
                                 Href = "/system/audittrails",
                                 PageStatus = PageStatus.Completed
-                            },
-                            new()
-                            {
-                                Title = "Jobs",
-                                Href = "/jobs",
-                                PageStatus = PageStatus.Completed,
-                                Target = "_blank"
                             }
                         }
                     }

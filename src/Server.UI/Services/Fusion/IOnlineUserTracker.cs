@@ -1,6 +1,7 @@
 using System.Runtime.Serialization;
 using ActualLab.Fusion;
 using ActualLab.Fusion.Blazor;
+using Faker.Resources;
 using MemoryPack;
 
 namespace Cfo.Cats.Server.UI.Services.Fusion;
@@ -31,7 +32,16 @@ public sealed partial record UserInfo(
     [property: DataMember] string? PhoneNumber,
     [property: DataMember] string[] AssignedRoles,
     [property: DataMember] UserPresence Status
-);
+)
+{
+    public string Initials()
+    {
+        var nameParts = DisplayName.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+        var initials = nameParts.Select(part => part[0]).ToArray();
+        return new string(initials).ToUpper();
+    }
+};
+
 public enum UserPresence
 {
     Available,

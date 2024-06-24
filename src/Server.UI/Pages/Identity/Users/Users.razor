@@ -7,15 +7,11 @@
 @using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Application.Common.Interfaces.MultiTenant
 @using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Server.UI.Components.Fusion
-
-@using Microsoft.AspNetCore.WebUtilities
 @using System.Security.Claims
-@using System.Text
 @using BlazorDownloadFile
-@using System.ComponentModel
 @using System.Linq.Expressions
-@using System.Reflection
+@using ActualLab.Fusion.Extensions
+@using Cfo.Cats.Infrastructure.Services.MultiTenant
 @using Cfo.Cats.Server.UI.Services.Fusion
 @using ZiggyCreatures.Caching.Fusion
 
@@ -54,9 +50,9 @@
                     <MudText Typo="Typo.caption" Class="mb-2">@L[_currentDto.GetClassDescription()]</MudText>
                     <MudSelect T="string" Style="min-width:120px" ValueChanged="OnChangedListView" Value="@_selectedTenantId" Dense="true" Label="List View">
                         <MudSelectItem T="string" Value="@(" ")">@L["ALL"]</MudSelectItem>
-                        @foreach (var item in TenantsService.DataSource)
+                        @foreach (var item in TenantsService.DataSource.OrderBy(t => t.Id))
                         {
-                        <MudSelectItem T="string" Value="@item.Id">@item.Name</MudSelectItem>
+                            <MudSelectItem T="string" Value="@item.Id">@item.Name</MudSelectItem>
                         }
                     </MudSelect>
                 </div>
@@ -420,7 +416,9 @@
     private async Task OnSearch(string text)
     {
         if (_loading)
+        {
             return;
+        }
         _searchString = text.ToLower();
         await _table.ReloadServerData();
     }
@@ -428,7 +426,9 @@
     private async Task OnSearchRole(string role)
     {
         if (_loading)
+        {
             return;
+        }
         _searchRole = role;
         await _table.ReloadServerData();
     }
@@ -478,6 +478,7 @@
             DisplayName = model.DisplayName,
             UserName = model.UserName,
             TenantId = model.TenantId,
+            TenantName = TenantsService.DataSource.First(t => t.Id == model.TenantId).Name, 
             Email = model.Email,
             PhoneNumber = model.PhoneNumber,
             SuperiorId = model.SuperiorId,
@@ -513,6 +514,7 @@
         user.UserName = item.UserName;
         user.IsActive = item.IsActive;
         user.TenantId = item.TenantId;
+        user.TenantName = TenantsService.DataSource.First(t => t.Id == item.TenantId).Name;
         user.SuperiorId = item.SuperiorId;
         var identityResult = await UserManager.UpdateAsync(user);
         if (identityResult.Succeeded)
@@ -664,6 +666,7 @@
     private async Task ActivateUser(ApplicationUser user, ApplicationUserDto item)
     {
         user.IsActive = true;
+        user.EmailConfirmed = true;
         user.LockoutEnd = null;
         var identityResult = await UserManager.UpdateAsync(user);
 
@@ -689,7 +692,7 @@
         {
             item.IsActive = false;
             item.LockoutEnd = DateTimeOffset.MaxValue;
-            Snackbar.Add($"{L["The user has been inactivated."]}", Severity.Info);
+            Snackbar.Add($"{L["The user has been deactivated."]}", Severity.Info);
         }
         else
         {

@@ -49,7 +49,9 @@
     private static string GetDescriptionText<T>(T val)
     {
         if (val is null)
+        {
             return string.Empty;
+        }
         var attributes = (DescriptionAttribute[])val.GetType().GetField(val!.ToString()!)!.GetCustomAttributes(typeof(DescriptionAttribute), false);
         return attributes.Length > 0 ? attributes[0].Description : val!.ToString()!;
     }
@@ -64,9 +66,13 @@
         dynamic valueAsInt = Convert.ChangeType(value!, underlyingType);
         dynamic flagAsInt = Convert.ChangeType(flag!, underlyingType);
         if (set)
+        {
             valueAsInt |= flagAsInt;
+        }
         else
+        {
             valueAsInt &= ~flagAsInt;
+        }
 
         return (T)valueAsInt;
     }
