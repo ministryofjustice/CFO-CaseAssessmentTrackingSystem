@@ -7,7 +7,7 @@
     if (ConsentDto is not null && ConsentDto.Length > 0)
     {
         <MudText Typo="Typo.body2">
-            Consent Files already uploaded
+            Consent documentation already uploaded
         </MudText>
         
         <MudList T="string">
@@ -29,29 +29,8 @@
     else
     {
         <MudForm @ref="Form">
-            <MudDatePicker Label="Date of Consent" Editable="true" bind MaxDate="DateTime.UtcNow.Date" @bind-Date="Model.ConsentDate" Required/>
+            <MudDatePicker Label="Date of Consent" Editable="true" MaxDate="DateTime.UtcNow.Date" @bind-Date="Model.ConsentDate" Required/>
             <div class="mb-4 mt-8">
-
-                @*<MudFileUpload T="IBrowserFile" FilesChanged="OnImportData" Accept=".xlsx" >
-                    <ActivatorContent>
-                        <MudButton Size="Size.Small"
-                            Variant="Variant.Outlined"
-                            Color="Color.Primary"
-                            Disabled="@_loading"
-                            StartIcon="@Icons.Material.Filled.Upload">
-                            @if (_uploading)
-                            {
-                            <MudProgressCircular Size="Size.Small" Indeterminate="true" />
-                            @ConstantString.Uploading
-                            }
-                            else
-                            {
-                            @ConstantString.Import
-                            }
-                        </MudButton>
-                    </ActivatorContent>
-                </MudFileUpload>*@
-                
                 <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1" Accept=".pdf, .png, .jpg, .jpeg">
                     <ActivatorContent>
                         <MudButton Variant="Variant.Outlined"

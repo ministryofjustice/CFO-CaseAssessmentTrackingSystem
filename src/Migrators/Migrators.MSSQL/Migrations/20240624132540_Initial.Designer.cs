@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240618100313_addconsent")]
-    partial class addconsent
+    [Migration("20240624132540_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -903,7 +903,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.OwnsMany("Cfo.Cats.Domain.Entities.Participants.Consent", "Consents", b1 =>
                         {
-                            b1.Property<string>("CandidateId")
+                            b1.Property<string>("ParticipantId")
                                 .HasColumnType("nvarchar(9)");
 
                             b1.Property<int>("Id")
@@ -911,9 +911,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .HasColumnType("int");
 
                             SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
-
-                            b1.Property<DateTime>("ConsentDate")
-                                .HasColumnType("datetime2");
 
                             b1.Property<DateTime?>("Created")
                                 .HasColumnType("datetime2");
@@ -931,14 +928,14 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .HasColumnType("uniqueidentifier")
                                 .HasColumnName("DocumentId");
 
-                            b1.HasKey("CandidateId", "Id");
+                            b1.HasKey("ParticipantId", "Id");
 
                             b1.HasIndex("_documentId");
 
                             b1.ToTable("Consent", (string)null);
 
                             b1.WithOwner()
-                                .HasForeignKey("CandidateId");
+                                .HasForeignKey("ParticipantId");
 
                             b1.HasOne("Cfo.Cats.Domain.Entities.Documents.Document", "Document")
                                 .WithMany()
@@ -946,7 +943,104 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .OnDelete(DeleteBehavior.Cascade)
                                 .IsRequired();
 
+                            b1.OwnsOne("Cfo.Cats.Domain.ValueObjects.Lifetime", "Lifetime", b2 =>
+                                {
+                                    b2.Property<string>("ConsentParticipantId")
+                                        .HasColumnType("nvarchar(9)");
+
+                                    b2.Property<int>("ConsentId")
+                                        .HasColumnType("int");
+
+                                    b2.Property<DateTime>("EndDate")
+                                        .HasColumnType("datetime2")
+                                        .HasColumnName("ValidTo");
+
+                                    b2.Property<DateTime>("StartDate")
+                                        .HasColumnType("datetime2")
+                                        .HasColumnName("ValidFrom");
+
+                                    b2.HasKey("ConsentParticipantId", "ConsentId");
+
+                                    b2.ToTable("Consent");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("ConsentParticipantId", "ConsentId");
+                                });
+
                             b1.Navigation("Document");
+
+                            b1.Navigation("Lifetime")
+                                .IsRequired();
+                        });
+
+                    b.OwnsMany("Cfo.Cats.Domain.Entities.Participants.RightToWork", "RightToWorks", b1 =>
+                        {
+                            b1.Property<string>("ParticipantId")
+                                .HasColumnType("nvarchar(9)");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
+
+                            b1.Property<DateTime?>("Created")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("CreatedBy")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<DateTime?>("LastModified")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("LastModifiedBy")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<Guid?>("_documentId")
+                                .HasColumnType("uniqueidentifier")
+                                .HasColumnName("DocumentId");
+
+                            b1.HasKey("ParticipantId", "Id");
+
+                            b1.HasIndex("_documentId");
+
+                            b1.ToTable("RightToWork", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("ParticipantId");
+
+                            b1.HasOne("Cfo.Cats.Domain.Entities.Documents.Document", "Document")
+                                .WithMany()
+                                .HasForeignKey("_documentId");
+
+                            b1.OwnsOne("Cfo.Cats.Domain.ValueObjects.Lifetime", "Lifetime", b2 =>
+                                {
+                                    b2.Property<string>("RightToWorkParticipantId")
+                                        .HasColumnType("nvarchar(9)");
+
+                                    b2.Property<int>("RightToWorkId")
+                                        .HasColumnType("int");
+
+                                    b2.Property<DateTime>("EndDate")
+                                        .HasColumnType("datetime2")
+                                        .HasColumnName("ValidTo");
+
+                                    b2.Property<DateTime>("StartDate")
+                                        .HasColumnType("datetime2")
+                                        .HasColumnName("ValidFrom");
+
+                                    b2.HasKey("RightToWorkParticipantId", "RightToWorkId");
+
+                                    b2.ToTable("RightToWork");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("RightToWorkParticipantId", "RightToWorkId");
+                                });
+
+                            b1.Navigation("Document");
+
+                            b1.Navigation("Lifetime")
+                                .IsRequired();
                         });
 
                     b.Navigation("Consents");
@@ -958,6 +1052,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("EnrolmentLocation");
 
                     b.Navigation("Owner");
+
+                    b.Navigation("RightToWorks");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationRoleClaim", b =>

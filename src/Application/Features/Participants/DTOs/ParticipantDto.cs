@@ -34,10 +34,7 @@ public class ParticipantDto
         public Mapping()
         {
 
-            CreateMap<Consent, ConsentDto>()
-                .ForMember(c => c.DocumentId, options => options.MapFrom(source => source.Document!.Id))
-                .ForMember(c => c.FileName, options => options.MapFrom(source => source.Document!.Title));
-            
+
             
             CreateMap<Participant, ParticipantDto>()
                 .ForMember(target => target.CurrentLocation,

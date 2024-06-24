@@ -19,6 +19,7 @@ public class Participant : OwnerPropertyEntity<string>
     private int _currentLocationId;
     private int? _enrolmentLocationId;
     private List<Consent> _consents = new();
+    private List<RightToWork> _rightToWorks = new();
 
     
     
@@ -73,6 +74,8 @@ public class Participant : OwnerPropertyEntity<string>
     public string? EnrolmentLocationJustification { get; private set; }
 
     public IReadOnlyCollection<Consent> Consents => _consents.AsReadOnly();
+
+    public IReadOnlyCollection<RightToWork> RightToWorks => _rightToWorks.AsReadOnly();
     
     /// <summary>
     /// Transitions this participant to the new enrolment status, if valid
@@ -116,9 +119,16 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
-    public void AddConsent(DateTime consentDate, Guid documentId)
+    public Participant AddConsent(DateTime consentDate, Guid documentId)
     {
-        _consents.Add(Consent.Create( this.Id, consentDate, documentId ));
+        _consents.Add(Consent.Create( Id, consentDate, documentId ));
+        return this;
+    }
+
+    public Participant AddRightToWork(DateTime validFrom, DateTime validTo, Guid documentId)
+    {
+        _rightToWorks.Add(RightToWork.Create(Id, validFrom, validTo, documentId ));
+        return this;
     }
 
     public Participant MoveToLocation(Location to)

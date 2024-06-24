@@ -6,32 +6,28 @@ using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
 
-public class Consent : BaseAuditableEntity<int>, ILifetime
+public class RightToWork : BaseAuditableEntity<int>, ILifetime
 {
     private string _participantId;
-    private Guid _documentId;
-    
+    private Guid? _documentId;
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    private Consent()
+    private RightToWork()
     {
-        
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    private Consent(string participantId, DateTime consentDate, Guid documentId)
+    private RightToWork(string participantId, DateTime validFrom, DateTime validTo, Guid? documentId)
     {
         _participantId = participantId;
         _documentId = documentId;
-
-        // we do not currently require consent to be renewed, so make it the end date.
-        Lifetime = new Lifetime(consentDate, DateTime.MaxValue);
-        
-        AddDomainEvent(new ConsentCreatedDomainEvent(this));
+        Lifetime = new Lifetime(validFrom, validTo);
+        AddDomainEvent(new RightToWorkCreatedDomainEvent(this));
     }
-    
-    public Document? Document { get; private set; }
 
-    public static Consent Create(string participantId, DateTime consentDate, Guid documentId) => new(participantId, consentDate, documentId);
+    public Document? Document { get; private set; }
+    public static RightToWork Create(string participantId, DateTime validFrom, DateTime validTo, Guid documentId) 
+        => new(participantId, validFrom, validTo, documentId);
 
     public Lifetime Lifetime { get; }
 }

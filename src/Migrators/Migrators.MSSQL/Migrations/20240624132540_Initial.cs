@@ -41,25 +41,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Document",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FileName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    ContentType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Document", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "KeyValue",
                 columns: table => new
                 {
@@ -320,6 +301,47 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Document",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Content = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
+                    IsPublic = table.Column<bool>(type: "bit", nullable: false),
+                    URL = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DocumentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(200)", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    OwnerId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EditorId = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Document", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Document_ApplicationUser_CreatedBy",
+                        column: x => x.CreatedBy,
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Document_ApplicationUser_LastModifiedBy",
+                        column: x => x.LastModifiedBy,
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Document_Tenant_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenant",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Location",
                 columns: table => new
                 {
@@ -393,24 +415,61 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     EnrolmentStatus = table.Column<int>(type: "int", nullable: false),
                     ConsentStatus = table.Column<int>(type: "int", nullable: false),
                     CurrentLocationId = table.Column<int>(type: "int", nullable: false),
+                    EnrolmentLocationId = table.Column<int>(type: "int", nullable: true),
+                    EnrolmentLocationJustification = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OwnerId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    OwnerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    EditorId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Participant", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Participant_ApplicationUser_EditorId",
+                        column: x => x.EditorId,
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Participant_ApplicationUser_OwnerId",
                         column: x => x.OwnerId,
                         principalTable: "ApplicationUser",
                         principalColumn: "Id");
                     table.ForeignKey(
+                        name: "FK_Participant_EnrolmentLocation",
+                        column: x => x.EnrolmentLocationId,
+                        principalTable: "Location",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Participant_Location",
                         column: x => x.CurrentLocationId,
                         principalTable: "Location",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TenantLocation",
+                columns: table => new
+                {
+                    LocationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(200)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TenantLocation", x => new { x.LocationId, x.TenantId });
+                    table.ForeignKey(
+                        name: "FK_TenantLocation_Location_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Location",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TenantLocation_Tenant_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenant",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -432,6 +491,69 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         name: "FK_CandidateIdentifier_Candidate_CandidateId",
                         column: x => x.CandidateId,
                         principalTable: "Candidate",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Consent",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ParticipantId = table.Column<string>(type: "nvarchar(9)", nullable: false),
+                    DocumentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ValidFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ValidTo = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Consent", x => new { x.ParticipantId, x.Id });
+                    table.ForeignKey(
+                        name: "FK_Consent_Document_DocumentId",
+                        column: x => x.DocumentId,
+                        principalTable: "Document",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Consent_Participant_ParticipantId",
+                        column: x => x.ParticipantId,
+                        principalTable: "Participant",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RightToWork",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ParticipantId = table.Column<string>(type: "nvarchar(9)", nullable: false),
+                    DocumentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ValidFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ValidTo = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RightToWork", x => new { x.ParticipantId, x.Id });
+                    table.ForeignKey(
+                        name: "FK_RightToWork_Document_DocumentId",
+                        column: x => x.DocumentId,
+                        principalTable: "Document",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_RightToWork_Participant_ParticipantId",
+                        column: x => x.ParticipantId,
+                        principalTable: "Participant",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -501,6 +623,11 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 column: "CandidateId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Consent_DocumentId",
+                table: "Consent",
+                column: "DocumentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Contract_LotNumber",
                 table: "Contract",
                 column: "LotNumber",
@@ -509,6 +636,21 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Contract_TenantId",
                 table: "Contract",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Document_CreatedBy",
+                table: "Document",
+                column: "CreatedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Document_LastModifiedBy",
+                table: "Document",
+                column: "LastModifiedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Document_TenantId",
+                table: "Document",
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
@@ -527,6 +669,16 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 column: "CurrentLocationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Participant_EditorId",
+                table: "Participant",
+                column: "EditorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Participant_EnrolmentLocationId",
+                table: "Participant",
+                column: "EnrolmentLocationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Participant_OwnerId",
                 table: "Participant",
                 column: "OwnerId");
@@ -535,6 +687,16 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 name: "IX_ParticipantEnrolmentHistory_ParticipantId",
                 table: "ParticipantEnrolmentHistory",
                 column: "ParticipantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RightToWork_DocumentId",
+                table: "RightToWork",
+                column: "DocumentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TenantLocation_TenantId",
+                table: "TenantLocation",
+                column: "TenantId");
         }
 
         /// <inheritdoc />
@@ -562,25 +724,34 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 name: "CandidateIdentifier");
 
             migrationBuilder.DropTable(
-                name: "DataProtectionKeys");
+                name: "Consent");
 
             migrationBuilder.DropTable(
-                name: "Document");
+                name: "DataProtectionKeys");
 
             migrationBuilder.DropTable(
                 name: "KeyValue");
 
             migrationBuilder.DropTable(
-                name: "Participant");
+                name: "ParticipantEnrolmentHistory");
 
             migrationBuilder.DropTable(
-                name: "ParticipantEnrolmentHistory");
+                name: "RightToWork");
+
+            migrationBuilder.DropTable(
+                name: "TenantLocation");
 
             migrationBuilder.DropTable(
                 name: "ApplicationRole");
 
             migrationBuilder.DropTable(
                 name: "Candidate");
+
+            migrationBuilder.DropTable(
+                name: "Document");
+
+            migrationBuilder.DropTable(
+                name: "Participant");
 
             migrationBuilder.DropTable(
                 name: "ApplicationUser");

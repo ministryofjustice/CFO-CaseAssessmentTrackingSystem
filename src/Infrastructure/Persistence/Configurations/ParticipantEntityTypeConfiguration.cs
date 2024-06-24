@@ -71,12 +71,18 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
 
         builder.OwnsMany(c => c.Consents, a => {
             a.WithOwner()
-                .HasForeignKey("CandidateId");
+                .HasForeignKey("ParticipantId");
 
             a.ToTable(DatabaseSchema.Tables.Consent);
 
-            a.Property(c => c.ConsentDate)
-                .IsRequired();
+            a.OwnsOne(p => p.Lifetime, lt => {
+                lt.Property(t => t.StartDate).IsRequired()
+                    .HasColumnName("ValidFrom");
+                lt.Property(t => t.EndDate)
+                    .IsRequired()
+                    .HasColumnName("ValidTo");
+            });
+                
 
             a.HasOne(c => c.Document)
                 .WithMany()
@@ -84,6 +90,33 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
 
             a.Property("_documentId")
                 .HasColumnName("DocumentId");
+
+        });
+
+        builder.OwnsMany(c => c.RightToWorks, a => {
+            a.WithOwner()
+                .HasForeignKey("ParticipantId");
+
+            a.ToTable(DatabaseSchema.Tables.RightToWork);
+
+            a.OwnsOne(p => p.Lifetime, lt => {
+                
+                lt.Property(t => t.StartDate)
+                    .IsRequired()
+                    .HasColumnName("ValidFrom");
+                
+                lt.Property(t => t.EndDate)
+                    .IsRequired()
+                    .HasColumnName("ValidTo");
+                
+                a.HasOne(c => c.Document)
+                    .WithMany()
+                    .HasForeignKey("_documentId");
+
+                a.Property("_documentId")
+                    .HasColumnName("DocumentId");
+                
+            });
 
         });
 
