@@ -14,25 +14,16 @@ public static class GetDocumentById
         public Guid Id { get; set; }
     }
 
-    public class Handler : IRequestHandler<Query, DownloadDocumentDto>
+    public class Handler(IApplicationDbContext context, IUploadService uploadService) : IRequestHandler<Query, DownloadDocumentDto>
     {
-        private readonly IApplicationDbContext _context;
-        private readonly IUploadService _uploadService;
-        
-        public Handler(IApplicationDbContext context, IUploadService uploadService)
-        {
-            _context = context;
-            _uploadService = uploadService;
-        }
-
         public async Task<DownloadDocumentDto> Handle(Query request, CancellationToken cancellationToken)
         {
-            var document = await _context.Documents.FindAsync(request.Id);
-            var stream = await _uploadService.DownloadAsync(document!.URL!);
+            var document = await context.Documents.FindAsync(request.Id);
+            var stream = await uploadService.DownloadAsync(document!.URL!);
             DownloadDocumentDto dto = new DownloadDocumentDto()
             {
                 FileStream = stream,
-                FileExtension = "pdf",
+                FileExtension = document.Title!.Split(".").Last(),
                 FileName = document.Title!
             };
             return dto;

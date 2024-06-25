@@ -1,6 +1,7 @@
 @using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Domain.Common.Enums
+@using Humanizer;
 
 @if (Model is not null)
 {
@@ -31,7 +32,7 @@
         <MudForm @ref="Form">
             <MudDatePicker Label="Date of Consent" Editable="true" MaxDate="DateTime.UtcNow.Date" @bind-Date="Model.ConsentDate" Required/>
             <div class="mb-4 mt-8">
-                <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1" Accept=".pdf, .png, .jpg, .jpeg">
+                <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1" Accept=".pdf">
                     <ActivatorContent>
                         <MudButton Variant="Variant.Outlined"
                                    Color="Color.Primary"
@@ -84,16 +85,29 @@
 
     int fileCount = 0;
 
-    private async Task UploadFiles(IBrowserFile file)
+    private async Task UploadFiles(IBrowserFile? file)
     {
-        _uploading = true;
-        await using var stream = file.OpenReadStream();
-        using var memoryStream = new MemoryStream();
-        await stream.CopyToAsync(memoryStream);
-        
-        Model!.UploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
-        fileCount = 1;
-        _uploading = false;
+        if (file is not null)
+        {
+            const int maxFileSize = 5242880; // 5MB
+            if (file.Size > maxFileSize)
+            {
+                Snackbar.Add($"File {file.Name} exceeds the maximum allowed size of {maxFileSize.Bytes().Humanize()}", Severity.Error);
+            }
+            else
+            {
+                _uploading = true;
+                await using var stream = file.OpenReadStream(maxFileSize);
+                using var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                
+                Model!.UploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
+                fileCount = 1;
+                _uploading = false;
+            }
+            
+        }
+
     }
 
     private MudForm? Form { get; set; }

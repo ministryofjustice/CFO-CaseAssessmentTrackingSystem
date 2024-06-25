@@ -54,8 +54,8 @@
                 <CatsMudStep Condition="() => Consent!.Validate()" Title="Consent"  Icon="@Icons.Material.Filled.Approval" Optional="false">
 					<Consent @ref="Consent" Model="@AddConsentCommand" ConsentDto="_participant?.Consents" />
                 </CatsMudStep>
-                <CatsMudStep Condition="() => RightToWork.Validate()" Title="Right to Work" Icon="@Icons.Material.Filled.HomeWork" Optional="false">
-                    <RightToWork @ref="RightToWork" />
+                <CatsMudStep Condition="() => RightToWork!.Validate()" Title="Right to Work" Icon="@Icons.Material.Filled.HomeWork" Optional="false">
+                    <RightToWork @ref="RightToWork" Model="AddRightToWorkCommand" RightToWorkDtos="_participant?.RightToWorks" />
                 </CatsMudStep>
                 <MudStepExtended IsResultStep="true">
                     <MudContainer Class="d-flex flex-column align-center justify-center mb-8">
@@ -109,6 +109,7 @@
 
     private SetEnrolmentLocation.Command SetEnrolmentCommand { get; set; } = null!;
     private AddConsent.Command AddConsentCommand { get; set; } = null!;
+    private AddRightToWork.Command AddRightToWorkCommand { get; set; } = null!;
     
     private LocationDto[] Locations { get; set; } = [];
 
@@ -132,6 +133,11 @@
             );
 
             AddConsentCommand = new AddConsent.Command()
+            {
+                ParticipantId = ParticipantId
+            };
+
+            AddRightToWorkCommand = new AddRightToWork.Command()
             {
                 ParticipantId = ParticipantId
             };

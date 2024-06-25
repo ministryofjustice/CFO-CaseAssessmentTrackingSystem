@@ -1,5 +1,7 @@
 ﻿@using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Domain.Common.Enums
+@using Humanizer
 
 
 @if (Model is not null)
@@ -35,20 +37,42 @@
                 To your knowledge, is any Right to Work (RTW) documentation required for the enrolment of this person?
             </MudText>
             <MudButtonGroup OverrideStyles="false" Class="my-4">
-                <MudButton Color="Color.Primary" Variant="@(isRequired ? Variant.Filled : Variant.Outlined)" OnClick="() => isRequired = true">Yes, Right to Work is required</MudButton>
-                <MudButton Color="Color.Primary" Variant="@(isRequired ? Variant.Outlined : Variant.Filled)" OnClick="() => isRequired = false">No, Right to Work is not required</MudButton>
+                <MudButton Color="Color.Primary" Variant="@(_isRequired ? Variant.Filled : Variant.Outlined)" OnClick="() => _isRequired = true">Yes, Right to Work is required</MudButton>
+                <MudButton Color="Color.Primary" Variant="@(_isRequired ? Variant.Outlined : Variant.Filled)" OnClick="() => _isRequired = false">No, Right to Work is not required</MudButton>
             </MudButtonGroup>
+            
+            @if (_isRequired)
+            {
+                <MudDatePicker Label="Valid From" Editable="true"
+                               MaxDate="DateTime.Now.Date"
+                               MinDate="DateTime.Now.AddYears(-5).Date"
+                               @bind-Date="Model.ValidFrom" Required/>
 
-            <MudDatePicker Label="Valid From" Editable="true"
-                           MaxDate="DateTime.Now.Date"
-                           MinDate="DateTime.Now.AddYears(-5).Date"
-                           @bind-Date="Model.ValidFrom" Required/>
+                <MudDatePicker Label="Valid To" Editable="true"
+                               MaxDate="DateTime.MaxValue.Date"
+                               MinDate="DateTime.Now.Date"
+                               @bind-Date="Model.ValidTo" Required/>
 
-            <MudDatePicker Label="Valid To" Editable="true"
-                           MaxDate="DateTime.MaxValue.Date"
-                           MinDate="DateTime.Now.Date"
-                           @bind-Date="Model.ValidTo" Required/>
-
+                <div class="mb-4 mt-8">
+                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1" Accept=".pdf">
+                        <ActivatorContent>
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Upload">
+                                @if (_uploading)
+                                {
+                                    <MudProgressCircular Size="Size.Small" Indeterminate="true"/>
+                                    @ConstantString.Uploading
+                                }
+                                else
+                                {
+                                    @ConstantString.Upload
+                                }
+                            </MudButton>
+                        </ActivatorContent>
+                    </MudFileUpload>
+                </div>
+            }
         </MudForm>
     }
 }
@@ -56,7 +80,10 @@
 
 @code {
 
-    private bool isRequired = true;
+    private bool _isRequired = true;
+    private bool _uploading = false;
+    private int _fileCount = 0;
+
     
     [EditorRequired]
     [Parameter]
@@ -69,7 +96,7 @@
 
     public async Task<bool> Validate()
     {
-        if (RightToWorkDtos is { Length: > 0 } )
+        if (RightToWorkDtos is { Length: > 0 } || _isRequired == false)
         {
             return true;
         }
@@ -89,6 +116,29 @@
             }
         }
         return Form.IsValid;
+    }
+
+    private async Task UploadFiles(IBrowserFile? file)
+    {
+        if (file is not null)
+        {
+            const int maxFileSize = 5242880; // 5MB
+            if (file.Size > maxFileSize)
+            {
+                Snackbar.Add($"File {file.Name} exceeds the maximum allowed size of {maxFileSize.Bytes().Humanize()}", Severity.Error);
+            }
+            else
+            {
+                _uploading = true;
+                await using var stream = file.OpenReadStream(maxFileSize);
+                using var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+        
+                Model!.UploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
+                _fileCount = 1;
+                _uploading = false;
+            }
+        }
     }
 
 }

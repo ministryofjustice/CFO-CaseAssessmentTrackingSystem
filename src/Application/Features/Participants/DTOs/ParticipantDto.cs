@@ -29,18 +29,19 @@ public class ParticipantDto
 
     public ConsentDto[] Consents { get; set; }
     
+    public RightToWorkDto[] RightToWorks { get; set; }
+    
     private class Mapping : Profile
     {
         public Mapping()
         {
-
-
-            
             CreateMap<Participant, ParticipantDto>()
                 .ForMember(target => target.CurrentLocation,
-                options => options.MapFrom(source => source.CurrentLocation))
+                    options => options.MapFrom(source => source.CurrentLocation))
                 .ForMember(target => target.Consents,
-                options => options.MapFrom(source => source.Consents.ToArray()));
+                    options => options.MapFrom(source => source.Consents.ToArray()))
+                .ForMember(target => target.RightToWorks,
+                    options => options.MapFrom(source => source.RightToWorks.ToArray()));
         }
     }
 }

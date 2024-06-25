@@ -8,7 +8,6 @@ public sealed class ParticipantAdvancedSpecification : Specification<Participant
     {
         EnrolmentStatus status = filter.ListView switch
         {
-
             ParticipantListView.Default => EnrolmentStatus.PendingStatus,
             ParticipantListView.Pending => EnrolmentStatus.PendingStatus,
             ParticipantListView.SubmittedToProvider => EnrolmentStatus.SubmittedToProviderStatus,

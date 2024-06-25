@@ -69,13 +69,13 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
         builder.Property<int?>("_enrolmentLocationId")
             .HasColumnName("EnrolmentLocationId");
 
-        builder.OwnsMany(c => c.Consents, a => {
-            a.WithOwner()
+        builder.OwnsMany(participant => participant.Consents, consent => {
+            consent.WithOwner()
                 .HasForeignKey("ParticipantId");
 
-            a.ToTable(DatabaseSchema.Tables.Consent);
+            consent.ToTable(DatabaseSchema.Tables.Consent);
 
-            a.OwnsOne(p => p.Lifetime, lt => {
+            consent.OwnsOne(p => p.Lifetime, lt => {
                 lt.Property(t => t.StartDate).IsRequired()
                     .HasColumnName("ValidFrom");
                 lt.Property(t => t.EndDate)
@@ -84,11 +84,11 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             });
                 
 
-            a.HasOne(c => c.Document)
+            consent.HasOne(c => c.Document)
                 .WithMany()
                 .HasForeignKey("_documentId");
 
-            a.Property("_documentId")
+            consent.Property("_documentId")
                 .HasColumnName("DocumentId");
 
         });
