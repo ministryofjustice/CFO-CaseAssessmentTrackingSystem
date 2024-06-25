@@ -3,6 +3,6 @@ using Cfo.Cats.Domain.Entities.Documents;
 
 namespace Cfo.Cats.Domain.Events;
 
-public class DocumentCreatedDomainEvent(Document entity) : CreatedDomainEvent<Document>(entity);
+public sealed class DocumentCreatedDomainEvent(Document entity) : CreatedDomainEvent<Document>(entity);
 
-public class DocumentUpdatedDomainEvent(Document entity) : UpdatedDomainEvent<Document>(entity);
+public sealed class DocumentUpdatedDomainEvent(Document entity) : UpdatedDomainEvent<Document>(entity);

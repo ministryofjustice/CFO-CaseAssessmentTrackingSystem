@@ -51,10 +51,12 @@ public class MappingTests
         
     }
 
-    private object GetInstanceOf(Type type)
+    private static object GetInstanceOf(Type type)
     {
-        if (type.GetConstructor(Type.EmptyTypes) != null)
-            return Activator.CreateInstance(type);
+        // Check for a parameterless constructor, including non-public ones
+        ConstructorInfo constructor = type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
+        if (constructor != null)
+            return constructor.Invoke(null);
 
         // Type without parameterless constructor
         return FormatterServices.GetUninitializedObject(type);

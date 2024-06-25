@@ -33,17 +33,14 @@ public static class AddRightToWork
             {
                 throw new NotFoundException("Cannot find participant", request.ParticipantId);
             }
+
+            var document = Document.Create(request.UploadRequest!.FileName,
+                $"Right to work evidence for {request.ParticipantId}",
+                DocumentType.PDF);
             
-            var document = new Document()
-            {
-                Description = $"Right to work evidence for {request.ParticipantId}",
-                DocumentType = DocumentType.Document,
-                IsPublic = false,
-                Title = request.UploadRequest!.FileName
-            };
             
             var result = await uploadService.UploadAsync($"{request.ParticipantId}/rtw", request.UploadRequest!);
-            document.URL = result;
+            document.SetURL(result);
 
             participant.AddRightToWork(request.ValidFrom!.Value, request.ValidTo!.Value, document.Id);
 

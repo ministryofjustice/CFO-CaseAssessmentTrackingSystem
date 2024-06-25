@@ -4,4 +4,4 @@ using Cfo.Cats.Domain.Entities.Participants;
 namespace Cfo.Cats.Domain.Events;
 
 
-public class RightToWorkCreatedDomainEvent(RightToWork entity) : CreatedDomainEvent<RightToWork>(entity);
+public sealed class RightToWorkCreatedDomainEvent(RightToWork entity) : CreatedDomainEvent<RightToWork>(entity);

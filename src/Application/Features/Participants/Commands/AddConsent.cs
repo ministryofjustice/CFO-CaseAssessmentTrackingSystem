@@ -31,17 +31,13 @@ public static class AddConsent
                 throw new NotFoundException("Cannot find participant", request.ParticipantId);
             }
 
-            var document = new Document()
-            {
-                Description = $"Consent form for {request.ParticipantId}",
-                DocumentType = DocumentType.Document,
-                IsPublic = false,
-                Title = request.UploadRequest!.FileName
-            };
+            var document = Document.Create(request.UploadRequest!.FileName,
+                $"Consent form for {request.ParticipantId}",
+                DocumentType.PDF);
             
             var result = await uploadService.UploadAsync($"{request.ParticipantId}/consent", request.UploadRequest!);
 
-            document.URL = result;
+            document.SetURL(result);
 
             participant.AddConsent(request.ConsentDate!.Value, document.Id);
             
