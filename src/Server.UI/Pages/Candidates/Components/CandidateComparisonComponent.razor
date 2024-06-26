@@ -33,7 +33,7 @@
 @code {
 
     [Parameter] public List<ComparisonRow> Comparisons { get; set; } = new();
-    
+
     private readonly List<(ComparisonRow row, string HighlightedDiff, bool HasDifferences)> diffResults = new();
 
 
@@ -42,8 +42,8 @@
         diffResults.Clear();
         foreach (var comparison in Comparisons)
         {
-            var diff = HighlightDifferences(comparison.OriginalText, comparison.NewText);
             bool hasDifferences = HasDifferences(comparison.OriginalText, comparison.NewText);
+            var diff = hasDifferences ? HighlightDifferences(comparison.OriginalText, comparison.NewText) : comparison.NewText;
             diffResults.Add((comparison, diff, hasDifferences));
         }
     }
@@ -81,6 +81,6 @@
         return result.ToString();
     }
     
-    public static bool HasDifferences(string str1, string str2) => str1.Equals(str2, StringComparison.CurrentCultureIgnoreCase) == false;
+    public static bool HasDifferences(string str1, string str2) => str1.Equals(str2, StringComparison.OrdinalIgnoreCase) == false;
 
 }
