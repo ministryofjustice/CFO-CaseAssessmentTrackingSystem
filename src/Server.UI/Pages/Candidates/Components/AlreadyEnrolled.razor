@@ -1,10 +1,9 @@
-@using Cfo.Cats.Application.Features.Candidates.DTOs
 @using Humanizer
 
 <MudContainer Class="d-flex flex-column align-center justify-center">
 
     <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">
-        The candidate we have found is already enrolled. ( @Candidate.EnrolmentStatus!.Name.Humanize() )
+        The candidate we have found is already enrolled.
     </MudAlert>
 
     <MudContainer Class="d-flex px-0 mt-8 justify-space-between">
@@ -15,9 +14,6 @@
 
 @code 
 {
-    [Parameter]
-    public CandidateDto Candidate { get; set; }
-    
     [Parameter]
     public EventCallback OnCanceled { get; set; }
     
