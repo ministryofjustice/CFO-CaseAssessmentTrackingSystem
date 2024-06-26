@@ -21,6 +21,8 @@ using ActualLab.Fusion;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using ActualLab.Fusion.Extensions;
 using Cfo.Cats.Server.UI.Middlewares;
+using Cfo.Cats.Server.UI.Services.Candidate;
+using Cfo.Cats.Infrastructure;
 
 namespace Cfo.Cats.Server.UI;
 
@@ -103,6 +105,12 @@ public static class DependencyInjection
                 service.Preload();
                 return service;
             });
+
+        services.AddHttpClient<CandidateService>((provider, client) =>
+        {
+            client.DefaultRequestHeaders.Add("X-API-KEY", config.GetRequiredValue("DMS:ApiKey"));
+            client.BaseAddress = new Uri(config.GetRequiredValue("DMS:ApplicationUrl"));
+        });
 
         services.Configure<ForwardedHeadersOptions>(options =>
         {
