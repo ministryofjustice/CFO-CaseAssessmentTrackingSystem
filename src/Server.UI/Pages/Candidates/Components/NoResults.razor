@@ -1,7 +1,7 @@
-﻿<MudContainer Class="d-flex flex-column align-center justify-center">
+<MudContainer Class="d-flex flex-column align-center justify-center">
 
-    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
-        A candidate was found which loosely matches your search criteria, but you have not provided enough valid information. Please double-check your criteria, and provide more information to refine your search.
+    <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">
+        No candidates were found which match your search criteria. Please double-check your criteria, and provide more information to refine your search.
     </MudAlert>
 
     <MudContainer Class="d-flex px-0 mt-8 justify-space-between">
@@ -10,11 +10,9 @@
 
 </MudContainer>
 
-
-@code
+@code 
 {
     [Parameter]
     public EventCallback OnCanceled { get; set; }
-
     private Task BackToSearch() => OnCanceled.InvokeAsync();
 }

@@ -22,7 +22,7 @@ public partial class MatchFound : ComponentBase
     private List<ComparisonRow>? _comparisons;
 
     [Parameter]
-    public string Id { get; set; }
+    public string CandidateId { get; set; }
 
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; }
@@ -42,7 +42,7 @@ public partial class MatchFound : ComponentBase
 
     protected override async Task OnParametersSetAsync()
     {
-        candidate = await CandidateService.GetByUpciAsync(Id);
+        candidate = await CandidateService.GetByUpciAsync(CandidateId);
 
         _comparisons = new List<ComparisonRow>
         {
