@@ -21,6 +21,7 @@ public static class SetEnrolmentLocation
         /// <summary>
         /// The location to assign the enrolment to
         /// </summary>
+        [Description("Current Location")]
         public LocationDto CurrentLocation { get; set; } = currentLocation;
 
         /// <summary>
@@ -32,8 +33,10 @@ public static class SetEnrolmentLocation
         /// A justification for enrolling a participant in a location
         /// other than where we think they are
         /// </summary>
+        [Description("Justification reason for alternative enrolment location")]
         public string? JustificationReason { get; set; } = justificationReason;
 
+        [Description("Enrol at an alternative location enrolment")]
         public bool EnrolFromOtherLocation { get; set; } = enrolmentLocation.Id != currentLocation.Id;
         
         public string CacheKey => ParticipantCacheKey.GetCacheKey($"Id:{this.Identifier}");
@@ -72,10 +75,18 @@ public static class SetEnrolmentLocation
 
             RuleFor(x => x.EnrolmentLocation)
                 .NotNull();
+
+            When(x => x.EnrolFromOtherLocation, () => {
+                RuleFor(x => x.EnrolmentLocation)
+                    .Must((model, enrolmentLocation) => model.CurrentLocation != enrolmentLocation)
+                    .WithMessage("Enrolment location must be different when Enrol from another location is selected");
+            });
+            
             
             When(x => x.CurrentLocation != x.EnrolmentLocation, () => {
                 RuleFor(x => x.JustificationReason)
                     .NotNull()
+                    .WithMessage("Justification reason is mandatory when enrolling in a different location")
                     .NotEmpty()
                     .WithMessage("Justification reason is mandatory when enrolling in a different location");
             });

@@ -5,11 +5,11 @@ namespace Cfo.Cats.Application.Features.Locations.DTOs;
 
 public record LocationDto
 {
-    public int Id { get; init; } 
-    public required string Name { get; init; }
-    public required GenderProvision GenderProvision { get; init; } 
+    public int Id { get; set; } 
+    public required string Name { get; set; }
+    public required GenderProvision GenderProvision { get; set; } 
     
-    public required LocationType LocationType { get; init; }
+    public required LocationType LocationType { get; set; }
     
     /// <summary>
     /// The parent location (currently only supported on community locations)

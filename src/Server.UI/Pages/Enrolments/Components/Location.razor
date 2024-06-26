@@ -1,22 +1,53 @@
 ﻿@using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Participants.Commands
+@inject IStringLocalizer<Location> L
 
 @if (Model is not null && Locations is not [])
 {
-    <MudForm @ref="_form" Validation="@(Validator.ValidateValue(Model))">
-        <MudTextField T="string" Label="Location" Value="@Model.CurrentLocation.Name" Disabled/>
+    <MudForm Model="Model" @ref="_form" Validation="@(Validator.ValidateValue(Model))">
 
-        <MudCheckBox T="bool" @bind-Value="Model.EnrolFromOtherLocation" Label="Enrol at alternative location"/>
-
-        <MudSelect T="LocationDto" @bind-Value="Model.EnrolmentLocation" Label="Alternative Location" AnchorOrigin="Origin.BottomCenter" Disabled="!Model.EnrolFromOtherLocation">
-            @foreach (var location in Locations!)
+        <MudGrid>
+            <MudItem xs="12">
+                <MudTextField Label="@L[Model.GetMemberDescription(x => x.CurrentLocation)]" 
+                              @bind-Value="Model.CurrentLocation.Name" 
+                              ReadOnly="true"
+                              Variant="Variant.Text">
+                </MudTextField>
+            </MudItem>
+            <MudItem xs="12">
+                <MudCheckBox T="bool" @bind-Value="Model.EnrolFromOtherLocation"
+                             Label="@L[Model.GetMemberDescription(x => x.EnrolFromOtherLocation)]">
+                </MudCheckBox>
+            </MudItem>
+            @if (Model.EnrolFromOtherLocation)
             {
-                <MudSelectItem Value="location">
-                    @location.Name
-                </MudSelectItem>
+                <MudItem xs="12">
+                    <MudSelect T="LocationDto"
+                               Label="@L["Alternative Location"]"
+                               Required="true"
+                               @bind-Value="@Model.EnrolmentLocation"
+                               For="@(()=>Model.EnrolmentLocation)">
+                        @foreach (var item in Locations!)
+                        {
+                            <MudSelectItem T="LocationDto" Value="@item">
+                                @item.Name
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Label="@L[Model.GetMemberDescription(x => x.JustificationReason)]"
+                                  @bind-Value="Model.JustificationReason"
+                                  For="@(()=>Model.JustificationReason)">
+                    </MudTextField>
+                </MudItem>
             }
-        </MudSelect>
-        <MudTextFieldExtended T="string" @bind-Value="Model.JustificationReason" Label="Reason for alternative location enrolment" Disabled="!Model.EnrolFromOtherLocation"/>
+        </MudGrid>
+
+        @* 
+
+       
+        <MudTextFieldExtended T="string" @bind-Value="Model.JustificationReason" Label="" Disabled="!Model.EnrolFromOtherLocation"/> *@
     </MudForm>
 }
 
