@@ -1,5 +1,7 @@
 @using Cfo.Cats.Application.Features.Candidates.DTOs
 @using Cfo.Cats.Application.Features.Candidates.Queries.Search
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Server.UI.Services.Candidate
 
 @if (_selectedType is not null)
 {
@@ -9,21 +11,21 @@
 @code {
 
     private Type? _selectedType = null;
-    private IDictionary<string, object>? _selectedParameters;
+    private Dictionary<string, object> _selectedParameters = [];
     private List<ComparisonRow>? _comparisons;
-    
+
     private bool Confirmation { get; set; }
 
     [Parameter, EditorRequired]
     public EventCallback OnCancelled { get; set; }
 
     [Parameter, EditorRequired]
-    public EventCallback OnCandidateEnrolled { get; set; }
+    public EventCallback<string> OnCandidateEnrolled { get; set; }
 
-    [Parameter, EditorRequired] public CandidateDto[] SearchResults { get; set; } = default!;
+    [Parameter, EditorRequired] public SearchResult[] SearchResults { get; set; } = default!;
     [Parameter, EditorRequired] public CandidateSearchQuery Query { get; set; } = default!;
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         _selectedParameters = new Dictionary<string, object>()
         {
@@ -32,35 +34,76 @@
             }
         };
 
-        if (SearchResults is { Length: 0 })
+        if (SearchReturnedNoCandidates())
         {
-            _selectedType = typeof(NoResults);
+            ShowMoreInformationRequired();
         }
-        else if (SearchResults is { Length: > 1 })
+        else if (SearchReturnedMultipleAmbiguousCandidates())
         {
-            _selectedType = typeof(TooManyResults);
+            ShowTooManyResults();
         }
-        else if (SearchResults is
-                 [
-                     { EnrolmentStatus: not null }
-                 ])
+        else if (SearchReturnedIdenticalCandidate())
         {
-            _selectedParameters.Add("Candidate", SearchResults[0]);
-            _selectedType = typeof(AlreadyEnrolled);
+            await EnrolCandidateIfNotAlreadyEnrolled();
+        }
+        else if (SearchReturnedSingleCandidate())
+        {
+            if(CandidateMeetsMinimumPrecedence(10))
+            {
+                await EnrolCandidateIfNotAlreadyEnrolled();
+            }
+            else
+            {
+                ShowMoreInformationRequired();
+            }
+        }
+    }
+
+    bool SearchReturnedNoCandidates() => SearchResults is { Length: 0 };
+    bool SearchReturnedSingleCandidate() => SearchResults is { Length: 1 };
+    bool SearchReturnedIdenticalCandidate() => SearchResults.Any(result => result.Precedence is 1);
+    bool SearchReturnedMultipleAmbiguousCandidates() => SearchResults is { Length: > 1 } && SearchReturnedIdenticalCandidate() is false;
+
+    void ShowCandidateFound()
+    {
+        _selectedParameters.Add("Id", Candidate.Upci);
+        _selectedParameters.Add("Query", Query);
+        _selectedParameters.Add("OnParticipantEnrolled", EventCallback.Factory.Create(this, OnParticipantEnrolledHandler));
+        _selectedType = typeof(MatchFound);
+    }
+
+    void ShowCandidateAlreadyEnrolled() => _selectedType = typeof(AlreadyEnrolled);
+    void ShowMoreInformationRequired() => _selectedType = typeof(MoreInformationRequired);
+    void ShowTooManyResults() => _selectedType = typeof(TooManyResults);
+
+    async Task EnrolCandidateIfNotAlreadyEnrolled()
+    {
+        var result = SearchResults
+            .OrderBy(candidate => candidate.Precedence)
+            .First();
+
+        var enrolled = await Mediator.Send(new CheckParticipantExistsById.Query
+        {
+            Id = result.Upci
+        });
+
+        if (enrolled)
+        {
+            ShowCandidateAlreadyEnrolled();
         }
         else
         {
-            _selectedParameters.Add("Candidate", SearchResults[0]);
-            _selectedParameters.Add("Query", Query);
-            _selectedParameters.Add("OnParticipantEnrolled", EventCallback.Factory.Create(this, OnParticipantEnrolledHandler));
-            _selectedType = typeof(MatchFound);
+            ShowCandidateFound();
         }
     }
+
+    bool CandidateMeetsMinimumPrecedence(int precedence) => Candidate.Precedence <= precedence;
+
+    SearchResult Candidate => SearchResults.OrderBy(candidate => candidate.Precedence).First();
 
     private Task HandleOnCancelledClick()
         => OnCancelled.InvokeAsync();
 
-
     private Task OnParticipantEnrolledHandler()
-        => OnCandidateEnrolled.InvokeAsync();
+        => OnCandidateEnrolled.InvokeAsync(Candidate.Upci);
 }

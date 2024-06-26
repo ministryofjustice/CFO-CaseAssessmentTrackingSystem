@@ -2,7 +2,7 @@
 @using Cfo.Cats.Application.Features.Candidates
 @using Cfo.Cats.Application.Features.Candidates.DTOs
 @using Cfo.Cats.Application.Features.Candidates.Queries.Search
-@using Cfo.Cats.Server.UI.Pages.Enrolments.Search
+@using Cfo.Cats.Server.UI.Services.Candidate
 @using Faker
 
 <MudGrid>
@@ -33,18 +33,21 @@
 @code {
 
     private MudForm? _form;
-    
+
+    [Inject]
+    public CandidateService CandidateService { get; set; }
+
     [EditorRequired]
     [Parameter]
-    public EventCallback<CandidateDto[]> OnCandidatesFound { get; set; }
+    public EventCallback<SearchResult[]> OnSearch { get; set; }
 
     [EditorRequired]
     [Parameter]
     public CandidateSearchQuery? Query { get; set; }
-    
+
     [CascadingParameter]
     private UserProfile? UserProfile { get; set; }
-    
+
     CandidateFluentValidator candidateValidator = new();
 
     public async Task Search()
@@ -52,8 +55,8 @@
         await _form!.Validate().ConfigureAwait(false);
         if (_form.IsValid)
         {
-            var result = await Mediator.Send(Query!);
-            await OnCandidatesFound.InvokeAsync(result.ToArray());
+            var result = await CandidateService.SearchAsync(Query);
+            await OnSearch.InvokeAsync(result?.ToArray() ?? []);
         }
     }
 

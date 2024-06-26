@@ -1,11 +1,14 @@
 @using Cfo.Cats.Application.Features.Candidates.DTOs
 @using Cfo.Cats.Application.Features.Candidates.Queries.Search
 @using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Server.UI.Services.Candidate
 
-<MudContainer Class="d-flex flex-column align-center justify-center">
+@if(candidate is not null)
+{
+    <MudContainer Class="d-flex flex-column align-center justify-center">
     <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
-        We have found a match (@Candidate.FirstName @Candidate.LastName (@Candidate.Identifier)
-        We have them located at @Candidate.CurrentLocation
+        We have found a match (@candidate.FirstName @candidate.LastName (@candidate.Identifier)
+        We have them located at @candidate.CurrentLocation
     </MudAlert>
     <MudForm Model="@Model" @ref="@_form" Validation="@(Validator.ValidateValue(Model))">
         <MudGrid>
@@ -15,8 +18,8 @@
             <MudItem xs="12">
                 <MudSelect Required="true" RequiredError="Select a referral source" T="string" Label="Referral Source" @bind-Value="Model.ReferralSource">
                     @foreach (var item in PicklistService.DataSource
-                                  .Where(c => c.Name == Picklist.ReferralSource)
-                                  .OrderBy(c => c.Text))
+                                    .Where(c => c.Name == Picklist.ReferralSource)
+                                    .OrderBy(c => c.Text))
                     {
                         <MudSelectItem Value="@item.Value">@item.Text</MudSelectItem>
                     }
@@ -25,7 +28,7 @@
 
                 <MudItem xs="12">
                     <MudTextField Label="Referral Comments" @bind-Value="Model.ReferralComments" For="(() => Model.ReferralComments)"
-                                  RequiredError="Comments must be entered for this referral type"/>
+                                    RequiredError="Comments must be entered for this referral type"/>
                 </MudItem>
 
             <MudItem xs="12">
@@ -37,78 +40,11 @@
     <MudContainer Class="d-flex px-0 mt-8 justify-space-between">
         <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="BackToSearch">Back to Search</MudButton>
         <MudButton Color="Color.Success" Variant="Variant.Filled"
-                   OnClick="EnrolCandidate"
-                   Disabled="@(_confirmation == false)">
+                    OnClick="EnrolCandidate"
+                    Disabled="@(_confirmation == false)">
             Enrol Candidate
         </MudButton>
     </MudContainer>
 
-</MudContainer>
-
-@code 
-{
-
-    [Inject]
-    private IPicklistService PicklistService { get; set; }
-    
-    private MudForm? _form;
-
-    private CreateParticipant.Command? Model;
-    
-    private bool _confirmation = false;
-    private List<ComparisonRow>? _comparisons;
-    
-    [Parameter]
-    public CandidateDto Candidate { get; set; } = default!;
-    
-    [CascadingParameter]
-    public UserProfile? UserProfile { get; set; }
-
-    [Parameter]
-    public CandidateSearchQuery Query { get; set; } = default!;
-    
-    [Parameter]
-    public EventCallback OnCanceled { get; set; }
-
-    [Parameter]
-    public EventCallback OnParticipantEnrolled { get; set; }
-
-    protected override void OnParametersSet()
-    {
-        _comparisons =  new List<ComparisonRow>
-        {
-            new ("First Name", Query.FirstName, Candidate.FirstName),
-            new ("Last Name", Query.LastName, Candidate.LastName),
-            new("Date Of Birth", Query.DateOfBirth.GetValueOrDefault().ToShortDateString(),
-            Candidate.DateOfBirth.GetValueOrDefault().ToShortDateString())
-        };
-
-        foreach(var identifier in Candidate.ExternalIdentifiers)
-        {
-            _comparisons.Add(new( "Identifier", identifier, Query.ExternalIdentifier ));
-        }
-        Model = new CreateParticipant.Command
-        {
-            Identifier = Candidate.Identifier,
-            CurrentUser = UserProfile!
-        };
-    }
-
-    private Task BackToSearch()
-    {
-        return OnCanceled.InvokeAsync();
-    }
-
-    private async Task EnrolCandidate()
-    {
-        await _form!.Validate().ConfigureAwait(false);
-        if (_form!.IsValid)
-        {
-            await Mediator.Send(Model!);
-            await OnParticipantEnrolled.InvokeAsync();    
-        }
-    }
-
-
+    </MudContainer>   
 }
-

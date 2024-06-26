@@ -2,6 +2,7 @@
 @using Cfo.Cats.Application.Features.Candidates.DTOs
 @using Cfo.Cats.Application.Features.Candidates.Queries.Search
 @using Cfo.Cats.Server.UI.Pages.Candidates.Components
+@using Cfo.Cats.Server.UI.Services.Candidate
 
 
 <MudContainer Style="width: 100%; min-width: 480px">
@@ -21,10 +22,10 @@
             <MudContainer Class="pb-6">
                 @if (SearchResults is null)
                 {
-                    <CandidateFinderComponent OnCandidatesFound="CandidatesFoundHandler" Query="Query"/>
+                    <CandidateFinderComponent OnSearch="SearchHandler" Query="Query"/>
                 }
 
-                @if (SearchResults is not null && SelectedCandidate is null)
+                @if (SearchResults is not null && SelectedCandidateId is null)
                 {
                     <CandidateResultsComponent
                         SearchResults="SearchResults"
@@ -33,7 +34,7 @@
                         OnCancelled="OnCancelClicked"/>
                 }
                 
-                @if (SelectedCandidate is not null)
+                @if (SelectedCandidateId is not null)
                 {
                     <MudContainer Class="d-flex flex-column align-center justify-center">
                         <MudIconButton Icon="@Icons.Material.Filled.Done" Color="@Color.Success" Size="Size.Large" />
@@ -41,7 +42,7 @@
                         
                         <MudContainer Class="d-flex px-0 mt-8 justify-space-between">
                             <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="OnCancelClicked">Back to Search</MudButton>
-                            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="() => NavigateToEnrolment(SelectedCandidate.Identifier)">Proceed with the enrolment</MudButton>
+                            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="() => NavigateToEnrolment(SelectedCandidateId)">Proceed with the enrolment</MudButton>
                         </MudContainer>
                     </MudContainer>
 
@@ -60,10 +61,10 @@
     {
         Navigation.NavigateTo($"/pages/enrolments/{participantId}");
     }
-    
+
     private CandidateSearchQuery? Query { get; set; }
-    private CandidateDto[]? SearchResults { get; set; }
-    private CandidateDto? SelectedCandidate { get; set; }
+    private SearchResult[]? SearchResults { get; set; }
+    private string? SelectedCandidateId { get; set; }
 
     [CascadingParameter] 
     public UserProfile UserProfile { get; set; } = default!;
@@ -85,14 +86,14 @@
         };
     }
 
-    private void CandidatesFoundHandler(CandidateDto[] candidates)
+    private void SearchHandler(SearchResult[] candidates)
     {
         SearchResults = candidates;
     }
 
-    private void CandidateEnrolledHandler()
+    private void CandidateEnrolledHandler(string identifier)
     {
-        this.SelectedCandidate = SearchResults![0];
+        this.SelectedCandidateId = identifier;
     }
 
     private string GetTitle()
@@ -102,7 +103,7 @@
             return "Find a candidate to enrol";
         }
 
-        if (SelectedCandidate is not null)
+        if (SelectedCandidateId is not null)
         {
             return "Confirm selected candidate";
         }
