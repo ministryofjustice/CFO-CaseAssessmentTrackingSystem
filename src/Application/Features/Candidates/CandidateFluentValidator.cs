@@ -39,10 +39,10 @@ public class CandidateFluentValidator : AbstractValidator<CandidateDto>
         return result.Errors.Select(e => e.ErrorMessage);
     };
 
-    private bool BeValidAge(DateTime? date)
+    private bool BeValidAge(DateTime date)
     {
         var minimumAge = DateTime.Now.Date.AddYears(-18);
-        return date is not null && (minimumAge < date) == false;
+        return (minimumAge < date) == false;
     }
 
 }

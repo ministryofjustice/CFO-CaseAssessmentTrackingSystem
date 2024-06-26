@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Cfo.Cats.Application.Features.Candidates.DTOs;
 
@@ -22,7 +22,7 @@ public class CandidateDto
     /// <summary>
     /// The candidates date of birth
     /// </summary>
-    public DateTime? DateOfBirth { get; set; }
+    public DateTime DateOfBirth { get; set; }
     
     /// <summary>
     /// A collection of identifiers from external systems.
