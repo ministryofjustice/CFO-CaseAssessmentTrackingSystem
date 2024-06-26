@@ -1,5 +1,4 @@
-﻿using Cfo.Cats.Domain.Entities.Candidates;
-using Cfo.Cats.Domain.Entities.Participants;
+using System.Text.Json.Serialization;
 
 namespace Cfo.Cats.Application.Features.Candidates.DTOs;
 
@@ -28,7 +27,15 @@ public class CandidateDto
     /// <summary>
     /// A collection of identifiers from external systems.
     /// </summary>
-    public string[] ExternalIdentifiers { get; set; }
+    public string[] ExternalIdentifiers { get; set; } = [];
+
+
+    /// <summary>
+    /// Indicates whether the candidate is marked as active in the data source(s).
+    /// </summary>
+    public bool IsActive { get; set; }
+
+    public string Gender { get; set; }
     
     /// <summary>
     /// The location CATS thinks the user is registered at
@@ -38,23 +45,4 @@ public class CandidateDto
     public EnrolmentStatus? EnrolmentStatus { get; set; }
     
     public string? ReferralSource { get; set; }
-    
-    private class Mapping : Profile
-    {
-        public Mapping()
-        {
-            CreateMap<Candidate, CandidateDto>(MemberList.None)
-                .ForMember(candidateDto => candidateDto.Identifier, 
-                    options => options.MapFrom(candidate => candidate.Id))
-                .ForMember(candidateDto => candidateDto.FirstName, 
-                    options => options.MapFrom(candidate => candidate.FirstName))
-                .ForMember(candidateDto => candidateDto.LastName, 
-                    options => options.MapFrom(candidate => candidate.LastName))
-                .ForMember(candidateDto => candidateDto.CurrentLocation,
-                    options => options.MapFrom(candidate => candidate.CurrentLocation.Name))
-                .ForMember(candidateDto => candidateDto.ExternalIdentifiers, 
-                    options => options.MapFrom(candidate => candidate.Identifiers.Select(p => p.IdentifierValue).ToArray()));
-                
-        }
-    }
 }

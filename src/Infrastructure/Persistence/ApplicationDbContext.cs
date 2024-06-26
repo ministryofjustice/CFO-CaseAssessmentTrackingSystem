@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Entities.Administration;
-using Cfo.Cats.Domain.Entities.Candidates;
 using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Identity;
@@ -36,7 +35,6 @@ public class ApplicationDbContext
     public DbSet<Document> Documents => Set<Document>();
     public DbSet<Participant> Participants => Set<Participant>();
     public DbSet<KeyValue> KeyValues => Set<KeyValue>();
-    public DbSet<Candidate> Candidates => Set<Candidate>();
     public DbSet<ParticipantEnrolmentHistory> ParticipantEnrolmentHistories => Set<ParticipantEnrolmentHistory>();
 
     public DbSet<Location> Locations => Set<Location>();

@@ -8,8 +8,6 @@ using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Common.Exceptions;
 using Cfo.Cats.Domain.Entities.Administration;
-using Cfo.Cats.Domain.Entities.Candidates;
-using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
@@ -29,19 +27,19 @@ public class Participant : OwnerPropertyEntity<string>
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public static Participant CreateFrom(Candidate candidate, string referralSource, string? referralComments)
+    public static Participant CreateFrom(string id, string firstName, string lastName, DateTime dateOfBirth, string referralSource, string? referralComments)
     {
         Participant p = new Participant
         {
             ConsentStatus = ConsentStatus.PendingStatus,
             EnrolmentStatus = EnrolmentStatus.PendingStatus,
-            Id = candidate.Id,
-            DateOfBirth = DateOnly.FromDateTime(candidate.DateOfBirth),
-            FirstName = candidate.FirstName,
-            LastName = candidate.LastName,
+            Id = id,
+            DateOfBirth = DateOnly.FromDateTime(dateOfBirth),
+            FirstName = firstName,
+            LastName = lastName,
             ReferralSource = referralSource,
             ReferralComments = referralComments,
-            _currentLocationId = candidate.CurrentLocationId
+            _currentLocationId = 1
         };
         
         p.AddDomainEvent(new ParticipantCreatedDomainEvent(p));

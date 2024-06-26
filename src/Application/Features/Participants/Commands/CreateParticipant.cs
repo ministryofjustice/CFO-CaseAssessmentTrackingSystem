@@ -1,7 +1,7 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Candidates.DTOs;
 using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.SecurityConstants;
-using Cfo.Cats.Domain.Entities.Candidates;
 using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
@@ -14,14 +14,16 @@ public static class CreateParticipant
         /// <summary>
         /// The CATS identifier
         /// </summary>
-        public string? Identifier { get; set; }
+        public string? Identifier => Candidate.Identifier;
+
+        public required CandidateDto Candidate { get; set; }
     
         public string? ReferralSource { get; set; }
     
         public string? ReferralComments { get; set; }
     
         public UserProfile? CurrentUser { get; set; }
-    
+
         public string CacheKey => ParticipantCacheKey.GetCacheKey($"{this}");
 
         public CancellationTokenSource? SharedExpiryTokenSource 
@@ -38,8 +40,8 @@ public static class CreateParticipant
     {
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
-            Candidate candidate = await dbContext.Candidates.FirstAsync(c => c.Id == request.Identifier, cancellationToken);
-            Participant participant = Participant.CreateFrom(candidate, request.ReferralSource!, request.ReferralComments);
+            var candidate = request.Candidate;
+            Participant participant = Participant.CreateFrom(candidate.Identifier, candidate.FirstName, candidate.LastName, candidate.DateOfBirth, request.ReferralSource!, request.ReferralComments);
             participant.AssignTo(currentUserService.UserId);
         
             dbContext.Participants.Add(participant);
