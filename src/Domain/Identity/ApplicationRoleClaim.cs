@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿namespace Cfo.Cats.Domain.Identity;
 
-namespace Cfo.Cats.Domain.Identity;
-
-public class ApplicationRoleClaim : IdentityRoleClaim<int>
+public class ApplicationRoleClaim : IdentityRoleClaim<string>
 {
     public string? Description { get; set; }
     public string? Group { get; set; }

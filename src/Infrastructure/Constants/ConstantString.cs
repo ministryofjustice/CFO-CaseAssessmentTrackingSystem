@@ -19,6 +19,7 @@ public static class ConstantString
         return rm.GetString(key, CultureInfo.CurrentCulture) ?? key;
     }
 
+    public static string Rename => Localize("Rename");
     public static string Refresh => Localize("Refresh");
     public static string Edit => Localize("Edit");
     public static string Submit => Localize("Submit");
@@ -92,6 +93,8 @@ public static class ConstantString
     public static string DeleteConfirmationTitle => Localize("Delete Confirmation");
     public static string LogoutConfirmationTitle => Localize("Logout Confirmation");
 
+    public static string ResumeEnrolment => Localize("Continue Enrolment");
+    
     public static string LogoutConfirmation =>
         Localize("You are attempting to log out of application. Do you really want to log out?");
 }

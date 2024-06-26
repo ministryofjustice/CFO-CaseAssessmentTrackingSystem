@@ -1,11 +1,10 @@
 ﻿using MudExtensions;
-using MudExtensions.Enums;
 
 namespace Cfo.Cats.Server.UI.Components.Stepper;
 
-public class CatsMudStepper : MudStepper
+public class CatsMudStepper : MudStepperExtended
 {
-    public MudStep ActiveStep => Steps.ElementAt(GetActiveIndex());
+    public MudStepExtended ActiveStep => Steps.ElementAt(GetActiveIndex());
 
     public bool IsResultStep => HasResultStep() && GetActiveIndex().Equals(Steps.Count);
 
@@ -50,7 +49,7 @@ public class CatsMudStepper : MudStepper
         // Validate component if required.
         if (ActiveStep is CatsMudStep step)
         {
-            var valid = step.Condition?.Invoke() ?? true;
+            var valid = await step.Condition!.Invoke();
             return await Task.FromResult(valid is false);
         }
 

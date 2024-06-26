@@ -10,13 +10,13 @@ public static class ClaimsPrincipalExtensions
     {
         var profile = new UserProfile()
         {
-            Email = "",
-            UserId = 0,
-            UserName = ""
+            Email = string.Empty,
+            UserId = string.Empty,
+            UserName = string.Empty
         };
         if (claimsPrincipal.Identity?.IsAuthenticated ?? false)
         {
-            profile.UserId = claimsPrincipal.GetUserId() ?? 0;
+            profile.UserId = claimsPrincipal.GetUserId() ?? string.Empty;
             profile.UserName = claimsPrincipal.GetUserName() ?? "";
             profile.TenantId = claimsPrincipal.GetTenantId();
             profile.TenantName = claimsPrincipal.GetTenantName();
@@ -44,9 +44,9 @@ public static class ClaimsPrincipalExtensions
         return claimsPrincipal.FindFirstValue(ClaimTypes.MobilePhone);
     }
 
-    public static int? GetUserId(this ClaimsPrincipal claimsPrincipal)
+    public static string? GetUserId(this ClaimsPrincipal claimsPrincipal)
     {
-        return claimsPrincipal.GetNullableIntValue(ClaimTypes.NameIdentifier);
+        return claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 
     public static string? GetUserName(this ClaimsPrincipal claimsPrincipal)
@@ -74,9 +74,9 @@ public static class ClaimsPrincipalExtensions
         return claimsPrincipal.FindFirstValue(ApplicationClaimTypes.SuperiorName);
     }
 
-    public static int? GetSuperiorId(this ClaimsPrincipal claimsPrincipal)
+    public static string? GetSuperiorId(this ClaimsPrincipal claimsPrincipal)
     {
-        return claimsPrincipal.GetNullableIntValue(ApplicationClaimTypes.SuperiorId);
+        return claimsPrincipal.FindFirstValue(ApplicationClaimTypes.SuperiorId);
     }
 
     public static string? GetTenantName(this ClaimsPrincipal claimsPrincipal)

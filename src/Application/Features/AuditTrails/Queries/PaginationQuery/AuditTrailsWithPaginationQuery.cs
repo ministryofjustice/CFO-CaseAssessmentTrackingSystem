@@ -2,11 +2,12 @@
 using Cfo.Cats.Application.Features.AuditTrails.Caching;
 using Cfo.Cats.Application.Features.AuditTrails.DTOs;
 using Cfo.Cats.Application.Features.AuditTrails.Specifications;
+using Cfo.Cats.Application.SecurityConstants;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Cfo.Cats.Application.Features.AuditTrails.Queries.PaginationQuery;
 
-[RequestAuthorize(Roles = "Admin")]
+[RequestAuthorize(Roles = RoleNames.SystemSupport)]
 public class AuditTrailsWithPaginationQuery
     : AuditTrailAdvancedFilter,
         ICacheableRequest<PaginatedData<AuditTrailDto>>

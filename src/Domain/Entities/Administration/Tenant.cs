@@ -5,18 +5,24 @@ namespace Cfo.Cats.Domain.Entities.Administration;
 
 public class Tenant : BaseAuditableEntity<string>
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+    private readonly List<Location> _locations = new();
+
+    public IReadOnlyCollection<Location> Locations => _locations.AsReadOnly();
+
+
+#pragma warning disable CS8618// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private Tenant()
     {
     }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS8618// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     private Tenant(string id, string name, string description)
     {
         Id = id;
         Name = name;
         Description = description;
-        
+
         AddDomainEvent(new TenantCreatedDomainEvent(this));
     }
 
@@ -27,4 +33,39 @@ public class Tenant : BaseAuditableEntity<string>
 
     public string? Name { get; private set; }
     public string? Description { get; private set; }
+
+    public Tenant Rename(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("Tenant name cannot be null or empty", nameof(name));
+        }
+
+        if (Name != name)
+        {
+            string oldName = this.Name!;
+            Name = name;
+            AddDomainEvent(new TenantRenamedDomainEvent(this, oldName));
+        }
+        return this;
+    }
+
+    public Tenant AddLocation(Location location)
+    {
+        if(_locations.Contains(location) == false)
+        {
+            _locations.Add(location);
+        }
+        return this;
+    }
+
+    public Tenant RemoveLocation(Location location)
+    {
+        if(_locations.Contains(location))
+        {
+            _locations.Remove(location);
+        }
+        return this;
+    }
+
 }

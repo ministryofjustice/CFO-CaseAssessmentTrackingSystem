@@ -1,40 +1,10 @@
 @using Cfo.Cats.Application.Features.Candidates.DTOs
 @using Cfo.Cats.Application.Features.Candidates.Queries.Search
-@using Cfo.Cats.Application.Features.Participants.Commands.Enrol
 
 @if (_selectedType is not null)
 {
     <DynamicComponent Type="_selectedType" Parameters="_selectedParameters"/>
 }
-
-
-@*
-        @if (SearchResults is { Length: 1 })
-        {
-          
-            
-            <MudText Typo="Typo.h6">
-                We found a match
-            </MudText>
-
-            
-            <MudListItem IconSize="Size.Small" Avatar="@Icons.Material.Filled.Place">
-                <MudText Typo="Typo.caption">
-                    @SearchResults[0].CurrentLocation
-                </MudText>
-            </MudListItem>
-            
-            <CandidateComparisonComponent Comparisons="_comparisons" />
-
-                        
-            @if (SearchResults[0].EnrolmentStatus is null)
-            {
-                <MudCheckBox Class="mt-4" @bind-Value="Confirmation" T="bool" Label="I confirm the details above reflect the CFO Consent form."/>
-            }
-        }
-       *@
-
-
 
 @code {
 

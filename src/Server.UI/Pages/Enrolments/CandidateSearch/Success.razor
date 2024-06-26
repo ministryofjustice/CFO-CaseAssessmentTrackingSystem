@@ -1,6 +1,4 @@
-﻿
-
-<MudContainer Class="d-flex flex-column align-center justify-center">
+﻿<MudContainer Class="d-flex flex-column align-center justify-center">
     <MudIconButton Icon="@Icons.Material.Filled.Done" Color="@Color.Success" Size="Size.Large" />
     <MudText Typo="Typo.h6">Success</MudText>
     @foreach (var success in Successes)
@@ -17,16 +15,11 @@
     [Parameter]
     public string ParticipantId { get; set; } = default!;
 
-    [Inject]
-    public NavigationManager Navigation { get; set; } = default!;
-
     [Parameter]
     public string[] Successes { get; set; } = [];
 
-    private void NavigateToEnrolment(string participantId)
-    => Navigation.NavigateTo($"/Enrolments/{participantId}");
+    private void NavigateToEnrolment(string participantId) => Navigation.NavigateTo($"/Enrolments/{participantId}");
 
-    private void BackToSearch()
-        => Navigation.NavigateTo($"/Enrolments/Search", true);
+    private void BackToSearch() => Navigation.NavigateTo($"/Enrolments/Search", true);
 
 }

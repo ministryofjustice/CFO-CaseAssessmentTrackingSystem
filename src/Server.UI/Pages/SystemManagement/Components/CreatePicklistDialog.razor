@@ -1,5 +1,4 @@
 @using Cfo.Cats.Application.Features.KeyValues.Commands.AddEdit
-@using Severity=MudBlazor.Severity
 @inherits MudComponentBase
 @inject IStringLocalizer<Dictionaries> L
 
@@ -60,7 +59,9 @@
             _saving = true;
             await _form!.Validate().ConfigureAwait(false);
             if (!_form!.IsValid)
+            {
                 return;
+            }
             var result = await Mediator.Send(Model);
 
             if (result.Succeeded)

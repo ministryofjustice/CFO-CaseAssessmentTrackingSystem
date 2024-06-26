@@ -1,12 +1,6 @@
-﻿@using Cfo.Cats.Server.UI.Services
-@using Cfo.Cats.Server.UI.Services.JsInterop
-@using System.Security.Claims
-@inherits FluxorComponent
-@inject IJSRuntime JS
-@inject NavigationManager NavigationManager
+﻿@inherits FluxorComponent
 @inject IState<UserProfileState> UserProfileState
 @inject IStringLocalizer<HeaderMenu> L
-
 
 <MudTooltip Arrow="true" Text="@L["User Profile"]">
     <MudMenu AnchorOrigin="Origin.BottomRight"

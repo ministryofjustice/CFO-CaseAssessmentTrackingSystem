@@ -7,16 +7,15 @@ namespace Cfo.Cats.Application.Pipeline;
 public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    private readonly ICurrentUserService currentUserService;
-    private readonly IIdentityService identityService;
+    private readonly ICurrentUserService _currentUserService;
+    private readonly IIdentityService _identityService;
 
     public AuthorizationBehaviour(
         ICurrentUserService currentUserService,
-        IIdentityService identityService
-    )
+        IIdentityService identityService)
     {
-        this.currentUserService = currentUserService;
-        this.identityService = identityService;
+        _currentUserService = currentUserService;
+        _identityService = identityService;
     }
 
     public async Task<TResponse> Handle(
@@ -44,8 +43,8 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
         }
 
         // Must be authenticated user
-        var userId = currentUserService.UserId;
-        if (userId is null or 0)
+        var userId = _currentUserService.UserId;
+        if (string.IsNullOrEmpty(userId))
         {
             throw new UnauthorizedAccessException();
         }
@@ -63,8 +62,8 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
             {
                 foreach (var role in roles)
                 {
-                    var isInRole = await identityService.IsInRoleAsync(
-                        userId.Value,
+                    var isInRole = await _identityService.IsInRoleAsync(
+                        userId,
                         role.Trim(),
                         cancellationToken
                     );
@@ -91,8 +90,8 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
         {
             foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
             {
-                var authorized = await identityService.AuthorizeAsync(
-                    userId.Value,
+                var authorized = await _identityService.AuthorizeAsync(
+                    userId,
                     policy,
                     cancellationToken
                 );

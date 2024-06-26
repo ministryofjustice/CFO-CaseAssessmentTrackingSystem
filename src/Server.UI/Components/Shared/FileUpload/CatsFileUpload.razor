@@ -5,7 +5,6 @@
                               Variant="Variant.Filled"
                               Color="Color.Primary"
                               StartIcon="@Icons.Material.Filled.CloudUpload"
-                              for="@context.Id"
                               Loading="Loading">
                 @UploadText
             </MudLoadingButton>
@@ -18,7 +17,7 @@
     </MudTooltip>
 </div>
 
-<MudChipSet AllClosable="true" OnClose="OnFileDelete">
+<MudChipSet T="string" AllClosable="true" OnClose="OnFileDelete">
     @foreach(var file in Files)
     {
         <MudChip Icon="@Icons.Material.Filled.AttachFile"

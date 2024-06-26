@@ -7,7 +7,7 @@ using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Domain.Entities.Administration;
 
-public class Location : BaseAuditableEntity<int>, ILifetimeEntity
+public class Location : BaseAuditableEntity<int>, ILifetime
 {
 
     private string _name;
@@ -17,6 +17,7 @@ public class Location : BaseAuditableEntity<int>, ILifetimeEntity
     private Lifetime _lifetime;
     private int? _parentLocationId;
     private readonly List<Location> _childLocations = new();
+
     
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private Location()
@@ -33,7 +34,7 @@ public class Location : BaseAuditableEntity<int>, ILifetimeEntity
         _contractId = contractId;
         _lifetime = new Lifetime(lifetimeStart, lifetimeEnd);
         
-        this.AddDomainEvent(new LocationCreatedDomainEvent(this));
+        this.AddDomainEvent(new LocationCreatedDomainEvent(this, contractId));
     }
 
     public static Location Create(string name, int genderProvisionId, int locationTypeId, string? contractId,
@@ -55,6 +56,7 @@ public class Location : BaseAuditableEntity<int>, ILifetimeEntity
     public virtual Location? ParentLocation { get; private set; }
 
     public IReadOnlyCollection<Location> ChildLocations => _childLocations.AsReadOnly();
+
 
 
     public void AddChildLocation(Location child)

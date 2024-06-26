@@ -6,9 +6,9 @@ public abstract class BaseAuditableEntity<TId> : BaseEntity<TId>, IAuditableEnti
 {
     public virtual DateTime? Created { get; set; }
 
-    public virtual int? CreatedBy { get; set; }
+    public virtual string? CreatedBy { get; set; }
 
     public virtual DateTime? LastModified { get; set; }
 
-    public virtual int? LastModifiedBy { get; set; }
+    public virtual string? LastModifiedBy { get; set; }
 }

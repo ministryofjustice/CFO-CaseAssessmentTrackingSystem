@@ -1,8 +1,6 @@
 ﻿@using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode
-@using Severity = Severity
 @using Size = SixLabors.ImageSharp.Size
 @using Image = SixLabors.ImageSharp.Image
-@using Color = Color
 @using SixLabors.ImageSharp.Processing
 @using SixLabors.ImageSharp
 @using SixLabors.ImageSharp.Formats.Png
@@ -20,7 +18,7 @@
 <MudForm Model="@Model" @ref="@form" Validation="@(Validator.ValidateValue(Model))">
     <input For="@(() => Model.Id)" @bind-value="Model.Id" type="hidden"/>
     <input For="@(() => Model.ProfilePictureDataUrl)" @bind-value="Model.ProfilePictureDataUrl" type="hidden"/>
-    <InputFile id="UploadPhoto" OnChange="UploadPhoto" hidden accept=".jpg, .jpeg, .png"/>
+    <InputFile id="UploadPhoto" FilesChanged="UploadPhoto" hidden accept=".jpg, .jpeg, .png"/>
     <MudGrid>
         <MudItem sm="12">
             <div class="d-flex justify-center">
@@ -35,12 +33,13 @@
                         <MudImage Src="@Model.ProfilePictureDataUrl"></MudImage>
                     </MudAvatar>
                 }
-                <MudTooltip Text="@L["Click upload a photo."]">
-                    <MudIconButton HtmlTag="label"
-                                   Color="Color.Info"
-                                   Icon="@Icons.Material.Filled.PhotoCamera"
-                                   for="UploadPhoto">
-                    </MudIconButton>
+                <MudTooltip Text="@L["Click upload a image"]">
+                    <MudFileUpload T="IBrowserFile" Accept=".jpg, .jpeg, .png, .webp" FilesChanged="UploadPhoto" Style="margin-top:-10px;margin-left:-15px">
+                        <ActivatorContent>
+                            <MudIconButton Icon="@Icons.Material.Filled.PhotoCamera">
+                            </MudIconButton>
+                        </ActivatorContent>
+                    </MudFileUpload>
                 </MudTooltip>
             </div>
         </MudItem>
@@ -86,7 +85,7 @@
         <MudItem xs="12" sm="6">
             <MudText Typo="Typo.caption">@L["Status"]</MudText>
             <div class="d-fex">
-                <MudCheckBox For="@(() => Model.IsActive)" T="bool" @bind-Value="Model.IsActive" Label="@L["Is Active"]" Disabled="@(Model.Id == 0)"></MudCheckBox>
+                <MudCheckBox For="@(() => Model.IsActive)" T="bool" @bind-Value="Model.IsActive" Label="@L["Is Active"]" Disabled="@(!string.IsNullOrEmpty(Model.Id))"></MudCheckBox>
             </div>
         </MudItem>
         <MudItem xs="12" sm="12">
@@ -135,9 +134,9 @@
             }
         }
     }
-    private async Task UploadPhoto(InputFileChangeEventArgs e)
+    private async Task UploadPhoto(IBrowserFile file)
     {
-        var filestream = e.File.OpenReadStream(GlobalVariable.MaxAllowedSize);
+        var filestream = file.OpenReadStream(GlobalVariable.MaxAllowedSize);
         var imgStream = new MemoryStream();
         await filestream.CopyToAsync(imgStream);
         imgStream.Position = 0;
@@ -148,10 +147,10 @@
                 image.Mutate(
                     i => i.Resize(new ResizeOptions { Mode = ResizeMode.Crop, Size = new Size(128, 128) }));
                 image.Save(outStream, PngFormat.Instance);
-                var filename = e.File.Name;
+                var filename = file.Name;
                 var fi = new FileInfo(filename);
                 var ext = fi.Extension;
-                var result = await UploadService.UploadAsync(new UploadRequest(Guid.NewGuid() + ext, UploadType.ProfilePicture, outStream.ToArray()));
+                var result = await UploadService.UploadAsync($"/users/{Model.Id}" ,new UploadRequest(Guid.NewGuid() + ext, UploadType.ProfilePicture, outStream.ToArray()));
                 Model.ProfilePictureDataUrl = result;
                 //Do your validations here
                 Snackbar.Add(ConstantString.UploadSuccess, Severity.Info);

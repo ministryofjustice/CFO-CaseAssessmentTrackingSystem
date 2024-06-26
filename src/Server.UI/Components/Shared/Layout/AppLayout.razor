@@ -1,38 +1,32 @@
-﻿@using Severity = Severity
-@using Toolbelt.Blazor.HotKeys2
-@using Cfo.Cats.Server.UI.Services.UserPreferences
-@using Cfo.Cats.Server.UI.Constants
-@layout MainLayout
+﻿@layout MainLayout
 @inherits LayoutComponentBase
 
 @inject LayoutService LayoutService
-@inject HotKeys HotKeys
-@inject IStringLocalizer<SharedResource> L
 <MudLayout>
     <AuthorizeView>
         <NotAuthorized>
-            <RedirectToLogin />
+            <RedirectToLogin/>
         </NotAuthorized>
         <Authorized>
-            <HeaderMenu NavigationMenuDrawerOpen="navigationMenuDrawerOpen"
+            <HeaderMenu NavigationMenuDrawerOpen="_navigationMenuDrawerOpen"
                         OpenSearchDialog="OpenSearchDialog"
                         IsDarkMode="@LayoutService.IsDarkMode"
                         ToggleNavigationMenuDrawer="ToggleNavigationMenuDrawer"
                         RightToLeft="false"
                         RightToLeftToggle="LayoutService.ToggleRightToLeft"
-                        OnSettingClick="@(() => themingDrawerOpen = true)" />
-                        <NavigationMenu DrawerOpen="navigationMenuDrawerOpen" Roles="@userProfile?.AssignedRoles"
-                                        DrawerOpenChanged="NavigationMenuDrawerOpenChangedHandler"  />
-            <ThemesMenu ThemingDrawerOpen="themingDrawerOpen"
+                        OnSettingClick="@(() => _themingDrawerOpen = true)"/>
+            <NavigationMenu DrawerOpen="_navigationMenuDrawerOpen" Roles="@_userProfile?.AssignedRoles"
+                            DrawerOpenChanged="NavigationMenuDrawerOpenChangedHandler"/>
+            <ThemesMenu ThemingDrawerOpen="_themingDrawerOpen"
                         ThemingDrawerOpenChanged="ThemingDrawerOpenChangedHandler"
                         UserPreferences="@LayoutService.UserPreferences"
-                        UserPreferencesChanged="LayoutService.UpdateUserPreferences" />
-            <ThemesButton OnClick="@(() => themingDrawerOpen = true)" />
+                        UserPreferencesChanged="LayoutService.UpdateUserPreferences"/>
+            <ThemesButton OnClick="@(() => _themingDrawerOpen = true)"/>
             <MudMainContent>
                 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mb-4 mt-4">
                     <ErrorBoundary @ref="ErrorBoundary">
                         <ChildContent>
-                            <CascadingValue Value="@userProfile">
+                            <CascadingValue Value="@_userProfile">
                                 @Body
                             </CascadingValue>
                         </ChildContent>
@@ -42,7 +36,8 @@
                     </ErrorBoundary>
                 </MudContainer>
             </MudMainContent>
-            <UserLoginState />
+          
+            <UserLoginState UserProfileStateChanged="OnUserProfileStateChanged" />
         </Authorized>
     </AuthorizeView>
 </MudLayout>
@@ -50,23 +45,31 @@
 
 @code
 {
-    private bool commandPaletteOpen;
-    private bool navigationMenuDrawerOpen = true;
-    private bool themingDrawerOpen;
-    private UserProfile? userProfile;
+    private bool _commandPaletteOpen;
+    private bool _navigationMenuDrawerOpen = true;
+    private bool _themingDrawerOpen;
+    private UserProfile? _userProfile;
     private ErrorBoundary? ErrorBoundary { set; get; }
-    [CascadingParameter] 
-    private Task<AuthenticationState> AuthState { get; set; } = default!;
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
-        userProfile = state.User.GetUserProfileFromClaim();
+        _userProfile = state.User.GetUserProfileFromClaim();
     }
+
     protected override void OnParametersSet()
     {
         ResetBoundary();
     }
-
+    private void OnUserProfileStateChanged(UserProfileState state)
+    {
+        if (state.UserProfile is not null)
+        {
+            _userProfile = state.UserProfile;
+        }
+        
+    }
     private void ResetBoundary()
     {
         // On each page navigation, reset any error state
@@ -75,35 +78,35 @@
 
     protected void NavigationMenuDrawerOpenChangedHandler(bool state)
     {
-        navigationMenuDrawerOpen = state;
+        _navigationMenuDrawerOpen = state;
     }
 
     protected void ThemingDrawerOpenChangedHandler(bool state)
     {
-        themingDrawerOpen = state;
+        _themingDrawerOpen = state;
     }
 
     protected void ToggleNavigationMenuDrawer()
     {
-        navigationMenuDrawerOpen = !navigationMenuDrawerOpen;
+        _navigationMenuDrawerOpen = !_navigationMenuDrawerOpen;
     }
 
     private async Task OpenSearchDialog()
     {
-        if (!commandPaletteOpen)
+        if (!_commandPaletteOpen)
         {
             var options = new DialogOptions
-                {
-                    NoHeader = true,
-                    MaxWidth = MaxWidth.Medium,
-                    FullWidth = true
-                };
+            {
+                NoHeader = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
 
-            var commandPalette = DialogService.Show<SearchDialog>("", options);
-            commandPaletteOpen = true;
+            var commandPalette = await DialogService.ShowAsync<SearchDialog>("", options);
+            _commandPaletteOpen = true;
 
             await commandPalette.Result;
-            commandPaletteOpen = false;
+            _commandPaletteOpen = false;
         }
     }
 }

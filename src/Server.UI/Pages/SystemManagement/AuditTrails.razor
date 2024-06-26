@@ -4,8 +4,9 @@
 @using Cfo.Cats.Application.Features.AuditTrails.Queries.PaginationQuery
 @using Cfo.Cats.Application.Features.AuditTrails.Specifications
 @using Cfo.Cats.Application.Features.AuditTrails.Caching
+@using Cfo.Cats.Application.SecurityConstants
 
-@attribute [Authorize(Policy = Permissions.AuditTrails.View)]
+@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.ServiceDesk}")]
 
 @inject IStringLocalizer<AuditTrails> L
 @inject IState<UserProfileState> UserProfileState
@@ -36,7 +37,7 @@
 
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
-                    <MudButton DisableElevation Variant="Variant.Outlined"
+                    <MudButton Variant="Variant.Outlined"
                                Size="Size.Small"
                                OnClick="@(() => OnRefresh())"
                                StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"

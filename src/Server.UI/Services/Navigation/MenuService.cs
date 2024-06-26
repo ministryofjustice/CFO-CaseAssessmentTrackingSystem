@@ -1,5 +1,5 @@
 ﻿using System.Drawing;
-using Cfo.Cats.Infrastructure.Constants.Role;
+using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
 
 namespace Cfo.Cats.Server.UI.Services.Navigation;
@@ -31,21 +31,15 @@ public class MenuService : IMenuService
                             new()
                             {
                                 Title = "All",
-                                Href = "/pages/cases",
-                                PageStatus = PageStatus.ComingSoon
-                            },
-                            new()
-                            {
-                                Title = "Pending",
-                                Href = "/pages/cases/pending",
-                                PageStatus = PageStatus.ComingSoon
+                                Href = "/pages/participants",
+                                PageStatus = PageStatus.Completed
                             },
                         }
                     },
                     new()
                     {
                         Title = "Reports",
-                        Roles = new[] { RoleName.Admin, RoleName.Users },
+                        Roles = [RoleNames.SystemSupport, RoleNames.Statistics, RoleNames.ServiceDesk],
                         Icon = Icons.Material.Filled.Analytics,
                         Href = "/reports",
                         PageStatus = PageStatus.ComingSoon
@@ -53,7 +47,7 @@ public class MenuService : IMenuService
                     new()
                     {
                         Title = "PSF/DAF",
-                        Roles = new[] { RoleName.Admin, RoleName.Users },
+                        Roles = [RoleNames.SystemSupport, RoleNames.Finance],
                         Icon = Icons.Material.Filled.Money,
                         Href = "/banking",
                         PageStatus = PageStatus.ComingSoon
@@ -61,7 +55,7 @@ public class MenuService : IMenuService
                     new()
                     {
                         Title = "Tasks",
-                        Roles = new[] { RoleName.Admin, RoleName.Users },
+                        Roles = [RoleNames.SystemSupport],
                         Icon = Icons.Material.Filled.CalendarToday,
                         Href = "/Tasks",
                         PageStatus = PageStatus.ComingSoon
@@ -71,7 +65,7 @@ public class MenuService : IMenuService
             new MenuSectionModel
             {
                 Title = "MANAGEMENT",
-                Roles = new[] { RoleName.Admin },
+                Roles = new[] { RoleNames.SystemSupport, RoleNames.ServiceDesk },
                 SectionItems = new List<MenuSectionItemModel>
                 {
                     new()
@@ -125,13 +119,6 @@ public class MenuService : IMenuService
                                 Title = "Audit Trails",
                                 Href = "/system/audittrails",
                                 PageStatus = PageStatus.Completed
-                            },
-                            new()
-                            {
-                                Title = "Jobs",
-                                Href = "/jobs",
-                                PageStatus = PageStatus.Completed,
-                                Target = "_blank"
                             }
                         }
                     }

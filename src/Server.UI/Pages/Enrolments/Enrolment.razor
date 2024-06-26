@@ -1,6 +1,11 @@
 
 
 @page "/pages/enrolments/{ParticipantId}"
+@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Locations.Queries.GetAll
+@using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
 
 @attribute [Authorize]
 
@@ -19,9 +24,9 @@
 <EnrolmentContainer>
     <TitleContent>
         <MudContainer Class="d-flex px-0 gap-2 align-center">
-            <MudText Typo="Typo.h6">Enrolling John Doe</MudText>
-            <MudText Typo="Typo.subtitle1">(DOB 01/01/1990)</MudText>
-            <MudText Typo="Typo.h6">at HMP Risley</MudText>
+            <MudText Typo="Typo.h6">Enrolling @_participant?.FirstName @_participant?.LastName</MudText>
+            <MudText Typo="Typo.subtitle1">(DOB @_participant?.DateOfBirth)</MudText>
+            <MudText Typo="Typo.h6">at @_participant?.CurrentLocation.Name</MudText>
         </MudContainer>
     </TitleContent>
     <ChildContent>
@@ -32,7 +37,7 @@
                         OnChangeAsync="OnChangeAsync"
                         ActiveStepChanged="StepChanged"
                         ContentClass="mb-8"
-                        DisableRipple
+                        Ripple="true"
                         DisablePreviousButton="Stepper?.IsResultStep ?? false"
                         MobileView="false"
                         HeaderSize="Size.Large"
@@ -43,19 +48,16 @@
             </StaticContent>
 
             <ChildContent>
-                <CatsMudStep Condition="() => Location?.Validate() ?? false" Title="Location" Icon="@Icons.Material.Filled.Map" Optional="false">
-                    <Location @ref="Location"/>
+                <CatsMudStep Condition="() => Location!.Validate()" Title="Location" Icon="@Icons.Material.Filled.Map" Optional="false">
+                    <Location @ref="Location" Model="@SetEnrolmentCommand" Locations="@Locations" />
                 </CatsMudStep>
-                <CatsMudStep Condition="() => Consent?.Validate() ?? false" Title="Consent" Icon="@Icons.Material.Filled.Approval" Optional="false">
-					<Consent @ref="Consent" />
+                <CatsMudStep Condition="() => Consent!.Validate()" Title="Consent"  Icon="@Icons.Material.Filled.Approval" Optional="false">
+					<Consent @ref="Consent" Model="@AddConsentCommand" ConsentDto="_participant?.Consents" />
                 </CatsMudStep>
-                <CatsMudStep Condition="() => RightToWork?.Validate() ?? false" Title="Right to Work" Icon="@Icons.Material.Filled.HomeWork" Optional="false">
-                    <RightToWork @ref="RightToWork" />
+                <CatsMudStep Condition="() => RightToWork!.Validate()" Title="Right to Work" Icon="@Icons.Material.Filled.HomeWork" Optional="false">
+                    <RightToWork @ref="RightToWork" Model="AddRightToWorkCommand" RightToWorkDtos="_participant?.RightToWorks" />
                 </CatsMudStep>
-                <MudStep Title="Demographics" Icon="@Icons.Material.Filled.EmojiPeople" Optional="false">
-                    <Demographics />
-                </MudStep>
-                <MudStep IsResultStep="true">
+                <MudStepExtended IsResultStep="true">
                     <MudContainer Class="d-flex flex-column align-center justify-center mb-8">
                         <MudIconButton Icon="@Icons.Material.Filled.Done" Color="@Color.Success" Size="Size.Large" />
                         <MudText Typo="Typo.h6">Enrolment Started!</MudText>
@@ -67,7 +69,7 @@
                     <MudText Typo="Typo.caption">
                         You can finalise the enrolment at a later time by visiting the cases screen.
                     </MudText>
-                </MudStep>
+                </MudStepExtended>
             </ChildContent>
 
             <ActionContent>
@@ -89,6 +91,8 @@
 
 @code {
 
+    private ParticipantDto? _participant;
+    
     [Parameter]
     public required string ParticipantId { get; set; }
     
@@ -102,6 +106,49 @@
     Consent? Consent { get; set; }
     RightToWork? RightToWork { get; set; }
     Location? Location { get; set; }
+
+    private SetEnrolmentLocation.Command SetEnrolmentCommand { get; set; } = null!;
+    private AddConsent.Command AddConsentCommand { get; set; } = null!;
+    private AddRightToWork.Command AddRightToWorkCommand { get; set; } = null!;
+    
+    private LocationDto[] Locations { get; set; } = [];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_participant == null)
+        {
+            var query = new GetParticipantById.Query()
+            {
+                Id = ParticipantId
+            };
+
+            var result = await Mediator.Send(query);
+            _participant = result;
+
+            SetEnrolmentCommand = new SetEnrolmentLocation.Command(
+                _participant.Id,
+                _participant.CurrentLocation,
+                _participant.EnrolmentLocation ?? _participant.CurrentLocation,
+                _participant.EnrolmentLocationJustification
+            );
+
+            AddConsentCommand = new AddConsent.Command()
+            {
+                ParticipantId = ParticipantId
+            };
+
+            AddRightToWorkCommand = new AddRightToWork.Command()
+            {
+                ParticipantId = ParticipantId
+            };
+
+            Locations = await Mediator.Send(new GetAllLocationsQuery()
+            {
+                UserProfile = this.UserProfile!
+            });
+
+        }
+    }
 
     private void StepChanged(int index)
     {
@@ -118,18 +165,18 @@
 
         if(!result.Canceled)
         {
-            NavMan.NavigateTo("/");
+            Navigation.NavigateTo("/");
         }
     }
 
     private void BeginAssessment()
     {
-        NavMan.NavigateTo($"/Cases/{ParticipantId}");
+        Navigation.NavigateTo($"/Cases/{ParticipantId}");
     }
 
     private void ReturnToSearch()
     {
-        NavMan.NavigateTo("/Enrolments/Search");
+        Navigation.NavigateTo("/Enrolments/Search");
     }
 
     private async Task<bool> OnChangeAsync(StepChangeDirection direction, int targetIndex)

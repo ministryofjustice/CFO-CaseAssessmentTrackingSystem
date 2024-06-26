@@ -1,13 +1,57 @@
-﻿using Cfo.Cats.Domain.Common.Entities;
+﻿using Cfo.Cats.Domain.Common.Contracts;
+using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Documents;
 
-public class Document : BaseAuditableSoftDeleteEntity<Guid>
+public class Document : OwnerPropertyEntity<Guid>, IMayHaveTenant, IAuditTrial
 {
     private Document()
     {
+        Id = Guid.NewGuid();
     }
 
-    public string FileName { get; set; }
-    public string ContentType { get; set; }
+    private Document(string title, string description, DocumentType documentType)
+    {
+        Title = title;
+        IsPublic = false;
+        Description = description;
+        DocumentType = documentType;
+        
+        AddDomainEvent(new DocumentCreatedDomainEvent(this));
+    }
+
+
+    public static Document Create(string title, string description, DocumentType documentType)
+    {
+        return new(title, description, documentType);
+    }
+
+    public Document SetURL(string url)
+    {
+        URL = url;
+        return this;
+    }
+
+    public string? Title { get; private set; }
+    public string? Description { get; private set; }
+    
+    [Obsolete("We are not storing the content with the document", false)]
+    public string? Content { get; private set; }
+    public bool IsPublic { get; private set; }
+    public string? URL { get; private set; }
+    public DocumentType DocumentType { get; private set; } = default!;
+    public virtual Tenant? Tenant { get; set; }
+
+    public string? TenantId {get; set;}
+}
+
+public enum DocumentType
+{
+    Document,
+    Excel,
+    Image,
+    PDF,
+    Others
 }

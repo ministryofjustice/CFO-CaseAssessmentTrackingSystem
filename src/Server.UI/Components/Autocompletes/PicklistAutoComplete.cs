@@ -39,7 +39,7 @@ public class PicklistAutoComplete : MudAutocomplete<string>
         return base.SetParametersAsync(parameters);
     }
     
-    private Task<IEnumerable<string>> SearchKeyValues(string value)
+    private Task<IEnumerable<string>> SearchKeyValues(string value, CancellationToken cancellation=default)
     {
         // if text is null or empty, show complete list
         return string.IsNullOrEmpty(value)

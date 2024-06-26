@@ -1,93 +1,95 @@
+using System.Net;
+using Amazon.S3;
+using Amazon.S3.Model;
 using Cfo.Cats.Application.Common.Extensions;
+using Microsoft.Extensions.Configuration;
 
 namespace Cfo.Cats.Infrastructure.Services;
 
 public class UploadService : IUploadService
 {
-    private static readonly string NumberPattern = " ({0})";
+    private readonly string _bucketName;
+    private readonly IAmazonS3 _client;
+    private readonly ILogger<UploadService> _logger;
 
-    public async Task<string> UploadAsync(UploadRequest request)
+    public UploadService(IConfiguration configuration, IAmazonS3 client, ILogger<UploadService> logger)
     {
-        var streamData = new MemoryStream(request.Data);
-        if (streamData.Length > 0)
-        {
-            var folder = request.UploadType.GetDescription();
-            var folderName = Path.Combine("Files", folder);
-            var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-            var exists = Directory.Exists(pathToSave);
-            if (!exists)
-            {
-                Directory.CreateDirectory(pathToSave);
-            }
-
-            var fileName = request.FileName.Trim('"');
-            var fullPath = Path.Combine(pathToSave, fileName);
-            var dbPath = Path.Combine(folderName, fileName);
-            if (File.Exists(dbPath))
-            {
-                dbPath = NextAvailableFilename(dbPath);
-                fullPath = NextAvailableFilename(fullPath);
-            }
-
-            await using var stream = new FileStream(fullPath, FileMode.Create);
-            await streamData.CopyToAsync(stream);
-
-            return dbPath;
-        }
-
-        return string.Empty;
+        _bucketName = configuration.GetValue<string>("AWS:Bucket") ?? throw new Exception("Missing configuration details");
+        _client = client;
+        _logger = logger;
     }
 
-    public static string NextAvailableFilename(string path)
+    public async Task<Result<string>> UploadAsync(string folder, UploadRequest uploadRequest)
     {
-        // Short-cut if already available
-        if (!File.Exists(path))
+        var scopeInfo = CreateScopeInformation(folder, uploadRequest);
+
+        using (_logger.BeginScope(scopeInfo))
         {
-            return path;
-        }
-
-        // If path has extension then insert the number pattern just before the extension and return next filename
-        if (Path.HasExtension(path))
-        {
-            return GetNextFilename(path.Insert(path.LastIndexOf(Path.GetExtension(path)), NumberPattern));
-        }
-
-        // Otherwise just append the pattern to the path and return next filename
-        return GetNextFilename(path + NumberPattern);
-    }
-
-    private static string GetNextFilename(string pattern)
-    {
-        var tmp = string.Format(pattern, 1);
-        //if (tmp == pattern)
-        //throw new ArgumentException("The pattern must include an index place-holder", "pattern");
-
-        if (!File.Exists(tmp))
-        {
-            return tmp; // short-circuit if no matches
-        }
-
-        int min = 1, max = 2; // min is inclusive, max is exclusive/untested
-
-        while (File.Exists(string.Format(pattern, max)))
-        {
-            min = max;
-            max *= 2;
-        }
-
-        while (max != min + 1)
-        {
-            var pivot = (max + min) / 2;
-            if (File.Exists(string.Format(pattern, pivot)))
+            try
             {
-                min = pivot;
+                if (folder.EndsWith("/"))
+                {
+                    _logger.LogWarning("Attempt to upload a document with a forward slash in the folder");
+                    return await Result<string>.FailureAsync("Folder should not end in forward slash");
+                }
+                
+                string key = $"{folder}/{Guid.NewGuid()}";
+
+                using var stream = new MemoryStream(uploadRequest.Data);
+         
+                var putRequest = new PutObjectRequest()
+                {
+                    BucketName = _bucketName,
+                    Key = key,
+                    InputStream = stream
+                };
+
+                _logger.LogDebug("Uploading to S3 bucket");
+                var result =  await _client.PutObjectAsync(putRequest);
+                if (result.HttpStatusCode == HttpStatusCode.OK)
+                {
+                    return putRequest.Key;
+                }
+                return await Result<string>.FailureAsync(result.HttpStatusCode.ToString());
             }
-            else
+            catch (AmazonS3Exception s3Ex)
             {
-                max = pivot;
+                _logger.LogError(s3Ex, $"Error uploading file" );
+                return await Result<string>.FailureAsync(s3Ex.Message);
             }
         }
-
-        return string.Format(pattern, max);
     }
+    public async Task<Result<Stream>> DownloadAsync(string key)
+    {
+        var getRequest = new GetObjectRequest()
+        {
+            BucketName = _bucketName,
+            Key = key
+        };
+
+        using var response = await _client.GetObjectAsync(getRequest)
+            .ConfigureAwait(false);
+        var stream = new MemoryStream();
+        await response.ResponseStream.CopyToAsync(stream);
+        stream.Position = 0;
+        return stream;
+    }
+
+    private static Dictionary<string, object> CreateScopeInformation(string folder, UploadRequest uploadRequest)
+    {
+        var scopeInfo = new Dictionary<string, object>()
+        {
+            {
+                "OperationId", Guid.NewGuid()
+            },
+            {
+                "Folder", folder
+            },
+            {
+                "FileName", uploadRequest.FileName
+            }
+        };
+        return scopeInfo;
+    }
+
 }

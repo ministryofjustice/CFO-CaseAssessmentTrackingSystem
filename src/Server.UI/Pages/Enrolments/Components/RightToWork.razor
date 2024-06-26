@@ -1,18 +1,155 @@
-﻿@using Cfo.Cats.Server.UI.Components.Shared.FileUpload
+﻿@using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Domain.Common.Enums
+@using Humanizer
 
+
+@if (Model is not null)
+{
+    if (RightToWorkDtos is not null && RightToWorkDtos.Length > 0)
+    {
+        <MudText Typo="Typo.body2">
+            Right To Work supporting documentation already updated 
+        </MudText>
+        
+        <MudList T="string">
+            @foreach (var c in RightToWorkDtos)
+            {
+                <MudListItem T="string">
+                    <MudText Typo="Typo.body2">
+                        @c.FileName 
+                    </MudText>
+                </MudListItem>
+            }    
+        </MudList>
+        
+        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" @onclick="() => RightToWorkDtos = null">
+            Add New
+        </MudButton>
+    }
+    else
+    {
+        <MudForm @ref="Form">   
+            <MudText Typo="Typo.caption">
+                For anyone recorded on PNomis / NDelius as non-British / non-Irish, documentation is required to support their Right to Work. More information on this requirement can be found in the CFO Enrolment Guidance.
+            </MudText>
+            <MudText Typo="Typo.caption">
+                To your knowledge, is any Right to Work (RTW) documentation required for the enrolment of this person?
+            </MudText>
+            <MudButtonGroup OverrideStyles="false" Class="my-4">
+                <MudButton Color="Color.Primary" Variant="@(_isRequired ? Variant.Filled : Variant.Outlined)" OnClick="() => _isRequired = true">Yes, Right to Work is required</MudButton>
+                <MudButton Color="Color.Primary" Variant="@(_isRequired ? Variant.Outlined : Variant.Filled)" OnClick="() => _isRequired = false">No, Right to Work is not required</MudButton>
+            </MudButtonGroup>
+            
+            @if (_isRequired)
+            {
+                <MudDatePicker Label="Valid From" Editable="true"
+                               MaxDate="DateTime.Now.Date"
+                               MinDate="DateTime.Now.AddYears(-5).Date"
+                               @bind-Date="Model.ValidFrom" Required/>
+
+                <MudDatePicker Label="Valid To" Editable="true"
+                               MaxDate="DateTime.MaxValue.Date"
+                               MinDate="DateTime.Now.Date"
+                               @bind-Date="Model.ValidTo" Required/>
+
+                <div class="mb-4 mt-8">
+                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1" Accept=".pdf">
+                        <ActivatorContent>
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Upload">
+                                @if (_uploading)
+                                {
+                                    <MudProgressCircular Size="Size.Small" Indeterminate="true"/>
+                                    @ConstantString.Uploading
+                                }
+                                else
+                                {
+                                    @ConstantString.Upload
+                                }
+                            </MudButton>
+                        </ActivatorContent>
+                    </MudFileUpload>
+                </div>
+            }
+        </MudForm>
+    }
+}
+
+
+@code {
+
+    private bool _isRequired = true;
+    private bool _uploading = false;
+    private int _fileCount = 0;
+
+    
+    [EditorRequired]
+    [Parameter]
+    public AddRightToWork.Command? Model { get; set; } 
+
+    [Parameter]
+    public RightToWorkDto[]? RightToWorkDtos { get; set; }
+    
+    private MudForm? Form { get; set; }
+
+    public async Task<bool> Validate()
+    {
+        if (RightToWorkDtos is { Length: > 0 } || _isRequired == false)
+        {
+            return true;
+        }
+        
+        await Form!.Validate();
+
+        if (Form.IsValid)
+        {
+            var result = await Mediator.Send(Model!);
+            if (result.Succeeded)
+            {
+                Snackbar.Add("Right to work evidence uploaded", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Error uploading Right to work evidence: {result.ErrorMessage}", Severity.Error);
+            }
+        }
+        return Form.IsValid;
+    }
+
+    private async Task UploadFiles(IBrowserFile? file)
+    {
+        if (file is not null)
+        {
+            const int maxFileSize = 5242880; // 5MB
+            if (file.Size > maxFileSize)
+            {
+                Snackbar.Add($"File {file.Name} exceeds the maximum allowed size of {maxFileSize.Bytes().Humanize()}", Severity.Error);
+            }
+            else
+            {
+                _uploading = true;
+                await using var stream = file.OpenReadStream(maxFileSize);
+                using var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+        
+                Model!.UploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
+                _fileCount = 1;
+                _uploading = false;
+            }
+        }
+    }
+
+}
+
+@*
 <div class="d-flex flex-column">
-    <MudText Typo="Typo.caption">
-        For anyone recorded on PNomis / NDelius as non-British / non-Irish, documentation is required to support their Right to Work. More information on this requirement can be found in the CFO Enrolment Guidance.
-    </MudText>
 
-    <MudText Typo="Typo.caption">
-        To your knowledge, is any Right to Work (RTW) documentation required for the enrolment of this person?
-    </MudText>
 
-    <MudButtonGroup DisableElevation OverrideStyles="false" Class="my-4">
-        <MudButton Color="Color.Primary" Variant="@(isRequired ? Variant.Filled : Variant.Outlined)" OnClick="() => isRequired = true">Yes, Right to Work is required</MudButton>
-        <MudButton Color="Color.Primary" Variant="@(isRequired ? Variant.Outlined : Variant.Filled)" OnClick="() => isRequired = false">No, Right to Work is not required</MudButton>
-    </MudButtonGroup>
+
+
+
 </div>
 
 <MudForm @ref="Form" Disabled="isRequired is false">
@@ -40,9 +177,10 @@
         StateHasChanged();
     }
 
-    public bool Validate()
+    public async Task<bool> Validate()
     {
+        await Task.CompletedTask;
         Form?.Validate();
         return Form?.IsValid ?? false;
     }
-}
+}*@

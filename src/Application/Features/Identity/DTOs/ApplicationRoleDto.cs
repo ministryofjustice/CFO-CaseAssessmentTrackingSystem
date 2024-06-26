@@ -4,7 +4,7 @@ namespace Cfo.Cats.Application.Features.Identity.DTOs;
 public class ApplicationRoleDto
 {
     [Description("Id")]
-    public int Id { get; set; }
+    public string Id { get; set; }
 
     [Description("Name")]
     public string Name { get; set; } = string.Empty;

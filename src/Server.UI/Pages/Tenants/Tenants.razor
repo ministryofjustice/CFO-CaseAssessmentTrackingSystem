@@ -5,15 +5,13 @@
 @using Cfo.Cats.Application.Features.Tenants.Caching
 @using Cfo.Cats.Application.Features.Tenants.Commands.AddEdit
 @using Cfo.Cats.Application.Features.Tenants.Commands.Delete
+@using Cfo.Cats.Application.Features.Tenants.Commands.Rename
 @using Cfo.Cats.Application.Features.Tenants.Queries.Export
+@using Cfo.Cats.Application.SecurityConstants
 @using DocumentFormat.OpenXml.Office2010.PowerPoint
-@using Severity = MudBlazor.Severity
 
-@attribute [Authorize(Policy = Permissions.Tenants.View)]
+@attribute [Authorize(Policy = PolicyNames.SystemFunctionsRead)]
 
-@inject IMediator Mediator
-@inject IMapper Mapper
-@inject IJSRuntime Js
 @inject IStringLocalizer<Tenants> L
 
 <PageTitle>@Title</PageTitle>
@@ -36,11 +34,11 @@
                     <MudText Typo="Typo.caption">@Title</MudText>
                 </div>
             </div>
-            <div class="flex-grow-1"/>
+            <div class="flex-grow-1"></div>
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                        <MudButton DisableElevation Variant="Variant.Outlined"
+                        <MudButton Variant="Variant.Outlined"
                                    Size="Size.Small"
                                    Disabled="@loading"
                                    OnClick="@(() => OnRefresh())"
@@ -50,7 +48,7 @@
                         </MudButton>
                         @if (canCreate)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.Add"
                                        Disabled="@loading"
                                        Size="Size.Small"
@@ -62,7 +60,7 @@
                         }
                         @if (canDelete)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Error"
+                            <MudButton Variant="Variant.Outlined" Color="Color.Error"
                                        StartIcon="@Icons.Material.Filled.Delete"
                                        Disabled="@(!(selectedItems.Count > 0))"
                                        Size="Size.Small"
@@ -74,7 +72,7 @@
                         }
                         @if (canExport)
                         {
-                            <MudLoadingButton @bind-Loading="exporting" DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudLoadingButton @bind-Loading="exporting" Variant="Variant.Outlined" Color="Color.Primary"
                                               Label="@ConstantString.Export"
                                               Disabled="@loading"
                                               StartIcon="@Icons.Custom.FileFormats.FileExcel"
@@ -90,7 +88,7 @@
                     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
                         @if (canCreate)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.Add"
                                        Disabled="@loading"
                                        Size="Size.Small"
@@ -102,7 +100,7 @@
                         }
                         @if (canDelete)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Error"
+                            <MudButton Variant="Variant.Outlined" Color="Color.Error"
                                        StartIcon="@Icons.Material.Filled.Delete"
                                        Disabled="@(!(selectedItems.Count > 0))"
                                        Size="Size.Small"
@@ -130,22 +128,23 @@
             <CellTemplate>
                 @if (canEdit || canDelete)
                 {
-                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" DisableElevation="true" Size="Size.Small"
+                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                              Dense="true"
                              EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                         @if (canEdit)
                         {
-                            <MudMenuItem OnAction="@(() => OnEdit(context.Item))">@ConstantString.Edit</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => OnRename(context.Item))">@ConstantString.Rename</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => OnEdit(context.Item))">@ConstantString.Edit</MudMenuItem>
                         }
                         @if (canDelete)
                         {
-                            <MudMenuItem OnAction="@(() => OnDelete(context.Item))">@ConstantString.Delete</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => OnDelete(context.Item))">@ConstantString.Delete</MudMenuItem>
                         }
                     </MudMenu>
                 }
                 else
                 {
-                    <MudButton Variant="Variant.Filled" DisableElevation="true"
+                    <MudButton Variant="Variant.Filled" 
                                StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary" Size="Size.Small"
                                Color="Color.Surface">
                         @ConstantString.NoAllowed
@@ -209,11 +208,11 @@
     {
         Title = L[currentDto.GetClassDescription()];
         var state = await AuthState;
-        canCreate = (await AuthService.AuthorizeAsync(state.User, Permissions.Tenants.Create)).Succeeded;
-        canEdit = (await AuthService.AuthorizeAsync(state.User, Permissions.Tenants.Edit)).Succeeded;
-        canDelete = (await AuthService.AuthorizeAsync(state.User, Permissions.Tenants.Delete)).Succeeded;
-        canExport = (await AuthService.AuthorizeAsync(state.User, Permissions.Tenants.Export)).Succeeded;
-        canSearch = (await AuthService.AuthorizeAsync(state.User, Permissions.Tenants.Search)).Succeeded;
+        canCreate = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
+        canEdit = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
+        canDelete = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
+        canExport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
+        canSearch = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
     }
 
     private async Task<GridData<TenantDto>> ServerReload(GridState<TenantDto> state)
@@ -260,6 +259,23 @@
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
         var dialog = DialogService.Show<TenantFormDialog>
             (L["Create a new Tenant"], parameters, options);
+        var state = await dialog.Result;
+        if (!state.Canceled)
+        {
+            await table.ReloadServerData();
+        }
+    }
+
+    private async Task OnRename(TenantDto dto)
+    {
+        var command = Mapper.Map<RenameTenant.Command>(dto);
+        var parameters = new DialogParameters<RenameTenantDialog>
+        {
+            { x => x.Model, command }
+        };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<RenameTenantDialog>
+            (L["Rename the Tenant"], parameters, options);
         var state = await dialog.Result;
         if (!state.Canceled)
         {
@@ -321,7 +337,7 @@
             { x => x.Command, command },
             { x => x.ContentText, string.Format(deleteContent, dto.Id) }
         };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, DisableBackdropClick = true };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
         var dialog = DialogService.Show<DeleteConfirmation>(L["Delete the Tenant"], parameters, options);
         var state = await dialog.Result;
         if (!state.Canceled)
@@ -339,7 +355,7 @@
             { x => x.Command, command },
             { x => x.ContentText, string.Format(deleteContent, selectedItems.Count) }
         };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, DisableBackdropClick = true };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
         var dialog = DialogService.Show<DeleteConfirmation>(L["Delete Selected Tenants"], parameters, options);
         var state = await dialog.Result;
         if (!state.Canceled)

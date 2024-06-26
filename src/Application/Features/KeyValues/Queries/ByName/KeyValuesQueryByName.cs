@@ -1,10 +1,11 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.KeyValues.Caching;
 using Cfo.Cats.Application.Features.KeyValues.DTOs;
+using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.KeyValues.Queries.ByName;
 
-[RequestAuthorize(Roles = "Admin, Basic")]
+[RequestAuthorize(Policy = PolicyNames.AuthorizedUser)]
 public class KeyValuesQueryByName : ICacheableRequest<IEnumerable<KeyValueDto>>
 {
     public KeyValuesQueryByName(Picklist name)

@@ -14,7 +14,7 @@ public class ApplicationDbContext
     : IdentityDbContext<
         ApplicationUser,
         ApplicationRole,
-        int,
+        string,
         ApplicationUserClaim,
         ApplicationUserRole,
         ApplicationUserLogin,
@@ -37,8 +37,11 @@ public class ApplicationDbContext
     public DbSet<Participant> Participants => Set<Participant>();
     public DbSet<KeyValue> KeyValues => Set<KeyValue>();
     public DbSet<Candidate> Candidates => Set<Candidate>();
+    public DbSet<ParticipantEnrolmentHistory> ParticipantEnrolmentHistories => Set<ParticipantEnrolmentHistory>();
 
     public DbSet<Location> Locations => Set<Location>();
+    
+    
 
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 

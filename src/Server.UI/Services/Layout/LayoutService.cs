@@ -15,7 +15,7 @@ public class LayoutService
         this.userPreferencesService = userPreferencesService;
     }
 
-    public bool IsRtl { get; private set; }
+    public bool IsRTL { get; private set; }
     public bool IsDarkMode { get; private set; }
     public string PrimaryColor { get; set; } = "#722660";
     public string DarkPrimaryColor { get; set; } = "#0092CC";
@@ -40,7 +40,7 @@ public class LayoutService
             DarkLightMode.System => isDarkModeDefaultTheme,
             _ => IsDarkMode
         };
-        IsRtl = UserPreferences.RightToLeft;
+        IsRTL = UserPreferences.RightToLeft;
         BorderRadius = UserPreferences.BorderRadius;
         DefaultFontSize = UserPreferences.DefaultFontSize;
         CurrentTheme.LayoutProperties.DefaultBorderRadius = BorderRadius + "px";
@@ -110,15 +110,15 @@ public class LayoutService
 
     public async Task ToggleRightToLeft()
     {
-        IsRtl = !IsRtl;
-        UserPreferences.RightToLeft = IsRtl;
+        IsRTL = !IsRTL;
+        UserPreferences.RightToLeft = IsRTL;
         await userPreferencesService.SaveUserPreferences(UserPreferences);
         OnMajorUpdateOccured();
     }
 
     public async Task SetRightToLeft()
     {
-        if (!IsRtl)
+        if (!IsRTL)
         {
             await ToggleRightToLeft();
         }
@@ -126,7 +126,7 @@ public class LayoutService
 
     public async Task SetLeftToRight()
     {
-        if (IsRtl)
+        if (IsRTL)
         {
             await ToggleRightToLeft();
         }
@@ -138,7 +138,7 @@ public class LayoutService
 
         if (string.IsNullOrEmpty(PrimaryColor) == false)
         {
-            CurrentTheme.Palette.Primary = PrimaryColor;
+            CurrentTheme.PaletteLight.Primary = PrimaryColor;
             CurrentTheme.PaletteDark.Primary = DarkPrimaryColor;
         }
 
@@ -151,7 +151,7 @@ public class LayoutService
     public async Task SetSecondaryColor(string color)
     {
         SecondaryColor = color;
-        CurrentTheme.Palette.Secondary = SecondaryColor;
+        CurrentTheme.PaletteLight.Secondary = SecondaryColor;
         CurrentTheme.PaletteDark.Secondary = SecondaryColor;
         UserPreferences.SecondaryColor = SecondaryColor;
         await userPreferencesService.SaveUserPreferences(UserPreferences);
@@ -177,10 +177,10 @@ public class LayoutService
             DarkLightMode.System => systemPreferences = true,
             _ => IsDarkMode
         };
-        IsRtl = UserPreferences.RightToLeft;
+        IsRTL = UserPreferences.RightToLeft;
         BorderRadius = UserPreferences.BorderRadius;
         DefaultFontSize = UserPreferences.DefaultFontSize;
-        CurrentTheme.Palette.Primary = PrimaryColor;
+        CurrentTheme.PaletteLight.Primary = PrimaryColor;
         CurrentTheme.PaletteDark.Primary = DarkPrimaryColor;
         CurrentTheme.LayoutProperties.DefaultBorderRadius = BorderRadius + "px";
         CurrentTheme.Typography.Default.FontSize =

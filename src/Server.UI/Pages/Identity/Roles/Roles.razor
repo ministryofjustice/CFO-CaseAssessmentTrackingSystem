@@ -1,16 +1,15 @@
 ﻿@page "/identity/roles"
-@using Severity = Severity
 @using LazyCache
 @using Cfo.Cats.Application.Features.Identity.DTOs
 @using Cfo.Cats.Domain.Identity
 @using Cfo.Cats.Server.UI.Pages.Identity.Roles.Components
 @using System.Security.Claims
 @using System.ComponentModel
-@using System.Linq.Dynamic.Core
 @using System.Reflection
+@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Infrastructure.Constants.ClaimTypes
 
-@attribute [Authorize(Policy = Permissions.Roles.View)]
+@attribute [Authorize(Policy = PolicyNames.SystemFunctionsRead)]
 @inherits OwningComponentBase
 
 
@@ -41,7 +40,7 @@
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                        <MudButton DisableElevation Variant="Variant.Outlined"
+                        <MudButton Variant="Variant.Outlined"
                                    Size="Size.Small"
                                    OnClick="OnRefresh"
                                    Disabled="@_loading"
@@ -51,7 +50,7 @@
                         </MudButton>
                         @if (_canCreate)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.Add"
                                        Size="Size.Small"
                                        OnClick="OnCreate"
@@ -62,7 +61,7 @@
                         }
                         @if (_canDelete)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Error"
+                            <MudButton Variant="Variant.Outlined" Color="Color.Error"
                                        StartIcon="@Icons.Material.Filled.Delete"
                                        Disabled="@(!(_selectedItems.Count > 0))"
                                        OnClick="OnDeleteChecked"
@@ -75,7 +74,7 @@
 
                         @if (_canExport)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.Download"
                                        Size="Size.Small"
                                        Style="margin-right: 4px; margin-bottom:4px"
@@ -92,8 +91,7 @@
                                                Variant="Variant.Outlined"
                                                Color="Color.Primary"
                                                Disabled="@_loading"
-                                               StartIcon="@Icons.Material.Filled.Upload"
-                                               for="@context">
+                                               StartIcon="@Icons.Material.Filled.Upload">
                                         @if (_uploading)
                                         {
                                             <MudProgressCircular Size="Size.Small" Indeterminate="true"/>
@@ -111,7 +109,7 @@
                     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
                         @if (_canCreate)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.Add"
                                        Size="Size.Small"
                                        OnClick="OnCreate"
@@ -122,7 +120,7 @@
                         }
                         @if (_canDelete)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Error"
+                            <MudButton Variant="Variant.Outlined" Color="Color.Error"
                                        StartIcon="@Icons.Material.Filled.Delete"
                                        Disabled="@(!(_selectedItems.Count > 0))"
                                        OnClick="OnDeleteChecked"
@@ -151,27 +149,26 @@
             <CellTemplate>
                 @if (_canEdit || _canDelete || _canManagePermissions)
                 {
-                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" DisableElevation="true" Size="Size.Small"
+                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                              Dense="true"
                              EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                         @if (_canEdit)
                         {
-                            <MudMenuItem OnAction="@(() => OnEdit(context.Item))">@ConstantString.Edit</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => OnEdit(context.Item))">@ConstantString.Edit</MudMenuItem>
                         }
                         @if (_canDelete)
                         {
-                            <MudMenuItem OnAction="@(() => OnDelete(context.Item))">@ConstantString.Delete</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => OnDelete(context.Item))">@ConstantString.Delete</MudMenuItem>
                         }
                         @if (_canManagePermissions)
                         {
-                            <MudMenuItem OnAction="@(() => OnSetPermissions(context.Item))">@L["Set Permissions"]</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => OnSetPermissions(context.Item))">@L["Set Permissions"]</MudMenuItem>
                         }
                     </MudMenu>
                 }
                 else
                 {
-                    <MudButton Variant="Variant.Filled" DisableElevation="true"
-                               StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary" Size="Size.Small"
+                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary" Size="Size.Small"
                                Color="Color.Surface">
                         @ConstantString.NoAllowed
                     </MudButton>
@@ -236,13 +233,13 @@
         RoleManager = ScopedServices.GetRequiredService<RoleManager<ApplicationRole>>();
         Title = L[_currentDto.GetClassDescription()];
         var state = await AuthState;
-        _canCreate = (await AuthService.AuthorizeAsync(state.User, Permissions.Roles.Create)).Succeeded;
-        _canSearch = (await AuthService.AuthorizeAsync(state.User, Permissions.Roles.Search)).Succeeded;
-        _canEdit = (await AuthService.AuthorizeAsync(state.User, Permissions.Roles.Edit)).Succeeded;
-        _canDelete = (await AuthService.AuthorizeAsync(state.User, Permissions.Roles.Delete)).Succeeded;
-        _canManagePermissions = (await AuthService.AuthorizeAsync(state.User, Permissions.Roles.ManagePermissions)).Succeeded;
-        _canImport = false; // (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Import)).Succeeded;
-        _canExport = false; // (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Export)).Succeeded;
+        _canCreate = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        _canSearch = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
+        _canEdit = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        _canDelete = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        _canManagePermissions = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
+        _canImport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowImport)).Succeeded;
+        _canExport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowExport)).Succeeded;
     }
 
     private async Task<GridData<ApplicationRoleDto>> ServerReload(GridState<ApplicationRoleDto> state)
@@ -270,7 +267,9 @@
     private async Task OnSearch(string text)
     {
         if (_loading)
+        {
             return;
+        }
         _searchString = text.ToLower();
         await _table.ReloadServerData();
     }
@@ -350,7 +349,7 @@
 
     private async Task<List<PermissionModel>> GetAllPermissions(ApplicationRoleDto dto)
     {
-        async Task<IList<Claim>> GetClaims(int roleId)
+        async Task<IList<Claim>> GetClaims(string roleId)
         {
             var role = await RoleManager.Roles.FirstOrDefaultAsync(r => r.Id == dto.Id) ?? throw new NotFoundException($"not found application role: {roleId}");
             var claims = await RoleManager.GetClaimsAsync(role);
@@ -360,37 +359,7 @@
         var key = $"get-claims-by-{dto.Id}";
         _assignedClaims = await Cache.GetOrAddAsync(key, async () => await GetClaims(dto.Id), Options);
         var allPermissions = new List<PermissionModel>();
-        var modules = typeof(Permissions).GetNestedTypes();
-        foreach (var module in modules)
-        {
-            var moduleName = string.Empty;
-            var moduleDescription = string.Empty;
-            if (module.GetCustomAttributes(typeof(DisplayNameAttribute), true)
-                    .FirstOrDefault() is DisplayNameAttribute displayNameAttribute)
-                moduleName = displayNameAttribute.DisplayName;
-
-            if (module.GetCustomAttributes(typeof(DescriptionAttribute), true)
-                    .FirstOrDefault() is DescriptionAttribute descriptionAttribute)
-                moduleDescription = descriptionAttribute.Description;
-
-            var fields = module.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-            allPermissions.AddRange(from field in fields
-                select field.GetValue(null)
-                into propertyValue
-                where propertyValue is not null
-                select propertyValue.ToString()
-                into claimValue
-                select new PermissionModel
-                {
-                    RoleId = dto.Id,
-                    ClaimValue = claimValue,
-                    ClaimType = ApplicationClaimTypes.Permission,
-                    Group = moduleName,
-                    Description = moduleDescription,
-                    Assigned = _assignedClaims.Any(x => x.Value == claimValue)
-                });
-        }
-
+       
         return allPermissions;
     }
 
@@ -478,7 +447,7 @@
         {
             { x => x.ContentText, string.Format(deleteContent, dto.Name) }
         };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, DisableBackdropClick = true };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
         var dialog = DialogService.Show<ConfirmationDialog>(ConstantString.DeleteConfirmationTitle, parameters, options);
         var result = await dialog.Result;
         if (!result.Canceled)
@@ -506,7 +475,7 @@
         {
             { x => x.ContentText, string.Format(deleteContent, _selectedItems.Count) }
         };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, DisableBackdropClick = true };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
         var dialog = DialogService.Show<ConfirmationDialog>(ConstantString.DeleteConfirmationTitle, parameters, options);
         var result = await dialog.Result;
         if (!result.Canceled)

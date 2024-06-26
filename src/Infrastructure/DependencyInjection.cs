@@ -1,25 +1,17 @@
-﻿using Cfo.Cats.Application.Common.Interfaces;
-using Cfo.Cats.Application.Common.Interfaces.Identity;
+﻿using Amazon.Runtime;
+using Amazon.S3;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
+using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Configurations;
-using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
 using Cfo.Cats.Infrastructure.Constants.Database;
-using Cfo.Cats.Infrastructure.PermissionSet;
-using Cfo.Cats.Infrastructure.Persistence;
 using Cfo.Cats.Infrastructure.Persistence.Interceptors;
-using Cfo.Cats.Infrastructure.Services;
-using Cfo.Cats.Infrastructure.Services.Identity;
 using Cfo.Cats.Infrastructure.Services.MultiTenant;
 using Cfo.Cats.Infrastructure.Services.Serialization;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure;
@@ -35,7 +27,8 @@ public static class DependencyInjection
             .AddDatabase(configuration)
             .AddServices(configuration);
 
-        services.AddAuthenticationService(configuration).AddFusionCacheService();
+        services.AddAuthenticationService(configuration)
+            .AddFusionCacheService();
 
         services.AddSingleton<IUsersStateContainer, UsersStateContainer>();
 
@@ -53,6 +46,10 @@ public static class DependencyInjection
             .AddSingleton<IIdentitySettings>(s =>
                 s.GetRequiredService<IOptions<IdentitySettings>>().Value
             );
+        
+        services.Configure<AppConfigurationSettings>(configuration.GetSection(AppConfigurationSettings.Key))
+            .AddSingleton(s => s.GetRequiredService<IOptions<AppConfigurationSettings>>().Value)
+            .AddSingleton<IApplicationSettings>(s => s.GetRequiredService<IOptions<AppConfigurationSettings>>().Value);
 
         services
             .Configure<DatabaseSettings>(configuration.GetSection(DatabaseSettings.Key))
@@ -72,8 +69,7 @@ public static class DependencyInjection
 
         if (configuration.GetValue<bool>("UseInMemoryDatabase"))
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-            {
+            services.AddDbContext<ApplicationDbContext>(options => {
                 options.UseInMemoryDatabase("CatsDb");
                 options.EnableSensitiveDataLogging();
             });
@@ -81,22 +77,17 @@ public static class DependencyInjection
         else
         {
             services.AddDbContext<ApplicationDbContext>(
-                (p, m) =>
-                {
-                    var databaseSettings = p.GetRequiredService<IOptions<DatabaseSettings>>().Value;
-                    m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
-                    m.UseDatabase(databaseSettings.DbProvider, databaseSettings.ConnectionString);
-                }
+            (p, m) => {
+                var databaseSettings = p.GetRequiredService<IOptions<DatabaseSettings>>().Value;
+                m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
+                m.UseDatabase(databaseSettings.DbProvider, databaseSettings.ConnectionString);
+            }
             );
         }
 
-        services.AddScoped<
-            IDbContextFactory<ApplicationDbContext>,
-            BlazorContextFactory<ApplicationDbContext>
-        >();
+        services.AddScoped<IDbContextFactory<ApplicationDbContext>, BlazorContextFactory<ApplicationDbContext>>();
         services.AddTransient<IApplicationDbContext>(provider =>
-            provider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext()
-        );
+            provider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
         services.AddScoped<ApplicationDbContextInitializer>();
 
         return services;
@@ -112,14 +103,14 @@ public static class DependencyInjection
         {
             case DbProviderKeys.SqlServer:
                 return builder.UseSqlServer(
-                    connectionString,
-                    e => e.MigrationsAssembly("Cfo.Cats.Migrators.MSSQL")
+                connectionString,
+                e => e.MigrationsAssembly("Cfo.Cats.Migrators.MSSQL")
                 );
 
             case DbProviderKeys.SqLite:
                 return builder.UseSqlite(
-                    connectionString,
-                    e => e.MigrationsAssembly("Cfo.Cats.Migrators.SqLite")
+                connectionString,
+                e => e.MigrationsAssembly("Cfo.Cats.Migrators.SqLite")
                 ).EnableSensitiveDataLogging();
 
             default:
@@ -130,24 +121,32 @@ public static class DependencyInjection
     private static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<PicklistService>()
-            .AddSingleton<IPicklistService>(sp =>
-            {
+            .AddSingleton<IPicklistService>(sp => {
                 var service = sp.GetRequiredService<PicklistService>();
                 service.Initialize();
                 return service;
             });
-        
+
         services
             .AddSingleton<TenantService>()
-            .AddSingleton<ITenantService>(sp =>
-            {
+            .AddSingleton<ITenantService>(sp => {
                 var service = sp.GetRequiredService<TenantService>();
                 service.Initialize();
                 return service;
             });
-        
+
         services.Configure<NotifyOptions>(configuration.GetSection(NotifyOptions.Notify));
 
+        if(configuration.GetSection("AWS") is {} section && section.Exists())
+        {
+            var options = configuration.GetAWSOptions();
+            options.Credentials = new BasicAWSCredentials(section.GetRequiredValue("AccessKey"), section.GetRequiredValue("SecretKey"));
+            services.AddDefaultAWSOptions(options);
+            services.AddAWSService<IAmazonS3>();
+            
+        }
+        
+        
         return services
             .AddSingleton<ISerializer, SystemTextJsonSerializer>()
             .AddScoped<ICurrentUserService, CurrentUserService>()
@@ -159,14 +158,11 @@ public static class DependencyInjection
             .AddScoped<IUploadService, UploadService>();
     }
 
-    private static IServiceCollection AddAuthenticationService(
-        this IServiceCollection services,
-        IConfiguration configuration
-    )
+    private static IServiceCollection AddAuthenticationService(this IServiceCollection services, IConfiguration configuration)
     {
-        
+
         services.Configure<AllowlistOptions>(configuration.GetSection(nameof(AllowlistOptions)));
-        
+
         services
             .AddIdentityCore<ApplicationUser>()
             .AddRoles<ApplicationRole>()
@@ -174,13 +170,12 @@ public static class DependencyInjection
             //.AddSignInManager()
             .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
             .AddDefaultTokenProviders();
-        
-       services.AddScoped<SignInManager<ApplicationUser>, CustomSigninManager<ApplicationUser>>();
-       services.AddScoped<ISecurityStampValidator, SecurityStampValidator<ApplicationUser>>();
 
-        
-        services.Configure<IdentityOptions>(options =>
-        {
+        services.AddScoped<SignInManager<ApplicationUser>, CustomSigninManager<ApplicationUser>>();
+        services.AddScoped<ISecurityStampValidator, SecurityStampValidator<ApplicationUser>>();
+
+
+        services.Configure<IdentityOptions>(options => {
             var identitySettings = configuration
                 .GetRequiredSection(IdentitySettings.Key)
                 .Get<IdentitySettings>();
@@ -194,7 +189,7 @@ public static class DependencyInjection
 
             // Lockout settings
             options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(
-                identitySettings.DefaultLockoutTimeSpan
+            identitySettings.DefaultLockoutTimeSpan
             );
             options.Lockout.MaxFailedAccessAttempts = 10;
             options.Lockout.AllowedForNewUsers = true;
@@ -211,62 +206,118 @@ public static class DependencyInjection
 
         services
             .AddScoped<IIdentityService, IdentityService>()
-            .AddAuthorizationCore(options =>
-            {
-                var permissions = Permissions.GetRegisteredPermissions();
+            .AddAuthorizationCore(options => {
 
-                foreach (var propertyValue in permissions)
-                {
-                    options.AddPolicy(
-                        propertyValue,
-                        policy =>
-                            policy.RequireClaim(ApplicationClaimTypes.Permission, propertyValue)
+                options.AddPolicy(PolicyNames.AllowExport, policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireAssertion((context) => {
+
+                        bool isSystemUser = context.User.IsInRole(RoleNames.SystemSupport);
+                        bool isSeniorServiceDesk = context.User.IsInRole(RoleNames.ServiceDesk) && context.User.HasClaim(c => c.Type == ClaimNames.SeniorUser);
+
+                        return isSystemUser || isSeniorServiceDesk;
+                    });
+                });
+
+                options.AddPolicy(PolicyNames.AllowCandidateSearch, policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole(
+                    RoleNames.SystemSupport,
+                    RoleNames.SupportWorker,
+                    RoleNames.ServiceDesk
                     );
-                }
+                });
+
+                options.AddPolicy(PolicyNames.AllowDocumentUpload, policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole(
+                    RoleNames.SystemSupport,
+                    RoleNames.SupportWorker,
+                    RoleNames.ServiceDesk
+                    );
+                });
+
+                options.AddPolicy(PolicyNames.AuthorizedUser, policy => {
+                    policy.RequireAuthenticatedUser();
+                });
+
+                options.AddPolicy(PolicyNames.AllowEnrol, policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SupportWorker);
+                });
+                
+                options.AddPolicy(PolicyNames.AllowImport, policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireAssertion((context) => {
+
+                        bool isSystemUser = context.User.IsInRole(RoleNames.SystemSupport);
+                        bool isSeniorServiceDesk = context.User.IsInRole(RoleNames.ServiceDesk) && context.User.HasClaim(c => c.Type == ClaimNames.SeniorUser);
+
+                        return isSystemUser || isSeniorServiceDesk;
+                    });
+                });
+                
+                options.AddPolicy(PolicyNames.SystemFunctionsRead, policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireAssertion((context) => {
+
+                        bool isSystemUser = context.User.IsInRole(RoleNames.SystemSupport);
+                        bool isSeniorServiceDesk = context.User.IsInRole(RoleNames.ServiceDesk) && context.User.HasClaim(c => c.Type == ClaimNames.SeniorUser);
+
+                        return isSystemUser || isSeniorServiceDesk;
+                    });
+                });
+                
+                options.AddPolicy(PolicyNames.SystemFunctionsWrite, policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireAssertion((context) => context.User.IsInRole(RoleNames.SystemSupport));
+                });
+
             })
-            .AddAuthentication(options =>
-            {
+            .AddAuthentication(options => {
                 options.DefaultScheme = IdentityConstants.ApplicationScheme;
                 options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
             })
-            .AddIdentityCookies(options => { });
+            .AddIdentityCookies(options => {});
 
         services.AddDataProtection().PersistKeysToDbContext<ApplicationDbContext>();
 
-        services.ConfigureApplicationCookie(options =>
-        {
+        services.ConfigureApplicationCookie(options => {
             options.LoginPath = "/pages/authentication/login";
         });
         services
             .AddSingleton<UserService>()
-            .AddSingleton<IUserService>(sp =>
-            {
+            .AddSingleton<IUserService>(sp => {
                 var service = sp.GetRequiredService<UserService>();
                 service.Initialize();
                 return service;
             });
+        
 
         return services;
     }
 
+    public static string GetRequiredValue(this IConfiguration configuration, string name) =>
+        configuration[name] ?? throw new InvalidOperationException($"Configuration missing value for: {(configuration is IConfigurationSection s ? s.Path + ":" + name : name)}");
+    
     private static IServiceCollection AddFusionCacheService(this IServiceCollection services)
     {
         services.AddMemoryCache();
         services
             .AddFusionCache()
             .WithDefaultEntryOptions(
-                new FusionCacheEntryOptions
-                {
-                    // CACHE DURATION
-                    Duration = TimeSpan.FromMinutes(120),
-                    // FAIL-SAFE OPTIONS
-                    IsFailSafeEnabled = true,
-                    FailSafeMaxDuration = TimeSpan.FromHours(8),
-                    FailSafeThrottleDuration = TimeSpan.FromSeconds(30),
-                    // FACTORY TIMEOUTS
-                    FactorySoftTimeout = TimeSpan.FromMilliseconds(100),
-                    FactoryHardTimeout = TimeSpan.FromMilliseconds(1500)
-                }
+            new FusionCacheEntryOptions
+            {
+                // CACHE DURATION
+                Duration = TimeSpan.FromMinutes(120),
+                // FAIL-SAFE OPTIONS
+                IsFailSafeEnabled = true,
+                FailSafeMaxDuration = TimeSpan.FromHours(8),
+                FailSafeThrottleDuration = TimeSpan.FromSeconds(30),
+                // FACTORY TIMEOUTS
+                FactorySoftTimeout = TimeSpan.FromMilliseconds(100),
+                FactoryHardTimeout = TimeSpan.FromMilliseconds(1500)
+            }
             );
         return services;
     }

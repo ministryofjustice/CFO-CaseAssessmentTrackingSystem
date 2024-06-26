@@ -17,11 +17,9 @@ public class CandidateSearchQueryHandler : IRequestHandler<CandidateSearchQuery,
     public async Task<IEnumerable<CandidateDto>> Handle(CandidateSearchQuery request, CancellationToken cancellationToken)
     {
         var query = from c in dbContext.Candidates
-                .Include(c => c.Participant)
             where 
-                c.LastName == request.LastName
+                c.LastName == request.LastName && c.DateOfBirth == request.DateOfBirth
                 || c.Identifiers.Any(i => i.IdentifierValue == request.ExternalIdentifier)
-                || c.DateOfBirth == request.DateOfBirth
             select c;
         
         

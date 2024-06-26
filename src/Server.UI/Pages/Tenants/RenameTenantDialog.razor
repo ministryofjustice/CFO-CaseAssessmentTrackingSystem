@@ -1,0 +1,70 @@
+@using Cfo.Cats.Application.Features.Tenants.Commands.Rename
+@inherits MudComponentBase
+
+@inject IValidationService Validator
+@inject IStringLocalizer<Tenants> L
+
+<MudDialog>
+    <DialogContent>
+        <MudForm Model="Model" @ref="_form" Validation="@(Validator.ValidateValue(Model))">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField Label="@L[Model.GetMemberDescription(x => x.Name)]" @bind-Value="Model.Name"
+                                  For="@(() => Model.Name)"
+                                  ReadOnly="false"
+                                  Required="true"
+                                  RequiredError="@L["Tenant Name is required!"]">
+                    </MudTextField>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code 
+{
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+    [EditorRequired] [Parameter] public RenameTenant.Command Model { get; set; } = default!;
+    
+    private MudForm? _form;
+    private bool saving;
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+    
+    private async Task Submit()
+    {
+        try
+        {
+            saving = true;
+            await _form!.Validate().ConfigureAwait(false);
+
+            if (!_form!.IsValid)
+            {
+                return;
+            }
+            var result = await Mediator.Send(Model);
+
+            if (result.Succeeded)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+    
+}

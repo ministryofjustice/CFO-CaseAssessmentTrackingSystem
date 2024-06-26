@@ -1,0 +1,31 @@
+@using Cfo.Cats.Domain.Common.Enums;
+@using MudBlazor
+@inherits MudChip<string>   
+
+<MudChip T="string" @attributes="UserAttributes" Class="@Class" Style="@Style" Color="@Color">
+    <MudIcon Icon="@Icon" />
+    @Status.Name
+</MudChip>
+
+@code {
+
+
+    [Parameter, EditorRequired]
+    public EnrolmentStatus Status { get; set;}
+
+    public string Icon => GetIconForStatus(Status);
+
+    private string GetIconForStatus(EnrolmentStatus status)
+    {
+        // Replace with your actual status enum and icon mapping
+        return status switch
+        {
+            _ when status == EnrolmentStatus.PendingStatus  => Icons.Material.Filled.Autorenew,
+            _ when status == EnrolmentStatus.PendingStatus => Icons.Material.Filled.Description,
+            _ when status == EnrolmentStatus.PendingStatus => Icons.Material.Filled.AssignmentTurnedIn,
+            _ when status == EnrolmentStatus.PendingStatus => Icons.Material.Filled.CheckCircle,
+            _ when status == EnrolmentStatus.PendingStatus => Icons.Material.Filled.Block,
+            _ => Icons.Material.Filled.HelpOutline
+        };
+    }
+}    

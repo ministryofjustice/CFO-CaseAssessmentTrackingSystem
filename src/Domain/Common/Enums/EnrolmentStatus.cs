@@ -42,7 +42,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
             : base(nameof(SubmittedToProvider), 1) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions()
-            => [AbandonedStatus, PendingStatus, SubmittedToProviderStatus];
+            => [AbandonedStatus, PendingStatus];
     }
 
     private sealed class SubmittedToAuthority : EnrolmentStatus

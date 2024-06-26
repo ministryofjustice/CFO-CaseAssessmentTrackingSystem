@@ -2,7 +2,7 @@
 
 namespace Cfo.Cats.Domain.Identity;
 
-public class ApplicationRole : IdentityRole<int>
+public class ApplicationRole : IdentityRole
 {
     public ApplicationRole()
     {
@@ -20,4 +20,5 @@ public class ApplicationRole : IdentityRole<int>
     public string? Description { get; set; }
     public virtual ICollection<ApplicationRoleClaim> RoleClaims { get; set; }
     public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
+    
 }

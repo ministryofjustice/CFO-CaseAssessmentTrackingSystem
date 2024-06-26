@@ -17,5 +17,19 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
         builder.Property(t => t.Name).IsRequired().HasMaxLength(50);
 
         builder.Property(t => t.Description).IsRequired().HasMaxLength(150);
+
+        builder.HasMany(t => t.Locations)
+            .WithMany("Tenants")
+            .UsingEntity<Dictionary<string,object>>(
+                "TenantLocation",
+                j =>
+                    j.HasOne<Location>()
+                    .WithMany()
+                    .HasForeignKey("LocationId"),
+                j => j.HasOne<Tenant>()
+                    .WithMany()
+                    .HasForeignKey("TenantId")
+            );
+
     }
 }

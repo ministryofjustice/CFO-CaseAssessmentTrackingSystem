@@ -44,10 +44,19 @@ public class MappingTests
         }
     }
 
-    private object GetInstanceOf(Type type)
+    [Test]
+    public void LocationDtoShouldMapCorrectlyToLocationTypeDto()
     {
-        if (type.GetConstructor(Type.EmptyTypes) != null)
-            return Activator.CreateInstance(type);
+           
+        
+    }
+
+    private static object GetInstanceOf(Type type)
+    {
+        // Check for a parameterless constructor, including non-public ones
+        ConstructorInfo constructor = type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
+        if (constructor != null)
+            return constructor.Invoke(null);
 
         // Type without parameterless constructor
         return FormatterServices.GetUninitializedObject(type);

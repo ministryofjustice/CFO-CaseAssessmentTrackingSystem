@@ -1,9 +1,7 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Identity;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.VisualBasic;
 
 namespace Cfo.Cats.Domain.Entities;
 
@@ -14,7 +12,7 @@ public class AuditTrail : IEntity<int>
     {
     }
 
-    public static AuditTrail Create(string tableName, int? userId, AuditType auditType)
+    public static AuditTrail Create(string tableName, string? userId, AuditType auditType)
     {
         return new AuditTrail()
         {
@@ -30,7 +28,7 @@ public class AuditTrail : IEntity<int>
 
 
     public int Id { get; private set; }
-    public int? UserId { get; private set; }
+    public string? UserId { get; set; }
     public virtual ApplicationUser? Owner { get; private set; }
     public AuditType AuditType { get; private set; }
     public string? TableName { get; private set; }

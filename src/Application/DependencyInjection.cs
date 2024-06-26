@@ -9,23 +9,13 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        var assembly = Assembly.GetExecutingAssembly();
-
-        services.AddAutoMapper(config =>
-        {
-            config.AddMaps(assembly);
-        });
-
-        services.AddValidatorsFromAssembly(assembly);
-
+        services.AddAutoMapper(config => { config.AddMaps(Assembly.GetExecutingAssembly()); });
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         services.AddMediatR(config =>
         {
-            config.RegisterServicesFromAssembly(assembly);
+            config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             config.NotificationPublisher = new ParallelNoWaitPublisher();
-            config.AddRequestPreProcessor(
-                typeof(IRequestPreProcessor<>),
-                typeof(ValidationPreProcessor<>)
-            );
+            config.AddRequestPreProcessor(typeof(IRequestPreProcessor<>), typeof(ValidationPreProcessor<>));
             config.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
             config.AddOpenBehavior(typeof(UnhandledExceptionBehaviour<,>));
             config.AddOpenBehavior(typeof(RequestExceptionProcessorBehavior<,>));

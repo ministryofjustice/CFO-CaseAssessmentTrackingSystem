@@ -4,7 +4,7 @@ namespace Cfo.Cats.Application.Features.Documents.Caching;
 
 public static class DocumentCacheKey
 {
-    private static readonly TimeSpan RefreshInterval = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan RefreshInterval = TimeSpan.FromMinutes(10);
     private static CancellationTokenSource tokenSource;
 
     static DocumentCacheKey() 
@@ -19,6 +19,11 @@ public static class DocumentCacheKey
 
         return tokenSource;
     }
+    
+    public static MemoryCacheEntryOptions MemoryCacheEntryOptions =>
+        new MemoryCacheEntryOptions().AddExpirationToken(
+        new CancellationChangeToken(SharedExpiryTokenSource().Token)
+        );
     
     public static void Refresh() => SharedExpiryTokenSource().Cancel();
 

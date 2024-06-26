@@ -1,59 +1,63 @@
 ﻿@using Cfo.Cats.Application.Features.Locations.DTOs
-@using Cfo.Cats.Application.Features.Locations.Queries.GetAll
-@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Participants.Commands
 
-<MudForm @ref="Form">
-    <MudTextField T="string" Label="Location" Value='"Risley"' Disabled />
+@if (Model is not null && Locations is not [])
+{
+    <MudForm @ref="_form" Validation="@(Validator.ValidateValue(Model))">
+        <MudTextField T="string" Label="Location" Value="@Model.CurrentLocation.Name" Disabled/>
 
-    <MudCheckBox T="bool" @bind-Value="enrolFromOtherLocation" Label="Enrol at alternative location" />
+        <MudCheckBox T="bool" @bind-Value="Model.EnrolFromOtherLocation" Label="Enrol at alternative location"/>
 
-    @if (enrolFromOtherLocation)
-    {
-        <MudSelect T="LocationDto" @bind-Value="selectedLocation" Label="Alternative Location" AnchorOrigin="Origin.BottomCenter" Required>
-            @foreach (var location in Locations)
+        <MudSelect T="LocationDto" @bind-Value="Model.EnrolmentLocation" Label="Alternative Location" AnchorOrigin="Origin.BottomCenter" Disabled="!Model.EnrolFromOtherLocation">
+            @foreach (var location in Locations!)
             {
                 <MudSelectItem Value="location">
                     @location.Name
                 </MudSelectItem>
             }
         </MudSelect>
-    }
-
-    <MudTextFieldExtended T="string" Label="Reason for alternative location enrolment" Disabled="!enrolFromOtherLocation" Required="enrolFromOtherLocation"/>
-</MudForm>
+        <MudTextFieldExtended T="string" @bind-Value="Model.JustificationReason" Label="Reason for alternative location enrolment" Disabled="!Model.EnrolFromOtherLocation"/>
+    </MudForm>
+}
 
 @code {
+
+    MudForm? _form;
     
-    [CascadingParameter]
-    public UserProfile? UserProfile { get; set; }
+    SetEnrolmentLocation.Validator _modelValidator = new();
 
-    private LocationDto? selectedLocation;
-    bool enrolFromOtherLocation;
+    [EditorRequired]
+    [Parameter]
+    public SetEnrolmentLocation.Command? Model { get; set; } 
 
-    MudForm? Form { get; set; }
+    [EditorRequired]
+    [Parameter]
+    public LocationDto[]? Locations { get; set; } 
 
-    LocationDto[] Locations { get; set; } = [];
-
-    protected override async Task OnInitializedAsync()
+    public async Task<bool> Validate()
     {
-        var response = await Mediator.Send(new GetAllLocationsQuery()
+        try
         {
-            UserProfile = UserProfile!
-        });
+            await _form!.Validate().ConfigureAwait(false);
 
-        if (response.Succeeded)
-        {
-            Locations = response.Data!;
-            selectedLocation = Locations.First();
+            if (_form.IsValid)
+            {
+                var result = await Mediator.Send(Model);
+                if (result.Succeeded)
+                {
+                    Snackbar.Add("Location details saved", Severity.Info);
+                }
+                else
+                {
+                    Snackbar.Add(result.ErrorMessage, Severity.Error);
+                }
+            }
+
+            return _form.IsValid;
         }
-        
-        await base.OnInitializedAsync();
+        catch
+        {
+            return false;
+        }
     }
-
-    public bool Validate()
-    {
-        Form?.Validate();
-        return Form?.IsValid ?? false;
-    }
-
 }

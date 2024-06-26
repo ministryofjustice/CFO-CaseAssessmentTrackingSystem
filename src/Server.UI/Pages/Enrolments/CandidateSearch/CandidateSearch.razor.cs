@@ -1,5 +1,5 @@
 ﻿using Cfo.Cats.Application.Features.Candidates.DTOs;
-using Cfo.Cats.Application.Features.Participants.Commands.Enrol;
+using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Server.UI.Pages.Enrolments.Search;
 
 namespace Cfo.Cats.Server.UI.Pages.Enrolments.CandidateSearch;
@@ -20,7 +20,7 @@ public partial class CandidateSearch
             return;
         }
 
-        var enrolment = await Mediator.Send(new EnrolParticipantCommand() { Identifier = ""});
+        var participant = await Mediator.Send(new CreateParticipant.Command() { Identifier = ""});
         
         //await CaseService!.AddDummyCase(Candidate.Identifier);
         Snackbar.Add("Enrolment started!", Severity.Success);
@@ -42,7 +42,7 @@ public partial class CandidateSearch
     }
 
     public void NavigateToEnrolment(string participantId) 
-        => NavMan.NavigateTo($"/Enrolments/{participantId}");
+        => Navigation.NavigateTo($"/Enrolments/{participantId}");
 
     private Type selectedType = typeof(CandidateFinder);
 
