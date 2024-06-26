@@ -1,9 +1,7 @@
-@using Humanizer
-
 <MudContainer Class="d-flex flex-column align-center justify-center">
 
     <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">
-        The candidate we have found is already enrolled.
+        This candidate is already enrolled (@CandidateId);
     </MudAlert>
 
     <MudContainer Class="d-flex px-0 mt-8 justify-space-between">
@@ -16,6 +14,9 @@
 {
     [Parameter]
     public EventCallback OnCanceled { get; set; }
-    
+
+    [Parameter]
+    public string CandidateId { get; set; }
+
     private Task BackToSearch() => OnCanceled.InvokeAsync();
 }

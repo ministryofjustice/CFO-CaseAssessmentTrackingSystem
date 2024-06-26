@@ -7,8 +7,8 @@
 {
     <MudContainer Class="d-flex flex-column align-center justify-center">
     <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
-        We have found a match (@candidate.FirstName @candidate.LastName (@candidate.Identifier)
-        We have them located at @candidate.CurrentLocation
+        We have found a match: @candidate.FirstName @candidate.LastName (@candidate.Identifier)
+        We have them located at @(candidate.CurrentLocation ?? "Unknown Location")
     </MudAlert>
     <MudForm Model="@Model" @ref="@_form" Validation="@(Validator.ValidateValue(Model))">
         <MudGrid>

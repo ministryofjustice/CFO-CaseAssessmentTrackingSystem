@@ -36,21 +36,21 @@
 
         if (SearchReturnedNoCandidates())
         {
-            ShowMoreInformationRequired();
+            ShowNoResultsFound();
         }
         else if (SearchReturnedMultipleAmbiguousCandidates())
         {
-            ShowTooManyResults();
+            ShowTooManyResultsFound();
         }
         else if (SearchReturnedIdenticalCandidate())
         {
-            await EnrolCandidateIfNotAlreadyEnrolled();
+            await BeginEnrolmentIfNotAlreadyEnrolled();
         }
         else if (SearchReturnedSingleCandidate())
         {
             if(CandidateMeetsMinimumPrecedence(10))
             {
-                await EnrolCandidateIfNotAlreadyEnrolled();
+                await BeginEnrolmentIfNotAlreadyEnrolled();
             }
             else
             {
@@ -66,17 +66,23 @@
 
     void ShowCandidateFound()
     {
-        _selectedParameters.Add("Id", Candidate.Upci);
+        _selectedParameters.Add("CandidateId", Candidate.Upci);
         _selectedParameters.Add("Query", Query);
         _selectedParameters.Add("OnParticipantEnrolled", EventCallback.Factory.Create(this, OnParticipantEnrolledHandler));
         _selectedType = typeof(MatchFound);
     }
 
-    void ShowCandidateAlreadyEnrolled() => _selectedType = typeof(AlreadyEnrolled);
-    void ShowMoreInformationRequired() => _selectedType = typeof(MoreInformationRequired);
-    void ShowTooManyResults() => _selectedType = typeof(TooManyResults);
+    void ShowCandidateAlreadyEnrolled() 
+    {
+        _selectedParameters.Add("CandidateId", Candidate.Upci);
+        _selectedType = typeof(AlreadyEnrolled); 
+    }
 
-    async Task EnrolCandidateIfNotAlreadyEnrolled()
+    void ShowNoResultsFound() => _selectedType = typeof(NoResults);
+    void ShowMoreInformationRequired() => _selectedType = typeof(MoreInformationRequired);
+    void ShowTooManyResultsFound() => _selectedType = typeof(TooManyResults);
+
+    async Task BeginEnrolmentIfNotAlreadyEnrolled()
     {
         var result = SearchResults
             .OrderBy(candidate => candidate.Precedence)
