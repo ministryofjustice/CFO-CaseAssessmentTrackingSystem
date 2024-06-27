@@ -1,9 +1,10 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{28581377-5421-47F6-A678-9510117A7791}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.UI", "src\Server.UI\Server.UI.csproj", "{50485EFF-8E12-4F8A-A087-A9882D2C31C7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "src\Application\Application.csproj", "{166C4168-C1B3-4771-8DCB-21BBCC8E1FF4}"
 EndProject
@@ -17,8 +18,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Migrators.MSSQL", "src\Migr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Migrators.SqLite", "src\Migrators\Migrators.SqLite\Migrators.SqLite.csproj", "{426EFDAD-6A43-40DC-8954-7E2CE6056687}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.UI", "src\Server.UI\Server.UI.csproj", "{50485EFF-8E12-4F8A-A087-A9882D2C31C7}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_SolutionItems", "{1B26F38D-22D1-4A00-B3D3-D77C5979281B}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -30,13 +29,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_Solution
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Build", "build\Build.csproj", "{7CC5B8A2-2122-4907-B970-FD7A3EEA1C4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Build", "build\Build.csproj", "{7CC5B8A2-2122-4907-B970-FD7A3EEA1C4C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{62ABFE2F-D4F3-4E44-AA07-20D679B04CF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.UnitTests", "test\Application.UnitTests\Application.UnitTests.csproj", "{2FC2E6B9-5186-4A39-A2CC-0975ED2AEC1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.UnitTests", "test\Application.UnitTests\Application.UnitTests.csproj", "{2FC2E6B9-5186-4A39-A2CC-0975ED2AEC1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchitectureTests", "test\ArchitectureTests\ArchitectureTests.csproj", "{386B9FE9-E2C6-443A-A8EE-D1DC79E867C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArchitectureTests", "test\ArchitectureTests\ArchitectureTests.csproj", "{386B9FE9-E2C6-443A-A8EE-D1DC79E867C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
