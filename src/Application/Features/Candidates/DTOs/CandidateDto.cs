@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Cfo.Cats.Application.Features.Candidates.DTOs;
+﻿namespace Cfo.Cats.Application.Features.Candidates.DTOs;
 
 public class CandidateDto
 {
@@ -13,6 +11,11 @@ public class CandidateDto
     /// The first name of the candidate
     /// </summary>
     public string FirstName { get; set; }
+
+    /// <summary>
+    /// The second (or middle) name of the candidate
+    /// </summary>
+    public string SecondName { get; set; }
     
     /// <summary>
     /// The candidates last name
@@ -23,19 +26,41 @@ public class CandidateDto
     /// The candidates date of birth
     /// </summary>
     public DateTime DateOfBirth { get; set; }
-    
+
     /// <summary>
-    /// A collection of identifiers from external systems.
+    /// The candidates NOMIS Number (if applicable).
     /// </summary>
-    public string[] ExternalIdentifiers { get; set; } = [];
-
+    public string? NomisNumber { get; set; }
 
     /// <summary>
-    /// Indicates whether the candidate is marked as active in the data source(s).
+    /// The candidates Crn (if applicable).
+    /// </summary>
+    public string? Crn { get; set; }
+
+    /// <summary>
+    /// Indicates whether the primary record is marked as active in the data source(s).
     /// </summary>
     public bool IsActive { get; set; }
 
+    /// <summary>
+    /// The candidates gender (Male/Female).
+    /// </summary>
     public string Gender { get; set; }
+
+    /// <summary>
+    /// The candidates nationality
+    /// </summary>
+    public string Nationality { get; set; }
+
+    /// <summary>
+    /// The candidates ethnicity
+    /// </summary>
+    public string Ethnicity { get; set; }
+
+    /// <summary>
+    /// The primary source of information (NOMIS/DELIUS).
+    /// </summary>
+    public string Origin { get; set; }
     
     /// <summary>
     /// The location CATS thinks the user is registered at
