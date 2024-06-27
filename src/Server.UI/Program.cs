@@ -10,10 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.RegisterSerilog();
 builder.WebHost.UseStaticWebAssets();
 
-builder
-    .Services.AddApplication()
-    .AddInfrastructure(builder.Configuration)
-    .AddServerUi(builder.Configuration);
+builder.AddServerUi();
+
+builder.Services
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 

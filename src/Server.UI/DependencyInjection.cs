@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.FileProviders;
 using MudBlazor.Services;
 using MudExtensions.Services;
-using Polly;
 using ActualLab.Fusion;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using ActualLab.Fusion.Extensions;
@@ -28,8 +27,12 @@ namespace Cfo.Cats.Server.UI;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddServerUi(this IServiceCollection services, IConfiguration config)
+    public static WebApplicationBuilder AddServerUi(this WebApplicationBuilder builder)
     {
+        var services = builder.Services;
+        var config = builder.Configuration;
+        var environment = builder.Environment;
+
         services.AddRazorComponents().AddInteractiveServerComponents();
         services.AddCascadingAuthenticationState();
         services.AddScoped<IdentityUserAccessor>();
@@ -106,11 +109,18 @@ public static class DependencyInjection
                 return service;
             });
 
-        services.AddHttpClient<CandidateService>((provider, client) =>
+        if(environment.IsDevelopment())
         {
-            client.DefaultRequestHeaders.Add("X-API-KEY", config.GetRequiredValue("DMS:ApiKey"));
-            client.BaseAddress = new Uri(config.GetRequiredValue("DMS:ApplicationUrl"));
-        });
+            services.AddSingleton<ICandidateService, DummyCandidateService>();
+        }
+        else
+        {
+            services.AddHttpClient<ICandidateService, CandidateService>((provider, client) =>
+            {
+                client.DefaultRequestHeaders.Add("X-API-KEY", config.GetRequiredValue("DMS:ApiKey"));
+                client.BaseAddress = new Uri(config.GetRequiredValue("DMS:ApplicationUrl"));
+            });
+        }
 
         services.Configure<ForwardedHeadersOptions>(options =>
         {
@@ -118,7 +128,7 @@ public static class DependencyInjection
                 ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
         });
         
-        return services;
+        return builder;
     }
 
     public static WebApplication ConfigureServer(this WebApplication app, IConfiguration configuration)
