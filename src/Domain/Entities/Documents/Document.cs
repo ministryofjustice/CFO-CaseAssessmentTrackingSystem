@@ -7,13 +7,15 @@ namespace Cfo.Cats.Domain.Entities.Documents;
 
 public class Document : OwnerPropertyEntity<Guid>, IMayHaveTenant, IAuditTrial
 {
+    
     private Document()
     {
-        Id = Guid.NewGuid();
+        
     }
 
     private Document(string title, string description, DocumentType documentType)
     {
+        Id = Guid.NewGuid();
         Title = title;
         IsPublic = false;
         Description = description;
