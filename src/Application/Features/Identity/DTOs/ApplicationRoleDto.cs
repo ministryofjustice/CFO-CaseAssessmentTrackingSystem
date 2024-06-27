@@ -4,10 +4,10 @@ namespace Cfo.Cats.Application.Features.Identity.DTOs;
 public class ApplicationRoleDto
 {
     [Description("Id")]
-    public string Id { get; set; }
+    public required string Id { get; set; }
 
     [Description("Name")]
-    public string Name { get; set; } = string.Empty;
+    public required string Name { get; set; }
 
     [Description("Normalized Name")]
     public string? NormalizedName { get; set; }

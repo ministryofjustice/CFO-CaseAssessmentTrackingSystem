@@ -24,7 +24,7 @@ public class RequestLoggerTests
         currentUserService.Setup(x => x.UserId).Returns("Administrator");
         var requestLogger = new LoggingPreProcessor<CreateParticipant.Command>(logger.Object, currentUserService.Object);
         await requestLogger.Process(
-            new CreateParticipant.Command { Candidate = new CandidateDto { Identifier = "aABBB" } },
+            new CreateParticipant.Command { Candidate = DummyCandidate()  },
             new CancellationToken());
         currentUserService.Verify(i => i.UserName, Times.Once);
     }
@@ -34,9 +34,24 @@ public class RequestLoggerTests
     {
         var requestLogger = new LoggingPreProcessor<CreateParticipant.Command>(logger.Object, currentUserService.Object);
         await requestLogger.Process(
-            new CreateParticipant.Command { Candidate = new CandidateDto { Identifier = "aABBB" } },
+            new CreateParticipant.Command { Candidate = DummyCandidate() },
             new CancellationToken());
         identityService.Verify(i => i.GetUserNameAsync(It.IsAny<string>(), CancellationToken.None), Times.Never);
     }
-    
+
+    private CandidateDto DummyCandidate()
+    {
+        return new CandidateDto
+        {
+            Identifier = "aABBB",
+            FirstName = "",
+            LastName = "",
+            Gender = "",
+            Nationality = "",
+            Ethnicity = "",
+            Origin = "",
+            CurrentLocation = "",
+
+        };
+    }
 }

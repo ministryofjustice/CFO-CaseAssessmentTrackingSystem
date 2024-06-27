@@ -6,13 +6,13 @@ namespace Cfo.Cats.Application.Features.Tenants.DTOs;
 public record TenantDto
 {
     [Description("Tenant Id")]
-    public string Id { get; init; }
+    public required string Id { get; set; }
 
     [Description("Tenant Name")]
-    public string? Name { get; init; }
+    public string? Name { get; set; }
 
     [Description("Description")]
-    public string? Description { get; init; }
+    public string? Description { get; set; }
 
     private class Mapping : Profile
     {
