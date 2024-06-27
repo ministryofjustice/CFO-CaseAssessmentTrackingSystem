@@ -171,12 +171,12 @@
 
     private void BeginAssessment()
     {
-        Navigation.NavigateTo($"/Cases/{ParticipantId}");
+        Navigation.NavigateTo($"/pages/participants/{ParticipantId}");
     }
 
     private void ReturnToSearch()
     {
-        Navigation.NavigateTo("/Enrolments/Search");
+        Navigation.NavigateTo("/pages/candidates/search");
     }
 
     private async Task<bool> OnChangeAsync(StepChangeDirection direction, int targetIndex)
