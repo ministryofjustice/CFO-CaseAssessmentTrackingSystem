@@ -753,6 +753,28 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("ParentLocation");
                 });
 
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.Tenant", b =>
+                {
+                    b.OwnsMany("Cfo.Cats.Domain.ValueObjects.TenantDomain", "Domains", b1 =>
+                        {
+                            b1.Property<string>("TenantId")
+                                .HasColumnType("nvarchar(200)");
+
+                            b1.Property<string>("Domain")
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
+
+                            b1.HasKey("TenantId", "Domain");
+
+                            b1.ToTable("TenantDomain", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("TenantId");
+                        });
+
+                    b.Navigation("Domains");
+                });
+
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.AuditTrail", b =>
                 {
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")

@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Events;
+using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Domain.Entities.Administration;
 
@@ -7,8 +8,10 @@ public class Tenant : BaseAuditableEntity<string>
 {
 
     private readonly List<Location> _locations = new();
+    private readonly List<TenantDomain> _domains = new();
 
     public IReadOnlyCollection<Location> Locations => _locations.AsReadOnly();
+    public IReadOnlyCollection<TenantDomain> Domains => _domains.AsReadOnly();
 
 
 #pragma warning disable CS8618// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -64,6 +67,24 @@ public class Tenant : BaseAuditableEntity<string>
         if(_locations.Contains(location))
         {
             _locations.Remove(location);
+        }
+        return this;
+    }
+
+    public Tenant AddDomain(TenantDomain domain)
+    {
+        if (_domains.Contains(domain) == false)
+        {
+            _domains.Add(domain);
+        }
+        return this;
+    }
+
+    public Tenant RemoveDomain(TenantDomain domain)
+    {
+        if (_domains.Contains(domain))
+        {
+            _domains.Remove(domain);
         }
         return this;
     }

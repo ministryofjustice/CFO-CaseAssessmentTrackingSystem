@@ -14,11 +14,16 @@ public record TenantDto
     [Description("Description")]
     public string? Description { get; set; }
 
+    public string[] Domains { get; set; } = [];
+
     private class Mapping : Profile
     {
         public Mapping()
         {
-            CreateMap<Tenant, TenantDto>().ReverseMap();
+            CreateMap<Tenant, TenantDto>()
+                .ForMember(tenantDto => tenantDto.Domains, 
+                    options => options.MapFrom(tenant => tenant.Domains.Select(d => d.Domain)))
+                .ReverseMap();
         }
     }
 }

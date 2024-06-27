@@ -31,5 +31,11 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
                     .HasForeignKey("TenantId")
             );
 
+        builder.OwnsMany(l => l.Domains, domain => {
+            domain.WithOwner().HasForeignKey("TenantId");
+            domain.HasKey("TenantId", "Domain");
+            domain.ToTable(DatabaseSchema.Tables.TenantDomain);
+            domain.Property(x => x.Domain).HasMaxLength(255);
+        });
     }
 }
