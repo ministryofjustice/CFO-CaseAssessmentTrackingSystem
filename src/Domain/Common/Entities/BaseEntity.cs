@@ -10,7 +10,7 @@ public abstract class BaseEntity<TId> : IEntity<TId>
     [NotMapped]
     public IReadOnlyCollection<DomainEvent> DomainEvents => domainEvents.AsReadOnly();
 
-    public virtual TId Id { get; set; }
+    public virtual TId Id { get; set; } = default!;
 
     public void AddDomainEvent(DomainEvent domainEvent)
     {
