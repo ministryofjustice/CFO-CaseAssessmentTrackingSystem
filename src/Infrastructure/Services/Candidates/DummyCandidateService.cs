@@ -2,7 +2,7 @@
 using Cfo.Cats.Application.Features.Candidates.Queries.Search;
 using Matching.Core.Search;
 
-namespace Cfo.Cats.Server.UI.Services.Candidate;
+namespace Cfo.Cats.Infrastructure.Services.Candidates;
 
 public class DummyCandidateService : ICandidateService
 {
