@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -21,12 +21,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.UI", "src\Server.UI\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_SolutionItems", "{1B26F38D-22D1-4A00-B3D3-D77C5979281B}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
 		docker-compose.yml = docker-compose.yml
 		.config\dotnet-tools.json = .config\dotnet-tools.json
 		LICENSE = LICENSE
+		NuGet.config = NuGet.config
 		README.md = README.md
-		.gitignore = .gitignore
-		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Build", "build\Build.csproj", "{7CC5B8A2-2122-4907-B970-FD7A3EEA1C4C}"
