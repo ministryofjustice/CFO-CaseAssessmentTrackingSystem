@@ -36,10 +36,8 @@ public class CommunicationsService(IOptions<NotifyOptions> options, ILogger<Comm
 
 public class NotifyOptions
 {
-
     public const string Notify = "Notify";
-    public string ApiKey { get; set; }
-    public string SmsTemplate { get; set; }
-
-    public string EmailTemplate { get; set; }
+    public string ApiKey { get; set; } = default!;
+    public string SmsTemplate { get; set; } = default!;
+    public string EmailTemplate { get; set; } = default!;
 }

@@ -12,7 +12,7 @@ public class CandidateService(HttpClient client) : ICandidateService
         {
             $"identifier={searchQuery.ExternalIdentifier}",
             $"lastName={searchQuery.LastName}",
-            $"dateOfBirth={searchQuery.DateOfBirth.Value.ToString("yyyy-MM-dd")}"
+            $"dateOfBirth={searchQuery.DateOfBirth!.Value:yyyy-MM-dd}"
         };
 
         return await client.GetFromJsonAsync<IEnumerable<SearchResult>>($"/search?{string.Join('&', queryParams)}");

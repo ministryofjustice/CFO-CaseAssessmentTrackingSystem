@@ -151,7 +151,7 @@ public class ExcelService : IExcelService
 
         var lastRow = ws.LastRowUsed();
         var list = new List<TEntity>();
-        foreach (var row in ws.Rows(startRow, lastRow.RowNumber()))
+        foreach (var row in ws.Rows(startRow, lastRow!.RowNumber()))
         {
             try
             {
