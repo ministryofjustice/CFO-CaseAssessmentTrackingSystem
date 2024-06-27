@@ -2,6 +2,7 @@
 using Cfo.Cats.Application.Features.Candidates.Queries.Search;
 using Matching.Core.Search;
 
+
 namespace Cfo.Cats.Infrastructure.Services.Candidates;
 
 public class DummyCandidateService : ICandidateService
@@ -16,7 +17,11 @@ public class DummyCandidateService : ICandidateService
             DateOfBirth = new DateTime(1970, 2, 19),
             Gender = "Male",
             Crn = "B001111",
-            NomisNumber = "A0001AA"
+            NomisNumber = "A0001AA",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         },
         new CandidateDto
         {
@@ -25,7 +30,11 @@ public class DummyCandidateService : ICandidateService
             LastName = "Parker",
             DateOfBirth = new DateTime(2001, 8, 10),
             Gender = "Male",
-            Crn = "B002222"
+            Crn = "B002222",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         },
         new CandidateDto
         {
@@ -35,7 +44,11 @@ public class DummyCandidateService : ICandidateService
             DateOfBirth = new DateTime(1970, 5, 29),
             Gender = "Male",
             Crn = "B003333",
-            NomisNumber = "A0002BB"
+            NomisNumber = "A0002BB",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         },
         new CandidateDto
         {
@@ -44,7 +57,11 @@ public class DummyCandidateService : ICandidateService
             LastName = "Rogers",
             DateOfBirth = new DateTime(1918, 7, 4),
             Gender = "Male",
-            Crn = "B004444"
+            Crn = "B004444",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         },
         new CandidateDto
         {
@@ -53,7 +70,11 @@ public class DummyCandidateService : ICandidateService
             LastName = "Kent",
             DateOfBirth = new DateTime(1938, 6, 18),
             Gender = "Male",
-            Crn = "B006666"
+            Crn = "B006666",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         },
         new CandidateDto
         {
@@ -63,7 +84,11 @@ public class DummyCandidateService : ICandidateService
             DateOfBirth = new DateTime(1989, 3, 14),
             Gender = "Male",
             Crn = "B007777",
-            NomisNumber = "A0004DD"
+            NomisNumber = "A0004DD",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         },
         new CandidateDto
         {
@@ -72,7 +97,11 @@ public class DummyCandidateService : ICandidateService
             LastName = "Curry",
             DateOfBirth = new DateTime(1986, 1, 29),
             Gender = "Male",
-            Crn = "B008888"
+            Crn = "B008888",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         },
         new CandidateDto
         {
@@ -82,7 +111,11 @@ public class DummyCandidateService : ICandidateService
             DateOfBirth = new DateTime(1984, 11, 22),
             Gender = "Female",
             Crn = "B009999",
-            NomisNumber = "A0005EE"
+            NomisNumber = "A0005EE",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         },
         new CandidateDto
         {
@@ -91,7 +124,11 @@ public class DummyCandidateService : ICandidateService
             LastName = "Wilson",
             DateOfBirth = new DateTime(1974, 4, 10),
             Gender = "Male",
-            Crn = "B001010"
+            Crn = "B001010",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         },
         new CandidateDto
         {
@@ -101,7 +138,11 @@ public class DummyCandidateService : ICandidateService
             DateOfBirth = new DateTime(1968, 8, 16),
             Gender = "Male",
             Crn = "B001111",
-            NomisNumber = "A0006FF"
+            NomisNumber = "A0006FF",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         },
         new CandidateDto
         {
@@ -110,7 +151,11 @@ public class DummyCandidateService : ICandidateService
             LastName = "Strange",
             DateOfBirth = new DateTime(1930, 11, 18),
             Gender = "Male",
-            Crn = "B001212"
+            Crn = "B001212",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         },
         new CandidateDto
         {
@@ -119,7 +164,11 @@ public class DummyCandidateService : ICandidateService
             LastName = "Banner",
             DateOfBirth = new DateTime(1969, 12, 18),
             Gender = "Male",
-            Crn = "B001414"
+            Crn = "B001414",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         },
         new CandidateDto
         {
@@ -128,7 +177,11 @@ public class DummyCandidateService : ICandidateService
             LastName = "Danvers",
             DateOfBirth = new DateTime(1984, 5, 29),
             Gender = "Female",
-            Crn = "B001616"
+            Crn = "B001616",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         },
         new CandidateDto
         {
@@ -138,7 +191,11 @@ public class DummyCandidateService : ICandidateService
             DateOfBirth = new DateTime(1979, 12, 15),
             Gender = "Male",
             Crn = "B001717",
-            NomisNumber = "A0009II"
+            NomisNumber = "A0009II",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         },
         new CandidateDto
         {
@@ -147,7 +204,11 @@ public class DummyCandidateService : ICandidateService
             LastName = "Jones",
             DateOfBirth = new DateTime(1985, 7, 5),
             Gender = "Female",
-            Crn = "B001818"
+            Crn = "B001818",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         },
         new CandidateDto
         {
@@ -157,7 +218,11 @@ public class DummyCandidateService : ICandidateService
             DateOfBirth = new DateTime(1990, 3, 20),
             Gender = "Male",
             Crn = "B001919",
-            NomisNumber = "A0010JJ"
+            NomisNumber = "A0010JJ",
+            Nationality = "British",
+            Ethnicity = "",
+            Origin = "Nomis",
+            CurrentLocation = "Risley",
         }
     ];
 
@@ -180,7 +245,7 @@ public class DummyCandidateService : ICandidateService
                 Candidates.Where(e => new[] { e.Crn, e.NomisNumber }.Contains(searchQuery.ExternalIdentifier))
             );
 
-        if(blocks is null || blocks.Count() is 0)
+        if(blocks.Count() is 0)
         {
             return [];
         }
