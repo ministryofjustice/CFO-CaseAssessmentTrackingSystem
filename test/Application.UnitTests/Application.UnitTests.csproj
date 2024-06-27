@@ -6,6 +6,7 @@
         <AssemblyName>Cfo.Cats.Application.UnitTests</AssemblyName>
         <IsPackable>false</IsPackable>
         <LangVersion>default</LangVersion>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>
