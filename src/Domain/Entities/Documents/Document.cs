@@ -39,7 +39,7 @@ public class Document : OwnerPropertyEntity<Guid>, IMayHaveTenant, IAuditTrial
     public string? Title { get; private set; }
     public string? Description { get; private set; }
     
-    [Obsolete("We are not storing the content with the document", false)]
+    //todo: remove this field
     public string? Content { get; private set; }
     public bool IsPublic { get; private set; }
     public string? URL { get; private set; }
