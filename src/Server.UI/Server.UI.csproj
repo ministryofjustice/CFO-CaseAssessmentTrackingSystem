@@ -88,9 +88,6 @@
         <_ContentIncludedByDefault Remove="Pages\Enrolments\Enrolment.razor" />
         <_ContentIncludedByDefault Remove="Pages\Enrolments\_Imports.razor" />
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Services\Candidate\" />
-    </ItemGroup>
 
 
 </Project>
