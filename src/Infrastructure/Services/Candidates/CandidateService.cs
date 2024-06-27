@@ -1,7 +1,8 @@
-﻿using Cfo.Cats.Application.Features.Candidates.DTOs;
+﻿using System.Net.Http.Json;
+using Cfo.Cats.Application.Features.Candidates.DTOs;
 using Cfo.Cats.Application.Features.Candidates.Queries.Search;
 
-namespace Cfo.Cats.Server.UI.Services.Candidate;
+namespace Cfo.Cats.Infrastructure.Services.Candidates;
 
 public class CandidateService(HttpClient client) : ICandidateService
 {

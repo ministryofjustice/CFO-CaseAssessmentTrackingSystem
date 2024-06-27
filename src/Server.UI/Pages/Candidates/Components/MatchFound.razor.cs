@@ -3,7 +3,6 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Candidates.DTOs;
 using Cfo.Cats.Application.Features.Candidates.Queries.Search;
 using Cfo.Cats.Application.Features.Participants.Commands;
-using Cfo.Cats.Server.UI.Services.Candidate;
 
 namespace Cfo.Cats.Server.UI.Pages.Candidates.Components;
 

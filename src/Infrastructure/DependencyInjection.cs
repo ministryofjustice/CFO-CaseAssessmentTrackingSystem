@@ -7,6 +7,7 @@ using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Configurations;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Cfo.Cats.Infrastructure.Persistence.Interceptors;
+using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.MultiTenant;
 using Cfo.Cats.Infrastructure.Services.Serialization;
 using Microsoft.AspNetCore.DataProtection;
@@ -146,6 +147,18 @@ public static class DependencyInjection
             
         }
         
+        if(configuration["UseDummyCandidateService"] == "True")
+        {
+            services.AddSingleton<ICandidateService, DummyCandidateService>();
+        }
+        else
+        {
+            services.AddHttpClient<ICandidateService, CandidateService>((provider, client) =>
+            {
+                client.DefaultRequestHeaders.Add("X-API-KEY", configuration.GetRequiredValue("DMS:ApiKey"));
+                client.BaseAddress = new Uri(configuration.GetRequiredValue("DMS:ApplicationUrl"));
+            });
+        }
         
         return services
             .AddSingleton<ISerializer, SystemTextJsonSerializer>()
