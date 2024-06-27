@@ -2,7 +2,7 @@
 @using Cfo.Cats.Application.Features.Candidates.Queries.Search
 @using Cfo.Cats.Application.Features.Participants.Commands
 
-@if(candidate is not null)
+@if(candidate is not null && Model is not null)
 {
     <MudContainer Class="d-flex flex-column align-center justify-center">
     <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">

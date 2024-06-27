@@ -1,5 +1,4 @@
-﻿@using Server.UI.Components.Shared.Layout
-@using Toolbelt.Blazor.HotKeys2
+﻿@using Toolbelt.Blazor.HotKeys2
 
 @inject IStringLocalizer<HeaderMenu> L
 @inject HotKeys HotKeys
@@ -78,7 +77,7 @@
 
     public void Dispose()
     {
-        hotKeysContext?.Dispose();
+        hotKeysContext?.DisposeAsync();
     }    
 
 }

@@ -168,7 +168,7 @@
     private MudDataGrid<ParticipantDto> _table = default!;
     private bool _loading;
     private bool _canSearch;
-    private ParticipantDto _currentDto = new();
+    private ParticipantDto _currentDto = new() { Id = "" };
 
     private ParticipantsWithPagination.Query Query { get; set; } = new();
 

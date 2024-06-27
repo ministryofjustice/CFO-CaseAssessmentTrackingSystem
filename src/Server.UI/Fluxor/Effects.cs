@@ -15,6 +15,6 @@ public class Effects
     public async Task HandleFetchDataAction(FetchUserDtoAction action, IDispatcher dispatcher)
     {
         var result = await identityService.GetApplicationUserDto(action.UserName);
-        dispatcher.Dispatch(new FetchUserDtoResultAction(result));
+        dispatcher.Dispatch(new FetchUserDtoResultAction(result!));
     }
 }

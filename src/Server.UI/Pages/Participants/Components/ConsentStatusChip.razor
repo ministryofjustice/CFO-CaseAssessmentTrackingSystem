@@ -11,9 +11,9 @@
 
 
     [Parameter, EditorRequired]
-    public ConsentStatus Status { get; set;}
+    public ConsentStatus Status { get; set; } = default!;
 
-    public string Icon => GetIconForStatus(Status);
+    public new string Icon => GetIconForStatus(Status);
 
     private string GetIconForStatus(ConsentStatus status)
     {

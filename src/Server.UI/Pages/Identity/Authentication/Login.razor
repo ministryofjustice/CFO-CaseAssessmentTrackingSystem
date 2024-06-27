@@ -146,7 +146,7 @@
         {
             var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
             var token = await UserManager.GenerateTwoFactorTokenAsync(user!, "Email");
-            await Sender.Publish(new SendFactorCodeNotification(user.Email!, user.UserName!, token));
+            await Sender.Publish(new SendFactorCodeNotification(user!.Email!, user.UserName!, token));
 
             RedirectManager.RedirectTo(LoginWith2fa.PageUrl, new() { ["returnUrl"] = ReturnUrl, ["rememberMe"] = false });
         }

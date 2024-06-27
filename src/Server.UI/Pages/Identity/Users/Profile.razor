@@ -72,11 +72,11 @@
                                     }
                                     <MudTooltip Text="@L["Click upload a image"]">
                                         <MudFileUpload T="IBrowserFile" Accept=".jpg, .jpeg, .png, .webp" FilesChanged="UploadPhoto" Style="margin-top:-10px;margin-left:-15px">
-                                            <ButtonTemplate>
+                                            <ActivatorContent>
                                                 <MudIconButton HtmlTag="label"
                                                                Icon="@Icons.Material.Filled.PhotoCamera">
                                                 </MudIconButton>
-                                            </ButtonTemplate>
+                                            </ActivatorContent>
                                         </MudFileUpload>
                                     </MudTooltip>
 
@@ -177,7 +177,9 @@
 
 @code{
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
-    private UserManager<ApplicationUser> userManager;
+    
+    private UserManager<ApplicationUser> userManager = default!;
+    
     public string Title { get; set; } = "Profile";
 
     private MudForm? form;
@@ -189,7 +191,7 @@
 
     public string Id => Guid.NewGuid().ToString();
     private bool IsLoading => UserProfileState.Value.IsLoading;
-    private UserProfile Model => UserProfileState.Value.UserProfile;
+    private UserProfile Model => UserProfileState.Value.UserProfile!;
 
 
     private async void ActivePanelIndexChanged(int index)

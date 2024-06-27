@@ -7,9 +7,9 @@ using Cfo.Cats.Application.Features.Participants.Commands;
 namespace Cfo.Cats.Server.UI.Pages.Candidates.Components;
 
 public partial class MatchFound : ComponentBase
-{ 
+{
     [Inject]
-    private IPicklistService PicklistService { get; set; }
+    private IPicklistService PicklistService { get; set; } = default!;
 
     private MudForm? _form;
 
@@ -21,7 +21,8 @@ public partial class MatchFound : ComponentBase
     private List<ComparisonRow>? _comparisons;
 
     [Parameter]
-    public string CandidateId { get; set; }
+    [EditorRequired]
+    public string CandidateId { get; set; } = default!;
 
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; }
@@ -36,26 +37,19 @@ public partial class MatchFound : ComponentBase
     public EventCallback OnParticipantEnrolled { get; set; }
 
     [Inject]
-    public ICandidateService CandidateService { get; set; }
+    public ICandidateService CandidateService { get; set; } = default!;
 
 
     protected override async Task OnParametersSetAsync()
     {
-        candidate = await CandidateService.GetByUpciAsync(CandidateId);
+        candidate = await CandidateService.GetByUpciAsync(CandidateId)
+            ?? throw new ApplicationException("We found a candidate, but then could not get it");
 
-        _comparisons = new List<ComparisonRow>
-        {
-            new ("First Name", Query.FirstName.ToUpper(), candidate.FirstName.ToUpper()),
-            new ("Last Name", Query.LastName.ToUpper(), candidate.LastName.ToUpper()),
-            new ("Date Of Birth", Query.DateOfBirth.GetValueOrDefault().ToShortDateString(), candidate.DateOfBirth.ToShortDateString())
-        };
-
-        /*
-        foreach (var identifier in candidate.ExternalIdentifiers)
-        {
-            _comparisons.Add(new("Identifier", identifier, Query.ExternalIdentifier));
-        }
-        */
+        _comparisons = [
+            new("First Name", Query.FirstName.ToUpper(), candidate.FirstName.ToUpper()),
+            new("Last Name", Query.LastName.ToUpper(), candidate.LastName.ToUpper()),
+            new("Date Of Birth", Query.DateOfBirth.GetValueOrDefault().ToShortDateString(), candidate.DateOfBirth.ToShortDateString())
+        ];
 
         Model = new CreateParticipant.Command
         {
