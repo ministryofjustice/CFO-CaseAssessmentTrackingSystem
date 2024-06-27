@@ -21,8 +21,8 @@ public class AuditTrailAdvancedSpecification : Specification<AuditTrail>
         Query
             .Where(p => p.AuditType == filter.AuditType, filter.AuditType is not null)
             .Where(
-                p => p.UserId == filter.CurrentUser.UserId,
-                filter.ListView == AuditTrailListView.My && filter.CurrentUser is not null
+                p => p.UserId == filter.CurrentUser!.UserId,
+                filter is { ListView: AuditTrailListView.My, CurrentUser: not null }
             )
             .Where(
                 p => p.DateTime.Date == DateTime.Now.Date,
@@ -30,7 +30,7 @@ public class AuditTrailAdvancedSpecification : Specification<AuditTrail>
             )
             .Where(p => p.DateTime >= last30day, filter.ListView == AuditTrailListView.Last30days)
             .Where(
-                x => x.TableName.Contains(filter.Keyword),
+                x => x.TableName!.Contains(filter.Keyword!),
                 !string.IsNullOrEmpty(filter.Keyword)
             );
     }

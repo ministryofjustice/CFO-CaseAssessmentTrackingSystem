@@ -5,22 +5,22 @@ public class CandidateDto
     /// <summary>
     /// The CATS identifier
     /// </summary>
-    public string Identifier { get; set; }
+    public required string Identifier { get; set; }
     
     /// <summary>
     /// The first name of the candidate
     /// </summary>
-    public string FirstName { get; set; }
+    public required string FirstName { get; set; }
 
     /// <summary>
     /// The second (or middle) name of the candidate
     /// </summary>
-    public string SecondName { get; set; }
+    public string? SecondName { get; set; }
     
     /// <summary>
     /// The candidates last name
     /// </summary>
-    public string LastName { get; set; } 
+    public required string LastName { get; set; } 
     
     /// <summary>
     /// The candidates date of birth
@@ -45,27 +45,27 @@ public class CandidateDto
     /// <summary>
     /// The candidates gender (Male/Female).
     /// </summary>
-    public string Gender { get; set; }
+    public required string Gender { get; set; }
 
     /// <summary>
     /// The candidates nationality
     /// </summary>
-    public string Nationality { get; set; }
+    public required string Nationality { get; set; }
 
     /// <summary>
     /// The candidates ethnicity
     /// </summary>
-    public string Ethnicity { get; set; }
+    public required string Ethnicity { get; set; }
 
     /// <summary>
     /// The primary source of information (NOMIS/DELIUS).
     /// </summary>
-    public string Origin { get; set; }
+    public required string Origin { get; set; }
     
     /// <summary>
     /// The location CATS thinks the user is registered at
     /// </summary>
-    public string CurrentLocation { get; set; }
+    public required string CurrentLocation { get; set; }
 
     public EnrolmentStatus? EnrolmentStatus { get; set; }
     

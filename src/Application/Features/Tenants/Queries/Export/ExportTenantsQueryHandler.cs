@@ -6,7 +6,8 @@ public class ExportTenantsQueryHandler
     : IRequestHandler<ExportTenantsQuery, Result<byte[]>>
 {
     private readonly IApplicationDbContext context;
-    private readonly TenantDto dto = new();
+    // The is only used to get the member name descriptions.
+    private readonly TenantDto dto = new() { Id = "" };
     private readonly IExcelService excelService;
     private readonly IStringLocalizer<ExportTenantsQueryHandler> localizer;
     private readonly IMapper mapper;

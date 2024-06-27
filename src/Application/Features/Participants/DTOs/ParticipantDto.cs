@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Participants.DTOs;
 public class ParticipantDto
 {
     [Description("CATS Identifier")]
-    public string Id { get; set; }
+    public required string Id { get; set; }
     public string? FirstName { get; set; }
     public string? MiddleName { get; set; }
     public string? LastName { get; set; }
@@ -27,9 +27,9 @@ public class ParticipantDto
     [Description("Enrolment Justification Reason")]
     public string? EnrolmentLocationJustification { get; set; }
 
-    public ConsentDto[] Consents { get; set; }
-    
-    public RightToWorkDto[] RightToWorks { get; set; }
+    public ConsentDto[] Consents { get; set; } = [];
+
+    public RightToWorkDto[] RightToWorks { get; set; } = [];
     
     private class Mapping : Profile
     {
