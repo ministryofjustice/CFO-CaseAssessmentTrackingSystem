@@ -28,7 +28,7 @@ internal sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> log
 
         await Results.Problem(title: title,
         statusCode: statusCode,
-        extensions: new Dictionary<string, object?>
+        extensions: new Dictionary<string, object>
         {
             {
                 "traceId", traceId

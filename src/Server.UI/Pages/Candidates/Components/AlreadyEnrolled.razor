@@ -15,8 +15,8 @@
     [Parameter]
     public EventCallback OnCanceled { get; set; }
 
-    [Parameter]
-    public string CandidateId { get; set; }
+    [Parameter, EditorRequired]
+    public string CandidateId { get; set; } = default!;
 
     private Task BackToSearch() => OnCanceled.InvokeAsync();
 }

@@ -6,26 +6,29 @@
 
 <MudGrid>
     <MudItem xs="12">
-            <MudForm Model="@Query" @ref="_form" Validation="@(Validator.ValidateValue(Query))" >
+        @if (Query is not null)
+        {
+            <MudForm Model="@Query" @ref="_form" Validation="@(Validator.ValidateValue(Query))">
                 <MudItem xs="12">
-                    <MudTextField Label="External Identifier (PNomis/NDelius Id)" @bind-Value="Query.ExternalIdentifier" For="(() => Query.ExternalIdentifier)" Immediate="true" />
+                    <MudTextField Label="External Identifier (PNomis/NDelius Id)" @bind-Value="Query.ExternalIdentifier" For="(() => Query.ExternalIdentifier)" Immediate="true"/>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudTextField Label="First Name" @bind-Value="Query.FirstName" For="(() => Query.FirstName)" Immediate="true" />
+                    <MudTextField Label="First Name" @bind-Value="Query.FirstName" For="(() => Query.FirstName)" Immediate="true"/>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudTextField Label="Last Name" @bind-Value="Query.LastName" For="(() => Query.LastName)" Immediate="true" />
+                    <MudTextField Label="Last Name" @bind-Value="Query.LastName" For="(() => Query.LastName)" Immediate="true"/>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudDatePicker Label="Date Of Birth" @bind-Date="Query.DateOfBirth" For="(() => Query.DateOfBirth)" ImmediateText="true" Editable="true" MaxDate="DateTime.UtcNow.Date" />
+                    <MudDatePicker Label="Date Of Birth" @bind-Date="Query.DateOfBirth" For="(() => Query.DateOfBirth)" ImmediateText="true" Editable="true" MaxDate="DateTime.UtcNow.Date"/>
                 </MudItem>
             </MudForm>
-        <MudContainer Class="d-flex px-0 pt-8">
-            <MudSpacer />
-            <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Search" Loading="false" Disabled="false">
-                Search
-            </MudLoadingButton>
-        </MudContainer>
+            <MudContainer Class="d-flex px-0 pt-8">
+                <MudSpacer/>
+                <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Search" Loading="false" Disabled="false">
+                    Search
+                </MudLoadingButton>
+            </MudContainer>
+        }
     </MudItem>
 </MudGrid>
 
@@ -34,7 +37,7 @@
     private MudForm? _form;
 
     [Inject]
-    public ICandidateService CandidateService { get; set; }
+    public ICandidateService CandidateService { get; set; } = default!;
 
     [EditorRequired]
     [Parameter]
@@ -54,7 +57,7 @@
         await _form!.Validate().ConfigureAwait(false);
         if (_form.IsValid)
         {
-            var result = await CandidateService.SearchAsync(Query);
+            var result = await CandidateService.SearchAsync(Query!);
             await OnSearch.InvokeAsync(result?.ToArray() ?? []);
         }
     }

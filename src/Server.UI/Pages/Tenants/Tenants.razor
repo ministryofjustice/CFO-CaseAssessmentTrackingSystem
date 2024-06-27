@@ -191,7 +191,7 @@
     private int defaultPageSize = 15;
     private HashSet<TenantDto> selectedItems = new();
     private MudDataGrid<TenantDto> table = default!;
-    private TenantDto currentDto = new();
+    private TenantDto currentDto = new() { Id = "" };
     private string searchString = string.Empty;
     private bool loading;
     private bool exporting;

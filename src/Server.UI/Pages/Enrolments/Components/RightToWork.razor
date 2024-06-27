@@ -82,8 +82,6 @@
 
     private bool _isRequired = true;
     private bool _uploading = false;
-    private int _fileCount = 0;
-
     
     [EditorRequired]
     [Parameter]
@@ -135,7 +133,6 @@
                 await stream.CopyToAsync(memoryStream);
         
                 Model!.UploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
-                _fileCount = 1;
                 _uploading = false;
             }
         }

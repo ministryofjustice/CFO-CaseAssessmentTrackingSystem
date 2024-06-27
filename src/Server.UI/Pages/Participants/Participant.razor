@@ -68,7 +68,7 @@
     </MudItem>
     <MudItem xs="8" Style="height: 100%; width: 100%;">
         <MudPaper Class="document-container">
-            @if (fileBase64 != null && extension.Equals("pdf", StringComparison.CurrentCultureIgnoreCase))
+            @if (fileBase64 != null && extension!.Equals("pdf", StringComparison.CurrentCultureIgnoreCase))
             {
                 <object data="data:application/pdf;base64,@fileBase64" type="application/pdf" class="full-size-object">
                     <p>PDF cannot be displayed.</p>

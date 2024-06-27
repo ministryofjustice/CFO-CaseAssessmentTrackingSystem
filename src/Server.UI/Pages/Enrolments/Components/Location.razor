@@ -73,7 +73,7 @@
 
             if (_form.IsValid)
             {
-                var result = await Mediator.Send(Model);
+                var result = await Mediator.Send(Model!);
                 if (result.Succeeded)
                 {
                     Snackbar.Add("Location details saved", Severity.Info);

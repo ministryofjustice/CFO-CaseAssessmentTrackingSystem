@@ -85,7 +85,7 @@
                         @if (_canImport)
                         {
                             <MudFileUpload T="IBrowserFile" FilesChanged="OnImportData" Accept=".xlsx" Style="margin-top:0px;">
-                                <ButtonTemplate>
+                                <ActivatorContent>
                                     <MudButton HtmlTag="label"
                                                Size="Size.Small"
                                                Variant="Variant.Outlined"
@@ -102,7 +102,7 @@
                                             @ConstantString.Import
                                         }
                                     </MudButton>
-                                </ButtonTemplate>
+                                </ActivatorContent>
                             </MudFileUpload>
                         }
                     </MudHidden>
@@ -202,14 +202,14 @@
 
 @code{
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
-    private RoleManager<ApplicationRole> RoleManager;
+    private RoleManager<ApplicationRole> _roleManager = default!;
     private string? Title { get; set; }
     private bool _processing;
     private string _currentRoleName = string.Empty;
     private int _defaultPageSize = 15;
     private HashSet<ApplicationRoleDto> _selectedItems = new();
-    private readonly ApplicationRoleDto _currentDto = new();
-    private string _searchString = string.Empty;
+    private readonly ApplicationRoleDto _currentDto = new() { Id = "", Name = ""};
+    private string _searchString = string.Empty; 
 
     private TimeSpan RefreshInterval => TimeSpan.FromSeconds(60);
     private LazyCacheEntryOptions Options => new LazyCacheEntryOptions().SetAbsoluteExpiration(RefreshInterval, ExpirationMode.LazyExpiration);
@@ -230,7 +230,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        RoleManager = ScopedServices.GetRequiredService<RoleManager<ApplicationRole>>();
+        _roleManager = ScopedServices.GetRequiredService<RoleManager<ApplicationRole>>();
         Title = L[_currentDto.GetClassDescription()];
         var state = await AuthState;
         _canCreate = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
@@ -247,14 +247,14 @@
         try
         {
             _loading = true;
-            var items = await RoleManager.Roles
+            var items = await _roleManager.Roles
                 .Where(x => x.Name!.ToLower().Contains(_searchString) || x.Description!.ToLower().Contains(_searchString))
                 .EfOrderBySortDefinitions(state)
                 .Skip(state.Page * state.PageSize).Take(state.PageSize)
                 .Select(x => new ApplicationRoleDto
                     { Id = x.Id, Name = x.Name!, Description = x.Description, NormalizedName = x.NormalizedName })
                 .ToListAsync();
-            var total = await RoleManager.Roles.CountAsync(x =>
+            var total = await _roleManager.Roles.CountAsync(x =>
                 x.Name!.ToLower().Contains(_searchString) || x.Description!.ToLower().Contains(_searchString));
             return new GridData<ApplicationRoleDto> { TotalItems = total, Items = items };
         }
@@ -281,7 +281,7 @@
 
     private async Task OnCreate()
     {
-        var model = new ApplicationRoleDto { Name = "" };
+        var model = new ApplicationRoleDto { Id = "", Name = "" };
         var parameters = new DialogParameters<RoleFormDialog> { { x => x.Model, model } };
         var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
         var dialog = DialogService.Show<RoleFormDialog>(L["Create a new role"], parameters, options);
@@ -295,7 +295,7 @@
                 Description = model.Description
             };
 
-            var state = await RoleManager.CreateAsync(applicationRole);
+            var state = await _roleManager.CreateAsync(applicationRole);
 
             if (state.Succeeded)
             {
@@ -320,12 +320,12 @@
         var result = await dialog.Result;
         if (!result.Canceled)
         {
-            var role = await RoleManager.Roles.FirstOrDefaultAsync(r => r.Id == item.Id);
+            var role = await _roleManager.Roles.FirstOrDefaultAsync(r => r.Id == item.Id);
             if (role is not null)
             {
                 role.Description = item.Description;
                 role.Name = item.Name;
-                var state = await RoleManager.UpdateAsync(role);
+                var state = await _roleManager.UpdateAsync(role);
                 if (state.Succeeded)
                 {
                     Snackbar.Add($"{ConstantString.UpdateSuccess}", Severity.Info);
@@ -351,8 +351,8 @@
     {
         async Task<IList<Claim>> GetClaims(string roleId)
         {
-            var role = await RoleManager.Roles.FirstOrDefaultAsync(r => r.Id == dto.Id) ?? throw new NotFoundException($"not found application role: {roleId}");
-            var claims = await RoleManager.GetClaimsAsync(role);
+            var role = await _roleManager.Roles.FirstOrDefaultAsync(r => r.Id == dto.Id) ?? throw new NotFoundException($"not found application role: {roleId}");
+            var claims = await _roleManager.GetClaimsAsync(role);
             return claims;
         }
 
@@ -375,11 +375,11 @@
         {
             _processing = true;
             var roleId = model.RoleId!;
-            var role = await RoleManager.Roles.FirstOrDefaultAsync (r => r.Id == roleId) ?? throw new NotFoundException($"Application role {roleId} Not Found.");
+            var role = await _roleManager.Roles.FirstOrDefaultAsync (r => r.Id == roleId) ?? throw new NotFoundException($"Application role {roleId} Not Found.");
             model.Assigned = !model.Assigned;
             if (model is { Assigned: true, ClaimType: not null, ClaimValue: not null })
             {
-                await RoleManager.AddClaimAsync(role, new Claim(model.ClaimType, model.ClaimValue));
+                await _roleManager.AddClaimAsync(role, new Claim(model.ClaimType, model.ClaimValue));
                 Snackbar.Add($"{L["Permission assigned successfully"]}", Severity.Info);
             }
             else
@@ -387,7 +387,7 @@
                 var removed = _assignedClaims.FirstOrDefault(x => x.Value == model.ClaimValue);
                 if (removed is not null)
                 {
-                    await RoleManager.RemoveClaimAsync(role, removed);
+                    await _roleManager.RemoveClaimAsync(role, removed);
                 }
 
                 Snackbar.Add($"{L["Permission removed successfully"]}", Severity.Info);
@@ -408,7 +408,7 @@
         {
             _processing = true;
             var roleId = models.First().RoleId;
-            var role = await RoleManager.Roles.FirstOrDefaultAsync(r => r.Id == roleId!) 
+            var role = await _roleManager.Roles.FirstOrDefaultAsync(r => r.Id == roleId!) 
                        ?? throw new NotFoundException($"not found application role: {roleId}");
             foreach (var model in models)
             {
@@ -416,7 +416,7 @@
                 {
                     if (model.ClaimType is not null)
                     {
-                        await RoleManager.AddClaimAsync(role, new Claim(model.ClaimType, model.ClaimValue));
+                        await _roleManager.AddClaimAsync(role, new Claim(model.ClaimType, model.ClaimValue));
                     }
                 }
                 else
@@ -424,7 +424,7 @@
                     var removed = _assignedClaims.FirstOrDefault(x => x.Value == model.ClaimValue);
                     if (removed is not null)
                     {
-                        await RoleManager.RemoveClaimAsync(role, removed);
+                        await _roleManager.RemoveClaimAsync(role, removed);
                     }
                 }
             }
@@ -452,10 +452,10 @@
         var result = await dialog.Result;
         if (!result.Canceled)
         {
-            var deleteRoles = await RoleManager.Roles.Where(x => x.Id == dto.Id).ToListAsync();
+            var deleteRoles = await _roleManager.Roles.Where(x => x.Id == dto.Id).ToListAsync();
             foreach (var role in deleteRoles)
             {
-                var deleteResult = await RoleManager.DeleteAsync(role);
+                var deleteResult = await _roleManager.DeleteAsync(role);
                 if (!deleteResult.Succeeded)
                 {
                     Snackbar.Add($"{string.Join(",", deleteResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
@@ -481,10 +481,10 @@
         if (!result.Canceled)
         {
             var deleteId = _selectedItems.Select(x => x.Id).ToArray();
-            var deleteRoles = await RoleManager.Roles.Where(x => deleteId.Contains(x.Id)).ToListAsync();
+            var deleteRoles = await _roleManager.Roles.Where(x => deleteId.Contains(x.Id)).ToListAsync();
             foreach (var role in deleteRoles)
             {
-                var deleteResult = await RoleManager.DeleteAsync(role);
+                var deleteResult = await _roleManager.DeleteAsync(role);
                 if (!deleteResult.Succeeded)
                 {
                     Snackbar.Add($"{string.Join(",", deleteResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);

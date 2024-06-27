@@ -18,7 +18,7 @@ public partial class CatsFileUpload : ComponentBase
 
     public Dictionary<Guid, IBrowserFile> Files { get; private set; } = [];
 
-    private async Task OnFilesChanged(IReadOnlyList<IBrowserFile> files)
+    private Task OnFilesChanged(IReadOnlyList<IBrowserFile> files)
     {
         Loading = true;
 
@@ -33,6 +33,7 @@ public partial class CatsFileUpload : ComponentBase
         Loading = false;
 
         StateHasChanged();
+        return Task.CompletedTask;
     }
 
     /*public async Task OnFileDelete(MudChip<string> chip)
