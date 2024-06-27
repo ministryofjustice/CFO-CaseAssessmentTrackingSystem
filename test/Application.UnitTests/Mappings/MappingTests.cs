@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Reflection;
-using System.Runtime.Serialization;
+using System.Runtime.CompilerServices;
 using AutoMapper;
 using Cfo.Cats.Application.Common.Interfaces;
-using Cfo.Cats.Application.Features.Candidates.DTOs;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Tenants.DTOs;
 using Cfo.Cats.Domain.Entities.Administration;
@@ -59,7 +58,7 @@ public class MappingTests
             return constructor.Invoke(null);
 
         // Type without parameterless constructor
-        return FormatterServices.GetUninitializedObject(type);
+        return  RuntimeHelpers.GetUninitializedObject(type);
     }
     
 }
