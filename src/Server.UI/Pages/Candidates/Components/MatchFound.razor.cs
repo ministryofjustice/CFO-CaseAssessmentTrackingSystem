@@ -37,7 +37,7 @@ public partial class MatchFound : ComponentBase
     public EventCallback OnParticipantEnrolled { get; set; }
 
     [Inject]
-    public CandidateService CandidateService { get; set; }
+    public ICandidateService CandidateService { get; set; }
 
 
     protected override async Task OnParametersSetAsync()
@@ -51,10 +51,12 @@ public partial class MatchFound : ComponentBase
             new ("Date Of Birth", Query.DateOfBirth.GetValueOrDefault().ToShortDateString(), candidate.DateOfBirth.ToShortDateString())
         };
 
+        /*
         foreach (var identifier in candidate.ExternalIdentifiers)
         {
             _comparisons.Add(new("Identifier", identifier, Query.ExternalIdentifier));
         }
+        */
 
         Model = new CreateParticipant.Command
         {
