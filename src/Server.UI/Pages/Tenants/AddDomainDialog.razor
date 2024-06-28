@@ -1,0 +1,78 @@
+﻿@using Cfo.Cats.Application.Features.Tenants.Commands
+@using Cfo.Cats.Application.Features.Tenants.Commands.Rename
+@using Cfo.Cats.Application.Features.Tenants.DTOs
+@inherits MudComponentBase
+
+@inject IValidationService Validator
+@inject IStringLocalizer<Tenants> L
+
+<MudDialog>
+    <DialogContent>
+        @if (Model is not null)
+        {
+            <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField Label="@L[Model.GetMemberDescription(x => x.Domain)]" @bind-Value="Model.Domain"
+                                      For="@(() => Model.Domain)"
+                                      ReadOnly="false"
+                                      Required="true"
+                                      Placeholder="@("@example.com")"
+                                      RequiredError="@L["Domain is required!"]">
+                        </MudTextField>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code
+{   
+    private MudForm? form;
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+    [EditorRequired][Parameter] public AddDomainCommand.Command Model { get; set; } = default!;
+
+    private bool saving;
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            saving = true;
+
+            await form!.Validate().ConfigureAwait(false);
+
+            if (!form!.IsValid)
+            {
+                return;
+            }
+
+            var result = await Mediator.Send(Model);
+
+            if (result.Succeeded)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+}
