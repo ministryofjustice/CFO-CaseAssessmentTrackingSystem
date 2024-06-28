@@ -11,7 +11,6 @@
                 <MudItem xs="12">
                     <MudTextField Label="@L[Model.GetMemberDescription(x => x.Id)]" @bind-Value="Model.Id"
                                   For="@(() => Model.Id)"
-                                  ReadOnly="true"
                                   Required="true"
                                   RequiredError="@L["Tenant id is required!"]">
                     </MudTextField>
