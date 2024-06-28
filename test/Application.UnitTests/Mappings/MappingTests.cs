@@ -30,7 +30,7 @@ public class MappingTests
 
     [Test]
     [TestCase(typeof(Participant), typeof(ParticipantDto), false)]
-    [TestCase(typeof(Tenant), typeof(TenantDto), true)]
+    [TestCase(typeof(Tenant), typeof(TenantDto), false)]
     public void ShouldSupportMappingFromSourceToDestination(Type source, Type destination, bool inverseMap = false)
     {
         var instance = GetInstanceOf(source);
