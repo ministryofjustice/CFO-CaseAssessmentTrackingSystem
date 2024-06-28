@@ -10,7 +10,7 @@
 <MudGrid>
 	<MudItem xs="4">
 		<AssessmentQuestionBase Question="@Dto.Question" HelperText="@Dto.HelperText" />
-		<ValidationMessage style="color: red;" For="() => Dto.SelectedOption" /> 
+		@*<ValidationMessage style="color: red;" For="() => Dto.SelectedOption" />*@ 
 	</MudItem>
 	<MudItem xs="8">
 		<MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined">
@@ -52,7 +52,8 @@
 	private new void ValueChanged(string newValue)
 	{
 		Dto.SelectedOption = newValue;
-		EditContext.NotifyFieldChanged(fieldIdentifier);
+        StateHasChanged();
+		//EditContext.NotifyFieldChanged(fieldIdentifier);
 	}
 
 	protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out string result, [NotNullWhen(false)] out string validationErrorMessage)
