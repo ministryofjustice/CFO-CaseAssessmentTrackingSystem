@@ -366,7 +366,7 @@
         _canManagePermissions = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
         _canImport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowImport)).Succeeded;
         _canExport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowExport)).Succeeded;
-        
+
         _roles = await RoleManager.Roles.Select(x => x.Name).ToListAsync();
     }
 
@@ -374,7 +374,7 @@
     {
         return UsersStateContainer.UsersByConnectionId.Any(x => x.Value.Equals(username, StringComparison.OrdinalIgnoreCase));
     }
-    
+
     private Expression<Func<ApplicationUser, bool>> CreateSearchPredicate()
     {
         return x =>
@@ -385,7 +385,7 @@
             (_searchRole == null || (_searchRole != null && x.UserRoles.Any(x => x.Role.Name == _searchRole))) &&
             (_selectedTenantId == " " || (_selectedTenantId != " " && x.TenantId == _selectedTenantId)));
     }
-    
+
     private async Task<GridData<ApplicationUserDto>> ServerReload(GridState<ApplicationUserDto> state)
     {
         try
@@ -406,13 +406,13 @@
             _loading = false;
         }
     }
-    
+
     private async Task OnChangedListView(string tenantId)
     {
         _selectedTenantId = tenantId;
         await _table.ReloadServerData();
     }
-    
+
     private async Task OnSearch(string text)
     {
         if (_loading)
@@ -437,7 +437,7 @@
     {
         await _table.ReloadServerData();
     }
-    
+
     private async Task ShowCreateUserDialog(ApplicationUserDto model, string title)
     {
         var parameters = new DialogParameters<UserFormDialog>
@@ -469,14 +469,30 @@
             await ProcessUserUpdate(model);
         }
     }
-    
+
     private async Task ProcessUserCreation(ApplicationUserDto model)
     {
+        var allowedEmails = TenantsService.DataSource
+            .Where(x => x.Id == model.Id)
+            .SelectMany(x => x.Domains).ToArray();
+
+        if(allowedEmails is { Length: 0 })
+        {
+            Snackbar.Add($"No allowed emails have been configured for this tenant.", Severity.Info);
+            return;
+        }
+
+        if (allowedEmails.Any(email => model.Email.EndsWith(email)) is false)
+        {
+            Snackbar.Add($"Email Address '{model.Email}' is not allowed for this tenant.", Severity.Info);
+            return;
+        }
+
         var applicationUser = new ApplicationUser
         {
             Provider = model.Provider,
             DisplayName = model.DisplayName,
-            UserName = model.UserName,
+            UserName = model.Email,
             TenantId = model.TenantId,
             TenantName = TenantsService.DataSource.First(t => t.Id == model.TenantId).Name, 
             Email = model.Email,
@@ -502,20 +518,36 @@
         await OnRefresh();
     }
     
-    private async Task ProcessUserUpdate(ApplicationUserDto item)
+    private async Task ProcessUserUpdate(ApplicationUserDto model)
     {
-        var user = await UserManager.FindByIdAsync(item.Id!) ?? throw new NotFoundException($"The application user [{item.Id}] was not found.");
+        var allowedEmails = TenantsService.DataSource
+            .Where(x => x.Id == model.Id)
+            .SelectMany(x => x.Domains).ToArray();
+
+        if (allowedEmails is { Length: 0 })
+        {
+            Snackbar.Add($"No allowed emails have been configured for this tenant.", Severity.Info);
+            return;
+        }
+
+        if (allowedEmails.Any(email => model.Email.EndsWith(email)) is false)
+        {
+            Snackbar.Add($"Email Address '{model.Email}' is not allowed for this tenant.", Severity.Info);
+            return;
+        }
+
+        var user = await UserManager.FindByIdAsync(model.Id!) ?? throw new NotFoundException($"The application user [{model.Id}] was not found.");
         var state = await AuthState;
-        user.Email = item.Email;
-        user.PhoneNumber = item.PhoneNumber;
-        user.ProfilePictureDataUrl = item.ProfilePictureDataUrl;
-        user.DisplayName = item.DisplayName;
-        user.Provider = item.Provider;
-        user.UserName = item.UserName;
-        user.IsActive = item.IsActive;
-        user.TenantId = item.TenantId;
-        user.TenantName = TenantsService.DataSource.First(t => t.Id == item.TenantId).Name;
-        user.SuperiorId = item.SuperiorId;
+        user.Email = model.Email;
+        user.PhoneNumber = model.PhoneNumber;
+        user.ProfilePictureDataUrl = model.ProfilePictureDataUrl;
+        user.DisplayName = model.DisplayName;
+        user.Provider = model.Provider;
+        user.UserName = model.Email;
+        user.IsActive = model.IsActive;
+        user.TenantId = model.TenantId;
+        user.TenantName = TenantsService.DataSource.First(t => t.Id == model.TenantId).Name;
+        user.SuperiorId = model.SuperiorId;
         var identityResult = await UserManager.UpdateAsync(user);
         if (identityResult.Succeeded)
         {
@@ -525,25 +557,25 @@
                 await UserManager.RemoveFromRolesAsync(user, roles);
             }
 
-            if (item.AssignedRoles is not null && item.AssignedRoles.Length > 0)
+            if (model.AssignedRoles is not null && model.AssignedRoles.Length > 0)
             {
-                await UserManager.AddToRolesAsync(user, item.AssignedRoles);
+                await UserManager.AddToRolesAsync(user, model.AssignedRoles);
             }
 
             Snackbar.Add($"{L["The user updated successfully."]}", Severity.Info);
             await OnRefresh();
             UserService.Refresh();
-            await OnlineUserTracker.UpdateUser(new UserInfo(item.Id,
-                                                            item.UserName,
-                                                            item.Email,
-                                                            item.DisplayName ?? string.Empty,
-                                                            item.ProfilePictureDataUrl ?? string.Empty,
-                                                            item.SuperiorName ?? string.Empty,
-                                                            item.SuperiorId ?? string.Empty,
-                                                            item.TenantId ?? string.Empty,
-                                                            item.TenantName ?? string.Empty,
-                                                            item.PhoneNumber,
-                                                            item.AssignedRoles ?? Array.Empty<string>(),
+            await OnlineUserTracker.UpdateUser(new UserInfo(model.Id,
+                                                            model.UserName,
+                                                            model.Email,
+                                                            model.DisplayName ?? string.Empty,
+                                                            model.ProfilePictureDataUrl ?? string.Empty,
+                                                            model.SuperiorName ?? string.Empty,
+                                                            model.SuperiorId ?? string.Empty,
+                                                            model.TenantId ?? string.Empty,
+                                                            model.TenantName ?? string.Empty,
+                                                            model.PhoneNumber,
+                                                            model.AssignedRoles ?? Array.Empty<string>(),
                                                             UserPresence.Available));
         }
         else
