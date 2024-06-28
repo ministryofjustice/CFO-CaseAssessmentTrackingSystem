@@ -1,5 +1,6 @@
 ﻿@page "/administration/tenants"
 @using BlazorDownloadFile
+@using Cfo.Cats.Application.Features.Tenants.Commands
 @using Cfo.Cats.Application.Features.Tenants.DTOs
 @using Cfo.Cats.Application.Features.Tenants.Queries.Pagination
 @using Cfo.Cats.Application.Features.Tenants.Caching
@@ -17,14 +18,12 @@
 <PageTitle>@Title</PageTitle>
 
 <MudDataGrid ServerData="@(ServerReload)"
+             T="TenantDto"
              FixedHeader="true"
              FixedFooter="false"
              Height="calc(100vh - 300px)"
              Loading="@loading"
              @bind-RowsPerPage="defaultPageSize"
-             MultiSelection="true"
-             @bind-SelectedItems="selectedItems"
-             @bind-SelectedItem="currentDto"
              Hover="true" @ref="table">
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
@@ -58,18 +57,6 @@
                                 @ConstantString.New
                             </MudButton>
                         }
-                        @if (canDelete)
-                        {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Error"
-                                       StartIcon="@Icons.Material.Filled.Delete"
-                                       Disabled="@(!(selectedItems.Count > 0))"
-                                       Size="Size.Small"
-                                       Style="margin-right: 4px; margin-bottom:4px"
-                                       OnClick="OnDeleteChecked"
-                                       IconColor="Color.Surface">
-                                @ConstantString.Delete
-                            </MudButton>
-                        }
                         @if (canExport)
                         {
                             <MudLoadingButton @bind-Loading="exporting" Variant="Variant.Outlined" Color="Color.Primary"
@@ -98,18 +85,6 @@
                                 @ConstantString.New
                             </MudButton>
                         }
-                        @if (canDelete)
-                        {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Error"
-                                       StartIcon="@Icons.Material.Filled.Delete"
-                                       Disabled="@(!(selectedItems.Count > 0))"
-                                       Size="Size.Small"
-                                       Style="margin-right: 4px; margin-bottom:4px"
-                                       OnClick="OnDeleteChecked"
-                                       IconColor="Color.Surface">
-                                @ConstantString.Delete
-                            </MudButton>
-                        }
                     </MudHidden>
                 </div>
                 @if (canSearch)
@@ -123,7 +98,7 @@
         </div>
     </ToolBarContent>
     <Columns>
-        <SelectColumn ShowInFooter="false"> </SelectColumn>
+        <HierarchyColumn T="TenantDto" ButtonDisabledFunc="@(x => x.Domains.Count() is 0)"/>
         <TemplateColumn CellStyle="width:60px" Title="@ConstantString.Actions" Sortable="false">
             <CellTemplate>
                 @if (canEdit || canDelete)
@@ -133,6 +108,7 @@
                              EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                         @if (canEdit)
                         {
+                            <MudMenuItem OnClick="@(() => OnAddDomain(context.Item))">New Domain</MudMenuItem>
                             <MudMenuItem OnClick="@(() => OnRename(context.Item))">@ConstantString.Rename</MudMenuItem>
                             <MudMenuItem OnClick="@(() => OnEdit(context.Item))">@ConstantString.Edit</MudMenuItem>
                         }
@@ -152,11 +128,6 @@
                 }
             </CellTemplate>
         </TemplateColumn>
-        <PropertyColumn CellStyle="width:300px" Property="x => x.Id" Title="@L[currentDto.GetMemberDescription(x => x.Id)]">
-            <FooterTemplate>
-                @L["Selected"]: @selectedItems.Count
-            </FooterTemplate>
-        </PropertyColumn>
         <PropertyColumn Property="x => x.Name" Title="@L[currentDto.GetMemberDescription(x => x.Name)]">
             <CellTemplate>
                 <div class="d-flex flex-column">
@@ -167,7 +138,34 @@
         </PropertyColumn>
 
     </Columns>
-
+    <ChildRowContent>
+        <MudCard Elevation="0" Class="d-flex flex-grow-0">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.body1">
+                        <strong>Allowed Domains</strong>
+                    </MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    @foreach(var domain in context.Item.Domains)
+                    {
+                        <MudItem xs="12" md="6" lg="4" Class="d-flex">
+                            <MudField Variant="Variant.Text">@domain</MudField>
+                            <MudIconButton OnClick="@(() => OnDeleteDomain(domain, context.Item.Id))"  Icon="@Icons.Material.Filled.Delete" aria-label="delete"></MudIconButton>
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </ChildRowContent>
+    <NoRecordsContent>
+        <MudText>@ConstantString.NoRecords</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>@ConstantString.Loading</MudText>
+    </LoadingContent>
     <PagerContent>
         <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })"/>
     </PagerContent>
@@ -183,19 +181,17 @@
 {
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
-    
-    [Inject] private IBlazorDownloadFileService BlazorDownloadFileService { get; set; } = null!;
 
+    [Inject] private IBlazorDownloadFileService BlazorDownloadFileService { get; set; } = null!;
 
     public string? Title { get; private set; }
     private int defaultPageSize = 15;
-    private HashSet<TenantDto> selectedItems = new();
     private MudDataGrid<TenantDto> table = default!;
     private TenantDto currentDto = new() { Id = "" };
     private string searchString = string.Empty;
     private bool loading;
     private bool exporting;
-    
+
     private bool canSearch;
     private bool canCreate;
     private bool canEdit;
@@ -236,7 +232,6 @@
 
     private async Task OnSearch(string text)
     {
-        selectedItems = new HashSet<TenantDto>();
         searchString = text;
         await table.ReloadServerData();
     }
@@ -244,7 +239,6 @@
     private async Task OnRefresh()
     {
         TenantCacheKey.Refresh();
-        selectedItems = new HashSet<TenantDto>();
         searchString = string.Empty;
         await table.ReloadServerData();
     }
@@ -262,6 +256,50 @@
         var state = await dialog.Result;
         if (!state.Canceled)
         {
+            await table.ReloadServerData();
+        }
+    }
+
+    private async Task OnAddDomain(TenantDto dto)
+    {
+        var parameters = new DialogParameters<AddDomainDialog>
+        {
+            { x => x.Model, new AddDomainCommand.Command() { TenantId = dto.Id } }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = DialogService.Show<AddDomainDialog>
+            (L["Add a domain to tenant allowlist"], parameters, options);
+
+        var state = await dialog.Result;
+
+        if (!state.Canceled)
+        {
+            TenantCacheKey.Refresh();
+            await table.ReloadServerData();
+        }
+    }
+
+    private async Task OnDeleteDomain(string domain, string tenantId)
+    {
+        var deleteContent = ConstantString.DeleteConfirmation;
+
+        var parameters = new DialogParameters<DeleteConfirmation>
+        {
+            { x => x.Command, new DeleteDomainCommand.Command() { Domain = domain, TenantId = tenantId } },
+            { x => x.ContentText, string.Format(deleteContent, domain) }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = DialogService.Show<DeleteConfirmation>(L["Delete the Domain"], parameters, options);
+
+        var state = await dialog.Result;
+
+        if (!state.Canceled)
+        {
+            TenantCacheKey.Refresh();
             await table.ReloadServerData();
         }
     }
@@ -346,22 +384,4 @@
         }
     }
 
-    private async Task OnDeleteChecked()
-    {
-        var command = new DeleteTenantCommand(selectedItems.Select(x => x.Id).ToArray());
-        var deleteContent = ConstantString.DeleteConfirmation;
-        var parameters = new DialogParameters<DeleteConfirmation>
-        {
-            { x => x.Command, command },
-            { x => x.ContentText, string.Format(deleteContent, selectedItems.Count) }
-        };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
-        var dialog = DialogService.Show<DeleteConfirmation>(L["Delete Selected Tenants"], parameters, options);
-        var state = await dialog.Result;
-        if (!state.Canceled)
-        {
-            await table.ReloadServerData();
-            selectedItems = new HashSet<TenantDto>();
-        }
-    }
 }
