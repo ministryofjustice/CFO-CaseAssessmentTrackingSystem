@@ -63,33 +63,8 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>Dashboard.resx</DependentUpon>
         </Compile>
-        <Compile Remove="Pages\Assessment\**"/>
-        <Compile Remove="Components\Shared\FileUpload\CustomFileUpload.cs"/>
     </ItemGroup>
-    <ItemGroup>
-        <Content Remove="Pages\Assessment\**"/>
-    </ItemGroup>
-    <ItemGroup>
-        <None Remove="Pages\Assessment\**"/>
-    </ItemGroup>
-    <ItemGroup>
-        <_ContentIncludedByDefault Remove="Pages\Assessment\Assessment.razor"/>
-        <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentComponents\AssessmentCheckbox.razor"/>
-        <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentComponents\AssessmentQuestionBase.razor"/>
-        <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentPathway.razor"/>
-        <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentQuestions\AssessmentMultipleChoiceQuestion.razor"/>
-        <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentQuestions\AssessmentToggleQuestion.razor"/>
-        <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentResultStep.razor"/>
-        <_ContentIncludedByDefault Remove="Pages\Enrolments\CandidateSearch\Error.razor"/>
-        <_ContentIncludedByDefault Remove="Pages\Enrolments\CandidateSearch\Success.razor"/>
-        <_ContentIncludedByDefault Remove="Pages\Enrolments\Components\Consent.razor"/>
-        <_ContentIncludedByDefault Remove="Pages\Enrolments\Components\Demographics.razor"/>
-        <_ContentIncludedByDefault Remove="Pages\Enrolments\Components\EnrolmentContainer.razor"/>
-        <_ContentIncludedByDefault Remove="Pages\Enrolments\Components\Location.razor"/>
-        <_ContentIncludedByDefault Remove="Pages\Enrolments\Components\RightToWork.razor"/>
-        <_ContentIncludedByDefault Remove="Pages\Enrolments\Enrolment.razor"/>
-        <_ContentIncludedByDefault Remove="Pages\Enrolments\_Imports.razor"/>
-    </ItemGroup>
+    
 
 
 </Project>

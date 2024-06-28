@@ -229,9 +229,9 @@
         }
     }
     
-    private async Task OnSearch(string text)
+    private async Task OnSearch(string? text)
     {
-        _selectedItems = new HashSet<ParticipantDto>();
+        _selectedItems = new();
         Query.Keyword = text;
         await _table.ReloadServerData();
     }

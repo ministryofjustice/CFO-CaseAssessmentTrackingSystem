@@ -1,5 +1,4 @@
-﻿@using Blazored.FluentValidation;
-@using Cfo.Cats.Application.Features.Assessments.DTOs
+﻿@using Cfo.Cats.Application.Features.Assessments.DTOs
 @using Cfo.Cats.Application.Features.Assessments.DTOs.AssessmentModelQuestions
 @using Cfo.Cats.Server.UI.Components.Stepper
 @using Cfo.Cats.Server.UI.Pages.Assessment.AssessmentQuestions
@@ -8,9 +7,8 @@
 {
     <CatsMudStep Icon="@Model.Pathway.Icon" Title="@Model.Pathway.Name" Condition="@Validate">
         <ChildContent>
-            <EditForm @ref="@form" Model="@Model">
-                <FluentValidationValidator @ref="@fluentValidator"/>
-
+            <MudForm @ref="@form" Model="@Model" Validation="@(Validator.ValidateAsync(Model))" >
+    
                 <CascadingValue Value="@Model">
                     <MudGrid Class="mb-4 px-10">
                         @foreach (var question in Model.Questions)
@@ -33,22 +31,29 @@
                         }
                     </MudGrid>
                 </CascadingValue>
-            </EditForm>
+            </MudForm>
         </ChildContent>
     </CatsMudStep>
 }
 
 @code {
 
-    private EditForm form = new();
-    private FluentValidationValidator fluentValidator = new();
+    private MudForm form = new();
     
 	[Parameter, EditorRequired]
 	public AssessmentPathwayDto? Model { get; set; } 
 
-	private bool Validate()
+	private async Task<bool> Validate()
 	{
-        var isValid = form.EditContext!.Validate();
-		return isValid;
+        try
+        {
+            AssessmentPathwayValidator validator = new AssessmentPathwayValidator();
+            var result = await validator.ValidateAsync(Model!);
+            return result.IsValid;
+        }
+        catch
+        {
+            return false;
+        }
 	}
 }

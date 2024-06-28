@@ -9,7 +9,7 @@
 <MudGrid>
 	<MudItem xs="4">
 		<AssessmentQuestionBase Question="@Dto.Question" HelperText="@Dto.HelperText" />
-		<ValidationMessage style="color: red;" For="() => Dto.Toggles" />
+		@*<ValidationMessage style="color: red;" For="() => Dto.Toggles" />*@
 	</MudItem>
 	<MudItem xs="8">
 		<MudGrid>
@@ -55,7 +55,8 @@
 	private void OnValueChanged(int index)
 	{
 		Dto.Toggles[index] = !Dto.Toggles[index];
-		EditContext.NotifyFieldChanged(fieldIdentifier);
+        StateHasChanged();
+		//EditContext.NotifyFieldChanged(fieldIdentifier);
 	}
 
 	//Extending MudInput forces you to override this. 

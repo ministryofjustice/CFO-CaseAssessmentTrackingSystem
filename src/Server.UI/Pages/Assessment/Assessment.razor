@@ -69,10 +69,11 @@
 	private async Task SubmitAssessment()
 	{
 		if (Stepper.IsAllStepsCompleted())
-		{
-			var isValid = Validator?.Validate(Model!).IsValid;
+        {
+            var validator = new AssessmentValidator();
+            var result = await validator.ValidateAsync(Model!);
 
-			if (isValid ?? false)
+			if (result.IsValid)
 			{
 				Processing = true;
 				await Task.Delay(10000); //Simulates a genuine POST request in UI.
