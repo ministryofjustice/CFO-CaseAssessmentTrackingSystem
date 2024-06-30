@@ -308,7 +308,7 @@
         };
         var dialog = DialogService.Show<DeleteConfirmation>(ConstantString.DeleteConfirmationTitle, parameters, options);
         var state = await dialog.Result;
-        if (!state.Canceled)
+        if (!state!.Canceled)
         {
             await _table.ReloadServerData();
         }
@@ -331,7 +331,7 @@
         };
         var dialog = DialogService.Show<DeleteConfirmation>(ConstantString.DeleteConfirmationTitle, parameters, options);
         var state = await dialog.Result;
-        if (!state.Canceled)
+        if (!state!.Canceled)
         {
             var command = new DeleteKeyValueCommand(_selectedItems.Select(x => x.Id).ToArray());
             var result = await Mediator.Send(command);
@@ -362,7 +362,7 @@
         var dialog = DialogService.Show<CreatePicklistDialog>
             (L["Create a new picklist"], parameters, options);
         var state = await dialog.Result;
-        if (!state.Canceled)
+        if (!state!.Canceled)
         {
             await _table.ReloadServerData();
         }

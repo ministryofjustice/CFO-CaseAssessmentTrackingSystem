@@ -38,7 +38,7 @@
                         ActiveStepChanged="StepChanged"
                         ContentClass="mb-8"
                         Ripple="true"
-                        DisablePreviousButton="Stepper?.IsResultStep ?? false"
+                        ShowPreviousButton="!Stepper?.IsResultStep ?? true"
                         MobileView="false"
                         HeaderSize="Size.Large"
                         Class="enrolment-view gap-12">
@@ -163,7 +163,7 @@
         var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Save & Exit", parameters);
         var result = await dialog.Result;
 
-        if(!result.Canceled)
+        if(!result!.Canceled)
         {
             Navigation.NavigateTo("/");
         }

@@ -1,4 +1,6 @@
-﻿using MudExtensions;
+﻿
+
+using MudExtensions;
 
 namespace Cfo.Cats.Server.UI.Components.Stepper;
 
