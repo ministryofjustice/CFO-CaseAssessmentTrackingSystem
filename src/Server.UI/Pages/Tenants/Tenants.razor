@@ -254,7 +254,7 @@
         var dialog = DialogService.Show<TenantFormDialog>
             (L["Create a new Tenant"], parameters, options);
         var state = await dialog.Result;
-        if (!state.Canceled)
+        if (!state!.Canceled)
         {
             await table.ReloadServerData();
         }
@@ -274,7 +274,7 @@
 
         var state = await dialog.Result;
 
-        if (!state.Canceled)
+        if (!state!.Canceled)
         {
             TenantCacheKey.Refresh();
             await table.ReloadServerData();
@@ -297,7 +297,7 @@
 
         var state = await dialog.Result;
 
-        if (!state.Canceled)
+        if (!state!.Canceled)
         {
             TenantCacheKey.Refresh();
             await table.ReloadServerData();
@@ -315,7 +315,7 @@
         var dialog = DialogService.Show<RenameTenantDialog>
             (L["Rename the Tenant"], parameters, options);
         var state = await dialog.Result;
-        if (!state.Canceled)
+        if (!state!.Canceled)
         {
             await table.ReloadServerData();
         }
@@ -332,7 +332,7 @@
         var dialog = DialogService.Show<TenantFormDialog>
             (L["Edit the Tenant"], parameters, options);
         var state = await dialog.Result;
-        if (!state.Canceled)
+        if (!state!.Canceled)
         {
             await table.ReloadServerData();
         }
@@ -378,7 +378,7 @@
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
         var dialog = DialogService.Show<DeleteConfirmation>(L["Delete the Tenant"], parameters, options);
         var state = await dialog.Result;
-        if (!state.Canceled)
+        if (!state!.Canceled)
         {
             await table.ReloadServerData();
         }

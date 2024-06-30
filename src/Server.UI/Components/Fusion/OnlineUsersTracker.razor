@@ -14,7 +14,7 @@
                       .Where(u => u.TenantId.StartsWith(_me?.TenantId ?? "xxx")))
         {
             <MudBadge Color="Color.Success" Overlap="true" Bordered="true">
-                <MudAvatar Title="@($"{user.DisplayName} ({user.TenantName})")" Variant="Variant.Filled" Size="Size.Large">
+                <MudAvatar title="@($"{user.DisplayName} ({user.TenantName})")" Variant="Variant.Filled" Size="Size.Large">
                     @user.Initials()
                 </MudAvatar>
             </MudBadge>

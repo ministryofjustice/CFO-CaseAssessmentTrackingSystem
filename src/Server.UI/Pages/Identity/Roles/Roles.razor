@@ -287,7 +287,7 @@
         var dialog = DialogService.Show<RoleFormDialog>(L["Create a new role"], parameters, options);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (!result!.Canceled)
         {
             var applicationRole = new ApplicationRole
             {
@@ -318,7 +318,7 @@
         var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
         var dialog = DialogService.Show<RoleFormDialog>(L["Edit the role"], parameters, options);
         var result = await dialog.Result;
-        if (!result.Canceled)
+        if (!result!.Canceled)
         {
             var role = await _roleManager.Roles.FirstOrDefaultAsync(r => r.Id == item.Id);
             if (role is not null)
@@ -450,7 +450,7 @@
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
         var dialog = DialogService.Show<ConfirmationDialog>(ConstantString.DeleteConfirmationTitle, parameters, options);
         var result = await dialog.Result;
-        if (!result.Canceled)
+        if (!result!.Canceled)
         {
             var deleteRoles = await _roleManager.Roles.Where(x => x.Id == dto.Id).ToListAsync();
             foreach (var role in deleteRoles)
@@ -478,7 +478,7 @@
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
         var dialog = DialogService.Show<ConfirmationDialog>(ConstantString.DeleteConfirmationTitle, parameters, options);
         var result = await dialog.Result;
-        if (!result.Canceled)
+        if (!result!.Canceled)
         {
             var deleteId = _selectedItems.Select(x => x.Id).ToArray();
             var deleteRoles = await _roleManager.Roles.Where(x => deleteId.Contains(x.Id)).ToListAsync();
