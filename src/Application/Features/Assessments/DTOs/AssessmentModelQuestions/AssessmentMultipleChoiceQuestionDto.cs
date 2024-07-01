@@ -2,9 +2,8 @@
 
 public class AssessmentMultipleChoiceQuestionDto : AssessmentQuestionDto
 {
-    public bool[] Toggles { get; set; } = [];
+    public IEnumerable<string>? Toggles { get; set; }
 
-    public bool AnyToggleSelected => !Toggles.All(toggle => false);
 
     public AssessmentMultipleChoiceQuestionDto(string question, string[] options) : base(question, options)
     { }
@@ -12,4 +11,6 @@ public class AssessmentMultipleChoiceQuestionDto : AssessmentQuestionDto
     public AssessmentMultipleChoiceQuestionDto(string question, string[] options, string helperText)
         : base(question, options, helperText)
     { }
+
+    public override bool IsValid() => Toggles is not null && Toggles.Count() > 0;
 }

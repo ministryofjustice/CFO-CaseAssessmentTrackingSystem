@@ -12,4 +12,6 @@ public class AssessmentPathwayDto
     public AssessmentToggleQuestionDto[] ToggleQuestions => Questions.OfType<AssessmentToggleQuestionDto>().ToArray();
     public AssessmentMultipleChoiceQuestionDto[] CheckboxQuestions => Questions.OfType<AssessmentMultipleChoiceQuestionDto>().ToArray();
     public AssessmentQuestionDto LastQuestion => Questions.Last();
+
+    
 }
