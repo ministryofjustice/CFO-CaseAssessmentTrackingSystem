@@ -7,17 +7,17 @@ BEGIN TRY
 
     INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.', N'CFO', N'Root tenant for Creating Future Opportunities', N'2024-05-31 12:30:38.3849332', null, null, null);
     INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.', N'CFO Evolution', N'Top level tenant for Evolution Programme', N'2024-05-31 12:30:38.3850497', null, null, null);
-    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.1.', N'Alpha', N'Alpha', N'2024-05-31 12:30:38.3850635', null, null, null);
-    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.', N'Bravo', N'Top level tenant for provider Bravo', N'2024-05-31 12:30:38.3850637', null, null, null);
-    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.1.', N'Bravo (A)', N'Bravo (A)', N'2024-05-31 12:30:38.3850637', null, null, null);
-    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.2.', N'Bravo (B)', N'Bravo (B)', N'2024-05-31 12:30:38.3850637', null, null, null);
-    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.3.', N'Bravo (C)', N'Bravo (C)', N'2024-05-31 12:30:38.3850637', null, null, null);
-    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.3.', N'Charlie', N'Charlie', N'2024-05-31 12:30:38.3850645', null, null, null);
-    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.4.', N'Delta', N'Top level tenant for Delta', N'2024-05-31 12:30:38.3850647', null, null, null);
-    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.4.1.', N'Delta (A)', N'Delta (A)', N'2024-05-31 12:30:38.3850647', null, null, null);
-    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.4.2.', N'Delta (A)', N'Delta (B)', N'2024-05-31 12:30:38.3850647', null, null, null);
-    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.5.', N'Echo', N'Echo', N'2024-05-31 12:30:38.3850651', null, null, null);
-    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.6.', N'Foxtrot', N'Foxtrot', N'2024-05-31 12:30:38.3850653', null, null, null);
+    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.1.', N'Career Connect', N'Career Connect', N'2024-05-31 12:30:38.3850635', null, null, null);
+    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.', N'Ingeus', N'Top level tenant for provider Ingeus', N'2024-05-31 12:30:38.3850637', null, null, null);
+    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.1.', N'Ingeus (NE)', N'Ingeus (North East)', N'2024-05-31 12:30:38.3850637', null, null, null);
+    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.2.', N'Ingeus (WM)', N'Ingeus (West Midlands)', N'2024-05-31 12:30:38.3850637', null, null, null);
+    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.2.3.', N'Ingeus (EM)', N'Ingeus (East Midlands)', N'2024-05-31 12:30:38.3850637', null, null, null);
+    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.3.', N'The Growth Co', N'The Growth Co', N'2024-05-31 12:30:38.3850645', null, null, null);
+    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.4.', N'Shaw Trust', N'Top level tenant for Shaw Trust', N'2024-05-31 12:30:38.3850647', null, null, null);
+    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.4.1.', N'Shaw Trust (EoE)', N'Shaw Trust (East of England)', N'2024-05-31 12:30:38.3850647', null, null, null);
+    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.4.2.', N'Shaw Trust (SE)', N'Shaw Trust (South East)', N'2024-05-31 12:30:38.3850647', null, null, null);
+    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.5.', N'Reed', N'Reed', N'2024-05-31 12:30:38.3850651', null, null, null);
+    INSERT INTO dbo.Tenant (Id, Name, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'1.1.6.', N'Seetec', N'Seetec', N'2024-05-31 12:30:38.3850653', null, null, null);
 
     INSERT INTO dbo.ApplicationRole (Id, Description, Name, NormalizedName, ConcurrencyStamp) VALUES ('a6bc93b6-0c06-43e7-bc8f-8d1f1ff6f136', N'User responsible for finance-related tasks', N'Finance', N'FINANCE', N'e6340a9c-8144-4f9d-8489-2e21af06bc56');
     INSERT INTO dbo.ApplicationRole (Id, Description, Name, NormalizedName, ConcurrencyStamp) VALUES ('b2ac2d5a-9f2a-43c1-a2b6-4b9f2b8b6c5a', N'User responsible for monitoring and enhancing performance', N'Performance', N'PERFORMANCE', N'fc3d1f2e-7d34-4eb9-8748-6f23d6e1b1a2');
@@ -234,5 +234,5 @@ BEGIN CATCH
     BEGIN
         ROLLBACK TRANSACTION;
     END;
-    select error_message()
+    ;throw;
 END CATCH
