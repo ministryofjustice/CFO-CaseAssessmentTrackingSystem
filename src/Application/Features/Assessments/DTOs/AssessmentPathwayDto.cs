@@ -5,7 +5,7 @@ namespace Cfo.Cats.Application.Features.Assessments.DTOs;
 
 public class AssessmentPathwayDto
 {
-    public AssessmentQuestionDto[] Questions { get; set; } = [];
+    public List<AssessmentQuestionDto> Questions { get; set; } = new();
     
     public required Pathway Pathway { get; set; }
 
@@ -13,5 +13,9 @@ public class AssessmentPathwayDto
     public AssessmentMultipleChoiceQuestionDto[] CheckboxQuestions => Questions.OfType<AssessmentMultipleChoiceQuestionDto>().ToArray();
     public AssessmentQuestionDto LastQuestion => Questions.Last();
 
-    
+
+    public void AddQuestion(AssessmentQuestionDto questionDto)
+    {
+        Questions.Add(questionDto);
+    }
 }

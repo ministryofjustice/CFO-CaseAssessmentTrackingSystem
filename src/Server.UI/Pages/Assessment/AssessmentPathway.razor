@@ -2,6 +2,21 @@
 @using Cfo.Cats.Application.Features.Assessments.DTOs.AssessmentModelQuestions
 @using Cfo.Cats.Server.UI.Components.Stepper
 
+
+<style>
+    .two-columns {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Two columns */
+        gap: 10px; /* Adjust the gap between items as needed */
+    }
+
+    .toggle-item {
+        box-sizing: border-box; /* Ensure padding and borders are included in width/height */
+        padding: 10px; /* Add padding if needed */
+        justify-content: left !important;
+    }
+</style>
+
 @if (Model != null)
 {
     <CatsMudStep Icon="@Model.Pathway.Icon" Title="@Model.Pathway.Name" Condition="@Validate">
@@ -25,35 +40,33 @@
                             </MudItem>
 
                             <MudItem xs="8">
+                                    @if (question is AssessmentToggleQuestionDto atq)
+                                    {
+                                    <MudToggleGroup T="string" SelectionMode="SelectionMode.SingleSelection" @bind-Value="@atq.SelectedOption" CheckMark FixedContent Color="Color.Primary">
+                                            @foreach (var item in atq.Options)
+                                            {
+                                                <MudToggleItem Value="@item" Text="@item" />
+                                            }
+                                        </MudToggleGroup>
 
-                               
-
-                                @if (question is AssessmentToggleQuestionDto atq)
-                                {
-                                    <MudToggleGroup T="string" SelectionMode="SelectionMode.SingleSelection" @bind-Value="@atq.SelectedOption" CheckMark FixedContent Color="Color.Info">
-                                        @foreach (var item in atq.Options)
-                                        {
-                                            <MudToggleItem Value="@item" Text="@item"/>
-                                        }
-                                    </MudToggleGroup>
-                                   
-                                    @*<AssessmentToggleQuestion Dto="atq" @bind-Value="@(atq.SelectedOption)"/>*@
-                                }
-
-                                @if (question is AssessmentMultipleChoiceQuestionDto amcq)
-                                {
-                                    <MudToggleGroup T="string" SelectionMode="SelectionMode.MultiSelection" @bind-Values="@amcq.Toggles" CheckMark FixedContent Color="Color.Info">
-                                        @foreach (var item in amcq.Options)
-                                        {
-                                            <MudToggleItem Value="@item" Text="@item" UnselectedIcon="@Icons.Material.Filled.CheckBoxOutlineBlank" SelectedIcon="@Icons.Material.Filled.CheckBox" />
-                                        }
-                                    </MudToggleGroup>
-                                }
+                                        @*<AssessmentToggleQuestion Dto="atq" @bind-Value="@(atq.SelectedOption)"/>*@
+                                    }
+                                    @if (question is AssessmentMultipleChoiceQuestionDto amcq)
+                                    {
+                                        <MudToggleGroup T="string" Class="two-columns" Vertical SelectionMode="SelectionMode.MultiSelection" @bind-Values="@amcq.Toggles" CheckMark Color="Color.Primary" Outlined="false" Delimiters="false">
+                                            @foreach (var item in amcq.Options)
+                                            {
+                                                <MudToggleItem Class="toggle-item" Value="@item" Text="@item" UnselectedIcon="@Icons.Material.Filled.CheckBoxOutlineBlank" SelectedIcon="@Icons.Material.Filled.CheckBox" />
+                                            }
+                                        </MudToggleGroup>
+                                    }
                             </MudItem>
+
                             @if (question != Model.LastQuestion)
                             {
-                                <MudDivider/>
+                                <MudDivider />
                             }
+
                         }
                     </MudGrid>
                 </CascadingValue>
@@ -63,16 +76,17 @@
 }
 
 @code {
-    
+
     private MudForm form = new();
 
     private bool validateCalled = false;
-    
-	[Parameter, EditorRequired]
-	public AssessmentPathwayDto? Model { get; set; } 
 
-	private async Task<bool> Validate()
-	{
+
+    [Parameter, EditorRequired]
+    public AssessmentPathwayDto? Model { get; set; } 
+
+    private async Task<bool> Validate()
+    {
         try
         {
             validateCalled = true;
@@ -84,5 +98,13 @@
         {
             return false;
         }
-	}
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("removeInlineStyle", ".two-columns");
+        }
+    }
 }
