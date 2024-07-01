@@ -10,7 +10,7 @@ public abstract class AssessmentQuestionDto(string question, string[] options)
 
     public string[] Options { get; } = options;
 
-    protected AssessmentQuestionDto(string question, string[] options, string helperText) : this(question, options)
+    protected AssessmentQuestionDto(string question, string[] options, string? helperText) : this(question, options)
     {
         HelperText = helperText;
     }

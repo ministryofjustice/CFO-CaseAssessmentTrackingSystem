@@ -8,9 +8,9 @@ public class AssessmentMultipleChoiceQuestionDto : AssessmentQuestionDto
     public AssessmentMultipleChoiceQuestionDto(string question, string[] options) : base(question, options)
     { }
 
-    public AssessmentMultipleChoiceQuestionDto(string question, string[] options, string helperText)
+    public AssessmentMultipleChoiceQuestionDto(string question, string[] options, string? helperText = null)
         : base(question, options, helperText)
     { }
 
-    public override bool IsValid() => Toggles is not null && Toggles.Count() > 0;
+    public override bool IsValid() => Toggles is not null && Toggles.Any();
 }
