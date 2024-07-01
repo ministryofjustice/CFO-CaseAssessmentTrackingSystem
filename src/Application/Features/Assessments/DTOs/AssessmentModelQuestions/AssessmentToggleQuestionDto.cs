@@ -13,4 +13,6 @@ public class AssessmentToggleQuestionDto : AssessmentQuestionDto
     public AssessmentToggleQuestionDto(string question, string[] options, string helperText)
         : base(question, options, helperText)
     { }
+
+    public override bool IsValid() => SelectedOption != null;
 }

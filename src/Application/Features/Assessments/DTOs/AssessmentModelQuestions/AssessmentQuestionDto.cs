@@ -14,4 +14,6 @@ public abstract class AssessmentQuestionDto(string question, string[] options)
     {
         HelperText = helperText;
     }
+
+    public abstract bool IsValid();
 }

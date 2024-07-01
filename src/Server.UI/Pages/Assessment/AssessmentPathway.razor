@@ -1,7 +1,6 @@
 ﻿@using Cfo.Cats.Application.Features.Assessments.DTOs
 @using Cfo.Cats.Application.Features.Assessments.DTOs.AssessmentModelQuestions
 @using Cfo.Cats.Server.UI.Components.Stepper
-@using Cfo.Cats.Server.UI.Pages.Assessment.AssessmentQuestions
 
 @if (Model != null)
 {
@@ -11,17 +10,44 @@
     
                 <CascadingValue Value="@Model">
                     <MudGrid Class="mb-4 px-10">
+
                         @foreach (var question in Model.Questions)
                         {
-                            <MudItem xs="12">
+
+                            <MudItem xs="4">
+                                <Cfo.Cats.Server.UI.Pages.Assessment.AssessmentComponents.AssessmentQuestion Question="@question.Question" HelperText="@question.HelperText" />
+                                @if (validateCalled && question.IsValid() == false)
+                                {
+                                    <MudText Typo="Typo.caption" Color="Color.Error">
+                                        You must select an option!
+                                    </MudText>
+                                }
+                            </MudItem>
+
+                            <MudItem xs="8">
+
+                               
+
                                 @if (question is AssessmentToggleQuestionDto atq)
                                 {
-                                    <AssessmentToggleQuestion Dto="atq" @bind-Value="@(atq.SelectedOption)"/>
+                                    <MudToggleGroup T="string" SelectionMode="SelectionMode.SingleSelection" @bind-Value="@atq.SelectedOption" CheckMark FixedContent Color="Color.Info">
+                                        @foreach (var item in atq.Options)
+                                        {
+                                            <MudToggleItem Value="@item" Text="@item"/>
+                                        }
+                                    </MudToggleGroup>
+                                   
+                                    @*<AssessmentToggleQuestion Dto="atq" @bind-Value="@(atq.SelectedOption)"/>*@
                                 }
 
                                 @if (question is AssessmentMultipleChoiceQuestionDto amcq)
                                 {
-                                    <AssessmentMultipleChoiceQuestion Dto="@amcq" @bind-Value="@(amcq.Toggles)"/>
+                                    <MudToggleGroup T="string" SelectionMode="SelectionMode.MultiSelection" @bind-Values="@amcq.Toggles" CheckMark FixedContent Color="Color.Info">
+                                        @foreach (var item in amcq.Options)
+                                        {
+                                            <MudToggleItem Value="@item" Text="@item" UnselectedIcon="@Icons.Material.Filled.CheckBoxOutlineBlank" SelectedIcon="@Icons.Material.Filled.CheckBox" />
+                                        }
+                                    </MudToggleGroup>
                                 }
                             </MudItem>
                             @if (question != Model.LastQuestion)
@@ -37,8 +63,10 @@
 }
 
 @code {
-
+    
     private MudForm form = new();
+
+    private bool validateCalled = false;
     
 	[Parameter, EditorRequired]
 	public AssessmentPathwayDto? Model { get; set; } 
@@ -47,6 +75,7 @@
 	{
         try
         {
+            validateCalled = true;
             AssessmentPathwayValidator validator = new AssessmentPathwayValidator();
             var result = await validator.ValidateAsync(Model!);
             return result.IsValid;

@@ -64,6 +64,10 @@
             <DependentUpon>Dashboard.resx</DependentUpon>
         </Compile>
     </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentQuestions\AssessmentMultipleChoiceQuestion.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentQuestions\AssessmentToggleQuestion.razor" />
+    </ItemGroup>
     
 
 
