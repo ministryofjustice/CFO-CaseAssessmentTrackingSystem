@@ -1,10 +1,8 @@
 ﻿@using Cfo.Cats.Application.Features.Assessments.DTOs
-@using Cfo.Cats.Application.Features.Assessments.PostAssessmentCommand
 @using Cfo.Cats.Application.Features.Assessments.Queries.GetAssessment
 @using Cfo.Cats.Server.UI.Components.Stepper
 
-@page "/Assessment/{Upci}"
-@page "/Assessment"
+@page "/pages/assessment/{Upci}"
 
 @if (Model != null)
 {
@@ -27,8 +25,6 @@
 
 @code {
     
-	[Inject]
-	private ILogger<Assessment> Logger { get; init; } = null!;
 
 	[Parameter]
 	public string Upci { get; set; } = string.Empty;
@@ -47,7 +43,7 @@
 	{
         if (Model is null)
         {
-            var response = await Mediator.Send(new GetAssessmentQuery());
+            var response = await Mediator.Send(new GetAssessment.Query() { Upci = Upci });
 
             if (response.Succeeded)
             {
@@ -58,8 +54,6 @@
 
 	private async Task OnStepChange(int step)
 	{
-		await Task.CompletedTask;
-
 		if (step == Stepper.Steps.Count())
 		{
 			await SubmitAssessment();
@@ -77,15 +71,9 @@
 			{
 				Processing = true;
 				await Task.Delay(10000); //Simulates a genuine POST request in UI.
-
-				SubmissionSuccess = await Mediator.Send(new PostAssessmentCommand(Model!));
-
 				Processing = false;
 			}
-			else //Navigate to step where first error is. Uncomplete invalid sections/pathways.
-			{
-				
-			}
+			
 		}
 	}
 }
