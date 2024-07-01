@@ -33,7 +33,7 @@
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
             <div class="d-flex gap-4">
-                <MudIcon Icon="@Icons.Material.Filled.Window" Size="Size.Large"/>
+                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large"/>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.caption" Class="mb-2">@Title</MudText>
                     <MudEnumSelect Style="min-width:120px" TEnum="ParticipantListView" ValueChanged="OnChangedListView" Value="Query.ListView" Dense="true" Label="List View">
@@ -60,7 +60,7 @@
                 </div>
                 @if (_canSearch)
                 {
-                    <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                    <MudTextField T="string" ValueChanged="@(s => OnSearch(s!))" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
                                   AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
                     </MudTextField>
                 }
@@ -229,7 +229,7 @@
         }
     }
     
-    private async Task OnSearch(string? text)
+    private async Task OnSearch(string text)
     {
         _selectedItems = new();
         Query.Keyword = text;

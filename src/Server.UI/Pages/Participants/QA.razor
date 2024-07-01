@@ -1,0 +1,132 @@
+@page "/pages/qa/{upci}"
+
+@using Cfo.Cats.Application.Features.Documents.Queries
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+
+<style>
+    .document-container {
+        width: 90%;
+        height: calc(100vh - 150px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .full-size-object {
+        width: 100%;
+        height: 100%;
+    }
+
+    .mud-radio {
+        display: block;
+        margin-bottom: 0.5rem; 
+    }
+    
+</style>
+
+<h3>Participant</h3>
+
+@upci
+
+<MudGrid Style="height: 100vh; width: 100vw;">
+    <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
+        <MudText Typo="Typo.h2">
+            Participant
+        </MudText>
+        @if (_participantDto is not null)
+        {
+            <MudList T="string">
+                <MudListItem T="string" Text="@_participantDto.Id"></MudListItem>
+                <MudListItem T="string" Text="@_participantDto.FirstName"></MudListItem>
+                <MudListItem T="string" Text="@_participantDto.LastName"></MudListItem>
+                <MudListItem T="string" Text="@_participantDto.DateOfBirth.ToString()"></MudListItem>
+                <MudListItem T="string" Text="@_participantDto.CurrentLocation.Name"></MudListItem>
+            </MudList>
+            
+            <MudRadioGroup T="Guid" Class="mud-radio" ValueChanged="OnSelectedDocumentChanged">
+                @foreach (var consent in _participantDto.Consents)
+                {
+                    <MudRadio T="Guid" Color="Color.Primary" Value="@consent.DocumentId!.Value">
+                        @consent.FileName
+                    </MudRadio>
+                }
+
+                @foreach (var rtw in _participantDto.RightToWorks)
+                {
+                    <MudRadio T="Guid" Color="Color.Primary" Value="@rtw.DocumentId!.Value">
+                        @rtw.FileName
+                    </MudRadio>
+                }
+            </MudRadioGroup>
+                
+               
+           
+            
+        }
+    </MudItem>
+    <MudItem xs="8" Style="height: 100%; width: 100%;">
+        <MudPaper Class="document-container">
+            @if (fileBase64 != null && extension!.Equals("pdf", StringComparison.CurrentCultureIgnoreCase))
+            {
+                <object data="data:application/pdf;base64,@fileBase64" type="application/pdf" class="full-size-object">
+                    <p>PDF cannot be displayed.</p>
+                </object>
+            }
+            else
+            {
+                <MudText Typo="Typo.caption">
+                    Please select a file to display
+                </MudText>
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+
+
+
+@code {
+
+    private ParticipantDto? _participantDto = null;
+    
+    
+    [Parameter]
+    public string upci { get; set; } = null!;
+
+
+    protected Guid SelectedDocument { get; set; } = Guid.Empty;
+
+    private string? fileBase64;
+    private string? extension;
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        _participantDto = await Mediator.Send(new GetParticipantById.Query()
+        {
+            Id = upci 
+        });
+        StateHasChanged();
+    }
+
+    private async Task OnSelectedDocumentChanged(Guid documentId)
+    {
+        if (documentId != Guid.Empty)
+        {
+            var query = new GetDocumentById.Query()
+            {
+                Id = documentId
+            };
+
+            var result = await Mediator.Send(query);
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await result.FileStream.CopyToAsync(memoryStream);
+                var bytes = memoryStream.ToArray();
+                fileBase64 = Convert.ToBase64String(bytes);
+            }
+            extension = result.FileExtension;
+        }
+    }
+}
