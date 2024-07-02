@@ -45,7 +45,7 @@
                                         <MudToggleGroup T="string" SelectionMode="SelectionMode.SingleSelection" @bind-Value="@atq.Answer" CheckMark FixedContent Color="Color.Primary">
                                             @foreach (var item in atq.Options)
                                             {
-                                                <MudToggleItem Value="@item.Answer" Text="@item.Answer" />
+                                                <MudToggleItem Value="@item" Text="@item" />
                                             }
                                         </MudToggleGroup>
 
@@ -56,7 +56,7 @@
                                         <MudToggleGroup T="string" Class="two-columns" Vertical SelectionMode="SelectionMode.MultiSelection" @bind-Values="@amcq.Answers" CheckMark Color="Color.Primary" Outlined="false" Delimiters="false">
                                             @foreach (var item in amcq.Options)
                                             {
-                                                <MudToggleItem Class="toggle-item" Value="@item.Answer" Text="@item.Answer" UnselectedIcon="@Icons.Material.Filled.CheckBoxOutlineBlank" SelectedIcon="@Icons.Material.Filled.CheckBox" />
+                                                <MudToggleItem Class="toggle-item" Value="@item" Text="@item" UnselectedIcon="@Icons.Material.Filled.CheckBoxOutlineBlank" SelectedIcon="@Icons.Material.Filled.CheckBox" />
                                             }
                                         </MudToggleGroup>
                                     }
