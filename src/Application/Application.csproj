@@ -29,4 +29,7 @@
         <None Remove="DependencyInjection.cs.bak"/>
         <None Remove="Application.csproj.bak"/>
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Features\Assessments\DTOs\V1\Questions\" />
+    </ItemGroup>
 </Project>

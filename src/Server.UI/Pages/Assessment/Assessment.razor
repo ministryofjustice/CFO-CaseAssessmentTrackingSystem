@@ -4,16 +4,16 @@
 
 @page "/pages/assessment/{Upci}"
 
-@if (Model != null)
+@if (_model != null)
 {
 	<CatsMudStepper @ref="@Stepper" Color="Color.Primary" Variant="Variant.Filled"
 					MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
 					ActiveStepChanged="@OnStepChange" ShowSkipButton="false">
 		<ChildContent>
-			<MudForm Model="@Model">
+			<MudForm Model="@_model">
 				@*This top-level form is responsible for submission *@
                 
-                @foreach (var pathway in Model.Pathways)
+                @foreach (var pathway in _model.Pathways)
                 {
                     <AssessmentPathway Model="pathway" />
                 }
@@ -29,7 +29,7 @@
 	[Parameter]
 	public string Upci { get; set; } = string.Empty;
 
-	private AssessmentDto? Model;
+	private Cfo.Cats.Application.Features.Assessments.DTOs.Assessment? _model;
 
 	private CatsMudStepper Stepper { get; set; } = new();
 
@@ -41,13 +41,13 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-        if (Model is null)
+        if (_model is null)
         {
             var response = await Mediator.Send(new GetAssessment.Query() { Upci = Upci });
 
             if (response.Succeeded)
             {
-                Model = response.Data!;
+                _model = response.Data!;
             }
         }
     }
@@ -65,7 +65,7 @@
 		if (Stepper.IsAllStepsCompleted())
         {
             var validator = new AssessmentValidator();
-            var result = await validator.ValidateAsync(Model!);
+            var result = await validator.ValidateAsync(_model!);
 
 			if (result.IsValid)
 			{
