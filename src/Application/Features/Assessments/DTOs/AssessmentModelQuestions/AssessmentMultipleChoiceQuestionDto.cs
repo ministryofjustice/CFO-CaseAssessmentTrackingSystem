@@ -2,15 +2,19 @@
 
 public class AssessmentMultipleChoiceQuestionDto : AssessmentQuestionDto
 {
-    public IEnumerable<string>? Toggles { get; set; }
-
-
     public AssessmentMultipleChoiceQuestionDto(string question, string[] options) : base(question, options)
-    { }
+    {
+    }
 
     public AssessmentMultipleChoiceQuestionDto(string question, string[] options, string? helperText = null)
         : base(question, options, helperText)
-    { }
+    {
+    }
 
-    public override bool IsValid() => Toggles is not null && Toggles.Any();
+    public IEnumerable<string>? Toggles { get; set; }
+
+    public override bool IsValid()
+    {
+        return Toggles is not null && Toggles.Any();
+    }
 }

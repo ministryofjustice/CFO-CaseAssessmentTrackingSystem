@@ -1,6 +1,6 @@
 ﻿namespace Cfo.Cats.Application.Features.Assessments.DTOs;
 
-public class AssessmentValidator : AbstractValidator<Cfo.Cats.Application.Features.Assessments.DTOs.Assessment>
+public class AssessmentValidator : AbstractValidator<Assessment>
 {
     public AssessmentValidator()
     {

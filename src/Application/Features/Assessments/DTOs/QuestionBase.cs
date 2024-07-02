@@ -1,45 +1,47 @@
 namespace Cfo.Cats.Application.Features.Assessments.DTOs;
 
-
 /// <summary>
-/// Base class for the all questions
+///     Base class for the all questions
 /// </summary>
 public abstract class QuestionBase
 {
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    private QuestionBase()
+    {
+    }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+    protected QuestionBase(string question, string[] options)
+    {
+        this.Question = question;
+        this.Options = options;
+    }
+
+    protected QuestionBase(string question, string otherInformation, string[] options)
+        : this(question, options)
+    {
+        this.OtherInformation = otherInformation;
+    }
+
     /// <summary>
-    /// The question we are asking
+    ///     The question we are asking
     /// </summary>
-    public abstract string Question { get; }
-   
+    public string Question { get; }
+
     /// <summary>
-    /// The weight of the question
+    ///     Any other errata about the question.
     /// </summary>
-    public abstract double Weight { get; }
-    
+    public string? OtherInformation { get; }
+
     /// <summary>
-    /// Any other errata about the question.
+    ///     A collection of options for the answers
     /// </summary>
-    public abstract string? OtherInformation { get; }
-    
+    public string[] Options { get; }
+
     /// <summary>
-    /// A collection of options for the answers
-    /// </summary>
-    public abstract QuestionResponse[] Options { get; }
-    
-    /// <summary>
-    /// Is the answer valid
+    ///     Is the answer valid
     /// </summary>
     /// <returns>True if the answer has a valid return value</returns>
     public abstract bool IsValid();
-
-    /// <summary>
-    /// Scores the question
-    /// </summary>
-    /// <param name="participantAge">The age of the participant who this question is asked of</param>
-    /// <param name="location">The location where the assessment took place</param>
-    /// <param name="sex">The sex of the participant</param>
-    /// <returns></returns>
-    public abstract double Score(int participantAge, AssessmentLocation location, Sex sex);
 }
-
-public record QuestionResponse (string Answer, double Percentile);

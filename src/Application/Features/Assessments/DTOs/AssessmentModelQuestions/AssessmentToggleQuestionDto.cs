@@ -1,14 +1,16 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Cfo.Cats.Application.Features.Assessments.DTOs.AssessmentModelQuestions;
+﻿namespace Cfo.Cats.Application.Features.Assessments.DTOs.AssessmentModelQuestions;
 
 public class AssessmentToggleQuestionDto : AssessmentQuestionDto
 {
-    public string? SelectedOption { get; set; }
-
     public AssessmentToggleQuestionDto(string question, string[] options, string? helperText = null)
         : base(question, options, helperText)
-    { }
+    {
+    }
 
-    public override bool IsValid() => SelectedOption != null;
+    public string? SelectedOption { get; set; }
+
+    public override bool IsValid()
+    {
+        return SelectedOption != null;
+    }
 }
