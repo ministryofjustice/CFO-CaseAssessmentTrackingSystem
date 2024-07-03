@@ -6,7 +6,7 @@ public class ThoughtsAndBehavioursPathway
     public override string Title => "Thoughts & Behaviours";
     public override double Constant => 0.68287;
     public override string Icon => CatsIcons.Thoughts;
-    protected override IEnumerable<double> GetScores()
+    protected override IEnumerable<double> GetScores(int age, AssessmentLocation location, Sex sex)
     {
         yield return 0;
     }

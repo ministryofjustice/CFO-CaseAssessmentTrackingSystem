@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Assessments.Caching;
+using Cfo.Cats.Application.Features.Assessments.Commands;
 using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Education;
 using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.HealthAndAdditiction;
@@ -11,14 +12,14 @@ using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.WellbeingAndMen
 using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Working;
 using Cfo.Cats.Application.SecurityConstants;
 
-namespace Cfo.Cats.Application.Features.Assessments.Queries.GetAssessment;
+namespace Cfo.Cats.Application.Features.Assessments.Queries;
 
 public static class GetAssessment
 {
     [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
     public class Query : ICacheableRequest<Result<Assessment>>
     {
-        public required string Upci { get; set; }
+        public required string ParticipantId { get; set; }
 
         public string CacheKey
             => AssessmentsCacheKey.GetAllCacheKey;
@@ -31,8 +32,10 @@ public static class GetAssessment
     {
         public Task<Result<Assessment>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var a = new Assessment
+            //todo: get this data from the database rather than re-run this create logic
+            Assessment assessment = new Assessment()
             {
+                ParticipantId = request.ParticipantId,
                 Pathways =
                 [
                     new WorkingPathway(),
@@ -45,7 +48,8 @@ public static class GetAssessment
                     new WellbeingAndMentalHealthPathway(),
                 ]
             };
-            return Result<Assessment>.SuccessAsync(a);
+            
+            return Result<Assessment>.SuccessAsync(assessment);
         }
     }
 
@@ -53,10 +57,10 @@ public static class GetAssessment
     {
         public Validator()
         {
-            RuleFor(x => x.Upci)
+            RuleFor(x => x.ParticipantId)
                 .NotNull();
 
-            RuleFor(x => x.Upci)
+            RuleFor(x => x.ParticipantId)
                 .MinimumLength(9)
                 .MaximumLength(9);
         }

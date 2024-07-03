@@ -1,3 +1,4 @@
+@using Cfo.Cats.Application.Features.Assessments.Commands
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Humanizer
 
@@ -15,7 +16,7 @@
             </MudCardHeader>
             <MudCardContent Class="d-flex justify-space-between align-center">
                 <MudText Typo="Typo.body2">No assessment found</MudText>
-                <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="NavigateToAssessment">Begin</MudButton>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="BeginAssessment">Begin</MudButton>
             </MudCardContent>
         </MudCard>
     </MudItem>
@@ -142,9 +143,18 @@
     private double[] data = [1, 4, 3, 2];
     private string[] labels = { "Pending", "In Progress", "Overdue", "Complete" };
 
-    public void NavigateToAssessment()
+    public async Task BeginAssessment()
     {
-        Navigation.NavigateTo($"/pages/assessment/{ParticipantDto.Id}");
+        var command = new BeginAssessment.Command()
+        {
+            ParticipantId = this.ParticipantDto.Id
+        };
+        var result = await Mediator.Send(command);
+
+        if (result.Succeeded)
+        {
+            Navigation.NavigateTo($"/pages/assessment/{ParticipantDto.Id}");
+        }
     }
 
 }

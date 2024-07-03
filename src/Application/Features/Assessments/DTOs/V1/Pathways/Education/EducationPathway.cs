@@ -6,7 +6,7 @@ public class EducationPathway
     public override string Title => "Education";
     public override double Constant => 0.61259;
     public override string Icon => CatsIcons.Education;
-    protected override IEnumerable<double> GetScores()
+    protected override IEnumerable<double> GetScores(int age, AssessmentLocation location, Sex sex)
     {
         yield return 0;
     }

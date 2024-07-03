@@ -1,5 +1,5 @@
 ﻿@using Cfo.Cats.Application.Features.Assessments.DTOs
-@using Cfo.Cats.Application.Features.Assessments.Queries.GetAssessment
+@using Cfo.Cats.Application.Features.Assessments.Queries
 @using Cfo.Cats.Server.UI.Components.Stepper
 
 @page "/pages/assessment/{Upci}"
@@ -43,7 +43,7 @@
 	{
         if (_model is null)
         {
-            var response = await Mediator.Send(new GetAssessment.Query() { Upci = Upci });
+            var response = await Mediator.Send(new GetAssessment.Query() { ParticipantId = Upci });
 
             if (response.Succeeded)
             {
