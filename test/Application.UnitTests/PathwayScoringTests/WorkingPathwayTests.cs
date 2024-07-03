@@ -27,7 +27,7 @@ public class WorkingPathwayTests
         pathway.A9.Answer = A9.No;
         
         
-        var cumulativePercentile = pathway.GetPercentile(18, AssessmentLocation.EastMidlandsAssessmentLocation, Sex.Male);
+        var cumulativePercentile = pathway.GetPercentile(18, AssessmentLocation.EastMidlandsAssessmentLocation, Sex.MaleSex);
 
         cumulativePercentile.Should().Be(0.16215);
 
@@ -50,7 +50,7 @@ public class WorkingPathwayTests
         pathway.A8.Answer = A8.Yes;
         pathway.A9.Answer = A9.No;
 
-        var rag = pathway.GetRagScore(18, AssessmentLocation.EastMidlandsAssessmentLocation, Sex.Male);
+        var rag = pathway.GetRagScore(18, AssessmentLocation.EastMidlandsAssessmentLocation, Sex.MaleSex);
         rag.Should().Be(2);
     }
 }
