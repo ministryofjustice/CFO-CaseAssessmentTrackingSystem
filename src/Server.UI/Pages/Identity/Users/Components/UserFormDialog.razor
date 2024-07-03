@@ -1,4 +1,5 @@
 @using Cfo.Cats.Application.Features.Identity.DTOs
+@using Cfo.Cats.Domain.Identity
 @inherits MudComponentBase
 
 @inject IStringLocalizer<Users> L
@@ -14,6 +15,8 @@
 </MudDialog>
 
 @code{
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+
     [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter] public ApplicationUserDto Model { get; set; } = default!;

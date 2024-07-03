@@ -24,6 +24,7 @@ public static class ConstantString
     public static string Edit => Localize("Edit");
     public static string Submit => Localize("Submit");
     public static string Delete => Localize("Delete");
+    public static string Archive => Localize("Archive");
     public static string Add => Localize("Add");
     public static string Clone => Localize("Clone");
     public static string New => Localize("New");
@@ -57,6 +58,9 @@ public static class ConstantString
     public static string SaveSuccess => Localize("Save successfully");
     public static string DeleteSuccess => Localize("Delete successfully");
     public static string DeleteFail => Localize("Delete fail");
+
+    public static string ArchiveSuccess => Localize("Archive successfully");
+    public static string ArchiveFail => Localize("Archive fail");
     public static string UpdateSuccess => Localize("AddOrUpdate successfully");
     public static string CreateSuccess => Localize("Create successfully");
     public static string LoginSuccess => Localize("Login successfully");
@@ -86,11 +90,23 @@ public static class ConstantString
     public static string DeleteConfirmWithSelected =>
         Localize("Are you sure you want to delete the selected items: {0}?");
 
+    public static string ArchiveTheItem => Localize("Archive the {0}");
+    public static string ArchiveItems => Localize("Archive selected items: {0}");
+    public static string ArchiveConfirmation =>
+        Localize("Are you sure you want to archive this item: {0}?");
+
+    public static string ArchiveConfirmationWithId =>
+        Localize("Are you sure you want to archive this item with Id: {0}?");
+
+    public static string ArchiveConfirmWithSelected =>
+        Localize("Are you sure you want to archive the selected items: {0}?");
+
     public static string NoRecords => Localize("There are no records to view.");
     public static string Loading => Localize("Loading...");
     public static string Waiting => Localize("Wating...");
     public static string Processing => Localize("Processing...");
     public static string DeleteConfirmationTitle => Localize("Delete Confirmation");
+    public static string ArchiveConfirmationTitle => Localize("Archive Confirmation");
     public static string LogoutConfirmationTitle => Localize("Logout Confirmation");
 
     public static string ResumeEnrolment => Localize("Continue Enrolment");

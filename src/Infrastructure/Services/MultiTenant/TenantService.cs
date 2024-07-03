@@ -56,4 +56,7 @@ public class TenantService : ITenantService
         );
         OnChange?.Invoke();
     }
+
+    public IEnumerable<TenantDto> GetVisibleTenants(string tenantId) => 
+        DataSource.Where(t => t.Id.StartsWith(tenantId));
 }
