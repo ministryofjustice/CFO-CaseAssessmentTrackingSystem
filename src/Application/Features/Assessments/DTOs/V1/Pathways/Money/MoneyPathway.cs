@@ -36,7 +36,7 @@ public class MoneyPathway : PathwayBase
     public override string Title => "Money";
     public override double Constant => 0.76845;
     public override string Icon => CatsIcons.Money;
-    protected override IEnumerable<double> GetScores(int age, AssessmentLocation location, Sex sex)
+    protected override IEnumerable<double> GetPercentiles(int age, AssessmentLocation location, Sex sex)
     {
         yield return 0;
     }

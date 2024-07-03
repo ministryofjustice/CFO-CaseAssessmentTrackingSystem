@@ -4,16 +4,16 @@ public class B4() : SingleChoiceQuestion(
     "How satisfied are you with your current housing?",
     "If you’re in prison, then think about your expected housing on release.",
     [
-        VeryDissatisfiedHousing,
-        SlightlySatisfiedHousing,
-        NeitherSatisfiedOrDissatisfiedHousing,
-        FairlySatisfiedHousing,
-        VerySatisfiedHousing,
+        VeryDissatisfied,
+        SlightlyDissatisfied,
+        NeitherSatisfiedOrDissatisfied,
+        FairlySatisfied,
+        VerySatisfied,
     ])
 {
-    public const string VeryDissatisfiedHousing = "Very dissatisfied";
-    public const string SlightlySatisfiedHousing = "Slightly dissatisfied";
-    public const string NeitherSatisfiedOrDissatisfiedHousing = "Neither satisfied or dissatisfied";
-    public const string FairlySatisfiedHousing = "Fairly satisfied";
-    public const string VerySatisfiedHousing = "Very satisfied";
+    public const string VeryDissatisfied = "Very dissatisfied";
+    public const string SlightlyDissatisfied = "Slightly dissatisfied";
+    public const string NeitherSatisfiedOrDissatisfied = "Neither satisfied or dissatisfied";
+    public const string FairlySatisfied = "Fairly satisfied";
+    public const string VerySatisfied = "Very satisfied";
 }
