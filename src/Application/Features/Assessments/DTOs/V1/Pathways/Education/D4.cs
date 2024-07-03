@@ -11,7 +11,8 @@ public class D4() : MultipleChoiceQuestion("Do you have difficulty with any of t
         MemoryDifficulty,
         UnderstandingOthersDifficulty,
         SittingStillDifficulty,
-        OtherDifficulties
+        OtherDifficulties,
+        NoneOfThese,
     ])
 {
     public const string ReadingDifficulty = "Reading";
@@ -24,4 +25,5 @@ public class D4() : MultipleChoiceQuestion("Do you have difficulty with any of t
     public const string UnderstandingOthersDifficulty = "Understanding others";
     public const string SittingStillDifficulty = "Restlessness / sitting still";
     public const string OtherDifficulties = "Others";
+    public const string NoneOfThese = "None of these";
 }
