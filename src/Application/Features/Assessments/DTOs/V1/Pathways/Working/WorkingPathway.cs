@@ -33,7 +33,7 @@ public sealed class WorkingPathway
     public A8 A8 { get; private set; }
     public A9 A9 { get; private set; }
     public A10 A10 { get; private set; }
-    protected override IEnumerable<double> GetScores()
+    protected override IEnumerable<double> GetScores(int age, AssessmentLocation location, Sex sex)
     {
         throw new NotImplementedException();
     }

@@ -11,10 +11,10 @@ public abstract class PathwayBase
 
     public double Score(int age, AssessmentLocation location, Sex sex)
     {
-        var scores = GetScores();
+        var scores = GetScores(age, location, sex);
         var score = scores.Aggregate(1.0, (ac, a) => ac * a);
         return Math.Round(score, 5);
     }
 
-    protected abstract IEnumerable<double> GetScores();
+    protected abstract IEnumerable<double> GetScores(int age, AssessmentLocation location, Sex sex);
 }
