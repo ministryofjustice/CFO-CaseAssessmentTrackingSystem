@@ -27,7 +27,7 @@ public sealed class HousingPathway : PathwayBase
     
     public B6 B6 { get; private set; }
     
-    protected override IEnumerable<double> GetScores(int age, AssessmentLocation location, Sex sex)
+    protected override IEnumerable<double> GetPercentiles(int age, AssessmentLocation location, Sex sex)
     {
         yield return 0;
     }

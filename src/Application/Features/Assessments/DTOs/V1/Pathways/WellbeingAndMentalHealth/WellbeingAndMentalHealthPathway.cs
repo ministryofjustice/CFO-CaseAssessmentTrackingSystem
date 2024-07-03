@@ -6,7 +6,7 @@ public class WellbeingAndMentalHealthPathway
     public override string Title => "Wellbeing & Mental Health";
     public override double Constant => 0.64723;
     public override string Icon => CatsIcons.Wellbeing;
-    protected override IEnumerable<double> GetScores(int age, AssessmentLocation location, Sex sex)
+    protected override IEnumerable<double> GetPercentiles(int age, AssessmentLocation location, Sex sex)
     {
         yield return 0;
     }

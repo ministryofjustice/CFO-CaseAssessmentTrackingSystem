@@ -1,20 +1,32 @@
 using Ardalis.SmartEnum;
 using Cfo.Cats.Domain.Entities.Administration;
+using DocumentFormat.OpenXml.Drawing;
 
 namespace Cfo.Cats.Application.Features.Assessments.DTOs;
 
 public class AssessmentLocation : SmartEnum<AssessmentLocation>
 {
-    public static readonly AssessmentLocation Unknown = new("Unknown", 0);
-    public static readonly AssessmentLocation NorthWest = new("North West", 1);
-    public static readonly AssessmentLocation NorthEast = new("North East", 2);
-    public static readonly AssessmentLocation YorkshireAndHumberside = new("Yorkshire and Humberside", 3);
-    public static readonly AssessmentLocation WestMidlands = new("West Midlands", 4);
-    public static readonly AssessmentLocation EastMidlands = new("East Midlands", 5);
-    public static readonly AssessmentLocation EastOfEngland = new("East of England", 6);
-    public static readonly AssessmentLocation London = new("London", 7);
-    public static readonly AssessmentLocation SouthWest = new("South West", 8);
-    public static readonly AssessmentLocation SouthEast = new("South East", 9);
+    public const string Unknown = "Unknown";
+    public const string EastMidlands = "East Midlands";
+    public const string NorthWest = "North West";
+    public const string NorthEast = "North East";
+    public const string YorkshireAndHumberside = "Yorkshire and Humberside";
+    public const string WestMidlands = "West Midlands";
+    public const string EastOfEngland = "East of England";
+    public const string London = "London";
+    public const string SouthWest = "South West";
+    public const string SouthEast = "South East";
+    
+    public static readonly AssessmentLocation UnknownAssessmentLocation = new(Unknown, 0);
+    public static readonly AssessmentLocation NorthWestAssessmentLocation = new(NorthWest, 1);
+    public static readonly AssessmentLocation NorthEastAssessmentLocation = new(NorthEast, 2);
+    public static readonly AssessmentLocation YorkshireAndHumbersideAssessmentLocation = new(YorkshireAndHumberside, 3);
+    public static readonly AssessmentLocation WestMidlandsAssessmentLocation = new(WestMidlands, 4);
+    public static readonly AssessmentLocation EastMidlandsAssessmentLocation = new(EastMidlands, 5);
+    public static readonly AssessmentLocation EastOfEnglandAssessmentLocation = new(EastOfEngland, 6);
+    public static readonly AssessmentLocation LondonAssessmentLocation = new(London, 7);
+    public static readonly AssessmentLocation SouthWestAssessmentLocation = new(SouthWest, 8);
+    public static readonly AssessmentLocation SouthEastAssessmentLocation = new(SouthEast, 9);
 
     private AssessmentLocation(string name, int value) : base(name, value)
     {
@@ -24,6 +36,6 @@ public class AssessmentLocation : SmartEnum<AssessmentLocation>
     {
         var lotNumber = contract.LotNumber;
         var value = TryFromValue(lotNumber, out var assessmentLocation);
-        return assessmentLocation ?? Unknown;
+        return assessmentLocation ?? UnknownAssessmentLocation;
     }
 }
