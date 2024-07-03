@@ -9,7 +9,7 @@ public class E5() : SingleChoiceQuestion("How much sport, exercise or physical a
     ])
 {
     public const string LessThan30MinutesPerWeek = "Less than 30min per week";
-    public const string ThirtyMinutesTo2AndHalfHoursPerWeek = "30min to 2Â½ hr per week";
-    public const string Over2AndHalfHoursPerWeek = "Over 2Â½ hrs per week";
+    public const string ThirtyMinutesTo2AndHalfHoursPerWeek = "30min to 2½ hr per week";
+    public const string Over2AndHalfHoursPerWeek = "Over 2½ hrs per week";
     
 }
