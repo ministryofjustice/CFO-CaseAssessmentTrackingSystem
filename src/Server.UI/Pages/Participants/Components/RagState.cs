@@ -7,3 +7,13 @@ public enum RagState
     Amber = 2,
     Green = 3
 }
+
+public static class RagStateHelper
+{
+    public static RagState GetRagStateForScore(double score) => score switch
+    {
+        < 10 => RagState.Red,
+        >= 10 and <= 26 => RagState.Amber,
+        _ => RagState.Green
+    };
+}
