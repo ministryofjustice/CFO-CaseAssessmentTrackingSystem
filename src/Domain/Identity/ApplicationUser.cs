@@ -14,16 +14,16 @@ public class ApplicationUser : IdentityUser
     }
 
     public string? DisplayName { get; set; }
-    public string? Provider { get; set; } = "Local";
+    public string? ProviderId { get; set; }
     public string? TenantId { get; set; }
     public virtual Tenant? Tenant { get; set; }
     public string? TenantName { get; set; }
-
     [Column(TypeName = "text")]
     public string? ProfilePictureDataUrl { get; set; }
-
     public bool IsActive { get; set; }
     public bool IsLive { get; set; }
+    public string? MemorablePlace { get; set; }
+    public string? MemorableDate { get; set; }
     public string? RefreshToken { get; set; }
     public DateTime RefreshTokenExpiryTime { get; set; }
     public virtual ICollection<ApplicationUserClaim> UserClaims { get; set; }

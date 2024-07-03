@@ -10,7 +10,7 @@ public class ApplicationUserDtoValidator : AbstractValidator<ApplicationUserDto>
         RuleFor(v => v.TenantId)
             .MaximumLength(128).WithMessage(_localizer["Tenant id must be less than 128 characters"])
             .NotEmpty().WithMessage(_localizer["Tenant name cannot be empty"]);
-        RuleFor(v => v.Provider)
+        RuleFor(v => v.ProviderId)
             .MaximumLength(128).WithMessage(_localizer["Provider must be less than 100 characters"])
             .NotEmpty().WithMessage(_localizer["Provider cannot be empty"]);
         RuleFor(x => x.UserName)

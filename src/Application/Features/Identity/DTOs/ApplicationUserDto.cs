@@ -10,9 +10,9 @@ public class ApplicationUserDto
 
     [Description("User Name")] public string UserName { get; set; } = string.Empty;
 
-    [Description("Display Name")] public string? DisplayName { get; set; }
+    [Description("Display Name")] public string DisplayName { get; set; } = string.Empty;
 
-    [Description("Provider")] public string? Provider { get; set; } = "Local";
+    [Description("Provider")] public string? ProviderId { get; set; }
 
     [Description("Tenant Id")] public string? TenantId { get; set; }
 
@@ -31,6 +31,10 @@ public class ApplicationUserDto
     [Description("Assigned Roles")] public string[]? AssignedRoles { get; set; }
 
     [Description("Default Role")] public string? DefaultRole => AssignedRoles?.FirstOrDefault();
+
+    [Description("Memorable Place")] public string MemorableDate { get; set; } = string.Empty;
+
+    [Description("Memorable Place")] public string MemorablePlace { get; set; } = string.Empty;
 
     [Description("Is Active")] public bool IsActive { get; set; }
 
@@ -51,7 +55,7 @@ public class ApplicationUserDto
             Email = Email,
             PhoneNumber = PhoneNumber,
             DisplayName = DisplayName,
-            Provider = Provider,
+            Provider = ProviderId,
             UserName = UserName,
             TenantId = TenantId,
             TenantName = TenantName,
@@ -74,7 +78,13 @@ public class ApplicationUserDto
             CreateMap<ApplicationUser, ApplicationUserDto>(MemberList.None)
                 .ForMember(x => x.SuperiorName, s => s.MapFrom(y => y.Superior!.UserName))
                 .ForMember(x => x.TenantName, s => s.MapFrom(y => y.Tenant!.Name))
-                .ForMember(x => x.AssignedRoles, s => s.MapFrom(y => y.UserRoles.Select(r => r.Role.Name)));
+                .ForMember(x => x.AssignedRoles, s => s.MapFrom(y => y.UserRoles.Select(r => r.Role.Name)))
+            .ReverseMap()
+                .ForMember(x => x.UserRoles, s => s.MapFrom(y => y.AssignedRoles!.Select(roleName => new ApplicationUserRole
+                {
+                    Role = new ApplicationRole { Name = roleName } 
+                })
+            ));
         }
     }
 }

@@ -14,7 +14,7 @@ public class FetchUserDtoResultAction
             Email = dto.Email,
             PhoneNumber = dto.PhoneNumber,
             DisplayName = dto.DisplayName,
-            Provider = dto.Provider,
+            Provider = dto.ProviderId,
             UserName = dto.UserName,
             TenantId = dto.TenantId,
             TenantName = dto.TenantName,

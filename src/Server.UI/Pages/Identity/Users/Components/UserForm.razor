@@ -1,4 +1,6 @@
-﻿@using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode
+﻿@using Cfo.Cats.Application.Features.Tenants.DTOs
+@using FluentValidation.Internal
+@using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode
 @using Size = SixLabors.ImageSharp.Size
 @using Image = SixLabors.ImageSharp.Image
 @using SixLabors.ImageSharp.Processing
@@ -8,75 +10,87 @@
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Domain.Identity
 @using Cfo.Cats.Application.Common.Interfaces.MultiTenant
+@using FluentValidation;
+
 @inherits MudComponentBase
+
 @inject IValidationService Validator
 @inject IUploadService UploadService
 @inject ITenantService TenantsService
 @inject RoleManager<ApplicationRole> RoleManager
+@inject UserManager<ApplicationUser> UserManager
 @inject IStringLocalizer<Users> L
 
 <MudForm Model="@Model" @ref="@form" Validation="@(Validator.ValidateValue(Model))">
-    <input For="@(() => Model.Id)" @bind-value="Model.Id" type="hidden"/>
-    <input For="@(() => Model.ProfilePictureDataUrl)" @bind-value="Model.ProfilePictureDataUrl" type="hidden"/>
-    <InputFile id="UploadPhoto" FilesChanged="UploadPhoto" hidden accept=".jpg, .jpeg, .png"/>
     <MudGrid>
-        <MudItem sm="12">
-            <div class="d-flex justify-center">
+        <MudItem xs="12" sm="6">
+            <MudSelect T="string" ShrinkLabel Label="@L["Select Provider"]" For="@(() => Model.ProviderId)" Value="Model.ProviderId" ValueChanged="OnProviderValueChanged" Required="true">
+                @{
+                    if (CurrentUser is not null)
+                    {
+                        var tenants = GetDescendants(CurrentUser.TenantId!);
 
-                @if (string.IsNullOrEmpty(Model.ProfilePictureDataUrl))
-                {
-                    <MudAvatar Style="height:128px; width:128px; font-size:2rem;">@Model.UserName.ToUpper().FirstOrDefault()</MudAvatar>
-                }
-                else
-                {
-                    <MudAvatar Style="height:128px; width:128px; font-size:2rem;">
-                        <MudImage Src="@Model.ProfilePictureDataUrl"></MudImage>
-                    </MudAvatar>
-                }
-                <MudTooltip Text="@L["Click upload a image"]">
-                    <MudFileUpload T="IBrowserFile" Accept=".jpg, .jpeg, .png, .webp" FilesChanged="UploadPhoto" Style="margin-top:-10px;margin-left:-15px">
-                        <ActivatorContent>
-                            <MudIconButton Icon="@Icons.Material.Filled.PhotoCamera">
-                            </MudIconButton>
-                        </ActivatorContent>
-                    </MudFileUpload>
-                </MudTooltip>
-            </div>
-        </MudItem>
-        <MudItem sm="6" xs="12">
-            <MudSelect For="@(() => Model.TenantId)"
-                       T="string"
-                       Label="@L["Select Tenant"]"
-                       Required="true"
-                       @bind-Value="@Model.TenantId">
-                @foreach (var item in TenantsService.DataSource)
-                {
-                    <MudSelectItem T="string" Value="@item.Id">@item.Name</MudSelectItem>
+                        for (int i = 0; i < tenants.Count(); i++)
+                        {
+                            var tenant = tenants.ElementAt(i);
+
+                            <MudSelectItem Class="@($"ml-{(i is 0 ? 0 : tenant.Id.Length)}")" Value="@tenant.Id" Disabled="!IsValidTenant(tenant.Id)">
+                                @tenant.Name
+                            </MudSelectItem>
+                        }
+                    }
                 }
             </MudSelect>
         </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField For="@(() => Model.Provider)" @bind-Value="Model.Provider" Label="@L["Provider"]" Variant="Variant.Text"></MudTextField>
-        </MudItem>
 
         <MudItem xs="12" sm="6">
-            <MudTextField For="@(() => Model.DisplayName)" @bind-Value="Model.DisplayName" Label="@L["Display Name"]" Variant="Variant.Text"></MudTextField>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField For="@(() => Model.Email)" @bind-Value="Model.Email" Label="@L["E-mail"]" Variant="Variant.Text" Required="true"></MudTextField>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField For="@(() => Model.PhoneNumber)" @bind-Value="Model.PhoneNumber" Label="@L["Phone Number"]" Variant="Variant.Text"></MudTextField>
+            <MudSelect T="string" ShrinkLabel Label="@L["Select Team"]" For="@(() => Model.TenantId)" Value="Model.TenantId" ValueChanged="OnTenantValueChange" Text="@Model.TenantName" Required="true" Disabled="string.IsNullOrEmpty(Model.ProviderId)">
+                @{
+                    if(string.IsNullOrEmpty(Model.ProviderId) is false)
+                    {
+                        var tenants = Tenants.Where(x => x.Id.StartsWith(Model.ProviderId));
+
+                        for(int i = 0; i < tenants.Count(); i++)
+                        {
+                            var tenant = tenants.ElementAt(i);
+
+                            <MudSelectItem Class="@($"ml-{(i is 0 ? 0 : tenant.Id.Length)}")" Value="@tenant.Id" Disabled="!IsValidTenant(tenant.Id)">
+                                @tenant.Name
+                            </MudSelectItem>
+                        }
+                    }
+                }
+            </MudSelect>
         </MudItem>
 
-
-        <MudItem xs="12" sm="6">
-            <MudText Typo="Typo.caption">@L["Status"]</MudText>
-            <div class="d-fex">
-                <MudCheckBox For="@(() => Model.IsActive)" T="bool" @bind-Value="Model.IsActive" Label="@L["Is Active"]" Disabled="@(!string.IsNullOrEmpty(Model.Id))"></MudCheckBox>
-            </div>
+        <MudItem xs="12" sm="12" Class="mt-6">
+            <MudText Typo="Typo.caption">@L["Personal Information"]</MudText>
+            <MudGrid>
+                <MudItem xs="12" sm="12">
+                    <MudTextField For="@(() => Model.DisplayName)" @bind-Value="Model.DisplayName" Label="@L["Full Name"]" InputType="InputType.Email" Variant="Variant.Text" Required="true"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField For="@(() => Model.Email)" @bind-Value="Model.Email" Label="@L["E-mail"]" InputType="InputType.Email" Variant="Variant.Text" Required="true"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField For="@(() => Model.PhoneNumber)" @bind-Value="Model.PhoneNumber" Label="@L["Phone Number"]" InputType="InputType.Telephone" Variant="Variant.Text"></MudTextField>
+                </MudItem>
+            </MudGrid>
         </MudItem>
-        <MudItem xs="12" sm="12">
+
+        <MudItem xs="12" sm="12" Class="mt-6">
+            <MudText Typo="Typo.caption">@L["Account Recovery"]</MudText>
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudPasswordField For="@(() => Model.MemorablePlace)" @bind-Value="Model.MemorablePlace" Label="@L["Memorable Place"]" Variant="Variant.Text" PasswordMode="true" Required="true" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudPasswordField For="@(() => Model.MemorableDate)" @bind-Value="Model.MemorableDate" Label="@L["Memorable Date"]" Variant="Variant.Text" PasswordMode="true" Required="true" />
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+
+        <MudItem xs="12" sm="12" Class="mt-6">
             <MudText Typo="Typo.caption">@L["Assign Roles"]</MudText>
             <MudGrid Class="mt-1">
                 @for (var i = 0; i < Roles.Count; i++)
@@ -91,7 +105,10 @@
     </MudGrid>
 </MudForm>
 
-@code{
+@code {
+    private IEnumerable<string> allowedDomains = [];
+
+    public IEnumerable<TenantDto> Tenants { get; set; } = [];
 
     public class CheckItem
     {
@@ -99,17 +116,29 @@
         public bool Value { get; set; }
     }
 
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+
     [EditorRequired] [Parameter] public ApplicationUserDto Model { get; set; } = default!;
 
     [EditorRequired] [Parameter] public EventCallback<ApplicationUserDto> OnFormSubmit { get; set; }
 
+    public ApplicationUser CurrentUser { get; private set; } = default!;
 
     private MudForm? form = default!;
     private List<CheckItem> Roles { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
+        var state = await AuthState;
+
+        CurrentUser = (await UserManager.GetUserAsync(state.User))!;
+
+        Tenants = TenantsService
+            .GetVisibleTenants(CurrentUser.TenantId ?? string.Empty)
+            .OrderBy(x => x.Id);
+
         var array = await RoleManager.Roles.Select(x => x.Name).ToListAsync();
+
         foreach (var role in array)
         {
             if (Model.AssignedRoles != null && Model.AssignedRoles.Contains(role))
@@ -122,29 +151,24 @@
             }
         }
     }
-    private async Task UploadPhoto(IBrowserFile file)
+
+    private void OnProviderValueChanged(string value)
     {
-        var filestream = file.OpenReadStream(GlobalVariable.MaxAllowedSize);
-        var imgStream = new MemoryStream();
-        await filestream.CopyToAsync(imgStream);
-        imgStream.Position = 0;
-        using (var outStream = new MemoryStream())
-        {
-            using (var image = Image.Load(imgStream))
-            {
-                image.Mutate(
-                    i => i.Resize(new ResizeOptions { Mode = ResizeMode.Crop, Size = new Size(128, 128) }));
-                image.Save(outStream, PngFormat.Instance);
-                var filename = file.Name;
-                var fi = new FileInfo(filename);
-                var ext = fi.Extension;
-                var result = await UploadService.UploadAsync($"/users/{Model.Id}" ,new UploadRequest(Guid.NewGuid() + ext, UploadType.ProfilePicture, outStream.ToArray()));
-                Model.ProfilePictureDataUrl = result;
-                //Do your validations here
-                Snackbar.Add(ConstantString.UploadSuccess, Severity.Info);
-            }
-        }
+        Model.ProviderId = value;
+        Model.TenantId = null;
+        Model.TenantName = null;
     }
+
+    private void OnTenantValueChange(string value)
+    {
+        Model.TenantId = value;
+    }
+
+    private IEnumerable<string> AllowedDomains(string tenantId) =>
+        Tenants.Where(x => x.Id == tenantId)
+        .SelectMany(x => x.Domains);
+
+    private bool IsValidTenant(string tenantId) => AllowedDomains(tenantId).Any();
 
     public async Task Submit()
     {
@@ -157,6 +181,17 @@
                 await OnFormSubmit.InvokeAsync(Model);
             }
         }
+    }
+
+    private IEnumerable<TenantDto> GetDescendants(string tenantId)
+    {
+        int len = tenantId.Length / 2;
+
+        var maxDepth = len > 1 ? 1 : 2;
+
+        var depth = tenantId.Length + (maxDepth * 2);
+
+        return Tenants.Where(x => x.Id.StartsWith(tenantId) && x.Id.Length <= depth);
     }
 
 }
