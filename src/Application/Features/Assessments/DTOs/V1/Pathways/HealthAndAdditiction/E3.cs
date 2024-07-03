@@ -2,12 +2,12 @@
 
 public class E3() : SingleChoiceQuestion("Are you currently taking any regular medication or undergoing treatment for a physical or mental health condition?",
     [
-        YesMentalHealthMedication,
-        NoMentalHealthMedication,
-        NotSureMentalHealthMedication
+        Yes,
+        No,
+        NotSure
     ])
 {
-    public const string YesMentalHealthMedication = "Yes";
-    public const string NoMentalHealthMedication = "No";
-    public const string NotSureMentalHealthMedication = "Not Sure";
+    public const string Yes = "Yes";
+    public const string No = "No";
+    public const string NotSure = "Not Sure";
 }
