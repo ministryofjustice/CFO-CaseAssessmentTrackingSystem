@@ -1,10 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Domain.Identity;
 
 public class ApplicationUser : IdentityUser
 {
+    private readonly List<Note> _notes = new();
+
+    public IReadOnlyCollection<Note> Notes => _notes.AsReadOnly();
+
     public ApplicationUser()
     {
         UserClaims = new HashSet<ApplicationUserClaim>();
@@ -33,4 +38,15 @@ public class ApplicationUser : IdentityUser
 
     public string? SuperiorId { get; set; } = null;
     public ApplicationUser? Superior { get; set; } = null;
+
+    public ApplicationUser AddNote(Note note)
+    {
+        if(_notes.Contains(note) is false)
+        {
+            _notes.Add(note);
+        }
+
+        return this;
+    }
+
 }
