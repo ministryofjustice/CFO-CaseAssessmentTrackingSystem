@@ -11,6 +11,7 @@ internal static class DatabaseSchema
         public const string ApplicationUser = nameof(ApplicationUser);
         public const string ApplicationUserClaim = nameof(ApplicationUserClaim);
         public const string ApplicationUserLogin = nameof(ApplicationUserLogin);
+        public const string ApplicationUserNote = nameof(ApplicationUserNote);
         public const string ApplicationUserToken = nameof(ApplicationUserToken);
         public const string ApplicationUserRole = nameof(ApplicationUserRole);
         public const string AuditTrail = nameof(AuditTrail);

@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Domain.Identity;
+using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Application.Features.Identity.DTOs;
 
@@ -46,6 +47,8 @@ public class ApplicationUserDto
 
     [Description("Status")] public DateTimeOffset? LockoutEnd { get; set; }
 
+    [Description("Notes")] public List<ApplicationUserNoteDto> Notes { get; set; } = [];
+
     public UserProfile ToUserProfile()
     {
         return new UserProfile
@@ -80,11 +83,16 @@ public class ApplicationUserDto
                 .ForMember(x => x.TenantName, s => s.MapFrom(y => y.Tenant!.Name))
                 .ForMember(x => x.AssignedRoles, s => s.MapFrom(y => y.UserRoles.Select(r => r.Role.Name)))
             .ReverseMap()
-                .ForMember(x => x.UserRoles, s => s.MapFrom(y => y.AssignedRoles!.Select(roleName => new ApplicationUserRole
+                .ForMember(x => x.UserName, s => s.MapFrom(y => y.Email))
+                .ForMember(x => x.Notes, s => s.Ignore())
+            .AfterMap((dto, entity, context) =>
+            {
+                foreach(var noteDto in dto.Notes)
                 {
-                    Role = new ApplicationRole { Name = roleName } 
-                })
-            ));
+                    var note = context.Mapper.Map<Note>(noteDto);
+                    entity.AddNote(note);
+                }
+            });
         }
     }
 }

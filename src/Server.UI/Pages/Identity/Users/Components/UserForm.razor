@@ -34,7 +34,7 @@
                         {
                             var tenant = tenants.ElementAt(i);
 
-                            <MudSelectItem Class="@($"ml-{(i is 0 ? 0 : tenant.Id.Length)}")" Value="@tenant.Id" Disabled="!IsValidTenant(tenant.Id)">
+                            <MudSelectItem Class="@($"pl-{(tenant.Id.Length + 2)}")" Value="@tenant.Id" Disabled="!IsValidTenant(tenant.Id)">
                                 @tenant.Name
                             </MudSelectItem>
                         }
@@ -44,7 +44,7 @@
         </MudItem>
 
         <MudItem xs="12" sm="6">
-            <MudSelect T="string" ShrinkLabel Label="@L["Select Team"]" For="@(() => Model.TenantId)" Value="Model.TenantId" ValueChanged="OnTenantValueChange" Text="@Model.TenantName" Required="true" Disabled="string.IsNullOrEmpty(Model.ProviderId)">
+            <MudSelect T="string" ShrinkLabel Label="@L["Select Tenant"]" For="@(() => Model.TenantId)" Value="Model.TenantId" ValueChanged="OnTenantValueChange" Text="@Model.TenantName" Required="true" Disabled="string.IsNullOrEmpty(Model.ProviderId)">
                 @{
                     if(string.IsNullOrEmpty(Model.ProviderId) is false)
                     {
@@ -54,7 +54,7 @@
                         {
                             var tenant = tenants.ElementAt(i);
 
-                            <MudSelectItem Class="@($"ml-{(i is 0 ? 0 : tenant.Id.Length)}")" Value="@tenant.Id" Disabled="!IsValidTenant(tenant.Id)">
+                            <MudSelectItem Class="@($"pl-{(tenant.Id.Length + 2)}")" Value="@tenant.Id" Disabled="!IsValidTenant(tenant.Id)">
                                 @tenant.Name
                             </MudSelectItem>
                         }
@@ -85,7 +85,7 @@
                     <MudPasswordField For="@(() => Model.MemorablePlace)" @bind-Value="Model.MemorablePlace" Label="@L["Memorable Place"]" Variant="Variant.Text" PasswordMode="true" Required="true" />
                 </MudItem>
                 <MudItem xs="12" sm="6">
-                    <MudPasswordField For="@(() => Model.MemorableDate)" @bind-Value="Model.MemorableDate" Label="@L["Memorable Date"]" Variant="Variant.Text" PasswordMode="true" Required="true" />
+                    <MudPasswordField For="@(() => Model.MemorableDate)" @bind-Value="Model.MemorableDate" Label="@L["Memorable Date"]" Variant="Variant.Text" PasswordMode="true"  Required="true" />
                 </MudItem>
             </MudGrid>
         </MudItem>
@@ -100,6 +100,16 @@
                         <MudCheckBox T="bool" Value="@Roles[x].Value" Label="@Roles[x].Key" ValueChanged="@(s => Roles[x].Value = s)"></MudCheckBox>
                     </MudItem>
                 }
+            </MudGrid>
+        </MudItem>
+
+        <MudItem xs="12" sm="12" Class="mt-6">
+            <MudText Typo="Typo.caption">@L["Additional Information"]</MudText>
+            <MudGrid Class="mt-1">
+                <MudItem xs="12" sm="12" Class="py-0 my=0">
+                    <MudTextField @bind-Value="CallReference" Label="@L["Call Reference No."]" Variant="Variant.Text" Required></MudTextField>
+                    <MudTextField @bind-Value="Message" Label="@L["Notes"]" Lines="4" AutoGrow Variant="Variant.Text" Required></MudTextField>
+                </MudItem>
             </MudGrid>
         </MudItem>
     </MudGrid>
@@ -121,6 +131,9 @@
     [EditorRequired] [Parameter] public ApplicationUserDto Model { get; set; } = default!;
 
     [EditorRequired] [Parameter] public EventCallback<ApplicationUserDto> OnFormSubmit { get; set; }
+
+    public string? CallReference { get; set; }
+    public string Message { get; set; } = string.Empty;
 
     public ApplicationUser CurrentUser { get; private set; } = default!;
 
@@ -162,6 +175,7 @@
     private void OnTenantValueChange(string value)
     {
         Model.TenantId = value;
+        Model.TenantName = Tenants.First(t => t.Id == Model.TenantId).Name;
     }
 
     private IEnumerable<string> AllowedDomains(string tenantId) =>
@@ -178,6 +192,13 @@
             if (form.IsValid)
             {
                 Model.AssignedRoles = Roles.Where(x => x.Value).Select(x => x.Key).ToArray();
+                Model.Notes.Add(new ApplicationUserNoteDto 
+                { 
+                    Message = Message, 
+                    CallReference = CallReference,
+                    ApplicationUserId = Model.Id
+                });
+
                 await OnFormSubmit.InvokeAsync(Model);
             }
         }
