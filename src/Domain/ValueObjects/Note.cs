@@ -13,6 +13,7 @@ public class Note(string message, string? callReference) : ValueObject, IAuditab
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return Message;
+        yield return CreatedBy ?? Guid.NewGuid().ToString();
+        yield return Created ?? DateTime.Now;
     }
 }
