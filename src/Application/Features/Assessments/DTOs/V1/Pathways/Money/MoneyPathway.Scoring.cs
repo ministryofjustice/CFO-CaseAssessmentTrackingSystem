@@ -2,22 +2,20 @@ namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Money;
 
 public partial class MoneyPathway
 {
-    protected override IEnumerable<double> GetPercentiles(int age, AssessmentLocation location, Sex sex)
+    internal override IEnumerable<double> GetPercentiles(int age, AssessmentLocation location, Sex sex)
     {
         double[] percentiles =
         [
-            GetCopingFinancially(),
-            GetPayingBills(),
-            GetProblemDebt(),
-            GetBanking(),
-            GetFoodSecurity(),
+            GetCopingFinancially(C1).PowerRound(0.5),
+            GetPayingBills(C2).PowerRound(0.11),
+            GetProblemDebt(C3).PowerRound(0.15),
+            GetBanking(C5).PowerRound(0.12),
+            GetFoodSecurity(C9).PowerRound(0.12)
         ];
         return percentiles;
     }
-    private double GetFoodSecurity()
-    {
-        double weight = 0.12;
-        double percentile = C5.Answer switch
+    internal static double GetFoodSecurity(C9 answer)
+        => answer.Answer switch
         {
             C9.Never => 1,
             C9.OverYearAgo => 1,
@@ -25,45 +23,31 @@ public partial class MoneyPathway
             C9.WithinTheLast30Days => 0.01,
             _ => throw new ApplicationException("Unknown answer")
         };
-        return percentile.PowerRound(weight);
-    }
-    private double GetBanking()
-    {
-        double weight = 0.12;
-        double percentile = C5.Answer switch
+
+    internal static double GetBanking(C5 answer)
+        => answer.Answer switch
         {
             C5.Yes => 1,
             C5.No => 0.02,
             _ => throw new ApplicationException("Unknown answer")
         };
-        return percentile.PowerRound(weight);
-    }
-    private double GetProblemDebt()
-    {
-        double weight = 0.15;
-        double percentile = C2.Answer switch
+    internal static double GetProblemDebt(C3 answer)
+        => answer.Answer switch
         {
             C3.Yes => 1,
             C3.No => 0.29,
             _ => throw new ApplicationException("Unknown answer")
         };
-        return percentile.PowerRound(weight);
-    }
-    private double GetPayingBills()
-    {
-        double weight = 0.11;
-        double percentile = C2.Answer switch
+
+    internal static double GetPayingBills(C2 answer)
+        => answer.Answer switch
         {
             C2.Yes => 1,
             C2.No => 0.16,
             _ => throw new ApplicationException("Unknown answer")
         };
-        return percentile.PowerRound(weight);
-    }
-    private double GetCopingFinancially()
-    {
-        double weight = 0.5;
-        double percentile = C1.Answer switch
+    internal static double GetCopingFinancially(C1 answer)
+        => answer.Answer switch
         {
             C1.LivingComfortably => 1,
             C1.DoingAlright => 0.7,
@@ -72,6 +56,4 @@ public partial class MoneyPathway
             C1.FindingVeryDifficult => 0.02,
             _ => throw new ApplicationException("Unknown answer")
         };
-        return percentile.PowerRound(weight);
-    }
 }

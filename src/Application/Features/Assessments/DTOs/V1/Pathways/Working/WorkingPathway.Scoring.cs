@@ -2,7 +2,7 @@ namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Working;
 
 public partial class WorkingPathway
 {
-    protected override IEnumerable<double> GetPercentiles(int age, AssessmentLocation location, Sex sex)
+    internal override IEnumerable<double> GetPercentiles(int age, AssessmentLocation location, Sex sex)
     {
         // get all the scores for each answer
         double[] percentiles =
