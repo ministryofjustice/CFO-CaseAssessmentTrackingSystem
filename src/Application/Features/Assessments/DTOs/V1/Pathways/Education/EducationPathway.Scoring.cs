@@ -2,22 +2,20 @@ namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Education;
 
 public partial class EducationPathway
 {
-    protected override IEnumerable<double> GetPercentiles(int age, AssessmentLocation location, Sex sex)
+    internal override IEnumerable<double> GetPercentiles(int age, AssessmentLocation location, Sex sex)
     {
         double[] percentiles = [
-            GetHighestLevelOfQualification(),
-            GetFinishSchool(),
-            GetNeurodiversity(),
-            GetLearningDifficulties(),
-            GetCreativeActivity(),
+            GetHighestLevelOfQualification(D1),
+            GetFinishSchool(D2),
+            GetNeurodiversity(D3),
+            GetLearningDifficulties(D4),
+            GetCreativeActivity(D5),
         ];
         return percentiles;
     }
-    private double GetCreativeActivity()
+    internal static double GetCreativeActivity(D5 answer, double weight = 0.11)
     {
-        double weight = 0.11;
-
-        var count = D5.Answers?.Except([D5.NoneOftheGivenOptions]).Count();
+        var count = answer.Answers!.Except([D5.NoneOftheGivenOptions]).Count();
         double percentile = count switch
         {
             0 => 0.28,
@@ -28,11 +26,9 @@ public partial class EducationPathway
 
         return percentile.PowerRound(weight);
     }
-    private double GetLearningDifficulties()
+    internal static double GetLearningDifficulties(D4 answer, double weight = 0.16)
     {
-        double weight = 0.16;
-
-        var count = D4.Answers?.Except([D4.NoneOfThese]).Count();
+        var count = answer.Answers!.Except([D4.NoneOfThese]).Count();
         double percentile = count switch
         {
             0 => 1,
@@ -43,25 +39,19 @@ public partial class EducationPathway
 
         return percentile.PowerRound(weight);
     }
-    private double GetNeurodiversity()
+    internal static double GetNeurodiversity(D3 answer, double weight = 0.08)
     {
-        double weight = 0.08;
-
         // join on the options
-        var query = from a in D3.Answers
+        var query = from a in answer.Answers
             join s in NeurodiveristyMappings on a equals s.key
             select s.percentile;
 
         var percentile = query.Min();
-
         return percentile.PowerRound(weight);
-
     }
-    private double GetFinishSchool()
+    internal static double GetFinishSchool(D2 answer, double weight = 0.15)
     {
-        double weight = 0.15;
-
-        double percentile = D2.Answer switch
+        double percentile = answer.Answer switch
         {
             D2.YesFinishedSchool => 1,
             D2.LeftBefore16 => 0.01,
@@ -71,11 +61,9 @@ public partial class EducationPathway
         
         return percentile.PowerRound(weight);
     }
-    private double GetHighestLevelOfQualification()
+    internal static double GetHighestLevelOfQualification(D1 answer, double weight = 0.5)
     {
-        double weight = 0.5;
-
-        double percentile = D1.Answer switch
+        double percentile = answer.Answer switch
         {
             D1.DegreeOrHigher => 1,
             D1.TwoPlusALevelsOrSimilar => 0.65,

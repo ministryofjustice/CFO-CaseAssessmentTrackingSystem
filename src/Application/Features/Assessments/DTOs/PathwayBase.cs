@@ -16,7 +16,7 @@ public abstract class PathwayBase
         return Math.Round(score, 5);
     }
 
-    protected abstract IEnumerable<double> GetPercentiles(int age, AssessmentLocation location, Sex sex);
+    internal abstract IEnumerable<double> GetPercentiles(int age, AssessmentLocation location, Sex sex);
 
     public double GetRagScore(int age, AssessmentLocation location, Sex sex)
     {
