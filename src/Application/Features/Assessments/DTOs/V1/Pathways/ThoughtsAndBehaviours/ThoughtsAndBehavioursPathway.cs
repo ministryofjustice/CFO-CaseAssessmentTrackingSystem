@@ -11,7 +11,7 @@ public class ThoughtsAndBehavioursPathway
         Questions =
         [
             G1 = new G1(),
-            G2 = new H2(),
+            G2 = new G2(),
             G3 = new G3(),
             G4 = new G4(),
             G5 = new G5(),
@@ -23,7 +23,7 @@ public class ThoughtsAndBehavioursPathway
         ];
     }
     public G1 G1 { get; private set; }
-    public H2 G2 { get; private set; }
+    public G2 G2 { get; private set; }
     public G3 G3 { get; private set; }
     public G4 G4 { get; private set; }
     public G5 G5 { get; private set; }
