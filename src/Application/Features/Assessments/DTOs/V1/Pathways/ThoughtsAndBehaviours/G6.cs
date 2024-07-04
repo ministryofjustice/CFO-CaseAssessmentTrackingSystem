@@ -1,4 +1,4 @@
-﻿namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Relationships;
+﻿namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.ThoughtsAndBehaviours;
 
 public class G6() : SingleChoiceQuestion("I find it easy to adapt to changes in my life",
     [

@@ -1,4 +1,4 @@
-﻿namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Relationships;
+﻿namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.ThoughtsAndBehaviours;
 
 public class G3() : SingleChoiceQuestion("I am really working hard to change my life",
     [

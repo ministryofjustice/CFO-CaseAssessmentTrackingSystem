@@ -19,6 +19,8 @@ public partial class WellbeingAndMentalHealthPathway : PathwayBase
             H9 = new H9(),
             H10 = new H10(),
             H11 = new H11(),
+            H12 = new H12(),
+            H13 = new H13(),
         ];
     }
     public H1 H1 { get; private set; }
@@ -32,6 +34,8 @@ public partial class WellbeingAndMentalHealthPathway : PathwayBase
     public H9 H9 { get; private set; }
     public H10 H10 { get; private set; }
     public H11 H11 { get; private set; }
+    public H12 H12 { get; private set; }
+    public H13 H13 { get; private set; }
 
     public override string Title => "Wellbeing & Mental Health";
     public override double Constant => 0.64723;
