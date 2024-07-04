@@ -1,37 +1,17 @@
-﻿namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Relationships;
+namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.WellbeingAndMentalHealth;
 
-public class H11() : MultipleChoiceQuestion("Do you live with any of the following mental health conditions? (tick all that apply)",
-    "It is ok to tick if you have not been formally diagnosed by a doctor yet if you feel you have it",
-    [
-        AnxietyDisorders,
-        BipolarDisorder,
-        BorderlinePersonalityDisorder,
-        Depression,
-        EatingDisorders,
-        PanicDisorder,
-        OCD,
-        Psychosis,
-        PersonalityDisorders,
-        Schizophrenia,
-        PTSD,
-        SelfHarm,
-        Other,
-        NoneOfThese,
-    ])
+public class H11() : SingleChoiceQuestion("On a scale 1 to 5, overall how satisfied are you with your life?", [
+    NotAtAll,
+    MostlyNot,
+    Fairly,
+    Mostly,
+    Completely
+])
 {
-    public const string AnxietyDisorders = "Anxiety disorders";
-    public const string BipolarDisorder = "Bipolar Disorder";
-    public const string BorderlinePersonalityDisorder = "Borderline Personality Disorder";
-    public const string Depression = "Depression";
-    public const string EatingDisorders = "Eating Disorders";
-    public const string PanicDisorder = "Panic Disorder";
-    public const string OCD = "Obsessive Compulsive Disorder";
-    public const string Psychosis = "Psychosis";
-    public const string PersonalityDisorders = "Personality Disorders";
-    public const string Schizophrenia = "Schizophrenia";
-    public const string PTSD = "Post-Traumatic Stress Disorder";
-    public const string SelfHarm = "Self-harm";
-    public const string Other = "Other";
-    public const string NoneOfThese = "None of these";
-    
+    public const string NotAtAll = "1 Not at all";
+    public const string MostlyNot = "2 Mostly not";
+    public const string Fairly  = "3 Fairly";
+    public const string Mostly = "4 Mostly";
+    public const string Completely =  "5 Completely";
+
 }
