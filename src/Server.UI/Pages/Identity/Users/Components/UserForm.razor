@@ -70,7 +70,7 @@
                     <MudTextField For="@(() => Model.DisplayName)" @bind-Value="Model.DisplayName" Label="@L["Full Name"]" InputType="InputType.Email" Variant="Variant.Text" Required="true"></MudTextField>
                 </MudItem>
                 <MudItem xs="12" sm="6">
-                    <MudTextField For="@(() => Model.Email)" @bind-Value="Model.Email" Label="@L["E-mail"]" InputType="InputType.Email" Variant="Variant.Text" Required="true"></MudTextField>
+                    <MudTextField For="@(() => Model.Email)" @bind-Value="Model.Email" Label="@L["E-mail"]" InputType="InputType.Email" Variant="Variant.Text" Required="true" Disabled="@string.IsNullOrEmpty(Model.TenantId)"></MudTextField>
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudTextField For="@(() => Model.PhoneNumber)" @bind-Value="Model.PhoneNumber" Label="@L["Phone Number"]" InputType="InputType.Telephone" Variant="Variant.Text"></MudTextField>
