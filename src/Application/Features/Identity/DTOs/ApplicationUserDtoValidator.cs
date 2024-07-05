@@ -41,7 +41,7 @@ public class ApplicationUserDtoValidator : AbstractValidator<ApplicationUserDto>
                     .SelectMany(x => x.Domains);
 
                 return domains.Contains(domain);
-            }).WithMessage("Email must have a valid domain");
+            }).WithMessage("Email is not valid for this tenant");
 
         RuleFor(x => x.DisplayName)
             .MaximumLength(128).WithMessage(_localizer["Display name must be less than 128 characters"]);
