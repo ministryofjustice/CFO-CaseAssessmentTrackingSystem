@@ -2,7 +2,7 @@
 
 namespace Cfo.Cats.Domain.Common.Entities;
 
-public abstract class BaseAuditableEntity<TId> : BaseEntity<TId>, IAuditableEntity
+public abstract class BaseAuditableEntity<TId> : BaseEntity<TId>, IAuditable
 {
     public virtual DateTime? Created { get; set; }
 

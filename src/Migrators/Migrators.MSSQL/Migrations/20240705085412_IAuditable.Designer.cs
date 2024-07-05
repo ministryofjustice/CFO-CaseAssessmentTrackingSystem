@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240705085412_IAuditable")]
+    partial class IAuditable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -144,55 +147,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tenant", (string)null);
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Assessments.ParticipantAssessment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(9)
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AssessmentJson")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EditorId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("TenantId")
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EditorId");
-
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("ParticipantAssessment", (string)null);
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.AuditTrail", b =>
@@ -852,54 +806,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         });
 
                     b.Navigation("Domains");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Assessments.ParticipantAssessment", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
-                        .WithMany()
-                        .HasForeignKey("EditorId");
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", null)
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.OwnsMany("Cfo.Cats.Domain.ValueObjects.PathwayScore", "Scores", b1 =>
-                        {
-                            b1.Property<Guid>("AssessmentId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Pathway")
-                                .HasMaxLength(50)
-                                .HasColumnType("nvarchar(50)");
-
-                            b1.Property<double>("Score")
-                                .HasColumnType("float");
-
-                            b1.HasKey("AssessmentId", "Pathway");
-
-                            b1.ToTable("ParticipantAssessmentPathwayScore", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("AssessmentId");
-                        });
-
-                    b.Navigation("Editor");
-
-                    b.Navigation("Owner");
-
-                    b.Navigation("Scores");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.AuditTrail", b =>

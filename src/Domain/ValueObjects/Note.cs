@@ -2,7 +2,7 @@
 
 namespace Cfo.Cats.Domain.ValueObjects;
 
-public class Note(string message, string? callReference) : ValueObject, IAuditableEntity
+public class Note(string message, string? callReference) : ValueObject, IAuditable
 {
     public string Message { get; private set; } = message;
     public string? CallReference { get; private set; } = callReference;

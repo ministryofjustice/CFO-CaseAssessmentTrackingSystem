@@ -1,6 +1,6 @@
 ﻿namespace Cfo.Cats.Domain.Common.Contracts;
 
-public interface IAuditableEntity
+public interface IAuditable
 {
     DateTime? Created { get; set; }
 
