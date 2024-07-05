@@ -1,11 +1,18 @@
 ﻿@using Cfo.Cats.Application.Features.Assessments.DTOs
 @using Cfo.Cats.Application.Features.Assessments.Queries
+@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Components.Stepper
+@using Cfo.Cats.Server.UI.Pages.Participants.Components
 
 @page "/pages/assessment/{Upci}"
 
 @if (_model != null)
 {
+    
+    <RagBar Assessment="_model" />
+        
+    
+    
 	<CatsMudStepper @ref="@Stepper" Color="Color.Primary" Variant="Variant.Filled"
 					MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
 					ActiveStepChanged="@OnStepChange" ShowSkipButton="false">

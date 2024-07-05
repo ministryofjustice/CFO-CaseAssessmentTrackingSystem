@@ -20,7 +20,7 @@ public sealed partial class WorkingPathway
         ];
     }
 
-    public override string Title => "Wellbeing & Mental Health";
+    public override string Title => "Working";
     public override double Constant => 0.79225;
     public override string Icon => CatsIcons.Working;
     public A1 A1 { get; private set; }
