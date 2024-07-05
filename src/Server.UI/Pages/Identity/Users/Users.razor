@@ -493,6 +493,7 @@
     {
         var applicationUser = Mapper.Map<ApplicationUser>(model);
         applicationUser.EmailConfirmed = true;
+        applicationUser.Active = true;
 
         var identityResult = await UserManager.CreateAsync(applicationUser);
         if (!identityResult.Succeeded)
