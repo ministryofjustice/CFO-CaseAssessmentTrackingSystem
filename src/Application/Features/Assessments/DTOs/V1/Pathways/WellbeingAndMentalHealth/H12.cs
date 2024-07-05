@@ -1,7 +1,10 @@
 namespace Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.WellbeingAndMentalHealth;
 
 public class H12() : SingleChoiceQuestion("How often do you feel stressed?", [
-
+    EveryDay,
+    OneToTwoTimesPerWeek,
+    FewTimesAMonth,
+    RarelyOrNever
 ])
 {
     public const string EveryDay = "Every day";
