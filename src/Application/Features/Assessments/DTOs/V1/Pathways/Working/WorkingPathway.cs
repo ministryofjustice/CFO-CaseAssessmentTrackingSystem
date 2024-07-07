@@ -20,22 +20,27 @@ public sealed partial class WorkingPathway
         ];
     }
 
-    public override string Title => "Wellbeing & Mental Health";
+    public override string Title => "Working";
     public override double Constant => 0.79225;
     public override string Icon => CatsIcons.Working;
-    public A1 A1 { get; private set; }
-    public A2 A2 { get; private set; }
-    public A3 A3 { get; private set; }
-    public A4 A4 { get; private set; }
-    public A5 A5 { get; private set; }
-    public A6 A6 { get; private set; }
-    public A7 A7 { get; private set; }
-    public A8 A8 { get; private set; }
-    public A9 A9 { get; private set; }
-    public A10 A10 { get; private set; }
+    /// <summary>
+    ///     A1 What is your current employment status?
+    /// </summary>
+    public A1 A1 { get; }
+    /// <summary>
+    ///     A2 When were you last in work?
+    /// </summary>
+    public A2 A2 { get; }
     
+    /// <summary>
+    ///     A3 Does or would your offence limit the types of work you could do?
+    /// </summary>
+    public A3 A3 { get; private set; }
+    public A4 A4 { get; }
+    public A5 A5 { get; }
+    public A6 A6 { get; }
+    public A7 A7 { get; }
+    public A8 A8 { get; }
+    public A9 A9 { get; private set; }
+    public A10 A10 { get; }
 }
-
-
-
-

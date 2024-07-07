@@ -1,23 +1,33 @@
 @using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Application.Features.Assessments.DTOs
 @using System.Data
 
-
-<MudChip T="string" Icon="@Pathway.Icon" Label="true" Color="GetColor(State)">
-    @Pathway.Name
-</MudChip>
+@if (_validator.Validate(Pathway).IsValid)
+{
+   <MudChip T="string" Icon="@Pathway.Icon" Label="true" Color="@GetColor(Pathway.GetRagScore(18, AssessmentLocation.EastMidlandsAssessmentLocation, Sex.MaleSex))">
+        @Pathway.Title
+    </MudChip>
+}
+else
+{
+    <MudChip T="string" Icon="@Pathway.Icon" Label="true" Color="Color.Primary" Disabled="true">
+        @Pathway.Title
+    </MudChip>
+}
 
 @code {
-    [Parameter, EditorRequired]
-    public RagState State { get; set; } = RagState.Red;
 
     [Parameter, EditorRequired]
-    public Pathway Pathway { get; set; } = default!;
-    private Color GetColor(RagState state) =>
-        state switch
+    public PathwayBase Pathway { get; set; } = default!;
+
+    public AssessmentPathwayValidator _validator = new AssessmentPathwayValidator();
+    
+
+    private Color GetColor(double ragScore) =>
+        ragScore switch
         {
-            RagState.Green => Color.Success,
-            RagState.Red => Color.Error,
-            RagState.Amber => Color.Warning,
-            _ => Color.Primary
+            > 25 => Color.Success,
+            >10 => Color.Warning,
+            _ => Color.Error,
         };
 }

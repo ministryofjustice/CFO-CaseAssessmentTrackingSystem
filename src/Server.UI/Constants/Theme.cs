@@ -21,12 +21,12 @@ public static class Theme
             {
                 Primary = "#0092CC",
                 Secondary = "#494f56",
-                Success = "#62ae2f",
+                Success = "#66cc33",
                 Info = "#0c6980",
                 Black = "#000000",
                 TableLines = "#0092CC",
                 Tertiary = "#FFFFFF",
-                AppbarBackground = "#0092CC"
+                AppbarBackground = "#0092CC",
             },
             Typography = new Typography
             {
