@@ -25,7 +25,7 @@
                 <CascadingValue Value="@Model">
                     <MudGrid Class="mb-4 px-10">
 
-                        @foreach (var question in Model.Questions)
+                        @foreach (var question in Model.Questions())
                         {
 
                             <MudItem xs="4">

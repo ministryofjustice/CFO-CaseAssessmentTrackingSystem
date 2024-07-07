@@ -4,7 +4,7 @@ public class AssessmentPathwayValidator : AbstractValidator<PathwayBase>
 {
     public AssessmentPathwayValidator()
     {
-        RuleForEach(model => model.Questions)
+        RuleForEach(model => model.Questions())
             .Must(q => q.IsValid())
             .WithMessage("You must select a valid option!");
     }

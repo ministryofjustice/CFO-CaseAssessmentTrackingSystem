@@ -1,13 +1,16 @@
+using System.Text.Json.Serialization;
+
 namespace Cfo.Cats.Application.Features.Assessments.DTOs;
 
 /// <summary>
 ///     Base class for the all questions
 /// </summary>
-public abstract class QuestionBase
+[JsonPolymorphic]
+public abstract partial class QuestionBase
 {
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    private QuestionBase()
+    protected QuestionBase()
     {
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -27,16 +30,19 @@ public abstract class QuestionBase
     /// <summary>
     ///     The question we are asking
     /// </summary>
+    [JsonIgnore]
     public string Question { get; }
 
     /// <summary>
     ///     Any other errata about the question.
     /// </summary>
+    [JsonIgnore]
     public string? OtherInformation { get; }
 
     /// <summary>
     ///     A collection of options for the answers
     /// </summary>
+    [JsonIgnore]
     public string[] Options { get; }
 
     /// <summary>

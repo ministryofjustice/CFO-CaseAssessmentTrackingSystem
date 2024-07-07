@@ -9,26 +9,10 @@
             <RagComponent Pathway="pathway"></RagComponent>
         }
     }
-    @*<RagComponent Pathway="Pathway.Working" State="RagState.Green" />
-    <RagComponent Pathway="Pathway.WellbeingAndMentalHealth" State="RagState.Red" />
-    <RagComponent Pathway="Pathway.Relationships" State="RagState.Green" />
-    <RagComponent Pathway="Pathway.HealthAndAddiction" State="RagState.Amber"/>
-    
-    <RagComponent Pathway="Pathway.Education" State="RagState.Red" />
-    <RagComponent Pathway="Pathway.Housing" State="RagState.Amber" />
-    <RagComponent Pathway="Pathway.Money" State="RagState.Green" />
-    <RagComponent Pathway="Pathway.ThoughtsAndBehaviours" State="RagState.Green" />*@
 </MudPaper>
 
 @code {
 
     [Parameter]
-    public Assessment? Assessment { get; set; } = new Assessment()
-    {
-        ParticipantId = string.Empty,
-        Pathways = []
-    };
-
-
-
+    public Assessment? Assessment { get; set; }
 }
