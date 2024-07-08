@@ -15,7 +15,7 @@
 <MudContainer Style="width: 100%; min-width: 480px">
     @if (_participant is not null)
     {
-        <RagBar />
+        <RagBar ParticipantId="@_participant.Id" />
         <CascadingValue Value="_participant">
             <MudPaper Class="pa-2 ma-2" Elevation="1" Outlined="true">
                 <MudGrid Spacing="1" Justify="Justify.SpaceBetween" Class="pa-3">
