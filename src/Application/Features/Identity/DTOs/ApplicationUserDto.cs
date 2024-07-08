@@ -85,6 +85,7 @@ public class ApplicationUserDto
             .ReverseMap()
                 .ForMember(x => x.UserName, s => s.MapFrom(y => y.Email))
                 .ForMember(x => x.Notes, s => s.Ignore())
+                .ForMember(x => x.Tenant, s => s.Ignore())
             .AfterMap((dto, entity, context) =>
             {
                 foreach(var noteDto in dto.Notes)
