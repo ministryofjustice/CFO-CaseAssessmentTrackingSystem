@@ -124,15 +124,21 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Provider = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProviderId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TenantId = table.Column<string>(type: "nvarchar(200)", nullable: true),
                     TenantName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ProfilePictureDataUrl = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsLive = table.Column<bool>(type: "bit", nullable: false),
+                    MemorablePlace = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MemorableDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SuperiorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -193,7 +199,11 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 columns: table => new
                 {
                     Domain = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    TenantId = table.Column<string>(type: "nvarchar(200)", nullable: false)
+                    TenantId = table.Column<string>(type: "nvarchar(200)", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -243,6 +253,31 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     table.ForeignKey(
                         name: "FK_ApplicationUserLogin_ApplicationUser_UserId",
                         column: x => x.UserId,
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ApplicationUserNote",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Message = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    CallReference = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApplicationUserNote", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ApplicationUserNote_ApplicationUser_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
                         principalTable: "ApplicationUser",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -635,6 +670,11 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ApplicationUserNote_ApplicationUserId",
+                table: "ApplicationUserNote",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ApplicationUserRole_RoleId",
                 table: "ApplicationUserRole",
                 column: "RoleId");
@@ -752,6 +792,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
             migrationBuilder.DropTable(
                 name: "ApplicationUserLogin");
+
+            migrationBuilder.DropTable(
+                name: "ApplicationUserNote");
 
             migrationBuilder.DropTable(
                 name: "ApplicationUserRole");
