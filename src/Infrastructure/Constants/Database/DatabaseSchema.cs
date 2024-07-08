@@ -20,11 +20,15 @@ internal static class DatabaseSchema
         public const string Document = nameof(Document);
         public const string Location = nameof(Location);
         public const string Participant = nameof(Participant);
+        public const string ParticipantAssessment = nameof(ParticipantAssessment);
         public const string Tenant = nameof(Tenant);
         public const string TenantDomain = nameof(TenantDomain);
         public const string KeyValue = nameof(KeyValue);
         public const string ParticipantEnrolmentHistory = nameof(ParticipantEnrolmentHistory);
         public const string RightToWork = nameof(RightToWork);
+
+        public const string ParticipantAssessmentPathwayScore = nameof(ParticipantAssessmentPathwayScore);
+        
     }
 
 }

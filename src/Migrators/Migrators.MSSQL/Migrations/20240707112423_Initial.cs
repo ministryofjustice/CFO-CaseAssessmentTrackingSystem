@@ -189,6 +189,24 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TenantDomain",
+                columns: table => new
+                {
+                    Domain = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(200)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TenantDomain", x => new { x.TenantId, x.Domain });
+                    table.ForeignKey(
+                        name: "FK_TenantDomain_Tenant_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenant",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ApplicationUserClaim",
                 columns: table => new
                 {
@@ -376,32 +394,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Candidate",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    MiddleName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CurrentLocationId = table.Column<int>(type: "int", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Candidate", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Candidate_Location_CurrentLocationId",
-                        column: x => x.CurrentLocationId,
-                        principalTable: "Location",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Participant",
                 columns: table => new
                 {
@@ -475,27 +467,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CandidateIdentifier",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IdentifierType = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    IdentifierValue = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    CandidateId = table.Column<string>(type: "nvarchar(9)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CandidateIdentifier", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CandidateIdentifier_Candidate_CandidateId",
-                        column: x => x.CandidateId,
-                        principalTable: "Candidate",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Consent",
                 columns: table => new
                 {
@@ -528,6 +499,48 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ParticipantAssessment",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", maxLength: 9, nullable: false),
+                    ParticipantId = table.Column<string>(type: "nvarchar(9)", nullable: false),
+                    AssessmentJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(200)", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OwnerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    EditorId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ParticipantAssessment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ParticipantAssessment_ApplicationUser_EditorId",
+                        column: x => x.EditorId,
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ParticipantAssessment_ApplicationUser_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ParticipantAssessment_Participant_ParticipantId",
+                        column: x => x.ParticipantId,
+                        principalTable: "Participant",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ParticipantAssessment_Tenant_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenant",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RightToWork",
                 columns: table => new
                 {
@@ -554,6 +567,25 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         name: "FK_RightToWork_Participant_ParticipantId",
                         column: x => x.ParticipantId,
                         principalTable: "Participant",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ParticipantAssessmentPathwayScore",
+                columns: table => new
+                {
+                    Pathway = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    AssessmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Score = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ParticipantAssessmentPathwayScore", x => new { x.AssessmentId, x.Pathway });
+                    table.ForeignKey(
+                        name: "FK_ParticipantAssessmentPathwayScore_ParticipantAssessment_AssessmentId",
+                        column: x => x.AssessmentId,
+                        principalTable: "ParticipantAssessment",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -611,16 +643,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 name: "IX_AuditTrail_UserId",
                 table: "AuditTrail",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Candidate_CurrentLocationId",
-                table: "Candidate",
-                column: "CurrentLocationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CandidateIdentifier_CandidateId",
-                table: "CandidateIdentifier",
-                column: "CandidateId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Consent_DocumentId",
@@ -684,6 +706,26 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ParticipantAssessment_EditorId",
+                table: "ParticipantAssessment",
+                column: "EditorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ParticipantAssessment_OwnerId",
+                table: "ParticipantAssessment",
+                column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ParticipantAssessment_ParticipantId",
+                table: "ParticipantAssessment",
+                column: "ParticipantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ParticipantAssessment_TenantId",
+                table: "ParticipantAssessment",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ParticipantEnrolmentHistory_ParticipantId",
                 table: "ParticipantEnrolmentHistory",
                 column: "ParticipantId");
@@ -721,9 +763,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 name: "AuditTrail");
 
             migrationBuilder.DropTable(
-                name: "CandidateIdentifier");
-
-            migrationBuilder.DropTable(
                 name: "Consent");
 
             migrationBuilder.DropTable(
@@ -733,10 +772,16 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 name: "KeyValue");
 
             migrationBuilder.DropTable(
+                name: "ParticipantAssessmentPathwayScore");
+
+            migrationBuilder.DropTable(
                 name: "ParticipantEnrolmentHistory");
 
             migrationBuilder.DropTable(
                 name: "RightToWork");
+
+            migrationBuilder.DropTable(
+                name: "TenantDomain");
 
             migrationBuilder.DropTable(
                 name: "TenantLocation");
@@ -745,7 +790,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 name: "ApplicationRole");
 
             migrationBuilder.DropTable(
-                name: "Candidate");
+                name: "ParticipantAssessment");
 
             migrationBuilder.DropTable(
                 name: "Document");

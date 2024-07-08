@@ -44,7 +44,7 @@
         </PackageReference>
         <PackageReference Include="MudBlazor" Version="7.0.0" />
         <PackageReference Include="SixLabors.ImageSharp" Version="3.1.4"/>
-        <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="5.0.0"/>
+        <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="5.1.0"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj"/>

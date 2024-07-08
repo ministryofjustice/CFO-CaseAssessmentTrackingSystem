@@ -1,8 +1,9 @@
-﻿@using Cfo.Cats.Application.Features.Assessments.DTOs
+﻿@using Cfo.Cats.Application.Features.Assessments.Commands
+@using Cfo.Cats.Application.Features.Assessments.DTOs
 @using Cfo.Cats.Application.Features.Assessments.Queries
 @using Cfo.Cats.Server.UI.Components.Stepper
 
-@page "/pages/assessment/{Upci}"
+@page "/pages/participants/{Upci}/assessment/{AssessmentId:guid}"
 
 @if (_model != null)
 {
@@ -29,6 +30,9 @@
 	[Parameter]
 	public string Upci { get; set; } = string.Empty;
 
+    [Parameter]
+    public Guid AssessmentId { get; set; } = Guid.Empty;
+
 	private Cfo.Cats.Application.Features.Assessments.DTOs.Assessment? _model;
 
 	private CatsMudStepper Stepper { get; set; } = new();
@@ -43,7 +47,11 @@
 	{
         if (_model is null)
         {
-            var response = await Mediator.Send(new GetAssessment.Query() { ParticipantId = Upci });
+            var response = await Mediator.Send(new GetAssessment.Query()
+            {
+                AssessmentId = AssessmentId,
+                ParticipantId = Upci
+            });
 
             if (response.Succeeded)
             {
@@ -54,11 +62,18 @@
 
 	private async Task OnStepChange(int step)
 	{
+        //todo add an explicit save button.
+        Processing = true;
+        await Mediator.Send(new SaveAssessment.Command()
+        {
+            Assessment = _model!
+        });
 		if (step == Stepper.Steps.Count())
-		{
+        {
 			await SubmitAssessment();
 		}
-	}
+        Processing = false;
+    }
 
 	private async Task SubmitAssessment()
 	{
@@ -70,9 +85,14 @@
 			if (result.IsValid)
 			{
 				Processing = true;
-				await Task.Delay(10000); //Simulates a genuine POST request in UI.
+                var response = await Mediator.Send(new SaveAssessment.Command()
+                {
+                    Assessment = _model!,
+                    Submit = true
+                });
 				Processing = false;
-			}
+                SubmissionSuccess = response.Succeeded;
+            }
 			
 		}
 	}

@@ -153,7 +153,7 @@
 
         if (result.Succeeded)
         {
-            Navigation.NavigateTo($"/pages/assessment/{ParticipantDto.Id}");
+            Navigation.NavigateTo($"/pages/participants/{ParticipantDto.Id}/assessment/{result.Data}");
         }
     }
 

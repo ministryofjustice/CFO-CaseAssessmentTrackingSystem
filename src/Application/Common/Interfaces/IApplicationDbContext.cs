@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Identity;
@@ -21,6 +22,8 @@ public interface IApplicationDbContext
     public DbSet<Participant> Participants { get; }
 
     public DbSet<KeyValue> KeyValues { get; }
+    
+    public DbSet<ParticipantAssessment> ParticipantAssessments { get; }
     
     public DbSet<ParticipantEnrolmentHistory> ParticipantEnrolmentHistories { get; }
     
