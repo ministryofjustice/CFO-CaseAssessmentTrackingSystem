@@ -8,6 +8,13 @@ namespace Cfo.Cats.Domain.Entities.Assessments
     public class ParticipantAssessment : OwnerPropertyEntity<Guid>, IMayHaveTenant, IAuditTrial
     {
 
+ #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        private ParticipantAssessment()
+ 
+        {
+        }
+        #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
         private readonly List<PathwayScore> _scores = new();
 
         public string ParticipantId {get; private set;}
