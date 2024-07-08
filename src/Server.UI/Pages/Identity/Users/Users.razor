@@ -282,31 +282,34 @@
             </MudCardHeader>
             <MudCardContent>
                 @{
-                    var notes = context.Item.Notes;
+                    if(context.Open)
+                    {
+                        var notes = context.Item.Notes;
 
-                    <MudSimpleTable Hover="true" Bordered="true" Striped>
-                        <thead>
-                        <tr>
-                            <th>@L["Call Reference"]</th>
-                            <th>@L["Message"]</th>
-                            <th>@L["Created By"]</th>
-                            <th>@L["Created Date"]</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            @foreach(var note in notes.OrderByDescending(x => x.Created))
-                            {
+                        <MudSimpleTable Hover="true" Bordered="true" Striped>
+                            <thead>
                                 <tr>
-                                    <td>@(note.CallReference ?? "None")</td>
-                                    <td>@note.Message</td>
-                                    <td>@note.CreatedBy</td>
-                                    <td>
-                                        <ToLocal DateTime="@note.Created.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
-                                    </td>
+                                    <th>@L["Call Reference"]</th>
+                                    <th>@L["Message"]</th>
+                                    <th>@L["Created By"]</th>
+                                    <th>@L["Created Date"]</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </MudSimpleTable>
+                            </thead>
+                            <tbody>
+                                @foreach (var note in notes.OrderByDescending(x => x.Created))
+                                {
+                                    <tr>
+                                        <td>@(note.CallReference ?? "None")</td>
+                                        <td>@note.Message</td>
+                                        <td>@(UserService.DataSource.SingleOrDefault(x => x.Id == note.CreatedBy)?.DisplayName ?? "Unknown")</td>
+                                        <td>
+                                            <ToLocal DateTime="@note.Created.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </MudSimpleTable>
+                    }
                 }
             </MudCardContent>
         </MudCard>
