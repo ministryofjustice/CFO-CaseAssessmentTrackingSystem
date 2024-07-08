@@ -1,13 +1,20 @@
+using Newtonsoft.Json;
+
 namespace Cfo.Cats.Application.Features.Assessments.DTOs;
 
 public abstract class PathwayBase
 {
+    [JsonIgnore]
     public abstract string Title { get; }
 
+    [JsonIgnore]
     public abstract double Constant { get; }
 
+    [JsonIgnore]
     public abstract string Icon { get; }
-    public QuestionBase[] Questions { get; protected set; } = [];
+
+    public abstract IEnumerable<QuestionBase> Questions();
+    
 
     public double GetPercentile(int age, AssessmentLocation location, Sex sex)
     {

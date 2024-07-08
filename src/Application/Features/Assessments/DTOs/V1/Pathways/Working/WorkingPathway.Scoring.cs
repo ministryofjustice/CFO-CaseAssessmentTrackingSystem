@@ -7,26 +7,25 @@ public partial class WorkingPathway
         // get all the scores for each answer
         double[] percentiles =
         [
-            PercentileA1(),
-            PercentileA2(),
-            PercentileA4(),
-            PercentileA5(),
-            PercentileA6(),
-            PercentileA7(age),
-            PercentileA8(),
-            PercentileA9(location),
+            GetEmploymentStatus(A1).PowerRound(0.5),
+            GetEmploymentHistory(A2).PowerRound(0.15),
+            GetVolunteering(A4).PowerRound(0.09),
+            GetJobSearch(A5).PowerRound(0.02),
+            GetWorking(A6).PowerRound(0.08),
+            GetComputers(age, A7).PowerRound(0.03),
+            GetConnected(A8).PowerRound(0.05),
+            GetTransport(location, A10).PowerRound(0.08)
         ];
         return percentiles;
     }
-    private double PercentileA9(AssessmentLocation location)
-    {
-        const double weight = 0.08;
-        var percentile = (location.Name, A9.Answer) switch
+    internal static double GetTransport(AssessmentLocation location, A10 answer)
+        => (location.Name, answer.Answer) switch
         {
             (AssessmentLocation.EastMidlands, A7.No) => 0.18,
             (AssessmentLocation.EastOfEngland, A7.No) => 0.15,
             (AssessmentLocation.London, A7.No) => 0.45,
             (AssessmentLocation.NorthEast, A7.No) => 0.29,
+            (AssessmentLocation.NorthWest, A7.No) => 0.24,
             (AssessmentLocation.SouthEast, A7.No) => 0.16,
             (AssessmentLocation.SouthWest, A7.No) => 0.15,
             (AssessmentLocation.WestMidlands, A7.No) => 0.26,
@@ -34,24 +33,16 @@ public partial class WorkingPathway
             (_, A7.Yes) => 1,
             _ => throw new ArgumentException("Invalid answer")
         };
-        return percentile.PowerRound(weight);
-    }
-    private double PercentileA8()
-    {
-        const double weight = 0.05;
-        var percentile = A8.Answer switch
+    internal static double GetConnected(A8 answer)
+        => answer.Answer switch
         {
             A8.Yes => 1,
             A8.YesStruggleToAffordData => 0.23,
             A8.No => 0.16,
             _ => throw new ArgumentException("Invalid answer")
         };
-        return percentile.PowerRound(weight);
-    }
-    private double PercentileA7(int age)
-    {
-        const double weight = 0.03;
-        var percentile = (age, A7.Answer) switch
+    internal static double GetComputers(int age, A7 answer)
+        => (age, answer.Answer) switch
         {
             (< 20, A7.No) => 0.06,
             (>= 20 and <= 24, A7.No) => 0.06,
@@ -67,25 +58,17 @@ public partial class WorkingPathway
             (_, A7.Yes) => 1,
             _ => throw new ArgumentException("Invalid answer")
         };
-        return percentile.PowerRound(weight);
-    }
-    private double PercentileA6()
-    {
-        const double weight = 0.08;
-        var percentile = A6.Answer switch
+    internal static double GetWorking(A6 answer)
+        => answer.Answer switch
         {
             A6.YesUnaided => 1,
             A6.YesWithHelp => 0.01,
             A6.No => 0.001,
             _ => throw new ArgumentException("Invalid answer")
         };
-        return percentile.PowerRound(weight);
-    }
 
-    private double PercentileA1()
-    {
-        const double weight = 0.5;
-        var percentile = A1.Answer switch
+    internal static double GetEmploymentStatus(A1 answer)
+        => answer.Answer switch
         {
             A1.InPermanentJob => 1,
             A1.InTemporaryJob => 0.29,
@@ -94,13 +77,9 @@ public partial class WorkingPathway
             A1.DoNotWantAJob => 0.17,
             _ => throw new ArgumentException("Invalid answer")
         };
-        return percentile.PowerRound(weight);
-    }
 
-    private double PercentileA2()
-    {
-        const double weight = 0.15;
-        var percentile = A2.Answer switch
+    internal static double GetEmploymentHistory(A2 answer)
+        => answer.Answer switch
         {
             A2.CurrentlyWorking => 1,
             A2.InTheLastYear => 0.25,
@@ -108,32 +87,20 @@ public partial class WorkingPathway
             A2.NeverWorked => 0.06,
             _ => throw new ArgumentException("Invalid answer")
         };
-        return percentile.PowerRound(weight);
-    }
 
-    private double PercentileA4()
+    internal static double GetVolunteering(A4 answer) => answer.Answer switch
     {
-        const double weight = 0.09;
-        var percentile = A4.Answer switch
-        {
-            A4.AtLeastOncePerMonth => 1,
-            A4.LessThanOncePerMonth => 0.82,
-            A4.NoCannot => 0.7,
-            A4.NoPreferNot => 0.25,
-            _ => throw new ArgumentException("Invalid answer")
-        };
-        return percentile.PowerRound(weight);
-    }
+        A4.AtLeastOncePerMonth => 1,
+        A4.LessThanOncePerMonth => 0.82,
+        A4.NoCannot => 0.7,
+        A4.NoPreferNot => 0.25,
+        _ => throw new ArgumentException("Invalid answer")
+    };
 
-    private double PercentileA5()
+    internal static double GetJobSearch(A5 answer) => answer.Answer switch
     {
-        const double weight = 0.02;
-        var percentile = A5.Answer switch
-        {
-            A5.Yes => 1,
-            A5.No => 0.01,
-            _ => throw new ArgumentException("Invalid answer")
-        };
-        return percentile.PowerRound(weight);
-    }
+        A5.Yes => 1,
+        A5.No => 0.01,
+        _ => throw new ArgumentException("Invalid answer")
+    };
 }

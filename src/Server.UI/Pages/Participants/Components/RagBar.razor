@@ -1,11 +1,18 @@
+@using Cfo.Cats.Application.Features.Assessments.DTOs
 @using Cfo.Cats.Domain.Common.Enums
+
 <MudPaper Class="ma-2 d-flex justify-space-between flex-wrap" Elevation="1" Outlined="true">
-    <RagComponent Pathway="Pathway.WellbeingAndMentalHealth" State="RagState.Red" />
-    <RagComponent Pathway="Pathway.Relationships" State="RagState.Green" />
-    <RagComponent Pathway="Pathway.HealthAndAddiction" State="RagState.Amber"/>
-    <RagComponent Pathway="Pathway.Working" State="RagState.Green" />
-    <RagComponent Pathway="Pathway.Education" State="RagState.Red" />
-    <RagComponent Pathway="Pathway.Housing" State="RagState.Amber" />
-    <RagComponent Pathway="Pathway.Money" State="RagState.Green" />
-    <RagComponent Pathway="Pathway.ThoughtsAndBehaviours" State="RagState.Green" />
+    @if (Assessment is not null)
+    {
+        foreach (var pathway in Assessment.Pathways)
+        {
+            <RagComponent Pathway="pathway"></RagComponent>
+        }
+    }
 </MudPaper>
+
+@code {
+
+    [Parameter]
+    public Assessment? Assessment { get; set; }
+}

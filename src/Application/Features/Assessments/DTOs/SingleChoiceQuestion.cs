@@ -1,11 +1,22 @@
+using System.Text.Json.Serialization;
+using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Education;
+using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.HealthAndAdditiction;
+using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Working;
+
 namespace Cfo.Cats.Application.Features.Assessments.DTOs;
 
 /// <summary>
 ///     An implementation of <c>QuestionBase</c> that only allows a
 ///     single answer
 /// </summary>
+
 public abstract class SingleChoiceQuestion : QuestionBase
 {
+    protected SingleChoiceQuestion()
+    : base()
+    {
+    }
+
     protected SingleChoiceQuestion(string question, string[] options)
         : base(question, options)
     {

@@ -1,7 +1,15 @@
+using System.Text.Json.Serialization;
+using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Housing;
+
 namespace Cfo.Cats.Application.Features.Assessments.DTOs;
 
-public abstract class MultipleChoiceQuestion : QuestionBase
+public abstract partial class MultipleChoiceQuestion : QuestionBase
 {
+    protected MultipleChoiceQuestion()
+        :base()
+    {
+    }
+
     protected MultipleChoiceQuestion(string question, string[] options) : base(question, options)
     {
     }

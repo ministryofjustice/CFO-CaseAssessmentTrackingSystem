@@ -25,6 +25,7 @@ public class WorkingPathwayTests
         pathway.A7.Answer = A7.No;
         pathway.A8.Answer = A8.Yes;
         pathway.A9.Answer = A9.No;
+        pathway.A10.Answer = A10.No;
         
         
         var cumulativePercentile = pathway.GetPercentile(18, AssessmentLocation.EastMidlandsAssessmentLocation, Sex.MaleSex);
@@ -49,6 +50,7 @@ public class WorkingPathwayTests
         pathway.A7.Answer = A7.No;
         pathway.A8.Answer = A8.Yes;
         pathway.A9.Answer = A9.No;
+        pathway.A10.Answer = A10.No;
 
         var rag = pathway.GetRagScore(18, AssessmentLocation.EastMidlandsAssessmentLocation, Sex.MaleSex);
         rag.Should().Be(2);
