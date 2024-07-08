@@ -8,11 +8,16 @@ namespace Cfo.Cats.Application.Features.Assessments.Queries;
 
 public static class GetAssessment
 {
+    
+    /// <summary>
+    /// Returns an assessment, either the one specified by the AssessmentId or
+    /// the latest on if that is not specified
+    /// </summary>
     [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
     public class Query : ICacheableRequest<Result<Assessment>>
     {
         public required string ParticipantId { get; set; }
-        public required Guid AssessmentId { get; set; }
+        public Guid? AssessmentId { get; set; }
 
         public string CacheKey
             => AssessmentsCacheKey.GetAllCacheKey;
@@ -31,7 +36,16 @@ public static class GetAssessment
 
         public async Task<Result<Assessment>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var pa = await _context.ParticipantAssessments.FirstOrDefaultAsync(a => a.ParticipantId == request.ParticipantId && a.Id == request.AssessmentId, cancellationToken: cancellationToken);
+            var query = _context.ParticipantAssessments
+                .Where(p => p.ParticipantId == request.ParticipantId);
+
+            if (request.AssessmentId is not null)
+            {
+                query = query.Where(p => p.Id == request.AssessmentId);
+            }
+
+            var pa = await query.OrderByDescending(pa => pa.Created)
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (pa is null)
             {
