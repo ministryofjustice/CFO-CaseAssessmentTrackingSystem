@@ -295,9 +295,12 @@ public static class DependencyInjection
 
         services.AddDataProtection().PersistKeysToDbContext<ApplicationDbContext>();
 
+        services.AddSingleton<IPasswordService, PasswordService>();
+
         services.ConfigureApplicationCookie(options => {
             options.LoginPath = "/pages/authentication/login";
         });
+
         services
             .AddSingleton<UserService>()
             .AddSingleton<IUserService>(sp => {

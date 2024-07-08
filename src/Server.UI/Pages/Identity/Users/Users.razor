@@ -493,7 +493,7 @@
     {
         var applicationUser = Mapper.Map<ApplicationUser>(model);
         applicationUser.EmailConfirmed = true;
-        applicationUser.Active = true;
+        //applicationUser.Active = true;
 
         var identityResult = await UserManager.CreateAsync(applicationUser);
         if (!identityResult.Succeeded)
@@ -675,39 +675,21 @@
 
     private async Task OnResetPassword(ApplicationUserDto item)
     {
-        var model = new ResetPasswordFormModel { Id = item.Id, DisplayName = item.DisplayName, UserName = item.UserName, ProfilePictureDataUrl = item.ProfilePictureDataUrl };
+        var model = new ResetPasswordFormModel { UserId = item.Id };
+        
         var parameters = new DialogParameters<ResetPasswordDialog>
         {
             { x => x.Model, model }
         };
-        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
-        var dialog = DialogService.Show<ResetPasswordDialog>(L["Set Password"], parameters, options);
+
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.Small };
+        var dialog = DialogService.Show<ResetPasswordDialog>(L[$"Reset Password for {item.DisplayName}"], parameters, options);
+
         var result = await dialog.Result;
+
         if (!result!.Canceled)
         {
-            await ProcessPasswordReset(item, model);
-        }
-    }
-
-    private async Task ProcessPasswordReset(ApplicationUserDto item, ResetPasswordFormModel model)
-    {
-        var user = await UserManager.FindByIdAsync(item.Id!) ?? throw new NotFoundException($"Application user not found {item.Id}.");
-        var token = await UserManager.GeneratePasswordResetTokenAsync(user);
-        var identityResult = await UserManager.ResetPasswordAsync(user, token, model.Password!);
-
-        if (identityResult.Succeeded)
-        {
-            if (!user.EmailConfirmed)
-            {
-                user.EmailConfirmed = true;
-                await UserManager.UpdateAsync(user);
-            }
-
             Snackbar.Add($"{L["Reset password successfully"]}", Severity.Info);
-        }
-        else
-        {
-            Snackbar.Add($"{string.Join(",", identityResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
         }
     }
 
