@@ -29,8 +29,8 @@ public partial class WellbeingAndMentalHealthPathway
         2. Percentile is based on the total score.
         */
 
-        var sum = Score(pathway.H1.Answer!) + 
-                  Score(pathway.H2.Answer!) + 
+        var sum = Score(pathway.H1.Answer!) +
+                  ReverseScore(pathway.H2.Answer!) + 
                   Score(pathway.H3.Answer!) + 
                   Score(pathway.H4.Answer!) + 
                   Score(pathway.H5.Answer!) + 
