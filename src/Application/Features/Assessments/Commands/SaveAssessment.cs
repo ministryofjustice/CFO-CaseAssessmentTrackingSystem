@@ -1,10 +1,9 @@
-using System.Diagnostics.Tracing;
-using System.Text.Json.Serialization;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Assessments.Caching;
 using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Assessments;
+using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Assessments.Commands;
 
@@ -41,8 +40,12 @@ public static class SaveAssessment
                                            request.Assessment.Id,
                                            request.Assessment.ParticipantId
                                        });
-
-            pa.UpdateJson(JsonSerializer.Serialize(request.Assessment));
+         
+            
+            pa.UpdateJson(JsonConvert.SerializeObject(request.Assessment, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            }));
 
             if (request.Submit)
             {

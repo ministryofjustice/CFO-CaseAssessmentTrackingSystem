@@ -1,17 +1,8 @@
-﻿using System.Text.Json.Serialization;
-using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Assessments.Caching;
-using Cfo.Cats.Application.Features.Assessments.Commands;
 using Cfo.Cats.Application.Features.Assessments.DTOs;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Education;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.HealthAndAdditiction;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Housing;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Money;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Relationships;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.ThoughtsAndBehaviours;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.WellbeingAndMentalHealth;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Working;
 using Cfo.Cats.Application.SecurityConstants;
+using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Assessments.Queries;
 
@@ -51,7 +42,11 @@ public static class GetAssessment
                 });
             }
 
-            Assessment assessment = JsonSerializer.Deserialize<Assessment>(pa.AssessmentJson)!;
+            Assessment assessment = JsonConvert.DeserializeObject<Assessment>(pa.AssessmentJson,
+            new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            })!;
             return await Result<Assessment>.SuccessAsync(assessment);
         }
     }

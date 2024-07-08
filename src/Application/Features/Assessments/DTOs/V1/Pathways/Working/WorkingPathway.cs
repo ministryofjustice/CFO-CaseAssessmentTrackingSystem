@@ -34,7 +34,7 @@ public sealed partial class WorkingPathway
     /// <summary>
     ///     A2 When were you last in work?
     /// </summary>
-    public A2 A2 { get; } = new();
+    public A2 A2 { get; private set; } = new();
 
     /// <summary>
     ///     A3 Does or would your offence limit the types of work you could do?

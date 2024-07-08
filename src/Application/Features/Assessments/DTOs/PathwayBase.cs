@@ -1,23 +1,7 @@
-using System.Text.Json.Serialization;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Education;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.HealthAndAdditiction;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Housing;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Money;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Relationships;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.ThoughtsAndBehaviours;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.WellbeingAndMentalHealth;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Working;
+using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Assessments.DTOs;
 
-[JsonDerivedType(typeof(EducationPathway), typeDiscriminator: "education")]
-[JsonDerivedType(typeof(HealthAndAddictionPathway), typeDiscriminator: "health")]
-[JsonDerivedType(typeof(HousingPathway), typeDiscriminator: "housing")]
-[JsonDerivedType(typeof(MoneyPathway), typeDiscriminator: "money")]
-[JsonDerivedType(typeof(RelationshipsPathway), typeDiscriminator: "relationships")]
-[JsonDerivedType(typeof(ThoughtsAndBehavioursPathway), typeDiscriminator: "thoughts")]
-[JsonDerivedType(typeof(WellbeingAndMentalHealthPathway), typeDiscriminator: "wellbeing")]
-[JsonDerivedType(typeof(WorkingPathway), typeDiscriminator: "working")]
 public abstract class PathwayBase
 {
     [JsonIgnore]

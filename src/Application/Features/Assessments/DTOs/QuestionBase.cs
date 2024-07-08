@@ -1,11 +1,10 @@
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Assessments.DTOs;
 
 /// <summary>
 ///     Base class for the all questions
 /// </summary>
-[JsonPolymorphic]
 public abstract partial class QuestionBase
 {
 
@@ -51,3 +50,4 @@ public abstract partial class QuestionBase
     /// <returns>True if the answer has a valid return value</returns>
     public abstract bool IsValid();
 }
+

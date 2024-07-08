@@ -12,6 +12,7 @@ using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.WellbeingAndMen
 using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Working;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Assessments;
+using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Assessments.Commands;
 
@@ -57,9 +58,11 @@ public static class BeginAssessment
                     new WellbeingAndMentalHealthPathway(),
                 ]
             };
-            
 
-            string json = JsonSerializer.Serialize(assessment);
+            string json = JsonConvert.SerializeObject(assessment, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            });
             
             ParticipantAssessment pa = ParticipantAssessment.Create(assessment.Id, request.ParticipantId, assessmentJson: json, _currentUserService.TenantId!);
             foreach (var pathway in assessment.Pathways)

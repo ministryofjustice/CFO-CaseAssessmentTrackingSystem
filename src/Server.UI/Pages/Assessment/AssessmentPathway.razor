@@ -77,21 +77,14 @@
 
 
     [Parameter, EditorRequired]
-    public PathwayBase? Model { get; set; } 
+    public PathwayBase? Model { get; set; }
 
     private async Task<bool> Validate()
     {
-        try
-        {
-            validateCalled = true; 
-            AssessmentPathwayValidator validator = new AssessmentPathwayValidator();
-            var result = await validator.ValidateAsync(Model!);
-            return result.IsValid;
-        }
-        catch
-        {
-            return false;
-        }
+        validateCalled = true;
+        AssessmentPathwayValidator validator = new AssessmentPathwayValidator();
+        var result = await validator.ValidateAsync(Model!);
+        return result.IsValid;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
