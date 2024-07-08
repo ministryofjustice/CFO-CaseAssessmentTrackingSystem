@@ -593,6 +593,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<DateTime>("RefreshTokenExpiryTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("RequiresPasswordReset")
+                        .HasColumnType("bit");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
