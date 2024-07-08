@@ -184,7 +184,7 @@ public static class DependencyInjection
             .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
             .AddDefaultTokenProviders();
 
-        services.AddScoped<SignInManager<ApplicationUser>, CustomSigninManager<ApplicationUser>>();
+        services.AddScoped<SignInManager<ApplicationUser>, CustomSigninManager>();
         services.AddScoped<ISecurityStampValidator, SecurityStampValidator<ApplicationUser>>();
 
 

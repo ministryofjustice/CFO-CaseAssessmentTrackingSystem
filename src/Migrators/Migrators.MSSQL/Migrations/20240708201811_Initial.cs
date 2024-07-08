@@ -133,6 +133,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     MemorablePlace = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MemorableDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RequiresPasswordReset = table.Column<bool>(type: "bit", nullable: false),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SuperiorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: true),
