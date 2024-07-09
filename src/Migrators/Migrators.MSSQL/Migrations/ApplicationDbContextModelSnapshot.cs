@@ -524,6 +524,12 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("DisplayName")
                         .HasColumnType("nvarchar(max)");
 
@@ -540,11 +546,23 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<bool>("IsLive")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("MemorableDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MemorablePlace")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -566,7 +584,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<string>("ProfilePictureDataUrl")
                         .HasColumnType("text");
 
-                    b.Property<string>("Provider")
+                    b.Property<string>("ProviderId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RefreshToken")
@@ -574,6 +592,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.Property<DateTime>("RefreshTokenExpiryTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("RequiresPasswordReset")
+                        .HasColumnType("bit");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -812,6 +833,18 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                             b1.Property<string>("Domain")
                                 .HasMaxLength(255)
                                 .HasColumnType("nvarchar(255)");
+
+                            b1.Property<DateTime?>("Created")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("CreatedBy")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<DateTime?>("LastModified")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("LastModifiedBy")
+                                .HasColumnType("nvarchar(max)");
 
                             b1.HasKey("TenantId", "Domain");
 
@@ -1102,6 +1135,50 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId");
+
+                    b.OwnsMany("Cfo.Cats.Domain.ValueObjects.Note", "Notes", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
+
+                            b1.Property<string>("ApplicationUserId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(450)");
+
+                            b1.Property<string>("CallReference")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<DateTime?>("Created")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("CreatedBy")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<DateTime?>("LastModified")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("LastModifiedBy")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Message")
+                                .IsRequired()
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("ApplicationUserId");
+
+                            b1.ToTable("ApplicationUserNote", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("ApplicationUserId");
+                        });
+
+                    b.Navigation("Notes");
 
                     b.Navigation("Superior");
 

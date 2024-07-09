@@ -26,7 +26,7 @@ public class UserProfileState
             Email = dto.Email,
             PhoneNumber = dto.PhoneNumber,
             DisplayName = dto.DisplayName,
-            Provider = dto.Provider,
+            Provider = dto.ProviderId,
             UserName = dto.UserName,
             IsActive = dto.IsActive,
             TenantId = dto.TenantId,

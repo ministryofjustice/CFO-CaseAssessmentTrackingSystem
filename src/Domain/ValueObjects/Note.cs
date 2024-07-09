@@ -2,9 +2,10 @@
 
 namespace Cfo.Cats.Domain.ValueObjects;
 
-public class TenantDomain(string domain) : ValueObject, IAuditable
+public class Note(string message, string? callReference) : ValueObject, IAuditable
 {
-    public string Domain { get; private set; } = domain;
+    public string Message { get; private set; } = message;
+    public string? CallReference { get; private set; } = callReference;
     public DateTime? Created { get; set; }
     public string? CreatedBy { get; set; }
     public DateTime? LastModified { get; set; }
@@ -12,7 +13,7 @@ public class TenantDomain(string domain) : ValueObject, IAuditable
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return Domain;
+        yield return CreatedBy ?? Guid.NewGuid().ToString();
+        yield return Created ?? DateTime.Now;
     }
-
 }

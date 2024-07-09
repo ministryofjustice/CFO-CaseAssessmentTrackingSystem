@@ -15,11 +15,7 @@ public class ResetPasswordFormModelValidator : AbstractValidator<ResetPasswordFo
     {
         this.localizer = localizer;
         this.identitySettings = identitySettings;
-        RuleFor(x => x.UserName)
-            .NotEmpty()
-            .WithMessage(this.localizer["User name cannot be empty."])
-            .Length(2, 100)
-            .WithMessage(this.localizer["User name must be between 2 and 100 characters."]);
+
         RuleFor(p => p.Password)
             .NotEmpty()
             .WithMessage(this.localizer["Password cannot be empty"])
@@ -49,8 +45,5 @@ public class ResetPasswordFormModelValidator : AbstractValidator<ResetPasswordFo
                     "Password must contain at least one non-alphanumeric character (e.g., @, !, ?, *, .)"
                 ]
             );
-        RuleFor(x => x.ConfirmPassword)
-            .Equal(x => x.Password)
-            .WithMessage(this.localizer["Confirm password must match the password"]);
     }
 }

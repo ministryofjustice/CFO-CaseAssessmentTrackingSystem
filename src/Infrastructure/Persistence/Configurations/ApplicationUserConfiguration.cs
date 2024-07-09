@@ -22,5 +22,12 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         builder.HasOne(x => x.Superior).WithMany().HasForeignKey(u => u.SuperiorId);
         builder.HasOne(x => x.Tenant).WithMany().HasForeignKey(u => u.TenantId);
         builder.Navigation(e => e.Tenant).AutoInclude();
+
+        builder.OwnsMany(x => x.Notes, note => {
+            note.WithOwner().HasForeignKey("ApplicationUserId");
+            note.HasKey("Id");
+            note.ToTable(DatabaseSchema.Tables.ApplicationUserNote);
+            note.Property(x => x.Message).HasMaxLength(255);
+        });
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Domain.Identity;
+using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Application.Features.Identity.DTOs;
 
@@ -10,9 +11,9 @@ public class ApplicationUserDto
 
     [Description("User Name")] public string UserName { get; set; } = string.Empty;
 
-    [Description("Display Name")] public string? DisplayName { get; set; }
+    [Description("Display Name")] public string DisplayName { get; set; } = string.Empty;
 
-    [Description("Provider")] public string? Provider { get; set; } = "Local";
+    [Description("Provider")] public string? ProviderId { get; set; }
 
     [Description("Tenant Id")] public string? TenantId { get; set; }
 
@@ -32,15 +33,17 @@ public class ApplicationUserDto
 
     [Description("Default Role")] public string? DefaultRole => AssignedRoles?.FirstOrDefault();
 
+    [Description("Memorable Place")] public string MemorableDate { get; set; } = string.Empty;
+
+    [Description("Memorable Place")] public string MemorablePlace { get; set; } = string.Empty;
+
     [Description("Is Active")] public bool IsActive { get; set; }
 
     [Description("Is Live")] public bool IsLive { get; set; }
 
-    [Description("Password")] public string? Password { get; set; }
-
-    [Description("Confirm Password")] public string? ConfirmPassword { get; set; }
-
     [Description("Status")] public DateTimeOffset? LockoutEnd { get; set; }
+
+    [Description("Notes")] public List<ApplicationUserNoteDto> Notes { get; set; } = [];
 
     public UserProfile ToUserProfile()
     {
@@ -51,7 +54,7 @@ public class ApplicationUserDto
             Email = Email,
             PhoneNumber = PhoneNumber,
             DisplayName = DisplayName,
-            Provider = Provider,
+            Provider = ProviderId,
             UserName = UserName,
             TenantId = TenantId,
             TenantName = TenantName,
@@ -74,7 +77,19 @@ public class ApplicationUserDto
             CreateMap<ApplicationUser, ApplicationUserDto>(MemberList.None)
                 .ForMember(x => x.SuperiorName, s => s.MapFrom(y => y.Superior!.UserName))
                 .ForMember(x => x.TenantName, s => s.MapFrom(y => y.Tenant!.Name))
-                .ForMember(x => x.AssignedRoles, s => s.MapFrom(y => y.UserRoles.Select(r => r.Role.Name)));
+                .ForMember(x => x.AssignedRoles, s => s.MapFrom(y => y.UserRoles.Select(r => r.Role.Name)))
+            .ReverseMap()
+                .ForMember(x => x.UserName, s => s.MapFrom(y => y.Email))
+                .ForMember(x => x.Notes, s => s.Ignore())
+                .ForMember(x => x.Tenant, s => s.Ignore())
+            .AfterMap((dto, entity, context) =>
+            {
+                foreach(var noteDto in dto.Notes)
+                {
+                    var note = context.Mapper.Map<Note>(noteDto);
+                    entity.AddNote(note);
+                }
+            });
         }
     }
 }

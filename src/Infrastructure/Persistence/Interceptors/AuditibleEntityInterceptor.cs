@@ -50,7 +50,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     {
         var userId = currentUserService.UserId;
         var tenantId = currentUserService.TenantId;
-        foreach (var entry in context.ChangeTracker.Entries<IAuditableEntity>())
+        foreach (var entry in context.ChangeTracker.Entries<IAuditable>())
         {
             switch (entry.State)
             {
@@ -103,7 +103,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         var tenantId = currentUserService.TenantId;
         context.ChangeTracker.DetectChanges();
         var temporaryAuditEntries = new List<AuditTrail>();
-        foreach (var entry in context.ChangeTracker.Entries<IAuditableEntity>())
+        foreach (var entry in context.ChangeTracker.Entries<IAuditable>())
         {
             if (entry.State is EntityState.Detached or EntityState.Unchanged)
             {

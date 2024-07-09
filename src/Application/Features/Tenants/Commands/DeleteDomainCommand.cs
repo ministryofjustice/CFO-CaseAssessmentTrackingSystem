@@ -22,7 +22,7 @@ public static class DeleteDomainCommand
         {
             public Mapping()
             {
-                CreateMap<Command, TenantDomain>();
+                CreateMap<Command, TenantDomain>(MemberList.None);
             }
         }
     }

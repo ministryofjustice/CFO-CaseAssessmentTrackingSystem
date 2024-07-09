@@ -22,7 +22,7 @@ public static class AddDomainCommand
         {
             public Mapping()
             {
-                CreateMap<Command, TenantDomain>();
+                CreateMap<Command, TenantDomain>(MemberList.None);
             }
         }
     }

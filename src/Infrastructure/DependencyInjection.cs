@@ -184,7 +184,7 @@ public static class DependencyInjection
             .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
             .AddDefaultTokenProviders();
 
-        services.AddScoped<SignInManager<ApplicationUser>, CustomSigninManager<ApplicationUser>>();
+        services.AddScoped<SignInManager<ApplicationUser>, CustomSigninManager>();
         services.AddScoped<ISecurityStampValidator, SecurityStampValidator<ApplicationUser>>();
 
 
@@ -295,9 +295,12 @@ public static class DependencyInjection
 
         services.AddDataProtection().PersistKeysToDbContext<ApplicationDbContext>();
 
+        services.AddSingleton<IPasswordService, PasswordService>();
+
         services.ConfigureApplicationCookie(options => {
             options.LoginPath = "/pages/authentication/login";
         });
+
         services
             .AddSingleton<UserService>()
             .AddSingleton<IUserService>(sp => {
