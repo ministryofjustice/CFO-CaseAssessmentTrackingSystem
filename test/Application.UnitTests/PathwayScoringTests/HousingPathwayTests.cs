@@ -16,7 +16,7 @@ public class HousingPathwayTests
         HousingPathway pathway = new HousingPathway();
 
         pathway.B1.Answer = B1.HousingRentedOrOwnedByYouOrYourPartnerParentOrGuardian;
-        pathway.B2.Answers = new List<string>() { B2.BehindOnRentOrMortgage };
+        pathway.B2.Answers = [ B2.BehindOnRentOrMortgage ];
 
         pathway.B4.Answer = B4.VerySatisfied;
         pathway.B5.Answer = B5.VerySafeToWalkAloneAfterDarkInLocalArea;
@@ -32,7 +32,7 @@ public class HousingPathwayTests
 
         pathway.B1.Answer = B1.HousingRentedOrOwnedByYouOrYourPartnerParentOrGuardian;
 
-        pathway.B2.Answers = new List<string>() { B2.BehindOnRentOrMortgage, B2.FacingEviction, B2.RiskOfHomelessness }; ;
+        pathway.B2.Answers = [ B2.BehindOnRentOrMortgage, B2.FacingEviction, B2.RiskOfHomelessness ];
 
         pathway.B4.Answer = B4.VerySatisfied;
         pathway.B5.Answer = B5.VerySafeToWalkAloneAfterDarkInLocalArea;
@@ -48,7 +48,7 @@ public class HousingPathwayTests
 
         pathway.B1.Answer = B1.TemporaryOrSupportedHousing;
 
-        pathway.B2.Answers = new List<string>() { B2.BehindOnRentOrMortgage, B2.RiskOfHomelessness };
+        pathway.B2.Answers = [ B2.BehindOnRentOrMortgage, B2.RiskOfHomelessness ];
 
         pathway.B4.Answer = B4.VeryDissatisfied;
         pathway.B5.Answer = B5.ABitUnsafeToWalkAloneAfterDarkInLocalArea;

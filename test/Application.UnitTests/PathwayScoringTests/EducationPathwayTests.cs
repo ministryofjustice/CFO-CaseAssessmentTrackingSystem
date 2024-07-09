@@ -19,12 +19,12 @@ public class EducationPathwayTests
 
         pathway.D2.Answer = D2.YesFinishedSchool;
 
-        pathway.D3.Answers = new List<string>() { D3.NoneOftheGivenOptions }; ;
+        pathway.D3.Answers = [ D3.NoneOftheGivenOptions ];
 
-        pathway.D4.Answers = new List<string>() { D4.UsingNumbersDifficulty }; ;
+        pathway.D4.Answers = [ D4.UsingNumbersDifficulty ];
 
 
-        pathway.D5.Answers = new List<string>() { D5.Reading, D5.Drawing, D5.Painting, D5.Photography };
+        pathway.D5.Answers = [ D5.Reading, D5.Drawing, D5.Painting, D5.Photography ];
 
         var rag = pathway.GetRagScore(23, AssessmentLocation.EastOfEnglandAssessmentLocation, Sex.MaleSex);
         rag.Should().Be(25);
@@ -39,11 +39,11 @@ public class EducationPathwayTests
 
         pathway.D2.Answer = D2.YesFinishedSchool;
 
-        pathway.D3.Answers = new List<string>() { D3.NoneOftheGivenOptions };
+        pathway.D3.Answers = [ D3.NoneOftheGivenOptions ];
 
-        pathway.D4.Answers = new List<string>() { D4.ReadingDifficulty, D4.WritingDifficulty };
+        pathway.D4.Answers = [D4.ReadingDifficulty, D4.WritingDifficulty];
 
-        pathway.D5.Answers = new List<string>() { D5.Crafts };
+        pathway.D5.Answers = [ D5.Crafts ];
 
         var rag = pathway.GetRagScore(23, AssessmentLocation.EastOfEnglandAssessmentLocation, Sex.MaleSex);
         rag.Should().Be(11);
@@ -58,11 +58,11 @@ public class EducationPathwayTests
 
         pathway.D2.Answer = D2.LeftBefore16;
 
-        pathway.D3.Answers = new List<string>() { D3.Dyslexia, D3.AdhdOrAdd };
+        pathway.D3.Answers = [ D3.Dyslexia, D3.AdhdOrAdd ];
 
-        pathway.D4.Answers = new List<string>() { D4.ReadingDifficulty, D4.WritingDifficulty };
+        pathway.D4.Answers = [ D4.ReadingDifficulty, D4.WritingDifficulty ];
 
-        pathway.D5.Answers = new List<string>() { D5.Crafts };
+        pathway.D5.Answers = [ D5.Crafts ];
 
         var rag = pathway.GetRagScore(23, AssessmentLocation.EastOfEnglandAssessmentLocation, Sex.MaleSex);
         rag.Should().Be(1);
