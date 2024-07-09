@@ -31,6 +31,7 @@ public class ApplicationUser : IdentityUser, IAuditable
     public string? MemorablePlace { get; set; }
     public string? MemorableDate { get; set; }
     public string? RefreshToken { get; set; }
+    public bool RequiresPasswordReset { get; set; }
     public DateTime RefreshTokenExpiryTime { get; set; }
     public virtual ICollection<ApplicationUserClaim> UserClaims { get; set; }
     public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }

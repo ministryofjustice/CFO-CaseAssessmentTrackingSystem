@@ -1,7 +1,5 @@
 @using Cfo.Cats.Application.Features.Assessments.Commands
 @using Cfo.Cats.Application.Features.Participants.DTOs
-@using Humanizer
-
 
 <MudGrid Class="pa-3" Spacing="4">
     <MudItem xs="12" md="4">
@@ -20,118 +18,6 @@
             </MudCardContent>
         </MudCard>
     </MudItem>
-    <MudItem xs="12" md="4" >
-        <MudCard Style="Height: 100%; Max-Height: 192px">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Review Frequency</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                     <MudIconButton Icon="@Icons.Material.Filled.Update" Color="Color.Primary" />
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText Typo="Typo.body2">1 Month</MudText>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="4" >
-        <MudCard Style="Height: 100%; Max-Height: 192px">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Enrolled On</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                     <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Primary" Disabled="true"/>
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText Typo="Typo.body2">GET ENROLMENT DATE</MudText>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="4" >
-        <MudCard Style="Height: 100%; Max-Height: 192px">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Enrolled By</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Primary" Disabled="true" />
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText Typo="Typo.body2">Support Worker Dave</MudText>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="4" >
-        <MudCard Style="Height: 100%; Max-Height: 192px">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Last Engaged With</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Primary" Disabled="true"/>
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText Typo="Typo.body2">Support Worker Clare</MudText>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="4" >
-        <MudCard Style="Height: 100%; Max-Height: 192px">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Overdue Objectives</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Color="Color.Primary" />
-                </CardHeaderActions>
-            </MudCardHeader>            
-            <MudCardContent>
-                <MudText Typo="Typo.body2">3</MudText>
-            </MudCardContent>
-
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="4" >
-        <MudCard Style="Height: 100%; Max-Height: 192px">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">In Progress Objectives</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Color="Color.Primary" />
-                </CardHeaderActions>
-            </MudCardHeader>   
-            <MudCardContent>
-                <MudText Typo="Typo.body2">4</MudText>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="6">
-        
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Objective Progress</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Primary" Disabled="true"/>
-                </CardHeaderActions>
-            </MudCardHeader>
-
-            <MudCardContent>
-                <MudChart ChartType="ChartType.Pie" LegendPosition="Position.Bottom" Width="300px" Height="300px"
-                          InputData="@data" InputLabels="@labels">
-                </MudChart>
-            </MudCardContent>
-        </MudCard>
-        
-
-    </MudItem>
 </MudGrid>
 
 @code {
@@ -139,9 +25,6 @@
 
     [CascadingParameter] 
     public ParticipantDto ParticipantDto { get; set; } = default!;
-
-    private double[] data = [1, 4, 3, 2];
-    private string[] labels = { "Pending", "In Progress", "Overdue", "Complete" };
 
     public async Task BeginAssessment()
     {
