@@ -42,6 +42,12 @@ jobs:
       - name: Publish
         run: dotnet publish --configuration Release --output ./publish
 
+      # Compress the build artifacts into a ZIP file
+      - name: Compress build artifacts
+        run: |
+          cd publish
+          zip -r ../build-artifacts.zip .
+
       # Generate tag and release names based on date
       - name: Set Release Version
         id: set_release_version
@@ -70,6 +76,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./publish
+          asset_path: ./build-artifacts.zip
           asset_name: build-artifacts.zip
           asset_content_type: application/zip
