@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Identity.DTOs;
 [Description("Users")]
 public class ApplicationUserDto
 {
-    [Description("User Id")] public string Id { get; set; } = string.Empty;
+    [Description("User Id")] public string Id { get; set; } = Guid.NewGuid().ToString();
 
     [Description("User Name")] public string UserName { get; set; } = string.Empty;
 
@@ -82,6 +82,7 @@ public class ApplicationUserDto
                 .ForMember(x => x.UserName, s => s.MapFrom(y => y.Email))
                 .ForMember(x => x.Notes, s => s.Ignore())
                 .ForMember(x => x.Tenant, s => s.Ignore())
+                .ForMember(x => x.Superior, s => s.Ignore())
             .AfterMap((dto, entity, context) =>
             {
                 foreach(var noteDto in dto.Notes)
