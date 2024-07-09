@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240708171007_Initial")]
+    [Migration("20240708201811_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -595,6 +595,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.Property<DateTime>("RefreshTokenExpiryTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("RequiresPasswordReset")
+                        .HasColumnType("bit");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");

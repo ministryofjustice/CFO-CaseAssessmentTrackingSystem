@@ -5,6 +5,9 @@
 @using Cfo.Cats.Domain.Identity
 @using Cfo.Cats.Application.Common.Interfaces.Identity
 @using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.WebUtilities
+@using System.Text
+@using static Cfo.Cats.Infrastructure.Services.Identity.CustomSigninManager
 
 @inject ILogger<Login> Logger
 @inject UserManager<ApplicationUser> UserManager
@@ -134,17 +137,32 @@
 
     public async Task OnSubmit()
     {
+        var user = await UserManager.FindByNameAsync(Input.UserName);
+
+        if(user is null)
+        {
+            errorMessage = L["Error: Invalid login attempt."];
+            return;
+        }
+
         // This doesn't count login failures towards account lockout
         // To enable password failures to trigger account lockout, set lockoutOnFailure: true
         var result = await SignInManager.PasswordSignInAsync(Input.UserName, Input.Password, false, lockoutOnFailure: true);
+
         if (result.Succeeded)
         {
             Logger.LogInformation($"{Input.UserName} logged in.");
             RedirectManager.RedirectTo(ReturnUrl);
         }
+        else if(result is CustomSignInResult customSignInResult && customSignInResult.RequiresPasswordReset)
+        {
+            string token = await UserManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            RedirectManager.RedirectTo(ResetPassword.PageUrl, new() { ["token"] = encodedToken, ["userid"] = user.Id });
+        }
         else if (result.RequiresTwoFactor)
         {
-            var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
+            user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
             var token = await UserManager.GenerateTwoFactorTokenAsync(user!, "Email");
             await Sender.Publish(new SendFactorCodeNotification(user!.Email!, user.UserName!, token));
 

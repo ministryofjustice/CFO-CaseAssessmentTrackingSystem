@@ -41,10 +41,6 @@ public class ApplicationUserDto
 
     [Description("Is Live")] public bool IsLive { get; set; }
 
-    [Description("Password")] public string? Password { get; set; }
-
-    [Description("Confirm Password")] public string? ConfirmPassword { get; set; }
-
     [Description("Status")] public DateTimeOffset? LockoutEnd { get; set; }
 
     [Description("Notes")] public List<ApplicationUserNoteDto> Notes { get; set; } = [];
