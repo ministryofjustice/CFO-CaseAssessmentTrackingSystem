@@ -2,6 +2,24 @@
 @using Cfo.Cats.Application.Features.Assessments.Queries
 @using Cfo.Cats.Domain.Common.Enums
 
+<style>
+    .readonly-toggle {
+        pointer-events: none; 
+    }
+
+    .two-columns {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Two columns */
+        gap: 10px; /* Adjust the gap between items as needed */
+    }
+
+    .toggle-item {
+        box-sizing: border-box; /* Ensure padding and borders are included in width/height */
+        padding: 10px; /* Add padding if needed */
+        justify-content: left !important;
+    }
+    
+</style>
 
 @if (_notFound)
 {
@@ -37,10 +55,10 @@
                         <MudItem xs="8">
                             @if (question is SingleChoiceQuestion atq)
                             {
-                            <MudToggleGroup T="string" SelectionMode="SelectionMode.SingleSelection" @bind-Value="@atq.Answer" CheckMark FixedContent Color="Color.Primary">
+                            <MudToggleGroup T="string" Class="readonly-toggle" SelectionMode="SelectionMode.SingleSelection" @bind-Value="@atq.Answer" CheckMark FixedContent Color="Color.Primary">
                                 @foreach (var item in atq.Options)
                                 {
-                                    <MudToggleItem Value="@item" Text="@item" Disabled />
+                                    <MudToggleItem Value="@item" Text="@item" />
                                 }
                             </MudToggleGroup>
 
@@ -48,10 +66,10 @@
 
                             @if (question is MultipleChoiceQuestion amcq)
                             {
-                                <MudToggleGroup T="string" Class="two-columns" Vertical SelectionMode="SelectionMode.MultiSelection" @bind-Values="@amcq.Answers" CheckMark Color="Color.Primary" Outlined="false" Delimiters="false">
+                                <MudToggleGroup T="string" Class="two-columns readonly-toggle" Vertical SelectionMode="SelectionMode.MultiSelection" @bind-Values="@amcq.Answers" CheckMark Color="Color.Primary" Outlined="false" Delimiters="false">
                                     @foreach (var item in amcq.Options)
                                     {
-                                        <MudToggleItem Class="toggle-item" Value="@item" Text="@item" UnselectedIcon="@Icons.Material.Filled.CheckBoxOutlineBlank" SelectedIcon="@Icons.Material.Filled.CheckBox" Disabled/>
+                                        <MudToggleItem Class="toggle-item" Value="@item" Text="@item" UnselectedIcon="@Icons.Material.Filled.CheckBoxOutlineBlank" SelectedIcon="@Icons.Material.Filled.CheckBox" />
                                     }
                                 </MudToggleGroup>
                             }
@@ -91,6 +109,11 @@
             _notFound = true;
         }
         
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("removeInlineStyle", ".two-columns");
     }
 
 }
