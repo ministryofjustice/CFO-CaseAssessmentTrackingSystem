@@ -18,6 +18,7 @@ jobs:
           if [ "${{ github.ref }}" != "refs/heads/main" ]; then
             echo "This workflow can only be triggered from the main branch."
             exit 1
+          fi
 
       # Set up .NET environment
       - name: Set up .NET
