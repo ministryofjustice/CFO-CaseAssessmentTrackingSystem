@@ -11,7 +11,7 @@ public partial class ThoughtsAndBehavioursPathway
             GetResilience(G1).PowerRound(0.05),
             GetImpulsivity(age, G2).PowerRound(0.5),
             GetMotivation(age, G3).PowerRound(0.02),
-            GetHope(G4).PowerRound(0.8),
+            GetHope(G4).PowerRound(0.08),
             GetSelfEsteem(G5).PowerRound(0.05),
             GetAdaptability(G6).PowerRound(0.07),
             GetEmotionalPerception(G7).PowerRound(0.09),
@@ -126,6 +126,9 @@ public partial class ThoughtsAndBehavioursPathway
             (G3.Neither, < 55) => 0.34,
             (G3.Neither, < 65) => 0.39,
             (G3.Neither, _) => 0.44,
+
+            (G3.StronglyAgree, _) => 1,
+            (G3.StronglyDisagree, _) => 0.01,
 
             _ => throw new ApplicationException("Unknown answer")
         };

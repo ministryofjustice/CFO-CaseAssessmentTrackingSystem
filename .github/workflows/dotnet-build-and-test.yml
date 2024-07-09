@@ -42,9 +42,40 @@ jobs:
       - name: Publish
         run: dotnet publish --configuration Release --output ./publish
 
-      # Archive build artifacts
-      - name: Archive build artifacts
-        uses: actions/upload-artifact@v2
+      # Compress the build artifacts into a ZIP file
+      - name: Compress build artifacts
+        run: |
+          cd publish
+          zip -r ../build-artifacts.zip .
+
+      # Generate tag and release names based on date
+      - name: Set Release Version
+        id: set_release_version
+        run: |
+          TAG_NAME="v$(date +'%Y%m%d%H%M%S')"
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo "RELEASE_NAME=Release $TAG_NAME" >> $GITHUB_ENV
+
+      # Create a new release
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: build-artifacts
-          path: ./publish
+          tag_name: ${{ env.TAG_NAME }}
+          release_name: ${{ env.RELEASE_NAME }}
+          body: 'Automatic release based on date and time.'
+          draft: false
+          prerelease: false
+
+      # Upload build artifacts to the release
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build-artifacts.zip
+          asset_name: build-artifacts.zip
+          asset_content_type: application/zip
