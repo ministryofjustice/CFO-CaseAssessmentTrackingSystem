@@ -39,7 +39,7 @@ public static class SetEnrolmentLocation
         [Description("Enrol at an alternative location enrolment")]
         public bool EnrolFromOtherLocation { get; set; } = enrolmentLocation.Id != currentLocation.Id;
         
-        public string CacheKey => ParticipantCacheKey.GetCacheKey($"Id:{this.Identifier}");
+        public string[] CacheKeys => [ParticipantCacheKey.GetCacheKey($"Id:{this.Identifier}")];
         public CancellationTokenSource? SharedExpiryTokenSource 
             => ParticipantCacheKey.SharedExpiryTokenSource();
     }

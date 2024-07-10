@@ -12,7 +12,7 @@ public static class RenameTenant
     {
         public required string Id { get; set; }
         public required string Name { get; set; }
-        public string CacheKey => TenantCacheKey.GetAllCacheKey;
+        public string[] CacheKeys => [TenantCacheKey.GetAllCacheKey];
         public CancellationTokenSource? SharedExpiryTokenSource =>
             TenantCacheKey.SharedExpiryTokenSource();
         

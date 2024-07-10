@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Documents.Commands.Upload;
 [RequestAuthorize(Policy = PolicyNames.AllowDocumentUpload)]
 public class UploadDocumentCommand : ICacheInvalidatorRequest<Result<Guid>>
 {
-    public string CacheKey { get; } = string.Empty;
+    public string[] CacheKeys { get; } = [];
 
     public CancellationTokenSource? SharedExpiryTokenSource
         => DocumentCacheKey.SharedExpiryTokenSource();

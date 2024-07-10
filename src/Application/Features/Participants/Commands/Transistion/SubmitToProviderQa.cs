@@ -1,8 +1,9 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Candidates.Caching;
+using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.SecurityConstants;
 
-namespace Cfo.Cats.Application.Features.Documents.Commands.Transistion;
+namespace Cfo.Cats.Application.Features.Participants.Commands.Transistion;
 
 public static class SubmitToProviderQa
 {
@@ -11,7 +12,10 @@ public static class SubmitToProviderQa
     {
         public required string ParticipantId { get; set; }
         
-        public string CacheKey => CandidatesCacheKey.GetCacheKey(ParticipantId);
+        public string[] CacheKeys => [
+            ParticipantCacheKey.GetCacheKey(ParticipantId),
+            ParticipantCacheKey.GetSummaryCacheKey(ParticipantId)
+        ];
         
         public CancellationTokenSource? SharedExpiryTokenSource => CandidatesCacheKey.SharedExpiryTokenSource();
     }

@@ -2,7 +2,7 @@
 
 public interface ICacheInvalidatorRequest<TResponse> : IRequest<TResponse>
 {
-    string CacheKey { get; }
+    string[] CacheKeys { get; }
 
     CancellationTokenSource? SharedExpiryTokenSource { get; }
 }

@@ -16,6 +16,7 @@ public static class ParticipantCacheKey
         );
     
     public static string GetCacheKey(string parameters) => $"ParticipantCacheKey,{parameters}";
+    public static string GetSummaryCacheKey(string id) => $"ParticipantSummary,{id}";
 
     public static CancellationTokenSource SharedExpiryTokenSource()
     {

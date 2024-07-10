@@ -13,7 +13,7 @@ public static class SaveAssessment
     public class Command : ICacheInvalidatorRequest<Result>
     {
         //TODO: cache individually
-        public string CacheKey => AssessmentsCacheKey.GetAllCacheKey;
+        public string[] CacheKeys =>  [ AssessmentsCacheKey.GetAllCacheKey ];
         public CancellationTokenSource? SharedExpiryTokenSource => AssessmentsCacheKey.SharedExpiryTokenSource();
 
         public bool Submit { get; set; } = false;

@@ -27,7 +27,6 @@ public class MenuService : IMenuService
                         IsParent = true,
                         MenuItems = new List<MenuSectionSubItemModel>
                         {
-                            new() { Title = "New Enrolment", Href = "/pages/candidates/search" },
                             new()
                             {
                                 Title = "All",
