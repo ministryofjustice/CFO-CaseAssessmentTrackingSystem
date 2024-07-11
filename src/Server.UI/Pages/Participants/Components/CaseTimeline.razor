@@ -12,7 +12,7 @@
             Color color = GetColour(model);
             
             <MudTimeline TimelinePosition="TimelinePosition.Start" Modifiers="true">
-                    <MudTimelineItem Size="Size.Medium" Color="@color" Elevation="25"><MudTooltip Text="Created on @model.OccurredOn.ToString()">
+                    <MudTimelineItem Size="Size.Medium" Color="@color" Elevation="25"><MudTooltip Text="@model.OccurredOn.ToString()">
                         <MudCard Outlined="false" Elevation="25">  
                             <MudCardContent>
                                 <MudText Typo="Typo.h6">@model.Line1</MudText>
