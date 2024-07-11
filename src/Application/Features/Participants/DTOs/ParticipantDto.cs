@@ -3,6 +3,7 @@ using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.Participants.DTOs;
 
+[Description("Participants")]
 public class ParticipantDto
 {
     [Description("CATS Identifier")]

@@ -24,7 +24,7 @@ public static class CreateParticipant
     
         public UserProfile? CurrentUser { get; set; }
 
-        public string CacheKey => ParticipantCacheKey.GetCacheKey($"{this}");
+        public string[] CacheKeys => [ ParticipantCacheKey.GetCacheKey($"{this}") ];
 
         public CancellationTokenSource? SharedExpiryTokenSource 
             => ParticipantCacheKey.SharedExpiryTokenSource();

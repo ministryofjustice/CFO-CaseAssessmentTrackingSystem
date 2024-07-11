@@ -20,7 +20,7 @@ public static class CandidatesCacheKey
         return tokenSource;
     }
     
-    public static string GetCacheKey(string parameters)
+    public static string GetCandidateCacheKey(string parameters)
     {
         return $"EnrolmentsWithPaginationQuery,{parameters}";
     }

@@ -24,7 +24,7 @@ public static class BeginAssessment
         public required string ParticipantId { get; set; }
         
         //TODO: this could be done at a per participant level
-        public string CacheKey => AssessmentsCacheKey.GetAllCacheKey;
+        public string[] CacheKeys => [ AssessmentsCacheKey.GetAllCacheKey ];
         public CancellationTokenSource? SharedExpiryTokenSource 
             => AssessmentsCacheKey.SharedExpiryTokenSource();
     }
