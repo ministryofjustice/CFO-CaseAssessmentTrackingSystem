@@ -30,7 +30,7 @@
     else
     {
         <MudForm @ref="Form">
-            <MudDatePicker Label="Date of Consent" Editable="true" MaxDate="DateTime.UtcNow.Date" @bind-Date="Model.ConsentDate" Required/>
+            <MudDatePicker Label="Date of Consent" Editable="true" MaxDate="DateTime.Now.Date" @bind-Date="Model.ConsentDate" Required/>
             <div class="mb-4 mt-8">
                 <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1" Accept=".pdf">
                     <ActivatorContent>

@@ -15,11 +15,9 @@ public class TimelineEntityTypeConfiguration : IEntityTypeConfiguration<Timeline
 
         builder.HasOne<Participant>()
             .WithMany()
-            .HasForeignKey("_participantId");
+            .HasForeignKey("ParticipantId");
 
-        builder.Property<string>("_participantId")
-            .HasColumnName("ParticipantId");
-
+     
         builder.Property(t => t.EventType)
             .IsRequired()
             .HasConversion(
