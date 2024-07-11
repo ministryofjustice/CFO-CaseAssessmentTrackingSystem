@@ -42,14 +42,17 @@
     public UserProfile UserProfile { get; set; } = default!;
 
     private PaginatedData<TimelineDto>? _model = null;
-    
-    protected override async Task OnParametersSetAsync()
+
+    protected override async Task OnInitializedAsync()
     {
-        _model = await Mediator.Send(new TimelinesWithPaginationQuery.Query()
+        if (_model is null)
         {
-            ParticipantId = ParticipantSummaryDto.Id,
-            CurrentUser = UserProfile
-        });
+            _model = await Mediator.Send(new TimelinesWithPaginationQuery.Query()
+            {
+                ParticipantId = ParticipantSummaryDto.Id,
+                CurrentUser = UserProfile
+            });
+        }
     }
 
     private Color GetColour(TimelineDto dto)
