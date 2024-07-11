@@ -9,6 +9,7 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Humanizer.Core.uk" Version="2.14.1" />
         <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="8.0.6"/>
         <PackageReference Include="Ardalis.Specification" Version="8.0.0"/>
         <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="8.0.0"/>

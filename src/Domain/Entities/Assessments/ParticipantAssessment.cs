@@ -28,7 +28,7 @@ namespace Cfo.Cats.Domain.Entities.Assessments
             ParticipantId = participantId;
             AssessmentJson = assessmentJson;
             TenantId = tenantId;
-            AddDomainEvent(new ParticipantAssessmentCreatedDomainEvent(this));
+            AddDomainEvent(new AssessmentCreatedDomainEvent(this));
         }
 
         public ParticipantAssessment UpdateJson(string json)
@@ -49,7 +49,13 @@ namespace Cfo.Cats.Domain.Entities.Assessments
             }
 
             _scores.Add(new PathwayScore(pathwayName, score));
-          
+            return this;
+        }
+
+        public ParticipantAssessment Submit()
+        {
+            // this does nothing except raise the event.
+            AddDomainEvent(new AssessmentScoredDomainEvent(this));
             return this;
         }
 

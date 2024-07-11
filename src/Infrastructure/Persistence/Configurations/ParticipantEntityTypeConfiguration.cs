@@ -1,6 +1,7 @@
 ﻿using Amazon.Runtime.Documents;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Participants;
+using Cfo.Cats.Domain.ValueObjects;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -90,9 +91,8 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
 
             consent.Property("_documentId")
                 .HasColumnName("DocumentId");
-
         });
-
+        
         builder.OwnsMany(c => c.RightToWorks, a => {
             a.WithOwner()
                 .HasForeignKey("ParticipantId");
@@ -117,7 +117,7 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
                     .HasColumnName("DocumentId");
                 
             });
-
+            
         });
 
         builder.Navigation(p => p.Consents)
