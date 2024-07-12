@@ -44,8 +44,8 @@ public class ApplicationDbContext
     public DbSet<ParticipantEnrolmentHistory> ParticipantEnrolmentHistories => Set<ParticipantEnrolmentHistory>();
 
     public DbSet<Location> Locations => Set<Location>();
-    
-    
+
+    public DbSet<Timeline> Timelines => Set<Timeline>();
 
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 

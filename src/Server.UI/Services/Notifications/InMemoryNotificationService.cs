@@ -31,7 +31,7 @@ public class InMemoryNotificationService : INotificationService
 
     public async Task MarkNotificationsAsRead()
     {
-        await localStorageService.SetAsync(LocalStorageKey, DateTime.UtcNow.Date);
+        await localStorageService.SetAsync(LocalStorageKey, DateTime.Now.Date);
     }
 
     public async Task MarkNotificationsAsRead(string id)

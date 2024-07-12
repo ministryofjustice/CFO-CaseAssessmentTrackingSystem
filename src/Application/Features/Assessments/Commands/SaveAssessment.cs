@@ -68,6 +68,7 @@ public static class SaveAssessment
                 {
                     pa.SetPathwayScore(pathway.Title, pathway.GetRagScore(age, location, sex));
                 }
+                pa.Submit();
             }
 
             await _context.SaveChangesAsync(cancellationToken);

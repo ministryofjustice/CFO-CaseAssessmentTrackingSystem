@@ -18,7 +18,7 @@ public class AuditTrail : IEntity<int>
         {
             TableName = tableName,
             UserId = userId,
-            DateTime = DateTime.UtcNow,
+            DateTime = DateTime.Now,
             AuditType = auditType,
             AffectedColumns = new List<string>(),
             NewValues = new Dictionary<string, object?>(),
