@@ -2,6 +2,16 @@
 @using Cfo.Cats.Application.Features.Participants.Queries
 @using Humanizer;
 
+<style>
+    .multiline-ellipsis {
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Number of lines to show */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+
 <MudGrid Class="pa-3" Spacing="4">
     @if (_notes is not null)
     {
@@ -22,7 +32,7 @@
                         </CardHeaderActions>
                     </MudCardHeader>
                     <MudCardContent>
-                        <MudText Typo="Typo.caption">
+                        <MudText Class="multiline-ellipsis" Typo="Typo.body2">
                             @note.Message
                         </MudText>
                     </MudCardContent>
