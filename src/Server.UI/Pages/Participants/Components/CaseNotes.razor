@@ -1,32 +1,43 @@
 ﻿@using Cfo.Cats.Application.Features.Participants.DTOs
-
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Humanizer;
 
 <MudGrid Class="pa-3" Spacing="4">
-    @if (notes is not null)
+    @if (_notes is not null)
     {
-        <MudItem xs="6" md="4">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderAvatar>
-                        <MudAvatar Color="Color.Secondary">SW</MudAvatar>
-                    </CardHeaderAvatar>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.body1">Support Worker</MudText>
-                        <MudText Typo="Typo.body2">support.worker@justice.gov.uk</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText Typo="Typo.caption">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam elementum, mauris non hendrerit finibus, libero quam vehicula magna, ut lobortis augue turpis vel mauris.
-                    </MudText>
-                </MudCardContent>
-                <MudCardActions Class="p">
-                    <MudIconButton Icon="@Icons.Material.Filled.Reply"></MudIconButton>
-                    <MudSpacer />
-                    <MudText Typo="Typo.body2">(Posted 43 minutes ago)</MudText>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
+        @foreach(var note in _notes.OrderByDescending(n => n.Created))
+        {
+            <MudItem xs="6" md="4">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderAvatar>
+                            <MudAvatar Color="Color.Secondary">DU</MudAvatar>
+                        </CardHeaderAvatar>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.body1">Default User</MudText>
+                            <MudText Typo="Typo.body2">default.user@example.com</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudIconButton Icon="@Icons.Material.Filled.OpenInNew"></MudIconButton>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText Typo="Typo.caption">
+                            @note.Message
+                        </MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudIconButton Icon="@Icons.Material.Filled.Reply"></MudIconButton>
+                        <MudSpacer />
+                        <MudTooltip Text="@note.Created.ToLocalTime().ToString("dd/MM/yyyy HH:mm")">
+                            <MudText Typo="Typo.body2">
+                                @note.Created.Humanize()
+                            </MudText>
+                        </MudTooltip>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
     }
     else
     {
@@ -35,7 +46,7 @@
 </MudGrid>
 
 @code {
-    ParticipantNoteDto[]? notes;
+    ParticipantNoteDto[]? _notes = null;
 
     [Parameter]
     [EditorRequired]
@@ -45,10 +56,10 @@
     {
         try
         {
-            await Task.Delay(500);
-
-            // Retrieve notes
-            notes = [];
+            _notes = await Mediator.Send(new GetParticipantNotes.Query()
+            {
+                ParticipantId = ParticipantId
+            });
         }
         catch(NotFoundException)
         {
