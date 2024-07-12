@@ -1,0 +1,64 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+
+
+<MudGrid Class="pa-3" Spacing="4">
+    @if (notes is not null)
+    {
+        <MudItem xs="6" md="4">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudAvatar Color="Color.Secondary">SW</MudAvatar>
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1">Support Worker</MudText>
+                        <MudText Typo="Typo.body2">support.worker@justice.gov.uk</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="Typo.caption">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam elementum, mauris non hendrerit finibus, libero quam vehicula magna, ut lobortis augue turpis vel mauris.
+                    </MudText>
+                </MudCardContent>
+                <MudCardActions Class="p">
+                    <MudIconButton Icon="@Icons.Material.Filled.Reply"></MudIconButton>
+                    <MudSpacer />
+                    <MudText Typo="Typo.body2">(Posted 43 minutes ago)</MudText>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    }
+    else
+    {
+        <MudText>@ConstantString.Loading</MudText>
+    }
+</MudGrid>
+
+@code {
+    ParticipantNoteDto[]? notes;
+
+    [Parameter]
+    [EditorRequired]
+    public string ParticipantId { get; set; } = default!;
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            await Task.Delay(500);
+
+            // Retrieve notes
+            notes = [];
+        }
+        catch(NotFoundException)
+        {
+            // handle not found
+        }
+        finally
+        {
+            await base.OnInitializedAsync();
+        }
+
+    }
+
+}
