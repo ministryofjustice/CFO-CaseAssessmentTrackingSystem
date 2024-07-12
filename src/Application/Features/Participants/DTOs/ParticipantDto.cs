@@ -31,6 +31,8 @@ public class ParticipantDto
     public ConsentDto[] Consents { get; set; } = [];
 
     public RightToWorkDto[] RightToWorks { get; set; } = [];
+
+    public ParticipantNoteDto[] Notes { get; set; } = [];
     
     private class Mapping : Profile
     {
@@ -42,7 +44,9 @@ public class ParticipantDto
                 .ForMember(target => target.Consents,
                     options => options.MapFrom(source => source.Consents.ToArray()))
                 .ForMember(target => target.RightToWorks,
-                    options => options.MapFrom(source => source.RightToWorks.ToArray()));
+                    options => options.MapFrom(source => source.RightToWorks.ToArray()))
+                .ForMember(target => target.Notes,
+                    options => options.MapFrom(source => source.Notes.ToArray()));
         }
     }
 }

@@ -22,6 +22,7 @@ internal static class DatabaseSchema
         public const string LocationMapping = nameof(LocationMapping);
         public const string Participant = nameof(Participant);
         public const string ParticipantAssessment = nameof(ParticipantAssessment);
+        public const string ParticipantNote = nameof(ParticipantNote);
         public const string Tenant = nameof(Tenant);
         public const string TenantDomain = nameof(TenantDomain);
         public const string KeyValue = nameof(KeyValue);

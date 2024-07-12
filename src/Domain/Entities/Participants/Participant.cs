@@ -9,6 +9,7 @@ using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Common.Exceptions;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Events;
+using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
 
@@ -18,8 +19,7 @@ public class Participant : OwnerPropertyEntity<string>
     private int? _enrolmentLocationId;
     private List<Consent> _consents = new();
     private List<RightToWork> _rightToWorks = new();
-
-    
+    private List<Note> _notes = new();
     
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private Participant()
@@ -74,7 +74,9 @@ public class Participant : OwnerPropertyEntity<string>
     public IReadOnlyCollection<Consent> Consents => _consents.AsReadOnly();
 
     public IReadOnlyCollection<RightToWork> RightToWorks => _rightToWorks.AsReadOnly();
-    
+
+    public IReadOnlyCollection<Note> Notes => _notes.AsReadOnly();
+
     /// <summary>
     /// Transitions this participant to the new enrolment status, if valid
     /// </summary>
@@ -139,4 +141,15 @@ public class Participant : OwnerPropertyEntity<string>
         }
         return this;
     }
+
+    public Participant AddNote(Note note)
+    {
+        if (_notes.Contains(note) is false)
+        {
+            _notes.Add(note);
+        }
+
+        return this;
+    }
+
 }
