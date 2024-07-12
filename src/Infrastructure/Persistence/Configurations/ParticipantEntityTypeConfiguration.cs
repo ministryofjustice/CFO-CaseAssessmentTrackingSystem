@@ -120,6 +120,14 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             
         });
 
+        builder.OwnsMany(p => p.Notes, note =>
+        {
+            note.WithOwner();
+            note.ToTable(DatabaseSchema.Tables.ParticipantNote);
+            note.HasKey("Id");
+            note.Property(x => x.Message).HasMaxLength(256);
+        });
+
         builder.Navigation(p => p.Consents)
             .AutoInclude();
 
