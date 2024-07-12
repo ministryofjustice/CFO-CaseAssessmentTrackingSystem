@@ -49,7 +49,7 @@ public class RequestLoggerTests
             Gender = "",
             Nationality = "",
             Ethnicity = "",
-            Origin = "",
+            Primary = "",
             CurrentLocation = "",
 
         };
