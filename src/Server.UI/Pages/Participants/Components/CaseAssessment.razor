@@ -95,20 +95,22 @@
     [EditorRequired]
     public string ParticipantId { get; set; } = default!;
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
-        try
+
+        if(_model == null)
         {
-            _model = await Mediator.Send(new GetAssessment.Query()
+            var result = await Mediator.Send(new GetAssessment.Query()
             {
                 ParticipantId = ParticipantId
             });
+
+            if(result.Succeeded)
+            {
+                _model = result.Data;
+            }
         }
-        catch (NotFoundException)
-        {
-            _notFound = true;
-        }
-        
+
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
