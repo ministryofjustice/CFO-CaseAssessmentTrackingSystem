@@ -14,16 +14,11 @@ public static class GetAssessment
     /// the latest on if that is not specified
     /// </summary>
     [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
-    public class Query : ICacheableRequest<Result<Assessment>>
+    public class Query : IRequest<Result<Assessment>>
     {
         public required string ParticipantId { get; set; }
         public Guid? AssessmentId { get; set; }
 
-        public string CacheKey
-            => AssessmentsCacheKey.GetAllCacheKey;
-
-        public MemoryCacheEntryOptions? Options
-            => AssessmentsCacheKey.MemoryCacheEntryOptions;
     }
 
     internal class Handler : IRequestHandler<Query, Result<Assessment>>
@@ -49,11 +44,7 @@ public static class GetAssessment
 
             if (pa is null)
             {
-                throw new NotFoundException(nameof(Assessment), new
-                {
-                    request.AssessmentId,
-                    request.ParticipantId
-                });
+                return Result<Assessment>.Failure(["Participant not found"]);
             }
 
             Assessment assessment = JsonConvert.DeserializeObject<Assessment>(pa.AssessmentJson,
