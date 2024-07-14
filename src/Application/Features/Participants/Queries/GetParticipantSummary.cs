@@ -18,12 +18,12 @@ public static class GetParticipantSummary
         
     }
 
-    public class Handler(IApplicationDbContext context, IMapper mapper) : IRequestHandler<Query, Result<ParticipantSummaryDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<ParticipantSummaryDto>>
     {
         
         public async Task<Result<ParticipantSummaryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var query = from c in context.Participants
+            var query = from c in unitOfWork.DbContext.Participants
                 where c.Id == request.ParticipantId
                 select c;
 
@@ -35,7 +35,7 @@ public static class GetParticipantSummary
                 throw new NotFoundException(nameof(ParticipantSummaryDto), request.ParticipantId);
             }
 
-            summary.Assessments = await context.ParticipantAssessments
+            summary.Assessments = await unitOfWork.DbContext.ParticipantAssessments
                 .Where(pa => pa.ParticipantId == request.ParticipantId)
                 .ProjectTo<AssessmentSummaryDto>(mapper.ConfigurationProvider)
                 .ToArrayAsync(cancellationToken);

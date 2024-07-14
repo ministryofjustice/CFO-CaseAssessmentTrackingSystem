@@ -4,22 +4,22 @@ namespace Cfo.Cats.Application.Features.KeyValues.Queries.ByName;
 
 public class KeyValuesQueryByNameHandler : IRequestHandler<KeyValuesQueryByName, IEnumerable<KeyValueDto>>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
     public KeyValuesQueryByNameHandler(
-        IApplicationDbContext context,
+        IUnitOfWork unitOfWork,
         IMapper mapper
     )
     {
-        _context = context;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
     public async Task<IEnumerable<KeyValueDto>> Handle(KeyValuesQueryByName request,
         CancellationToken cancellationToken)
     {
-        var data = await _context.KeyValues.Where(x => x.Name == request.Name)
+        var data = await _unitOfWork.DbContext.KeyValues.Where(x => x.Name == request.Name)
             .OrderBy(x => x.Text)
             .ProjectTo<KeyValueDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);

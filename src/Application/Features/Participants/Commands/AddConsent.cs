@@ -48,11 +48,11 @@ public static class AddConsent
 
     public class Validator : AbstractValidator<Command>
     {
-        private readonly IApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public Validator(IApplicationDbContext context)
+        public Validator(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
             
             RuleFor(c => c.ParticipantId)
                 .NotNull()
@@ -68,7 +68,7 @@ public static class AddConsent
         }
         
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken) 
-            => await _context.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
         
     }
 }

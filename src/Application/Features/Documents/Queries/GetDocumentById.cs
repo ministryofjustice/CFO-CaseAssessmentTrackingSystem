@@ -14,11 +14,11 @@ public static class GetDocumentById
         public Guid Id { get; set; }
     }
 
-    public class Handler(IApplicationDbContext context, IUploadService uploadService) : IRequestHandler<Query, DownloadDocumentDto>
+    public class Handler(IUnitOfWork unitOfWork, IUploadService uploadService) : IRequestHandler<Query, DownloadDocumentDto>
     {
         public async Task<DownloadDocumentDto> Handle(Query request, CancellationToken cancellationToken)
         {
-            var document = await context.Documents.FindAsync(request.Id);
+            var document = await unitOfWork.DbContext.Documents.FindAsync(request.Id);
             var stream = await uploadService.DownloadAsync(document!.URL!);
             DownloadDocumentDto dto = new DownloadDocumentDto()
             {

@@ -2,28 +2,16 @@
 
 namespace Cfo.Cats.Application.Features.Tenants.Queries.Export;
 
-public class ExportTenantsQueryHandler 
+public class ExportTenantsQueryHandler(IUnitOfWork unitOfWork, IExcelService excelService, IStringLocalizer<ExportTenantsQueryHandler> localizer, IMapper mapper)
     : IRequestHandler<ExportTenantsQuery, Result<byte[]>>
 {
-    private readonly IApplicationDbContext context;
     // The is only used to get the member name descriptions.
     private readonly TenantDto dto = new() { Id = "" };
-    private readonly IExcelService excelService;
-    private readonly IStringLocalizer<ExportTenantsQueryHandler> localizer;
-    private readonly IMapper mapper;
-
-    public ExportTenantsQueryHandler(IApplicationDbContext context, IExcelService excelService, IStringLocalizer<ExportTenantsQueryHandler> localizer, IMapper mapper)
-    {
-        this.context = context;
-        this.excelService = excelService;
-        this.localizer = localizer;
-        this.mapper = mapper;
-    }
 
 
     public async Task<Result<byte[]>> Handle(ExportTenantsQuery request, CancellationToken cancellationToken)
     {
-        var data = await context.Tenants.ApplySpecification(request.Specification)
+        var data = await unitOfWork.DbContext.Tenants.ApplySpecification(request.Specification)
             .OrderBy($"{request.OrderBy} {request.SortDirection}")
             .ProjectTo<TenantDto>(mapper.ConfigurationProvider)
             .AsNoTracking()
