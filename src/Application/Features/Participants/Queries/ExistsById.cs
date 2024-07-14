@@ -14,18 +14,12 @@ public static class CheckParticipantExistsById
         public MemoryCacheEntryOptions? Options => ParticipantCacheKey.MemoryCacheEntryOptions;
     }
 
-    public class Handler : IRequestHandler<Query, bool>
+    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, bool>
     {
-        private readonly IApplicationDbContext _context;
-
-        public Handler(IApplicationDbContext context)
-        {
-            _context = context;
-        }
-
+        
         public async Task<bool> Handle(Query request, CancellationToken cancellationToken)
         {
-            return await _context.Participants
+            return await unitOfWork.DbContext.Participants
                 .AnyAsync(p => p.Id == request.Id, cancellationToken);
         }
     }

@@ -1,34 +1,26 @@
 namespace Cfo.Cats.Application.Features.KeyValues.Commands.AddEdit;
 
-public class AddEditKeyValueCommandHandler : IRequestHandler<AddEditKeyValueCommand, Result<int>>
+public class AddEditKeyValueCommandHandler(
+    IUnitOfWork unitOfWork,
+    IMapper mapper
+) : IRequestHandler<AddEditKeyValueCommand, Result<int>>
 {
-    private readonly IApplicationDbContext _context;
-    private readonly IMapper _mapper;
-
-    public AddEditKeyValueCommandHandler(
-        IApplicationDbContext context,
-        IMapper mapper
-    )
-    {
-        _context = context;
-        _mapper = mapper;
-    }
 
     public async Task<Result<int>> Handle(AddEditKeyValueCommand request, CancellationToken cancellationToken)
     {
         if (request.Id > 0)
         {
-            var keyValue = await _context.KeyValues.FindAsync(new object[] { request.Id }, cancellationToken);
+            var keyValue = await unitOfWork.DbContext.KeyValues.FindAsync(new object[] { request.Id }, cancellationToken);
             _ = keyValue ?? throw new NotFoundException($"KeyValue Pair  {request.Id} Not Found.");
-            keyValue = _mapper.Map(request, keyValue);
+            keyValue = mapper.Map(request, keyValue);
             keyValue.AddDomainEvent(new KeyValueUpdatedDomainEvent(keyValue));
             return await Result<int>.SuccessAsync(keyValue.Id);
         }
         else
         {
-            var keyValue = _mapper.Map<KeyValue>(request);
+            var keyValue = mapper.Map<KeyValue>(request);
             keyValue.AddDomainEvent(new KeyValueUpdatedDomainEvent(keyValue));
-            _context.KeyValues.Add(keyValue);
+            unitOfWork.DbContext.KeyValues.Add(keyValue);
             return await Result<int>.SuccessAsync(keyValue.Id);
         }
     }

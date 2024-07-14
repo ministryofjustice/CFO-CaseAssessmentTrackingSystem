@@ -52,11 +52,11 @@ public static class CreateParticipant
 
     public class Validator : AbstractValidator<Command>
     {
-        private readonly IApplicationDbContext _dbContext;
+        private readonly IUnitOfWork _unitOfWork;
         
-        public Validator(IApplicationDbContext dbContext)
+        public Validator(IUnitOfWork unitOfWork)
         {
-            _dbContext = dbContext;
+            _unitOfWork = unitOfWork;
 
             RuleFor(x => x.Identifier).NotNull()
                 .NotEmpty()
@@ -80,7 +80,7 @@ public static class CreateParticipant
  
         }
         private async Task<bool> NotAlreadyExist(string identifier, CancellationToken cancellationToken) 
-            => await _dbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken) == false;
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken) == false;
 
     }
 }
