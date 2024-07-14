@@ -1,7 +1,7 @@
 ﻿@using Cfo.Cats.Application.Features.Tenants.Commands
 @using Cfo.Cats.Application.Features.Tenants.Commands.Rename
 @using Cfo.Cats.Application.Features.Tenants.DTOs
-@inherits MudComponentBase
+@inherits CatsComponentBase
 
 @inject IValidationService Validator
 @inject IStringLocalizer<Tenants> L
@@ -57,7 +57,7 @@
                 return;
             }
 
-            var result = await Mediator.Send(Model);
+            var result = await GetNewMediator().Send(Model);
 
             if (result.Succeeded)
             {

@@ -9,6 +9,8 @@
 @using Cfo.Cats.Application.SecurityConstants
 @inject IStringLocalizer<Participants> L
 
+@inherits CatsComponentBase
+
 @attribute [Authorize(Policy = PolicyNames.AuthorizedUser)]
 
 <PageTitle>@Title</PageTitle>
@@ -195,7 +197,7 @@
         {
             ParticipantId = participant.Id
         };
-        var result = await Mediator.Send(command);
+        var result = await GetNewMediator().Send(command);
         if (result.Succeeded)
         {
             Snackbar.Add($"Participant {participant.Id} submitted to Provider QA", Severity.Success);
@@ -233,7 +235,7 @@
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
-            var result = await Mediator.Send(Query).ConfigureAwait(false);
+            var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
             return new GridData<ParticipantDto> { TotalItems = result.TotalItems, Items = result.Items };
         }
         finally

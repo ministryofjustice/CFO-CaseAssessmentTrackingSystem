@@ -39,7 +39,7 @@ public class AddEditTenantCommandHandler : IRequestHandler<AddEditTenantCommand,
             item = mapper.Map(request, item);
         }
 
-        await context.SaveChangesAsync(cancellationToken);
+        
         tenantsService.Refresh();
         return await Result<string>.SuccessAsync(item.Id);
     }

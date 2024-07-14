@@ -22,7 +22,6 @@ public class AddEditKeyValueCommandHandler : IRequestHandler<AddEditKeyValueComm
             _ = keyValue ?? throw new NotFoundException($"KeyValue Pair  {request.Id} Not Found.");
             keyValue = _mapper.Map(request, keyValue);
             keyValue.AddDomainEvent(new KeyValueUpdatedDomainEvent(keyValue));
-            await _context.SaveChangesAsync(cancellationToken);
             return await Result<int>.SuccessAsync(keyValue.Id);
         }
         else
@@ -30,7 +29,6 @@ public class AddEditKeyValueCommandHandler : IRequestHandler<AddEditKeyValueComm
             var keyValue = _mapper.Map<KeyValue>(request);
             keyValue.AddDomainEvent(new KeyValueUpdatedDomainEvent(keyValue));
             _context.KeyValues.Add(keyValue);
-            await _context.SaveChangesAsync(cancellationToken);
             return await Result<int>.SuccessAsync(keyValue.Id);
         }
     }

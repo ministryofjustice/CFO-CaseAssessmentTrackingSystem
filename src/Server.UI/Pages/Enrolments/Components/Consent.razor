@@ -3,6 +3,8 @@
 @using Cfo.Cats.Domain.Common.Enums
 @using Humanizer;
 
+@inherits CatsComponentBase
+
 @if (Model is not null)
 {
     if (ConsentDto is not null && ConsentDto.Length > 0)
@@ -123,7 +125,7 @@
 
         if (Form.IsValid)
         {
-           var result = await Mediator.Send(Model!);
+           var result = await GetNewMediator().Send(Model!);
            if (result.Succeeded)
            {
                Snackbar.Add("Consent form uploaded", Severity.Success);

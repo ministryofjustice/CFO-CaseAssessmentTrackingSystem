@@ -44,12 +44,12 @@ public static class SetEnrolmentLocation
             => ParticipantCacheKey.SharedExpiryTokenSource();
     }
 
-    public class Handler(IApplicationDbContext context) 
+    public class Handler(IUnitOfWork unitOfWork) 
         : IRequestHandler<Command, Result<string>>
     {
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
-            Participant? participant = await context.Participants.FirstOrDefaultAsync(p => p.Id == request.Identifier, cancellationToken);
+            var participant = await unitOfWork.DbContext.Participants.FirstOrDefaultAsync(p => p.Id == request.Identifier, cancellationToken);
             if (participant == null)
             {
                 throw new NotFoundException("Cannot find participant", request.Identifier);
@@ -61,7 +61,6 @@ public static class SetEnrolmentLocation
             }
 
             participant.SetEnrolmentLocation(request.EnrolmentLocation.Id, request.JustificationReason);
-            await context.SaveChangesAsync(cancellationToken);
             return participant.Id;
         }
     }

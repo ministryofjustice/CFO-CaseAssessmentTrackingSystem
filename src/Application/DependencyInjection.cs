@@ -19,11 +19,22 @@ public static class DependencyInjection
             config.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
             config.AddOpenBehavior(typeof(UnhandledExceptionBehaviour<,>));
             config.AddOpenBehavior(typeof(RequestExceptionProcessorBehavior<,>));
-            config.AddOpenBehavior(typeof(MemoryCacheBehaviour<,>));
+            // config.AddOpenBehavior(typeof(MemoryCacheBehaviour<,>)); // issues with caching means we need to turn it off for now
             config.AddOpenBehavior(typeof(AuthorizationBehaviour<,>));
-            config.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>));
+            // config.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>)); // issues with caching means we need to turn it off for now
+            config.AddOpenBehavior(typeof(TransactionBehaviour<,>));
         });
 
+        // Register a factory for creating new instances of Mediator with a new scope
+        services.AddTransient<Func<IMediator>>(sp =>
+        {
+            return () =>
+            {
+                var scope = sp.CreateScope();
+                return scope.ServiceProvider.GetRequiredService<IMediator>();
+            };
+        });
+        
         services.AddLazyCache();
 
         return services;
