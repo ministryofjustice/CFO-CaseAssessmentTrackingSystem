@@ -23,15 +23,15 @@ public static class GetAssessment
 
     internal class Handler : IRequestHandler<Query, Result<Assessment>>
     {
-        private readonly IApplicationDbContext _context;
-        public Handler(IApplicationDbContext context)
+        private readonly IUnitOfWork _unitOfWork;
+        public Handler(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            this._unitOfWork = unitOfWork;
         }
 
         public async Task<Result<Assessment>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var query = _context.ParticipantAssessments
+            var query = _unitOfWork.DbContext.ParticipantAssessments
                 .Where(p => p.ParticipantId == request.ParticipantId);
 
             if (request.AssessmentId is not null)

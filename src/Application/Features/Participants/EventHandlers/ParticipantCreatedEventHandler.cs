@@ -3,11 +3,11 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Participants.EventHandlers;
 
-public class ParticipantCreatedEventHandler(IApplicationDbContext context) : INotificationHandler<ParticipantCreatedDomainEvent>
+public class ParticipantCreatedEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantCreatedDomainEvent>
 {
     public async Task Handle(ParticipantCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        context.ParticipantEnrolmentHistories.Add(ParticipantEnrolmentHistory.Create(notification.Item.Id, EnrolmentStatus.PendingStatus));
-        await context.SaveChangesAsync(cancellationToken);
+        var history = ParticipantEnrolmentHistory.Create(notification.Item.Id, EnrolmentStatus.PendingStatus);
+        await unitOfWork.DbContext.ParticipantEnrolmentHistories.AddAsync(history, cancellationToken);
     }
 }

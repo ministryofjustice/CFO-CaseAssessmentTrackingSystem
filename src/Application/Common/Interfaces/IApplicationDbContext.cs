@@ -6,11 +6,14 @@ using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Domain.ValueObjects;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Cfo.Cats.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {
+    public DatabaseFacade Database { get; }
+    
     DbSet<AuditTrail> AuditTrails { get; }
     DbSet<Tenant> Tenants { get; }
 
@@ -35,5 +38,5 @@ public interface IApplicationDbContext
     ChangeTracker ChangeTracker { get; }
 
     DbSet<DataProtectionKey> DataProtectionKeys { get; }
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+
 }

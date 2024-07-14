@@ -21,13 +21,13 @@ public static class AddRightToWork
         public UploadRequest? UploadRequest { get; set; }
     }
 
-    public class Handler(IApplicationDbContext context, IUploadService uploadService)
+    public class Handler(IUnitOfWork unitOfWork, IUploadService uploadService)
         : IRequestHandler<Command, Result<string>>
     {
 
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var participant = await context.Participants.FindAsync(request.ParticipantId);
+            var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
             
             if(participant == null)
             {
@@ -44,10 +44,7 @@ public static class AddRightToWork
 
             participant.AddRightToWork(request.ValidFrom!.Value, request.ValidTo!.Value, document.Id);
 
-            context.Documents.Add(document);
-
-            await context.SaveChangesAsync(cancellationToken);
-
+            unitOfWork.DbContext.Documents.Add(document);
             return result;
         }
     }

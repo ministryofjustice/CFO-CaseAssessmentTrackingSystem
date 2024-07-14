@@ -1,7 +1,6 @@
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Features.Assessments.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
-using Cfo.Cats.Domain.Common.Enums;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
@@ -25,7 +24,7 @@ public partial class CaseSummary
         {
             ParticipantId = ParticipantSummaryDto.Id
         };
-        var result = await Mediator.Send(command);
+        var result = await GetNewMediator().Send(command);
 
         if (result.Succeeded)
         {

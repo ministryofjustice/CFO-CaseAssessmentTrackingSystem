@@ -19,12 +19,12 @@ public static class AddConsent
         public UploadRequest? UploadRequest { get; set; }
     }
 
-    public class Handler(IApplicationDbContext context, IUploadService uploadService) : IRequestHandler<Command, Result<string>>
+    public class Handler(IUnitOfWork unitOfWork, IUploadService uploadService) : IRequestHandler<Command, Result<string>>
     {
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
             // get the participant
-            var participant = await context.Participants.FindAsync(request.ParticipantId!, cancellationToken);
+            var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId!, cancellationToken);
 
             if (participant == null)
             {
@@ -41,10 +41,7 @@ public static class AddConsent
 
             participant.AddConsent(request.ConsentDate!.Value, document.Id);
             
-            context.Documents.Add(document);
-            
-            await context.SaveChangesAsync(cancellationToken);
-            
+            unitOfWork.DbContext.Documents.Add(document);
             return result;
         }
     }

@@ -2,6 +2,8 @@
 @using Cfo.Cats.Application.Features.Assessments.Queries
 @using Cfo.Cats.Domain.Common.Enums
 
+@inherits CatsComponentBase
+
 <style>
     .readonly-toggle {
         pointer-events: none; 
@@ -100,7 +102,7 @@
 
         if(_model == null)
         {
-            var result = await Mediator.Send(new GetAssessment.Query()
+            var result = await GetNewMediator().Send(new GetAssessment.Query()
             {
                 ParticipantId = ParticipantId
             });

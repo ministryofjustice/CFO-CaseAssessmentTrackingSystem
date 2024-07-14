@@ -4,7 +4,7 @@ using Humanizer;
 
 namespace Cfo.Cats.Application.Features.Timelines.EventHandlers;
 
-public class ParticipantTransitionedEventHandler(ICurrentUserService currentUserService, IApplicationDbContext context) : TimelineNotificationHandler<ParticipantTransitionedDomainEvent>(currentUserService, context)
+public class ParticipantTransitionedEventHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork) : TimelineNotificationHandler<ParticipantTransitionedDomainEvent>(currentUserService, unitOfWork)
 {
     protected override string GetLine1(ParticipantTransitionedDomainEvent notification) => $"Enrolment transitioned to {notification.To.Name.Humanize()}";
     protected override TimelineEventType GetEventType() => TimelineEventType.Enrolment;
