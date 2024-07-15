@@ -17,7 +17,7 @@ public class ParticipantNoteDto
     {
         public Mapping()
         {
-            CreateMap<Note, ParticipantNoteDto>()
+            CreateMap<Note, ParticipantNoteDto>(MemberList.None)
                 .ForMember(x => x.CreatedBy, opts => opts.MapFrom(c => c.CreatedByUser!.DisplayName))
                 .ForMember(x => x.CreatedByEmail, opts => opts.MapFrom(c => c.CreatedByUser!.Email));
         }
