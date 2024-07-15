@@ -13,6 +13,13 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations
             builder.Property(t => t.Text).HasMaxLength(100).IsRequired();
             builder.Property(t => t.Description).IsRequired(false);
             builder.Ignore(e => e.DomainEvents);
+            
+            builder.Property(c => c.CreatedBy)
+                .HasMaxLength(36);
+
+            builder.Property(c => c.LastModifiedBy)
+                .HasMaxLength(36);
+            
         }
     }
 }

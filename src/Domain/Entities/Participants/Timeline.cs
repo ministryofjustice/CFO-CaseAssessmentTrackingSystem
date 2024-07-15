@@ -4,9 +4,10 @@ using Cfo.Cats.Domain.Identity;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
 
-public class Timeline : BaseAuditableEntity<int>
+public class Timeline : BaseEntity<int>
 {
-   
+    private string _createdBy;
+    
  #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private Timeline()
     {
@@ -17,10 +18,11 @@ public class Timeline : BaseAuditableEntity<int>
     {
         ParticipantId = participantId;
         EventType = eventType;
-        CreatedBy = createdBy;
+        _createdBy = createdBy;
         Line1 = line1;
         Line2 = line2;
         Line3 = line3;
+        Created = DateTime.Now;
     }
     
     public string ParticipantId { get; private set; }
@@ -29,6 +31,8 @@ public class Timeline : BaseAuditableEntity<int>
     public string Line1 { get; private set; }
     public string? Line2 { get; private set; }
     public string? Line3 { get; private set; }
+    
+    public DateTime Created { get; private set; }
 
     public static Timeline CreateTimeline(string participantId, TimelineEventType eventType, string createdBy, string line1, string? line2, string? line3)
     {

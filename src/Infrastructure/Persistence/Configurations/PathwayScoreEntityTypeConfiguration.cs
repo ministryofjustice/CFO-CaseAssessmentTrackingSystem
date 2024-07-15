@@ -34,7 +34,19 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations
                 score.Property(x => x.Pathway).HasMaxLength(50).IsRequired();
                 score.Property(x => x.Score).HasColumnType("float").IsRequired();
             });
-            
+
+            builder.Property(pa => pa.CreatedBy)
+                .HasMaxLength(36);
+
+            builder.Property(pa => pa.LastModifiedBy)
+                .HasMaxLength(36);
+
+            builder.HasOne(pa => pa.Owner)
+                .WithMany()
+                .HasForeignKey(pa => pa.OwnerId);
+
+            builder.Property(pa => pa.OwnerId)
+                .HasMaxLength(36);
 
         }
     }

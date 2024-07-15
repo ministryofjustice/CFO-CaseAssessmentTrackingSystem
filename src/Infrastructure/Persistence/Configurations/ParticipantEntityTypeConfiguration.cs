@@ -129,6 +129,18 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
         builder.Navigation(p => p.CurrentLocation)
             .AutoInclude();
 
+        builder.HasOne(p => p.Owner)
+            .WithMany()
+            .HasForeignKey(p => p.OwnerId);
+        
+        builder.Property(c => c.CreatedBy)
+            .HasMaxLength(36);
+
+        builder.Property(c => c.LastModifiedBy)
+            .HasMaxLength(36);
+
+        builder.Property(p => p.OwnerId)
+            .HasMaxLength(36);
 
     }
 }

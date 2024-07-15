@@ -16,11 +16,14 @@ public class DocumentEntityTypeConfiguration : IEntityTypeConfiguration<Document
             .WithMany()
             .HasForeignKey(x => x.CreatedBy)
             .OnDelete(DeleteBehavior.Restrict);
-        builder.HasOne(x => x.Editor)
-            .WithMany()
-            .HasForeignKey(x => x.LastModifiedBy)
-            .OnDelete(DeleteBehavior.Restrict);
+      
         builder.Navigation(e => e.Owner).AutoInclude();
-        builder.Navigation(e => e.Editor).AutoInclude();
+        
+        builder.Property(c => c.CreatedBy)
+            .HasMaxLength(36);
+
+        builder.Property(c => c.LastModifiedBy)
+            .HasMaxLength(36);
+        
     }
 }

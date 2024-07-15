@@ -9,5 +9,7 @@ public class ApplicationRoleConfiguration : IEntityTypeConfiguration<Application
     public void Configure(EntityTypeBuilder<ApplicationRole> builder)
     {
         builder.ToTable(DatabaseSchema.Tables.ApplicationRole);
+        builder.Property(ar => ar.Id)
+            .HasMaxLength(36);
     }
 }

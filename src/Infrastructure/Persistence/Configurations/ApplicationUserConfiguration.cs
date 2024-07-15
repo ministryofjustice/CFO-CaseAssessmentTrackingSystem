@@ -10,6 +10,9 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
     {
         builder.ToTable(DatabaseSchema.Tables.ApplicationUser);
 
+        builder.Property(e => e.Id)
+            .HasMaxLength(36);
+
         // Each User can have many UserLogins
         builder.HasMany(e => e.Logins).WithOne().HasForeignKey(ul => ul.UserId).IsRequired();
 

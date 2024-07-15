@@ -42,5 +42,11 @@ public class ContractEntityTypeConfiguration : IEntityTypeConfiguration<Contract
             lifetime.Property(l => l.EndDate).HasColumnName("LifetimeEnd");
         });
 
+        builder.Property(c => c.CreatedBy)
+            .HasMaxLength(36);
+
+        builder.Property(c => c.LastModifiedBy)
+            .HasMaxLength(36);
+
     }
 }

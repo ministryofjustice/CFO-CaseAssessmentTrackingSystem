@@ -53,6 +53,12 @@ public class LocationEntityTypeConfiguration : IEntityTypeConfiguration<Location
         builder.Property<string>("_contractId")
             .HasColumnName("ContractId")
             .HasMaxLength(12);// Adjust the length as needed
+        
+        builder.Property(c => c.CreatedBy)
+            .HasMaxLength(36);
+
+        builder.Property(c => c.LastModifiedBy)
+            .HasMaxLength(36);
 
     }
 }

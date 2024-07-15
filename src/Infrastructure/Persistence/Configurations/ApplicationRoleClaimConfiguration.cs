@@ -15,5 +15,8 @@ public class ApplicationRoleClaimConfiguration : IEntityTypeConfiguration<Applic
             .WithMany(p => p.RoleClaims)
             .HasForeignKey(d => d.RoleId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(ar => ar.RoleId)
+            .HasMaxLength(36);
     }
 }

@@ -24,5 +24,8 @@ public class AuditTrailConfiguration : IEntityTypeConfiguration<Domain.Entities.
         builder.Property(u => u.PrimaryKey).HasJsonConversion();
         builder.Ignore(x => x.TemporaryProperties);
         builder.Ignore(x => x.HasTemporaryProperties);
+
+        builder.Property(x => x.UserId)
+            .HasMaxLength(36);
     }
 }

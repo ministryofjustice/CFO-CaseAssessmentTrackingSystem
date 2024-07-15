@@ -15,5 +15,8 @@ public class ApplicationUserTokenConfiguration : IEntityTypeConfiguration<Applic
             .WithMany(p => p.Tokens)
             .HasForeignKey(d => d.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(ut => ut.UserId)
+            .HasMaxLength(36);
     }
 }

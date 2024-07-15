@@ -15,5 +15,8 @@ public class ApplicationUserClaimConfiguration : IEntityTypeConfiguration<Applic
             .WithMany(p => p.UserClaims)
             .HasForeignKey(d => d.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(ap => ap.UserId)
+            .HasMaxLength(36);
     }
 }

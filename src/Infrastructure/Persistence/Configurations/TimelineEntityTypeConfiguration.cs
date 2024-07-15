@@ -37,9 +37,13 @@ public class TimelineEntityTypeConfiguration : IEntityTypeConfiguration<Timeline
 
         builder.HasOne(t => t.CreatedByUser)
             .WithMany()
-            .HasForeignKey(t => t.CreatedBy)
+            .HasForeignKey("_createdBy")
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
+        builder.Property<string>("_createdBy")
+            .HasMaxLength(100)
+            .HasColumnName("CreatedBy");
+
     }
 }

@@ -15,5 +15,8 @@ public class ApplicationUserLoginConfiguration : IEntityTypeConfiguration<Applic
             .WithMany(p => p.Logins)
             .HasForeignKey(d => d.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(d => d.UserId)
+            .HasMaxLength(36);
     }
 }

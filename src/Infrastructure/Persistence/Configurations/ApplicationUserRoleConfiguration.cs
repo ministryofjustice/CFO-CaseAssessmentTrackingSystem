@@ -15,10 +15,18 @@ public class ApplicationUserRoleConfiguration : IEntityTypeConfiguration<Applica
             .WithMany(p => p.UserRoles)
             .HasForeignKey(d => d.RoleId)
             .OnDelete(DeleteBehavior.Cascade);
+        
         builder
             .HasOne(d => d.User)
             .WithMany(p => p.UserRoles)
             .HasForeignKey(d => d.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(ur => ur.UserId)
+            .HasMaxLength(36);
+
+        builder.Property(ur => ur.RoleId)
+            .HasMaxLength(36);
+
     }
 }

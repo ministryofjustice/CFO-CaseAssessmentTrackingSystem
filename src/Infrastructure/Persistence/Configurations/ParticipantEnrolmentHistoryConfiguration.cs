@@ -25,5 +25,11 @@ public class ParticipantEnrolmentHistoryConfiguration
                 es => es!.Value,
                 es => EnrolmentStatus.FromValue(es)
             );
+        
+        builder.Property(c => c.CreatedBy)
+            .HasMaxLength(36);
+
+        builder.Property(c => c.LastModifiedBy)
+            .HasMaxLength(36);
     }
 }
