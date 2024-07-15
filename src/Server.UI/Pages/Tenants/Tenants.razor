@@ -1,5 +1,6 @@
 ﻿@page "/administration/tenants"
 @using BlazorDownloadFile
+@using Cfo.Cats.Application.Common.Interfaces.MultiTenant
 @using Cfo.Cats.Application.Features.Tenants.Commands
 @using Cfo.Cats.Application.Features.Tenants.DTOs
 @using Cfo.Cats.Application.Features.Tenants.Queries.Pagination
@@ -14,6 +15,7 @@
 @attribute [Authorize(Policy = PolicyNames.SystemFunctionsRead)]
 
 @inject IStringLocalizer<Tenants> L
+@inject ITenantService TenantService
 
 @inherits CatsComponentBase
 
@@ -240,7 +242,7 @@
 
     private async Task OnRefresh()
     {
-        TenantCacheKey.Refresh();
+        TenantService.Refresh();
         searchString = string.Empty;
         await table.ReloadServerData();
     }
@@ -277,8 +279,8 @@
         var state = await dialog.Result;
 
         if (!state!.Canceled)
-        {
-            TenantCacheKey.Refresh();
+        {;
+            TenantService.Refresh();
             await table.ReloadServerData();
         }
     }
@@ -301,7 +303,7 @@
 
         if (!state!.Canceled)
         {
-            TenantCacheKey.Refresh();
+            TenantService.Refresh();
             await table.ReloadServerData();
         }
     }
