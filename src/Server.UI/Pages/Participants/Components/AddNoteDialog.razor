@@ -1,0 +1,79 @@
+﻿@using Cfo.Cats.Application.Features.Participants.Commands
+@inherits CatsComponentBase
+
+@inject IValidationService Validator
+
+<MudDialog>
+    <DialogContent>
+        @if (Model is not null)
+        {
+            <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField Label="@Model.GetMemberDescription(x => x.Message)" @bind-Value="Model.Message"
+                                      For="@(() => Model.Message)"
+                                      ReadOnly="false"
+                                      Required="true"
+                                      RequiredError="Message is required!">
+                        </MudTextField>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code
+{
+    private MudForm? form;
+
+    [CascadingParameter] 
+    private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [EditorRequired]
+    [Parameter]
+    public AddNote.Command? Model { get; set; }
+
+    private bool saving;
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            saving = true;
+
+            await form!.Validate().ConfigureAwait(false);
+
+            if (!form!.IsValid)
+            {
+                return;
+            }
+
+            var result = await GetNewMediator().Send(Model!);
+
+            if (result.Succeeded)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+}
