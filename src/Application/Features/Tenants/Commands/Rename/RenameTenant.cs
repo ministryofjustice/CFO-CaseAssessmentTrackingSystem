@@ -26,17 +26,16 @@ public static class RenameTenant
         
     }
 
-    internal class Handler(IApplicationDbContext context) : IRequestHandler<Command, Result<string>>
+    internal class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<string>>
     {
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var tenant = await context.Tenants.FindAsync(request.Id);
+            var tenant = await unitOfWork.DbContext.Tenants.FindAsync(request.Id);
             if (tenant == null)
             {
                 throw new NotFoundException("Tenant", request.Id);
             }
             tenant.Rename(request.Name);
-            await context.SaveChangesAsync(cancellationToken);
             return tenant.Id;
         }
     }

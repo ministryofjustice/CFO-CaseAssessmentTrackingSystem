@@ -3,6 +3,7 @@
 @using Cfo.Cats.Domain.Common.Enums
 @using Humanizer
 
+@inherits CatsComponentBase
 
 @if (Model is not null)
 {
@@ -103,7 +104,7 @@
 
         if (Form.IsValid)
         {
-            var result = await Mediator.Send(Model!);
+            var result = await GetNewMediator().Send(Model!);
             if (result.Succeeded)
             {
                 Snackbar.Add("Right to work evidence uploaded", Severity.Success);

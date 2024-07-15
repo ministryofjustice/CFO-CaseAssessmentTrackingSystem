@@ -1,5 +1,5 @@
 @using Cfo.Cats.Application.Features.KeyValues.Commands.AddEdit
-@inherits MudComponentBase
+@inherits CatsComponentBase
 @inject IStringLocalizer<Dictionaries> L
 
 <MudDialog>
@@ -62,7 +62,7 @@
             {
                 return;
             }
-            var result = await Mediator.Send(Model);
+            var result = await GetNewMediator().Send(Model);
 
             if (result.Succeeded)
             {

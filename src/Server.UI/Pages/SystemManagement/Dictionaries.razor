@@ -14,6 +14,8 @@
 @inject IStringLocalizer<Dictionaries> L
 @inject IBlazorDownloadFileService BlazorDownloadFileService
 
+@inherits CatsComponentBase
+
 <PageTitle>@Title</PageTitle>
 <MudDataGrid @ref="_table" FixedHeader="true"
              FixedFooter="false"
@@ -238,7 +240,7 @@
                 PageNumber = state.Page + 1,
                 PageSize = state.PageSize
             };
-            var result = await Mediator.Send(request).ConfigureAwait(false);
+            var result = await GetNewMediator().Send(request).ConfigureAwait(false);
             return new GridData<KeyValueDto>
             {
                 TotalItems = result.TotalItems,
@@ -274,7 +276,7 @@
     {
         InvokeAsync(async () => {
             var command = Mapper.Map<AddEditKeyValueCommand>(item);
-            var result = await Mediator.Send(command);
+            var result = await GetNewMediator().Send(command);
             if (!result.Succeeded)
             {
                 Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
@@ -334,7 +336,7 @@
         if (!state!.Canceled)
         {
             var command = new DeleteKeyValueCommand(_selectedItems.Select(x => x.Id).ToArray());
-            var result = await Mediator.Send(command);
+            var result = await GetNewMediator().Send(command);
             await _table.ReloadServerData();
             Snackbar.Add($"{ConstantString.DeleteSuccess}", Severity.Info);
         }
@@ -375,7 +377,7 @@
         {
             Keyword = _searchString
         };
-        var result = await Mediator.Send(request);
+        var result = await GetNewMediator().Send(request);
         var downloadResult = await BlazorDownloadFileService.DownloadFile($"{L["Picklist"]}.xlsx", result, "application/octet-stream");
         Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
         _downloading = false;
@@ -387,7 +389,7 @@
         var stream = new MemoryStream();
         await e.File.OpenReadStream(GlobalVariable.MaxAllowedSize).CopyToAsync(stream);
         var command = new ImportKeyValuesCommand(e.File.Name, stream.ToArray());
-        var result = await Mediator.Send(command);
+        var result = await GetNewMediator().Send(command);
         if (result.Succeeded)
         {
             await OnRefresh();

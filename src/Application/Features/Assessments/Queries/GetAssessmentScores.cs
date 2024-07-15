@@ -14,18 +14,19 @@ public static class GetAssessmentScores
 
     public class Handler : IRequestHandler<Query, Result<IEnumerable<ParticipantAssessmentDto>>>
     {
-        private readonly IApplicationDbContext _dbContext;
+        
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public Handler(IApplicationDbContext dbContext, IMapper mapper)
+        public Handler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _dbContext = dbContext;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<Result<IEnumerable<ParticipantAssessmentDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var query = _dbContext.ParticipantAssessments
+            var query = _unitOfWork.DbContext.ParticipantAssessments
                 .Include(pa => pa.Scores)
                 .Where(pa => pa.ParticipantId == request.ParticipantId)
                 .AsNoTracking()

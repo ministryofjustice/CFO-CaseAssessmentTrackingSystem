@@ -7,22 +7,22 @@ public class ImportKeyValuesCommandHandler :
     IRequestHandler<ImportKeyValuesCommand, Result>
 {
     private readonly IValidator<AddEditKeyValueCommand> _addValidator;
-    private readonly IApplicationDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IExcelService _excelService;
     private readonly IStringLocalizer<ImportKeyValuesCommandHandler> _localizer;
     private readonly IMapper _mapper;
 
     public ImportKeyValuesCommandHandler(
-        IApplicationDbContext context,
+        IUnitOfWork unitOfWork,
         IMapper mapper,
         IExcelService excelService,
         IStringLocalizer<ImportKeyValuesCommandHandler> localizer,
         IValidator<AddEditKeyValueCommand> addValidator
     )
     {
-        _context = context;
-        _mapper = mapper;
-        _excelService = excelService;
+         _mapper = mapper;
+         _unitOfWork = unitOfWork;
+         _excelService = excelService;
         _localizer = localizer;
         _addValidator = addValidator;
     }
@@ -71,7 +71,7 @@ public class ImportKeyValuesCommandHandler :
                 cancellationToken);
                 if (validationResult.IsValid)
                 {
-                    var exist = await _context.KeyValues.AnyAsync(x => x.Name == item.Name && x.Value == item.Value,
+                    var exist = await _unitOfWork.DbContext.KeyValues.AnyAsync(x => x.Name == item.Name && x.Value == item.Value,
                     cancellationToken);
                     if (exist)
                     {
@@ -79,7 +79,7 @@ public class ImportKeyValuesCommandHandler :
                     }
 
                     item.AddDomainEvent(new KeyValueCreatedDomainEvent(item));
-                    await _context.KeyValues.AddAsync(item, cancellationToken);
+                    await _unitOfWork.DbContext.KeyValues.AddAsync(item, cancellationToken);
                 }
                 else
                 {
@@ -89,9 +89,12 @@ public class ImportKeyValuesCommandHandler :
                 }
             }
 
-            if (errorsOccurred) return await Result.FailureAsync(errors.ToArray());
+            if (errorsOccurred)
+            {
+                return await Result.FailureAsync(errors.ToArray());
+            }
 
-            await _context.SaveChangesAsync(cancellationToken);
+            
             return await Result.SuccessAsync();
         }
     }

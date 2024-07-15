@@ -27,11 +27,11 @@ public static class DeleteDomainCommand
         }
     }
 
-    internal class Handler(IApplicationDbContext context, IMapper mapper, ITenantService tenantService) : IRequestHandler<Command, Result<int>>
+    internal class Handler(IUnitOfWork unitOfWork, IMapper mapper, ITenantService tenantService) : IRequestHandler<Command, Result<int>>
     {
         public async Task<Result<int>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var tenant = await context.Tenants.FindAsync(request.TenantId);
+            var tenant = await unitOfWork.DbContext.Tenants.FindAsync(request.TenantId);
 
             if (tenant is null)
             {
@@ -42,11 +42,10 @@ public static class DeleteDomainCommand
 
             tenant.RemoveDomain(model);
 
-            var result = await context.SaveChangesAsync(cancellationToken);
 
             tenantService.Refresh();
 
-            return await Result<int>.SuccessAsync(result);
+            return await Result<int>.SuccessAsync(1);
         }
     }
 

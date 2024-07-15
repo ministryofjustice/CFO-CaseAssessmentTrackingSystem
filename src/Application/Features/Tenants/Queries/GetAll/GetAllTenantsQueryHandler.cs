@@ -4,17 +4,17 @@ namespace Cfo.Cats.Application.Features.Tenants.Queries.GetAll;
 
 public class GetAllTenantsQueryHandler : IRequestHandler<GetAllTenantsQuery, IEnumerable<TenantDto>>
 {
-    private readonly IApplicationDbContext context;
     private readonly IStringLocalizer<GetAllTenantsQueryHandler> localizer;
     private readonly IMapper mapper;
+    private readonly IUnitOfWork unitOfWork;
 
     public GetAllTenantsQueryHandler(
-        IApplicationDbContext context,
+        IUnitOfWork unitOfWork,
         IMapper mapper,
         IStringLocalizer<GetAllTenantsQueryHandler> localizer
     )
     {
-        this.context = context;
+        this.unitOfWork = unitOfWork;
         this.mapper = mapper;
         this.localizer = localizer;
     }
@@ -24,7 +24,7 @@ public class GetAllTenantsQueryHandler : IRequestHandler<GetAllTenantsQuery, IEn
         CancellationToken cancellationToken
     )
     {
-        var data = await context
+        var data = await unitOfWork.DbContext
             .Tenants.OrderBy(x => x.Name)
             .ProjectTo<TenantDto>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);

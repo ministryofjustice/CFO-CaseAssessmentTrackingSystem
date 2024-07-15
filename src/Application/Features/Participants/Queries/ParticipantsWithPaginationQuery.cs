@@ -22,11 +22,11 @@ public static class ParticipantsWithPagination
             $"ListView:{ListView}, Search:{Keyword}, {OrderBy}, {SortDirection}, {PageNumber}, {CurrentUser!.UserId}";
     }
     
-    internal class Handler(IApplicationDbContext context, IMapper mapper) : IRequestHandler<Query, PaginatedData<ParticipantDto>>
+    internal class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, PaginatedData<ParticipantDto>>
     {
         public async Task<PaginatedData<ParticipantDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var data = await context.Participants.OrderBy($"{request.OrderBy} {request.SortDirection}")
+            var data = await unitOfWork.DbContext.Participants.OrderBy($"{request.OrderBy} {request.SortDirection}")
                 .ProjectToPaginatedDataAsync<Participant, ParticipantDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
             return data;
         }
