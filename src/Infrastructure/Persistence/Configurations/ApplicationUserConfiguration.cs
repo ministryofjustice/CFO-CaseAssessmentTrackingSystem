@@ -28,6 +28,11 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
             note.HasKey("Id");
             note.ToTable(DatabaseSchema.Tables.ApplicationUserNote);
             note.Property(x => x.Message).HasMaxLength(255);
+            note.HasOne(n => n.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(x => x.CreatedBy);
+            //note.Property(n => n.CreatedBy)
+            //    .HasMaxLength(36);
         });
     }
 }

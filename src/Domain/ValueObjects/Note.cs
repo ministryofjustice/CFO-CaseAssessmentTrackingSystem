@@ -1,15 +1,17 @@
 ﻿using Cfo.Cats.Domain.Common.Contracts;
+using Cfo.Cats.Domain.Identity;
 
 namespace Cfo.Cats.Domain.ValueObjects;
 
-public class Note(string message, string? callReference) : ValueObject, IAuditable
+public class Note : ValueObject, IAuditable
 {
-    public string Message { get; private set; } = message;
-    public string? CallReference { get; private set; } = callReference;
+    public required string Message { get; set; }
+    public string? CallReference { get; set; }
     public DateTime? Created { get; set; }
     public string? CreatedBy { get; set; }
     public DateTime? LastModified { get; set; }
     public string? LastModifiedBy { get; set; }
+    public virtual ApplicationUser? CreatedByUser { get; set; }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
