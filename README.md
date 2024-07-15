@@ -49,16 +49,6 @@ override any other database settings.
 }
 ```
 
-To use Sqlite set the following in appsettings.json
-
-```json
-{
-  "DatabaseSettings": {
-    "DbProvider": "sqlite",
-    "ConnectionString": "Data Source=./cats.db;"
-  }
-}
-```
 
 For MSSQL server you can use the following. If you are not running local db on windows, you will need to adjust the connection string.
 
@@ -69,10 +59,61 @@ For MSSQL server you can use the following. If you are not running local db on w
   },
 ```
 
-# Status
+## Database Migrations
 
-[![.NET Core Unit Tests](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/actions/workflows/unittest.yml/badge.svg?branch=develop)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/actions/workflows/unittest.yml)
+There is a powershell script in the root of the folder called ModifyDatabase.ps1. This can be used to 
 
+### Update the database
+
+*Note, the database will automatically update when the server ui project is ran in development environment*
+
+```powershell
+.\ModifyDatabase.ps1 -Action update
+```
+
+### Add a migration
+
+*Running this will generate a new migration based on changes to the model*
+
+```powershell
+.\ModifyDatabase.ps1 -Action add -MigrationName NewMigrationName
+```
+
+### Remove a migration
+
+*This will remove the last migration from the code. Useful if you need to make changes due to a malformed migration or a noticed error. Should not be applied to migrations that have been ran against a production envrionment*
+
+```powershell
+.\ModifyDatabase.ps1 -Action remove
+```
+
+### Drop the database
+
+*This will force a database to be dropped. Useful when developing and you need to re-seed any data etc.*
+
+```powershell
+ .\ModifyDatabase.ps1 -Action drop
+```
+
+### Seed the database
+
+*This will run the passed through SQL file against the database*
+
+```powershell
+.\ModifyDatabase.ps1 -Action seed -SqlFilePath .\db\seed\001_development_seed.sql
+```
+
+### Example usage
+
+Chaining the commands together it is very easy to refresh your local database by running the following
+
+```powershell
+
+.\ModifyDatabase.ps1 -Action drop | `
+.\ModifyDatabase.ps1 -Action update | `
+.\ModifyDatabase.ps1 -Action seed -SqlFilePath .\db\seed\001_development_seed.sql
+
+```
 
 
 
