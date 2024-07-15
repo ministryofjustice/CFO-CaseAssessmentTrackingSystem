@@ -279,7 +279,7 @@
         var state = await dialog.Result;
 
         if (!state!.Canceled)
-        {;
+        {
             TenantService.Refresh();
             await table.ReloadServerData();
         }
