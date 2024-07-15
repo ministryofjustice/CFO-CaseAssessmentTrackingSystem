@@ -27,7 +27,7 @@ public static class AddDomainCommand
         }
     }
 
-    internal class Handler(IUnitOfWork unitOfWork, IMapper mapper, ITenantService tenantService) : IRequestHandler<Command, Result>
+    internal class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -41,8 +41,6 @@ public static class AddDomainCommand
             var model = mapper.Map<TenantDomain>(request);
 
             tenant.AddDomain(model);
-
-            tenantService.Refresh();
 
             return Result.Success();
         }

@@ -448,6 +448,7 @@
 
     private async Task OnRefresh()
     {
+        TenantsService.Refresh();
         await _table.ReloadServerData();
     }
 
