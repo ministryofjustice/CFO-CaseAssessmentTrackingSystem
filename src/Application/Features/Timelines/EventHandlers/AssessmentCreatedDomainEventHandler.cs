@@ -2,7 +2,7 @@
 
 namespace Cfo.Cats.Application.Features.Timelines.EventHandlers;
 
-public class AssessmentCreatedDomainEventHandler(ICurrentUserService currentUserService, IApplicationDbContext context) : TimelineNotificationHandler<AssessmentCreatedDomainEvent>(currentUserService, context)
+public class AssessmentCreatedDomainEventHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork) : TimelineNotificationHandler<AssessmentCreatedDomainEvent>(currentUserService, unitOfWork)
 {
     protected override string GetLine1(AssessmentCreatedDomainEvent notification) => "Assessment created.";
     protected override TimelineEventType GetEventType() => TimelineEventType.Assessment;

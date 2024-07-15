@@ -1,4 +1,6 @@
-﻿namespace Cfo.Cats.Application.Features.Candidates.DTOs;
+﻿using System.Text.Json.Serialization;
+
+namespace Cfo.Cats.Application.Features.Candidates.DTOs;
 
 public class CandidateDto
 {
@@ -60,12 +62,16 @@ public class CandidateDto
     /// <summary>
     /// The primary source of information (NOMIS/DELIUS).
     /// </summary>
-    public required string Origin { get; set; }
-    
+    public required string Primary { get; set; }
+
+    [JsonIgnore]
     /// <summary>
     /// The location CATS thinks the user is registered at
     /// </summary>
-    public required string CurrentLocation { get; set; }
+    public string CurrentLocation { get; set; } = string.Empty;
+
+    public string? EstCode { get; set; }
+    public string? OrgCode { get; set; }
 
     public EnrolmentStatus? EnrolmentStatus { get; set; }
     

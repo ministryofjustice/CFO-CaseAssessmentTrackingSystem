@@ -2,7 +2,7 @@
 
 namespace Cfo.Cats.Application.Features.Timelines.EventHandlers;
 
-public abstract class TimelineNotificationHandler<TDomainEvent>(ICurrentUserService currentUserService, IApplicationDbContext context) : INotificationHandler<TDomainEvent>
+public abstract class TimelineNotificationHandler<TDomainEvent>(ICurrentUserService currentUserService, IUnitOfWork unitOfWork) : INotificationHandler<TDomainEvent>
     where TDomainEvent : INotification
 
 {
@@ -17,8 +17,7 @@ public abstract class TimelineNotificationHandler<TDomainEvent>(ICurrentUserServ
         GetLine2(notification),
         GetLine3(notification));
 
-        context.Timelines.Add(timelineEvent);
-        await context.SaveChangesAsync(cancellationToken);
+        await unitOfWork.DbContext.Timelines.AddAsync(timelineEvent);
     }
 
 

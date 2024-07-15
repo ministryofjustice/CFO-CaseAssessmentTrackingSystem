@@ -37,5 +37,8 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
             domain.ToTable(DatabaseSchema.Tables.TenantDomain);
             domain.Property(x => x.Domain).HasMaxLength(255);
         });
+
+        builder.Navigation(x => x.Domains)
+            .AutoInclude();
     }
 }

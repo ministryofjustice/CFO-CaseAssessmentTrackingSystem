@@ -15,26 +15,18 @@ public static class TimelinesWithPaginationQuery
         public TimelineAdvancedSpecification Specification => new(this);
     }
 
-    public class Handler : IRequestHandler<Query, PaginatedData<TimelineDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, PaginatedData<TimelineDto>>
     {
-        private readonly IApplicationDbContext _context;
-        private readonly IMapper _mapper;
-        
-        public Handler(IApplicationDbContext context, IMapper mapper)
-        {
-            _context = context;
-            _mapper = mapper;
-        }
-        
+
         public async Task<PaginatedData<TimelineDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var data = await _context.Timelines
+            var data = await unitOfWork.DbContext.Timelines
                 .OrderBy("Created DESC")
                 .ProjectToPaginatedDataAsync<Timeline, TimelineDto>(
                 request.Specification,
                 request.PageNumber,
                 request.PageSize,
-                _mapper.ConfigurationProvider,
+                mapper.ConfigurationProvider,
                 cancellationToken
                 );
 

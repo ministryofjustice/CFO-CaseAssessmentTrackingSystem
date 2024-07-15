@@ -21,13 +21,13 @@ public static class AddRightToWork
         public UploadRequest? UploadRequest { get; set; }
     }
 
-    public class Handler(IApplicationDbContext context, IUploadService uploadService)
+    public class Handler(IUnitOfWork unitOfWork, IUploadService uploadService)
         : IRequestHandler<Command, Result<string>>
     {
 
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var participant = await context.Participants.FindAsync(request.ParticipantId);
+            var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
             
             if(participant == null)
             {
@@ -44,21 +44,18 @@ public static class AddRightToWork
 
             participant.AddRightToWork(request.ValidFrom!.Value, request.ValidTo!.Value, document.Id);
 
-            context.Documents.Add(document);
-
-            await context.SaveChangesAsync(cancellationToken);
-
+            unitOfWork.DbContext.Documents.Add(document);
             return result;
         }
     }
     
     public class Validator : AbstractValidator<Command>
     {
-        private readonly IApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public Validator(IApplicationDbContext context)
+        public Validator(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
             
             RuleFor(c => c.ParticipantId)
                 .NotNull()
@@ -74,7 +71,7 @@ public static class AddRightToWork
         }
         
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken) 
-            => await _context.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
         
     }    
 }

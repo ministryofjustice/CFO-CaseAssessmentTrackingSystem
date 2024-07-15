@@ -1,5 +1,6 @@
 ﻿@page "/administration/tenants"
 @using BlazorDownloadFile
+@using Cfo.Cats.Application.Common.Interfaces.MultiTenant
 @using Cfo.Cats.Application.Features.Tenants.Commands
 @using Cfo.Cats.Application.Features.Tenants.DTOs
 @using Cfo.Cats.Application.Features.Tenants.Queries.Pagination
@@ -9,11 +10,14 @@
 @using Cfo.Cats.Application.Features.Tenants.Commands.Rename
 @using Cfo.Cats.Application.Features.Tenants.Queries.Export
 @using Cfo.Cats.Application.SecurityConstants
-@using DocumentFormat.OpenXml.Office2010.PowerPoint
+
 
 @attribute [Authorize(Policy = PolicyNames.SystemFunctionsRead)]
 
 @inject IStringLocalizer<Tenants> L
+@inject ITenantService TenantService
+
+@inherits CatsComponentBase
 
 <PageTitle>@Title</PageTitle>
 
@@ -221,7 +225,7 @@
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? false ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
-            var result = await Mediator.Send(Query);
+            var result = await GetNewMediator().Send(Query);
             return new GridData<TenantDto> { TotalItems = result.TotalItems, Items = result.Items };
         }
         finally
@@ -238,7 +242,7 @@
 
     private async Task OnRefresh()
     {
-        TenantCacheKey.Refresh();
+        TenantService.Refresh();
         searchString = string.Empty;
         await table.ReloadServerData();
     }
@@ -276,7 +280,7 @@
 
         if (!state!.Canceled)
         {
-            TenantCacheKey.Refresh();
+            TenantService.Refresh();
             await table.ReloadServerData();
         }
     }
@@ -299,7 +303,7 @@
 
         if (!state!.Canceled)
         {
-            TenantCacheKey.Refresh();
+            TenantService.Refresh();
             await table.ReloadServerData();
         }
     }
@@ -351,7 +355,7 @@
                 : SortDirection.Ascending.ToString()
         };
 
-        var result = await Mediator.Send(request);
+        var result = await GetNewMediator().Send(request);
         if (result.Succeeded)
         {
             var downloadresult = await BlazorDownloadFileService.DownloadFile($"{L["Tenants"]}.xlsx", result.Data, "application/octet-stream");

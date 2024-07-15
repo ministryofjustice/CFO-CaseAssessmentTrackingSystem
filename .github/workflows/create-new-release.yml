@@ -30,6 +30,10 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
+      # Restore dotnet tools
+      - name: Restore dotnet tools
+        run: dotnet tool restore
+
       # Build the project
       - name: Build
         run: dotnet build --configuration Release --no-restore

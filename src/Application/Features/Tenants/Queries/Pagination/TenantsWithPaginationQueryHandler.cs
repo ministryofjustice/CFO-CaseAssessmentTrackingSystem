@@ -6,17 +6,17 @@ namespace Cfo.Cats.Application.Features.Tenants.Queries.Pagination;
 public class TenantsWithPaginationQueryHandler
     : IRequestHandler<TenantsWithPaginationQuery, PaginatedData<TenantDto>>
 {
-    private readonly IApplicationDbContext context;
+    private readonly IUnitOfWork unitOfWork;
     private readonly IStringLocalizer<TenantsWithPaginationQueryHandler> localizer;
     private readonly IMapper mapper;
 
     public TenantsWithPaginationQueryHandler(
-        IApplicationDbContext context,
+        IUnitOfWork unitOfWork,
         IMapper mapper,
         IStringLocalizer<TenantsWithPaginationQueryHandler> localizer
     )
     {
-        this.context = context;
+        this.unitOfWork = unitOfWork;
         this.mapper = mapper;
         this.localizer = localizer;
     }
@@ -26,7 +26,7 @@ public class TenantsWithPaginationQueryHandler
         CancellationToken cancellationToken
     )
     {
-        var data = await context
+        var data = await unitOfWork.DbContext
             .Tenants.OrderBy($"{request.OrderBy} {request.SortDirection}")
             .ProjectToPaginatedDataAsync<Tenant, TenantDto>(
                 request.Specification,

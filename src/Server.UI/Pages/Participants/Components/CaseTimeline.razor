@@ -4,6 +4,8 @@
 @using Cfo.Cats.Domain.Common.Enums
 @using Humanizer
 
+@inherits CatsComponentBase
+
 <MudTimeline TimelinePosition="TimelinePosition.Start" TimelineAlign="TimelineAlign.Default">
     @if (_model is not null)
     {
@@ -47,7 +49,7 @@
     {
         if (_model is null)
         {
-            _model = await Mediator.Send(new TimelinesWithPaginationQuery.Query()
+            _model = await GetNewMediator().Send(new TimelinesWithPaginationQuery.Query()
             {
                 ParticipantId = ParticipantSummaryDto.Id,
                 CurrentUser = UserProfile

@@ -5,18 +5,18 @@ namespace Cfo.Cats.Application.Features.AuditTrails.Queries.PaginationQuery;
 public class AuditTrailsQueryHandler
     : IRequestHandler<AuditTrailsWithPaginationQuery, PaginatedData<AuditTrailDto>>
 {
-    private readonly IApplicationDbContext context;
+    private readonly IUnitOfWork unitOfWork;
     private readonly ICurrentUserService currentUserService;
     private readonly IMapper mapper;
 
     public AuditTrailsQueryHandler(
         ICurrentUserService currentUserService,
-        IApplicationDbContext context,
+        IUnitOfWork unitOfWork,
         IMapper mapper
     )
     {
         this.currentUserService = currentUserService;
-        this.context = context;
+        this.unitOfWork = unitOfWork;
         this.mapper = mapper;
     }
 
@@ -25,7 +25,7 @@ public class AuditTrailsQueryHandler
         CancellationToken cancellationToken
     )
     {
-        var data = await context
+        var data = await unitOfWork.DbContext
             .AuditTrails.OrderBy($"{request.OrderBy} {request.SortDirection}")
             .ProjectToPaginatedDataAsync<AuditTrail, AuditTrailDto>(
                 request.Specification,

@@ -20,13 +20,12 @@ public static class SubmitToProviderQa
         public CancellationTokenSource? SharedExpiryTokenSource => CandidatesCacheKey.SharedExpiryTokenSource();
     }
 
-    public class Handler(IApplicationDbContext context) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            var participant = await context.Participants.FindAsync(request.ParticipantId);
+            var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
             participant!.TransitionTo(EnrolmentStatus.SubmittedToProviderStatus);
-            await context.SaveChangesAsync(cancellationToken);
             // ReSharper disable once MethodHasAsyncOverload
             return Result.Success();
         }

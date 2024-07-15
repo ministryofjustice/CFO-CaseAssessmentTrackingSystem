@@ -6,7 +6,7 @@ using Cfo.Cats.Application.Features.Participants.Commands;
 
 namespace Cfo.Cats.Server.UI.Pages.Candidates.Components;
 
-public partial class MatchFound : ComponentBase
+public partial class MatchFound
 {
     [Inject]
     private IPicklistService PicklistService { get; set; } = default!;
@@ -68,7 +68,7 @@ public partial class MatchFound : ComponentBase
         await _form!.Validate().ConfigureAwait(false);
         if (_form!.IsValid)
         {
-            await Mediator.Send(Model!);
+            await GetNewMediator().Send(Model!);
             await OnParticipantEnrolled.InvokeAsync();
         }
     }

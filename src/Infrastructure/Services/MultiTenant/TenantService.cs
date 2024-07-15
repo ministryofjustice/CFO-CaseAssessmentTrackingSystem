@@ -1,17 +1,15 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Features.Tenants.Caching;
 using Cfo.Cats.Application.Features.Tenants.DTOs;
-using Microsoft.Extensions.DependencyInjection;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure.Services.MultiTenant;
 
 public class TenantService : ITenantService
 {
-    private readonly IApplicationDbContext context;
+    private readonly IServiceScopeFactory scopeFactory;
     private readonly IFusionCache fusionCache;
     private readonly IMapper mapper;
 
@@ -21,8 +19,7 @@ public class TenantService : ITenantService
         IMapper mapper
     )
     {
-        var scope = scopeFactory.CreateScope();
-        context = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
+        this.scopeFactory = scopeFactory;
         this.fusionCache = fusionCache;
         this.mapper = mapper;
     }
@@ -32,28 +29,24 @@ public class TenantService : ITenantService
 
     public void Initialize()
     {
+        using var scope = scopeFactory.CreateScope();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
         DataSource =
             fusionCache.GetOrSet(
                 TenantCacheKey.TenantsCacheKey,
                 _ =>
-                    context
+                    unitOfWork.DbContext
                         .Tenants.OrderBy(x => x.Name)
                         .ProjectTo<TenantDto>(mapper.ConfigurationProvider)
                         .ToList()
-            ) ?? new List<TenantDto>();
+            ) ?? [];
     }
 
     public void Refresh()
     {
         fusionCache.Remove(TenantCacheKey.TenantsCacheKey);
-        DataSource = fusionCache.GetOrSet(
-            TenantCacheKey.TenantsCacheKey,
-            _ =>
-                context
-                    .Tenants.OrderBy(x => x.Name)
-                    .ProjectTo<TenantDto>(mapper.ConfigurationProvider)
-                    .ToList()
-        );
+        Initialize();
         OnChange?.Invoke();
     }
 

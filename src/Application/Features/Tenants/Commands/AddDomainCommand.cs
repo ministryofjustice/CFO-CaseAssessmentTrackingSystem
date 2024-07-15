@@ -27,11 +27,11 @@ public static class AddDomainCommand
         }
     }
 
-    internal class Handler(IApplicationDbContext context, IMapper mapper, ITenantService tenantService) : IRequestHandler<Command, Result>
+    internal class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            var tenant = await context.Tenants.FindAsync(request.TenantId);
+            var tenant = await unitOfWork.DbContext.Tenants.FindAsync(request.TenantId);
 
             if (tenant is null)
             {
@@ -41,10 +41,6 @@ public static class AddDomainCommand
             var model = mapper.Map<TenantDomain>(request);
 
             tenant.AddDomain(model);
-
-            await context.SaveChangesAsync(cancellationToken);
-
-            tenantService.Refresh();
 
             return Result.Success();
         }

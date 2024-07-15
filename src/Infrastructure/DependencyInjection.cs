@@ -64,9 +64,8 @@ public static class DependencyInjection
         IConfiguration configuration
     )
     {
-        services
-            .AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>()
-            .AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+        services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
+
 
         if (configuration.GetValue<bool>("UseInMemoryDatabase"))
         {
@@ -77,19 +76,28 @@ public static class DependencyInjection
         }
         else
         {
+            
             services.AddDbContext<ApplicationDbContext>(
             (p, m) => {
                 var databaseSettings = p.GetRequiredService<IOptions<DatabaseSettings>>().Value;
                 m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
                 m.UseDatabase(databaseSettings.DbProvider, databaseSettings.ConnectionString);
-            }
-            );
+            });
+
         }
 
-        services.AddScoped<IDbContextFactory<ApplicationDbContext>, BlazorContextFactory<ApplicationDbContext>>();
-        services.AddTransient<IApplicationDbContext>(provider =>
-            provider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
+        services.AddDbContextFactory<ApplicationDbContext>((serviceProvider, optionsBuilder) =>
+        {
+            var databaseSettings = serviceProvider.GetRequiredService<IOptions<DatabaseSettings>>().Value;
+            optionsBuilder.AddInterceptors(serviceProvider.GetServices<ISaveChangesInterceptor>());
+            optionsBuilder.UseDatabase(databaseSettings.DbProvider, databaseSettings.ConnectionString);
+        }, ServiceLifetime.Scoped);
+        
+        
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
         services.AddScoped<ApplicationDbContextInitializer>();
+        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
         return services;
     }

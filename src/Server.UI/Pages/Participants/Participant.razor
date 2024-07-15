@@ -4,6 +4,8 @@
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Humanizer
 
+@inherits CatsComponentBase
+
 @attribute [Authorize]
 
 <style>
@@ -100,7 +102,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _participant = await Mediator.Send(new GetParticipantSummary.Query()
+        _participant = await GetNewMediator().Send(new GetParticipantSummary.Query()
         {
             ParticipantId = Id,
             CurrentUser = UserProfile
