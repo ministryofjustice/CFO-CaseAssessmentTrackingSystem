@@ -12,11 +12,11 @@ public static class GetParticipantNotes
         public required string ParticipantId { get; set; }
     }
 
-    public class Handler(IApplicationDbContext context, IMapper mapper) : IRequestHandler<Query, Result<ParticipantNoteDto[]>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<ParticipantNoteDto[]>>
     {
         public async Task<Result<ParticipantNoteDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var query = context.Participants
+            var query = unitOfWork.DbContext.Participants
                 .Where(p => p.Id == request.ParticipantId)
                 .SelectMany(p => p.Notes);
 
