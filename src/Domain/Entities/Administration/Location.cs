@@ -17,8 +17,8 @@ public class Location : BaseAuditableEntity<int>, ILifetime
     private Lifetime _lifetime;
     private int? _parentLocationId;
     private readonly List<Location> _childLocations = new();
+    private List<LocationMapping> _locationMappings = new();
 
-    
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private Location()
     {
@@ -57,7 +57,7 @@ public class Location : BaseAuditableEntity<int>, ILifetime
 
     public IReadOnlyCollection<Location> ChildLocations => _childLocations.AsReadOnly();
 
-
+    public IReadOnlyCollection<LocationMapping> LocationMappings => _locationMappings.AsReadOnly();
 
     public void AddChildLocation(Location child)
     {

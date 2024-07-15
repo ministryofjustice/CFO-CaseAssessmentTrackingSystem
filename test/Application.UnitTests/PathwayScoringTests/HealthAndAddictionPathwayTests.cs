@@ -23,7 +23,7 @@ public class HealthAndAddictionPathwayTests
 
         pathway.E5.Answer = E5.Over2AndHalfHoursPerWeek;
 
-        pathway.E6.Answers = new List<string>() { E6.SexOrPornography, E6.PrescriptionDrugs, E6.Food, E6.SomethingElse };
+        pathway.E6.Answers = [ E6.SexOrPornography, E6.PrescriptionDrugs, E6.Food, E6.SomethingElse ];
 
         pathway.E8.Answer = E8.NeverSmoked;
         pathway.E9.Answer = E9.NeverVaped;
@@ -45,7 +45,7 @@ public class HealthAndAddictionPathwayTests
 
         pathway.E5.Answer = E5.Over2AndHalfHoursPerWeek;
 
-        pathway.E6.Answers = new List<string>() { E6.Alcohol, E6.SexOrPornography, E6.PrescriptionDrugs, E6.Food, E6.SomethingElse };
+        pathway.E6.Answers = [ E6.Alcohol, E6.SexOrPornography, E6.PrescriptionDrugs, E6.Food, E6.SomethingElse ];
 
         pathway.E8.Answer = E8.IUsedTo;
         pathway.E9.Answer = E9.NeverVaped;
@@ -67,7 +67,7 @@ public class HealthAndAddictionPathwayTests
 
         pathway.E5.Answer = E5.Over2AndHalfHoursPerWeek;
 
-        pathway.E6.Answers = new List<string>() { E6.Alcohol, E6.IllegalDrugsOrSubstances, E6.SexOrPornography, E6.PrescriptionDrugs, E6.Food, E6.SomethingElse };
+        pathway.E6.Answers = [ E6.Alcohol, E6.IllegalDrugsOrSubstances, E6.SexOrPornography, E6.PrescriptionDrugs, E6.Food, E6.SomethingElse ];
 
         pathway.E8.Answer = E8.Yes;
         pathway.E9.Answer = E9.NeverVaped;

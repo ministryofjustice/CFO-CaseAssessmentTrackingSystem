@@ -19,6 +19,7 @@ internal static class DatabaseSchema
         public const string Contract = nameof(Contract);
         public const string Document = nameof(Document);
         public const string Location = nameof(Location);
+        public const string LocationMapping = nameof(LocationMapping);
         public const string Participant = nameof(Participant);
         public const string ParticipantAssessment = nameof(ParticipantAssessment);
         public const string ParticipantNote = nameof(ParticipantNote);
@@ -32,6 +33,10 @@ internal static class DatabaseSchema
 
         public const string Timeline = nameof(Timeline);
 
+    }
+    public static class Schema
+    {
+        public const string dms = nameof(dms);
     }
 
 }

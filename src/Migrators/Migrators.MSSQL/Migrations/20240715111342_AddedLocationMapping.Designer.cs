@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240715111342_AddedLocationMapping")]
+    partial class AddedLocationMapping
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -479,55 +482,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.HasIndex("ParticipantId");
 
                     b.ToTable("ParticipantEnrolmentHistory", (string)null);
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Timeline", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("EventType")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Line1")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Line2")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Line3")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(9)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.ToTable("Timeline", (string)null);
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationRole", b =>
@@ -1120,56 +1074,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .IsRequired();
                         });
 
-                    b.OwnsMany("Cfo.Cats.Domain.ValueObjects.Note", "Notes", b1 =>
-                        {
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
-
-                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
-
-                            b1.Property<string>("CallReference")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<DateTime?>("Created")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("CreatedBy")
-                                .HasColumnType("nvarchar(450)");
-
-                            b1.Property<DateTime?>("LastModified")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("LastModifiedBy")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("Message")
-                                .IsRequired()
-                                .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
-
-                            b1.Property<string>("ParticipantId")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(9)");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("CreatedBy");
-
-                            b1.HasIndex("ParticipantId");
-
-                            b1.ToTable("ParticipantNote", (string)null);
-
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CreatedByUser")
-                                .WithMany()
-                                .HasForeignKey("CreatedBy");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ParticipantId");
-
-                            b1.Navigation("CreatedByUser");
-                        });
-
                     b.OwnsMany("Cfo.Cats.Domain.Entities.Participants.RightToWork", "RightToWorks", b1 =>
                         {
                             b1.Property<string>("ParticipantId")
@@ -1248,27 +1152,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.Navigation("EnrolmentLocation");
 
-                    b.Navigation("Notes");
-
                     b.Navigation("Owner");
 
                     b.Navigation("RightToWorks");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Timeline", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationRoleClaim", b =>
@@ -1311,7 +1197,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .HasColumnType("datetime2");
 
                             b1.Property<string>("CreatedBy")
-                                .HasColumnType("nvarchar(450)");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<DateTime?>("LastModified")
                                 .HasColumnType("datetime2");
@@ -1328,18 +1214,10 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.HasIndex("ApplicationUserId");
 
-                            b1.HasIndex("CreatedBy");
-
                             b1.ToTable("ApplicationUserNote", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ApplicationUserId");
-
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CreatedByUser")
-                                .WithMany()
-                                .HasForeignKey("CreatedBy");
-
-                            b1.Navigation("CreatedByUser");
                         });
 
                     b.Navigation("Notes");
