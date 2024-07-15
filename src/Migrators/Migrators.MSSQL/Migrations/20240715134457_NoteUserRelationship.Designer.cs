@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240715134457_NoteUserRelationship")]
+    partial class NoteUserRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,36 +114,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.HasIndex("_parentLocationId");
 
                     b.ToTable("Location", (string)null);
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.LocationMapping", b =>
-                {
-                    b.Property<string>("Code")
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
-
-                    b.Property<string>("CodeType")
-                        .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("DeliveryRegion")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int?>("_locationId")
-                        .HasColumnType("int")
-                        .HasColumnName("LocationId");
-
-                    b.HasKey("Code", "CodeType");
-
-                    b.HasIndex("_locationId");
-
-                    b.ToTable("LocationMapping", "dms");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.Tenant", b =>
@@ -902,15 +875,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("ParentLocation");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.LocationMapping", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "Location")
-                        .WithMany("LocationMappings")
-                        .HasForeignKey("_locationId");
-
-                    b.Navigation("Location");
-                });
-
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.Tenant", b =>
                 {
                     b.OwnsMany("Cfo.Cats.Domain.ValueObjects.TenantDomain", "Domains", b1 =>
@@ -1424,8 +1388,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.Location", b =>
                 {
                     b.Navigation("ChildLocations");
-
-                    b.Navigation("LocationMappings");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationRole", b =>

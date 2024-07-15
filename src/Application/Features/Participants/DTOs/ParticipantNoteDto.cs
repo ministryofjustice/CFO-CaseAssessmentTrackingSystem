@@ -10,13 +10,16 @@ public class ParticipantNoteDto
     [Description("Call Reference")] public string? CallReference { get; set; }
     [Description("CATS Identifier")] public string ParticipantId { get; set; } = string.Empty;
     [Description("Created By")] public string CreatedBy { get; set; } = string.Empty;
+    [Description("Created By")] public string CreatedByEmail { get; set; } = string.Empty;
     [Description("Created Date")] public DateTime Created { get; set; }
 
     private class Mapping : Profile
     {
         public Mapping()
         {
-            CreateMap<Note, ParticipantNoteDto>();
+            CreateMap<Note, ParticipantNoteDto>()
+                .ForMember(x => x.CreatedBy, opts => opts.MapFrom(c => c.CreatedByUser!.DisplayName))
+                .ForMember(x => x.CreatedByEmail, opts => opts.MapFrom(c => c.CreatedByUser!.Email));
         }
     }
 

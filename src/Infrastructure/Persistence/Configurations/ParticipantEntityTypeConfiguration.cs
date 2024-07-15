@@ -126,6 +126,11 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             note.ToTable(DatabaseSchema.Tables.ParticipantNote);
             note.HasKey("Id");
             note.Property(x => x.Message).HasMaxLength(256);
+            note.HasOne(n => n.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(x => x.CreatedBy);
+            //note.Property(n => n.CreatedBy)
+            //    .HasMaxLength(36);
         });
 
         builder.Navigation(p => p.Consents)
