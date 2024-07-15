@@ -3,6 +3,8 @@
 @using Cfo.Cats.Domain.Common.Enums
 @using Humanizer;
 
+@inherits CatsComponentBase
+
 @if (Model is not null)
 {
     if (ConsentDto is not null && ConsentDto.Length > 0)
@@ -30,7 +32,7 @@
     else
     {
         <MudForm @ref="Form">
-            <MudDatePicker Label="Date of Consent" Editable="true" MaxDate="DateTime.UtcNow.Date" @bind-Date="Model.ConsentDate" Required/>
+            <MudDatePicker Label="Date of Consent" Editable="true" MaxDate="DateTime.Now.Date" @bind-Date="Model.ConsentDate" Required/>
             <div class="mb-4 mt-8">
                 <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1" Accept=".pdf">
                     <ActivatorContent>
@@ -123,7 +125,7 @@
 
         if (Form.IsValid)
         {
-           var result = await Mediator.Send(Model!);
+           var result = await GetNewMediator().Send(Model!);
            if (result.Succeeded)
            {
                Snackbar.Add("Consent form uploaded", Severity.Success);

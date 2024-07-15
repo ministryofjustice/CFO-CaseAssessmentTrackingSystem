@@ -17,7 +17,7 @@
 @using ZiggyCreatures.Caching.Fusion
 
 @attribute [Authorize(Policy = PolicyNames.SystemFunctionsRead)]
-@inherits OwningComponentBase
+@inherits CatsComponentBase
 @implements IDisposable
 
 @inject IUsersStateContainer UsersStateContainer
@@ -448,6 +448,7 @@
 
     private async Task OnRefresh()
     {
+        TenantsService.Refresh();
         await _table.ReloadServerData();
     }
 

@@ -1,43 +1,74 @@
-@using Cfo.Cats.Application.Features.Assessments.Commands
-@using Cfo.Cats.Application.Features.Participants.DTOs
+@inherits CatsComponentBase
 
 <MudGrid Class="pa-3" Spacing="4">
     <MudItem xs="12" md="4">
-        <MudCard Style="Height: 100%; Max-Height: 192px">
+        <MudCard Style="Height: 100%; ">
             <MudCardHeader>
+                <CardHeaderAvatar>
+                    <MudAvatar Color="Color.Default">
+                        A
+                    </MudAvatar>
+                </CardHeaderAvatar>
                 <CardHeaderContent>
                     <MudText Typo="Typo.h6">Latest Assessment</MudText>
                 </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Info" />
-                </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent Class="d-flex justify-space-between align-center">
-                <MudText Typo="Typo.body2">No assessment found</MudText>
-                <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="BeginAssessment">Begin</MudButton>
+                
+                @if (_latestAssessment is null)
+                {
+                    <MudText Typo="Typo.body2">No assessment has been created.</MudText>
+                }
+                else
+                {
+                    <div>
+                        <dl class="description-list">
+                            <div class="description-pair">
+                                <dt>
+                                    <MudText Typo="Typo.subtitle2">Date Created</MudText>
+                                </dt>
+                                <dd>
+                                    <MudText Typo="Typo.body2">@_latestAssessment.AssessmentDate!.Value.ToString("dd/MM/yyyy")</MudText>
+                                </dd>
+                            </div>
+                            <div class="description-pair">
+                                <dt>
+                                    <MudText Typo="Typo.subtitle2">Created By</MudText>
+                                </dt>
+                                <dd>
+                                    <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == _latestAssessment.AssessmentCreator).DisplayName</MudText>
+                                </dd>
+                            </div>
+                            
+                        </dl>
+                       
+
+                    </div>
+                    
+                }
             </MudCardContent>
+            <MudCardActions>
+                
+                @if (CanBeginAssessment())
+                {
+                    <MudTooltip Text="Create Assessment">
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginAssessment"/>    
+                    </MudTooltip>
+                    
+                }
+                @if (CanContinueAssessment())
+                {
+                    <MudTooltip Text="Continue Assessment">
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinueAssessment"/>
+                    </MudTooltip>
+                }
+                @if (CanReassess())
+                {
+                    <MudTooltip Text="Reassess">
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginAssessment"/>
+                    </MudTooltip>
+                }
+            </MudCardActions>
         </MudCard>
     </MudItem>
 </MudGrid>
-
-@code {
-
-
-    [CascadingParameter] 
-    public ParticipantDto ParticipantDto { get; set; } = default!;
-
-    public async Task BeginAssessment()
-    {
-        var command = new BeginAssessment.Command()
-        {
-            ParticipantId = this.ParticipantDto.Id
-        };
-        var result = await Mediator.Send(command);
-
-        if (result.Succeeded)
-        {
-            Navigation.NavigateTo($"/pages/participants/{ParticipantDto.Id}/assessment/{result.Data}");
-        }
-    }
-
-}

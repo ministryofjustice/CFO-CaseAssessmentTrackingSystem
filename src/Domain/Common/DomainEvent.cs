@@ -6,7 +6,7 @@ public abstract class DomainEvent : INotification
 {
     protected DomainEvent()
     {
-        DateOccurred = DateTimeOffset.UtcNow;
+        DateOccurred = DateTimeOffset.Now;
     }
 
     public bool IsPublished { get; set; }

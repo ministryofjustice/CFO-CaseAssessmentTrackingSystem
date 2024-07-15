@@ -3,6 +3,7 @@
 @using Cfo.Cats.Domain.Common.Enums
 @using Humanizer
 
+@inherits CatsComponentBase
 
 @if (Model is not null)
 {
@@ -103,7 +104,7 @@
 
         if (Form.IsValid)
         {
-            var result = await Mediator.Send(Model!);
+            var result = await GetNewMediator().Send(Model!);
             if (result.Succeeded)
             {
                 Snackbar.Add("Right to work evidence uploaded", Severity.Success);
@@ -139,45 +140,3 @@
     }
 
 }
-
-@*
-<div class="d-flex flex-column">
-
-
-
-
-
-</div>
-
-<MudForm @ref="Form" Disabled="isRequired is false">
-    <MudDatePicker Label="Date of Expiry" Editable="true" MinDate="DateTime.UtcNow" Required="isRequired" />
-
-    <div class="mb-4 mt-8">
-        <CatsFileUpload UploadText="Upload Evidence" Accept=".pdf, .jpeg, .png" FilesChanged="FilesChanged" />
-    </div>
-
-    <MudCheckBox @ref="certify" Required="isRequired" Disabled="fileCount == 0" T="bool" RequiredError="You must upload a document and certify" Label="I certify that any documents uploaded are the original or true copies of the original documents, and will not be used to claim payments / results against any other Government contract" />
-</MudForm>
-
-@code {
-    private bool isRequired = true;
-    int fileCount = 0;
-
-    MudCheckBox<bool> certify { get; set; } = default!;
-
-    MudForm? Form { get; set; }
-
-    async Task FilesChanged(int fileCount)
-    {
-        this.fileCount = fileCount;
-        await certify.ResetAsync();
-        StateHasChanged();
-    }
-
-    public async Task<bool> Validate()
-    {
-        await Task.CompletedTask;
-        Form?.Validate();
-        return Form?.IsValid ?? false;
-    }
-}*@

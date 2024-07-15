@@ -43,11 +43,16 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
 
         protected override EnrolmentStatus[] GetAllowedTransitions()
             => [AbandonedStatus, PendingStatus];
+        
+        public override bool StatusSupportsReassessment() => false;
+        
     }
 
     private sealed class SubmittedToAuthority : EnrolmentStatus
     { 
         public SubmittedToAuthority(): base(nameof(SubmittedToAuthority), 2) { }
+
+        public override bool StatusSupportsReassessment() => false;
 
         protected override EnrolmentStatus[] GetAllowedTransitions() => 
             [ SubmittedToProviderStatus, ApprovedStatus ];
@@ -72,4 +77,8 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
 
     }
 
+    /// <summary>
+    /// Indicates that a participant at this enrolment stage is allowed to have a new assessment created
+    /// </summary>
+    public virtual bool StatusSupportsReassessment() => true;
 }

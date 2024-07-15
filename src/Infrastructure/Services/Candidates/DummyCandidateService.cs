@@ -20,7 +20,7 @@ public class DummyCandidateService : ICandidateService
             NomisNumber = "A0001AA",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         },
         new CandidateDto
@@ -33,7 +33,7 @@ public class DummyCandidateService : ICandidateService
             Crn = "B002222",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         },
         new CandidateDto
@@ -47,7 +47,7 @@ public class DummyCandidateService : ICandidateService
             NomisNumber = "A0002BB",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         },
         new CandidateDto
@@ -60,7 +60,7 @@ public class DummyCandidateService : ICandidateService
             Crn = "B004444",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         },
         new CandidateDto
@@ -73,7 +73,7 @@ public class DummyCandidateService : ICandidateService
             Crn = "B006666",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         },
         new CandidateDto
@@ -87,7 +87,7 @@ public class DummyCandidateService : ICandidateService
             NomisNumber = "A0004DD",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         },
         new CandidateDto
@@ -100,7 +100,7 @@ public class DummyCandidateService : ICandidateService
             Crn = "B008888",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         },
         new CandidateDto
@@ -114,7 +114,7 @@ public class DummyCandidateService : ICandidateService
             NomisNumber = "A0005EE",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         },
         new CandidateDto
@@ -127,7 +127,7 @@ public class DummyCandidateService : ICandidateService
             Crn = "B001010",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         },
         new CandidateDto
@@ -141,7 +141,7 @@ public class DummyCandidateService : ICandidateService
             NomisNumber = "A0006FF",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         },
         new CandidateDto
@@ -154,7 +154,7 @@ public class DummyCandidateService : ICandidateService
             Crn = "B001212",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         },
         new CandidateDto
@@ -167,7 +167,7 @@ public class DummyCandidateService : ICandidateService
             Crn = "B001414",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         },
         new CandidateDto
@@ -180,7 +180,7 @@ public class DummyCandidateService : ICandidateService
             Crn = "B001616",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         },
         new CandidateDto
@@ -194,7 +194,7 @@ public class DummyCandidateService : ICandidateService
             NomisNumber = "A0009II",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         },
         new CandidateDto
@@ -207,7 +207,7 @@ public class DummyCandidateService : ICandidateService
             Crn = "B001818",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         },
         new CandidateDto
@@ -221,7 +221,7 @@ public class DummyCandidateService : ICandidateService
             NomisNumber = "A0010JJ",
             Nationality = "British",
             Ethnicity = "",
-            Origin = "Nomis",
+            Primary = "Nomis",
             CurrentLocation = "Risley",
         }
     ];

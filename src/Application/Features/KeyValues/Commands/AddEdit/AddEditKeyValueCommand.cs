@@ -19,7 +19,8 @@ public class AddEditKeyValueCommand : ICacheInvalidatorRequest<Result<int>>
     [Description("Description")] public string? Description { get; set; }
 
     public TrackingState TrackingState { get; set; } = TrackingState.Unchanged;
-    public string CacheKey => KeyValueCacheKey.GetAllCacheKey;
+    public string[] CacheKeys => [KeyValueCacheKey.GetAllCacheKey];
+    
     public CancellationTokenSource? SharedExpiryTokenSource => KeyValueCacheKey.SharedExpiryTokenSource();
 
     private class Mapping : Profile

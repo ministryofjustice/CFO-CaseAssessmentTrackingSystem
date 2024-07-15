@@ -4,6 +4,8 @@
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Humanizer
 
+@inherits CatsComponentBase
+
 @attribute [Authorize]
 
 <style>
@@ -15,7 +17,7 @@
 <MudContainer Style="width: 100%; min-width: 480px">
     @if (_participant is not null)
     {
-        <RagBar ParticipantId="@_participant.Id" />
+        <RagBar ParticipantId="@Id" />
         <CascadingValue Value="_participant">
             <MudPaper Class="pa-2 ma-2" Elevation="1" Outlined="true">
                 <MudGrid Spacing="1" Justify="Justify.SpaceBetween" Class="pa-3">
@@ -28,7 +30,7 @@
                     </MudItem>
                     <MudItem>
                         <MudText Typo="Typo.h6">
-                            @_participant.CurrentLocation.Name
+                            @_participant.Location
                         </MudText>
                     </MudItem>
                     <MudSpacer/>
@@ -41,7 +43,7 @@
                     </MudItem>
                     <MudItem>
                         <MudText Typo="Typo.h6">
-                            @_participant.DateOfBirth.GetValueOrDefault().ToShortDateString() (@_participant.DateOfBirth.Humanize())
+                            @_participant.DateOfBirth
                         </MudText>
                     </MudItem>
                     <MudSpacer/>
@@ -54,7 +56,7 @@
                     </MudItem>
                     <MudItem>
                         <MudText Typo="Typo.h6">
-                            @_participant.EnrolmentStatus!.Name
+                            @_participant.EnrolmentStatus!.Name.Humanize()
                         </MudText>
                     </MudItem>
                 </MudGrid>
@@ -63,7 +65,7 @@
                         <CaseSummary />
                     </MudTabPanel>
                     <MudTabPanel Text="Assessments">
-                        <CaseAssessment ParticipantId="@_participant.Id" />
+                        <CaseAssessment ParticipantId="@Id" />
                     </MudTabPanel>
                     <MudTabPanel Text="Contact Log">
 
@@ -89,14 +91,18 @@
 
 @code {
     [Parameter] public string Id { get; set; } = default!;
+    
+    [CascadingParameter] 
+    public UserProfile UserProfile { get; set; } = default!;
 
-    private ParticipantDto? _participant = null;
+    private ParticipantSummaryDto? _participant = null;
 
     protected override async Task OnInitializedAsync()
     {
-        _participant = await Mediator.Send(new GetParticipantById.Query()
+        _participant = await GetNewMediator().Send(new GetParticipantSummary.Query()
         {
-            Id = Id
+            ParticipantId = Id,
+            CurrentUser = UserProfile
         });
     }
 }

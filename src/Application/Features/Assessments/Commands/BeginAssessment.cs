@@ -24,20 +24,19 @@ public static class BeginAssessment
         public required string ParticipantId { get; set; }
         
         //TODO: this could be done at a per participant level
-        public string CacheKey => AssessmentsCacheKey.GetAllCacheKey;
+        public string[] CacheKeys => [ AssessmentsCacheKey.GetAllCacheKey ];
         public CancellationTokenSource? SharedExpiryTokenSource 
             => AssessmentsCacheKey.SharedExpiryTokenSource();
     }
 
     public class Handler : IRequestHandler<Command, Result<Guid>>
     {
-        private readonly IApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
-        public Handler(IApplicationDbContext context, ICurrentUserService currentUserService)
+        public Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
-
         }
 
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
@@ -70,9 +69,7 @@ public static class BeginAssessment
                 pa.SetPathwayScore(pathway.Title, -1);
             }
 
-            _context.ParticipantAssessments.Add(pa);
-            await _context.SaveChangesAsync(cancellationToken);
-            
+            _unitOfWork.DbContext.ParticipantAssessments.Add(pa);
             return await Result<Guid>.SuccessAsync(assessment.Id);
         }
     }

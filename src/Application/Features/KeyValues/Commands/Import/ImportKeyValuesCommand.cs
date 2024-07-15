@@ -8,6 +8,6 @@ public class ImportKeyValuesCommand(string fileName, byte[] data) : ICacheInvali
 {
     public string FileName { get; set; } = fileName;
     public byte[] Data { get; set; } = data;
-    public string CacheKey => KeyValueCacheKey.GetAllCacheKey;
+    public string[] CacheKeys =>  [ KeyValueCacheKey.GetAllCacheKey ]; 
     public CancellationTokenSource? SharedExpiryTokenSource => KeyValueCacheKey.SharedExpiryTokenSource();
 }

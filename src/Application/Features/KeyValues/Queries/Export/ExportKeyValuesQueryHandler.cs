@@ -5,19 +5,19 @@ namespace Cfo.Cats.Application.Features.KeyValues.Queries.Export;
 public class ExportKeyValuesQueryHandler :
     IRequestHandler<ExportKeyValuesQuery, byte[]>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IExcelService _excelService;
     private readonly IStringLocalizer<ExportKeyValuesQueryHandler> _localizer;
     private readonly IMapper _mapper;
 
     public ExportKeyValuesQueryHandler(
-        IApplicationDbContext context,
+        IUnitOfWork unitOfWork,
         IMapper mapper,
         IExcelService excelService,
         IStringLocalizer<ExportKeyValuesQueryHandler> localizer
     )
     {
-        _context = context;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
         _excelService = excelService;
         _localizer = localizer;
@@ -26,7 +26,7 @@ public class ExportKeyValuesQueryHandler :
 #pragma warning disable CS8604
     public async Task<byte[]> Handle(ExportKeyValuesQuery request, CancellationToken cancellationToken)
     {
-        var data = await _context.KeyValues.Where(x =>
+        var data = await _unitOfWork.DbContext.KeyValues.Where(x =>
                 x.Description.Contains(request.Keyword) || x.Value.Contains(request.Keyword) ||
                 x.Text.Contains(request.Keyword))
             .OrderBy($"{request.OrderBy} {request.SortDirection}")

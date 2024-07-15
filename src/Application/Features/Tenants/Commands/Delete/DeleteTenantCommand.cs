@@ -13,7 +13,7 @@ public class DeleteTenantCommand : ICacheInvalidatorRequest<Result<int>>
     }
 
     public string[] Id { get; }
-    public string CacheKey => TenantCacheKey.GetAllCacheKey;
+    public string[] CacheKeys => [TenantCacheKey.GetAllCacheKey];
     public CancellationTokenSource? SharedExpiryTokenSource =>
         TenantCacheKey.SharedExpiryTokenSource();
 }

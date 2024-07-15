@@ -13,7 +13,7 @@ public static class SaveAssessment
     public class Command : ICacheInvalidatorRequest<Result>
     {
         //TODO: cache individually
-        public string CacheKey => AssessmentsCacheKey.GetAllCacheKey;
+        public string[] CacheKeys =>  [ AssessmentsCacheKey.GetAllCacheKey ];
         public CancellationTokenSource? SharedExpiryTokenSource => AssessmentsCacheKey.SharedExpiryTokenSource();
 
         public bool Submit { get; set; } = false;
@@ -24,17 +24,17 @@ public static class SaveAssessment
 
     public class Handler : IRequestHandler<Command, Result>
     {
-        private readonly IApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
         
-        public Handler(IApplicationDbContext context)
+        public Handler(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
 
         }
 
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            ParticipantAssessment pa = _context.ParticipantAssessments.FirstOrDefault(r => r.Id == request.Assessment.Id && r.ParticipantId == request.Assessment.ParticipantId)
+            ParticipantAssessment pa = _unitOfWork.DbContext.ParticipantAssessments.FirstOrDefault(r => r.Id == request.Assessment.Id && r.ParticipantId == request.Assessment.ParticipantId)
                                        ?? throw new NotFoundException(nameof(Assessment), new
                                        {
                                            request.Assessment.Id,
@@ -49,7 +49,7 @@ public static class SaveAssessment
 
             if (request.Submit)
             {
-                var details = await _context.Participants
+                var details = await _unitOfWork.DbContext.Participants
                     .Where(p => p.Id == request.Assessment.ParticipantId)
                     .Select(p =>
                         new
@@ -68,9 +68,8 @@ public static class SaveAssessment
                 {
                     pa.SetPathwayScore(pathway.Title, pathway.GetRagScore(age, location, sex));
                 }
+                pa.Submit();
             }
-
-            await _context.SaveChangesAsync(cancellationToken);
 
             return await Result.SuccessAsync();
         }

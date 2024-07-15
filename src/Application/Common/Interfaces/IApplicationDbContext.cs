@@ -3,13 +3,17 @@ using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Identity;
+using Cfo.Cats.Domain.ValueObjects;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Cfo.Cats.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {
+    public DatabaseFacade Database { get; }
+    
     DbSet<AuditTrail> AuditTrails { get; }
     DbSet<Tenant> Tenants { get; }
 
@@ -26,11 +30,13 @@ public interface IApplicationDbContext
     public DbSet<ParticipantAssessment> ParticipantAssessments { get; }
     
     public DbSet<ParticipantEnrolmentHistory> ParticipantEnrolmentHistories { get; }
+
+    public DbSet<Timeline> Timelines { get; }
     
     public DbSet<ApplicationUser> Users { get; }
     
     ChangeTracker ChangeTracker { get; }
 
     DbSet<DataProtectionKey> DataProtectionKeys { get; }
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+
 }

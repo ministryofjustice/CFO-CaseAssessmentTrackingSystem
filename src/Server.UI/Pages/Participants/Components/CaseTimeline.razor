@@ -1,28 +1,72 @@
-<MudTimeline TimelinePosition="TimelinePosition.Start">
-    <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
-        <MudCard Outlined="true" Elevation="25">
-            <MudCardContent>
-                <MudText Typo="Typo.h6">Enrolment</MudText>
-                <MudText Typo="Typo.body2">Participant enrolled in Risley Prison.</MudText>
-                <MudText Typo="Typo.body2">The participant was enroled by Support Worker Dave</MudText>
-            </MudCardContent>
-        </MudCard>
-    </MudTimelineItem>
-    <MudTimelineItem Size="Size.Medium" Color="Color.Primary" Elevation="25">
-        <MudCard Outlined="true" Elevation="25">
-            <MudCardContent>
-                <MudText Typo="Typo.h6">Induction</MudText>
-                <MudText Typo="Typo.body2">Participant was inducted in Risley Prison.</MudText>
-                <MudText Typo="Typo.body2">The participant was inducted by Support Worker Dave</MudText>
-            </MudCardContent>
-        </MudCard>
-    </MudTimelineItem>
-    <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25" TimelineAlign="TimelineAlign.End">
-        <MudCard Outlined="true" Elevation="25">
-            <MudCardContent>
-                <MudText Typo="Typo.h6">Transfer</MudText>
-                <MudText Typo="Typo.body2">Participant was transferfed to the Warrington Hub.</MudText>
-            </MudCardContent>
-        </MudCard>
-    </MudTimelineItem>
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Timelines.DTOs
+@using Cfo.Cats.Application.Features.Timelines.PaginationQuery
+@using Cfo.Cats.Domain.Common.Enums
+@using Humanizer
+
+@inherits CatsComponentBase
+
+<MudTimeline TimelinePosition="TimelinePosition.Start" TimelineAlign="TimelineAlign.Default">
+    @if (_model is not null)
+    {
+        foreach (var model in _model.Items)
+        {
+            Color color = GetColour(model);
+            
+            <MudTimeline TimelinePosition="TimelinePosition.Start" Modifiers="true">
+                    <MudTimelineItem Size="Size.Medium" Color="@color" Elevation="25"><MudTooltip Text="@model.OccurredOn.ToString()">
+                        <MudCard Outlined="false" Elevation="25">  
+                            <MudCardContent>
+                                <MudText Typo="Typo.h6">@model.Line1</MudText>
+                                @if (model.Line2 is not null)
+                                {
+                                <MudText Typo="Typo.body2">@model.Line2</MudText>
+                                }
+                                @if (model.Line3 is not null)
+                                {
+                                <MudText Typo="Typo.body2">@model.Line3</MudText>
+                                }
+                                @model.User @model.OccurredOn.Humanize(false, DateTime.Now)
+                            </MudCardContent>
+                        </MudCard>  </MudTooltip>
+                    </MudTimelineItem>
+            </MudTimeline>
+        }
+    }
 </MudTimeline>
+
+@code
+{
+    [CascadingParameter]
+    public ParticipantSummaryDto ParticipantSummaryDto { get; set; } = default!;
+
+    [CascadingParameter]
+    public UserProfile UserProfile { get; set; } = default!;
+
+    private PaginatedData<TimelineDto>? _model = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_model is null)
+        {
+            _model = await GetNewMediator().Send(new TimelinesWithPaginationQuery.Query()
+            {
+                ParticipantId = ParticipantSummaryDto.Id,
+                CurrentUser = UserProfile
+            });
+        }
+    }
+
+    private Color GetColour(TimelineDto dto)
+    {
+        return dto.Title switch
+        {
+            nameof(TimelineEventType.Participant) => Color.Primary,
+            nameof(TimelineEventType.Enrolment) => Color.Success,
+            nameof(TimelineEventType.Consent) => Color.Secondary,
+            nameof(TimelineEventType.Assessment) => Color.Info,
+            _ => Color.Primary
+        };
+    }
+
+}

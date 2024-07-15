@@ -1,13 +1,15 @@
 @page "/pages/participants"
-@using Cfo.Cats.Application.Features.Documents.Commands.Transistion
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Application.Features.Participants.Caching
+@using Cfo.Cats.Application.Features.Participants.Commands.Transistion
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Application.Features.Participants.Specifications
 @using Cfo.Cats.Application.SecurityConstants
 @inject IStringLocalizer<Participants> L
+
+@inherits CatsComponentBase
 
 @attribute [Authorize(Policy = PolicyNames.AuthorizedUser)]
 
@@ -35,24 +37,34 @@
             <div class="d-flex gap-4">
                 <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large"/>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption" Class="mb-2">@Title</MudText>
+                    <MudText Typo="Typo.caption" Class="mb-2">@L[_currentDto.GetClassDescription()]</MudText>
                     <MudEnumSelect Style="min-width:120px" TEnum="ParticipantListView" ValueChanged="OnChangedListView" Value="Query.ListView" Dense="true" Label="List View">
                     </MudEnumSelect>
                 </div>
             </div>
-            <div class="flex-grow-1"/>
-
+            <div class="flex-grow-1"></div>
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                        <MudButton  Variant="Variant.Outlined"
-                                    Size="Size.Small"
-                                    Disabled="@_loading"
-                                    OnClick="@(() => OnRefresh())"
-                                    StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
-                                    Style="margin-right: 4px; margin-bottom:4px">
+                        <MudButton Variant="Variant.Outlined"
+                                   Size="Size.Small"
+                                   Disabled="@_loading"
+                                   OnClick="@(() => OnRefresh())"
+                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
+                                   Style="margin-right: 4px; margin-bottom:4px">
                             @ConstantString.Refresh
                         </MudButton>
+                        @if (_canEnrol)
+                        {
+                            <MudButton Variant="Variant.Outlined"
+                                       Size="Size.Small"
+                                       Disabled="@_loading"
+                                       OnClick="@(() => OnEnrol())"
+                                       StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
+                                       Style="margin-right: 4px; margin-bottom:4px">
+                                @ConstantString.NewEnrolment
+                            </MudButton>
+                        }
                     </MudHidden>
                     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
                         
@@ -60,7 +72,7 @@
                 </div>
                 @if (_canSearch)
                 {
-                    <MudTextField T="string" ValueChanged="@(s => OnSearch(s!))" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                    <MudTextField T="string" ValueChanged="@(OnSearch)" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
                                   AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
                     </MudTextField>
                 }
@@ -168,6 +180,8 @@
     private MudDataGrid<ParticipantDto> _table = default!;
     private bool _loading;
     private bool _canSearch;
+    private bool _canEnrol;
+    
     private ParticipantDto _currentDto = new() { Id = "" };
 
     private ParticipantsWithPagination.Query Query { get; set; } = new();
@@ -179,11 +193,11 @@
     
     private async Task OnSubmitToProviderQa(ParticipantDto participant)
     {
-        SubmitToProviderQa.Command command = new SubmitToProviderQa.Command()
+        SubmitToProviderQa.Command command = new SubmitToProviderQa.Command
         {
             ParticipantId = participant.Id
         };
-        var result = await Mediator.Send(command);
+        var result = await GetNewMediator().Send(command);
         if (result.Succeeded)
         {
             Snackbar.Add($"Participant {participant.Id} submitted to Provider QA", Severity.Success);
@@ -208,6 +222,7 @@
         Title = L["Participants"];
         var state = await AuthState;
         _canSearch = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowCandidateSearch)).Succeeded;
+        _canEnrol = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowEnrol)).Succeeded;
     }
 
     private async Task<GridData<ParticipantDto>> ServerReload(GridState<ParticipantDto> state)
@@ -220,7 +235,7 @@
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
-            var result = await Mediator.Send(Query).ConfigureAwait(false);
+            var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
             return new GridData<ParticipantDto> { TotalItems = result.TotalItems, Items = result.Items };
         }
         finally
@@ -231,6 +246,10 @@
     
     private async Task OnSearch(string text)
     {
+        if (_loading)
+        {
+            return;
+        }
         _selectedItems = new();
         Query.Keyword = text;
         await _table.ReloadServerData();
@@ -250,4 +269,8 @@
         await _table.ReloadServerData();
     }
 
+    private void OnEnrol()
+    {
+        Navigation.NavigateTo("/pages/candidates/search");
+    }
 }

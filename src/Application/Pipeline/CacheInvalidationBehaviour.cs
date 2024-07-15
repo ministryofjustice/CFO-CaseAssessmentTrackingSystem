@@ -26,9 +26,10 @@ public class CacheInvalidationBehaviour<TRequest, TResponse>
     {
         logger.LogTrace("{Name} cache expire with {@Request}", nameof(request), request);
         var response = await next().ConfigureAwait(false);
-        if (!string.IsNullOrEmpty(request.CacheKey))
+
+        foreach (var key in request.CacheKeys)
         {
-            cache.Remove(request.CacheKey);
+            cache.Remove(key);
         }
 
         request.SharedExpiryTokenSource?.Cancel();

@@ -1,8 +1,7 @@
-@using System.Runtime.CompilerServices
 @using Cfo.Cats.Application.Features.Candidates
-@using Cfo.Cats.Application.Features.Candidates.DTOs
 @using Cfo.Cats.Application.Features.Candidates.Queries.Search
-@using Faker
+
+@inherits CatsComponentBase
 
 <MudGrid>
     <MudItem xs="12">
@@ -19,7 +18,7 @@
                     <MudTextField Label="Last Name" @bind-Value="Query.LastName" For="(() => Query.LastName)" Immediate="true"/>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudDatePicker Label="Date Of Birth" @bind-Date="Query.DateOfBirth" For="(() => Query.DateOfBirth)" ImmediateText="true" Editable="true" MaxDate="DateTime.UtcNow.Date"/>
+                    <MudDatePicker Label="Date Of Birth" @bind-Date="Query.DateOfBirth" For="(() => Query.DateOfBirth)" ImmediateText="true" Editable="true" MaxDate="DateTime.Now.Date"/>
                 </MudItem>
             </MudForm>
             <MudContainer Class="d-flex px-0 pt-8">

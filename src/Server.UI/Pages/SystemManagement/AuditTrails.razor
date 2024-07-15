@@ -12,6 +12,8 @@
 @inject IState<UserProfileState> UserProfileState
 @inject IMediator Mediator
 
+@inherits CatsComponentBase
+
 <PageTitle>@Title</PageTitle>
 
 <MudDataGrid ServerData="@(ServerReload)"

@@ -79,3 +79,26 @@
 :root{
     --mud-palette-action-default: white;
 }
+
+.description-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.description-pair {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.description-pair dt {
+    min-width: 100px;
+    margin-right: 8px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.description-pair dd {
+    margin: 0;
+    flex: 1;
+}

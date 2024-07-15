@@ -10,7 +10,7 @@
 @using Cfo.Cats.Infrastructure.Constants.ClaimTypes
 
 @attribute [Authorize(Policy = PolicyNames.SystemFunctionsRead)]
-@inherits OwningComponentBase
+@inherits CatsComponentBase
 
 
 @inject IAppCache Cache

@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public static class CreateParticipant
 {
     [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
-    public class Command: ICacheInvalidatorRequest<Result<string>>
+    public class Command: IRequest<Result<string>>
     {
         /// <summary>
         /// The CATS identifier
@@ -24,7 +24,7 @@ public static class CreateParticipant
     
         public UserProfile? CurrentUser { get; set; }
 
-        public string CacheKey => ParticipantCacheKey.GetCacheKey($"{this}");
+        public string[] CacheKeys => [ ParticipantCacheKey.GetCacheKey($"{this}") ];
 
         public CancellationTokenSource? SharedExpiryTokenSource 
             => ParticipantCacheKey.SharedExpiryTokenSource();
@@ -35,29 +35,28 @@ public static class CreateParticipant
         }
     }
 
-    public class Handler(IApplicationDbContext dbContext, ICurrentUserService currentUserService) 
+    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) 
         : IRequestHandler<Command, Result<string>>
     {
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
             var candidate = request.Candidate;
-            Participant participant = Participant.CreateFrom(candidate.Identifier, candidate.FirstName, candidate.LastName, candidate.DateOfBirth, request.ReferralSource!, request.ReferralComments);
+            Participant participant = Participant.CreateFrom(candidate.Identifier, candidate.FirstName, candidate.LastName, candidate.DateOfBirth, 
+            request.ReferralSource!, request.ReferralComments);
             participant.AssignTo(currentUserService.UserId);
         
-            dbContext.Participants.Add(participant);
-            await dbContext.SaveChangesAsync(cancellationToken);
-
+            await unitOfWork.DbContext.Participants.AddAsync(participant, cancellationToken);
             return request.Identifier!;
         }
     }
 
     public class Validator : AbstractValidator<Command>
     {
-        private readonly IApplicationDbContext _dbContext;
+        private readonly IUnitOfWork _unitOfWork;
         
-        public Validator(IApplicationDbContext dbContext)
+        public Validator(IUnitOfWork unitOfWork)
         {
-            _dbContext = dbContext;
+            _unitOfWork = unitOfWork;
 
             RuleFor(x => x.Identifier).NotNull()
                 .NotEmpty()
@@ -81,7 +80,7 @@ public static class CreateParticipant
  
         }
         private async Task<bool> NotAlreadyExist(string identifier, CancellationToken cancellationToken) 
-            => await _dbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken) == false;
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken) == false;
 
     }
 }

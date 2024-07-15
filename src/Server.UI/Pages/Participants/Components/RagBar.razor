@@ -1,6 +1,7 @@
 @using Cfo.Cats.Application.Features.Assessments.DTOs
 @using Cfo.Cats.Application.Features.Assessments.Queries
-@using Cfo.Cats.Domain.Common.Enums
+
+@inherits CatsComponentBase
 
 <MudPaper Class="ma-2 d-flex justify-space-between flex-wrap" Elevation="1" Outlined="true">
     @if (_model is not null)
@@ -26,7 +27,7 @@
         {
             ParticipantId = ParticipantId
         };
-        var result = await Mediator.Send(query);
+        var result = await GetNewMediator().Send(query);
         if (result.Succeeded)
         {
             _model = result.Data!.MaxBy(pa => pa.CreatedDate);

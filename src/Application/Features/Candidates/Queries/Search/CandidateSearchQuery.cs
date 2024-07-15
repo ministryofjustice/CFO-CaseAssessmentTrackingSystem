@@ -14,7 +14,7 @@ public class CandidateSearchQuery : ICacheableRequest<IEnumerable<CandidateDto>>
     public required DateTime? DateOfBirth { get; set; } 
     public required UserProfile CurrentUser { get; set; }
     
-    public string CacheKey => CandidatesCacheKey.GetCacheKey($"{this}");
+    public string CacheKey => CandidatesCacheKey.GetCandidateCacheKey($"{this}");
 
     public MemoryCacheEntryOptions? Options => CandidatesCacheKey.MemoryCacheEntryOptions;
 

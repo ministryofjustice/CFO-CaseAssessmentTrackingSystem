@@ -4,20 +4,20 @@ namespace Cfo.Cats.Application.Features.Tenants.Commands.Delete;
 
 public class DeleteTenantCommandHandler : IRequestHandler<DeleteTenantCommand, Result<int>>
 {
-    private readonly IApplicationDbContext context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IStringLocalizer<DeleteTenantCommandHandler> localizer;
     private readonly IMapper mapper;
     private readonly ITenantService tenantsService;
 
     public DeleteTenantCommandHandler(
         ITenantService tenantsService,
-        IApplicationDbContext context,
+        IUnitOfWork unitOfWork,
         IStringLocalizer<DeleteTenantCommandHandler> localizer,
         IMapper mapper
     )
     {
         this.tenantsService = tenantsService;
-        this.context = context;
+        _unitOfWork = unitOfWork;
         this.localizer = localizer;
         this.mapper = mapper;
     }
@@ -27,16 +27,15 @@ public class DeleteTenantCommandHandler : IRequestHandler<DeleteTenantCommand, R
         CancellationToken cancellationToken
     )
     {
-        var items = await context
+        var items = await _unitOfWork.DbContext
             .Tenants.Where(x => request.Id.Contains(x.Id))
             .ToListAsync(cancellationToken);
         foreach (var item in items)
         {
-            context.Tenants.Remove(item);
+            _unitOfWork.DbContext.Tenants.Remove(item);
         }
 
-        var result = await context.SaveChangesAsync(cancellationToken);
         tenantsService.Refresh();
-        return await Result<int>.SuccessAsync(result);
+        return await Result<int>.SuccessAsync(items.Count);
     }
 }

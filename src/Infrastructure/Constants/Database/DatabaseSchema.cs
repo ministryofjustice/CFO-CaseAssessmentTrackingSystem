@@ -29,7 +29,9 @@ internal static class DatabaseSchema
         public const string RightToWork = nameof(RightToWork);
 
         public const string ParticipantAssessmentPathwayScore = nameof(ParticipantAssessmentPathwayScore);
-        
+
+        public const string Timeline = nameof(Timeline);
+
     }
     public static class Schema
     {

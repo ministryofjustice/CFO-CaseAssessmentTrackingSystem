@@ -1,4 +1,4 @@
-name: Manual Build and Test
+name: Create new release
 
 on:
   workflow_dispatch:
@@ -30,6 +30,10 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
+      # Restore dotnet tools
+      - name: Restore dotnet tools
+        run: dotnet tool restore
+
       # Build the project
       - name: Build
         run: dotnet build --configuration Release --no-restore
@@ -41,6 +45,10 @@ jobs:
       # Publish the build artifacts
       - name: Publish
         run: dotnet publish --configuration Release --output ./publish
+
+      # Run EF migrations
+      - name: Run EF migrations
+        run: dotnet ef migrations script --project src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj --startup-project src/Server.UI/Server.UI.csproj --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --idempotent -o ./publish/Migration.sql
 
       # Compress the build artifacts into a ZIP file
       - name: Compress build artifacts
