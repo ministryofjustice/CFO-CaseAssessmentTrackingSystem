@@ -58,5 +58,4 @@ public sealed partial class DiversityPathway
     public A10 A19 { get; private set; } = new();
     public A10 A20 { get; private set; } = new();
 
-    public override double Constant => throw new NotImplementedException();
 }

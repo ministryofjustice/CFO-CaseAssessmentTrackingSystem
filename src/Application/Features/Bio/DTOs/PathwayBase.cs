@@ -8,9 +8,6 @@ public abstract class PathwayBase
     public abstract string Title { get; }
 
     [JsonIgnore]
-    public abstract double Constant { get; }
-
-    [JsonIgnore]
     public abstract string Icon { get; }
 
     public abstract IEnumerable<QuestionBase> Questions();
