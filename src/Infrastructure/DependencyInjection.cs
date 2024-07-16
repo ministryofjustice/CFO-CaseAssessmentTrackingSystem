@@ -11,6 +11,7 @@ using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.MultiTenant;
 using Cfo.Cats.Infrastructure.Services.Serialization;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using ZiggyCreatures.Caching.Fusion;
@@ -307,6 +308,7 @@ public static class DependencyInjection
 
         services.ConfigureApplicationCookie(options => {
             options.LoginPath = "/pages/authentication/login";
+            options.Cookie.SameSite = SameSiteMode.Strict;
         });
 
         services
