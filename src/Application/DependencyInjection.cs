@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.PublishStrategies;
+﻿
 using Cfo.Cats.Application.Pipeline;
 using Cfo.Cats.Application.Pipeline.PreProcessors;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +14,7 @@ public static class DependencyInjection
         services.AddMediatR(config =>
         {
             config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            config.NotificationPublisher = new ParallelNoWaitPublisher();
+            //config.NotificationPublisher = new ParallelNoWaitPublisher();
             config.AddRequestPreProcessor(typeof(IRequestPreProcessor<>), typeof(ValidationPreProcessor<>));
             config.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
             config.AddOpenBehavior(typeof(UnhandledExceptionBehaviour<,>));

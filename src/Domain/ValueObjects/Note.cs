@@ -12,6 +12,8 @@ public class Note : ValueObject, IAuditable
     public DateTime? LastModified { get; set; }
     public string? LastModifiedBy { get; set; }
     public virtual ApplicationUser? CreatedByUser { get; set; }
+    
+    public virtual ApplicationUser? LastModifiedByUser { get; set; }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
@@ -19,3 +21,5 @@ public class Note : ValueObject, IAuditable
         yield return Created ?? DateTime.Now;
     }
 }
+
+

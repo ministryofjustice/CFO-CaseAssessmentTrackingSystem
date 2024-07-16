@@ -17,7 +17,7 @@ public class ApplicationDbContext
         string,
         ApplicationUserClaim,
         ApplicationUserRole,
-        ApplicationUserLogin,
+        UserLogin,
         ApplicationRoleClaim,
         ApplicationUserToken
     >,

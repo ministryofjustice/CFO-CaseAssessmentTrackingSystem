@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240716085603_InitialMigration")]
+    partial class InitialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1234,7 +1237,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .WithMany()
                                 .HasForeignKey("CreatedBy");
 
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "LastModifiedByUser")
+                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "ModifiedByUser")
                                 .WithMany()
                                 .HasForeignKey("LastModifiedBy");
 
@@ -1243,7 +1246,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.Navigation("CreatedByUser");
 
-                            b1.Navigation("LastModifiedByUser");
+                            b1.Navigation("ModifiedByUser");
                         });
 
                     b.OwnsMany("Cfo.Cats.Domain.Entities.Participants.RightToWork", "RightToWorks", b1 =>
@@ -1403,6 +1406,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .HasMaxLength(255)
                                 .HasColumnType("nvarchar(255)");
 
+                            b1.Property<string>("ModifiedByUserId")
+                                .HasColumnType("nvarchar(36)");
+
                             b1.Property<string>("UserId")
                                 .IsRequired()
                                 .HasMaxLength(36)
@@ -1412,7 +1418,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.HasIndex("CreatedBy");
 
-                            b1.HasIndex("LastModifiedBy");
+                            b1.HasIndex("ModifiedByUserId");
 
                             b1.HasIndex("UserId");
 
@@ -1422,16 +1428,16 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .WithMany()
                                 .HasForeignKey("CreatedBy");
 
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "LastModifiedByUser")
+                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "ModifiedByUser")
                                 .WithMany()
-                                .HasForeignKey("LastModifiedBy");
+                                .HasForeignKey("ModifiedByUserId");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
 
                             b1.Navigation("CreatedByUser");
 
-                            b1.Navigation("LastModifiedByUser");
+                            b1.Navigation("ModifiedByUser");
                         });
 
                     b.Navigation("Notes");
