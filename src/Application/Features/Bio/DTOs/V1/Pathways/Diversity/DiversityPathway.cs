@@ -47,15 +47,15 @@ public sealed partial class DiversityPathway
     public A8 A8 { get;private set; } = new();
     public A9 A9 { get; private set; } = new();
     public A10 A10 { get; private set; } = new();
-    public A10 A11 { get; private set; } = new();
-    public A10 A12 { get; private set; } = new();
-    public A10 A13 { get; private set; } = new();
-    public A10 A14 { get; private set; } = new();
-    public A10 A15 { get; private set; } = new();
-    public A10 A16 { get; private set; } = new();
-    public A10 A17 { get; private set; } = new();
-    public A10 A18 { get; private set; } = new();
-    public A10 A19 { get; private set; } = new();
-    public A10 A20 { get; private set; } = new();
+    public A11 A11 { get; private set; } = new();
+    public A12 A12 { get; private set; } = new();
+    public A13 A13 { get; private set; } = new();
+    public A14 A14 { get; private set; } = new();
+    public A15 A15 { get; private set; } = new();
+    public A16 A16 { get; private set; } = new();
+    public A17 A17 { get; private set; } = new();
+    public A18 A18 { get; private set; } = new();
+    public A19 A19 { get; private set; } = new();
+    public A20 A20 { get; private set; } = new();
 
 }
