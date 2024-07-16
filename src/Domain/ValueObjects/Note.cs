@@ -13,7 +13,7 @@ public class Note : ValueObject, IAuditable
     public string? LastModifiedBy { get; set; }
     public virtual ApplicationUser? CreatedByUser { get; set; }
     
-    public virtual ApplicationUser? ModifiedByUser { get; set; }
+    public virtual ApplicationUser? LastModifiedByUser { get; set; }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {

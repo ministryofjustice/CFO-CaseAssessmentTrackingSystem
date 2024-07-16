@@ -1,12 +1,13 @@
 ﻿using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Cfo.Cats.Domain.Entities.Participants;
 
-namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Participant;
+namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Participants;
 
-public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Domain.Entities.Participants.Participant>
+public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Participant>
 {
-    public void Configure(EntityTypeBuilder<Domain.Entities.Participants.Participant> builder)
+    public void Configure(EntityTypeBuilder<Participant> builder)
     {
         builder.ToTable(
             DatabaseConstants.Tables.Participant, 
@@ -153,7 +154,7 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Domai
             note.Property(n => n.CreatedBy)
                 .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
             
-            note.HasOne(n => n.ModifiedByUser)
+            note.HasOne(n => n.LastModifiedByUser)
                 .WithMany()
                 .HasForeignKey(x => x.LastModifiedBy);
             

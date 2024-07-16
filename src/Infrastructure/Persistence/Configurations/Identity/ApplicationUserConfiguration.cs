@@ -89,8 +89,13 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
             note.HasOne(n => n.CreatedByUser)
                 .WithMany()
                 .HasForeignKey(x => x.CreatedBy);
+            
             note.Property(n => n.CreatedBy)
                 .HasMaxLength(36);
+
+            note.HasOne(n => n.LastModifiedByUser)
+                .WithMany()
+                .HasForeignKey(n => n.LastModifiedBy);
             
             note.Property(n => n.LastModifiedBy)
                 .HasMaxLength(36);

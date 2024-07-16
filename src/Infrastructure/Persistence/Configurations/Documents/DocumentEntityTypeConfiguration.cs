@@ -2,7 +2,7 @@
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Participant;
+namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Documents;
 
 public class DocumentEntityTypeConfiguration : IEntityTypeConfiguration<Document>
 {
