@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Participant;
+namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Participants;
 
 public class ParticipantEnrolmentHistoryConfiguration
     : IEntityTypeConfiguration<ParticipantEnrolmentHistory>
