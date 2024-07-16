@@ -2,7 +2,7 @@
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Cfo.Cats.Infrastructure.Persistence.Configurations;
+namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Dms;
 
 public  class LocationMappingEntityTypeConfiguration : IEntityTypeConfiguration<LocationMapping>
 {
@@ -10,11 +10,9 @@ public  class LocationMappingEntityTypeConfiguration : IEntityTypeConfiguration<
     {
 
         builder.ToTable(
-            DatabaseSchema.Tables.LocationMapping,
-            DatabaseSchema.Schema.dms
+            DatabaseConstants.Tables.LocationMapping,
+            DatabaseConstants.Schemas.Dms
         );
-
-
 
         // Configure the primary key
         builder.HasKey(l => new { l.Code, l.CodeType });

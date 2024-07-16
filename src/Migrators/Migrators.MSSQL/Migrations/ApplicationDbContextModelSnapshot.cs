@@ -32,7 +32,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -43,13 +44,15 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<int>("LotNumber")
                         .HasColumnType("int");
 
                     b.Property<string>("_tenantId")
-                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("TenantId");
 
                     b.HasKey("Id");
@@ -59,7 +62,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasIndex("_tenantId");
 
-                    b.ToTable("Contract", (string)null);
+                    b.ToTable("Contract", "Configuration");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.Location", b =>
@@ -74,13 +77,15 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -110,7 +115,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasIndex("_parentLocationId");
 
-                    b.ToTable("Location", (string)null);
+                    b.ToTable("Location", "Configuration");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.LocationMapping", b =>
@@ -140,20 +145,21 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasIndex("_locationId");
 
-                    b.ToTable("LocationMapping", "dms");
+                    b.ToTable("LocationMapping", "Dms");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.Tenant", b =>
                 {
                     b.Property<string>("Id")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime?>("Created")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -164,7 +170,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -173,14 +180,13 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tenant", (string)null);
+                    b.ToTable("Tenant", "Configuration");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Assessments.ParticipantAssessment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(9)
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AssessmentJson")
@@ -191,26 +197,29 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("EditorId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("OwnerId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("ParticipantId")
                         .IsRequired()
+                        .HasMaxLength(9)
                         .HasColumnType("nvarchar(9)");
 
                     b.Property<string>("TenantId")
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -222,7 +231,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("ParticipantAssessment", (string)null);
+                    b.ToTable("Assessment", "Participant");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.AuditTrail", b =>
@@ -257,13 +266,13 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(36)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AuditTrail", (string)null);
+                    b.ToTable("AuditTrail", "Audit");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Documents.Document", b =>
@@ -280,7 +289,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -290,7 +300,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EditorId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<bool>("IsPublic")
                         .HasColumnType("bit");
@@ -299,13 +310,15 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("OwnerId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("TenantId")
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
@@ -321,7 +334,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Document", (string)null);
+                    b.ToTable("Document", "Document");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.KeyValue", b =>
@@ -336,20 +349,24 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -363,7 +380,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("KeyValue", (string)null);
+                    b.ToTable("KeyValue", "Configuration");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Participant", b =>
@@ -379,14 +396,16 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<DateOnly?>("DateOfBirth")
                         .IsRequired()
                         .HasColumnType("date");
 
                     b.Property<string>("EditorId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("EnrolmentLocationJustification")
                         .HasColumnType("nvarchar(max)");
@@ -403,7 +422,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -415,7 +435,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("OwnerId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("ReferralComments")
                         .HasColumnType("nvarchar(max)");
@@ -443,7 +464,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasIndex("_enrolmentLocationId");
 
-                    b.ToTable("Participant", (string)null);
+                    b.ToTable("Participant", "Participant");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantEnrolmentHistory", b =>
@@ -458,7 +479,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<int>("EnrolmentStatus")
                         .HasColumnType("int");
@@ -467,7 +489,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("ParticipantId")
                         .IsRequired()
@@ -478,7 +501,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasIndex("ParticipantId");
 
-                    b.ToTable("ParticipantEnrolmentHistory", (string)null);
+                    b.ToTable("EnrolmentHistory", "Participant");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Timeline", b =>
@@ -493,7 +516,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<int>("EventType")
                         .HasColumnType("int");
@@ -502,7 +525,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Line1")
                         .IsRequired()
@@ -527,37 +551,43 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasIndex("ParticipantId");
 
-                    b.ToTable("Timeline", (string)null);
+                    b.ToTable("Timeline", "Participant");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("ApplicationRole", (string)null);
+                    b.ToTable("Role", "Identity");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationRoleClaim", b =>
@@ -569,32 +599,40 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClaimValue")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Group")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("ApplicationRoleClaim", (string)null);
+                    b.ToTable("RoleClaim", "Identity");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -607,10 +645,14 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("DisplayName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -629,7 +671,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -638,10 +681,14 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("MemorableDate")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("MemorablePlace")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -655,7 +702,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
@@ -664,7 +712,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("ProviderId")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("RefreshToken")
                         .HasColumnType("nvarchar(max)");
@@ -679,13 +729,17 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SuperiorId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("TenantId")
-                        .HasColumnType("nvarchar(200)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("TenantName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -708,7 +762,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("ApplicationUser", (string)null);
+                    b.ToTable("User", "Identity");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationUserClaim", b =>
@@ -726,60 +780,44 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ApplicationUserClaim", (string)null);
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationUserLogin", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("LoginProvider", "ProviderKey");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ApplicationUserLogin", (string)null);
+                    b.ToTable("UserClaim", "Identity");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationUserRole", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("ApplicationUserRole", (string)null);
+                    b.ToTable("UserRole", "Identity");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationUserToken", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -792,7 +830,30 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("ApplicationUserToken", (string)null);
+                    b.ToTable("UserToken", "Identity");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Identity.UserLogin", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserLogin", "Identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
@@ -820,13 +881,13 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("TenantId")
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("LocationId", "TenantId");
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("TenantLocation");
+                    b.ToTable("TenantLocation", "Configuration");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.Contract", b =>
@@ -850,7 +911,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.HasKey("ContractId");
 
-                            b1.ToTable("Contract");
+                            b1.ToTable("Contract", "Configuration");
 
                             b1.WithOwner()
                                 .HasForeignKey("ContractId");
@@ -888,7 +949,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.HasKey("LocationId");
 
-                            b1.ToTable("Location");
+                            b1.ToTable("Location", "Configuration");
 
                             b1.WithOwner()
                                 .HasForeignKey("LocationId");
@@ -916,7 +977,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.OwnsMany("Cfo.Cats.Domain.ValueObjects.TenantDomain", "Domains", b1 =>
                         {
                             b1.Property<string>("TenantId")
-                                .HasColumnType("nvarchar(200)");
+                                .HasColumnType("nvarchar(50)");
 
                             b1.Property<string>("Domain")
                                 .HasMaxLength(255)
@@ -926,17 +987,19 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .HasColumnType("datetime2");
 
                             b1.Property<string>("CreatedBy")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
 
                             b1.Property<DateTime?>("LastModified")
                                 .HasColumnType("datetime2");
 
                             b1.Property<string>("LastModifiedBy")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
 
                             b1.HasKey("TenantId", "Domain");
 
-                            b1.ToTable("TenantDomain", (string)null);
+                            b1.ToTable("TenantDomain", "Configuration");
 
                             b1.WithOwner()
                                 .HasForeignKey("TenantId");
@@ -980,7 +1043,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.HasKey("AssessmentId", "Pathway");
 
-                            b1.ToTable("ParticipantAssessmentPathwayScore", (string)null);
+                            b1.ToTable("AssessmentPathwayScore", "Participant");
 
                             b1.WithOwner()
                                 .HasForeignKey("AssessmentId");
@@ -1063,13 +1126,15 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .HasColumnType("datetime2");
 
                             b1.Property<string>("CreatedBy")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
 
                             b1.Property<DateTime?>("LastModified")
                                 .HasColumnType("datetime2");
 
                             b1.Property<string>("LastModifiedBy")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
 
                             b1.Property<Guid>("_documentId")
                                 .HasColumnType("uniqueidentifier")
@@ -1079,7 +1144,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.HasIndex("_documentId");
 
-                            b1.ToTable("Consent", (string)null);
+                            b1.ToTable("Consent", "Participant");
 
                             b1.WithOwner()
                                 .HasForeignKey("ParticipantId");
@@ -1108,7 +1173,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                                     b2.HasKey("ConsentParticipantId", "ConsentId");
 
-                                    b2.ToTable("Consent");
+                                    b2.ToTable("Consent", "Participant");
 
                                     b2.WithOwner()
                                         .HasForeignKey("ConsentParticipantId", "ConsentId");
@@ -1129,19 +1194,22 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                             SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
 
                             b1.Property<string>("CallReference")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(20)
+                                .HasColumnType("nvarchar(20)");
 
                             b1.Property<DateTime?>("Created")
                                 .HasColumnType("datetime2");
 
                             b1.Property<string>("CreatedBy")
-                                .HasColumnType("nvarchar(450)");
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
 
                             b1.Property<DateTime?>("LastModified")
                                 .HasColumnType("datetime2");
 
                             b1.Property<string>("LastModifiedBy")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
 
                             b1.Property<string>("Message")
                                 .IsRequired()
@@ -1156,18 +1224,26 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.HasIndex("CreatedBy");
 
+                            b1.HasIndex("LastModifiedBy");
+
                             b1.HasIndex("ParticipantId");
 
-                            b1.ToTable("ParticipantNote", (string)null);
+                            b1.ToTable("Note", "Participant");
 
                             b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CreatedByUser")
                                 .WithMany()
                                 .HasForeignKey("CreatedBy");
 
+                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "ModifiedByUser")
+                                .WithMany()
+                                .HasForeignKey("LastModifiedBy");
+
                             b1.WithOwner()
                                 .HasForeignKey("ParticipantId");
 
                             b1.Navigation("CreatedByUser");
+
+                            b1.Navigation("ModifiedByUser");
                         });
 
                     b.OwnsMany("Cfo.Cats.Domain.Entities.Participants.RightToWork", "RightToWorks", b1 =>
@@ -1185,13 +1261,15 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .HasColumnType("datetime2");
 
                             b1.Property<string>("CreatedBy")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
 
                             b1.Property<DateTime?>("LastModified")
                                 .HasColumnType("datetime2");
 
                             b1.Property<string>("LastModifiedBy")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
 
                             b1.Property<Guid?>("_documentId")
                                 .HasColumnType("uniqueidentifier")
@@ -1201,7 +1279,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.HasIndex("_documentId");
 
-                            b1.ToTable("RightToWork", (string)null);
+                            b1.ToTable("RightToWork", "Participant");
 
                             b1.WithOwner()
                                 .HasForeignKey("ParticipantId");
@@ -1228,7 +1306,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                                     b2.HasKey("RightToWorkParticipantId", "RightToWorkId");
 
-                                    b2.ToTable("RightToWork");
+                                    b2.ToTable("RightToWork", "Participant");
 
                                     b2.WithOwner()
                                         .HasForeignKey("RightToWorkParticipantId", "RightToWorkId");
@@ -1290,7 +1368,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
                         .WithMany()
-                        .HasForeignKey("TenantId");
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.OwnsMany("Cfo.Cats.Domain.ValueObjects.Note", "Notes", b1 =>
                         {
@@ -1300,46 +1380,61 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
 
-                            b1.Property<string>("ApplicationUserId")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(450)");
-
                             b1.Property<string>("CallReference")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(20)
+                                .HasColumnType("nvarchar(20)");
 
                             b1.Property<DateTime?>("Created")
                                 .HasColumnType("datetime2");
 
                             b1.Property<string>("CreatedBy")
-                                .HasColumnType("nvarchar(450)");
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
 
                             b1.Property<DateTime?>("LastModified")
                                 .HasColumnType("datetime2");
 
                             b1.Property<string>("LastModifiedBy")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
 
                             b1.Property<string>("Message")
                                 .IsRequired()
                                 .HasMaxLength(255)
                                 .HasColumnType("nvarchar(255)");
 
-                            b1.HasKey("Id");
+                            b1.Property<string>("ModifiedByUserId")
+                                .HasColumnType("nvarchar(36)");
 
-                            b1.HasIndex("ApplicationUserId");
+                            b1.Property<string>("UserId")
+                                .IsRequired()
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
+
+                            b1.HasKey("Id");
 
                             b1.HasIndex("CreatedBy");
 
-                            b1.ToTable("ApplicationUserNote", (string)null);
+                            b1.HasIndex("ModifiedByUserId");
 
-                            b1.WithOwner()
-                                .HasForeignKey("ApplicationUserId");
+                            b1.HasIndex("UserId");
+
+                            b1.ToTable("Note", "Identity");
 
                             b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CreatedByUser")
                                 .WithMany()
                                 .HasForeignKey("CreatedBy");
 
+                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "ModifiedByUser")
+                                .WithMany()
+                                .HasForeignKey("ModifiedByUserId");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+
                             b1.Navigation("CreatedByUser");
+
+                            b1.Navigation("ModifiedByUser");
                         });
 
                     b.Navigation("Notes");
@@ -1353,17 +1448,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 {
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "User")
                         .WithMany("UserClaims")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationUserLogin", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "User")
-                        .WithMany("Logins")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1394,6 +1478,17 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 {
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "User")
                         .WithMany("Tokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Identity.UserLogin", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "User")
+                        .WithMany("Logins")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

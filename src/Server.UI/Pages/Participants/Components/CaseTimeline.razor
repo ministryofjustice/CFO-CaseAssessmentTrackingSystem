@@ -14,22 +14,24 @@
             Color color = GetColour(model);
             
             <MudTimeline TimelinePosition="TimelinePosition.Start" Modifiers="true">
-                    <MudTimelineItem Size="Size.Medium" Color="@color" Elevation="25"><MudTooltip Text="@model.OccurredOn.ToString()">
-                        <MudCard Outlined="false" Elevation="25">  
+                <MudTimelineItem Size="Size.Medium" Color="@color" Elevation="25">
+                    <MudTooltip Text="@model.OccurredOn.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
+                        <MudCard Outlined="false" Elevation="25">
                             <MudCardContent>
                                 <MudText Typo="Typo.h6">@model.Line1</MudText>
                                 @if (model.Line2 is not null)
                                 {
-                                <MudText Typo="Typo.body2">@model.Line2</MudText>
+                                    <MudText Typo="Typo.body2">@model.Line2</MudText>
                                 }
                                 @if (model.Line3 is not null)
                                 {
-                                <MudText Typo="Typo.body2">@model.Line3</MudText>
+                                    <MudText Typo="Typo.body2">@model.Line3</MudText>
                                 }
-                                @model.User @model.OccurredOn.Humanize(false, DateTime.Now)
+
+                                @model.User @model.OccurredOn.Humanize()
                             </MudCardContent>
-                        </MudCard>  </MudTooltip>
-                    </MudTimelineItem>
+                        </MudCard> </MudTooltip>
+                </MudTimelineItem>
             </MudTimeline>
         }
     }

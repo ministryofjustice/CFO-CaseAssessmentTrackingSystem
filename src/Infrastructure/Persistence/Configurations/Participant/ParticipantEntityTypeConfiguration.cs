@@ -1,22 +1,22 @@
-﻿using Amazon.Runtime.Documents;
-using Cfo.Cats.Domain.Common.Enums;
-using Cfo.Cats.Domain.Entities.Participants;
-using Cfo.Cats.Domain.ValueObjects;
+﻿using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Cfo.Cats.Infrastructure.Persistence.Configurations;
+namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Participant;
 
-public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Participant>
+public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Domain.Entities.Participants.Participant>
 {
-    public void Configure(EntityTypeBuilder<Participant> builder)
+    public void Configure(EntityTypeBuilder<Domain.Entities.Participants.Participant> builder)
     {
-        builder.ToTable(DatabaseSchema.Tables.Participant);
+        builder.ToTable(
+            DatabaseConstants.Tables.Participant, 
+            DatabaseConstants.Schemas.Participant
+        );
 
         builder.HasKey(p => p.Id);
 
         builder.Property(p => p.Id)
-            .HasMaxLength(9)
+            .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId)
             .ValueGeneratedNever();
 
         builder.Property(p => p.FirstName)
@@ -74,7 +74,9 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             consent.WithOwner()
                 .HasForeignKey("ParticipantId");
 
-            consent.ToTable(DatabaseSchema.Tables.Consent);
+            consent.ToTable(
+                DatabaseConstants.Tables.Consent, 
+                DatabaseConstants.Schemas.Participant);
 
             consent.OwnsOne(p => p.Lifetime, lt => {
                 lt.Property(t => t.StartDate).IsRequired()
@@ -82,22 +84,33 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
                 lt.Property(t => t.EndDate)
                     .IsRequired()
                     .HasColumnName("ValidTo");
+                
             });
                 
-
             consent.HasOne(c => c.Document)
                 .WithMany()
                 .HasForeignKey("_documentId");
 
             consent.Property("_documentId")
                 .HasColumnName("DocumentId");
+
+            consent.Property(x => x.CreatedBy)
+                .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
+            consent.Property(x => x.LastModifiedBy)
+                .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
         });
         
         builder.OwnsMany(c => c.RightToWorks, a => {
             a.WithOwner()
                 .HasForeignKey("ParticipantId");
 
-            a.ToTable(DatabaseSchema.Tables.RightToWork);
+            a.ToTable(
+                DatabaseConstants.Tables.RightToWork, 
+                DatabaseConstants.Schemas.Participant);
+            
+            a.Property(x => x.CreatedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+            a.Property(x => x.LastModifiedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
             a.OwnsOne(p => p.Lifetime, lt => {
                 
@@ -123,14 +136,30 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
         builder.OwnsMany(p => p.Notes, note =>
         {
             note.WithOwner();
-            note.ToTable(DatabaseSchema.Tables.ParticipantNote);
+            note.ToTable(
+                DatabaseConstants.Tables.Note, 
+                DatabaseConstants.Schemas.Participant
+            );
             note.HasKey("Id");
             note.Property(x => x.Message).HasMaxLength(256);
+
+            note.Property(x => x.CallReference)
+                .HasMaxLength(DatabaseConstants.FieldLengths.CallReference);
+            
             note.HasOne(n => n.CreatedByUser)
                 .WithMany()
                 .HasForeignKey(x => x.CreatedBy);
-            //note.Property(n => n.CreatedBy)
-            //    .HasMaxLength(36);
+            
+            note.Property(n => n.CreatedBy)
+                .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+            
+            note.HasOne(n => n.ModifiedByUser)
+                .WithMany()
+                .HasForeignKey(x => x.LastModifiedBy);
+            
+            note.Property(n => n.LastModifiedBy)
+                .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+            
         });
 
         builder.Navigation(p => p.Consents)
@@ -142,6 +171,25 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
         builder.Navigation(p => p.CurrentLocation)
             .AutoInclude();
 
+        builder.HasOne(x => x.Owner)
+            .WithMany()
+            .HasForeignKey(x => x.OwnerId);
+        
+        builder.HasOne(x => x.Editor)
+            .WithMany()
+            .HasForeignKey(x => x.EditorId);
+
+        builder.Property(x => x.OwnerId)
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+        
+        builder.Property(x => x.EditorId)
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+        
+        builder.Property(x => x.CreatedBy)
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+        
+        builder.Property(x => x.LastModifiedBy)
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
     }
 }

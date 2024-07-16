@@ -2,7 +2,7 @@
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Cfo.Cats.Infrastructure.Persistence.Configurations;
+namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Configuration;
 
 public class LocationEntityTypeConfiguration : IEntityTypeConfiguration<Location>
 {
@@ -10,7 +10,8 @@ public class LocationEntityTypeConfiguration : IEntityTypeConfiguration<Location
     {
 
         builder.ToTable(
-        DatabaseSchema.Tables.Location
+            DatabaseConstants.Tables.Location,
+            DatabaseConstants.Schemas.Configuration
         );
 
         // Configure the primary key
@@ -53,6 +54,12 @@ public class LocationEntityTypeConfiguration : IEntityTypeConfiguration<Location
         builder.Property<string>("_contractId")
             .HasColumnName("ContractId")
             .HasMaxLength(12);// Adjust the length as needed
+
+        builder.Property(x => x.CreatedBy)
+            .HasMaxLength(36);
+        
+        builder.Property(x => x.LastModifiedBy)
+            .HasMaxLength(36);
 
     }
 }

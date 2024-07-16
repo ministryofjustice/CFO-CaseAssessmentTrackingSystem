@@ -18,6 +18,7 @@ public class Timeline : BaseAuditableEntity<int>
         ParticipantId = participantId;
         EventType = eventType;
         CreatedBy = createdBy;
+        Created = DateTime.UtcNow;
         Line1 = line1;
         Line2 = line2;
         Line3 = line3;

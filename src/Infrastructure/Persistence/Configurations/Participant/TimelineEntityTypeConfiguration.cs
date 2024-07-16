@@ -1,23 +1,26 @@
-﻿using Cfo.Cats.Domain.Common.Enums;
+﻿using System.Net.NetworkInformation;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Cfo.Cats.Infrastructure.Persistence.Configurations;
+namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Participant;
 
 public class TimelineEntityTypeConfiguration : IEntityTypeConfiguration<Timeline>
 {
     public void Configure(EntityTypeBuilder<Timeline> builder)
     {
-        builder.ToTable(DatabaseSchema.Tables.Timeline);
+        builder.ToTable(
+            DatabaseConstants.Tables.Timeline,
+            DatabaseConstants.Schemas.Participant
+        );
 
         builder.HasKey(t => t.Id);
 
-        builder.HasOne<Participant>()
+        builder.HasOne<Domain.Entities.Participants.Participant>()
             .WithMany()
             .HasForeignKey("ParticipantId");
 
-     
         builder.Property(t => t.EventType)
             .IsRequired()
             .HasConversion(
@@ -40,6 +43,9 @@ public class TimelineEntityTypeConfiguration : IEntityTypeConfiguration<Timeline
             .HasForeignKey(t => t.CreatedBy)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
+        builder.Property(x => x.LastModifiedBy)
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
     }
 }

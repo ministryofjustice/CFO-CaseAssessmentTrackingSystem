@@ -15,7 +15,7 @@ public class ApplicationUser : IdentityUser, IAuditable
     {
         UserClaims = new HashSet<ApplicationUserClaim>();
         UserRoles = new HashSet<ApplicationUserRole>();
-        Logins = new HashSet<ApplicationUserLogin>();
+        Logins = new HashSet<UserLogin>();
         Tokens = new HashSet<ApplicationUserToken>();
     }
 
@@ -35,7 +35,7 @@ public class ApplicationUser : IdentityUser, IAuditable
     public DateTime RefreshTokenExpiryTime { get; set; }
     public virtual ICollection<ApplicationUserClaim> UserClaims { get; set; }
     public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
-    public virtual ICollection<ApplicationUserLogin> Logins { get; set; }
+    public virtual ICollection<UserLogin> Logins { get; set; }
     public virtual ICollection<ApplicationUserToken> Tokens { get; set; }
 
     public string? SuperiorId { get; set; } = null;
