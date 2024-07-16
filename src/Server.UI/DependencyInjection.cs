@@ -33,6 +33,11 @@ public static class DependencyInjection
         var config = builder.Configuration;
         var environment = builder.Environment;
 
+        services.AddAntiforgery(options =>
+        {
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        });
+
         services.AddRazorComponents().AddInteractiveServerComponents();
         services.AddCascadingAuthenticationState();
         services.AddScoped<IdentityUserAccessor>();
