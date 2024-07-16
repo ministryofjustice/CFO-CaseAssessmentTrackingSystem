@@ -7,6 +7,8 @@ public abstract class TimelineNotificationHandler<TDomainEvent>(ICurrentUserServ
 
 {
 
+    protected IUnitOfWork UnitOfWork { get; } = unitOfWork;
+
     public async Task Handle(TDomainEvent notification, CancellationToken cancellationToken)
     {
         var timelineEvent = Timeline.CreateTimeline(
@@ -17,7 +19,7 @@ public abstract class TimelineNotificationHandler<TDomainEvent>(ICurrentUserServ
         GetLine2(notification),
         GetLine3(notification));
 
-        await unitOfWork.DbContext.Timelines.AddAsync(timelineEvent);
+        await UnitOfWork.DbContext.Timelines.AddAsync(timelineEvent);
     }
 
 

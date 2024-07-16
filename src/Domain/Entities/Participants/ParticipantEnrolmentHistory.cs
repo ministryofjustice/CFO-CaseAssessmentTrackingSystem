@@ -20,6 +20,7 @@ public class ParticipantEnrolmentHistory : BaseAuditableEntity<int>
         => new()
         {
             ParticipantId = participantId,
-            EnrolmentStatus = enrolmentStatus
+            EnrolmentStatus = enrolmentStatus,
+            Created = DateTime.UtcNow
         };
 }

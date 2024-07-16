@@ -2,14 +2,14 @@
 using Cfo.Cats.Infrastructure.Persistence.Conversions;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Cfo.Cats.Infrastructure.Persistence.Configurations;
+namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Audit;
 
-public class AuditTrailConfiguration : IEntityTypeConfiguration<Domain.Entities.AuditTrail>
+public class AuditTrailConfiguration : IEntityTypeConfiguration<AuditTrail>
 {
 #nullable disable
-    public void Configure(EntityTypeBuilder<Domain.Entities.AuditTrail> builder)
+    public void Configure(EntityTypeBuilder<AuditTrail> builder)
     {
-        builder.ToTable(DatabaseSchema.Tables.AuditTrail);
+        builder.ToTable(DatabaseConstants.Tables.AuditTrail, DatabaseConstants.Schemas.Audit);
 
         builder
             .HasOne(x => x.Owner)

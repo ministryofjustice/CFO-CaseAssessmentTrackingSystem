@@ -3,18 +3,21 @@ using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Cfo.Cats.Infrastructure.Persistence.Configurations;
+namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Participant;
 
 public class ParticipantEnrolmentHistoryConfiguration
     : IEntityTypeConfiguration<ParticipantEnrolmentHistory>
 {
     public void Configure(EntityTypeBuilder<ParticipantEnrolmentHistory> builder)
     {
-        builder.ToTable(DatabaseSchema.Tables.ParticipantEnrolmentHistory);
+        builder.ToTable(
+            DatabaseConstants.Tables.EnrolmentHistory, 
+            DatabaseConstants.Schemas.Participant
+        );
 
         builder.HasKey(peh => peh.Id);
         builder.Property(peh => peh.ParticipantId)
-            .HasMaxLength(9)
+            .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId)
             .IsRequired();
 
         builder.HasIndex(peh => peh.ParticipantId);
@@ -25,5 +28,11 @@ public class ParticipantEnrolmentHistoryConfiguration
                 es => es!.Value,
                 es => EnrolmentStatus.FromValue(es)
             );
+
+        builder.Property(x => x.CreatedBy)
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+        
+        builder.Property(x => x.LastModifiedBy)
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
     }
 }

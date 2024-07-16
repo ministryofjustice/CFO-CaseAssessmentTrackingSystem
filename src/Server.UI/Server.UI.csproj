@@ -48,7 +48,6 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj" />
-        <ProjectReference Include="..\Migrators\Migrators.SqLite\Migrators.SqLite.csproj" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Update="Resources\Pages\Dashboard\Dashboard.resx">

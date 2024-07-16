@@ -1,15 +1,16 @@
-﻿using Cfo.Cats.Infrastructure.Constants.Database;
+﻿using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Contract=Cfo.Cats.Domain.Entities.Administration.Contract;
 
-namespace Cfo.Cats.Infrastructure.Persistence.Configurations;
+namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Configuration;
 
 public class ContractEntityTypeConfiguration : IEntityTypeConfiguration<Contract>
 {
     public void Configure(EntityTypeBuilder<Contract> builder)
     {
         builder.ToTable(
-        DatabaseSchema.Tables.Contract
+            DatabaseConstants.Tables.Contract,
+            DatabaseConstants.Schemas.Configuration
         );
 
         builder.Property(c => c.Id)
@@ -23,14 +24,15 @@ public class ContractEntityTypeConfiguration : IEntityTypeConfiguration<Contract
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.HasOne(x => x.Tenant)
+        builder.HasOne(c => c.Tenant)
             .WithMany()
             .HasForeignKey("_tenantId");
 
         builder.Property("_tenantId")
-            .HasColumnName("TenantId");
+            .HasColumnName("TenantId")
+            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
 
-        builder.Navigation(e => e.Tenant)
+        builder.Navigation(c => c.Tenant)
             .AutoInclude();
 
         builder.HasIndex(c => c.LotNumber)
@@ -41,6 +43,12 @@ public class ContractEntityTypeConfiguration : IEntityTypeConfiguration<Contract
             lifetime.Property(l => l.StartDate).HasColumnName("LifetimeStart");
             lifetime.Property(l => l.EndDate).HasColumnName("LifetimeEnd");
         });
+
+        builder.Property(x => x.CreatedBy)
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+        
+        builder.Property(x => x.LastModifiedBy)
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
     }
 }

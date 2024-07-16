@@ -1,26 +1,27 @@
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Assessments;
-using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Cfo.Cats.Infrastructure.Persistence.Configurations
+namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Participant
 {
     public class ParticipantAssessmentEntityTypeConfiguration : IEntityTypeConfiguration<ParticipantAssessment>
     {
         public void Configure(EntityTypeBuilder<ParticipantAssessment> builder)
         {
-            builder.ToTable(DatabaseSchema.Tables.ParticipantAssessment);
+            builder.ToTable(
+                DatabaseConstants.Tables.Assessment, 
+                DatabaseConstants.Schemas.Participant);
 
             builder.HasKey(t => t.Id);
 
-            builder.Property(t => t.Id)
-                .HasMaxLength(9);
-
-            builder.HasOne<Participant>()
+            builder.HasOne<Domain.Entities.Participants.Participant>()
                 .WithMany()
                 .HasForeignKey(pa => pa.ParticipantId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Property(x => x.ParticipantId)
+                .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId);
 
             builder.HasOne<Tenant>()
                 .WithMany()
@@ -30,11 +31,16 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations
             builder.OwnsMany(p => p.Scores, score => {
                 score.WithOwner().HasForeignKey("AssessmentId");
                 score.HasKey("AssessmentId", "Pathway");
-                score.ToTable(DatabaseSchema.Tables.ParticipantAssessmentPathwayScore);
+                score.ToTable(
+                    DatabaseConstants.Tables.AssessmentPathwayScore, 
+                    DatabaseConstants.Schemas.Participant
+                    );
                 score.Property(x => x.Pathway).HasMaxLength(50).IsRequired();
                 score.Property(x => x.Score).HasColumnType("float").IsRequired();
             });
             
+            builder.Property(x => x.CreatedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+            builder.Property(x => x.LastModifiedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
         }
     }
