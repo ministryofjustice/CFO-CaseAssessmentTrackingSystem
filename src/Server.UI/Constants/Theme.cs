@@ -15,7 +15,8 @@ public static class Theme
                 Black = "#000000",
                 TableLines = "#722660",
                 Tertiary = "#FFFFFF",
-                AppbarBackground = "#722660"
+                AppbarBackground = "#722660",
+                Error="#CC0033"
             },
             PaletteDark = new PaletteDark
             {
