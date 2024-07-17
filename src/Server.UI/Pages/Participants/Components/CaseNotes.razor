@@ -5,65 +5,44 @@
 
 @inherits CatsComponentBase
 
-<style>
-    .multiline-ellipsis {
-        display: -webkit-box;
-        -webkit-line-clamp: 3; /* Number of lines to show */
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-</style>
-
 @if(_notes is not null)
 {
-    <MudTimeline>
-        <MudTimelineItem>
+    <MudTimeline TimelinePosition="TimelinePosition.Start" Modifiers="true">
+        <MudTimelineItem TimelineAlign="TimelineAlign.Start">
             <MudTooltip Text="New">
                 <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="OnAddNote" Class="rounded-circle"></MudIconButton>
             </MudTooltip>
         </MudTimelineItem>
-        @foreach(var (note, index) in _notes.OrderByDescending(x => x.Created).Select((note, index) => (note, index)))
+        @foreach(var note in _notes.OrderByDescending(x => x.Created))
         {
-            Color color = index % 2 is 0 ? Color.Primary : Color.Info;
-
-            <MudTimelineItem Color="color" Size="Size.Small">
-                <ItemOpposite>
-                    <MudText Color="color" Typo="Typo.h5">
-                        @note.Created.Humanize()
-                    </MudText>
-                    <MudText Typo="Typo.body1">
-                        @(@$"{note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")}")
-                    </MudText>
-                </ItemOpposite>
-                <ItemContent>
-                    <MudCard Outlined="true">
+            <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
+                <MudCard>
+                    <MudCardContent>
                         <MudCardHeader>
                             <CardHeaderAvatar>
-                                <MudAvatar Color="color">
-                                    @note.CreatedBy.Substring(0, 1)
-                                </MudAvatar>
+                                <MudAvatar Color="Color.Secondary">@note.CreatedBy.Substring(0,1)</MudAvatar>
                             </CardHeaderAvatar>
                             <CardHeaderContent>
-                                <MudText Typo="Typo.body1">@note.CreatedBy</MudText>
+                                <MudText Typo="Typo.body1" Color="Color.Dark">
+                                    @note.CreatedBy
+                                </MudText>
                                 <MudText Typo="Typo.body2">@note.CreatedByEmail</MudText>
                             </CardHeaderContent>
                             <CardHeaderActions>
-                                <MudTooltip Text="Expand">
-                                    <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="async() => await OnExpandNote(note.Message)"></MudIconButton>
-                                </MudTooltip>
+                                <MudIconButton Icon="@Icons.Material.Filled.Info"></MudIconButton>
                             </CardHeaderActions>
                         </MudCardHeader>
                         <MudCardContent>
-                            <MudText Class="multiline-ellipsis" Typo="Typo.body2">
+                            <MudText Typo="Typo.body1">
                                 @note.Message
                             </MudText>
                         </MudCardContent>
                         <MudCardActions>
-                            @*<MudIconButton Icon="@Icons.Material.Filled.Reply"></MudIconButton>*@
+                            @note.Created.Humanize()
                         </MudCardActions>
-                    </MudCard>
-                </ItemContent>
+                    </MudCardContent>
+                </MudCard>
+              
             </MudTimelineItem>
         }
     </MudTimeline>
@@ -88,7 +67,7 @@
     [EditorRequired]
     public string ParticipantId { get; set; } = default!;
 
-    protected async override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         try
         {
