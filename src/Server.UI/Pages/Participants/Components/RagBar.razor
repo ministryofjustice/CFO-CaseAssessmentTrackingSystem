@@ -3,7 +3,7 @@
 
 @inherits CatsComponentBase
 
-<MudPaper Class="ma-2 d-flex justify-space-between flex-wrap" Elevation="1" Outlined="true">
+
     @if (_model is not null)
     {
         foreach (var pathway in _model.PathwayScore)
@@ -11,7 +11,7 @@
             <RagComponent Pathway="pathway"></RagComponent>
         }
     }
-</MudPaper>
+
 
 @code {
 
