@@ -46,7 +46,8 @@ public class ParticipantSummaryDto
             CreateMap<Participant, ParticipantSummaryDto>(MemberList.None)
                 .ForMember(target => target.Id, options => options.MapFrom(source => source.Id))
                 .ForMember(target => target.Location, options => options.MapFrom(source => source.CurrentLocation.Name))
-                .ForMember(target => target.OwnerName, options => options.MapFrom(source => source.Owner!.DisplayName));
+                .ForMember(target => target.OwnerName, options => options.MapFrom(source => source.Owner!.DisplayName))
+                .ForMember(target => target.ParticipantName, options => options.MapFrom(source => source.FirstName + ' ' + source.LastName));
 
             CreateMap<ParticipantAssessment, AssessmentSummaryDto>()
                 .ForMember(target => target.AssessmentId, options => options.MapFrom(source => source.Id))

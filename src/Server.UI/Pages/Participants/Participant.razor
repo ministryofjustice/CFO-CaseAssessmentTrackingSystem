@@ -17,10 +17,37 @@
 <MudContainer Style="width: 100%; min-width: 480px">
     @if (_participant is not null)
     {
-        <RagBar ParticipantId="@Id" />
+        
         <CascadingValue Value="_participant">
             <MudPaper Class="pa-2 ma-2" Elevation="1" Outlined="true">
                 <MudGrid Spacing="1" Justify="Justify.SpaceBetween" Class="pa-3">
+                      <MudItem>
+                        <MudText Typo="Typo.h6" Color="Color.Primary">
+                            <b>
+                                Case Ref
+                            </b>
+                        </MudText>
+                    </MudItem>
+                    <MudItem>
+                        <MudText Typo="Typo.h6">
+                            @_participant.Id
+                        </MudText>
+                    </MudItem>
+                    <MudSpacer/>
+                     <MudItem>
+                        <MudText Typo="Typo.h6" Color="Color.Primary">
+                            <b>
+                                Participant
+                            </b>
+                        </MudText>
+                    </MudItem>
+                    <MudItem>
+                        <MudText Typo="Typo.h6">
+                            @_participant.ParticipantName (@_participant.DateOfBirth)
+                        </MudText>
+                    </MudItem>
+                    <MudSpacer/>
+                    
                     <MudItem>
                         <MudText Typo="Typo.h6" Color="Color.Primary">
                             <b>
@@ -37,20 +64,7 @@
                     <MudItem>
                         <MudText Typo="Typo.h6" Color="Color.Primary">
                             <b>
-                                Date of Birth
-                            </b>
-                        </MudText>
-                    </MudItem>
-                    <MudItem>
-                        <MudText Typo="Typo.h6">
-                            @_participant.DateOfBirth
-                        </MudText>
-                    </MudItem>
-                    <MudSpacer/>
-                    <MudItem>
-                        <MudText Typo="Typo.h6" Color="Color.Primary">
-                            <b>
-                                Current Status
+                                Status
                             </b>
                         </MudText>
                     </MudItem>
@@ -60,7 +74,8 @@
                         </MudText>
                     </MudItem>
                 </MudGrid>
-                <MudTabs Class="primary-tabs" Outlined="true" Color="Color.Info" Border="true">
+                <RagBar ParticipantId="@Id" />
+                <MudTabs Class="primary-tabs mt-2" Outlined="true" Color="Color.Info" Border="true">
                     <MudTabPanel Text="Case Summary">
                         <CaseSummary />
                     </MudTabPanel>
