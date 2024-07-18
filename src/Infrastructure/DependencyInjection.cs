@@ -232,31 +232,17 @@ public static class DependencyInjection
 
                 options.AddPolicy(PolicyNames.AllowExport, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireAssertion((context) => {
 
-                        bool isSystemUser = context.User.IsInRole(RoleNames.SystemSupport);
-                        bool isSeniorServiceDesk = context.User.IsInRole(RoleNames.ServiceDesk) && context.User.HasClaim(c => c.Type == ClaimNames.SeniorUser);
-
-                        return isSystemUser || isSeniorServiceDesk;
-                    });
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager);
+                    
                 });
 
                 options.AddPolicy(PolicyNames.AllowCandidateSearch, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireRole(
-                    RoleNames.SystemSupport,
-                    RoleNames.SupportWorker,
-                    RoleNames.ServiceDesk
-                    );
                 });
 
                 options.AddPolicy(PolicyNames.AllowDocumentUpload, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireRole(
-                    RoleNames.SystemSupport,
-                    RoleNames.SupportWorker,
-                    RoleNames.ServiceDesk
-                    );
                 });
 
                 options.AddPolicy(PolicyNames.AuthorizedUser, policy => {
@@ -265,34 +251,21 @@ public static class DependencyInjection
 
                 options.AddPolicy(PolicyNames.AllowEnrol, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SupportWorker);
                 });
                 
                 options.AddPolicy(PolicyNames.AllowImport, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireAssertion((context) => {
-
-                        bool isSystemUser = context.User.IsInRole(RoleNames.SystemSupport);
-                        bool isSeniorServiceDesk = context.User.IsInRole(RoleNames.ServiceDesk) && context.User.HasClaim(c => c.Type == ClaimNames.SeniorUser);
-
-                        return isSystemUser || isSeniorServiceDesk;
-                    });
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager);
                 });
                 
                 options.AddPolicy(PolicyNames.SystemFunctionsRead, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireAssertion((context) => {
-
-                        bool isSystemUser = context.User.IsInRole(RoleNames.SystemSupport);
-                        bool isSeniorServiceDesk = context.User.IsInRole(RoleNames.ServiceDesk) && context.User.HasClaim(c => c.Type == ClaimNames.SeniorUser);
-
-                        return isSystemUser || isSeniorServiceDesk;
-                    });
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOffice, RoleNames.QASupportManager);
                 });
                 
                 options.AddPolicy(PolicyNames.SystemFunctionsWrite, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireAssertion((context) => context.User.IsInRole(RoleNames.SystemSupport));
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOffice, RoleNames.QASupportManager);
                 });
 
             })

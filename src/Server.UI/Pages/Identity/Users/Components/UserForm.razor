@@ -1,16 +1,8 @@
 ﻿@using Cfo.Cats.Application.Features.Tenants.DTOs
-@using FluentValidation.Internal
-@using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode
-@using Size = SixLabors.ImageSharp.Size
-@using Image = SixLabors.ImageSharp.Image
-@using SixLabors.ImageSharp.Processing
-@using SixLabors.ImageSharp
-@using SixLabors.ImageSharp.Formats.Png
 @using Cfo.Cats.Application.Features.Identity.DTOs
-@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Domain.Identity
 @using Cfo.Cats.Application.Common.Interfaces.MultiTenant
-@using FluentValidation;
+@using Cfo.Cats.Application.SecurityConstants
 
 @inherits MudComponentBase
 
@@ -23,41 +15,16 @@
 
 <MudForm Model="@Model" @ref="@form" Validation="@(Validator.ValidateValue(Model))">
     <MudGrid>
-        <MudItem xs="12" sm="6">
-            <MudSelect T="string" ShrinkLabel Label="@L["Select Provider"]" For="@(() => Model.ProviderId)" Value="Model.ProviderId" ValueChanged="OnProviderValueChanged" Required="true">
+        <MudItem sm="12">
+            <MudSelect T="string" ShrinkLabel Label="@L["Select Tenant"]" For="@(() => Model.TenantId!)" Value="Model.TenantId" ValueChanged="OnTenantValueChange" Text="@Model.TenantName" Required="true">
                 @{
-                    if (CurrentUser is not null)
+                    for(int i = 0; i < Tenants.Count(); i++)
                     {
-                        var tenants = GetDescendants(CurrentUser.TenantId!);
+                        var tenant = Tenants.ElementAt(i);
 
-                        for (int i = 0; i < tenants.Count(); i++)
-                        {
-                            var tenant = tenants.ElementAt(i);
-
-                            <MudSelectItem Class="@($"pl-{(tenant.Id.Length + 2)}")" Value="@tenant.Id" Disabled="!IsValidTenant(tenant.Id)">
-                                @tenant.Name
-                            </MudSelectItem>
-                        }
-                    }
-                }
-            </MudSelect>
-        </MudItem>
-
-        <MudItem xs="12" sm="6">
-            <MudSelect T="string" ShrinkLabel Label="@L["Select Tenant"]" For="@(() => Model.TenantId)" Value="Model.TenantId" ValueChanged="OnTenantValueChange" Text="@Model.TenantName" Required="true" Disabled="string.IsNullOrEmpty(Model.ProviderId)">
-                @{
-                    if(string.IsNullOrEmpty(Model.ProviderId) is false)
-                    {
-                        var tenants = Tenants.Where(x => x.Id.StartsWith(Model.ProviderId));
-
-                        for(int i = 0; i < tenants.Count(); i++)
-                        {
-                            var tenant = tenants.ElementAt(i);
-
-                            <MudSelectItem Class="@($"pl-{(tenant.Id.Length + 2)}")" Value="@tenant.Id" Disabled="!IsValidTenant(tenant.Id)">
-                                @tenant.Name
-                            </MudSelectItem>
-                        }
+                        <MudSelectItem Class="@($"pl-{(tenant.Id.Length + 2)}")" Value="@tenant.Id" Disabled="!IsValidTenant(tenant.Id)">
+                            @tenant.Name (@tenant.Id)
+                        </MudSelectItem>
                     }
                 }
             </MudSelect>
@@ -73,7 +40,7 @@
                     <MudTextField For="@(() => Model.Email)" @bind-Value="Model.Email" Label="@L["E-mail"]" InputType="InputType.Email" Variant="Variant.Text" Required="true" Disabled="@string.IsNullOrEmpty(Model.TenantId)"></MudTextField>
                 </MudItem>
                 <MudItem xs="12" sm="6">
-                    <MudTextField For="@(() => Model.PhoneNumber)" @bind-Value="Model.PhoneNumber" Label="@L["Phone Number"]" InputType="InputType.Telephone" Variant="Variant.Text"></MudTextField>
+                    <MudTextField For="@(() => Model.PhoneNumber)" @bind-Value="Model.PhoneNumber" Label="@L["Mobile Number"]" InputType="InputType.Telephone" Variant="Variant.Text"></MudTextField>
                 </MudItem>
             </MudGrid>
         </MudItem>
@@ -97,7 +64,7 @@
                 {
                     var x = i;
                     <MudItem xs="6" sm="6" Class="py-0 my=0">
-                        <MudCheckBox T="bool" Value="@Roles[x].Value" Label="@Roles[x].Key" ValueChanged="@(s => Roles[x].Value = s)"></MudCheckBox>
+                        <MudCheckBox T="bool" Value="@Roles[x].Value" Label="@Roles[x].Key" ValueChanged="@(s => Roles[x].Value = s)" Disabled="@(Roles[x].Enabled == false)"></MudCheckBox>
                     </MudItem>
                 }
             </MudGrid>
@@ -124,10 +91,11 @@
     {
         public string Key { get; set; } = string.Empty;
         public bool Value { get; set; }
+        public bool Enabled { get; set; }
     }
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
-
+    
     [EditorRequired] [Parameter] public ApplicationUserDto Model { get; set; } = default!;
 
     [EditorRequired] [Parameter] public EventCallback<ApplicationUserDto> OnFormSubmit { get; set; }
@@ -135,6 +103,8 @@
     public string? CallReference { get; set; }
     public string Message { get; set; } = string.Empty;
 
+    
+    
     public ApplicationUser CurrentUser { get; private set; } = default!;
 
     private MudForm? form = default!;
@@ -145,22 +115,29 @@
         var state = await AuthState;
 
         CurrentUser = (await UserManager.GetUserAsync(state.User))!;
-
+        
         Tenants = TenantsService
-            .GetVisibleTenants(CurrentUser.TenantId ?? string.Empty)
+            .GetVisibleTenants(CurrentUser.TenantId!)
             .OrderBy(x => x.Id);
 
-        var array = await RoleManager.Roles.Select(x => x.Name).ToListAsync();
+        var array = await RoleManager.Roles.Select(x => x.Name!).ToListAsync();
 
+        bool systemSupportUser = await UserManager.IsInRoleAsync(CurrentUser, RoleNames.SystemSupport);
+        
         foreach (var role in array)
         {
+            bool enabled = systemSupportUser || await UserManager.IsInRoleAsync(CurrentUser, role);
+                
+                /*CurrentUser.AssignedRoles.Any(r => r == RoleNames.SystemSupport)
+                           || CurrentUser.AssignedRoles.Any(r => r == role);
+            */
             if (Model.AssignedRoles != null && Model.AssignedRoles.Contains(role))
             {
-                Roles.Add(new CheckItem { Key = role!, Value = true });
+                Roles.Add(new CheckItem { Key = role!, Value = true, Enabled = enabled});
             }
             else
             {
-                Roles.Add(new CheckItem { Key = role!, Value = false });
+                Roles.Add(new CheckItem { Key = role!, Value = false, Enabled = enabled });
             }
         }
     }
@@ -191,6 +168,7 @@
             await form.Validate();
             if (form.IsValid)
             {
+                Model.ProviderId = Model.TenantId;
                 Model.AssignedRoles = Roles.Where(x => x.Value).Select(x => x.Key).ToArray();
                 Model.Notes.Add(new ApplicationUserNoteDto 
                 { 

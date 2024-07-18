@@ -38,7 +38,6 @@ public class MenuService : IMenuService
                     new()
                     {
                         Title = "Reports",
-                        Roles = [RoleNames.SystemSupport, RoleNames.Statistics, RoleNames.ServiceDesk],
                         Icon = Icons.Material.Filled.Analytics,
                         Href = "/reports",
                         PageStatus = PageStatus.ComingSoon
@@ -46,7 +45,7 @@ public class MenuService : IMenuService
                     new()
                     {
                         Title = "PSF/DAF",
-                        Roles = [RoleNames.SystemSupport, RoleNames.Finance],
+                        Roles = [RoleNames.SystemSupport, RoleNames.QAFinance],
                         Icon = Icons.Material.Filled.Money,
                         Href = "/banking",
                         PageStatus = PageStatus.ComingSoon
@@ -64,7 +63,7 @@ public class MenuService : IMenuService
             new MenuSectionModel
             {
                 Title = "MANAGEMENT",
-                Roles = new[] { RoleNames.SystemSupport, RoleNames.ServiceDesk },
+                Roles = new[] { RoleNames.SystemSupport, RoleNames.QAOffice, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT },
                 SectionItems = new List<MenuSectionItemModel>
                 {
                     new()

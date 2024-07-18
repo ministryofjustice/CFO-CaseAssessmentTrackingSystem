@@ -16,6 +16,7 @@
 
 @code{
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+    public UserProfile UserProfile { get; set; } = default!;
 
     [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
 

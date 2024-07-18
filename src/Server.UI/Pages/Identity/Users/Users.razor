@@ -329,11 +329,16 @@
 </style>
 
 @code {
-    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+    [CascadingParameter] 
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+    
     private UserManager<ApplicationUser> UserManager = null!;
     private RoleManager<ApplicationRole> RoleManager = null!;
 
-
+    [CascadingParameter] 
+    public UserProfile UserProfile { get; set; } = default!;
+    
+    
     private int _defaultPageSize = 15;
     private readonly ApplicationUserDto _currentDto = new();
     private string _searchString = string.Empty;
@@ -456,7 +461,8 @@
     {
         var parameters = new DialogParameters<UserFormDialog>
         {
-            { x => x.Model, model }
+            { x => x.Model, model },
+            { x => x.UserProfile, UserProfile }
         };
         var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
         var dialog = DialogService.Show<UserFormDialog>(title, parameters, options);
@@ -477,7 +483,8 @@
     {
         var parameters = new DialogParameters<UserFormDialog>
         {
-            { x => x.Model, model }
+            { x => x.Model, model },
+            { x => x.UserProfile, UserProfile}
         };
         var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
         var dialog = DialogService.Show<UserFormDialog>(title, parameters, options);
@@ -567,15 +574,11 @@
         {
             await UserManager.AddToRolesAsync(user, roles);
         }
-        else
-        {
-            await UserManager.AddToRoleAsync(user, RoleNames.SupportWorker);
-        }
     }
 
     private async Task OnCreate()
     {
-        var model = new ApplicationUserDto { AssignedRoles = new[] { RoleNames.SupportWorker } };
+        var model = new ApplicationUserDto { AssignedRoles = [] };
         await ShowCreateUserDialog(model, L["Create a new user"]);
     }
 
@@ -886,11 +889,7 @@
             if (!UserManager.Users.Any(x => x.UserName == user.UserName))
             {
                 var identityResult = await UserManager.CreateAsync(user);
-                if (identityResult.Succeeded)
-                {
-                    await UserManager.AddToRolesAsync(user, new[] { RoleNames.SupportWorker });
-                }
-                else
+                if (identityResult.Succeeded == false)
                 {
                     Snackbar.Add($"{string.Join(',', identityResult.Errors.Select(x => x.Description))}", Severity.Error);
                 }
