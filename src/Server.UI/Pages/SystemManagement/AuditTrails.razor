@@ -6,7 +6,7 @@
 @using Cfo.Cats.Application.Features.AuditTrails.Caching
 @using Cfo.Cats.Application.SecurityConstants
 
-@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.ServiceDesk}")]
+@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.QAManager}")]
 
 @inject IStringLocalizer<AuditTrails> L
 @inject IState<UserProfileState> UserProfileState
