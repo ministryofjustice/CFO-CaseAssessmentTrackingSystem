@@ -54,7 +54,11 @@
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>Dashboard.Designer.cs</LastGenOutput>
         </EmbeddedResource>
+        <Compile Remove="logs\**" />
+        <Content Remove="logs\**" />
+        <EmbeddedResource Remove="logs\**" />
         <EmbeddedResource Remove="Pages\Assessment\**" />
+        <None Remove="logs\**" />
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Resources\Pages\Dashboard\Dashboard.Designer.cs">
@@ -66,9 +70,6 @@
     <ItemGroup>
       <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentQuestions\AssessmentMultipleChoiceQuestion.razor" />
       <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentQuestions\AssessmentToggleQuestion.razor" />
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="logs\" />
     </ItemGroup>
     
 
