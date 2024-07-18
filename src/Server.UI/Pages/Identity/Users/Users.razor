@@ -461,10 +461,9 @@
     {
         var parameters = new DialogParameters<UserFormDialog>
         {
-            { x => x.Model, model },
-            { x => x.UserProfile, UserProfile }
+            { x => x.Model, model }
         };
-        var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
         var dialog = DialogService.Show<UserFormDialog>(title, parameters, options);
         var result = await dialog.Result;
 
@@ -483,10 +482,9 @@
     {
         var parameters = new DialogParameters<UserFormDialog>
         {
-            { x => x.Model, model },
-            { x => x.UserProfile, UserProfile}
+            { x => x.Model, model }
         };
-        var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
         var dialog = DialogService.Show<UserFormDialog>(title, parameters, options);
         var result = await dialog.Result;
 

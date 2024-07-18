@@ -58,7 +58,7 @@
         </MudItem>
 
         <MudItem xs="12" sm="12" Class="mt-6">
-            <MudText Typo="Typo.caption">@L["Assign Roles"]</MudText>
+            <MudText Typo="Typo.caption">@L["Additional Roles"]</MudText>
             <MudGrid Class="mt-1">
                 @for (var i = 0; i < Roles.Count; i++)
                 {
@@ -120,25 +120,27 @@
             .GetVisibleTenants(CurrentUser.TenantId!)
             .OrderBy(x => x.Id);
 
-        var array = await RoleManager.Roles.Select(x => x.Name!).ToListAsync();
-
-        bool systemSupportUser = await UserManager.IsInRoleAsync(CurrentUser, RoleNames.SystemSupport);
-        
-        foreach (var role in array)
+        var roleNames = await UserManager.GetRolesAsync(CurrentUser);
+        List<ApplicationRole> userRoles = new(); 
+        foreach (var roleName in roleNames)
         {
-            bool enabled = systemSupportUser || await UserManager.IsInRoleAsync(CurrentUser, role);
-                
-                /*CurrentUser.AssignedRoles.Any(r => r == RoleNames.SystemSupport)
-                           || CurrentUser.AssignedRoles.Any(r => r == role);
-            */
-            if (Model.AssignedRoles != null && Model.AssignedRoles.Contains(role))
+            var role = await RoleManager.FindByNameAsync(roleName);
+            if (role != null)
             {
-                Roles.Add(new CheckItem { Key = role!, Value = true, Enabled = enabled});
+                userRoles.Add(role);
             }
-            else
-            {
-                Roles.Add(new CheckItem { Key = role!, Value = false, Enabled = enabled });
-            }
+        }
+
+        int min = userRoles.Min(x => x.RoleRank);
+        
+        var allRoles = await RoleManager.Roles!.ToListAsync();
+        
+        foreach (var role in allRoles.OrderByDescending(r => r.RoleRank))
+        {
+            bool isEnabled = role.RoleRank >= min;
+            bool isChecked = Model.AssignedRoles.Contains(role.Name);
+            
+            Roles.Add(new CheckItem { Key = role.Name!, Value = isChecked, Enabled = isEnabled});
         }
     }
 
