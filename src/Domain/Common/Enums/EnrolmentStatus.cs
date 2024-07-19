@@ -77,6 +77,14 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
 
     }
 
+    private sealed class Dormant : EnrolmentStatus 
+    {
+        public Dormant() : base(nameof(Dormant), 5) { }
+
+        protected override EnrolmentStatus[] GetAllowedTransitions() =>
+            [ AbandonedStatus, ApprovedStatus ];
+    }
+
     /// <summary>
     /// Indicates that a participant at this enrolment stage is allowed to have a new assessment created
     /// </summary>
