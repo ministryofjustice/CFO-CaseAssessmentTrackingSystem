@@ -15,12 +15,14 @@ public static class DependencyInjection
         {
             config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             //config.NotificationPublisher = new ParallelNoWaitPublisher();
-            config.AddRequestPreProcessor(typeof(IRequestPreProcessor<>), typeof(ValidationPreProcessor<>));
+            //config.AddRequestPreProcessor(typeof(IRequestPreProcessor<>), typeof(ValidationPreProcessor<>));
+            config.AddOpenBehavior(typeof(ValidationBehaviour<,>));
             config.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
             config.AddOpenBehavior(typeof(UnhandledExceptionBehaviour<,>));
             config.AddOpenBehavior(typeof(RequestExceptionProcessorBehavior<,>));
             // config.AddOpenBehavior(typeof(MemoryCacheBehaviour<,>)); // issues with caching means we need to turn it off for now
             config.AddOpenBehavior(typeof(AuthorizationBehaviour<,>));
+
             // config.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>)); // issues with caching means we need to turn it off for now
             config.AddOpenBehavior(typeof(TransactionBehaviour<,>));
         });
