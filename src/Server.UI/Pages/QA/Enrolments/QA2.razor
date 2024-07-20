@@ -1,14 +1,15 @@
 ﻿
-@page "/pages/qa/enrolments/qa1"
+@page "/pages/qa/enrolments/qa2"
 @using Cfo.Cats.Application.Features.Enrolments.DTOs
 @using Cfo.Cats.Application.Features.Enrolments.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Humanizer
+
 @inherits CatsComponentBase;
 
 @inject IStringLocalizer<PQA> L
 
-@attribute [Authorize(Roles = $"{RoleNames.QAOfficer}, {RoleNames.QAManager}, {RoleNames.QASupportManager}, {RoleNames.SMT}, {RoleNames.SystemSupport}")]
+@attribute [Authorize(Roles = $"{RoleNames.QAManager}, {RoleNames.QASupportManager}, {RoleNames.SMT}, {RoleNames.SystemSupport}")]
 
 <style>
     .mud-table-toolbar {
@@ -107,7 +108,7 @@
     private int _defaultPageSize = 15;
     private MudDataGrid<EnrolmentQueueEntryDto> _table = default!;
 
-    private Qa1WithPagination.Query Query { get; set; } = new();
+    private Qa2WithPagination.Query Query { get; set; } = new();
     private EnrolmentQueueEntryDto _currentDto = new();
     private HashSet<EnrolmentQueueEntryDto> _selectedItems = new();
     

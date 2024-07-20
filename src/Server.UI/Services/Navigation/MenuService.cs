@@ -48,7 +48,7 @@ public class MenuService : IMenuService
             new MenuSectionModel
             {
                 Title = "QA",
-                Roles = [RoleNames.SystemSupport, RoleNames.QAOffice, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.QAFinance],
+                Roles = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.QAFinance],
                 SectionItems = new List<MenuSectionItemModel>
                 {
                     new()
@@ -70,12 +70,13 @@ public class MenuService : IMenuService
                                 Title = "QA1",
                                 PageStatus = PageStatus.Completed,
                                 Href="/pages/qa/enrolments/qa1",
-                                Roles = [ RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                                Roles = [ RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
                             },
                             new()
                             {
                                 Title = "QA2",
-                                PageStatus = PageStatus.ComingSoon,
+                                PageStatus = PageStatus.Completed,
+                                Href="/pages/qa/enrolments/qa2",
                                 Roles = [  RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
                             }      
                         }
@@ -85,7 +86,7 @@ public class MenuService : IMenuService
             new MenuSectionModel
             {
                 Title = "MANAGEMENT",
-                Roles = new[] { RoleNames.SystemSupport, RoleNames.QAOffice, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT },
+                Roles = new[] { RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT },
                 SectionItems = new List<MenuSectionItemModel>
                 {
                     new()
