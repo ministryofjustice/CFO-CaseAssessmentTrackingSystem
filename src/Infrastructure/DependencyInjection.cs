@@ -273,6 +273,12 @@ public static class DependencyInjection
                     policy.RequireAuthenticatedUser();
                     policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAFinance);
                 });
+                
+                options.AddPolicy(PolicyNames.CanApprove, policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOffice, RoleNames.QASupportManager);
+                });
 
             })
             .AddAuthentication(options => {

@@ -1,7 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
 
-namespace Cfo.Cats.Application.Features.Participants.Commands.Transistion;
+namespace Cfo.Cats.Application.Features.Participants.Commands.Transition;
 
 public static class SuspendCase
 {
