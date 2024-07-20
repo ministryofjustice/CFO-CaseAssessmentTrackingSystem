@@ -39,4 +39,5 @@ public static class PolicyNames
     public const string CanSubmitToQA = nameof(CanSubmitToQA);
 
     public const string CanApprove = nameof(CanApprove);
+    
 }

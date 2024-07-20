@@ -18,13 +18,14 @@ public static class ApproveCase
         {
             var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
             
-            // do we have a second PQA?
-            var pq2 = await unitOfWork.DbContext.EnrolmentQa2Queue.FirstOrDefaultAsync(x => x.ParticipantId == request.ParticipantId && x.IsCompleted, cancellationToken: cancellationToken);
+            // do we have an open second PQA?
+            var pq2 = await unitOfWork.DbContext.EnrolmentQa2Queue.FirstOrDefaultAsync(x => x.ParticipantId == request.ParticipantId && x.IsCompleted == false, cancellationToken: cancellationToken);
 
             if (pq2 == null)
             {
                 // we do not have an open PQA2 entry create one
                 var entry = EnrolmentQa2QueueEntry.Create(request.ParticipantId);
+                entry.TenantId = participant!.Owner!.TenantId!;
                 await unitOfWork.DbContext.EnrolmentQa2Queue.AddAsync(entry, cancellationToken);
             }
             else

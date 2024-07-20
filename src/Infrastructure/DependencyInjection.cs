@@ -260,12 +260,12 @@ public static class DependencyInjection
                 
                 options.AddPolicy(PolicyNames.SystemFunctionsRead, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOffice, RoleNames.QASupportManager);
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer, RoleNames.QASupportManager);
                 });
                 
                 options.AddPolicy(PolicyNames.SystemFunctionsWrite, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOffice, RoleNames.QASupportManager);
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer, RoleNames.QASupportManager);
                 });
                 
                 options.AddPolicy(PolicyNames.CanSubmitToQA, policy =>
@@ -277,7 +277,7 @@ public static class DependencyInjection
                 options.AddPolicy(PolicyNames.CanApprove, policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOffice, RoleNames.QASupportManager);
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer, RoleNames.QASupportManager);
                 });
 
             })
