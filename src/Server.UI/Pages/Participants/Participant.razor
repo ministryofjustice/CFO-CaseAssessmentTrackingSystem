@@ -76,32 +76,7 @@
                     </MudItem>
                 </MudGrid>
                 <RagBar ParticipantId="@Id" />
-                <MudMenu ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft">
-                    <ActivatorContent>
-                        <MudChip T="string" Icon="@Icons.Material.Filled.CallToAction">Actions</MudChip>
-                    </ActivatorContent>
-                    <ChildContent>
-                        @* Abandon always available? *@
-                        <MudMenuItem Icon="@Icons.Material.Filled.DeleteForever" IconColor="Color.Error">Abandon</MudMenuItem>
-
-                        @if (_participant.EnrolmentStatus == EnrolmentStatus.PendingStatus)
-                        {
-                            <MudMenuItem Icon="@Icons.Material.Filled.Send" IconColor="Color.Primary">Submit to Provider QA</MudMenuItem>
-                        }
-
-                        @if (_participant.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus)
-                        {
-                            <MudMenuItem Icon="@Icons.Material.Filled.Cancel" IconColor="Color.Primary">Return to Support Worker</MudMenuItem>
-                            <MudMenuItem Icon="@Icons.Material.Filled.Send" IconColor="Color.Primary">Submit to QA</MudMenuItem>
-                        }
-
-                        @if (_participant.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus)
-                        {
-                            <MudMenuItem Icon="@Icons.Material.Filled.Cancel" IconColor="Color.Primary">Return to PQA</MudMenuItem>
-                            <MudMenuItem Icon="@Icons.Material.Filled.Send" IconColor="Color.Primary">Approve</MudMenuItem>
-                        }
-                    </ChildContent>
-                </MudMenu>
+                <ParticipantActionMenu />
                 <MudTabs Class="primary-tabs mt-2" Outlined="true" Color="Color.Info" Border="true">
                     <MudTabPanel Text="Case Summary">
                         <CaseSummary />

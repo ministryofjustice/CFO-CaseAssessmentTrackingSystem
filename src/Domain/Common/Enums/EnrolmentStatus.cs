@@ -10,6 +10,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
     public static readonly EnrolmentStatus SubmittedToAuthorityStatus = new SubmittedToAuthority();
     public static readonly EnrolmentStatus ApprovedStatus = new Approved();
     public static readonly EnrolmentStatus AbandonedStatus = new Abandoned();
+    public static readonly EnrolmentStatus DormantStatus = new Dormant();
 
 
     private EnrolmentStatus(string name, int value)
@@ -19,6 +20,15 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
     /// Statuses that we can transition to.
     /// </summary>
     protected abstract EnrolmentStatus[] GetAllowedTransitions();
+
+    /// <summary>
+    /// Indicates the status of the enrolment is at a QA stage.
+    /// </summary>
+    /// <returns></returns>
+    public virtual bool IsQaStage()
+    {
+        return false;
+    }
 
     public virtual bool CanTransitionTo(EnrolmentStatus next)
     {
@@ -42,10 +52,12 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
             : base(nameof(SubmittedToProvider), 1) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions()
-            => [AbandonedStatus, PendingStatus];
+            => [AbandonedStatus, PendingStatus, SubmittedToAuthorityStatus];
         
         public override bool StatusSupportsReassessment() => false;
-        
+
+        public override bool IsQaStage() => true;
+
     }
 
     private sealed class SubmittedToAuthority : EnrolmentStatus
@@ -53,6 +65,8 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
         public SubmittedToAuthority(): base(nameof(SubmittedToAuthority), 2) { }
 
         public override bool StatusSupportsReassessment() => false;
+
+        public override bool IsQaStage() => true;
 
         protected override EnrolmentStatus[] GetAllowedTransitions() => 
             [ SubmittedToProviderStatus, ApprovedStatus ];
@@ -64,7 +78,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
         { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions() =>
-            [AbandonedStatus];
+            [AbandonedStatus, DormantStatus];
 
     }
 
@@ -90,3 +104,4 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
     /// </summary>
     public virtual bool StatusSupportsReassessment() => true;
 }
+

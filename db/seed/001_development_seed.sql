@@ -14,6 +14,7 @@ BEGIN TRY
         (N'1.1.1.', N'Achieve', N'Top level tenant for provider Achieve', N'2024-05-31 12:30:38.3850635'),
         (N'1.1.1.1.', N'North West Contract', N'Achieve (North West Contract)', N'2024-05-31 12:30:38.3850635'),
         (N'1.1.1.1.1.', N'Achieve_NW', N'Achieve (North West Team)', N'2024-05-31 12:30:38.3850635'),
+        (N'1.1.1.1.2.', N'Growth_NW', N'Achieve (Growth North West Team)', N'2024-05-31 12:30:38.3850635'),
         
         -- Igneus
         (N'1.1.2.', N'Ingeus', N'Top level tenant for provider Ingeus', N'2024-05-31 12:30:38.3850637'),

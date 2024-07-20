@@ -42,21 +42,43 @@ public class MenuService : IMenuService
                         Href = "/reports",
                         PageStatus = PageStatus.ComingSoon
                     },
+                  
+                }
+            },
+            new MenuSectionModel
+            {
+                Title = "QA",
+                Roles = [RoleNames.SystemSupport, RoleNames.QAOffice, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.QAFinance],
+                SectionItems = new List<MenuSectionItemModel>
+                {
                     new()
                     {
-                        Title = "PSF/DAF",
-                        Roles = [RoleNames.SystemSupport, RoleNames.QAFinance],
-                        Icon = Icons.Material.Filled.Money,
-                        Href = "/banking",
-                        PageStatus = PageStatus.ComingSoon
-                    },
-                    new()
-                    {
-                        Title = "Tasks",
-                        Roles = [RoleNames.SystemSupport],
-                        Icon = Icons.Material.Filled.CalendarToday,
-                        Href = "/Tasks",
-                        PageStatus = PageStatus.ComingSoon
+                        IsParent = true,
+                        Title = "Enrolments",
+                        Icon = Icons.Material.Filled.Approval,
+                        MenuItems = new List<MenuSectionSubItemModel>
+                        {
+                             new()
+                            {
+                                Title = "PQA",
+                                Href="/pages/qa/enrolments/pqa",
+                                PageStatus = PageStatus.Completed,
+                                Roles = [ RoleNames.QAFinance, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            },
+                            new()
+                            {
+                                Title = "QA1",
+                                PageStatus = PageStatus.Completed,
+                                Href="/pages/qa/enrolments/qa1",
+                                Roles = [ RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            },
+                            new()
+                            {
+                                Title = "QA2",
+                                PageStatus = PageStatus.ComingSoon,
+                                Roles = [  RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            }      
+                        }
                     }
                 }
             },

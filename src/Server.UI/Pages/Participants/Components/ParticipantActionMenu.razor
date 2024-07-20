@@ -1,0 +1,132 @@
+﻿@using System.Text
+@using Cfo.Cats.Application.Features.Participants.Commands.Transistion
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Domain.Common.Enums
+
+@inherits CatsComponentBase
+
+<MudMenu ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft">
+    <ActivatorContent>
+        <MudChip T="string" Icon="@Icons.Material.Filled.CallToAction">Actions</MudChip>
+    </ActivatorContent>
+    <ChildContent>
+        
+        @if (Participant.EnrolmentStatus != EnrolmentStatus.AbandonedStatus)
+        {
+            <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error" OnClick="Abandon">Abandon</MudMenuItem>
+        }
+        
+        @if (Participant.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
+        {
+            <MudMenuItem Icon="@Icons.Material.Filled.HideSource" IconColor="Color.Error" OnClick="Suspend">Suspend</MudMenuItem>
+        }
+
+        @if (Participant.EnrolmentStatus == EnrolmentStatus.PendingStatus)
+        {
+            <MudMenuItem Icon="@Icons.Material.Filled.Send" IconColor="Color.Primary" OnClick="SubmitToPqa">Submit to Provider QA</MudMenuItem>
+        }
+
+       
+        
+        
+    </ChildContent>
+</MudMenu>
+
+@code {
+
+    private bool _canSubmitToQA;
+    
+    [CascadingParameter]
+    protected ParticipantSummaryDto Participant { get; set; } = default!;
+    
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthState;
+        
+        // only provider QA can submit to QA
+        _canSubmitToQA = (await AuthService.AuthorizeAsync(state.User, PolicyNames.CanSubmitToQA)).Succeeded;
+
+
+    }
+
+    protected async Task Abandon()
+    {
+        var command = new AbandonCase.Command()
+        {
+            ParticipantId = Participant.Id
+        };
+        
+        var result = await GetNewMediator().Send(command);
+        if (result.Succeeded)
+        {
+            Snackbar.Add($"Participant {Participant.Id} abandoned", Severity.Success);
+        }
+        else
+        {
+            ShowActionFailure("Failed to abandon", result);
+        }
+
+    }
+    
+    protected async Task Suspend()
+    {
+        var command = new SuspendCase.Command()
+        {
+            ParticipantId = Participant.Id
+        };
+        
+        var result = await GetNewMediator().Send(command);
+        if (result.Succeeded)
+        {
+            Snackbar.Add($"Participant {Participant.Id} suspended", Severity.Success);
+        }
+        else
+        {
+            ShowActionFailure("Failed to abandon", result);
+        }
+
+    }
+
+    protected async Task SubmitToPqa()
+    {
+        var command = new SubmitToProviderQa.Command()
+        {
+            ParticipantId = Participant.Id
+        };
+
+        var result = await GetNewMediator().Send(command);
+        if (result.Succeeded)
+        {
+            Snackbar.Add($"Participant {Participant.Id} submitted to Provider QA", Severity.Success);
+        }
+        else
+        {
+            ShowActionFailure("Failed to submit to Provider QA", result);
+        }
+        
+    }
+    
+    
+
+    private void ShowActionFailure(string title, IResult result)
+    {
+        Snackbar.Add(
+            @<div>
+                <h2>@title</h2>
+                <ul>
+                    @foreach (var e in result.Errors)
+                    {
+                        <li>@e</li>
+                    }
+                </ul>
+            </div>
+        , Severity.Error, options => {
+            options.RequireInteraction = true;
+            options.SnackbarVariant = Variant.Text;
+        } );
+    }
+
+}

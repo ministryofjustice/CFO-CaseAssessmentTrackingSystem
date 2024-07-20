@@ -70,6 +70,10 @@
     <ItemGroup>
       <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentQuestions\AssessmentMultipleChoiceQuestion.razor" />
       <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentQuestions\AssessmentToggleQuestion.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Participants\Components\ParticipantActionMenu.razor" />
+    </ItemGroup>
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Pages\Participants\Components\ParticipantActionMenu.razor" />
     </ItemGroup>
     
 
