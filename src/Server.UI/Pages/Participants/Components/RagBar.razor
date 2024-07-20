@@ -23,7 +23,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (string.IsNullOrEmpty(ParticipantId))
+        if (!string.IsNullOrEmpty(ParticipantId))
         {
             var query = new GetAssessmentScores.Query()
                 {
