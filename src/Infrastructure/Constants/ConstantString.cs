@@ -22,6 +22,7 @@ public static class ConstantString
     public static string Rename => Localize("Rename");
     public static string Refresh => Localize("Refresh");
     public static string Edit => Localize("Edit");
+    public static string View => Localize("View");
     public static string Submit => Localize("Submit");
     public static string Delete => Localize("Delete");
     public static string Archive => Localize("Archive");

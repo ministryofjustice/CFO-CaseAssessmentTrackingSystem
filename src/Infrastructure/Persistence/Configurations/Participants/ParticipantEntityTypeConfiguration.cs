@@ -172,6 +172,9 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
         builder.Navigation(p => p.CurrentLocation)
             .AutoInclude();
 
+        builder.Navigation(p => p.Owner)
+            .AutoInclude();
+        
         builder.HasOne(x => x.Owner)
             .WithMany()
             .HasForeignKey(x => x.OwnerId);

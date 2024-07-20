@@ -33,6 +33,8 @@ public class ParticipantDto
     public RightToWorkDto[] RightToWorks { get; set; } = [];
 
     public ParticipantNoteDto[] Notes { get; set; } = [];
+
+    public string TenantId { get; set; } = default!;
     
     private class Mapping : Profile
     {
@@ -46,7 +48,8 @@ public class ParticipantDto
                 .ForMember(target => target.RightToWorks,
                     options => options.MapFrom(source => source.RightToWorks.ToArray()))
                 .ForMember(target => target.Notes,
-                    options => options.MapFrom(source => source.Notes.ToArray()));
+                    options => options.MapFrom(source => source.Notes.ToArray()))
+                .ForMember(target => target.TenantId, options => options.MapFrom(s => s.Owner!.TenantId));
         }
     }
 }

@@ -16,18 +16,19 @@
             var context = new ValidationContext<TRequest>(request);
             var failures = new List<FluentValidation.Results.ValidationFailure>();
 
-            foreach (var validator in _validators)
+            foreach (var validator in _validators.OrderBy(c => c.GetType().Name))
             {
                 var result = await validator.ValidateAsync(context, cancellationToken);
                 if (result.Errors.Any())
                 {
                     failures.AddRange(result.Errors);
+                    break;
                 }
             }
 
             if (failures.Any())
             {
-                var errors = failures.Select(f => $"{f.PropertyName}: {f.ErrorMessage}").ToArray();
+                var errors = failures.Select(f => f.ErrorMessage).ToArray();
 
                 if (typeof(TResponse).IsGenericType && typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>))
                 {

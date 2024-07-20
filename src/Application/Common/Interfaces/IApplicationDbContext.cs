@@ -35,8 +35,14 @@ public interface IApplicationDbContext
     
     public DbSet<ApplicationUser> Users { get; }
     
+    public DbSet<EnrolmentPqaQueueEntry> EnrolmentPqaQueue { get; }
+    public DbSet<EnrolmentQa1QueueEntry> EnrolmentQa1Queue { get; }
+    public DbSet<EnrolmentQa2QueueEntry> EnrolmentQa2Queue { get; }
+    public DbSet<EnrolmentEscalationQueueEntry> EnrolmentEscalationQueue { get; }
+    
     ChangeTracker ChangeTracker { get; }
 
     DbSet<DataProtectionKey> DataProtectionKeys { get; }
 
 }
+

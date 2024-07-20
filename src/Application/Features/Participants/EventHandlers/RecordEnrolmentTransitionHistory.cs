@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Participants.EventHandlers;
 
-public class ParticipantTransitionedEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantTransitionedDomainEvent>
+public class CreateTransitionEvent(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantTransitionedDomainEvent>
 {
     public async Task Handle(ParticipantTransitionedDomainEvent notification, CancellationToken cancellationToken)
     {

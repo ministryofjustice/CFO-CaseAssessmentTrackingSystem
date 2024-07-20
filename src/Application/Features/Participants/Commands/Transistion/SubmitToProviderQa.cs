@@ -1,24 +1,15 @@
-using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Features.Candidates.Caching;
-using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands.Transistion;
 
 public static class SubmitToProviderQa
 {
-    [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
-    public class Command : ICacheInvalidatorRequest<Result>
+    [RequestAuthorize(Policy = PolicyNames.AuthorizedUser)]
+    public class Command : IRequest<Result>
     {
         public required string ParticipantId { get; set; }
-        
-        public string[] CacheKeys => [
-            ParticipantCacheKey.GetCacheKey(ParticipantId),
-            ParticipantCacheKey.GetSummaryCacheKey(ParticipantId)
-        ];
-        
-        public CancellationTokenSource? SharedExpiryTokenSource => CandidatesCacheKey.SharedExpiryTokenSource();
+
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
@@ -32,10 +23,10 @@ public static class SubmitToProviderQa
         }
     }
 
-    public class ParticipantMustExistValidator : AbstractValidator<Command> 
+    public class A_ParticipantMustExistValidator : AbstractValidator<Command> 
     {
         private IUnitOfWork _unitOfWork;
-        public ParticipantMustExistValidator(IUnitOfWork unitOfWork)
+        public A_ParticipantMustExistValidator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
@@ -51,21 +42,17 @@ public static class SubmitToProviderQa
                 => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
     }
 
-    public class ParticipantAssessmentShouldExist : AbstractValidator<Command>
+    public class B_ParticipantAssessmentShouldExist : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public ParticipantAssessmentShouldExist(IUnitOfWork unitOfWork)
+        public B_ParticipantAssessmentShouldExist(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
             RuleFor(c => c.ParticipantId)
-                .NotNull()
-                .MinimumLength(9)
-                .MaximumLength(9)
-                .WithMessage("Invalid Participant Id")
                 .MustAsync(MustExist)
-                .WithMessage("Participant must have an assessment");
+                .WithMessage($"No assessment found for participant.");
 
         }
 
@@ -73,22 +60,44 @@ public static class SubmitToProviderQa
               => await _unitOfWork.DbContext.ParticipantAssessments.AnyAsync(e => e.ParticipantId == identifier, cancellationToken);
 
     }
-
-    public class ParticipantShouldHaveAtLeastTwoReds : AbstractValidator<Command>
+    
+    public class C_ParticipantAssessmentShouldBeSubmitted : AbstractValidator<Command>
     {
         private IUnitOfWork _unitOfWork;
 
-        public ParticipantShouldHaveAtLeastTwoReds(IUnitOfWork unitOfWork)
+        public C_ParticipantAssessmentShouldBeSubmitted(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
             RuleFor(c => c.ParticipantId)
-                .NotNull()
-                .MinimumLength(9)
-                .MaximumLength(9)
-                .WithMessage("Invalid Participant Id")
+                .MustAsync(MustBeScored)
+                .WithMessage("Assessment has not been submitted and scored.");
+        }
+
+        private async Task<bool> MustBeScored(string identifier, CancellationToken cancellationToken)
+        {
+            var assessments = await  _unitOfWork.DbContext.ParticipantAssessments
+                .Include(pa => pa.Scores)
+                .ToArrayAsync(cancellationToken);
+
+            var latest = assessments.MaxBy(a => a.Created);
+
+            return latest is not null
+                   && latest.Scores.All(s => s.Score >= 0);
+        }
+    }
+
+    public class D_ParticipantShouldHaveAtLeastTwoReds : AbstractValidator<Command>
+    {
+        private IUnitOfWork _unitOfWork;
+
+        public D_ParticipantShouldHaveAtLeastTwoReds(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c.ParticipantId)
                 .MustAsync(MustHaveTwoReds)
-                .WithMessage("Assessment should have two reds");
+                .WithMessage("Assessment does not have two reds. Justification must be provided");
         }
 
         private async Task<bool> MustHaveTwoReds(string identifier, CancellationToken cancellationToken)
@@ -97,10 +106,10 @@ public static class SubmitToProviderQa
                                     .Include(pa => pa.Scores)
                                     .ToArrayAsync(cancellationToken);
 
-            var latest = assessments.OrderByDescending(a => a.Created).FirstOrDefault();
+            var latest = assessments.MaxBy(a => a.Created);
 
             return latest is not null
-                && latest.Scores.Where(s => s.Score < 10).Count() > 1;
+                && latest.Scores.Count(s => s.Score is > 0 and < 10) > 1;
         }
     }
 

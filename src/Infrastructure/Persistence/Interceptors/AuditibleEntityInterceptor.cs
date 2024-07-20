@@ -60,12 +60,12 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                 case EntityState.Added:
                     entry.Entity.CreatedBy = userId;
                     entry.Entity.Created = dateTime.Now;
-                    if (entry.Entity is IMustHaveTenant mustTenant)
+                    if (entry.Entity is IMustHaveTenant mustTenant && string.IsNullOrEmpty(mustTenant.TenantId))
                     {
                         mustTenant.TenantId = tenantId!;
                     }
 
-                    if (entry.Entity is IMayHaveTenant mayTenant)
+                    if (entry.Entity is IMayHaveTenant mayTenant && string.IsNullOrEmpty(mayTenant.TenantId))
                     {
                         mayTenant.TenantId = tenantId;
                     }

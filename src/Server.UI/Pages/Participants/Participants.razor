@@ -92,10 +92,6 @@
                         <MudMenuItem OnClick="@(()=> OnResumeEnrolment(context.Item))">
                             @ConstantString.ResumeEnrolment
                         </MudMenuItem>
-                         // we are pending. Allow a continuation of the enrolment process.
-                        <MudMenuItem OnClick="@(()=> OnSubmitToProviderQa(context.Item))">
-                            @ConstantString.Submit
-                        </MudMenuItem>
                     }
                     <MudMenuItem OnClick="@(()=> Edit(context.Item))">
                         @ConstantString.Edit
@@ -191,22 +187,7 @@
         Navigation.NavigateTo($"/pages/enrolments/{participant.Id}");
     }
     
-    private async Task OnSubmitToProviderQa(ParticipantDto participant)
-    {
-        SubmitToProviderQa.Command command = new SubmitToProviderQa.Command
-        {
-            ParticipantId = participant.Id
-        };
-        var result = await GetNewMediator().Send(command);
-        if (result.Succeeded)
-        {
-            Snackbar.Add($"Participant {participant.Id} submitted to Provider QA", Severity.Success);
-        }
-        else
-        {
-            Snackbar.Add($"Participant {participant.Id} failed to submit to Provider QA", Severity.Error);
-        }
-    }
+   
 
     private void Edit(ParticipantDto participant)
     {

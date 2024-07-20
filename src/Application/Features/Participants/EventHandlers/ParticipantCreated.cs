@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Participants.EventHandlers;
 
-public class ParticipantCreatedEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantCreatedDomainEvent>
+public class ParticipantCreated(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantCreatedDomainEvent>
 {
     public async Task Handle(ParticipantCreatedDomainEvent notification, CancellationToken cancellationToken)
     {

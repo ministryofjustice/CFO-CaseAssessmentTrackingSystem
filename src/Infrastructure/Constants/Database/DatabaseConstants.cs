@@ -33,6 +33,13 @@ internal static class DatabaseConstants
 
         public const string Timeline = nameof(Timeline);
 
+        public const string EnrolmentPqaQueue = "PqaQueue";
+        public const string EnrolmentQa1Queue = "Qa1Queue";
+        public const string EnrolmentQa2Queue = "Qa2Queue";
+        public const string EnrolmentEscalationQueue = "EscalationQueue";
+        
+
+
     }
     public static class Schemas
     {
@@ -42,6 +49,7 @@ internal static class DatabaseConstants
         public const string Audit = nameof(Audit);
         public const string Configuration = nameof(Configuration);
         public const string Document = nameof(Document);
+        public const string Enrolment = nameof(Enrolment);
     }
 
     public static class FieldLengths
@@ -69,4 +77,5 @@ internal static class DatabaseConstants
     }
 
 }
+
 
