@@ -1,7 +1,7 @@
 @page "/pages/qa/enrolments/pqa/{upci}"
 
 @using Cfo.Cats.Application.Features.Documents.Queries
-@using Cfo.Cats.Application.Features.Participants.Commands.Transistion
+@using Cfo.Cats.Application.Features.Participants.Commands.Transition
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Domain.Common.Enums
@@ -83,7 +83,11 @@
                 {
                     <MudButton Color="Color.Primary" OnClick="SubmitToQa">Approve</MudButton>    
                 }
-                
+
+                @if (_participantDto.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus)
+                {
+                    <MudButton Color="Color.Primary" OnClick="Approve">Approve</MudButton>
+                }
                 
                 <MudButton Color="Color.Secondary">Return</MudButton>
             </MudButtonGroup>
@@ -170,9 +174,29 @@ else
         {
             ShowActionFailure("Failed to submit", result);
         }
+    }
+    
+    protected async Task Approve()
+    {
+        var command = new ApproveCase.Command()
+        {
+            ParticipantId = _participantDto!.Id
+        };
+        var result = await GetNewMediator().Send(command);
+
+        if (result.Succeeded)
+        {
+            Snackbar.Add("Participant submitted to QA", Severity.Info);
+            Navigation.NavigateTo("/pages/qa/enrolments/pqa");
+        }
+        else
+        {
+            ShowActionFailure("Failed to submit", result);
+        }
 
 
     }
+    
     
     private void ShowActionFailure(string title, IResult result)
     {

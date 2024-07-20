@@ -37,4 +37,6 @@ public static class PolicyNames
     public const string SystemFunctionsWrite = nameof(SystemFunctionsWrite);
 
     public const string CanSubmitToQA = nameof(CanSubmitToQA);
+
+    public const string CanApprove = nameof(CanApprove);
 }
