@@ -10,9 +10,9 @@ public static class SubmitPqaResponse
     {
         public required Guid QueueEntryId { get; set; }
         
-        public bool Accept { get; set; }
-        
-        public string? Message { get; set; }
+        public bool? Accept { get; set; }
+
+        public string Message { get; set; } = default!;
     }
     
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
@@ -28,17 +28,37 @@ public static class SubmitPqaResponse
                 return Result.Failure("Cannot find queue item");
             }
             
-            entry.Complete(request.Accept, request.Message);
+            entry.Complete(request.Accept.GetValueOrDefault(), request.Message);
             entry.Participant!.TransitionTo(EnrolmentStatus.SubmittedToAuthorityStatus);
             
             return Result.Success();
         }
     }
-    
-    public class A_EntryMustExist : AbstractValidator<Command> 
+
+    public class A_IsValidRequest : AbstractValidator<Command>
+    {
+        public A_IsValidRequest()
+        {
+            RuleFor(x => x.Accept)
+                .NotNull()
+                .WithMessage("You must accept or return the request");
+
+            When(x => x.Accept == false, () => {
+                RuleFor(x => x.Message)
+                    .NotNull()
+                    .WithMessage("A message is required when returning")
+                    .NotEmpty()
+                    .WithMessage("A message is required when returning");
+            });
+
+        }
+    }
+
+
+    public class B_EntryMustExist : AbstractValidator<Command> 
     {
         private IUnitOfWork _unitOfWork;
-        public A_EntryMustExist(IUnitOfWork unitOfWork)
+        public B_EntryMustExist(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
@@ -50,11 +70,11 @@ public static class SubmitPqaResponse
             => await _unitOfWork.DbContext.EnrolmentPqaQueue.AnyAsync(e => e.Id == identifier, cancellationToken);
     }
 
-    public class B_ShouldNotBeComplete : AbstractValidator<Command>
+    public class C_ShouldNotBeComplete : AbstractValidator<Command>
     {
         private IUnitOfWork _unitOfWork;
 
-        public B_ShouldNotBeComplete(IUnitOfWork unitOfWork)
+        public C_ShouldNotBeComplete(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
@@ -73,11 +93,11 @@ public static class SubmitPqaResponse
         }
     }
     
-    public class C_ShouldNotBeAtPqaStatus : AbstractValidator<Command>
+    public class D_ShouldNotBeAtPqaStatus : AbstractValidator<Command>
     {
         private IUnitOfWork _unitOfWork;
 
-        public C_ShouldNotBeAtPqaStatus(IUnitOfWork unitOfWork)
+        public D_ShouldNotBeAtPqaStatus(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
