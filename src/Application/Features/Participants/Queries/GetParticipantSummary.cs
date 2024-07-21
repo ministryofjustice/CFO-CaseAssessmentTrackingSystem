@@ -40,7 +40,7 @@ public static class GetParticipantSummary
                 .ProjectTo<AssessmentSummaryDto>(mapper.ConfigurationProvider)
                 .ToArrayAsync(cancellationToken);
                 
-            return await Result<ParticipantSummaryDto>.SuccessAsync(summary);
+            return Result<ParticipantSummaryDto>.Success(summary);
 
         }
     }

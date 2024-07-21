@@ -1,7 +1,7 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
 
-namespace Cfo.Cats.Application.Features.Participants.Commands.Transition;
+namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
 
 public static class SubmitToProviderQa
 {

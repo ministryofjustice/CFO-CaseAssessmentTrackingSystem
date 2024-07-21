@@ -1,28 +1,27 @@
-using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
 
-namespace Cfo.Cats.Application.Features.Participants.Commands.Transition;
+namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
 
-public static class SubmitToQa
+public static class SubmitPqaReturnToSupportWorker
 {
     [RequestAuthorize(Policy = PolicyNames.CanSubmitToQA)]
     public class Command : IRequest<Result>
     {
         public required string ParticipantId { get; set; }
-
     }
-
+    
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
-            participant!.TransitionTo(EnrolmentStatus.SubmittedToAuthorityStatus);
+            participant!.TransitionTo(EnrolmentStatus.PendingStatus);
             // ReSharper disable once MethodHasAsyncOverload
             return Result.Success();
         }
     }
-
+    
     public class A_ParticipantMustExistValidator : AbstractValidator<Command> 
     {
         private IUnitOfWork _unitOfWork;
@@ -39,7 +38,7 @@ public static class SubmitToQa
                 .WithMessage("Participant does not exist");
         }
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
-                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
     }
 
     public class B_ParticipantAssessmentShouldBeSubmittedToPqa : AbstractValidator<Command>
@@ -64,6 +63,4 @@ public static class SubmitToQa
 
         }
     }
-
-    
 }

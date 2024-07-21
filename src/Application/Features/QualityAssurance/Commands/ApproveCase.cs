@@ -2,7 +2,7 @@
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
 
-namespace Cfo.Cats.Application.Features.Participants.Commands.Transition;
+namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
 
 public static class ApproveCase
 {

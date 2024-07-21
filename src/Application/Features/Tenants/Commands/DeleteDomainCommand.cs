@@ -45,7 +45,7 @@ public static class DeleteDomainCommand
 
             tenantService.Refresh();
 
-            return await Result<int>.SuccessAsync(1);
+            return Result<int>.Success(1);
         }
     }
 

@@ -71,7 +71,7 @@ public static class SaveAssessment
                 pa.Submit();
             }
 
-            return await Result.SuccessAsync();
+            return Result.Success();
         }
     }
 

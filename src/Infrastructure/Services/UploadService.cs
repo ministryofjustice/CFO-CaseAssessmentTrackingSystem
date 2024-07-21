@@ -30,7 +30,7 @@ public class UploadService : IUploadService
                 if (folder.EndsWith("/"))
                 {
                     _logger.LogWarning("Attempt to upload a document with a forward slash in the folder");
-                    return await Result<string>.FailureAsync("Folder should not end in forward slash");
+                    return Result<string>.Failure("Folder should not end in forward slash");
                 }
                 
                 string key = $"{folder}/{Guid.NewGuid()}";
@@ -50,12 +50,12 @@ public class UploadService : IUploadService
                 {
                     return putRequest.Key;
                 }
-                return await Result<string>.FailureAsync(result.HttpStatusCode.ToString());
+                return Result<string>.Failure(result.HttpStatusCode.ToString());
             }
             catch (AmazonS3Exception s3Ex)
             {
                 _logger.LogError(s3Ex, $"Error uploading file" );
-                return await Result<string>.FailureAsync(s3Ex.Message);
+                return Result<string>.Failure(s3Ex.Message);
             }
         }
     }
