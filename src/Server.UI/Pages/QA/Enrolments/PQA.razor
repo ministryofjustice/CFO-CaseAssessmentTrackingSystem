@@ -82,10 +82,24 @@
 
             @if (_queueEntry.IsCompleted == false)
             {
-                <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Vertical="true">
-                    <MudButton Color="Color.Primary" OnClick="SubmitToQa">Approve</MudButton>    
-                    <MudButton Color="Color.Secondary">Return</MudButton>
-                </MudButtonGroup>    
+                <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
+                    <MudItem xs="12">
+                        <MudRadioGroup T="bool?" @bind-Value="Command.Accept" Required="true">
+                            <MudRadio T="bool?" Value="true" Color="Color.Primary">
+                                Accept
+                            </MudRadio>
+                            <MudRadio T="bool?" Value="false" Color="Color.Secondary">
+                                Return
+                            </MudRadio>
+                        </MudRadioGroup>    
+                    </MudItem>
+                    
+                    <MudTextField T="string" Label="Message" For="(() => Command.Message)" />
+                </MudForm>
+                <MudContainer Class="d-flex px-0 pt-8">
+                    <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
+                </MudContainer>
+   
             }
             
 
@@ -112,6 +126,7 @@
 
 @code {
 
+    private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry = null;
     private ParticipantDto? _participantDto = null;
     
@@ -125,7 +140,9 @@
 
     private string? fileBase64;
     private string? extension;
-    
+
+    private SubmitPqaResponse.Command Command { get; set; } = default!;
+
     protected override async Task OnInitializedAsync()
     {
         if (_participantDto is null)
@@ -142,7 +159,14 @@
                 _participantDto = await GetNewMediator().Send(new GetParticipantById.Query()
                 {
                     Id = _queueEntry.ParticipantId
-                });     
+                });
+
+                Command = new SubmitPqaResponse.Command()
+                {
+                    QueueEntryId = Id
+                };
+
+
             }
             StateHasChanged();    
         }
@@ -150,23 +174,22 @@
 
     protected async Task SubmitToQa()
     {
-        var command = new SubmitPqaResponse.Command()
+        await _form!.Validate().ConfigureAwait(false);
+        if (_form.IsValid)
         {
-            QueueEntryId = Id,
-            Accept = true,
-            Message = null
-        };
-        var result = await GetNewMediator().Send(command);
+            var result = await GetNewMediator().Send(Command);
 
-        if (result.Succeeded)
-        {
-            Snackbar.Add("Participant submitted to QA", Severity.Info);
-            Navigation.NavigateTo("/pages/qa/enrolments/pqa");
+            if (result.Succeeded)
+            {
+                Snackbar.Add("Participant submitted to QA", Severity.Info);
+                Navigation.NavigateTo("/pages/qa/enrolments/pqa");
+            }
+            else
+            {
+                ShowActionFailure("Failed to submit", result);
+            }
         }
-        else
-        {
-            ShowActionFailure("Failed to submit", result);
-        }
+       
     }
     
     private void ShowActionFailure(string title, IResult result)
