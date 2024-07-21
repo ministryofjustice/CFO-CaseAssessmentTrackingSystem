@@ -5,9 +5,9 @@ using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.QualityAssurance.Queries;
 
-public static class GetPqaEntryById
+public static class GetQa1EntryById
 {
-    [RequestAuthorize(Policy = PolicyNames.CanSubmitToQA)]
+    [RequestAuthorize(Policy = PolicyNames.CanApprove)]
     public class Query : IRequest<Result<EnrolmentQueueEntryDto>>
     {
         public Guid Id { get; set; }
@@ -18,8 +18,8 @@ public static class GetPqaEntryById
     {
         public async Task<Result<EnrolmentQueueEntryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var entry = await unitOfWork.DbContext.EnrolmentPqaQueue
-                .Where(a => a.Id == request.Id && request.CurrentUser!.TenantId!.StartsWith(a.TenantId))
+            var entry = await unitOfWork.DbContext.EnrolmentQa1Queue
+                .Where(a => a.Id == request.Id && a.TenantId.StartsWith(request.CurrentUser!.TenantId!)) //request.CurrentUser!.TenantId!.StartsWith(a.TenantId))
                 .ProjectTo<EnrolmentQueueEntryDto>(mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(cancellationToken);
 

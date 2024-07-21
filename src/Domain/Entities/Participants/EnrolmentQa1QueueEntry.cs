@@ -17,5 +17,5 @@ public class EnrolmentQa1QueueEntry : EnrolmentQueueEntry
     {
         return new EnrolmentQa1QueueEntry(participantId);
     }
-    
+
 }

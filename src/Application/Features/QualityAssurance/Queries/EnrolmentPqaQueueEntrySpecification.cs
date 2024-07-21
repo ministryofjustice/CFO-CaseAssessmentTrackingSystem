@@ -1,6 +1,6 @@
 ﻿using Cfo.Cats.Domain.Entities.Participants;
 
-namespace Cfo.Cats.Application.Features.Enrolments.Specifications;
+namespace Cfo.Cats.Application.Features.QualityAssurance.Queries;
 
 public class EnrolmentPqaQueueEntrySpecification : Specification<EnrolmentPqaQueueEntry>
 {

@@ -1,14 +1,14 @@
-﻿@page "/pages/qa/enrolments/pqa"
+﻿
+@page "/pages/qa/enrolments/qa2"
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 @using Cfo.Cats.Application.Features.QualityAssurance.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Humanizer
-
 @inherits CatsComponentBase;
 
 @inject IStringLocalizer<PQA> L
 
-@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.QAFinance}")]
+@attribute [Authorize(Roles = $"{RoleNames.QAManager}, {RoleNames.QASupportManager}, {RoleNames.SMT}, {RoleNames.SystemSupport}")]
 
 <style>
     .mud-table-toolbar {
@@ -24,6 +24,7 @@
              Height="calc(100vh - 330px)"
              Loading="@_loading"
              MultiSelection="true"
+             @bind-SelectedItems="_selectedItems"
              @bind-SelectedItem="_currentDto"
              Hover="true"
              @ref="_table">
@@ -106,13 +107,13 @@
     private int _defaultPageSize = 15;
     private MudDataGrid<EnrolmentQueueEntryDto> _table = default!;
 
-    private PqaQueueWithPagination.Query Query { get; set; } = new();
+    private Qa2WithPagination.Query Query { get; set; } = new();
     private EnrolmentQueueEntryDto _currentDto = new();
     private HashSet<EnrolmentQueueEntryDto> _selectedItems = new();
     
     private void OnEdit(EnrolmentQueueEntryDto dto)
     {
-        Navigation.NavigateTo($"/pages/qa/enrolments/pqa/{dto.Id}");
+        Navigation.NavigateTo($"/pages/qa/enrolments/qa2/{dto.Id}");
     }
    
     private async Task<GridData<EnrolmentQueueEntryDto>> ServerReload(GridState<EnrolmentQueueEntryDto> state)
