@@ -42,6 +42,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OwnerId = table.Column<string>(type: "nvarchar(36)", nullable: true),
                     EditorId = table.Column<string>(type: "nvarchar(36)", nullable: true),
+                    IsAccepted = table.Column<bool>(type: "bit", nullable: false),
                     IsCompleted = table.Column<bool>(type: "bit", nullable: false),
                     ParticipantId = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
                     TenantId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
@@ -89,6 +90,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OwnerId = table.Column<string>(type: "nvarchar(36)", nullable: true),
                     EditorId = table.Column<string>(type: "nvarchar(36)", nullable: true),
+                    IsAccepted = table.Column<bool>(type: "bit", nullable: false),
                     IsCompleted = table.Column<bool>(type: "bit", nullable: false),
                     ParticipantId = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
                     TenantId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
@@ -136,6 +138,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OwnerId = table.Column<string>(type: "nvarchar(36)", nullable: true),
                     EditorId = table.Column<string>(type: "nvarchar(36)", nullable: true),
+                    IsAccepted = table.Column<bool>(type: "bit", nullable: false),
                     IsCompleted = table.Column<bool>(type: "bit", nullable: false),
                     ParticipantId = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
                     TenantId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
@@ -183,6 +186,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OwnerId = table.Column<string>(type: "nvarchar(36)", nullable: true),
                     EditorId = table.Column<string>(type: "nvarchar(36)", nullable: true),
+                    IsAccepted = table.Column<bool>(type: "bit", nullable: false),
                     IsCompleted = table.Column<bool>(type: "bit", nullable: false),
                     ParticipantId = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
                     TenantId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)

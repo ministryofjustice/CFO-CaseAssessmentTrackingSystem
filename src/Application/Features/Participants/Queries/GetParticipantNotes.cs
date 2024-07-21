@@ -23,7 +23,7 @@ public static class GetParticipantNotes
             var notes = await query.ProjectTo<ParticipantNoteDto>(mapper.ConfigurationProvider)
                 .ToArrayAsync(cancellationToken) ?? [];
 
-            return await Result<ParticipantNoteDto[]>.SuccessAsync(notes);
+            return Result<ParticipantNoteDto[]>.Success(notes);
         }
     }
 

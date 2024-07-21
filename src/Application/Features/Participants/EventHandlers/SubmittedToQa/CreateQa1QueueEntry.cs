@@ -1,7 +1,7 @@
 ﻿using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Events;
 
-namespace Cfo.Cats.Application.Features.Participants.EventHandlers;
+namespace Cfo.Cats.Application.Features.Participants.EventHandlers.SubmittedToQa;
 
 public class CreateQa1QueueEntry(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantTransitionedDomainEvent>
 {

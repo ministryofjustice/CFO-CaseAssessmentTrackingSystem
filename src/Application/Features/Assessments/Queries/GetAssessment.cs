@@ -52,7 +52,7 @@ public static class GetAssessment
             {
                 TypeNameHandling = TypeNameHandling.Auto
             })!;
-            return await Result<Assessment>.SuccessAsync(assessment);
+            return Result<Assessment>.Success(assessment);
         }
     }
 

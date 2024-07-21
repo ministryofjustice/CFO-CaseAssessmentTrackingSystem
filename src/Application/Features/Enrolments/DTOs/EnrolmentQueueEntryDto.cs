@@ -4,6 +4,7 @@ namespace Cfo.Cats.Application.Features.Enrolments.DTOs;
 
 public class EnrolmentQueueEntryDto
 {
+    public Guid Id { get; set; }
     public string ParticipantId { get; set; } = default!; 
     public DateTime Created { get; set; } = default!;
     public string TenantId { get; set; } = default!;
@@ -12,6 +13,9 @@ public class EnrolmentQueueEntryDto
 
     public string SupportWorker { get; set; } = default!;
 
+    public bool IsCompleted { get; set; }
+    public bool IsAccepted { get; set; }
+    
     public NoteDto[] Notes { get; set; } = [];
 
     private class Mapping : Profile
@@ -33,7 +37,9 @@ public class EnrolmentQueueEntryDto
                 .ForMember(target => target.SupportWorker, options => options.MapFrom(
                     source => source.Participant!.Owner!.DisplayName
                 ))
-                .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes));
+                .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
+                .ForMember(target => target.IsCompleted, options => options.MapFrom(source=> source.IsCompleted))
+                .ForMember(target => target.IsAccepted, options => options.MapFrom(source=> source.IsAccepted));
             
             CreateMap<EnrolmentQa1QueueEntry, EnrolmentQueueEntryDto>()
                 .ForMember(target => target.ParticipantId,

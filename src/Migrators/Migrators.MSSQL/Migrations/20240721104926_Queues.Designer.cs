@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240720130435_Queues")]
+    [Migration("20240721104926_Queues")]
     partial class Queues
     {
         /// <inheritdoc />
@@ -401,6 +401,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<string>("EditorId")
                         .HasColumnType("nvarchar(36)");
 
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
 
@@ -450,6 +453,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.Property<string>("EditorId")
                         .HasColumnType("nvarchar(36)");
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
@@ -501,6 +507,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<string>("EditorId")
                         .HasColumnType("nvarchar(36)");
 
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
 
@@ -550,6 +559,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.Property<string>("EditorId")
                         .HasColumnType("nvarchar(36)");
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");

@@ -41,6 +41,8 @@ public static class BeginAssessment
 
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
         {
+            // We do nothing async in this method. Await the complete task.
+            await Task.CompletedTask;
             Assessment assessment = new Assessment()
             {
                 Id = Guid.NewGuid(),
@@ -70,7 +72,7 @@ public static class BeginAssessment
             }
 
             _unitOfWork.DbContext.ParticipantAssessments.Add(pa);
-            return await Result<Guid>.SuccessAsync(assessment.Id);
+            return Result<Guid>.Success(assessment.Id);
         }
     }
 

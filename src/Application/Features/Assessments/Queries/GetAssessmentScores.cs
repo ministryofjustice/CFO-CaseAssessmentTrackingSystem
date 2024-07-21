@@ -33,7 +33,7 @@ public static class GetAssessmentScores
                 .ProjectTo<ParticipantAssessmentDto>(_mapper.ConfigurationProvider);
 
             var result = await query.ToListAsync(cancellationToken);
-            return await Result<IEnumerable<ParticipantAssessmentDto>>.SuccessAsync(result);
+            return Result<IEnumerable<ParticipantAssessmentDto>>.Success(result);
         }
     }
 

@@ -58,44 +58,46 @@ public class ImportKeyValuesCommandHandler :
             }
         }, _localizer["Data"]);
 
-        if (result is not { Succeeded: true, Data: not null }) return await Result.FailureAsync(result.Errors);
+        if (result is not { Succeeded: true, Data: not null })
         {
-            var importItems = result.Data;
-            var errors = new List<string>();
-            var errorsOccurred = false;
-            foreach (var item in importItems)
+            return Result.Failure(result.Errors);
+        }
+        
+        var importItems = result.Data;
+        var errors = new List<string>();
+        var errorsOccurred = false;
+        foreach (var item in importItems)
+        {
+            var validationResult = await _addValidator.ValidateAsync(
+            new AddEditKeyValueCommand
+                { Name = item.Name, Value = item.Value, Description = item.Description, Text = item.Text },
+            cancellationToken);
+            if (validationResult.IsValid)
             {
-                var validationResult = await _addValidator.ValidateAsync(
-                new AddEditKeyValueCommand
-                    { Name = item.Name, Value = item.Value, Description = item.Description, Text = item.Text },
+                var exist = await _unitOfWork.DbContext.KeyValues.AnyAsync(x => x.Name == item.Name && x.Value == item.Value,
                 cancellationToken);
-                if (validationResult.IsValid)
+                if (exist)
                 {
-                    var exist = await _unitOfWork.DbContext.KeyValues.AnyAsync(x => x.Name == item.Name && x.Value == item.Value,
-                    cancellationToken);
-                    if (exist)
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    item.AddDomainEvent(new KeyValueCreatedDomainEvent(item));
-                    await _unitOfWork.DbContext.KeyValues.AddAsync(item, cancellationToken);
-                }
-                else
-                {
-                    errorsOccurred = true;
-                    errors.AddRange(validationResult.Errors.Select(e =>
-                        $"{(!string.IsNullOrWhiteSpace(item.Name.ToString()) ? $"{item.Name} - " : string.Empty)}{e.ErrorMessage}"));
-                }
+                item.AddDomainEvent(new KeyValueCreatedDomainEvent(item));
+                await _unitOfWork.DbContext.KeyValues.AddAsync(item, cancellationToken);
             }
-
-            if (errorsOccurred)
+            else
             {
-                return await Result.FailureAsync(errors.ToArray());
+                errorsOccurred = true;
+                errors.AddRange(validationResult.Errors.Select(e =>
+                    $"{(!string.IsNullOrWhiteSpace(item.Name.ToString()) ? $"{item.Name} - " : string.Empty)}{e.ErrorMessage}"));
             }
+        }
+
+        if (errorsOccurred)
+        {
+            return Result.Failure(errors.ToArray());
+        }
 
             
-            return await Result.SuccessAsync();
-        }
+        return Result.Success();
     }
 }

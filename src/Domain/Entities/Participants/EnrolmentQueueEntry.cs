@@ -11,6 +11,7 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHave
 {
     private readonly List<Note> _notes = [];
     
+    public bool IsAccepted { get; private set; }
     public bool IsCompleted { get; private set; }
     public string ParticipantId { get; private set; }
     
@@ -42,11 +43,28 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHave
         return this;
     }
 
-    public EnrolmentQueueEntry Complete()
+    public EnrolmentQueueEntry Complete(bool accept, string? message = null)
     {
+        if (!accept && string.IsNullOrWhiteSpace(message))
+        {
+            throw new ArgumentException("Cannot reject a queue entry without a reason");
+        }
+        
         IsCompleted = true;
+        IsAccepted = accept;
+        if (string.IsNullOrEmpty(message) == false)
+        {
+            _notes.Add(new Note()
+            {
+                TenantId = Tenant!.Id,
+                Message = message
+            });
+        }
+
         return this;
     }
+    
+    
 
     public string TenantId { get; set; } = default!;
 }
