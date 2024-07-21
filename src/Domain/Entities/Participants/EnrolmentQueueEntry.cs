@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Events;
 using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
@@ -61,6 +62,8 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHave
             });
         }
 
+        AddDomainEvent(new EnrolmentQueueEntryCompletedDomainEvent(this));
+        
         return this;
     }
     

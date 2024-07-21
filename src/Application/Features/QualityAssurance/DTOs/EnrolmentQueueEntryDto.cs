@@ -1,6 +1,6 @@
 ﻿using Cfo.Cats.Domain.Entities.Participants;
 
-namespace Cfo.Cats.Application.Features.Enrolments.DTOs;
+namespace Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 
 public class EnrolmentQueueEntryDto
 {
