@@ -8,13 +8,10 @@ namespace Cfo.Cats.Application.Features.Tenants.Commands.Rename;
 public static class RenameTenant
 {
     [RequestAuthorize(Policy = PolicyNames.SystemFunctionsWrite)]
-    public class Command  : ICacheInvalidatorRequest<Result<string>>
+    public class Command  : IRequest<Result<string>>
     {
         public required string Id { get; set; }
         public required string Name { get; set; }
-        public string[] CacheKeys => [TenantCacheKey.GetAllCacheKey];
-        public CancellationTokenSource? SharedExpiryTokenSource =>
-            TenantCacheKey.SharedExpiryTokenSource();
         
         private class Mapping : Profile
         {
@@ -26,7 +23,7 @@ public static class RenameTenant
         
     }
 
-    internal class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<string>>
+    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<string>>
     {
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -36,11 +33,11 @@ public static class RenameTenant
                 throw new NotFoundException("Tenant", request.Id);
             }
             tenant.Rename(request.Name);
-            return tenant.Id;
+            return tenant.Id;   
         }
     }
 
-    internal class Validator : AbstractValidator<Command>
+    public class Validator : AbstractValidator<Command>
     {
         public Validator()
         {
