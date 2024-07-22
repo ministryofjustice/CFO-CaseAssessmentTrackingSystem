@@ -1,0 +1,183 @@
+﻿@using Cfo.Cats.Domain.Common.Enums
+
+<MudExpansionPanels>
+    <MudExpansionPanel>
+        <TitleContent>
+            License Conditions
+        </TitleContent>
+        <ChildContent>
+            <MudTextField T="string" Lines="5" Label="Condition(s)" Placeholder="All conditions must be relevant to the Participant and linked to their involvement to the CFO Evolution Programme. This must be clear and concise, e.g. exclusion zone in place which restricts XX from entering XX City Centre."></MudTextField>
+        </ChildContent>
+    </MudExpansionPanel>
+    <MudExpansionPanel>
+        <TitleContent>
+            Risk Overview
+        </TitleContent>
+        <ChildContent>
+            <MudGrid>
+                @* Risk to Children *@
+                <MudItem xs="4">
+                    Risk to Children
+                </MudItem>
+                <MudItem xs="8">
+                    <MudToggleGroup T="RiskLevel">
+                        <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+                    </MudToggleGroup>
+                </MudItem>
+                @* Risk to Public *@
+                <MudDivider Class="mt-6"/>
+                <MudItem xs="4">
+                    Risk to Public
+                </MudItem>
+                <MudItem xs="8">
+                    <MudToggleGroup T="RiskLevel">
+                        <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+                    </MudToggleGroup>
+                </MudItem>
+                @* Risk to Known Adult *@
+                <MudDivider Class="mt-6" />
+                <MudItem xs="4">
+                    Risk to Known Adult
+                </MudItem>
+                <MudItem xs="8">
+                    <MudToggleGroup T="RiskLevel">
+                        <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+                    </MudToggleGroup>
+                </MudItem>
+                @* Risk to Staff *@
+                <MudDivider Class="mt-6"/>
+                <MudItem xs="4">
+                    Risk to Staff
+                </MudItem>
+                <MudItem xs="8">
+                    <MudToggleGroup T="RiskLevel">
+                        <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+                    </MudToggleGroup>
+                </MudItem>
+                @* Risk to Other Prisoners *@
+                <MudDivider Class="mt-6" />
+                <MudItem xs="4">
+                    Risk to Other Prisoners
+                </MudItem>
+                <MudItem xs="8">
+                    <MudToggleGroup T="RiskLevel">
+                        <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+                    </MudToggleGroup>
+                </MudItem>
+                @* Risk to Self *@
+                <MudDivider Class="mt-6" />
+                <MudItem xs="4">
+                    Risk to Self
+                </MudItem>
+                <MudItem xs="8">
+                    <MudToggleGroup T="RiskLevel">
+                        <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                        <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+                    </MudToggleGroup>
+                </MudItem>
+                @* Risk to Self *@
+                <MudDivider Class="mt-6" />
+                <MudItem xs="4">
+                    Risk Details above are relevant to
+                </MudItem>
+                <MudItem xs="8">
+                    <MudToggleGroup T="bool" SelectionMode="SelectionMode.MultiSelection">
+                        <MudToggleItem Value="@false">Custody</MudToggleItem>
+                        <MudToggleItem Value="@true">Community</MudToggleItem>
+                    </MudToggleGroup>
+                </MudItem>
+            </MudGrid>
+        </ChildContent>
+    </MudExpansionPanel>
+    <MudExpansionPanel>
+        <TitleContent>
+            MAPPA (if applicable)
+        </TitleContent>
+        <ChildContent>
+            <MudGrid>
+                @* MAPPA Category *@
+                <MudDivider Class="mt-6" />
+                <MudItem xs="4">
+                    Category
+                </MudItem>
+                <MudItem xs="8">
+                    <MudToggleGroup T="MappaCategory">
+                        <MudToggleItem Value="@MappaCategory.Category1">@MappaCategory.Category1.Name</MudToggleItem>
+                        <MudToggleItem Value="@MappaCategory.Category2">@MappaCategory.Category2.Name</MudToggleItem>
+                        <MudToggleItem Value="@MappaCategory.Category3">@MappaCategory.Category3.Name</MudToggleItem>
+                    </MudToggleGroup>
+                </MudItem>
+                @* MAPPA Category *@
+                <MudDivider Class="mt-6" />
+                <MudItem xs="4">
+                    Level
+                </MudItem>
+                <MudItem xs="8">
+                    <MudToggleGroup T="MappaLevel">
+                        <MudToggleItem Value="@MappaLevel.Level1">@MappaLevel.Level1.Name</MudToggleItem>
+                        <MudToggleItem Value="@MappaLevel.Level2">@MappaLevel.Level2.Name</MudToggleItem>
+                        <MudToggleItem Value="@MappaLevel.Level3">@MappaLevel.Level3.Name</MudToggleItem>
+                    </MudToggleGroup>
+                </MudItem>
+            </MudGrid>
+        </ChildContent>
+    </MudExpansionPanel>
+    <MudExpansionPanel>
+        <TitleContent>Activity Recommendations</TitleContent>
+        <ChildContent>
+            <MudTextField T="string" Lines="5" Label="Recommendation(s)" Placeholder="Consider any activities we could deliver to support any mandated accredited programmes which are required as part of the license conditions such as CSAAP course, unpaid work, substance misuse, exclusion zones. Also Support required for the Participant e.g. broken family links, debt, accommodation or education and training."></MudTextField>
+        </ChildContent>
+    </MudExpansionPanel>
+    <MudExpansionPanel>
+        <TitleContent>Activity Restrictions</TitleContent>
+        <ChildContent>
+            <MudTextField T="string" Lines="5" Label="Restrictions(s)" Placeholder="Include here any activity that you are aware of at this time that would not be appropriate."></MudTextField>
+        </ChildContent>
+    </MudExpansionPanel>
+    <MudExpansionPanel>
+        <TitleContent>Additional Information</TitleContent>
+        <ChildContent>
+            <MudTextField T="string" Lines="5" Label="Comment(s)" Placeholder="Use this area to provide any additional information (i.e. information that might support the Risk Overview rating, or relevant information that has not already been documented in this template)."></MudTextField>
+        </ChildContent>
+    </MudExpansionPanel>
+</MudExpansionPanels>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string ParticipantId { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+
+        }
+        catch (Exception)
+        {
+            // handle
+        }
+        finally
+        {
+            await base.OnInitializedAsync();
+        }
+
+    }
+}
