@@ -90,8 +90,13 @@ public static class DependencyInjection
         services.AddMvc();
         services.AddControllers();
         
-        services.AddScoped<IApplicationHubWrapper, ServerHubWrapper>()
-            .AddSignalR();
+        services.AddScoped<IApplicationHubWrapper, ServerHubWrapper>();
+        services.AddSignalR(options =>
+            {
+                options.HandshakeTimeout = TimeSpan.FromSeconds(60); // Adjust as needed
+                options.KeepAliveInterval = TimeSpan.FromSeconds(10); // SignalR keep-alive interval
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(120); // SignalR client timeout interval
+            });
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
         services.AddHealthChecks();
