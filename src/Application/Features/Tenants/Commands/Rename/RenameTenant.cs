@@ -48,8 +48,10 @@ public static class RenameTenant
                 .NotNull()
                 .NotEmpty();
 
-            RuleFor(r => r.Name)
-                .NotNull()
+            RuleFor(v => v.Name)
+                .MaximumLength(50)
+                .Matches(@"^[A-Za-z_ ]+$")
+                .WithMessage("Name must contain only letters, spaces, and underscores.")
                 .NotEmpty();
         }
     }
