@@ -103,7 +103,7 @@ public static class DependencyInjection
         
         services.AddScoped<LocalTimezoneOffset>();
         services.AddHttpContextAccessor();
-        services.AddScoped<HubClient>();
+/*        services.AddScoped<HubClient>(); */
         services.AddMudExtensions()
             .AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>()
             .AddScoped<LayoutService>()

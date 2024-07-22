@@ -1,5 +1,4 @@
 ﻿@inherits FluxorComponent
-@inject IState<UserProfileState> UserProfileState
 @inject IStringLocalizer<HeaderMenu> L
 
 <MudTooltip Arrow="true" Text="@L["User Profile"]">
@@ -83,7 +82,20 @@
 {
 
     [Parameter] public EventCallback<EventArgs> OnSettingClick { get; set; }
-    private bool IsLoading => UserProfileState.Value.IsLoading;
-    private UserProfile? UserProfile => UserProfileState.Value.UserProfile;
+    private bool IsLoading { get; set; }
+    private UserProfile? UserProfile { get; set; }
+    
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (UserProfile is null)
+        {
+            IsLoading = true;
+            var state = await AuthState;
+            this.UserProfile = state.User.GetUserProfileFromClaim();
+            IsLoading = false;
+        }
+    }
 
 }
