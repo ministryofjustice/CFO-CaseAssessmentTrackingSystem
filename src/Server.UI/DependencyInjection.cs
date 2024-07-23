@@ -35,7 +35,7 @@ public static class DependencyInjection
 
         services.AddAntiforgery(options =>
         {
-            options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
 
         services.AddRazorComponents().AddInteractiveServerComponents();
