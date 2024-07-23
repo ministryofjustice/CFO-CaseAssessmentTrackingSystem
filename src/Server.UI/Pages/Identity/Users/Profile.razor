@@ -1,9 +1,4 @@
 ﻿@page "/user/profile"
-@using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode
-@using Size = SixLabors.ImageSharp.Size
-@using SixLabors.ImageSharp.Processing
-@using SixLabors.ImageSharp
-@using SixLabors.ImageSharp.Formats.Png
 @using Cfo.Cats.Server.UI.Services.JsInterop
 @using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Domain.Identity
@@ -70,16 +65,6 @@
                                             </div>
                                         </MudElement>
                                     }
-                                    <MudTooltip Text="@L["Click upload a image"]">
-                                        <MudFileUpload T="IBrowserFile" Accept=".jpg, .jpeg, .png, .webp" FilesChanged="UploadPhoto" Style="margin-top:-10px;margin-left:-15px">
-                                            <ActivatorContent>
-                                                <MudIconButton HtmlTag="label"
-                                                               Icon="@Icons.Material.Filled.PhotoCamera">
-                                                </MudIconButton>
-                                            </ActivatorContent>
-                                        </MudFileUpload>
-                                    </MudTooltip>
-
                                 </div>
                             </MudItem>
                             <MudItem sm="6" xs="12">
@@ -256,29 +241,6 @@
     private void StateOnStateChanged(object? sender, EventArgs args)
     {
         InvokeAsync(StateHasChanged);
-    }
-
-    private async Task UploadPhoto(IBrowserFile file)
-    {
-        var filestream = file.OpenReadStream(GlobalVariable.MaxAllowedSize);
-        var imgstream = new MemoryStream();
-        await filestream.CopyToAsync(imgstream);
-        imgstream.Position = 0;
-        using (var outStream = new MemoryStream())
-        {
-            using (var image = Image.Load(imgstream))
-            {
-                image.Mutate(i => i.Resize(new ResizeOptions { Mode = ResizeMode.Crop, Size = new Size(128, 128) }));
-                image.Save(outStream, PngFormat.Instance);
-                var result = await UploadService.UploadAsync($"users/{Model.UserId}", new UploadRequest(Guid.NewGuid() + ".png", UploadType.ProfilePicture, outStream.ToArray()));
-                Model.ProfilePictureDataUrl = result;
-                var user = await userManager.Users.FirstOrDefaultAsync (u => u.Id == Model.UserId!);
-                user!.ProfilePictureDataUrl = Model.ProfilePictureDataUrl;
-                await userManager.UpdateAsync(user);
-                Snackbar.Add(L["The avatar has been updated"], Severity.Info);
-                Dispatcher.Dispatch(new UserProfileUpdateAction { UserProfile = Model });
-            }
-        }
     }
 
     private async Task Submit()
