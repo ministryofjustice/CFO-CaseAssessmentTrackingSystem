@@ -28,6 +28,7 @@ internal static class DatabaseConstants
         public const string KeyValue = nameof(KeyValue);
         public const string EnrolmentHistory = nameof(EnrolmentHistory);
         public const string RightToWork = nameof(RightToWork);
+        public const string Risk = nameof(Risk);
 
         public const string AssessmentPathwayScore = nameof(AssessmentPathwayScore);
 
