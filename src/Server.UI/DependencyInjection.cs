@@ -35,7 +35,7 @@ public static class DependencyInjection
 
         services.AddAntiforgery(options =>
         {
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
         });
 
         services.AddRazorComponents().AddInteractiveServerComponents();
@@ -154,7 +154,8 @@ public static class DependencyInjection
         });
         
         app.UseAntiforgery();
-        app.UseHttpsRedirection();
+        
+        //app.UseHttpsRedirection();
         app.UseStaticFiles();
 
         if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), @"Files")))

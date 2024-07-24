@@ -294,7 +294,7 @@ public static class DependencyInjection
         services.ConfigureApplicationCookie(options => {
             options.LoginPath = "/pages/authentication/login";
             options.Cookie.SameSite = SameSiteMode.Strict;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
         });
 
         services
