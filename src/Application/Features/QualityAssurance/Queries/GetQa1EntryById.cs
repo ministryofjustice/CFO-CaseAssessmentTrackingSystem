@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
@@ -31,6 +32,15 @@ public static class GetQa1EntryById
 
             return entry;
 
+        }
+    }
+    public class Validator : AbstractValidator<Query>
+    {
+        public Validator()
+        {
+            RuleFor(r => r.Id)
+                .NotEmpty()
+                .WithMessage(string.Format(ValidationConstants.GuidMessage, "Id"));
         }
     }
 }

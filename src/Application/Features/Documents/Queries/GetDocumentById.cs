@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Documents.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -27,6 +28,16 @@ public static class GetDocumentById
                 FileName = document.Title!
             };
             return dto;
+        }
+    }
+    public class Validator : AbstractValidator<Query>
+    {
+        public Validator()
+        {
+            RuleFor(x => x.Id.ToString())
+                .NotEmpty()
+                .WithMessage(string.Format(ValidationConstants.GuidMessage, "Id"));
+
         }
     }
 }

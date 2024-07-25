@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Specifications;
@@ -27,5 +28,20 @@ public static class GetParticipantById
             return data;
         }
     }
+    public class Validator : AbstractValidator<Query>
+    {
+        public Validator()
+        {
+            RuleFor(x => x.Id)
+                .NotNull();
 
+            RuleFor(x => x.Id)
+                .MinimumLength(9)
+                .MaximumLength(9)
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+
+
+        }
+    }
 }
