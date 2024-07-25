@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Timelines.DTOs;
 using Cfo.Cats.Application.Features.Timelines.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
@@ -41,7 +42,32 @@ public static class TimelinesWithPaginationQuery
             RuleFor(r => r.ParticipantId)
                 .NotNull()
                 .MinimumLength(9)
-                .MaximumLength(9);
+                .MaximumLength(9)
+                .Matches(RegularExpressionValidation.AlphaNumeric)
+                .WithMessage(string.Format(RegularExpressionValidation.AlphaNumericMessage, "Participant Id"));
+
+            RuleFor(r => r.Keyword)
+                .Matches(RegularExpressionValidation.Keyword)
+                .WithMessage(string.Format(RegularExpressionValidation.KeywordMessage, "Search Keyword"));
+            
+            RuleFor(r => r.PageNumber)
+                .GreaterThan(0)
+                .WithMessage(string.Format(RegularExpressionValidation.PositiveNumberMessage, "Page Number"));
+
+            RuleFor(r => r.PageSize)
+                .GreaterThan(0)
+                .LessThanOrEqualTo(1000)
+                .WithMessage(string.Format(RegularExpressionValidation.PageSizeMessage, "Page Size"));
+
+            RuleFor(r => r.SortDirection)
+                .Matches(RegularExpressionValidation.SortDirection)
+                .WithMessage(RegularExpressionValidation.SortDirectionMessage);
+            
+            //May be at some point in future validate against columns of query result dataset
+            RuleFor(r => r.OrderBy)
+                .Matches(RegularExpressionValidation.AlphaNumeric)
+                .WithMessage(string.Format(RegularExpressionValidation.AlphaNumericMessage, "OrderBy"));
+
         }
     }
     

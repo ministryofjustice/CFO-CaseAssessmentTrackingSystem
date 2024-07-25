@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -36,5 +37,19 @@ public static class GetAssessmentScores
             return Result<IEnumerable<ParticipantAssessmentDto>>.Success(result);
         }
     }
+    public class Validator : AbstractValidator<Query>
+    {
+        public Validator()
+        {
 
+            RuleFor(x => x.ParticipantId)
+                .NotNull();
+
+            RuleFor(x => x.ParticipantId)
+                .MinimumLength(9)
+                .MaximumLength(9)
+                .Matches(RegularExpressionValidation.AlphaNumeric)
+                .WithMessage(string.Format(RegularExpressionValidation.AlphaNumericMessage, "Participant Id"));
+        }
+    }
 }
