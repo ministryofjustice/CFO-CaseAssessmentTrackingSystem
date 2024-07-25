@@ -14,17 +14,17 @@ namespace Cfo.Cats.Application.Features.KeyValues.Queries.Export
         {
 
             RuleFor(r => r.Keyword)
-                .Matches(RegularExpressionValidation.Keyword)
-                .WithMessage(string.Format(RegularExpressionValidation.KeywordMessage, "Search Keyword"));
+                .Matches(ValidationConstants.Keyword)
+                .WithMessage(string.Format(ValidationConstants.KeywordMessage, "Search Keyword"));
 
             //May be at some point in future validate against columns of query result dataset
             RuleFor(r => r.OrderBy)
-                .Matches(RegularExpressionValidation.AlphaNumeric)
-                .WithMessage(string.Format(RegularExpressionValidation.AlphaNumericMessage, "OrderBy"));
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "OrderBy"));
 
             RuleFor(r => r.SortDirection)
-                .Matches(RegularExpressionValidation.SortDirection)
-                .WithMessage(RegularExpressionValidation.SortDirectionMessage);
+                .Matches(ValidationConstants.SortDirection)
+                .WithMessage(ValidationConstants.SortDirectionMessage);
 
         }
     }

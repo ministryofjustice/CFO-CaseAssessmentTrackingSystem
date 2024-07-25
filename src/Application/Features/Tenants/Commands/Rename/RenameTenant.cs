@@ -48,8 +48,8 @@ public static class RenameTenant
 
             RuleFor(v => v.Name)
                 .MaximumLength(50)
-                .Matches(RegularExpressionValidation.LettersSpacesUnderscores)
-                .WithMessage(string.Format(RegularExpressionValidation.LettersSpacesUnderscoresMessage, "Tenant"))
+                .Matches(ValidationConstants.LettersSpacesUnderscores)
+                .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Tenant"))
                 .NotEmpty();
         }
     }

@@ -10,37 +10,28 @@ public class CandidateSearchQueryValidator : AbstractValidator<CandidateSearchQu
             .NotNull()
             .MinimumLength(1)
             .MaximumLength(50)
-            .WithMessage("Firstname is required");
-        
-        RuleFor(q => q.FirstName)
-            .Matches(RegularExpressionValidation.NameCompliantWithDMS)
-            .WithMessage(string.Format(RegularExpressionValidation.NameCompliantWithDMSMessage, "First Name"));
+            .WithMessage("Firstname is required")
+            .Matches(ValidationConstants.NameCompliantWithDMS)
+            .WithMessage(string.Format(ValidationConstants.NameCompliantWithDMSMessage, "First Name"));
 
         RuleFor(q => q.LastName)
             .NotNull()
             .MinimumLength(1)
             .MaximumLength(50)
-            .WithMessage("Lastname is required");
-        
-        RuleFor(q => q.LastName)
-            .Matches(RegularExpressionValidation.NameCompliantWithDMS)
-            .WithMessage(string.Format(RegularExpressionValidation.NameCompliantWithDMSMessage, "Last Name"));
+            .WithMessage("Lastname is required")
+            .Matches(ValidationConstants.NameCompliantWithDMS)
+            .WithMessage(string.Format(ValidationConstants.NameCompliantWithDMSMessage, "Last Name"));
 
         RuleFor(q => q.DateOfBirth)
             .NotNull()
             .WithMessage("Date of birth is required");
 
-        RuleFor(q => q.DateOfBirth.ToString())
-            .Matches(RegularExpressionValidation.Date)
-            .WithMessage(string.Format(RegularExpressionValidation.DateMessage, "Date of birth"));
-
         RuleFor(q => q.ExternalIdentifier)
             .NotEmpty()
             .NotNull()
-            .WithMessage("External identifier is required");
+            .WithMessage("External identifier is required")
+            .Matches(ValidationConstants.AlphaNumeric)
+            .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "External Identifier"));
 
-        RuleFor(q => q.ExternalIdentifier)
-            .Matches(RegularExpressionValidation.AlphaNumeric)
-            .WithMessage(string.Format(RegularExpressionValidation.AlphaNumeric, "External Identifier"));
     }
 }

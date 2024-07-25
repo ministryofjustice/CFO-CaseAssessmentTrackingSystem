@@ -36,7 +36,7 @@ public static class GetDocumentById
         {
             RuleFor(x => x.Id.ToString())
                 .NotEmpty()
-                .WithMessage(string.Format(RegularExpressionValidation.GuidMessage, "Id"));
+                .WithMessage(string.Format(ValidationConstants.GuidMessage, "Id"));
 
         }
     }

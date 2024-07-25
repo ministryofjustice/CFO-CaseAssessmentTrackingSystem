@@ -40,7 +40,7 @@ public static class GetQa2EntryById
         {
             RuleFor(r => r.Id)
                 .NotEmpty()
-                .WithMessage(string.Format(RegularExpressionValidation.GuidMessage, "Id"));
+                .WithMessage(string.Format(ValidationConstants.GuidMessage, "Id"));
         }
     }
 }

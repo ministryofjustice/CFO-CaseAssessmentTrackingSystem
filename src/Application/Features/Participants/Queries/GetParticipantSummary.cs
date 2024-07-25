@@ -56,8 +56,8 @@ public static class GetParticipantSummary
             RuleFor(x => x.ParticipantId)
                 .MinimumLength(9)
                 .MaximumLength(9)
-                .Matches(RegularExpressionValidation.AlphaNumeric)
-                .WithMessage(string.Format(RegularExpressionValidation.AlphaNumericMessage, "ParticipantId"));
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "ParticipantId"));
         }
     }
 }

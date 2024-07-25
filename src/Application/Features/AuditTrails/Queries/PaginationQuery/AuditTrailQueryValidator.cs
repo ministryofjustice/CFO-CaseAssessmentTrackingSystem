@@ -9,16 +9,16 @@ namespace Cfo.Cats.Application.Features.AuditTrails.Queries.PaginationQuery
 
             RuleFor(r => r.PageNumber)
                 .GreaterThan(0)
-                .WithMessage(string.Format(RegularExpressionValidation.PositiveNumberMessage, "Page Number"));
+                .WithMessage(string.Format(ValidationConstants.PositiveNumberMessage, "Page Number"));
 
             RuleFor(r => r.PageSize)
                 .GreaterThan(0)
                 .LessThanOrEqualTo(1000)
-                .WithMessage(string.Format(RegularExpressionValidation.PageSizeMessage, "Page Size"));
+                .WithMessage(string.Format(ValidationConstants.MaximumPageSizeMessage, "Page Size"));
 
             RuleFor(r => r.SortDirection)
-                .Matches(RegularExpressionValidation.SortDirection)
-                .WithMessage(RegularExpressionValidation.SortDirectionMessage);
+                .Matches(ValidationConstants.SortDirection)
+                .WithMessage(ValidationConstants.SortDirectionMessage);
 
         }
     }

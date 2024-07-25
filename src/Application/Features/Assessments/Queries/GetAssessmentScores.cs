@@ -48,8 +48,8 @@ public static class GetAssessmentScores
             RuleFor(x => x.ParticipantId)
                 .MinimumLength(9)
                 .MaximumLength(9)
-                .Matches(RegularExpressionValidation.AlphaNumeric)
-                .WithMessage(string.Format(RegularExpressionValidation.AlphaNumericMessage, "Participant Id"));
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
         }
     }
 }
