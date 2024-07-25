@@ -1,8 +1,7 @@
-﻿@using Cfo.Cats.Server.UI.Hubs
-@using Cfo.Cats.Application.Common.Interfaces.Identity
-@inherits FluxorComponent
+﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
+@inherits CatsComponentBase
 
-@inject IState<UserProfileState> UserProfileState
+
 @inject IStringLocalizer<SharedResource> L
 
 @code {
@@ -12,63 +11,16 @@
    
     [Inject] 
     private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
-    
-    [Parameter] public EventCallback<UserProfileState> UserProfileStateChanged { get; set; }
-    [Inject] public IDispatcher Dispatcher { get; set; } = null!;
-    
-    protected override async ValueTask DisposeAsyncCore(bool disposing)
-    {
-        await base.DisposeAsyncCore(disposing);
-        Client.LoginEvent -= OnClientLoginHandler;
-        Client.LogoutEvent -= OnClientLogoutHandler;
-        UserProfileState.StateChanged -= OnStateChanged;
-        GC.SuppressFinalize(this);
-    }
 
-    [Inject] private HubClient Client { get; set; } = default!;
     [Inject] private IUsersStateContainer UsersStateContainer { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        Client.LoginEvent += OnClientLoginHandler;
-        Client.LogoutEvent += OnClientLogoutHandler;
-        UserProfileState.StateChanged += OnStateChanged;
         var state = await AuthState;
         if (state.User.Identity?.IsAuthenticated ?? false)
         {
-            var userName = state.User.Identity.Name;
-            SetProfile(userName!);
-            await Client.StartAsync();
+            
         }
-    }
+    }   
     
-    private void OnStateChanged(object? sender, EventArgs e)
-    {
-        var result = ((IState<UserProfileState>?)sender)?.Value;
-        UserProfileStateChanged.InvokeAsync(result);
-    }
-
-    private void OnClientLoginHandler(object? sender, UserStateChangeEventArgs args)
-    {
-        InvokeAsync(() =>
-        {
-            Snackbar.Add(string.Format(L["{0} has logged in."], args.UserName), Severity.Info);
-            UsersStateContainer.AddOrUpdate(args.ConnectionId, args.UserName);
-        });
-    }
-
-    private void OnClientLogoutHandler(object? sender, UserStateChangeEventArgs args)
-    {
-        InvokeAsync(() =>
-        {
-            Snackbar.Add(string.Format(L["{0} has logged out."], args.UserName));
-            UsersStateContainer.Remove(args.ConnectionId);
-        });
-    }
-
-    private void SetProfile(string userName)
-    {
-        Dispatcher.Dispatch(new FetchUserDtoAction { UserName = userName });
-    }
-
 }
