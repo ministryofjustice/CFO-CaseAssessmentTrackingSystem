@@ -1,0 +1,106 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Components.Stepper
+
+@inherits CatsComponentBase
+
+@if (Model is not null)
+{
+    <CatsMudStep Title="Risk Overview">
+        <MudGrid>
+            @* Risk to Children *@
+            <MudItem xs="4">
+                @Model.GetMemberDescription(x => x.RiskToChildren)
+            </MudItem>
+            <MudItem xs="8">
+                <MudToggleGroup Value="@Model.RiskToChildren" Class="readonly-toggle" CheckMark>
+                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+                </MudToggleGroup>
+            </MudItem>
+            @* Risk to Public *@
+            <MudDivider Class="mt-6" />
+            <MudItem xs="4">
+                @Model.GetMemberDescription(x => x.RiskToPublic)
+            </MudItem>
+            <MudItem xs="8">
+                <MudToggleGroup Value="@Model.RiskToPublic" Class="readonly-toggle" CheckMark>
+                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+                </MudToggleGroup>
+            </MudItem>
+            @* Risk to Known Adult *@
+            <MudDivider Class="mt-6" />
+            <MudItem xs="4">
+                @Model.GetMemberDescription(x => x.RiskToKnownAdult)
+            </MudItem>
+            <MudItem xs="8">
+                <MudToggleGroup Value="@Model.RiskToKnownAdult" Class="readonly-toggle" CheckMark>
+                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+                </MudToggleGroup>
+            </MudItem>
+            @* Risk to Staff *@
+            <MudDivider Class="mt-6" />
+            <MudItem xs="4">
+                @Model.GetMemberDescription(x => x.RiskToStaff)
+            </MudItem>
+            <MudItem xs="8">
+                <MudToggleGroup Value="@Model.RiskToStaff" Class="readonly-toggle" CheckMark>
+                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+                </MudToggleGroup>
+            </MudItem>
+            @* Risk to Other Prisoners *@
+            <MudDivider Class="mt-6" />
+            <MudItem xs="4">
+                @Model.GetMemberDescription(x => x.RiskToOtherPrisoners)
+            </MudItem>
+            <MudItem xs="8">
+                <MudToggleGroup Value="@Model.RiskToOtherPrisoners" Class="readonly-toggle" CheckMark>
+                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+                </MudToggleGroup>
+            </MudItem>
+            @* Risk to Self *@
+            <MudDivider Class="mt-6" />
+            <MudItem xs="4">
+                @Model.GetMemberDescription(x => x.RiskToSelf)
+            </MudItem>
+            <MudItem xs="8">
+                <MudToggleGroup Value="@Model.RiskToSelf" Class="readonly-toggle" CheckMark>
+                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+                </MudToggleGroup>
+            </MudItem>
+            @* Risk to Self *@
+            <MudDivider Class="mt-6" />
+            <MudItem xs="4">
+                Risk Details above are relevant to
+            </MudItem>
+            <MudItem xs="8" Class="d-flex">
+                <MudCheckBox Value="@(Model.IsRelevantToCustody ?? false)" Label="@Model.GetMemberDescription(x => x.IsRelevantToCustody)" />
+                <MudCheckBox Value="@(Model.IsRelevantToCommunity ?? false)" Label="@Model.GetMemberDescription(x => x.IsRelevantToCommunity)" />
+            </MudItem>
+        </MudGrid>
+    </CatsMudStep>
+}
+
+@code {
+
+    [EditorRequired]
+    [Parameter]
+    public RiskDto? Model { get; set; }
+}

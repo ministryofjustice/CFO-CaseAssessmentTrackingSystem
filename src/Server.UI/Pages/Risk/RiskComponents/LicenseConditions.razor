@@ -1,0 +1,54 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Server.UI.Components.Stepper
+
+@inherits CatsComponentBase
+
+@if(Model is not null)
+{
+    @*
+    <CatsMudStep Title="License Conditions" Condition="Validate">
+        <MudForm @ref="form" Model="Model" Validation="@(_validator())">
+            <MudTextField Label="@Model.GetMemberDescription(x => x.LicenseConditions)"
+                          Lines="5"
+                          For="(() => Model.LicenseConditions)"
+                          Value="@Model.LicenseConditions"
+                          Placeholder="All conditions must be relevant to the Participant and linked to their involvement to the CFO Evolution Programme. This must be clear and concise, e.g. exclusion zone in place which restricts XX from entering XX City Centre." />
+        </MudForm>
+    </CatsMudStep>
+    *@
+
+    <CatsMudStep Title="License Conditions">
+        <MudForm @ref="form" Model="Model" Validation="@(_validator())">
+            <MudTextField Label="@Model.GetMemberDescription(x => x.LicenseConditions)"
+                          Lines="5"
+                          For="(() => Model.LicenseConditions)"
+                          Value="@Model.LicenseConditions"
+                          Placeholder="All conditions must be relevant to the Participant and linked to their involvement to the CFO Evolution Programme. This must be clear and concise, e.g. exclusion zone in place which restricts XX from entering XX City Centre." />
+        </MudForm>
+    </CatsMudStep>
+}
+
+@code {
+    MudForm? form;
+
+    [EditorRequired]
+    [Parameter]
+    public RiskDto? Model { get; set; }
+
+    async Task<bool> Validate()
+    {
+        if(form is null)
+        {
+            return false;
+        }
+
+        var result = await _validator();
+
+        return result is { Count: 0 };
+    }
+
+    async Task<IDictionary<string, string[]>> _validator() => await Validator.ValidateAsync(Model, options =>
+    {
+        options.IncludeProperties(x => x!.LicenseConditions);
+    });
+}

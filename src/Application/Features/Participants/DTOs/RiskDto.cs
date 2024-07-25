@@ -63,4 +63,18 @@ public class RiskDto
         }
     }
 
+    public class Validator : AbstractValidator<RiskDto>
+    { 
+        public Validator()
+        {
+            RuleFor(x => x.LicenseConditions)
+                .NotEmpty()
+                .WithMessage("You must provide some conditions");
+
+            RuleFor(x => x.RiskToChildren)
+                .NotNull()
+                .WithMessage("You must answer");
+        }
+    }
+
 }

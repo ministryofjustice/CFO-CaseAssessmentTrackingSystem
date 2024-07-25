@@ -1,0 +1,42 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Components.Stepper
+
+@inherits CatsComponentBase
+
+@if (Model is not null)
+{
+    <CatsMudStep Title="MAPPA">
+        <MudGrid>
+            @* MAPPA Category *@
+            <MudItem xs="4">
+                Category
+            </MudItem>
+            <MudItem xs="8">
+                <MudToggleGroup Class="readonly-toggle" Value="@Model.MappaCategory" CheckMark>
+                    <MudToggleItem Value="@MappaCategory.Category1">@MappaCategory.Category1.Name</MudToggleItem>
+                    <MudToggleItem Value="@MappaCategory.Category2">@MappaCategory.Category2.Name</MudToggleItem>
+                    <MudToggleItem Value="@MappaCategory.Category3">@MappaCategory.Category3.Name</MudToggleItem>
+                </MudToggleGroup>
+            </MudItem>
+            @* MAPPA Category *@
+            <MudDivider Class="mt-6" />
+            <MudItem xs="4">
+                Level
+            </MudItem>
+            <MudItem xs="8">
+                <MudToggleGroup Class="readonly-toggle" Value="@Model.MappaLevel" CheckMark>
+                    <MudToggleItem Value="@MappaLevel.Level1">@MappaLevel.Level1.Name</MudToggleItem>
+                    <MudToggleItem Value="@MappaLevel.Level2">@MappaLevel.Level2.Name</MudToggleItem>
+                    <MudToggleItem Value="@MappaLevel.Level3">@MappaLevel.Level3.Name</MudToggleItem>
+                </MudToggleGroup>
+            </MudItem>
+        </MudGrid>
+    </CatsMudStep>
+}
+
+@code {
+    [CascadingParameter]
+    public RiskDto? Model { get; set; }
+}
+

@@ -1,0 +1,22 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Server.UI.Components.Stepper
+
+@inherits CatsComponentBase
+
+@if (Model is not null)
+{
+    <CatsMudStep Title="Activity Restrictions">
+        <MudTextField 
+            Value="@Model.ActivityRestrictions" 
+            Lines="5" 
+            Label="Restrictions(s)" 
+            Placeholder="Include here any activity that you are aware of at this time that would not be appropriate.">
+        </MudTextField>
+    </CatsMudStep>
+}
+
+@code {
+    [CascadingParameter]
+    public RiskDto? Model { get; set; }
+}
+

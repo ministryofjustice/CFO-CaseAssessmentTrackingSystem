@@ -1,0 +1,45 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Server.UI.Components.Stepper
+
+@inherits CatsComponentBase
+
+@if (Model is not null)
+{
+    <CatsMudStep Title="Sexual Harm Prevention Order (SHPO)">
+        <MudForm Model="Model" Validation="@(async () => Validate)">
+            <MudGrid>
+                @* Sexual Harm Prevention Order *@
+                <MudItem xs="4">
+                    Is the person subject to a @Model.GetMemberDescription(x => x.IsSubjectToSHPO)
+                </MudItem>
+                <MudItem xs="8">
+                    <MudToggleGroup Class="readonly-toggle" Value="@Model.IsSubjectToSHPO" CheckMark>
+                        <MudToggleItem Value="(bool?)true">Yes</MudToggleItem>
+                        <MudToggleItem Value="(bool?)false">No</MudToggleItem>
+                    </MudToggleGroup>
+                </MudItem>
+                @* NSD Case *@
+                <MudItem xs="4">
+                    @Model.GetMemberDescription(x => x.NSDCase)
+                </MudItem>
+                <MudItem xs="8">
+                    <MudTextField Placeholder="@Model.GetMemberDescription(x => x.NSDCase)"
+                                  Value="@Model.NSDCase"
+                                  For="(() => Model.NSDCase)" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </CatsMudStep>
+}
+
+@code {
+    [CascadingParameter]
+    public RiskDto? Model { get; set; }
+
+    async Task<IDictionary<string, string[]>> Validate() => await Validator.ValidateAsync(Model, options =>
+    {
+        options.IncludeProperties(x => x!.IsSubjectToSHPO);
+        options.IncludeProperties(x => x!.NSDCase);
+    });
+}
+

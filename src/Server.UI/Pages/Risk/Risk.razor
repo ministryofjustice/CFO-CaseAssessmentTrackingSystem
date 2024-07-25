@@ -1,0 +1,82 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Server.UI.Components.Stepper
+@using Cfo.Cats.Server.UI.Pages.Risk.RiskComponents
+
+@inherits CatsComponentBase
+
+@page "/pages/participants/{Upci}/risk/{RiskId:guid}"
+
+@if(_model is not null)
+{
+    <CatsMudStepper @ref="stepper" Color="Color.Primary" Variant="Variant.Filled"
+                    MobileView="false" HeaderBadgeView="HeaderBadgeView.GreyOutIncomplete" HeaderTextView="HeaderTextView.All"
+                    ActiveStepChanged="@OnStepChange" ShowSkipButton="false" Linear>
+        <ChildContent>
+            <MudCard Class="px-8 pt-4 pb-8">
+                <MudForm Model="_model">
+                    <LicenseConditions Model="_model" />
+                    <RiskOverview Model="_model" />
+                    @*
+                    <CascadingValue Value="_model">
+                        <RiskOverview />
+                        <Mappa />
+                        <SHPO />
+                        <SpecificRisk />
+                        <ActivityRecommendations />
+                        <ActivityRestrictions />
+                        <AdditionalInformation />
+                    </CascadingValue>
+                    *@
+
+                </MudForm>
+            </MudCard>
+        </ChildContent>
+    </CatsMudStepper>
+}
+
+@code {
+    private RiskDto? _model;
+    private CatsMudStepper stepper { get; set; } = new();
+
+    [Parameter]
+    public required string Upci { get; set; }
+
+    [Parameter]
+    public required Guid RiskId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await GetNewMediator().Send(new GetParticipantRisk.Query()
+            {
+                ParticipantId = Upci,
+                RiskId = RiskId
+            });
+
+            if (result.Succeeded && result.Data is not null)
+            {
+                _model = result.Data;
+            }
+
+        }
+        finally
+        {
+            
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task OnStepChange(int step)
+    {
+        await Task.CompletedTask;
+    }
+
+    private async Task Submit()
+    {
+        await Task.CompletedTask;
+    }
+
+}

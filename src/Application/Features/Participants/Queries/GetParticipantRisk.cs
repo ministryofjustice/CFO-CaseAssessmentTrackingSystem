@@ -10,6 +10,7 @@ public class GetParticipantRisk
     public class Query : IRequest<Result<RiskDto>>
     {
         public required string ParticipantId { get; set; }
+        public Guid? RiskId { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<RiskDto>>
@@ -18,6 +19,12 @@ public class GetParticipantRisk
         {
             var query = unitOfWork.DbContext.Risks
                 .Where(x => x.ParticipantId == request.ParticipantId);
+
+            if(request.RiskId is not null)
+            {
+                query = query
+                    .Where(x => x.Id == request.RiskId);
+            }
 
             var risk = await query.OrderByDescending(x => x.Created)
                 .FirstOrDefaultAsync();

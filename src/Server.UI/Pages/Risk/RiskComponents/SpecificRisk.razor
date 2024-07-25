@@ -1,0 +1,22 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Server.UI.Components.Stepper
+
+@inherits CatsComponentBase
+
+@if (Model is not null)
+{
+    <CatsMudStep Title="Specific Risk">
+        <MudTextField 
+            Value="@Model.SpecificRisk" 
+            Lines="5" 
+            Label="Risk(s)" 
+            Placeholder="Specific risk (to females, LGBT etc.)">
+        </MudTextField>
+    </CatsMudStep>
+}
+
+@code {
+    [CascadingParameter]
+    public RiskDto? Model { get; set; }
+}
+

@@ -2,13 +2,8 @@
 
 <MudGrid Class="pa-3" Spacing="4">
     <MudItem xs="12" md="4">
-        <MudCard Style="Height: 100%; ">
+        <MudCard Style="Height: 100%;">
             <MudCardHeader>
-                <CardHeaderAvatar>
-                    <MudAvatar Color="Color.Default">
-                        A
-                    </MudAvatar>
-                </CardHeaderAvatar>
                 <CardHeaderContent>
                     <MudText Typo="Typo.h6">Latest Assessment</MudText>
                 </CardHeaderContent>
@@ -66,6 +61,32 @@
                 {
                     <MudTooltip Text="Reassess">
                         <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginAssessment"/>
+                    </MudTooltip>
+                }
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" md="4">
+        <MudCard Style="Height: 100%;">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Risk Information</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText Typo="Typo.body2">No risk information provided.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                @if (CanAddRiskInformation())
+                {
+                    <MudTooltip Text="Add Information">
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="AddRiskInformation" />
+                    </MudTooltip>
+                }
+                @if(CanRenewRiskInformation())
+                {
+                    <MudTooltip Text="Renew Information">
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="AddRiskInformation" />
                     </MudTooltip>
                 }
             </MudCardActions>
