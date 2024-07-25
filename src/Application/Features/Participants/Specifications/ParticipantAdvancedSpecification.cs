@@ -6,25 +6,30 @@ public sealed class ParticipantAdvancedSpecification : Specification<Participant
 {
     public ParticipantAdvancedSpecification(ParticipantAdvancedFilter filter)
     {
-        EnrolmentStatus status = filter.ListView switch
-        {
-            ParticipantListView.Default => EnrolmentStatus.PendingStatus,
-            ParticipantListView.Pending => EnrolmentStatus.PendingStatus,
-            ParticipantListView.SubmittedToProvider => EnrolmentStatus.SubmittedToProviderStatus,
-            ParticipantListView.SubmittedToQa => EnrolmentStatus.SubmittedToAuthorityStatus,
-            ParticipantListView.SubmittedToAny => EnrolmentStatus.SubmittedToAuthorityStatus,
-            ParticipantListView.Approved => EnrolmentStatus.ApprovedStatus,
-            ParticipantListView.Abandoned => EnrolmentStatus.AbandonedStatus,
-            ParticipantListView.All => EnrolmentStatus.PendingStatus,
-            _ => throw new ArgumentOutOfRangeException()
-        };
         
-        Query.Where(p => p.OwnerId == filter.CurrentUser!.UserId)
+        Query.Where( p => p.EnrolmentStatus != EnrolmentStatus.AbandonedStatus.Value 
+                          && p.EnrolmentStatus != EnrolmentStatus.DormantStatus.Value, 
+                            filter.ListView == ParticipantListView.Default);
+        
+        Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.PendingStatus.Value, filter.ListView == ParticipantListView.Pending);
+
+        Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus.Value, filter.ListView == ParticipantListView.SubmittedToProvider);
+        Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus.Value, filter.ListView == ParticipantListView.SubmittedToQa);
+        Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus.Value || p.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus.Value, filter.ListView == ParticipantListView.SubmittedToAny);
+        Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value, filter.ListView == ParticipantListView.Approved);
+        Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.DormantStatus.Value, filter.ListView == ParticipantListView.Dormant);
+        Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.AbandonedStatus.Value, filter.ListView == ParticipantListView.Abandoned);
+        
+       
+        Query.Where(
+                p => p.OwnerId == filter.CurrentUser!.UserId, 
+                filter.CurrentUser!.AssignedRoles is [])
+             .Where(p => p.Owner!.TenantId!.StartsWith(filter.CurrentUser!.TenantId!))
             .Where(
-            p => p.LastName!.Contains(filter.Keyword!)
-                 || p.CurrentLocation.Name.Contains(filter.Keyword!)
-            , string.IsNullOrEmpty(filter.Keyword) == false)
-            .Where(p => p.EnrolmentStatus == status );
+                    // if we have passed a filter through, search the surname
+                    p => p.LastName!.Contains(filter.Keyword!) || p.CurrentLocation.Name.Contains(filter.Keyword!) || p.Id.Contains(filter.Keyword!)
+            , string.IsNullOrEmpty(filter.Keyword) == false);
+            
     }
 
     
