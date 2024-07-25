@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Tenants.Caching;
 using Cfo.Cats.Application.Features.Tenants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -47,8 +48,8 @@ public static class RenameTenant
 
             RuleFor(v => v.Name)
                 .MaximumLength(50)
-                .Matches(@"^[A-Za-z_ ]+$")
-                .WithMessage("Name must contain only letters, spaces, and underscores.")
+                .Matches(ValidationConstants.LettersSpacesUnderscores)
+                .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Tenant"))
                 .NotEmpty();
         }
     }

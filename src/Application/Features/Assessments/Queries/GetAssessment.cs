@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Assessments.Caching;
 using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -60,12 +61,16 @@ public static class GetAssessment
     {
         public Validator()
         {
+
             RuleFor(x => x.ParticipantId)
                 .NotNull();
 
             RuleFor(x => x.ParticipantId)
                 .MinimumLength(9)
-                .MaximumLength(9);
+                .MaximumLength(9)
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Application.Features.AuditTrails.DTOs;
+﻿using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.Features.AuditTrails.DTOs;
 
 namespace Cfo.Cats.Application.Features.AuditTrails.Queries.PaginationQuery;
 
@@ -37,4 +38,5 @@ public class AuditTrailsQueryHandler
 
         return data;
     }
+
 }
