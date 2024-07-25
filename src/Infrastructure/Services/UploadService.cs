@@ -1,7 +1,6 @@
 using System.Net;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Cfo.Cats.Application.Common.Extensions;
 using Microsoft.Extensions.Configuration;
 
 namespace Cfo.Cats.Infrastructure.Services;
@@ -9,12 +8,14 @@ namespace Cfo.Cats.Infrastructure.Services;
 public class UploadService : IUploadService
 {
     private readonly string _bucketName;
+    private readonly string _rootFolder;
     private readonly IAmazonS3 _client;
     private readonly ILogger<UploadService> _logger;
 
     public UploadService(IConfiguration configuration, IAmazonS3 client, ILogger<UploadService> logger)
     {
         _bucketName = configuration.GetValue<string>("AWS:Bucket") ?? throw new Exception("Missing configuration details");
+        _rootFolder = configuration.GetValue<string>("AWS:RootFolder") ?? throw new Exception("Missing configuration details");
         _client = client;
         _logger = logger;
     }
@@ -33,7 +34,7 @@ public class UploadService : IUploadService
                     return Result<string>.Failure("Folder should not end in forward slash");
                 }
                 
-                string key = $"{folder}/{Guid.NewGuid()}";
+                string key = $"{_rootFolder}/{folder}/{Guid.NewGuid()}";
 
                 using var stream = new MemoryStream(uploadRequest.Data);
          
