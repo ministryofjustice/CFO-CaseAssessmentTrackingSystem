@@ -9,7 +9,6 @@
 @attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.QAManager}")]
 
 @inject IStringLocalizer<AuditTrails> L
-@inject IState<UserProfileState> UserProfileState
 @inject IMediator Mediator
 
 @inherits CatsComponentBase
