@@ -1,42 +1,64 @@
 ﻿@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Components.Stepper
+@using FluentValidation.Internal
 
 @inherits CatsComponentBase
+@implements IValidatorStrategy<RiskDto>
 
 @if (Model is not null)
 {
-    <CatsMudStep Title="MAPPA">
-        <MudGrid>
-            @* MAPPA Category *@
-            <MudItem xs="4">
-                Category
-            </MudItem>
-            <MudItem xs="8">
-                <MudToggleGroup Class="readonly-toggle" Value="@Model.MappaCategory" CheckMark>
-                    <MudToggleItem Value="@MappaCategory.Category1">@MappaCategory.Category1.Name</MudToggleItem>
-                    <MudToggleItem Value="@MappaCategory.Category2">@MappaCategory.Category2.Name</MudToggleItem>
-                    <MudToggleItem Value="@MappaCategory.Category3">@MappaCategory.Category3.Name</MudToggleItem>
-                </MudToggleGroup>
-            </MudItem>
-            @* MAPPA Category *@
-            <MudDivider Class="mt-6" />
-            <MudItem xs="4">
-                Level
-            </MudItem>
-            <MudItem xs="8">
-                <MudToggleGroup Class="readonly-toggle" Value="@Model.MappaLevel" CheckMark>
-                    <MudToggleItem Value="@MappaLevel.Level1">@MappaLevel.Level1.Name</MudToggleItem>
-                    <MudToggleItem Value="@MappaLevel.Level2">@MappaLevel.Level2.Name</MudToggleItem>
-                    <MudToggleItem Value="@MappaLevel.Level3">@MappaLevel.Level3.Name</MudToggleItem>
-                </MudToggleGroup>
-            </MudItem>
-        </MudGrid>
-    </CatsMudStep>
+    <MudGrid>
+        @* MAPPA Category *@
+        <MudItem xs="4">
+            Category
+        </MudItem>
+        <MudItem xs="8">
+            <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.MappaCategory" CheckMark>
+                <MudToggleItem Value="@MappaCategory.Category1">@MappaCategory.Category1.Name</MudToggleItem>
+                <MudToggleItem Value="@MappaCategory.Category2">@MappaCategory.Category2.Name</MudToggleItem>
+                <MudToggleItem Value="@MappaCategory.Category3">@MappaCategory.Category3.Name</MudToggleItem>
+            </MudToggleGroup>
+            <MudTextField ReadOnly Underline="false" For="@(() => Model.MappaCategory)" hidden />
+        </MudItem>
+        @* MAPPA Category *@
+        <MudDivider Class="mt-6" />
+        <MudItem xs="4">
+            Level
+        </MudItem>
+        <MudItem xs="8">
+            <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.MappaLevel" CheckMark>
+                <MudToggleItem Value="@MappaLevel.Level1">@MappaLevel.Level1.Name</MudToggleItem>
+                <MudToggleItem Value="@MappaLevel.Level2">@MappaLevel.Level2.Name</MudToggleItem>
+                <MudToggleItem Value="@MappaLevel.Level3">@MappaLevel.Level3.Name</MudToggleItem>
+            </MudToggleGroup>
+            <MudTextField ReadOnly Underline="false" For="@(() => Model.MappaLevel)" hidden />
+        </MudItem>
+    </MudGrid>
 }
 
 @code {
-    [CascadingParameter]
-    public RiskDto? Model { get; set; }
-}
+    [Parameter, EditorRequired]
+    public required RiskDto Model { get; set; }
 
+    [CascadingParameter]
+    public MudForm? Form { get; set; }
+
+    public bool ReadOnly { get; private set; } = false;
+
+    protected override Task OnInitializedAsync()
+    {
+        if (Form is not null)
+        {
+            ReadOnly = Form.ReadOnly;
+        }
+
+        return base.OnInitializedAsync();
+    }
+
+    public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
+    {
+        options.IncludeProperties(x => x.MappaCategory);
+        options.IncludeProperties(x => x.MappaLevel);
+    };
+}

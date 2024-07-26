@@ -27,13 +27,16 @@
 }
 
 @code {
-    
 
-	[Parameter]
-	public string Upci { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Upci { get; set; } = string.Empty;
 
     [Parameter]
     public Guid AssessmentId { get; set; } = Guid.Empty;
+
+    [Parameter]
+    public Cfo.Cats.Application.Features.Assessments.DTOs.Assessment? Model { get; set; }
 
 	private Cfo.Cats.Application.Features.Assessments.DTOs.Assessment? _model;
 
@@ -47,6 +50,8 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+        _model ??= Model;
+
         if (_model is null)
         {
             var response = await GetNewMediator().Send(new GetAssessment.Query()

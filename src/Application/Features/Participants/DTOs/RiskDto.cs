@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Entities.Participants;
+using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.Participants.DTOs;
 
@@ -67,11 +67,72 @@ public class RiskDto
     { 
         public Validator()
         {
+            RuleFor(x => x.ActivityRecommendations)
+                .NotEmpty()
+                .WithMessage("You must provide activity recommendations");
+
+            RuleFor(x => x.ActivityRestrictions)
+                .NotEmpty()
+                .WithMessage("You must provide activity restrictions");
+
+            RuleFor(x => x.AdditionalInformation)
+                .NotEmpty()
+                .WithMessage("You must provide additional information");
+
             RuleFor(x => x.LicenseConditions)
                 .NotEmpty()
-                .WithMessage("You must provide some conditions");
+                .WithMessage("You must provide license conditions");
+
+            RuleFor(x => x.NSDCase)
+                .NotEmpty()
+                .WithMessage("You must provide NSD Case")
+                .When(x => x.IsSubjectToSHPO is true);
+
+            RuleFor(x => x.SpecificRisk)
+                .NotEmpty()
+                .WithMessage("You must provide specific risks");
 
             RuleFor(x => x.RiskToChildren)
+                .NotNull()
+                .WithMessage("You must answer");
+
+            RuleFor(x => x.RiskToPublic)
+                .NotNull()
+                .WithMessage("You must answer");
+
+            RuleFor(x => x.RiskToKnownAdult)
+                .NotNull()
+                .WithMessage("You must answer");
+
+            RuleFor(x => x.RiskToStaff)
+                .NotNull()
+                .WithMessage("You must answer");
+
+            RuleFor(x => x.RiskToOtherPrisoners)
+                .NotNull()
+                .WithMessage("You must answer");
+
+            RuleFor(x => x.RiskToSelf)
+                .NotNull()
+                .WithMessage("You must answer");
+
+            RuleFor(x => x.MappaCategory)
+                .NotNull()
+                .WithMessage("You must answer");
+
+            RuleFor(x => x.MappaLevel)
+                .NotNull()
+                .WithMessage("You must answer");
+
+            RuleFor(x => x.IsRelevantToCommunity)
+                .NotNull()
+                .WithMessage("You must answer");
+
+            RuleFor(x => x.IsRelevantToCustody)
+                .NotNull()
+                .WithMessage("You must answer");
+
+            RuleFor(x => x.IsSubjectToSHPO)
                 .NotNull()
                 .WithMessage("You must answer");
         }

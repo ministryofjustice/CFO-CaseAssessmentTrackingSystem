@@ -1,37 +1,28 @@
 ﻿@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Server.UI.Components.Stepper
+@using FluentValidation.Internal
 
 @inherits CatsComponentBase
+@implements IValidatorStrategy<RiskDto>
 
 @if (Model is not null)
 {
-    <CatsMudStep Title="Additional Information" Condition="Validate">
-        <MudTextField 
-            Value="@Model.AdditionalInformation" 
-            Lines="5" 
-            Label="Comment(s)" 
-            Placeholder="Use this area to provide any additional information (i.e. information that might support the Risk Overview rating, or relevant information that has not already been documented in this template).">
-        </MudTextField>
-    </CatsMudStep>
+    <MudTextField 
+        @bind-Value="@Model.AdditionalInformation" 
+        For="@(() => Model.AdditionalInformation)"
+        Lines="5"
+        Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
+        Placeholder="Use this area to provide any additional information (i.e. information that might support the Risk Overview rating, or relevant information that has not already been documented in this template).">
+    </MudTextField>
 }
 
 @code {
-    [CascadingParameter]
-    public RiskDto? Model { get; set; }
+    [Parameter, EditorRequired]
+    public required RiskDto Model { get; set; }
 
-    public async Task<bool> Validate()
+    public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
     {
-        if(Model is null)
-        {
-            return false;
-        }
-
-        var result = await Validator.ValidateAsync(Model, options =>
-        {
-            options.IncludeProperties(x => x.AdditionalInformation);
-        });
-
-        return result.Any() is false;
-    }
+        options.IncludeProperties(x => x.AdditionalInformation);
+    };
 }
 

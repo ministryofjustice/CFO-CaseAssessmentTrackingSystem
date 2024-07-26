@@ -1,54 +1,31 @@
 ﻿@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Server.UI.Components.Stepper
+@using FluentValidation.Internal
 
 @inherits CatsComponentBase
+@implements IValidatorStrategy<RiskDto>
 
-@if(Model is not null)
+@if (Model is not null)
 {
-    @*
-    <CatsMudStep Title="License Conditions" Condition="Validate">
-        <MudForm @ref="form" Model="Model" Validation="@(_validator())">
-            <MudTextField Label="@Model.GetMemberDescription(x => x.LicenseConditions)"
-                          Lines="5"
-                          For="(() => Model.LicenseConditions)"
-                          Value="@Model.LicenseConditions"
-                          Placeholder="All conditions must be relevant to the Participant and linked to their involvement to the CFO Evolution Programme. This must be clear and concise, e.g. exclusion zone in place which restricts XX from entering XX City Centre." />
-        </MudForm>
-    </CatsMudStep>
-    *@
-
-    <CatsMudStep Title="License Conditions">
-        <MudForm @ref="form" Model="Model" Validation="@(_validator())">
-            <MudTextField Label="@Model.GetMemberDescription(x => x.LicenseConditions)"
-                          Lines="5"
-                          For="(() => Model.LicenseConditions)"
-                          Value="@Model.LicenseConditions"
-                          Placeholder="All conditions must be relevant to the Participant and linked to their involvement to the CFO Evolution Programme. This must be clear and concise, e.g. exclusion zone in place which restricts XX from entering XX City Centre." />
-        </MudForm>
-    </CatsMudStep>
+    <MudTextField Label="@Model.GetMemberDescription(x => x.LicenseConditions)"
+        Lines="5"
+        @bind-Value="@Model.LicenseConditions"
+        For="@(() => Model.LicenseConditions)"
+        Placeholder="All conditions must be relevant to the Participant and linked to their involvement to the CFO Evolution Programme. This must be clear and concise, e.g. exclusion zone in place which restricts XX from entering XX City Centre." />
 }
 
 @code {
-    MudForm? form;
+    [Parameter, EditorRequired]
+    public required RiskDto Model { get; set; }
 
-    [EditorRequired]
-    [Parameter]
-    public RiskDto? Model { get; set; }
-
-    async Task<bool> Validate()
+    protected override async Task OnInitializedAsync()
     {
-        if(form is null)
-        {
-            return false;
-        }
-
-        var result = await _validator();
-
-        return result is { Count: 0 };
+        await base.OnInitializedAsync();
     }
 
-    async Task<IDictionary<string, string[]>> _validator() => await Validator.ValidateAsync(Model, options =>
+    public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
     {
-        options.IncludeProperties(x => x!.LicenseConditions);
-    });
+        options.IncludeProperties(x => x.LicenseConditions);
+    };
+
 }
