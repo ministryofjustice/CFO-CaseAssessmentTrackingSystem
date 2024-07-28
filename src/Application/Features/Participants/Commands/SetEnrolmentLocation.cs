@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 
 public static class SetEnrolmentLocation
 {
-    [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command(string identifier, LocationDto currentLocation, LocationDto enrolmentLocation, string? justificationReason)
         : ICacheInvalidatorRequest<Result<string>>
     {

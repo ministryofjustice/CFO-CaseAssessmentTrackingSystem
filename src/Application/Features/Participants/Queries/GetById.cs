@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetParticipantById
 {
-    [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Query : ICacheableRequest<ParticipantDto>
     {
         public required string Id { get; set; }

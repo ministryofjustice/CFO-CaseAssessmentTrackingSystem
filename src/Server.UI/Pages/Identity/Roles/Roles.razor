@@ -9,7 +9,7 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Infrastructure.Constants.ClaimTypes
 
-@attribute [Authorize(Policy = PolicyNames.SystemFunctionsRead)]
+@attribute [Authorize(Policy = SecurityPolicies.SystemFunctionsRead)]
 @inherits CatsComponentBase
 
 
@@ -233,13 +233,13 @@
         _roleManager = ScopedServices.GetRequiredService<RoleManager<ApplicationRole>>();
         Title = L[_currentDto.GetClassDescription()];
         var state = await AuthState;
-        _canCreate = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
-        _canSearch = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
-        _canEdit = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
-        _canDelete = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
-        _canManagePermissions = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
-        _canImport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowImport)).Succeeded;
-        _canExport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowExport)).Succeeded;
+        _canCreate = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
+        _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
+        _canEdit = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
+        _canDelete = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
+        _canManagePermissions = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
+        _canImport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Import)).Succeeded;
+        _canExport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Export)).Succeeded;
     }
 
     private async Task<GridData<ApplicationRoleDto>> ServerReload(GridState<ApplicationRoleDto> state)

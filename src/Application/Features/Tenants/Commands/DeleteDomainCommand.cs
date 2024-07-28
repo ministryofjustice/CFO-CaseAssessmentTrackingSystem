@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Tenants.Commands;
 [RequestAuthorize(Roles = "Admin")]
 public static class DeleteDomainCommand
 {
-    [RequestAuthorize(Policy = PolicyNames.SystemFunctionsWrite)]
+    [RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsWrite)]
     public class Command : IRequest<Result<int>>
     {
         [Description("Tenant Id")]

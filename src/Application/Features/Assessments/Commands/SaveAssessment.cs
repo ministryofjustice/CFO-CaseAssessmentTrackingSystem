@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Assessments.Commands;
 
 public static class SaveAssessment
 {
-    [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command : ICacheInvalidatorRequest<Result>
     {
         //TODO: cache individually

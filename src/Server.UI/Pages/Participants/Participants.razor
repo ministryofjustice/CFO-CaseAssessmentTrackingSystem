@@ -10,7 +10,7 @@
 
 @inherits CatsComponentBase
 
-@attribute [Authorize(Policy = PolicyNames.AuthorizedUser)]
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 <PageTitle>@Title</PageTitle>
 <style>
@@ -210,8 +210,8 @@
     {
         Title = L["Participants"];
         var state = await AuthState;
-        _canSearch = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowCandidateSearch)).Succeeded;
-        _canEnrol = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowEnrol)).Succeeded;
+        _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.CandidateSearch)).Succeeded;
+        _canEnrol = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Enrol)).Succeeded;
     }
 
     private async Task<GridData<ParticipantPaginationDto>> ServerReload(GridState<ParticipantPaginationDto> state)

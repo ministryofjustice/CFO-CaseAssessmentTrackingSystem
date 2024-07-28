@@ -12,7 +12,7 @@
 @using Cfo.Cats.Application.SecurityConstants
 
 
-@attribute [Authorize(Policy = PolicyNames.SystemFunctionsRead)]
+@attribute [Authorize(Policy = SecurityPolicies.SystemFunctionsRead)]
 
 @inject IStringLocalizer<Tenants> L
 @inject ITenantService TenantService
@@ -208,11 +208,11 @@
     {
         Title = L[currentDto.GetClassDescription()];
         var state = await AuthState;
-        canCreate = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
-        canEdit = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
-        canDelete = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
-        canExport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
-        canSearch = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
+        canCreate = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
+        canEdit = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
+        canDelete = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
+        canExport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
+        canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
     }
 
     private async Task<GridData<TenantDto>> ServerReload(GridState<TenantDto> state)

@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
 
 public static class SubmitQa1Response
 {
-    [RequestAuthorize(Policy = PolicyNames.CanApprove)]
+    [RequestAuthorize(Policy = SecurityPolicies.Qa1)]
     public class Command : IRequest<Result>
     {
         public required Guid QueueEntryId { get; set; }

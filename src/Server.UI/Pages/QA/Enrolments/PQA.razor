@@ -6,7 +6,10 @@
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 @using Cfo.Cats.Application.Features.QualityAssurance.Queries
+@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
+
+@attribute [Authorize(Policy = SecurityPolicies.Pqa)]
 
 @inherits CatsComponentBase
 

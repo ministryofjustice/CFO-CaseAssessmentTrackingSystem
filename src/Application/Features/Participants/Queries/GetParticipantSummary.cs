@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetParticipantSummary
 {
-    [RequestAuthorize(Policy = PolicyNames.AllowCandidateSearch)]
+    [RequestAuthorize(Policy = SecurityPolicies.CandidateSearch)]
     public class Query : ICacheableRequest<Result<ParticipantSummaryDto>>
     {
         public required string ParticipantId { get; set; } 

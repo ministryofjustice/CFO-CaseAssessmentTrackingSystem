@@ -16,7 +16,7 @@
 @using Cfo.Cats.Server.UI.Services.Fusion
 @using ZiggyCreatures.Caching.Fusion
 
-@attribute [Authorize(Policy = PolicyNames.SystemFunctionsRead)]
+@attribute [Authorize(Policy = SecurityPolicies.SystemFunctionsRead)]
 @inherits CatsComponentBase
 @implements IDisposable
 
@@ -375,16 +375,16 @@
         RoleManager = ScopedServices.GetRequiredService<RoleManager<ApplicationRole>>();
         UserManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
         var state = await AuthState;
-        _canCreate = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
-        _canSearch = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsRead)).Succeeded;
-        _canEdit = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
-        _canArchive = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
-        _canActive = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
-        _canManageRoles = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
-        _canResetPassword = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
-        _canManagePermissions = (await AuthService.AuthorizeAsync(state.User, PolicyNames.SystemFunctionsWrite)).Succeeded;
-        _canImport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowImport)).Succeeded;
-        _canExport = (await AuthService.AuthorizeAsync(state.User, PolicyNames.AllowExport)).Succeeded;
+        _canCreate = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
+        _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
+        _canEdit = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
+        _canArchive = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
+        _canActive = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
+        _canManageRoles = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
+        _canResetPassword = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
+        _canManagePermissions = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
+        _canImport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Import)).Succeeded;
+        _canExport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Export)).Succeeded;
         _roles = await RoleManager.Roles.Select(x => x.Name).ToListAsync();
     }
 

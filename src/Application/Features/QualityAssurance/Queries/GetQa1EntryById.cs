@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.QualityAssurance.Queries;
 
 public static class GetQa1EntryById
 {
-    [RequestAuthorize(Policy = PolicyNames.CanApprove)]
+    [RequestAuthorize(Policy = SecurityPolicies.Qa1)]
     public class Query : IRequest<Result<EnrolmentQueueEntryDto>>
     {
         public Guid Id { get; set; }
