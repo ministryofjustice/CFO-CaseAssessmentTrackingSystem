@@ -8,9 +8,12 @@
              Class="mx-1"
              LockScroll="true"
              TransformOrigin="Origin.TopRight">
-             <MudMenuItem Href="https://www.creatingfutureopportunities.gov.uk/" Target="_blank">CFO Website</MudMenuItem>
+             <MudMenuItem Icon="@Icons.Material.Filled.Web" Href="https://www.creatingfutureopportunities.gov.uk/" Target="_blank">CFO Website</MudMenuItem>
              <MudMenuItem Icon="@Icons.Material.Filled.Map" Href="https://www.creatingfutureopportunities.gov.uk/map/" Target="_blank">CFO Delivery Map</MudMenuItem>
-             <MudMenuItem Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/" Target="_blank">Github Repository</MudMenuItem>
+             @if (_isInternalStaff)
+             {
+                 <MudMenuItem Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/" Target="_blank">Github Repository</MudMenuItem>
+             }
     </MudMenu>
     <form method="post" hidden>
         <AntiforgeryToken />
@@ -19,6 +22,8 @@
 
 @code
 {
+
+    private bool _isInternalStaff = false;
 
     [Parameter] public EventCallback<EventArgs> OnSettingClick { get; set; }
     
@@ -39,6 +44,8 @@
             {
                 Email = user.GetEmail();
                 DisplayName = user.GetDisplayName();
+                string tenantId = user.GetTenantId()!;
+                _isInternalStaff = tenantId is "1." or "1.1.";
             }
         }
     }
