@@ -6,7 +6,7 @@ using Cfo.Cats.Domain.Entities.Administration;
 
 namespace Cfo.Cats.Application.Features.Tenants.Commands.AddEdit;
 
-[RequestAuthorize(Policy = PolicyNames.SystemFunctionsWrite)]
+[RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsWrite)]
 public class AddEditTenantCommand : ICacheInvalidatorRequest<Result<string>>
 {
     [Description("Tenant Id")]

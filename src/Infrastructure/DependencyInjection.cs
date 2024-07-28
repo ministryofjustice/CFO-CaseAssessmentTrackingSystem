@@ -230,54 +230,60 @@ public static class DependencyInjection
             .AddScoped<IIdentityService, IdentityService>()
             .AddAuthorizationCore(options => {
 
-                options.AddPolicy(PolicyNames.AllowExport, policy => {
+                options.AddPolicy(SecurityPolicies.Export, policy => {
                     policy.RequireAuthenticatedUser();
 
                     policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager);
                     
                 });
 
-                options.AddPolicy(PolicyNames.AllowCandidateSearch, policy => {
+                options.AddPolicy(SecurityPolicies.CandidateSearch, policy => {
                     policy.RequireAuthenticatedUser();
                 });
 
-                options.AddPolicy(PolicyNames.AllowDocumentUpload, policy => {
+                options.AddPolicy(SecurityPolicies.DocumentUpload, policy => {
                     policy.RequireAuthenticatedUser();
                 });
 
-                options.AddPolicy(PolicyNames.AuthorizedUser, policy => {
+                options.AddPolicy(SecurityPolicies.AuthorizedUser, policy => {
                     policy.RequireAuthenticatedUser();
                 });
 
-                options.AddPolicy(PolicyNames.AllowEnrol, policy => {
+                options.AddPolicy(SecurityPolicies.Enrol, policy => {
                     policy.RequireAuthenticatedUser();
                 });
                 
-                options.AddPolicy(PolicyNames.AllowImport, policy => {
+                options.AddPolicy(SecurityPolicies.Import, policy => {
                     policy.RequireAuthenticatedUser();
                     policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager);
                 });
                 
-                options.AddPolicy(PolicyNames.SystemFunctionsRead, policy => {
+                options.AddPolicy(SecurityPolicies.SystemFunctionsRead, policy => {
                     policy.RequireAuthenticatedUser();
                     policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer, RoleNames.QASupportManager);
                 });
                 
-                options.AddPolicy(PolicyNames.SystemFunctionsWrite, policy => {
+                options.AddPolicy(SecurityPolicies.SystemFunctionsWrite, policy => {
                     policy.RequireAuthenticatedUser();
                     policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer, RoleNames.QASupportManager);
                 });
                 
-                options.AddPolicy(PolicyNames.CanSubmitToQA, policy =>
+                options.AddPolicy(SecurityPolicies.Pqa, policy =>
                 {
                     policy.RequireAuthenticatedUser();
                     policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAFinance);
                 });
                 
-                options.AddPolicy(PolicyNames.CanApprove, policy =>
+                options.AddPolicy(SecurityPolicies.Qa1, policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer, RoleNames.QASupportManager);
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.QAOfficer);
+                });
+                
+                options.AddPolicy(SecurityPolicies.Qa2, policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QASupportManager);
                 });
 
             })

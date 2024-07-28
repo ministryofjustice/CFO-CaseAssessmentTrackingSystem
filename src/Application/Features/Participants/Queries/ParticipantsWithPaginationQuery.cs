@@ -10,7 +10,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class ParticipantsWithPagination
 {
-    [RequestAuthorize(Policy = PolicyNames.AllowCandidateSearch)]
+    [RequestAuthorize(Policy = SecurityPolicies.CandidateSearch)]
     public class Query : ParticipantAdvancedFilter, IRequest<PaginatedData<ParticipantPaginationDto>>
     {
         public ParticipantAdvancedSpecification Specification => new(this);

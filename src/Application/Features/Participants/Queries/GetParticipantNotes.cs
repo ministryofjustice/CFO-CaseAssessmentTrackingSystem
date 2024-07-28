@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetParticipantNotes
 {
-    [RequestAuthorize(Policy = PolicyNames.AuthorizedUser)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<Result<ParticipantNoteDto[]>>
     {
         public required string ParticipantId { get; set; }

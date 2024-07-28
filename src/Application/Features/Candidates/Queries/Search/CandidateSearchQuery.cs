@@ -5,7 +5,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Candidates.Queries.Search;
 
-[RequestAuthorize(Policy = PolicyNames.AllowCandidateSearch)]
+[RequestAuthorize(Policy = SecurityPolicies.CandidateSearch)]
 public class CandidateSearchQuery : ICacheableRequest<IEnumerable<CandidateDto>>
 {
     public required string ExternalIdentifier { get; set; }

@@ -4,7 +4,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Tenants.Commands.Delete;
 
-[RequestAuthorize(Policy = PolicyNames.SystemFunctionsWrite)]
+[RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsWrite)]
 public class DeleteTenantCommand : ICacheInvalidatorRequest<Result<int>>
 {
     public DeleteTenantCommand(string[] id)

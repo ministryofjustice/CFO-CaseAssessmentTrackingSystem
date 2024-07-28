@@ -47,7 +47,7 @@
         var state = await AuthState;
         
         // only provider QA can submit to QA
-        _canSubmitToQA = (await AuthService.AuthorizeAsync(state.User, PolicyNames.CanSubmitToQA)).Succeeded;
+        _canSubmitToQA = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Pqa)).Succeeded;
 
 
     }

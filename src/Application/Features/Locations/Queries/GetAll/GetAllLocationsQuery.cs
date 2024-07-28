@@ -5,7 +5,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Locations.Queries.GetAll;
 
-[RequestAuthorize(Policy = PolicyNames.AuthorizedUser)]
+[RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
 public class GetAllLocationsQuery : ICacheableRequest<Result<LocationDto[]>>
 {
     public required UserProfile UserProfile { get; set; }

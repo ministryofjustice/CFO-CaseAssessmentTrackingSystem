@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 
 public static class AddNote
 {
-    [RequestAuthorize(Policy = PolicyNames.AuthorizedUser)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
     {
         [Description("Participant Id")]

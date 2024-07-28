@@ -8,8 +8,7 @@
 
 @inject IStringLocalizer<PQA> L
 
-@attribute [Authorize(Roles = $"{RoleNames.QAOfficer}, {RoleNames.QAManager}, {RoleNames.QASupportManager}, {RoleNames.SMT}, {RoleNames.SystemSupport}")]
-
+@attribute [Authorize(Policy = SecurityPolicies.Qa1)]
 <style>
     .mud-table-toolbar {
         height: 120px !important;

@@ -1,21 +1,27 @@
 namespace Cfo.Cats.Application.SecurityConstants;
 
-public static class PolicyNames
+public static class SecurityPolicies
 {
     /// <summary>
     /// The user is permitted to export data from the system.
     /// </summary>
-    public const string AllowExport = nameof(AllowExport);
+    public const string Export = nameof(Export);
     
     /// <summary>
     /// The user is permitted to search for candidates.
     /// </summary>
-    public const string AllowCandidateSearch = nameof(AllowCandidateSearch);
+    public const string CandidateSearch = nameof(CandidateSearch);
+
+    public const string Pqa= nameof(Pqa);
+
+    public const string Qa1 = nameof(Qa1);
+
+    public const string Qa2 = nameof(Qa2);
     
     /// <summary>
     /// The user is allowed to upload files.
     /// </summary>
-    public const string AllowDocumentUpload = nameof(AllowDocumentUpload);
+    public const string DocumentUpload = nameof(DocumentUpload);
     
     /// <summary>
     /// Any authorized user is permitted to perform this action
@@ -25,9 +31,9 @@ public static class PolicyNames
     /// <summary>
     /// The user is permitted to import data into the system.
     /// </summary>
-    public const string AllowImport = nameof(AllowExport);
+    public const string Import = nameof(Export);
 
-    public const string AllowEnrol = nameof(AllowEnrol);
+    public const string Enrol = nameof(Enrol);
 
     /// <summary>
     /// 
@@ -35,9 +41,5 @@ public static class PolicyNames
     public const string SystemFunctionsRead = nameof(SystemFunctionsRead);
     
     public const string SystemFunctionsWrite = nameof(SystemFunctionsWrite);
-
-    public const string CanSubmitToQA = nameof(CanSubmitToQA);
-
-    public const string CanApprove = nameof(CanApprove);
     
 }

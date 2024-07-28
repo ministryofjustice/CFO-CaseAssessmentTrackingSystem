@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Tenants.Commands.Rename;
 
 public static class RenameTenant
 {
-    [RequestAuthorize(Policy = PolicyNames.SystemFunctionsWrite)]
+    [RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsWrite)]
     public class Command  : IRequest<Result<string>>
     {
         public required string Id { get; set; }

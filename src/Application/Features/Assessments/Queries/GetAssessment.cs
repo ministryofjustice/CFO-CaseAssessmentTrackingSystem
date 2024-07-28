@@ -14,7 +14,7 @@ public static class GetAssessment
     /// Returns an assessment, either the one specified by the AssessmentId or
     /// the latest on if that is not specified
     /// </summary>
-    [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Query : IRequest<Result<Assessment>>
     {
         public required string ParticipantId { get; set; }

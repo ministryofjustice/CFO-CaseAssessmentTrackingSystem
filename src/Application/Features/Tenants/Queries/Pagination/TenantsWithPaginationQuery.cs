@@ -6,7 +6,7 @@ using Cfo.Cats.Application.SecurityConstants;
  
 namespace Cfo.Cats.Application.Features.Tenants.Queries.Pagination;
 
-[RequestAuthorize(Policy = PolicyNames.SystemFunctionsRead)]
+[RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsRead)]
 public class TenantsWithPaginationQuery
     : PaginationFilter,
         ICacheableRequest<PaginatedData<TenantDto>>

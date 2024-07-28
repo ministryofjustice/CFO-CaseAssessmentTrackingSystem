@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 
 public static class CreateParticipant
 {
-    [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command: IRequest<Result<string>>
     {
         /// <summary>

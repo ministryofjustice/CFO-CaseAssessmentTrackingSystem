@@ -5,7 +5,7 @@ namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
 
 public static class AbandonCase
 {
-    [RequestAuthorize(Policy = PolicyNames.AuthorizedUser)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
     {
         public required string ParticipantId { get; set; }

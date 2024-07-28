@@ -10,7 +10,7 @@ namespace Cfo.Cats.Application.Features.Timelines.PaginationQuery;
 public static class TimelinesWithPaginationQuery
 {
 
-    [RequestAuthorize(Policy = PolicyNames.AllowCandidateSearch)]
+    [RequestAuthorize(Policy = SecurityPolicies.CandidateSearch)]
     public class Query : TimelineAdvancedFilter, IRequest<PaginatedData<TimelineDto>>
     {
         public TimelineAdvancedSpecification Specification => new(this);

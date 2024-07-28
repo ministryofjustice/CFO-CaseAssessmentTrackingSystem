@@ -1,7 +1,7 @@
 ﻿@page "/"
 @using Cfo.Cats.Application.SecurityConstants
 
-@attribute [Authorize(Policy = PolicyNames.AuthorizedUser)]
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 <PageTitle>@Title</PageTitle>
 

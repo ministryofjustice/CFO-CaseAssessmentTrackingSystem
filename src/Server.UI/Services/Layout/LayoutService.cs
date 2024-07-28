@@ -18,8 +18,8 @@ public class LayoutService
     public bool IsRTL { get; private set; }
     public bool IsDarkMode { get; private set; }
     public string PrimaryColor { get; set; } = "#722660";
-    public string DarkPrimaryColor { get; set; } = "#0092CC";
-    public string SecondaryColor { get; set; } = "#ff4081ff";
+    public string DarkPrimaryColor { get; set; } = "#AA3C85";
+    public string SecondaryColor { get; set; } = "#ff4081";
     public double BorderRadius { get; set; } = 4;
     public double DefaultFontSize { get; set; } = 1;
     public MudTheme CurrentTheme { get; private set; } = new();

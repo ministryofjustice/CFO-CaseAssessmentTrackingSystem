@@ -5,7 +5,7 @@ namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
 
 public static class SubmitPqaResponse
 {
-    [RequestAuthorize(Policy = PolicyNames.CanSubmitToQA)]
+    [RequestAuthorize(Policy = SecurityPolicies.Pqa)]
     public class Command : IRequest<Result>
     {
         public required Guid QueueEntryId { get; set; }

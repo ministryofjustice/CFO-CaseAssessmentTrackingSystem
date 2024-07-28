@@ -5,7 +5,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.KeyValues.Queries.GetAll;
 
-[RequestAuthorize(Policy = PolicyNames.AuthorizedUser)]
+[RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
 public class GetAllKeyValuesQuery : ICacheableRequest<IEnumerable<KeyValueDto>>
 {
     public string CacheKey => KeyValueCacheKey.GetAllCacheKey;
