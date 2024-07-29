@@ -72,7 +72,6 @@ public static class CreateParticipant
 
             When(x => x.ReferralSource is "Other" or "Healthcare", () => {
                 RuleFor(x => x.ReferralComments)
-                    .NotNull()
                     .NotEmpty()
                     .WithMessage("Comments are mandatory with this referral source");
             });
