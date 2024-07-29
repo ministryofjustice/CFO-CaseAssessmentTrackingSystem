@@ -7,13 +7,14 @@
 
 @if (Model is not null)
 {
-    <MudTextField 
-        @bind-Value="@Model.AdditionalInformation" 
-        For="@(() => Model.AdditionalInformation)"
-        Lines="5"
-        Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
-        Placeholder="Use this area to provide any additional information (i.e. information that might support the Risk Overview rating, or relevant information that has not already been documented in this template).">
-    </MudTextField>
+    <CatsMudStep Title="Additional Information">
+        <MudTextField @bind-Value="@Model.AdditionalInformation"
+                      For="@(() => Model.AdditionalInformation)"
+                      Lines="5"
+                      Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
+                      Placeholder="Use this area to provide any additional information (i.e. information that might support the Risk Overview rating, or relevant information that has not already been documented in this template).">
+        </MudTextField>
+    </CatsMudStep>
 }
 
 @code {

@@ -17,30 +17,14 @@
             <MudCard Class="px-8 pt-4 pb-8">
                 <MudForm @ref="form" Model="_model" Validation="Validator.ValidateValue(_model)">
                     <CascadingValue Value="form">
-                        <CatsMudStep Title="License Conditions">
-                            <LicenseConditions Model="_model" />
-                        </CatsMudStep>
-                        <CatsMudStep Title="Risk Overview">
-                            <RiskOverview Model="_model" />
-                        </CatsMudStep>
-                        <CatsMudStep Title="MAPPA">
-                            <Mappa Model="_model" />
-                        </CatsMudStep>
-                        <CatsMudStep Title="Sexual Health Prevention Order (SHPO)">
-                            <SHPO Model="_model" />
-                        </CatsMudStep>
-                        <CatsMudStep Title="Specific Risk">
-                            <SpecificRisk Model="_model" />
-                        </CatsMudStep>
-                        <CatsMudStep Title="Activity Recommendations">
-                            <ActivityRecommendations Model="_model" />
-                        </CatsMudStep>
-                        <CatsMudStep Title="Activity Restrictions">
-                            <ActivityRestrictions Model="_model" />
-                        </CatsMudStep>
-                        <CatsMudStep Title="Additional Information">
-                            <AdditionalInformation Model="_model" />
-                        </CatsMudStep>
+                        <LicenseConditions Model="_model" />
+                        <RiskOverview Model="_model" />
+                        <Mappa Model="_model" />
+                        <SHPO Model="_model" />
+                        <SpecificRisk Model="_model" />
+                        <ActivityRecommendations Model="_model" />
+                        <ActivityRestrictions Model="_model" />
+                        <AdditionalInformation Model="_model" />
                         <CatsMudStep IsResultStep>
                             Success!
                         </CatsMudStep>

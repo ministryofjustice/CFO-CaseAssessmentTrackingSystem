@@ -7,29 +7,31 @@
 
 @if (Model is not null)
 {
-    <MudGrid>
-        @* Sexual Harm Prevention Order *@
-        <MudItem xs="4">
-            Is the person subject to a @Model.GetMemberDescription(x => x.IsSubjectToSHPO)
-        </MudItem>
-        <MudItem xs="8">
-            <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.IsSubjectToSHPO" CheckMark>
-                <MudToggleItem Value="(bool?)true">Yes</MudToggleItem>
-                <MudToggleItem Value="(bool?)false">No</MudToggleItem>
-            </MudToggleGroup>
-            <MudTextField ReadOnly Underline="false" For="@(() => Model.IsSubjectToSHPO)" hidden />
-        </MudItem>
-        @* NSD Case *@
-        <MudItem xs="4">
-            @Model.GetMemberDescription(x => x.NSDCase)
-        </MudItem>
-        <MudItem xs="8">
-            <MudTextField Placeholder="@Model.GetMemberDescription(x => x.NSDCase)"
-                            @bind-Value="@Model.NSDCase"
-                            For="@(() => Model.NSDCase)"
-                            Disabled="@(Model.IsSubjectToSHPO is not true)" />
-        </MudItem>
-    </MudGrid>
+    <CatsMudStep Title="Sexual Health Prevention Order (SHPO)">
+        <MudGrid>
+            @* Sexual Harm Prevention Order *@
+            <MudItem xs="4">
+                Is the person subject to a @Model.GetMemberDescription(x => x.IsSubjectToSHPO)
+            </MudItem>
+            <MudItem xs="8">
+                <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.IsSubjectToSHPO" CheckMark>
+                    <MudToggleItem Value="(bool?)true">Yes</MudToggleItem>
+                    <MudToggleItem Value="(bool?)false">No</MudToggleItem>
+                </MudToggleGroup>
+                <MudTextField ReadOnly Underline="false" For="@(() => Model.IsSubjectToSHPO)" hidden />
+            </MudItem>
+            @* NSD Case *@
+            <MudItem xs="4">
+                @Model.GetMemberDescription(x => x.NSDCase)
+            </MudItem>
+            <MudItem xs="8">
+                <MudTextField Placeholder="@Model.GetMemberDescription(x => x.NSDCase)"
+                              @bind-Value="@Model.NSDCase"
+                              For="@(() => Model.NSDCase)"
+                              Disabled="@(Model.IsSubjectToSHPO is not true)" />
+            </MudItem>
+        </MudGrid>
+    </CatsMudStep>
 }
 
 @code {

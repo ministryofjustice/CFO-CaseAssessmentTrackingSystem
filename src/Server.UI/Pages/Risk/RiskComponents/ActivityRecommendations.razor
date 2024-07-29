@@ -7,13 +7,14 @@
 
 @if (Model is not null)
 {
-    <MudTextField 
-        @bind-Value="@Model.ActivityRecommendations" 
-        For="@(() => Model.ActivityRecommendations)"
-        Lines="5"
-        Label="@Model.GetMemberDescription(x => x.ActivityRecommendations)"
-        Placeholder="Consider any activities we could deliver to support any mandated accredited programmes which are required as part of the license conditions such as CSAAP course, unpaid work, substance misuse, exclusion zones. Also Support required for the Participant e.g. broken family links, debt, accommodation or education and training.">
-    </MudTextField>
+    <CatsMudStep Title="License Conditions">
+        <MudTextField @bind-Value="@Model.ActivityRecommendations"
+                      For="@(() => Model.ActivityRecommendations)"
+                      Lines="5"
+                      Label="@Model.GetMemberDescription(x => x.ActivityRecommendations)"
+                      Placeholder="Consider any activities we could deliver to support any mandated accredited programmes which are required as part of the license conditions such as CSAAP course, unpaid work, substance misuse, exclusion zones. Also Support required for the Participant e.g. broken family links, debt, accommodation or education and training.">
+        </MudTextField>
+    </CatsMudStep>
 }
 
 @code {

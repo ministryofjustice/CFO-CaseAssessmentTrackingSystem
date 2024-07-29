@@ -7,13 +7,14 @@
 
 @if (Model is not null)
 {
-    <MudTextField 
-        @bind-Value="@Model.SpecificRisk"
-        For="@(() => Model.SpecificRisk)"
-        Lines="5" 
-        Label="Risk(s)" 
-        Placeholder="Specific risk (to females, LGBT etc.)">
-    </MudTextField>
+    <CatsMudStep Title="Specific Risk">
+        <MudTextField @bind-Value="@Model.SpecificRisk"
+                      For="@(() => Model.SpecificRisk)"
+                      Lines="5"
+                      Label="Risk(s)"
+                      Placeholder="Specific risk (to females, LGBT etc.)">
+        </MudTextField>
+    </CatsMudStep>
 }
 
 @code {

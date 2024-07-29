@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public class GetParticipantRisk
 {
-    [RequestAuthorize(Policy = PolicyNames.AuthorizedUser)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<Result<RiskDto>>
     {
         public required string ParticipantId { get; set; }
