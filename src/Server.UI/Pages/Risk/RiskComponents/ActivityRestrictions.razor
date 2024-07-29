@@ -1,0 +1,29 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Server.UI.Components.Stepper
+@using FluentValidation.Internal
+
+@inherits CatsComponentBase
+@implements IValidatorStrategy<RiskDto>
+
+@if (Model is not null)
+{
+    <CatsMudStep Title="Activity Restrictions">
+        <MudTextField @bind-Value="@Model.ActivityRestrictions"
+                      For="@(() => Model.ActivityRestrictions)"
+                      Lines="5"
+                      Label="@Model.GetMemberDescription(x => x.ActivityRestrictions)"
+                      Placeholder="Include here any activity that you are aware of at this time that would not be appropriate.">
+        </MudTextField>
+    </CatsMudStep>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public required RiskDto Model { get; set; }
+
+    public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
+    {
+        options.IncludeProperties(x => x.ActivityRestrictions);
+    };
+}
+

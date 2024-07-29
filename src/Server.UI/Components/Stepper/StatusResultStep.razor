@@ -3,7 +3,7 @@
 		@if (SubmissionSuccess)
 		{
 			<MudStack Row="true">
-				<MudText Typo="Typo.h4">Assessment Submitted</MudText>
+				<MudText Typo="Typo.h4">@SuccessText</MudText>
 				<MudIcon Size="Size.Large" Class="align-self-center" Icon="@Icons.Material.Filled.Check" Color="Color.Success" />
 			</MudStack>
 		}
@@ -14,7 +14,7 @@
 		else
 		{
 			<MudStack Row="true">
-				<MudText Typo="Typo.h4">Assessment failed to submit</MudText>
+				<MudText Typo="Typo.h4">@FailureText</MudText>
 				<MudIcon Size="Size.Large" Class="align-self-center" Icon="@Icons.Material.Filled.Clear" Color="Color.Error" />
 			</MudStack>
 		}
@@ -23,9 +23,15 @@
 
 @code {
 
-	[Parameter, EditorRequired]
-	public required bool SubmissionSuccess { get; set; }
+    [Parameter, EditorRequired]
+    public required bool SubmissionSuccess { get; set; }
 
-	[Parameter, EditorRequired]
-	public required bool Processing { get; set; }
+    [Parameter, EditorRequired]
+    public required bool Processing { get; set; }
+
+    [Parameter]
+    public string SuccessText { get; set; } = "Submitted successfully";
+
+    [Parameter]
+    public string FailureText { get; set; } = "An issue occurred while completing your request. Please try again later";
 }

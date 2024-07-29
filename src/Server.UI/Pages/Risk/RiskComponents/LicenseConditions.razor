@@ -1,0 +1,33 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Server.UI.Components.Stepper
+@using FluentValidation.Internal
+
+@inherits CatsComponentBase
+@implements IValidatorStrategy<RiskDto>
+
+@if (Model is not null)
+{
+    <CatsMudStep Title="License Conditions">
+        <MudTextField Label="@Model.GetMemberDescription(x => x.LicenseConditions)"
+                      Lines="5"
+                      @bind-Value="@Model.LicenseConditions"
+                      For="@(() => Model.LicenseConditions)"
+                      Placeholder="All conditions must be relevant to the Participant and linked to their involvement to the CFO Evolution Programme. This must be clear and concise, e.g. exclusion zone in place which restricts XX from entering XX City Centre." />
+    </CatsMudStep>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public required RiskDto Model { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
+    {
+        options.IncludeProperties(x => x.LicenseConditions);
+    };
+
+}

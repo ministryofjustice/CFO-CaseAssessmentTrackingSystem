@@ -1,5 +1,6 @@
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Features.Assessments.Commands;
+using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
@@ -7,9 +8,13 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 public partial class CaseSummary
 {
     private AssessmentSummaryDto? _latestAssessment;
-    [Inject] private IUserService UserService { get; set; } = default!;
+
+    [Inject] 
+    private IUserService UserService { get; set; } = default!;
+
     [CascadingParameter]
     public ParticipantSummaryDto ParticipantSummaryDto { get; set; } = default!;
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -18,6 +23,7 @@ public partial class CaseSummary
             : ParticipantSummaryDto.Assessments.OrderByDescending(a => a.AssessmentDate)
                 .First();
     }
+
     public async Task BeginAssessment()
     {
         var command = new BeginAssessment.Command
@@ -69,4 +75,23 @@ public partial class CaseSummary
                ParticipantSummaryDto.EnrolmentStatus.StatusSupportsReassessment();
 
     }
+
+    private bool CanAddRiskInformation() => true;
+    private bool CanRenewRiskInformation() => false;
+
+    public async Task AddRiskInformation()
+    {
+        var command = new AddRisk.Command
+        {
+            ParticipantId = ParticipantSummaryDto.Id
+        };
+
+        var result = await GetNewMediator().Send(command);
+
+        if (result.Succeeded)
+        {
+            Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/risk/{result.Data}");
+        }
+    }
+
 }
