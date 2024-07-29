@@ -4,7 +4,7 @@
 		@if (SubmissionSuccess)
 		{
 			<MudStack Row="false">
-				<MudText Typo="Typo.h4">Assessment Submitted</MudText>
+				<MudText Typo="Typo.h4">@SuccessText</MudText>
                 <MudIcon Size="Size.Large" Class="align-self-center" Icon="@Icons.Material.Filled.Check" Color="Color.Success" />
                 <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" OnClick="GotoParticipant">
                     Continue
