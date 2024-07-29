@@ -1,10 +1,14 @@
-﻿<MudStepExtended IsResultStep="true">
+﻿@using System.ComponentModel
+<MudStepExtended IsResultStep="true">
 	<MudItem Class="d-flex justify-center">
 		@if (SubmissionSuccess)
 		{
-			<MudStack Row="true">
+			<MudStack Row="false">
 				<MudText Typo="Typo.h4">@SuccessText</MudText>
-				<MudIcon Size="Size.Large" Class="align-self-center" Icon="@Icons.Material.Filled.Check" Color="Color.Success" />
+                <MudIcon Size="Size.Large" Class="align-self-center" Icon="@Icons.Material.Filled.Check" Color="Color.Success" />
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" OnClick="GotoParticipant">
+                    Continue
+                </MudButton>
 			</MudStack>
 		}
 		else if (Processing)
@@ -26,8 +30,15 @@
     [Parameter, EditorRequired]
     public required bool SubmissionSuccess { get; set; }
 
+	[Parameter, EditorRequired]
+	public required bool Processing { get; set; }
+    
     [Parameter, EditorRequired]
-    public required bool Processing { get; set; }
+    public required string Upci { get; set; }
+    
+    private void GotoParticipant() => Navigation.NavigateTo($"/pages/participants/{Upci}");
+
+    
 
     [Parameter]
     public string SuccessText { get; set; } = "Submitted successfully";
