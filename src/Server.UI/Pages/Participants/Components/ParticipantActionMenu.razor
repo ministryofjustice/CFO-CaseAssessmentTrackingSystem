@@ -12,7 +12,7 @@
     </ActivatorContent>
     <ChildContent>
         
-        @if (Participant.EnrolmentStatus != EnrolmentStatus.AbandonedStatus)
+        @if (Participant.EnrolmentStatus != EnrolmentStatus.AbandonedStatus && Participant.EnrolmentStatus.IsQaStage() == false)
         {
             <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error" OnClick="Abandon">Abandon</MudMenuItem>
         }
