@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -35,6 +36,25 @@ public class GetParticipantRisk
             }
 
             return mapper.Map<RiskDto>(risk);
+        }
+    }
+
+    public class Validator : AbstractValidator<Query>
+    {
+        public Validator()
+        {
+            RuleFor(x => x.ParticipantId)
+                .NotEmpty()
+                .MinimumLength(9)
+                .MaximumLength(9)
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(ValidationConstants.AlphaNumericMessage);
+
+            When(x => x.RiskId is not null, () => {
+                RuleFor(x => x.RiskId)
+                    .NotEmpty();
+            });
+
         }
     }
 }

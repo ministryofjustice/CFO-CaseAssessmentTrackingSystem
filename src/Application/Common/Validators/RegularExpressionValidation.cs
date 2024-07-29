@@ -5,6 +5,9 @@
         public const string LettersSpacesUnderscores = @"^[A-Za-z_ ]+$";
         public const string LettersSpacesUnderscoresMessage = "{0} must contain only letters, spaces, and underscores.";
 
+        public const string Notes = @"^[A-Za-z0-9 _.,!""'/$]*$";
+        public const string NotesMessage = "{0} must contain only letters, numbers, spaces and common punctuation";
+        
         public const string GuidMessage = "{0} must contain a valid Guid";
 
         public const string AlphaNumeric = @"^[a-zA-Z0-9]*$";

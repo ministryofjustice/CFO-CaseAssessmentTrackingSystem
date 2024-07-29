@@ -1,5 +1,6 @@
 ﻿
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
 
@@ -28,7 +29,10 @@ public static class AddRisk
         public Validator()
         {
             RuleFor(x => x.ParticipantId)
-                .NotNull();
+                .NotNull()
+                .MinimumLength(9)
+                .MaximumLength(9)
+                .Matches(ValidationConstants.AlphaNumeric);
         }
     }
 

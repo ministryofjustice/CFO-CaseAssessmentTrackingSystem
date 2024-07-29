@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.Participants.DTOs;
@@ -70,28 +71,43 @@ public class RiskDto
         {
             RuleFor(x => x.ActivityRecommendations)
                 .NotEmpty()
-                .WithMessage("You must provide activity recommendations");
+                .WithMessage("You must provide activity recommendations")
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(ValidationConstants.NotesMessage);
 
             RuleFor(x => x.ActivityRestrictions)
                 .NotEmpty()
-                .WithMessage("You must provide activity restrictions");
+                .WithMessage("You must provide activity restrictions")
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(ValidationConstants.NotesMessage);
 
             RuleFor(x => x.AdditionalInformation)
                 .NotEmpty()
-                .WithMessage("You must provide additional information");
+                .WithMessage("You must provide additional information")
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(ValidationConstants.NotesMessage);
 
             RuleFor(x => x.LicenseConditions)
                 .NotEmpty()
-                .WithMessage("You must provide license conditions");
-
-            RuleFor(x => x.NSDCase)
-                .NotEmpty()
-                .WithMessage("You must provide NSD Case")
-                .When(x => x.IsSubjectToSHPO is true);
-
+                .WithMessage("You must provide license conditions")
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(ValidationConstants.NotesMessage);
+            
+            When(x => x.IsSubjectToSHPO == true, () => {
+                RuleFor(x => x.NSDCase)
+                    .NotEmpty()
+                    .WithMessage("You must provide NSD Case");
+                
+                RuleFor(x => x.NSDCase)
+                    .Matches(ValidationConstants.Notes)
+                    .WithMessage(ValidationConstants.NotesMessage);
+            });
+            
             RuleFor(x => x.SpecificRisk)
                 .NotEmpty()
-                .WithMessage("You must provide specific risks");
+                .WithMessage("You must provide specific risks")
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(ValidationConstants.NotesMessage);
 
             RuleFor(x => x.RiskToChildren)
                 .NotNull()
