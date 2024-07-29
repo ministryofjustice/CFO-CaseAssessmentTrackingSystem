@@ -13,7 +13,7 @@ public class CatsMudStep : MudStepExtended
         {
             base.OnInitialized();
         }
-        catch (Exception)
+        catch (InvalidOperationException)
         {
             // Handle "uninitialised" stepper
         }

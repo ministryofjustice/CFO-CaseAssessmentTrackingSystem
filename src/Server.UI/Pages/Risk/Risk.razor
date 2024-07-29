@@ -26,7 +26,7 @@
                         <ActivityRecommendations Model="_model" />
                         <ActivityRestrictions Model="_model" />
                         <AdditionalInformation Model="_model" />
-                        <StatusResultStep Processing="@processing" SubmissionSuccess="@submissionSuccess" SuccessText="Risk Submitted" FailureText="Risk failed to submit" />
+                        <StatusResultStep Processing="@Processing" SubmissionSuccess="@SubmissionSuccess" SuccessText="Risk Submitted" FailureText="Risk failed to submit" />
                     </CascadingValue>
                 </MudForm>
             </MudCard>
@@ -38,8 +38,8 @@
     private MudForm? form;
     private RiskDto? _model;
     private CatsMudStepper stepper { get; set; } = new();
-    private bool processing = false;
-    private bool submissionSuccess = false;
+    public bool Processing { get; set; } = false;
+    public bool SubmissionSuccess { get; set; } = false;
 
     [Parameter]
     public required string Upci { get; set; }
@@ -94,6 +94,8 @@
             return;
         }
 
+        bool isSuccess = false;
+
         var command = new SaveRisk.Command()
         {
             RiskId = RiskId,
@@ -102,13 +104,16 @@
 
         try
         {
-            processing = true;
+            Processing = true;
             var result = await GetNewMediator().Send(command);
-            submissionSuccess = result.Succeeded;
+            isSuccess = result.Succeeded;
         }
         finally
         {
-            processing = false;
+            Processing = false;
+            SubmissionSuccess = isSuccess;
+
+            StateHasChanged();
         }
 
     }

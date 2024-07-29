@@ -73,26 +73,26 @@ public class RiskDto
                 .NotEmpty()
                 .WithMessage("You must provide activity recommendations")
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(ValidationConstants.NotesMessage);
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Activity Recommendations"));
 
             RuleFor(x => x.ActivityRestrictions)
                 .NotEmpty()
                 .WithMessage("You must provide activity restrictions")
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(ValidationConstants.NotesMessage);
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Activity Restrictions"));
 
             RuleFor(x => x.AdditionalInformation)
                 .NotEmpty()
                 .WithMessage("You must provide additional information")
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(ValidationConstants.NotesMessage);
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Additional Information"));
 
             RuleFor(x => x.LicenseConditions)
                 .NotEmpty()
                 .WithMessage("You must provide license conditions")
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(ValidationConstants.NotesMessage);
-            
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "License Conditions"));
+
             When(x => x.IsSubjectToSHPO == true, () => {
                 RuleFor(x => x.NSDCase)
                     .NotEmpty()
@@ -100,14 +100,14 @@ public class RiskDto
                 
                 RuleFor(x => x.NSDCase)
                     .Matches(ValidationConstants.Notes)
-                    .WithMessage(ValidationConstants.NotesMessage);
+                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "NSD Case"));
             });
             
             RuleFor(x => x.SpecificRisk)
                 .NotEmpty()
                 .WithMessage("You must provide specific risks")
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(ValidationConstants.NotesMessage);
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Specific Risks"));
 
             RuleFor(x => x.RiskToChildren)
                 .NotNull()
