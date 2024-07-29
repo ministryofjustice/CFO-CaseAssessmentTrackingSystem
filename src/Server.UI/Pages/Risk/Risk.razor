@@ -1,4 +1,5 @@
-﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+﻿@using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Server.UI.Components.Stepper
 @using Cfo.Cats.Server.UI.Pages.Risk.RiskComponents
@@ -25,9 +26,7 @@
                         <ActivityRecommendations Model="_model" />
                         <ActivityRestrictions Model="_model" />
                         <AdditionalInformation Model="_model" />
-                        <CatsMudStep IsResultStep>
-                            Success!
-                        </CatsMudStep>
+                        <StatusResultStep Processing="@processing" SubmissionSuccess="@submissionSuccess" SuccessText="Risk Submitted" FailureText="Risk failed to submit" />
                     </CascadingValue>
                 </MudForm>
             </MudCard>
@@ -39,6 +38,8 @@
     private MudForm? form;
     private RiskDto? _model;
     private CatsMudStepper stepper { get; set; } = new();
+    private bool processing = false;
+    private bool submissionSuccess = false;
 
     [Parameter]
     public required string Upci { get; set; }
@@ -88,7 +89,28 @@
 
     private async Task Submit()
     {
-        await Task.CompletedTask;
+        if(_model is null)
+        {
+            return;
+        }
+
+        var command = new SaveRisk.Command()
+        {
+            RiskId = RiskId,
+            Risk = _model
+        };
+
+        try
+        {
+            processing = true;
+            var result = await GetNewMediator().Send(command);
+            submissionSuccess = result.Succeeded;
+        }
+        finally
+        {
+            processing = false;
+        }
+
     }
 
     private async Task<bool> OnChange(StepChangeDirection direction, int index)

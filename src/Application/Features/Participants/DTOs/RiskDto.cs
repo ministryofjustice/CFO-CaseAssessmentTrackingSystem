@@ -59,7 +59,8 @@ public class RiskDto
     {
         public Mapping()
         {
-            CreateMap<Risk, RiskDto>(MemberList.None);
+            CreateMap<Risk, RiskDto>(MemberList.None)
+                .ReverseMap();
         }
     }
 
