@@ -1514,7 +1514,7 @@ public class DummyCandidateService : ICandidateService
 
     public async Task<CandidateDto?> GetByUpciAsync(string upci)
     {
-        var candidate = Candidates.SingleOrDefault(c => c.Identifier == upci);
+        var candidate = Candidates.SingleOrDefault(c => c.Identifier.Equals(upci, StringComparison.CurrentCultureIgnoreCase));
         return await Task.FromResult(candidate);
     }
 
@@ -1525,10 +1525,10 @@ public class DummyCandidateService : ICandidateService
         DateOnly dateOfBirth = DateOnly.FromDateTime((DateTime)searchQuery.DateOfBirth!);
 
         var blocks = Candidates
-            .Where(e => e.LastName == searchQuery.LastName && e.DateOfBirth == searchQuery.DateOfBirth)
+            .Where(e => e.LastName.Equals(searchQuery.LastName, StringComparison.CurrentCultureIgnoreCase) && e.DateOfBirth == searchQuery.DateOfBirth)
             .Union
             (
-                Candidates.Where(e => new[] { e.Crn, e.NomisNumber }.Contains(searchQuery.ExternalIdentifier))
+                Candidates.Where(e => new[] { e.Crn, e.NomisNumber }.Contains(searchQuery.ExternalIdentifier.ToUpper()))
             );
 
         if(blocks.Count() is 0)
