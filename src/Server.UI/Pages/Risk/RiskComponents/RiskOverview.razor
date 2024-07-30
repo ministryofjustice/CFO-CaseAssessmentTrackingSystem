@@ -16,6 +16,7 @@
             </MudItem>
             <MudItem xs="8">
                 <MudToggleGroup Disabled="ReadOnly" @bind-Value="@Model.RiskToChildren" Class="readonly-toggle" CheckMark>
+                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
@@ -30,6 +31,7 @@
             </MudItem>
             <MudItem xs="8">
                 <MudToggleGroup Disabled="ReadOnly" @bind-Value="@Model.RiskToPublic" Class="readonly-toggle" CheckMark>
+                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
@@ -44,6 +46,7 @@
             </MudItem>
             <MudItem xs="8">
                 <MudToggleGroup Disabled="ReadOnly" @bind-Value="@Model.RiskToKnownAdult" Class="readonly-toggle" CheckMark>
+                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
@@ -58,6 +61,7 @@
             </MudItem>
             <MudItem xs="8">
                 <MudToggleGroup Disabled="ReadOnly" @bind-Value="@Model.RiskToStaff" Class="readonly-toggle" CheckMark>
+                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
@@ -72,6 +76,7 @@
             </MudItem>
             <MudItem xs="8">
                 <MudToggleGroup Disabled="ReadOnly" @bind-Value="@Model.RiskToOtherPrisoners" Class="readonly-toggle" CheckMark>
+                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
@@ -86,6 +91,7 @@
             </MudItem>
             <MudItem xs="8">
                 <MudToggleGroup Disabled="ReadOnly" @bind-Value="@Model.RiskToSelf" Class="readonly-toggle" CheckMark>
+                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
