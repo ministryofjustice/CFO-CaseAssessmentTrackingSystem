@@ -54,8 +54,6 @@ public class RiskDto
     public MappaCategory? MappaCategory { get; set; }
     public MappaLevel? MappaLevel { get; set; }
 
-    // public NoteDto[] Notes { get; set; } = [];
-
     private class Mapping : Profile
     {
         public Mapping()

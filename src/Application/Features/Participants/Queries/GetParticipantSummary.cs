@@ -40,6 +40,12 @@ public static class GetParticipantSummary
                 .Where(pa => pa.ParticipantId == request.ParticipantId)
                 .ProjectTo<AssessmentSummaryDto>(mapper.ConfigurationProvider)
                 .ToArrayAsync(cancellationToken);
+
+            var risk = await unitOfWork.DbContext.Risks
+                .OrderByDescending(x => x.Created)
+                .FirstOrDefaultAsync(x => x.ParticipantId == request.ParticipantId, cancellationToken);
+
+            summary.LatestRisk = mapper.Map<RiskSummaryDto>(risk);
                 
             return Result<ParticipantSummaryDto>.Success(summary);
 

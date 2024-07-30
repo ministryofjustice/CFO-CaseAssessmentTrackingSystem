@@ -74,7 +74,33 @@
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
-                <MudText Typo="Typo.body2">No risk information provided.</MudText>
+                @if(HasRiskInformation())
+                {
+                    <div>
+                        <dl class="description-list">
+                            <div class="description-pair">
+                                <dt>
+                                    <MudText Typo="Typo.subtitle2">Date Created</MudText>
+                                </dt>
+                                <dd>
+                                    <MudText Typo="Typo.body2">@ParticipantSummaryDto.LatestRisk!.Created.ToString("dd/MM/yyyy")</MudText>
+                                </dd>
+                            </div>
+                            <div class="description-pair">
+                                <dt>
+                                    <MudText Typo="Typo.subtitle2">Created By</MudText>
+                                </dt>
+                                <dd>
+                                    <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.LatestRisk!.CreatedBy).DisplayName</MudText>
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body2">No risk information provided.</MudText>
+                }
             </MudCardContent>
             <MudCardActions>
                 @if (CanAddRiskInformation())
