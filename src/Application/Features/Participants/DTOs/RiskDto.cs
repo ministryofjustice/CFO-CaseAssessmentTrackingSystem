@@ -9,14 +9,29 @@ public class RiskDto
     [Description("Activity Recommendations")]
     public string? ActivityRecommendations { get; set; }
 
+    [Description("Date Activity Recommendations Received")]
+    public DateTime? ActivityRecommendationsReceived { get; set; }
+
     [Description("Activity Restrictions")]
     public string? ActivityRestrictions { get; set; }
+
+    [Description("Date Activity Restrictions Received")]
+    public DateTime? ActivityRestrictionsReceived { get; set; }
 
     [Description("Additional Information")]
     public string? AdditionalInformation { get; set; }
 
     [Description("License Conditions")]
     public string? LicenseConditions { get; set; }
+
+    [Description("License/Supervision End Date")]
+    public DateTime? LicenseEnd { get; set; }
+
+    [Description("PSF Restrictions")]
+    public string? PSFRestrictions { get; set; }
+
+    [Description("Date PSF Restrictions Received")]
+    public DateTime? PSFRestrictionsReceived { get; set; }
 
     [Description("Risk to Children")]
     public RiskLevel? RiskToChildren { get; set; }
@@ -46,9 +61,9 @@ public class RiskDto
     public bool? IsSubjectToSHPO { get; set; }
 
     [Description("NSD case")]
-    public string? NSDCase { get; set; }
+    public bool? NSDCase { get; set; }
 
-    [Description("Specific risk")]
+    [Description("Specific Risk(s)")]
     public string? SpecificRisk { get; set; }
 
     public MappaCategory? MappaCategory { get; set; }
@@ -63,6 +78,8 @@ public class RiskDto
         }
     }
 
+    public record RiskDetails(RiskLevel RiskToChildren, RiskLevel RiskToPublic, RiskLevel RiskToKnownAdult, RiskLevel RiskToStaff, RiskLevel RiskToSelf);
+
     public class Validator : AbstractValidator<RiskDto>
     { 
         public Validator()
@@ -73,11 +90,23 @@ public class RiskDto
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Activity Recommendations"));
 
+            RuleFor(x => x.ActivityRecommendationsReceived)
+                .NotEmpty()
+                .WithMessage("You must provide the date activity recommendations were received")
+                .LessThanOrEqualTo(DateTime.UtcNow.Date)
+                .WithMessage(ValidationConstants.DateMustBeInPast);
+
             RuleFor(x => x.ActivityRestrictions)
                 .NotEmpty()
                 .WithMessage("You must provide activity restrictions")
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Activity Restrictions"));
+
+            RuleFor(x => x.ActivityRestrictionsReceived)
+                .NotEmpty()
+                .WithMessage("You must provide the date activity restrictions were received")
+                .LessThanOrEqualTo(DateTime.UtcNow.Date)
+                .WithMessage(ValidationConstants.DateMustBeInPast);
 
             RuleFor(x => x.AdditionalInformation)
                 .NotEmpty()
@@ -91,16 +120,24 @@ public class RiskDto
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "License Conditions"));
 
-            When(x => x.IsSubjectToSHPO == true, () => {
-                RuleFor(x => x.NSDCase)
-                    .NotEmpty()
-                    .WithMessage("You must provide NSD Case");
-                
-                RuleFor(x => x.NSDCase)
-                    .Matches(ValidationConstants.Notes)
-                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "NSD Case"));
-            });
-            
+            RuleFor(x => x.LicenseEnd)
+                .NotEmpty()
+                .WithMessage("You must provide the license end date")
+                .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
+                .WithMessage(ValidationConstants.DateMustBeInFuture);
+
+            RuleFor(x => x.PSFRestrictions)
+                .NotEmpty()
+                .WithMessage("You must provide PSF restrictions")
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "PSF Restrictions"));
+
+            RuleFor(x => x.PSFRestrictionsReceived)
+                .NotEmpty()
+                .WithMessage("You must provide the date PSF restrictions were received")
+                .LessThanOrEqualTo(DateTime.UtcNow.Date)
+                .WithMessage(ValidationConstants.DateMustBeInPast);
+
             RuleFor(x => x.SpecificRisk)
                 .NotEmpty()
                 .WithMessage("You must provide specific risks")
@@ -148,6 +185,10 @@ public class RiskDto
                 .WithMessage("You must answer");
 
             RuleFor(x => x.IsSubjectToSHPO)
+                .NotNull()
+                .WithMessage("You must answer");
+
+            RuleFor(x => x.NSDCase)
                 .NotNull()
                 .WithMessage("You must answer");
         }
