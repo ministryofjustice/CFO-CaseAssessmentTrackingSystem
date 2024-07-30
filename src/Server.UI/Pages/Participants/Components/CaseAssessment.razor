@@ -92,15 +92,19 @@
 
     private Assessment? _model;
     private bool _notFound = false;
-    
+
     [Parameter]
     [EditorRequired]
     public string ParticipantId { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
+        if(_model is not null)
+        {
+            return;
+        }
 
-        if(_model == null)
+        try
         {
             var result = await GetNewMediator().Send(new GetAssessment.Query()
             {
@@ -111,6 +115,11 @@
             {
                 _model = result.Data;
             }
+
+        }
+        finally
+        {
+            _notFound = _model is null;
         }
 
     }
