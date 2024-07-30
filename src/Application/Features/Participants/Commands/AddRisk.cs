@@ -18,7 +18,19 @@ public static class AddRisk
     {
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
         {
-            Risk risk = Risk.CreateFrom(Guid.NewGuid(), request.ParticipantId);
+            Risk? risk = await unitOfWork.DbContext.Risks
+                .OrderByDescending(r => r.ParticipantId == request.ParticipantId)
+                .FirstOrDefaultAsync();
+
+            if (risk is null)
+            {
+                risk = Risk.CreateFrom(Guid.NewGuid(), request.ParticipantId);
+            }
+            else
+            {
+                risk.Id = Guid.NewGuid();
+            }
+
             await unitOfWork.DbContext.Risks.AddAsync(risk, cancellationToken);
             return Result<Guid>.Success(risk.Id);
         }
