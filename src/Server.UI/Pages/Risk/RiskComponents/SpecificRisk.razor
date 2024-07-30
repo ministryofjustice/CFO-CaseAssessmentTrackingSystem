@@ -21,7 +21,7 @@
                 Is the person subject to a @Model.GetMemberDescription(x => x.IsSubjectToSHPO)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.IsSubjectToSHPO" CheckMark>
+                <MudToggleGroup Disabled="ReadOnly" Class="readonly-toggle" @bind-Value="@Model.IsSubjectToSHPO" CheckMark>
                     <MudToggleItem Value="(bool?)true">Yes</MudToggleItem>
                     <MudToggleItem Value="(bool?)false">No</MudToggleItem>
                 </MudToggleGroup>
@@ -31,7 +31,7 @@
                 @Model.GetMemberDescription(x => x.NSDCase)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.NSDCase" CheckMark>
+                <MudToggleGroup Disabled="ReadOnly" Class="readonly-toggle" @bind-Value="@Model.NSDCase" CheckMark>
                     <MudToggleItem Value="(bool?)true">Yes</MudToggleItem>
                     <MudToggleItem Value="(bool?)false">No</MudToggleItem>
                 </MudToggleGroup>
@@ -44,6 +44,21 @@
 @code {
     [Parameter, EditorRequired]
     public required RiskDto Model { get; set; }
+
+    [CascadingParameter]
+    public MudForm? Form { get; set; }
+
+    public bool ReadOnly { get; private set; } = false;
+
+    protected override Task OnInitializedAsync()
+    {
+        if (Form is not null)
+        {
+            ReadOnly = Form.ReadOnly;
+        }
+
+        return base.OnInitializedAsync();
+    }
 
     public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
     {

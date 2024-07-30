@@ -15,7 +15,7 @@
                 @Model.GetMemberDescription(x => x.RiskToChildren)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToChildren" Class="readonly-toggle" CheckMark>
+                <MudToggleGroup Disabled="ReadOnly" @bind-Value="@Model.RiskToChildren" Class="readonly-toggle" CheckMark>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
@@ -29,7 +29,7 @@
                 @Model.GetMemberDescription(x => x.RiskToPublic)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToPublic" Class="readonly-toggle" CheckMark>
+                <MudToggleGroup Disabled="ReadOnly" @bind-Value="@Model.RiskToPublic" Class="readonly-toggle" CheckMark>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
@@ -43,7 +43,7 @@
                 @Model.GetMemberDescription(x => x.RiskToKnownAdult)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToKnownAdult" Class="readonly-toggle" CheckMark>
+                <MudToggleGroup Disabled="ReadOnly" @bind-Value="@Model.RiskToKnownAdult" Class="readonly-toggle" CheckMark>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
@@ -57,7 +57,7 @@
                 @Model.GetMemberDescription(x => x.RiskToStaff)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToStaff" Class="readonly-toggle" CheckMark>
+                <MudToggleGroup Disabled="ReadOnly" @bind-Value="@Model.RiskToStaff" Class="readonly-toggle" CheckMark>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
@@ -71,7 +71,7 @@
                 @Model.GetMemberDescription(x => x.RiskToOtherPrisoners)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToOtherPrisoners" Class="readonly-toggle" CheckMark>
+                <MudToggleGroup Disabled="ReadOnly" @bind-Value="@Model.RiskToOtherPrisoners" Class="readonly-toggle" CheckMark>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
@@ -85,7 +85,7 @@
                 @Model.GetMemberDescription(x => x.RiskToSelf)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToSelf" Class="readonly-toggle" CheckMark>
+                <MudToggleGroup Disabled="ReadOnly" @bind-Value="@Model.RiskToSelf" Class="readonly-toggle" CheckMark>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
