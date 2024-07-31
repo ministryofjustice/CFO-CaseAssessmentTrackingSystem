@@ -9,13 +9,13 @@ public class RiskDto
     [Description("Activity Recommendations")]
     public string? ActivityRecommendations { get; set; }
 
-    [Description("Date Activity Recommendations Received")]
+    [Description("Date Latest Activity Recommendations Received")]
     public DateTime? ActivityRecommendationsReceived { get; set; }
 
     [Description("Activity Restrictions")]
     public string? ActivityRestrictions { get; set; }
 
-    [Description("Date Activity Restrictions Received")]
+    [Description("Date Latest Activity Restrictions Received")]
     public DateTime? ActivityRestrictionsReceived { get; set; }
 
     [Description("Additional Information")]
@@ -30,7 +30,7 @@ public class RiskDto
     [Description("PSF Restrictions")]
     public string? PSFRestrictions { get; set; }
 
-    [Description("Date PSF Restrictions Received")]
+    [Description("Date Latest PSF Restrictions Received")]
     public DateTime? PSFRestrictionsReceived { get; set; }
 
     [Description("Risk to Children")]
