@@ -115,9 +115,18 @@ public partial class CaseSummary
 
         var result = await GetNewMediator().Send(command);
 
-        if(result.Succeeded && command.ReviewReason.RequiresFurtherInformation)
+        if(result.Succeeded is false)
+        {
+            return;
+        }
+
+        if(command.ReviewReason.RequiresFurtherInformation)
         {
             Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/risk/{result.Data}");
+        }
+        else
+        {
+            Navigation.Refresh(true);
         }
 
     }
