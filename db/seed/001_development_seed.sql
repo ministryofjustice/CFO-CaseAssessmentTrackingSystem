@@ -16,21 +16,21 @@ BEGIN TRY
         (N'1.1.1.1.1.', N'Achieve_NW', N'Achieve (North West Team)', N'2024-05-31 12:30:38.3850635'),
         (N'1.1.1.1.2.', N'Growth_NW', N'Achieve (Growth North West Team)', N'2024-05-31 12:30:38.3850635'),
         
-        -- Igneus
+        -- Ingeus
         (N'1.1.2.', N'Ingeus', N'Top level tenant for provider Ingeus', N'2024-05-31 12:30:38.3850637'),
         
         (N'1.1.2.1.', N'North East Contract', N'Ingeus (North East Contract)', N'2024-05-31 12:30:38.3850637'),
-        (N'1.1.2.1.1.', N'Igneus_NE', N'Igneus (North East)', N'2024-05-31 12:30:38.3850637'),
+        (N'1.1.2.1.1.', N'Ingeus_NE', N'Ingeus (North East)', N'2024-05-31 12:30:38.3850637'),
         (N'1.1.2.1.2.', N'AWayOut_NE', N'A way out (North East)', N'2024-05-31 12:30:38.3850637'),
         (N'1.1.2.1.3.', N'ForcesEmploymentCharity_NE', N'Forces Employment Charity (North East)', N'2024-05-31 12:30:38.3850637'),
         
         (N'1.1.2.2.', N'West Midlands Contract', N'Ingeus (West Midlands Contract)', N'2024-05-31 12:30:38.3850637'),
-        (N'1.1.2.2.1.', N'Igneus_WM', N'Igneus (West Midlands)', N'2024-05-31 12:30:38.3850637'),
+        (N'1.1.2.2.1.', N'Ingeus_WM', N'Ingeus (West Midlands)', N'2024-05-31 12:30:38.3850637'),
         (N'1.1.2.2.2.', N'AWayOut_WM', N'A way out (West Midlands)', N'2024-05-31 12:30:38.3850637'),
         (N'1.1.2.2.3.', N'ChangingLives_WM', N'Changing Lives (West Midlands)', N'2024-05-31 12:30:38.3850637'),
         
         (N'1.1.2.3.', N'East Midlands Contract', N'Ingeus (East Midlands Contract)', N'2024-05-31 12:30:38.3850637'),
-        (N'1.1.2.3.1.', N'Igneus_EM', N'Igneus (East Midlands)', N'2024-05-31 12:30:38.3850637'),
+        (N'1.1.2.3.1.', N'Ingeus_EM', N'Ingeus (East Midlands)', N'2024-05-31 12:30:38.3850637'),
         (N'1.1.2.3.2.', N'ChangingLives_EM', N'Changing Lives (East Midlands)', N'2024-05-31 12:30:38.3850637'),
         (N'1.1.2.3.3.', N'LAT_EM', N'LAT (East Midlands)', N'2024-05-31 12:30:38.3850637'),
         
@@ -660,6 +660,12 @@ BEGIN TRY
     insert into [Configuration].[TenantLocation]
     select l.Id, c.TenantId from [Configuration].[Location] l
                                      inner join [configuration].Contract c on l.ContractId = c.Id
+
+
+	-- now specific sub teams
+
+	-- igneus _cm
+
 
     COMMIT TRANSACTION;
 
