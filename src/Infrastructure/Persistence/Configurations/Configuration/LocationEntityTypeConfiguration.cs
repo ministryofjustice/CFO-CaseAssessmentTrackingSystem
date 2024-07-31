@@ -41,7 +41,7 @@ public class LocationEntityTypeConfiguration : IEntityTypeConfiguration<Location
             .WithMany(p => p.ChildLocations)
             .HasForeignKey("_parentLocationId")
             .OnDelete(DeleteBehavior.Restrict);
-
+        
         builder.Property("_parentLocationId")
             .HasColumnName("ParentLocationId");
 

@@ -4,11 +4,11 @@
 @using Cfo.Cats.Application.Features.Tenants.Commands
 @using Cfo.Cats.Application.Features.Tenants.DTOs
 @using Cfo.Cats.Application.Features.Tenants.Queries.Pagination
-@using Cfo.Cats.Application.Features.Tenants.Caching
 @using Cfo.Cats.Application.Features.Tenants.Commands.AddEdit
 @using Cfo.Cats.Application.Features.Tenants.Commands.Delete
 @using Cfo.Cats.Application.Features.Tenants.Commands.Rename
 @using Cfo.Cats.Application.Features.Tenants.Queries.Export
+@using Cfo.Cats.Server.UI.Pages.Tenants.Components
 @using Cfo.Cats.Application.SecurityConstants
 
 
@@ -28,7 +28,7 @@
              Height="calc(100vh - 300px)"
              Loading="@loading"
              @bind-RowsPerPage="defaultPageSize"
-             Hover="true" @ref="table">
+             Hover="false" @ref="table">
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
             <div class="d-flex gap-4">
@@ -143,26 +143,35 @@
 
     </Columns>
     <ChildRowContent>
-        <MudCard Elevation="0" Class="d-flex flex-grow-0">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.body1">
-                        <strong>Allowed Domains</strong>
-                    </MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudGrid>
-                    @foreach(var domain in context.Item.Domains)
-                    {
-                        <MudItem xs="12" md="6" lg="4" Class="d-flex">
-                            <MudField Variant="Variant.Text">@domain</MudField>
-                            <MudIconButton OnClick="@(() => OnDeleteDomain(domain, context.Item.Id))"  Icon="@Icons.Material.Filled.Delete" aria-label="delete"></MudIconButton>
-                        </MudItem>
-                    }
-                </MudGrid>
-            </MudCardContent>
-        </MudCard>
+        <MudGrid>
+            <MudItem xs="12" md="6">
+                <TenantLocations TenantId="@context.Item.Id" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudCard Elevation="0" Class="d-flex flex-grow-0">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.body1">
+                                <strong>Allowed Domains</strong>
+                            </MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudGrid>
+                            @foreach (var domain in context.Item.Domains)
+                            {
+                                <MudItem xs="12" md="6" lg="4" Class="d-flex">
+                                    <MudField Variant="Variant.Text">@domain</MudField>
+                                    <MudIconButton OnClick="@(() => OnDeleteDomain(domain, context.Item.Id))" Icon="@Icons.Material.Filled.Delete" aria-label="delete"></MudIconButton>
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+        
+      
     </ChildRowContent>
     <NoRecordsContent>
         <MudText>@ConstantString.NoRecords</MudText>

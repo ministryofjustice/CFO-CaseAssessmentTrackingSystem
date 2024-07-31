@@ -1,0 +1,161 @@
+﻿@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Locations.Queries.GetAll
+@using Cfo.Cats.Domain.Common.Enums
+@using Humanizer
+
+@inherits CatsComponentBase
+
+
+@if (_loading == false)
+{
+    <MudCard Elevation="0" Class="d-flex flex-grow-0">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.body1">
+                    <strong>Accessible Locations</strong>
+                </MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+
+            <MudTable Hover="true" 
+                Breakpoint="Breakpoint.Sm" 
+                Items="_locations" 
+                Height="500px"
+                FixedHeader="true"
+                GroupBy="_groupDefinition"
+                GroupHeaderStyle="background-color:var(--mud-palette-background-gray)">
+                <ColGroup>
+                    <col style="width: 60px;" />
+                    <col />
+                    <col />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Gender Provision</MudTh>
+                    <MudTh>Parent Location</MudTh>
+                </HeaderContent>
+                <GroupHeaderTemplate>
+                    <MudTh Class="mud-table-cell-custom-group" colspan="5">@($"{context.Key} ({context.Items.Count()})")</MudTh>
+                </GroupHeaderTemplate>
+                <RowTemplate>
+                    <MudTd DataLabel="Nm">@context.Name</MudTd>
+                    <MudTd DataLabel="Gp">@context.GenderProvision.Name</MudTd>
+                    <MudTd DataLabel="P">@context.ParentLocationName</MudTd>
+                </RowTemplate>
+            </MudTable>
+
+            @* <MudList T="string">
+                <MudGrid>
+                    @foreach (var location in _locations.OrderBy(l => l.Name))
+                    {
+                        <MudItem xs="12" lg="4">
+                            <MudListItem Icon="@GetLocationIcon(location)" T="string" Text="@location.Name" SecondaryText="@location.LocationType.Name"/>    
+                        </MudItem>
+                    }
+                </MudGrid>
+               
+            </MudList> *@
+        </MudCardContent>
+    </MudCard>
+}
+
+
+
+@code {
+
+    private LocationDto[] _locations = [];
+
+    private TableGroupDefinition<LocationDto> _groupDefinition = new()
+        {
+            GroupName = "Location Type",
+            Indentation = false,
+            Expandable = true,
+            Selector = (l) => l.LocationType.Name.Humanize(),
+            IsInitiallyExpanded = false
+        };
+
+    private bool _loading;
+    
+    [Parameter, EditorRequired]
+    public string TenantId { get; set; } = default!;
+    
+    [CascadingParameter] private UserProfile? UserProfile { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _loading = true;
+            
+            var mediator = GetNewMediator();
+        
+            var request = new GetAllLocationsQuery()
+            {
+                UserProfile = UserProfile,
+                TenantId = this.TenantId
+            };
+
+            var result = await mediator.Send(request);
+            if (result.Succeeded)
+            {
+                _locations = result.Data!;
+            }
+            else
+            {
+                _locations = [];
+            }
+
+        }
+        finally
+        {
+            _loading = false;
+        }
+        
+        
+    
+    }
+
+
+
+    private string GetLocationIcon(LocationDto location)
+    {
+        if (location.LocationType == LocationType.Unspecified)
+        {
+            return Icons.Material.Filled.LocationCity;
+        }
+
+        if (location.LocationType == LocationType.Wing)
+        {
+            return Icons.Material.Filled.Warehouse;
+        }
+        
+        if (location.LocationType == LocationType.Outlying)
+        {
+            return Icons.Material.Filled.Domain;
+        }
+        
+        if (location.LocationType == LocationType.Feeder)
+        {
+            return Icons.Material.Filled.Business;
+        }
+        
+        if (location.LocationType == LocationType.Community)
+        {
+            return Icons.Material.Filled.People;
+        }
+        
+        if (location.LocationType == LocationType.Hub)
+        {
+            return Icons.Material.Filled.HomeWork;
+        }
+        
+        if (location.LocationType == LocationType.Satellite)
+        {
+            return Icons.Material.Filled.Satellite;
+        }
+
+        return Icons.Material.Filled.Castle;
+
+    }
+}

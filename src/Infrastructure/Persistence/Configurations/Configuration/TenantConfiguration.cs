@@ -21,7 +21,7 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
         builder.Property(t => t.Description).IsRequired().HasMaxLength(150);
 
         builder.HasMany(t => t.Locations)
-            .WithMany("Tenants")
+            .WithMany(l => l.Tenants)
             .UsingEntity<Dictionary<string,object>>(
                 "TenantLocation",
                 j =>
