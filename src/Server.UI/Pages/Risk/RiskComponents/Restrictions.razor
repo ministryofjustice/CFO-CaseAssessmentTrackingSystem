@@ -17,7 +17,10 @@
         <MudDatePicker @bind-Date="Model.ActivityRestrictionsReceived"
                        Label="@Model.GetMemberDescription(x => x.ActivityRestrictionsReceived)"
                        For="@(() => Model.ActivityRestrictionsReceived)"
-                       MaxDate="DateTime.UtcNow.Date" />
+                       MaxDate="DateTime.UtcNow.Date"
+                       Class="mt-4" />
+
+        <MudDivider Class="mt-8 mb-8"/>
 
         <MudTextField @bind-Value="@Model.PSFRestrictions" 
                       For="@(() => Model.PSFRestrictions)"
@@ -28,7 +31,8 @@
         <MudDatePicker @bind-Date="Model.PSFRestrictionsReceived"
                        Label="@Model.GetMemberDescription(x => x.PSFRestrictionsReceived)"
                        For="@(() => Model.PSFRestrictionsReceived)"
-                       MaxDate="DateTime.UtcNow.Date" />
+                       MaxDate="DateTime.UtcNow.Date"
+                       Class="mt-4" />
     </CatsMudStep>
 }
 
