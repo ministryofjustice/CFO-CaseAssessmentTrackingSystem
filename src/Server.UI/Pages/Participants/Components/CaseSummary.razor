@@ -114,10 +114,10 @@
                         <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="AddRiskInformation" />
                     </MudTooltip>
                 }
-                @if(CanRenewRiskInformation())
+                @if(CanReviewRiskInformation())
                 {
-                    <MudTooltip Text="Renew Information">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="AddRiskInformation" />
+                    <MudTooltip Text="Review Information">
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="ReviewRiskInformation" />
                     </MudTooltip>
                 }
             </MudCardActions>

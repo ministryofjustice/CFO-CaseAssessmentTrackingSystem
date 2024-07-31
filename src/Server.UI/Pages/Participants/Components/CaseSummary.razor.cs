@@ -78,7 +78,7 @@ public partial class CaseSummary
 
     private bool HasRiskInformation() => ParticipantSummaryDto.LatestRisk is not null;
     private bool CanAddRiskInformation() => HasRiskInformation() is false;
-    private bool CanRenewRiskInformation() => HasRiskInformation();
+    private bool CanReviewRiskInformation() => HasRiskInformation();
 
     public async Task AddRiskInformation()
     {
