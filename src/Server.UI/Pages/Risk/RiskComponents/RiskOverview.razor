@@ -11,12 +11,27 @@
 {
     <CatsMudStep Title="Risk Overview">
         <MudGrid>
+            @* Is Relevant to Custody/Community *@
+            <MudItem xs="4">
+                Risk Details are relevant to
+            </MudItem>
+            <MudItem xs="8">
+                <div class="d-flex align-center gap-4">
+                    <MudCheckBox ReadOnly="ReadOnly" @bind-Value="@Model.IsRelevantToCustody" Label="@Model.GetMemberDescription(x => x.IsRelevantToCustody)" />
+                    <MudTextField ReadOnly Underline="false" For="@(() => Model.IsRelevantToCustody)" hidden />
+                </div>
+                <div class="d-flex align-center gap-4">
+                    <MudCheckBox ReadOnly="ReadOnly" @bind-Value="@Model.IsRelevantToCommunity" Label="@Model.GetMemberDescription(x => x.IsRelevantToCommunity)" />
+                    <MudTextField ReadOnly Underline="false" For="@(() => Model.IsRelevantToCommunity)" hidden />
+                </div>
+            </MudItem>
             @* Risk to Children *@
+            <MudDivider Class="mt-6" />
             <MudItem xs="4">
                 @Model.GetMemberDescription(x => x.RiskToChildren)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToChildren" Class="readonly-toggle" CheckMark>
+                <MudToggleGroup @bind-Value="@Model.RiskToChildren" Class="readonly-toggle" CheckMark Disabled="HasOptionSelected is false">
                     <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
@@ -31,7 +46,7 @@
                 @Model.GetMemberDescription(x => x.RiskToPublic)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToPublic" Class="readonly-toggle" CheckMark>
+                <MudToggleGroup @bind-Value="@Model.RiskToPublic" Class="readonly-toggle" CheckMark Disabled="HasOptionSelected is false">
                     <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
@@ -46,7 +61,7 @@
                 @Model.GetMemberDescription(x => x.RiskToKnownAdult)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToKnownAdult" Class="readonly-toggle" CheckMark>
+                <MudToggleGroup @bind-Value="@Model.RiskToKnownAdult" Class="readonly-toggle" CheckMark Disabled="HasOptionSelected is false">
                     <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
@@ -61,7 +76,7 @@
                 @Model.GetMemberDescription(x => x.RiskToStaff)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToStaff" Class="readonly-toggle" CheckMark>
+                <MudToggleGroup @bind-Value="@Model.RiskToStaff" Class="readonly-toggle" CheckMark Disabled="HasOptionSelected is false">
                     <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
@@ -76,7 +91,7 @@
                 @Model.GetMemberDescription(x => x.RiskToOtherPrisoners)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToOtherPrisoners" Class="readonly-toggle" CheckMark>
+                <MudToggleGroup @bind-Value="@Model.RiskToOtherPrisoners" Class="readonly-toggle" CheckMark Disabled="HasOptionSelected is false">
                     <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
@@ -91,7 +106,7 @@
                 @Model.GetMemberDescription(x => x.RiskToSelf)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToSelf" Class="readonly-toggle" CheckMark>
+                <MudToggleGroup @bind-Value="@Model.RiskToSelf" Class="readonly-toggle" CheckMark Disabled="HasOptionSelected is false">
                     <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
                     <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
@@ -99,21 +114,6 @@
                     <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
                 </MudToggleGroup>
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToSelf)" hidden />
-            </MudItem>
-            @* Risk to Self *@
-            <MudDivider Class="mt-6" />
-            <MudItem xs="4">
-                Risk Details above are relevant to
-            </MudItem>
-            <MudItem xs="8">
-                <div class="d-flex">
-                    <MudCheckBox ReadOnly="ReadOnly" @bind-Value="@Model.IsRelevantToCustody" Label="@Model.GetMemberDescription(x => x.IsRelevantToCustody)" />
-                    <MudTextField ReadOnly Underline="false" For="@(() => Model.IsRelevantToCustody)" hidden />
-                </div>
-                <div class="d-flex">
-                    <MudCheckBox ReadOnly="ReadOnly" @bind-Value="@Model.IsRelevantToCommunity" Label="@Model.GetMemberDescription(x => x.IsRelevantToCommunity)" />
-                    <MudTextField ReadOnly Underline="false" For="@(() => Model.IsRelevantToCommunity)" hidden />
-                </div>
             </MudItem>
         </MudGrid>
     </CatsMudStep>
@@ -130,9 +130,6 @@
 
     protected override Task OnInitializedAsync()
     {
-        Model.IsRelevantToCommunity ??= false;
-        Model.IsRelevantToCustody ??= false;
-
         if(Form is not null)
         {
             ReadOnly = Form.ReadOnly;
@@ -152,4 +149,6 @@
         options.IncludeProperties(x => x.IsRelevantToCommunity);
         options.IncludeProperties(x => x.IsRelevantToCustody);
     };
+
+    public bool HasOptionSelected => Model.IsRelevantToCommunity || Model.IsRelevantToCustody;
 }

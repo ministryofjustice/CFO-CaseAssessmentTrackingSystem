@@ -52,10 +52,10 @@ public class RiskDto
     public RiskLevel? RiskToSelf { get; set; }
 
     [Description("Custody")]
-    public bool? IsRelevantToCustody { get; set; }
+    public bool IsRelevantToCustody { get; set; } = false;
 
     [Description("Community")]
-    public bool? IsRelevantToCommunity { get; set; }
+    public bool IsRelevantToCommunity { get; set; } = false;
 
     [Description("Sexual Harm Prevention Order (SHPO)")]
     public bool? IsSubjectToSHPO { get; set; }
@@ -144,43 +144,52 @@ public class RiskDto
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Specific Risks"));
 
-            RuleFor(x => x.RiskToChildren)
-                .NotNull()
-                .WithMessage("You must answer");
+            RuleFor(x => x.IsRelevantToCommunity)
+                .Equal(true)
+                .When(x => x.IsRelevantToCustody is false)
+                .WithMessage("You must pick one");
 
-            RuleFor(x => x.RiskToPublic)
-                .NotNull()
-                .WithMessage("You must answer");
+            RuleFor(x => x.IsRelevantToCustody)
+                .Equal(true)
+                .When(x => x.IsRelevantToCommunity is false)
+                .WithMessage("You must pick one");
 
-            RuleFor(x => x.RiskToKnownAdult)
-                .NotNull()
-                .WithMessage("You must answer");
+            When(x => x.IsRelevantToCommunity || x.IsRelevantToCustody, () =>
+            {
+                RuleFor(x => x.RiskToChildren)
+                    .NotNull()
+                    .When(x => x.IsRelevantToCommunity)
+                    .WithMessage("This option is mandatory in community");
 
-            RuleFor(x => x.RiskToStaff)
-                .NotNull()
-                .WithMessage("You must answer");
+                RuleFor(x => x.RiskToPublic)
+                    .NotNull()
+                    .When(x => x.IsRelevantToCommunity)
+                    .WithMessage("This option is mandatory in community");
 
-            RuleFor(x => x.RiskToOtherPrisoners)
-                .NotNull()
-                .WithMessage("You must answer");
+                RuleFor(x => x.RiskToKnownAdult)
+                    .NotNull()
+                    .When(x => x.IsRelevantToCommunity)
+                    .WithMessage("This option is mandatory in community");
 
-            RuleFor(x => x.RiskToSelf)
-                .NotNull()
-                .WithMessage("You must answer");
+                RuleFor(x => x.RiskToStaff)
+                    .NotNull()
+                    .WithMessage("This option is always mandatory");
+
+                RuleFor(x => x.RiskToOtherPrisoners)
+                    .NotNull()
+                    .When(x => x.IsRelevantToCustody)
+                    .WithMessage("This option is mandatory in custody");
+
+                RuleFor(x => x.RiskToSelf)
+                    .NotNull()
+                    .WithMessage("This option is always mandatory");
+            });
 
             RuleFor(x => x.MappaCategory)
                 .NotNull()
                 .WithMessage("You must answer");
 
             RuleFor(x => x.MappaLevel)
-                .NotNull()
-                .WithMessage("You must answer");
-
-            RuleFor(x => x.IsRelevantToCommunity)
-                .NotNull()
-                .WithMessage("You must answer");
-
-            RuleFor(x => x.IsRelevantToCustody)
                 .NotNull()
                 .WithMessage("You must answer");
 
