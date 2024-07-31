@@ -1,4 +1,4 @@
-
+﻿
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
@@ -28,7 +28,7 @@ public static class AddRisk
             }
             else
             {
-                risk.Id = Guid.NewGuid();
+                risk = Risk.Review(risk);
             }
 
             await unitOfWork.DbContext.Risks.AddAsync(risk, cancellationToken);

@@ -25,6 +25,13 @@ public class Risk : BaseAuditableEntity<Guid>
         return r;
     }
 
+    public static Risk Review(Risk from)
+    {
+        from.Id = Guid.NewGuid();
+        from.AddDomainEvent(new RiskInformationReviewedDomainEvent(from));
+        return from;
+    }
+
     public string? ActivityRecommendations { get; private set; }
     public DateTime? ActivityRecommendationsReceived { get; private set; }
     public string? ActivityRestrictions { get; private set; }

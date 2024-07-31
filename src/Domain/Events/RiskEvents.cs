@@ -6,3 +6,8 @@ public sealed class RiskInformationAddedDomainEvent(Risk risk) : DomainEvent
 {
     public Risk Item { get; set; } = risk;
 }
+
+public sealed class RiskInformationReviewedDomainEvent(Risk risk) : DomainEvent
+{
+    public Risk Item { get; set; } = risk;
+}
