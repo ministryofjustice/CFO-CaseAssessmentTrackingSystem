@@ -1,4 +1,4 @@
-﻿
+
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
@@ -19,8 +19,8 @@ public static class AddRisk
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
         {
             Risk? risk = await unitOfWork.DbContext.Risks
-                .OrderByDescending(r => r.ParticipantId == request.ParticipantId)
-                .FirstOrDefaultAsync();
+                .OrderByDescending(r => r.Created)
+                .FirstOrDefaultAsync(r => r.ParticipantId == request.ParticipantId);
 
             if (risk is null)
             {
