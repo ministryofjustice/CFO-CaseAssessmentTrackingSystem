@@ -18,9 +18,9 @@
             <MudItem xs="8">
                 <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.MappaCategory" CheckMark>
                     <MudToggleItem Value="@MappaCategory.Unknown">@MappaCategory.Unknown.Name</MudToggleItem>
-                    <MudToggleItem Value="@MappaCategory.Category1">@MappaCategory.Category1.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@MappaCategory.Category2">@MappaCategory.Category2.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@MappaCategory.Category3">@MappaCategory.Category3.Name.Humanize()</MudToggleItem>
+                    <MudToggleItem Value="@MappaCategory.Category1">@MappaCategory.Category1.Name</MudToggleItem>
+                    <MudToggleItem Value="@MappaCategory.Category2">@MappaCategory.Category2.Name</MudToggleItem>
+                    <MudToggleItem Value="@MappaCategory.Category3">@MappaCategory.Category3.Name</MudToggleItem>
                 </MudToggleGroup>
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.MappaCategory)" hidden />
             </MudItem>
@@ -31,10 +31,10 @@
             </MudItem>
             <MudItem xs="8">
                 <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.MappaLevel" CheckMark>
-                    <MudToggleItem Value="@MappaLevel.Unknown">@MappaLevel.Unknown.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@MappaLevel.Level1">@MappaLevel.Level1.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@MappaLevel.Level2">@MappaLevel.Level2.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@MappaLevel.Level3">@MappaLevel.Level3.Name.Humanize()</MudToggleItem>
+                    <MudToggleItem Value="@MappaLevel.Unknown">@MappaLevel.Unknown.Name</MudToggleItem>
+                    <MudToggleItem Value="@MappaLevel.Level1">@MappaLevel.Level1.Name</MudToggleItem>
+                    <MudToggleItem Value="@MappaLevel.Level2">@MappaLevel.Level2.Name</MudToggleItem>
+                    <MudToggleItem Value="@MappaLevel.Level3">@MappaLevel.Level3.Name</MudToggleItem>
                 </MudToggleGroup>
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.MappaLevel)" hidden />
             </MudItem>

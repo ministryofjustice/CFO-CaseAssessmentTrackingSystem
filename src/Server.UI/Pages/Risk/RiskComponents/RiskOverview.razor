@@ -17,11 +17,11 @@
             </MudItem>
             <MudItem xs="8">
                 <MudToggleGroup @bind-Value="@Model.RiskToChildren" Class="readonly-toggle" CheckMark>
-                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name.Humanize()</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
                 </MudToggleGroup>
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToChildren)" hidden />
             </MudItem>
@@ -32,11 +32,11 @@
             </MudItem>
             <MudItem xs="8">
                 <MudToggleGroup @bind-Value="@Model.RiskToPublic" Class="readonly-toggle" CheckMark>
-                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name.Humanize()</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
                 </MudToggleGroup>
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToPublic)" hidden />
             </MudItem>
@@ -47,11 +47,11 @@
             </MudItem>
             <MudItem xs="8">
                 <MudToggleGroup @bind-Value="@Model.RiskToKnownAdult" Class="readonly-toggle" CheckMark>
-                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name.Humanize()</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
                 </MudToggleGroup>
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToKnownAdult)" hidden />
             </MudItem>
@@ -62,11 +62,11 @@
             </MudItem>
             <MudItem xs="8">
                 <MudToggleGroup @bind-Value="@Model.RiskToStaff" Class="readonly-toggle" CheckMark>
-                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name.Humanize()</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
                 </MudToggleGroup>
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToStaff)" hidden />
             </MudItem>
@@ -77,11 +77,11 @@
             </MudItem>
             <MudItem xs="8">
                 <MudToggleGroup @bind-Value="@Model.RiskToOtherPrisoners" Class="readonly-toggle" CheckMark>
-                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name.Humanize()</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
                 </MudToggleGroup>
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToOtherPrisoners)" hidden />
             </MudItem>
@@ -92,11 +92,11 @@
             </MudItem>
             <MudItem xs="8">
                 <MudToggleGroup @bind-Value="@Model.RiskToSelf" Class="readonly-toggle" CheckMark>
-                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name.Humanize()</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name.Humanize()</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
                 </MudToggleGroup>
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToSelf)" hidden />
             </MudItem>
