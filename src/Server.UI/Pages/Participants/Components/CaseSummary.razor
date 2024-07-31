@@ -1,3 +1,4 @@
+@using Humanizer
 @inherits CatsComponentBase
 
 <MudGrid Class="pa-3" Spacing="4">
@@ -80,15 +81,19 @@
                         <dl class="description-list">
                             <div class="description-pair">
                                 <dt>
-                                    <MudText Typo="Typo.subtitle2">Date Created</MudText>
+                                    <MudText Typo="Typo.subtitle2">Last Reviewed</MudText>
                                 </dt>
                                 <dd>
-                                    <MudText Typo="Typo.body2">@ParticipantSummaryDto.LatestRisk!.Created.ToString("dd/MM/yyyy")</MudText>
+                                    <MudTooltip Text="@ParticipantSummaryDto.LatestRisk!.Created.ToString("dd/MM/yyyy hh:mm")">
+                                        <MudText Typo="Typo.body2">
+                                            @ParticipantSummaryDto.LatestRisk!.Created.Humanize()
+                                        </MudText>
+                                    </MudTooltip>
                                 </dd>
                             </div>
                             <div class="description-pair">
                                 <dt>
-                                    <MudText Typo="Typo.subtitle2">Created By</MudText>
+                                    <MudText Typo="Typo.subtitle2">Reviewed By</MudText>
                                 </dt>
                                 <dd>
                                     <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.LatestRisk!.CreatedBy).DisplayName</MudText>
