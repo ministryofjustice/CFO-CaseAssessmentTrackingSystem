@@ -12,22 +12,25 @@ public class Risk : BaseAuditableEntity<Guid>
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    private Risk(Guid id, string participantId)
+    private Risk(Guid id, string participantId, RiskReviewReason reviewReason)
     {
         Id = id;
         ParticipantId = participantId;
+        ReviewReason = reviewReason;
     }
 
     public static Risk CreateFrom(Guid id, string participantId) 
     {
-        Risk r = new(id, participantId);
-        r.AddDomainEvent(new RiskInformationAddedDomainEvent(r));
-        return r;
+        Risk risk = new(id, participantId, RiskReviewReason.InitialReview);
+        risk.AddDomainEvent(new RiskInformationAddedDomainEvent(risk));
+        return risk;
     }
 
-    public static Risk Review(Risk from)
+    public static Risk Review(Risk from, RiskReviewReason reason, string? justification)
     {
         from.Id = Guid.NewGuid();
+        from.ReviewReason = reason;
+        from.ReviewJustification = justification;
         from.AddDomainEvent(new RiskInformationReviewedDomainEvent(from));
         return from;
     }
@@ -46,8 +49,10 @@ public class Risk : BaseAuditableEntity<Guid>
     public MappaLevel? MappaLevel { get; private set; }
     public bool? NSDCase { get; private set; }
     public string ParticipantId { get; private set; }
-    public string? PSFRestrictions { get; set; }
-    public DateTime? PSFRestrictionsReceived { get; set; }
+    public string? PSFRestrictions { get; private set; }
+    public DateTime? PSFRestrictionsReceived { get; private set; }
+    public RiskReviewReason ReviewReason { get; private set; }
+    public string? ReviewJustification { get; private set; }
     public RiskLevel? RiskToChildren { get; private set; }
     public RiskLevel? RiskToPublic { get; private set; }
     public RiskLevel? RiskToKnownAdult { get; private set; }

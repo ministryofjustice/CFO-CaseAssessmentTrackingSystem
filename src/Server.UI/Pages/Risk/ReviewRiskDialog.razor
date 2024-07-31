@@ -1,0 +1,69 @@
+﻿@using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Domain.Common.Enums
+
+@inject IValidationService Validator
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+            <MudSelect @bind-Value="Model.ReviewReason" 
+                       Label="@Model.GetMemberDescription(x => x.ReviewReason)"
+                       For="@(() => Model.ReviewReason)">
+                <MudSelectItem Value="RiskReviewReason.ChangeToCircumstances">@RiskReviewReason.ChangeToCircumstances.Name</MudSelectItem>
+                <MudSelectItem Value="RiskReviewReason.NoRiskInformationAvailable">@RiskReviewReason.NoRiskInformationAvailable.Name</MudSelectItem>
+                <MudSelectItem Value="RiskReviewReason.NoChange">@RiskReviewReason.NoChange.Name</MudSelectItem>
+            </MudSelect>
+            <MudTextField @bind-Value="Model.Justification"
+                          Label="@Model.GetMemberDescription(x => x.Justification)"
+                          For="@(() => Model.Justification)"
+                          Lines="5" 
+                          Class="mt-4" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    bool saving = false;
+    MudForm? form;
+
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public required AddRisk.Command Model { get; set; }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            saving = true;
+
+            if(form is null)
+            {
+                saving = false;
+                return;
+            }
+
+            await form.Validate();
+
+            if(form.IsValid)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+}

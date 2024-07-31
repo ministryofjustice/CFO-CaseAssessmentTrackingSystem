@@ -68,6 +68,12 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
                 x => MappaLevel.FromValue(x)
             );
 
+        builder.Property(x => x.ReviewReason)
+            .HasConversion(
+                x => x!.Value,
+                x => RiskReviewReason.FromValue(x)
+            );
+
         builder.Property(x => x.CreatedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 

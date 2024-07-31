@@ -1,3 +1,4 @@
+@using Cfo.Cats.Domain.Common.Enums
 @using Humanizer
 @inherits CatsComponentBase
 
@@ -111,7 +112,7 @@
                 @if (CanAddRiskInformation())
                 {
                     <MudTooltip Text="Add Information">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="AddRiskInformation" />
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="async() => await AddRiskInformation()" />
                     </MudTooltip>
                 }
                 @if(CanReviewRiskInformation())
