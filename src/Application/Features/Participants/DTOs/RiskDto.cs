@@ -1,5 +1,6 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Entities.Participants;
+using FluentValidation;
 
 namespace Cfo.Cats.Application.Features.Participants.DTOs;
 
@@ -33,23 +34,8 @@ public class RiskDto
     [Description("Date Latest PSF Restrictions Received")]
     public DateTime? PSFRestrictionsReceived { get; set; }
 
-    [Description("Risk to Children")]
-    public RiskLevel? RiskToChildren { get; set; }
-
-    [Description("Risk to Public")]
-    public RiskLevel? RiskToPublic { get; set; }
-
-    [Description("Risk to Known Adult")]
-    public RiskLevel? RiskToKnownAdult { get; set; }
-
-    [Description("Risk to Staff")]
-    public RiskLevel? RiskToStaff { get; set; }
-
-    [Description("Risk to Other Prisoners")]
-    public RiskLevel? RiskToOtherPrisoners { get; set; }
-
-    [Description("Risk to Self")]
-    public RiskLevel? RiskToSelf { get; set; }
+    public RiskDetail CustodyRiskDetail { get; set; } = new();
+    public RiskDetail CommunityRiskDetail { get; set; } = new();
 
     [Description("Custody")]
     public bool IsRelevantToCustody { get; set; } = false;
@@ -74,11 +60,85 @@ public class RiskDto
         public Mapping()
         {
             CreateMap<Risk, RiskDto>(MemberList.None)
-                .ReverseMap();
+                .ForMember(dest => dest.CommunityRiskDetail, opt => opt.MapFrom(src => new RiskDetail
+                {
+                    RiskToChildren = src.RiskToChildrenInCommunity,
+                    RiskToPublic = src.RiskToPublicInCommunity,
+                    RiskToKnownAdult = src.RiskToKnownAdultInCommunity,
+                    RiskToStaff = src.RiskToStaffInCommunity,
+                    RiskToSelf = src.RiskToSelfInCommunity,
+                    RiskToOtherPrisoners = src.RiskToOtherPrisonersInCommunity,
+                }))
+                .ForMember(dest => dest.CustodyRiskDetail, opt => opt.MapFrom(src => new RiskDetail
+                {
+                    RiskToChildren = src.RiskToChildrenInCustody,
+                    RiskToPublic = src.RiskToPublicInCustody,
+                    RiskToKnownAdult = src.RiskToKnownAdultInCustody,
+                    RiskToStaff = src.RiskToStaffInCustody,
+                    RiskToSelf = src.RiskToSelfInCustody,
+                    RiskToOtherPrisoners = src.RiskToOtherPrisonersInCustody,
+                }))
+                .ReverseMap()
+                .ForPath(src => src.RiskToChildrenInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToChildren))
+                .ForPath(src => src.RiskToPublicInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToPublic))
+                .ForPath(src => src.RiskToKnownAdultInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToKnownAdult))
+                .ForPath(src => src.RiskToStaffInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToStaff))
+                .ForPath(src => src.RiskToSelfInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToSelf))
+                .ForPath(src => src.RiskToOtherPrisonersInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToOtherPrisoners))
+                .ForPath(src => src.RiskToChildrenInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToChildren))
+                .ForPath(src => src.RiskToPublicInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToPublic))
+                .ForPath(src => src.RiskToKnownAdultInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToKnownAdult))
+                .ForPath(src => src.RiskToStaffInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToStaff))
+                .ForPath(src => src.RiskToSelfInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToSelf))
+                .ForPath(src => src.RiskToOtherPrisonersInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToOtherPrisoners));
         }
     }
 
-    public record RiskDetails(RiskLevel RiskToChildren, RiskLevel RiskToPublic, RiskLevel RiskToKnownAdult, RiskLevel RiskToStaff, RiskLevel RiskToSelf);
+    public record class RiskDetail
+    {
+        [Description("Risk to Childen")]
+        public RiskLevel? RiskToChildren { get; set; } 
+        [Description("Risk to Public")]
+        public RiskLevel? RiskToPublic { get; set; }
+        [Description("Risk to Known Adult")]
+        public RiskLevel? RiskToKnownAdult { get; set; }
+        [Description("Risk to Staff")]
+        public RiskLevel? RiskToStaff { get; set; }
+        [Description("Risk to Self")]
+        public RiskLevel? RiskToSelf { get; set; }
+        [Description("Risk to Other Prisoners")]
+        public RiskLevel? RiskToOtherPrisoners { get; set; }
+
+        public class Validator : AbstractValidator<RiskDetail>
+        {
+            public Validator()
+            {
+                RuleFor(x => x.RiskToChildren)
+                    .NotNull()
+                    .WithMessage("This option is mandatory");
+
+                RuleFor(x => x.RiskToPublic)
+                    .NotNull()
+                    .WithMessage("This option is mandatory");
+
+                RuleFor(x => x.RiskToKnownAdult)
+                    .NotNull()
+                    .WithMessage("This option is mandatory");
+
+                RuleFor(x => x.RiskToStaff)
+                    .NotNull()
+                    .WithMessage("This option is mandatory");
+
+                RuleFor(x => x.RiskToOtherPrisoners)
+                    .NotNull()
+                    .WithMessage("This option is mandatory");
+
+                RuleFor(x => x.RiskToSelf)
+                    .NotNull()
+                    .WithMessage("This option is mandatory");
+            }
+        }
+    }
 
     public class Validator : AbstractValidator<RiskDto>
     { 
@@ -154,35 +214,16 @@ public class RiskDto
                 .When(x => x.IsRelevantToCommunity is false)
                 .WithMessage("You must pick one");
 
-            When(x => x.IsRelevantToCommunity || x.IsRelevantToCustody, () =>
+            When(x => x.IsRelevantToCommunity, () =>
             {
-                RuleFor(x => x.RiskToChildren)
-                    .NotNull()
-                    .When(x => x.IsRelevantToCommunity)
-                    .WithMessage("This option is mandatory in community");
+                RuleFor(x => x.CommunityRiskDetail)
+                    .SetValidator(new RiskDetail.Validator());
+            });
 
-                RuleFor(x => x.RiskToPublic)
-                    .NotNull()
-                    .When(x => x.IsRelevantToCommunity)
-                    .WithMessage("This option is mandatory in community");
-
-                RuleFor(x => x.RiskToKnownAdult)
-                    .NotNull()
-                    .When(x => x.IsRelevantToCommunity)
-                    .WithMessage("This option is mandatory in community");
-
-                RuleFor(x => x.RiskToStaff)
-                    .NotNull()
-                    .WithMessage("This option is always mandatory");
-
-                RuleFor(x => x.RiskToOtherPrisoners)
-                    .NotNull()
-                    .When(x => x.IsRelevantToCustody)
-                    .WithMessage("This option is mandatory in custody");
-
-                RuleFor(x => x.RiskToSelf)
-                    .NotNull()
-                    .WithMessage("This option is always mandatory");
+            When(x => x.IsRelevantToCustody, () =>
+            {
+                RuleFor(x => x.CustodyRiskDetail)
+                    .SetValidator(new RiskDetail.Validator());
             });
 
             RuleFor(x => x.MappaCategory)

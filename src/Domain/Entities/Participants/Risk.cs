@@ -53,11 +53,17 @@ public class Risk : BaseAuditableEntity<Guid>
     public DateTime? PSFRestrictionsReceived { get; private set; }
     public RiskReviewReason ReviewReason { get; private set; }
     public string? ReviewJustification { get; private set; }
-    public RiskLevel? RiskToChildren { get; private set; }
-    public RiskLevel? RiskToPublic { get; private set; }
-    public RiskLevel? RiskToKnownAdult { get; private set; }
-    public RiskLevel? RiskToStaff { get; private set; }
-    public RiskLevel? RiskToOtherPrisoners { get; private set; }
-    public RiskLevel? RiskToSelf { get; private set; }
+    public RiskLevel? RiskToChildrenInCustody { get; private set; }
+    public RiskLevel? RiskToPublicInCustody { get; private set; }
+    public RiskLevel? RiskToKnownAdultInCustody { get; private set; }
+    public RiskLevel? RiskToStaffInCustody { get; private set; }
+    public RiskLevel? RiskToOtherPrisonersInCustody { get; private set; }
+    public RiskLevel? RiskToSelfInCustody { get; private set; }
+    public RiskLevel? RiskToChildrenInCommunity { get; private set; }
+    public RiskLevel? RiskToPublicInCommunity { get; private set; }
+    public RiskLevel? RiskToKnownAdultInCommunity { get; private set; }
+    public RiskLevel? RiskToStaffInCommunity { get; private set; }
+    public RiskLevel? RiskToOtherPrisonersInCommunity { get; private set; }
+    public RiskLevel? RiskToSelfInCommunity { get; private set; }
     public string? SpecificRisk { get; private set; }
 }

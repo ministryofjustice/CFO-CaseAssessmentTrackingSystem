@@ -25,96 +25,25 @@
                     <MudTextField ReadOnly Underline="false" For="@(() => Model.IsRelevantToCommunity)" hidden />
                 </div>
             </MudItem>
-            @* Risk to Children *@
-            <MudDivider Class="mt-6" />
-            <MudItem xs="4">
-                @Model.GetMemberDescription(x => x.RiskToChildren)
-            </MudItem>
-            <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToChildren" Class="readonly-toggle" CheckMark Disabled="HasOptionSelected is false">
-                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
-                </MudToggleGroup>
-                <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToChildren)" hidden />
-            </MudItem>
-            @* Risk to Public *@
-            <MudDivider Class="mt-6" />
-            <MudItem xs="4">
-                @Model.GetMemberDescription(x => x.RiskToPublic)
-            </MudItem>
-            <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToPublic" Class="readonly-toggle" CheckMark Disabled="HasOptionSelected is false">
-                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
-                </MudToggleGroup>
-                <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToPublic)" hidden />
-            </MudItem>
-            @* Risk to Known Adult *@
-            <MudDivider Class="mt-6" />
-            <MudItem xs="4">
-                @Model.GetMemberDescription(x => x.RiskToKnownAdult)
-            </MudItem>
-            <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToKnownAdult" Class="readonly-toggle" CheckMark Disabled="HasOptionSelected is false">
-                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
-                </MudToggleGroup>
-                <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToKnownAdult)" hidden />
-            </MudItem>
-            @* Risk to Staff *@
-            <MudDivider Class="mt-6" />
-            <MudItem xs="4">
-                @Model.GetMemberDescription(x => x.RiskToStaff)
-            </MudItem>
-            <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToStaff" Class="readonly-toggle" CheckMark Disabled="HasOptionSelected is false">
-                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
-                </MudToggleGroup>
-                <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToStaff)" hidden />
-            </MudItem>
-            @* Risk to Other Prisoners *@
-            <MudDivider Class="mt-6" />
-            <MudItem xs="4">
-                @Model.GetMemberDescription(x => x.RiskToOtherPrisoners)
-            </MudItem>
-            <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToOtherPrisoners" Class="readonly-toggle" CheckMark Disabled="HasOptionSelected is false">
-                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
-                </MudToggleGroup>
-                <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToOtherPrisoners)" hidden />
-            </MudItem>
-            @* Risk to Self *@
-            <MudDivider Class="mt-6" />
-            <MudItem xs="4">
-                @Model.GetMemberDescription(x => x.RiskToSelf)
-            </MudItem>
-            <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToSelf" Class="readonly-toggle" CheckMark Disabled="HasOptionSelected is false">
-                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
-                </MudToggleGroup>
-                <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToSelf)" hidden />
-            </MudItem>
+
+            @if (HasOptionSelected)
+            {
+                <MudDivider Class="mt-6 mb-8"/>
+                <MudExpansionPanels MultiExpansion Elevation="@(ReadOnly ? 0 : 1)" Outlined="ReadOnly is false">
+                    @if (Model.IsRelevantToCustody)
+                    {
+                        <MudExpansionPanel Text="Risks in Custody" Expanded HideIcon="ReadOnly" Disabled="ReadOnly">
+                            <RiskDetail Model="Model.CustodyRiskDetail" />
+                        </MudExpansionPanel>
+                    }
+                    @if (Model.IsRelevantToCommunity)
+                    {
+                        <MudExpansionPanel Text="Risks in Community" Expanded HideIcon="ReadOnly" Disabled="ReadOnly">
+                            <RiskDetail Model="Model.CommunityRiskDetail" />
+                        </MudExpansionPanel>
+                    }
+                </MudExpansionPanels>
+            }
         </MudGrid>
     </CatsMudStep>
 }
@@ -140,12 +69,20 @@
 
     public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
     {
-        options.IncludeProperties(x => x.RiskToChildren);
-        options.IncludeProperties(x => x.RiskToPublic);
-        options.IncludeProperties(x => x.RiskToKnownAdult);
-        options.IncludeProperties(x => x.RiskToStaff);
-        options.IncludeProperties(x => x.RiskToOtherPrisoners);
-        options.IncludeProperties(x => x.RiskToSelf);
+        options.IncludeProperties(x => x.CommunityRiskDetail.RiskToChildren);
+        options.IncludeProperties(x => x.CommunityRiskDetail.RiskToPublic);
+        options.IncludeProperties(x => x.CommunityRiskDetail.RiskToKnownAdult);
+        options.IncludeProperties(x => x.CommunityRiskDetail.RiskToStaff);
+        options.IncludeProperties(x => x.CommunityRiskDetail.RiskToOtherPrisoners);
+        options.IncludeProperties(x => x.CommunityRiskDetail.RiskToSelf);
+
+        options.IncludeProperties(x => x.CustodyRiskDetail.RiskToChildren);
+        options.IncludeProperties(x => x.CustodyRiskDetail.RiskToPublic);
+        options.IncludeProperties(x => x.CustodyRiskDetail.RiskToKnownAdult);
+        options.IncludeProperties(x => x.CustodyRiskDetail.RiskToStaff);
+        options.IncludeProperties(x => x.CustodyRiskDetail.RiskToOtherPrisoners);
+        options.IncludeProperties(x => x.CustodyRiskDetail.RiskToSelf);
+
         options.IncludeProperties(x => x.IsRelevantToCommunity);
         options.IncludeProperties(x => x.IsRelevantToCustody);
     };
