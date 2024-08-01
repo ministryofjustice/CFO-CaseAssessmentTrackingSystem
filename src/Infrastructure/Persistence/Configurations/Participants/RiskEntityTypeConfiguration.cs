@@ -110,6 +110,18 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
                 x => RiskReviewReason.FromValue(x)
             );
 
+        builder.Property(x => x.IsSubjectToSHPO)
+            .HasConversion(
+                x => x!.Value,
+                x => ConfirmationStatus.FromValue(x)
+            );
+
+        builder.Property(x => x.NSDCase)
+            .HasConversion(
+                x => x!.Value,
+                x => ConfirmationStatus.FromValue(x)
+            );
+
         builder.Property(x => x.CreatedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 

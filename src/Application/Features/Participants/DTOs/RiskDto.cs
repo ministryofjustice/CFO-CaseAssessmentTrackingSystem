@@ -44,10 +44,10 @@ public class RiskDto
     public bool IsRelevantToCommunity { get; set; } = false;
 
     [Description("Sexual Harm Prevention Order (SHPO)")]
-    public bool? IsSubjectToSHPO { get; set; }
+    public ConfirmationStatus? IsSubjectToSHPO { get; set; }
 
     [Description("NSD case")]
-    public bool? NSDCase { get; set; }
+    public ConfirmationStatus? NSDCase { get; set; }
 
     [Description("Specific Risk(s)")]
     public string? SpecificRisk { get; set; }

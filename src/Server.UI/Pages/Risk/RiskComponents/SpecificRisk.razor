@@ -1,4 +1,5 @@
 ﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Components.Stepper
 @using FluentValidation.Internal
 
@@ -22,8 +23,9 @@
             </MudItem>
             <MudItem xs="8">
                 <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.IsSubjectToSHPO" CheckMark>
-                    <MudToggleItem Value="(bool?)true">Yes</MudToggleItem>
-                    <MudToggleItem Value="(bool?)false">No</MudToggleItem>
+                    <MudToggleItem Value="@ConfirmationStatus.Unknown">@ConfirmationStatus.Unknown.Name</MudToggleItem>
+                    <MudToggleItem Value="@ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
+                    <MudToggleItem Value="@ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
                 </MudToggleGroup>
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.IsSubjectToSHPO)" hidden />
             </MudItem>
@@ -32,8 +34,9 @@
             </MudItem>
             <MudItem xs="8">
                 <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.NSDCase" CheckMark>
-                    <MudToggleItem Value="(bool?)true">Yes</MudToggleItem>
-                    <MudToggleItem Value="(bool?)false">No</MudToggleItem>
+                    <MudToggleItem Value="@ConfirmationStatus.Unknown">@ConfirmationStatus.Unknown.Name</MudToggleItem>
+                    <MudToggleItem Value="@ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
+                    <MudToggleItem Value="@ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
                 </MudToggleGroup>
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.NSDCase)" hidden />
             </MudItem>
