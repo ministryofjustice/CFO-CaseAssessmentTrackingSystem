@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.ValueObjects;
 
@@ -62,7 +63,9 @@ public static class AddNote
 
             RuleFor(c => c.Message)
                 .NotEmpty()
-                .MaximumLength(255);
+                .MaximumLength(255)
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Message"));
         }
 
         private async Task<bool> Exist(string identifier, CancellationToken cancellationToken)

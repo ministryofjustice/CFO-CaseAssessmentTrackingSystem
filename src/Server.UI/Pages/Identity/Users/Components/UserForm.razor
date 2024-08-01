@@ -34,7 +34,7 @@
             <MudText Typo="Typo.caption">@L["Personal Information"]</MudText>
             <MudGrid>
                 <MudItem xs="12" sm="12">
-                    <MudTextField For="@(() => Model.DisplayName)" @bind-Value="Model.DisplayName" Label="@L["Full Name"]" InputType="InputType.Email" Variant="Variant.Text" Required="true"></MudTextField>
+                    <MudTextField For="@(() => Model.DisplayName)" @bind-Value="Model.DisplayName" Label="@L["Full Name"]" Variant="Variant.Text" Required="true"></MudTextField>
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudTextField For="@(() => Model.Email)" @bind-Value="Model.Email" Label="@L["E-mail"]" InputType="InputType.Email" Variant="Variant.Text" Required="true" Disabled="@string.IsNullOrEmpty(Model.TenantId)"></MudTextField>
@@ -74,8 +74,8 @@
             <MudText Typo="Typo.caption">@L["Additional Information"]</MudText>
             <MudGrid Class="mt-1">
                 <MudItem xs="12" sm="12" Class="py-0 my=0">
-                    <MudTextField @bind-Value="CallReference" Label="@L["Call Reference No."]" Variant="Variant.Text" Required></MudTextField>
-                    <MudTextField @bind-Value="Message" Label="@L["Notes"]" Lines="4" AutoGrow Variant="Variant.Text" Required></MudTextField>
+                    <MudTextField T="string" @bind-Value="CallReference" Label="@L["Call Reference No."]" Variant="Variant.Text" Required Validation="@(new Func<string, IEnumerable<string>>(ValidateCallReferenceNo))"></MudTextField>
+                    <MudTextField T="string" @bind-Value="Message" Label="@L["Notes"]" Lines="4" AutoGrow Variant="Variant.Text" Required Validation="@(new Func<string, IEnumerable<string>>(ValidateNotes))"></MudTextField>
                 </MudItem>
             </MudGrid>
         </MudItem>
@@ -95,7 +95,7 @@
     }
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
-    
+
     [EditorRequired] [Parameter] public ApplicationUserDto Model { get; set; } = default!;
 
     [EditorRequired] [Parameter] public EventCallback<ApplicationUserDto> OnFormSubmit { get; set; }
@@ -103,8 +103,8 @@
     public string? CallReference { get; set; }
     public string Message { get; set; } = string.Empty;
 
-    
-    
+
+
     public ApplicationUser CurrentUser { get; private set; } = default!;
 
     private MudForm? form = default!;
@@ -115,7 +115,7 @@
         var state = await AuthState;
 
         CurrentUser = (await UserManager.GetUserAsync(state.User))!;
-        
+
         Tenants = TenantsService
             .GetVisibleTenants(CurrentUser.TenantId!)
             .OrderBy(x => x.Id);
@@ -132,14 +132,14 @@
         }
 
         int min = userRoles.Min(x => x.RoleRank);
-        
+
         var allRoles = await RoleManager.Roles!.ToListAsync();
-        
+
         foreach (var role in allRoles.OrderByDescending(r => r.RoleRank))
         {
             bool isEnabled = role.RoleRank >= min;
             bool isChecked = Model.AssignedRoles.Contains(role.Name);
-            
+
             Roles.Add(new CheckItem { Key = role.Name!, Value = isChecked, Enabled = isEnabled});
         }
     }
@@ -155,6 +155,27 @@
     {
         Model.TenantId = value;
         Model.TenantName = Tenants.First(t => t.Id == Model.TenantId).Name;
+    }
+
+    private IEnumerable<string> ValidateCallReferenceNo(string callRefNo)
+    {
+        if (string.IsNullOrWhiteSpace(callRefNo))
+        {
+            yield return "Call Reference No is required!";
+            yield break;
+        }
+        if (callRefNo.Length > 20)
+            yield return "Call Reference No must be less than or equal to 20 characters";
+    }
+    private IEnumerable<string> ValidateNotes(string notes)
+    {
+        if (string.IsNullOrWhiteSpace(notes))
+        {
+            yield return "Notes is required!";
+            yield break;
+        }
+        if (notes.Length > 255)
+            yield return "Call Reference No must be less than or equal to 255 characters";
     }
 
     private IEnumerable<string> AllowedDomains(string tenantId) =>
@@ -178,8 +199,12 @@
                     CallReference = CallReference,
                     ApplicationUserId = Model.Id
                 });
-
-                await OnFormSubmit.InvokeAsync(Model);
+                await form.Validate();
+                
+                if (form.IsValid)
+                {
+                    await OnFormSubmit.InvokeAsync(Model);
+                }
             }
         }
     }

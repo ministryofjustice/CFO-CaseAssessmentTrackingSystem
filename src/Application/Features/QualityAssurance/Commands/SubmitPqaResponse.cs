@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
@@ -48,7 +49,9 @@ public static class SubmitPqaResponse
                     .NotNull()
                     .WithMessage("A message is required when returning")
                     .NotEmpty()
-                    .WithMessage("A message is required when returning");
+                    .WithMessage("A message is required when returning")
+                    .Matches(ValidationConstants.Notes)
+                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "Message"));
             });
 
         }

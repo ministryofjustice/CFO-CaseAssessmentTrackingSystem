@@ -1,5 +1,5 @@
 ﻿using Cfo.Cats.Application.Features.Candidates.DTOs;
-
+using Cfo.Cats.Application.Common.Validators;
 namespace Cfo.Cats.Application.Features.Candidates;
 
 public class CandidateFluentValidator : AbstractValidator<CandidateDto>
@@ -9,17 +9,20 @@ public class CandidateFluentValidator : AbstractValidator<CandidateDto>
         RuleFor(x => x.Identifier)
             .MinimumLength(8)
             .MaximumLength(9)
-            .NotEmpty();
+            .NotEmpty()
+            .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Identifier"));
 
         RuleFor(x => x.FirstName)
             .MinimumLength(2)
             .MaximumLength(50)
-            .NotEmpty();
+            .NotEmpty()
+            .Matches(ValidationConstants.NameCompliantWithDMS).WithMessage(string.Format(ValidationConstants.NameCompliantWithDMSMessage, "First name"));
 
         RuleFor(x => x.LastName)
             .MinimumLength(2)
             .MaximumLength(50)
-            .NotEmpty();
+            .NotEmpty()
+            .Matches(ValidationConstants.NameCompliantWithDMS).WithMessage(string.Format(ValidationConstants.NameCompliantWithDMSMessage, "Last name"));
 
         RuleFor(x => x.DateOfBirth)
             .Must(BeValidAge)

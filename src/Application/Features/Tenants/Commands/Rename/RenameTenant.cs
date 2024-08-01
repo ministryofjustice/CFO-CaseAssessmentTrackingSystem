@@ -44,7 +44,8 @@ public static class RenameTenant
         {
             RuleFor(r => r.Id)
                 .NotNull()
-                .NotEmpty();
+                .NotEmpty()
+                .Matches(ValidationConstants.TenantId).WithMessage(ValidationConstants.TenantIdMessage);
 
             RuleFor(v => v.Name)
                 .MaximumLength(50)

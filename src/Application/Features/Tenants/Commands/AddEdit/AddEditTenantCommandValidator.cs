@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Validators;
 namespace Cfo.Cats.Application.Features.Tenants.Commands.AddEdit;
 
 public class AddEditTenantCommandValidator : AbstractValidator<AddEditTenantCommand>
@@ -6,20 +7,22 @@ public class AddEditTenantCommandValidator : AbstractValidator<AddEditTenantComm
     {
         RuleFor(v => v.Name)
             .MaximumLength(50)
-            .Matches(@"^[A-Za-z_ ]+$")
-            .WithMessage("Name must contain only letters, spaces, and underscores.")
+            .Matches(ValidationConstants.LettersSpacesUnderscores)
+            .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Name"))
             .NotEmpty();
         
         RuleFor(v => v.Description)
-            .Matches(@"^[A-Za-z_ ]+$")
-            .WithMessage("Name must contain only letters, spaces, and underscores.")
+            .Matches(ValidationConstants.LettersSpacesUnderscores)
+            .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Description"))
             .MaximumLength(150).NotEmpty();
 
         RuleFor(v => v.Id)
-            .MaximumLength(50).NotEmpty();
+            .NotEmpty()
+            .MaximumLength(50)
+            .WithMessage("Tenant Id is required and must be less than 50 characters");
 
         RuleFor(v => v.Id)
-            .Matches("^[0-9]+(?:\\.[0-9]+)*\\.$")
-            .WithMessage("Must start with a number and end with a period");
+            .Matches(ValidationConstants.TenantId)
+            .WithMessage(ValidationConstants.TenantIdMessage);
     }
 }
