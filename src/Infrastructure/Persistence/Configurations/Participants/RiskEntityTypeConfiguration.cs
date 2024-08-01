@@ -20,37 +20,73 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
             .WithMany()
             .HasForeignKey(x => x.ParticipantId);
 
-        builder.Property(x => x.RiskToChildren)
+        builder.Property(x => x.RiskToChildrenInCustody)
             .HasConversion(
                 x => x!.Value,
                 x => RiskLevel.FromValue(x)
             );
 
-        builder.Property(x => x.RiskToKnownAdult)
+        builder.Property(x => x.RiskToKnownAdultInCustody)
             .HasConversion(
                 x => x!.Value,
                 x => RiskLevel.FromValue(x)
             );
 
-        builder.Property(x => x.RiskToOtherPrisoners)
+        builder.Property(x => x.RiskToOtherPrisonersInCustody)
             .HasConversion(
                 x => x!.Value,
                 x => RiskLevel.FromValue(x)
             );
 
-        builder.Property(x => x.RiskToPublic)
+        builder.Property(x => x.RiskToPublicInCustody)
             .HasConversion(
                 x => x!.Value,
                 x => RiskLevel.FromValue(x)
             );
 
-        builder.Property(x => x.RiskToSelf)
+        builder.Property(x => x.RiskToSelfInCustody)
             .HasConversion(
                 x => x!.Value,
                 x => RiskLevel.FromValue(x)
             );
 
-        builder.Property(x => x.RiskToStaff)
+        builder.Property(x => x.RiskToStaffInCustody)
+            .HasConversion(
+                x => x!.Value,
+                x => RiskLevel.FromValue(x)
+            );
+
+        builder.Property(x => x.RiskToChildrenInCommunity)
+            .HasConversion(
+                x => x!.Value,
+                x => RiskLevel.FromValue(x)
+            );
+
+        builder.Property(x => x.RiskToKnownAdultInCommunity)
+            .HasConversion(
+                x => x!.Value,
+                x => RiskLevel.FromValue(x)
+            );
+
+        builder.Property(x => x.RiskToOtherPrisonersInCommunity)
+            .HasConversion(
+                x => x!.Value,
+                x => RiskLevel.FromValue(x)
+            );
+
+        builder.Property(x => x.RiskToPublicInCommunity)
+            .HasConversion(
+                x => x!.Value,
+                x => RiskLevel.FromValue(x)
+            );
+
+        builder.Property(x => x.RiskToSelfInCommunity)
+            .HasConversion(
+                x => x!.Value,
+                x => RiskLevel.FromValue(x)
+            );
+
+        builder.Property(x => x.RiskToStaffInCommunity)
             .HasConversion(
                 x => x!.Value,
                 x => RiskLevel.FromValue(x)
@@ -66,6 +102,24 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
             .HasConversion(
                 x => x!.Value,
                 x => MappaLevel.FromValue(x)
+            );
+
+        builder.Property(x => x.ReviewReason)
+            .HasConversion(
+                x => x!.Value,
+                x => RiskReviewReason.FromValue(x)
+            );
+
+        builder.Property(x => x.IsSubjectToSHPO)
+            .HasConversion(
+                x => x!.Value,
+                x => ConfirmationStatus.FromValue(x)
+            );
+
+        builder.Property(x => x.NSDCase)
+            .HasConversion(
+                x => x!.Value,
+                x => ConfirmationStatus.FromValue(x)
             );
 
         builder.Property(x => x.CreatedBy)

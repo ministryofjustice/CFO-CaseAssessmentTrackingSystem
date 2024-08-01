@@ -8,11 +8,17 @@
 @if (Model is not null)
 {
     <CatsMudStep Title="License Conditions">
-        <MudTextField Label="@Model.GetMemberDescription(x => x.LicenseConditions)"
+        <MudTextField @bind-Value="@Model.LicenseConditions" 
+                      Label="@Model.GetMemberDescription(x => x.LicenseConditions)"
                       Lines="5"
-                      @bind-Value="@Model.LicenseConditions"
                       For="@(() => Model.LicenseConditions)"
                       Placeholder="All conditions must be relevant to the Participant and linked to their involvement to the CFO Evolution Programme. This must be clear and concise, e.g. exclusion zone in place which restricts XX from entering XX City Centre." />
+        
+        <MudDatePicker @bind-Date="Model.LicenseEnd" 
+                       Label="@Model.GetMemberDescription(x => x.LicenseEnd)"
+                       For="@(() => Model.LicenseEnd)"
+                       MinDate="DateTime.UtcNow.Date" 
+                       Class="mt-4" />
     </CatsMudStep>
 }
 
@@ -20,14 +26,10 @@
     [Parameter, EditorRequired]
     public required RiskDto Model { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-    }
-
     public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
     {
         options.IncludeProperties(x => x.LicenseConditions);
+        options.IncludeProperties(x => x.LicenseEnd);
     };
 
 }

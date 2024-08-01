@@ -12,13 +12,27 @@ public static class AddRisk
     public class Command : IRequest<Result<Guid>>
     {
         public required string ParticipantId { get; set; }
+        [Description("Reason for review")] public RiskReviewReason ReviewReason { get; set; } = RiskReviewReason.ChangeToCircumstances;
+        [Description("Justification for reason")] public string? Justification { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<Guid>>
     {
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
         {
-            Risk risk = Risk.CreateFrom(Guid.NewGuid(), request.ParticipantId);
+            Risk? risk = await unitOfWork.DbContext.Risks
+                .OrderByDescending(r => r.Created)
+                .FirstOrDefaultAsync(r => r.ParticipantId == request.ParticipantId);
+
+            if (risk is null)
+            {
+                risk = Risk.CreateFrom(Guid.NewGuid(), request.ParticipantId);
+            }
+            else
+            {
+                risk = Risk.Review(risk, request.ReviewReason, request.Justification);
+            }
+
             await unitOfWork.DbContext.Risks.AddAsync(risk, cancellationToken);
             return Result<Guid>.Success(risk.Id);
         }
@@ -33,6 +47,13 @@ public static class AddRisk
                 .MinimumLength(9)
                 .MaximumLength(9)
                 .Matches(ValidationConstants.AlphaNumeric);
+
+            RuleFor(c => c.Justification)
+                .NotEmpty()
+                .When(c => c.ReviewReason.RequiresJustification)
+                .WithMessage("You must provide a justification with the selected review reason")
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
         }
     }
 

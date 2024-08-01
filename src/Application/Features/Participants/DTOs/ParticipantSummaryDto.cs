@@ -38,6 +38,8 @@ public class ParticipantSummaryDto
 
     public AssessmentSummaryDto[] Assessments { get; set; } = [];
 
+    public RiskSummaryDto? LatestRisk { get; set; }
+
 
     private class Mapping : Profile
     {

@@ -7,13 +7,19 @@
 
 @if (Model is not null)
 {
-    <CatsMudStep Title="Activity Recommendations">
+    <CatsMudStep Title="Recommendations">
         <MudTextField @bind-Value="@Model.ActivityRecommendations"
                       For="@(() => Model.ActivityRecommendations)"
                       Lines="5"
                       Label="@Model.GetMemberDescription(x => x.ActivityRecommendations)"
                       Placeholder="Consider any activities we could deliver to support any mandated accredited programmes which are required as part of the license conditions such as CSAAP course, unpaid work, substance misuse, exclusion zones. Also Support required for the Participant e.g. broken family links, debt, accommodation or education and training.">
         </MudTextField>
+
+        <MudDatePicker @bind-Date="Model.ActivityRecommendationsReceived"
+                       Label="@Model.GetMemberDescription(x => x.ActivityRecommendationsReceived)"
+                       For="@(() => Model.ActivityRecommendationsReceived)"
+                       MaxDate="DateTime.UtcNow.Date"
+                       Class="mt-4" />
     </CatsMudStep>
 }
 
@@ -24,6 +30,7 @@
     public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
     {
         options.IncludeProperties(x => x.ActivityRecommendations);
+        options.IncludeProperties(x => x.ActivityRecommendationsReceived);
     };
 
 }

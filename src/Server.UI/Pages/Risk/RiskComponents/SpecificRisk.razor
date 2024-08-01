@@ -1,4 +1,5 @@
 ﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Components.Stepper
 @using FluentValidation.Internal
 
@@ -7,13 +8,39 @@
 
 @if (Model is not null)
 {
-    <CatsMudStep Title="Specific Risk">
-        <MudTextField @bind-Value="@Model.SpecificRisk"
-                      For="@(() => Model.SpecificRisk)"
-                      Lines="5"
-                      Label="Risk(s)"
-                      Placeholder="Specific risk (to females, LGBT etc.)">
-        </MudTextField>
+    <CatsMudStep Title="Specific Risk(s)">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudTextField @bind-Value="@Model.SpecificRisk"
+                              For="@(() => Model.SpecificRisk)"
+                              Lines="5"
+                              Label="Risk(s)"
+                              Placeholder="Specific risk (to females, LGBT etc.)">
+                </MudTextField>
+            </MudItem>
+            <MudItem xs="4">
+                Is the person subject to a @Model.GetMemberDescription(x => x.IsSubjectToSHPO)
+            </MudItem>
+            <MudItem xs="8">
+                <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.IsSubjectToSHPO" CheckMark>
+                    <MudToggleItem Value="@ConfirmationStatus.Unknown">@ConfirmationStatus.Unknown.Name</MudToggleItem>
+                    <MudToggleItem Value="@ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
+                    <MudToggleItem Value="@ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
+                </MudToggleGroup>
+                <MudTextField ReadOnly Underline="false" For="@(() => Model.IsSubjectToSHPO)" hidden />
+            </MudItem>
+            <MudItem xs="4">
+                @Model.GetMemberDescription(x => x.NSDCase)
+            </MudItem>
+            <MudItem xs="8">
+                <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.NSDCase" CheckMark>
+                    <MudToggleItem Value="@ConfirmationStatus.Unknown">@ConfirmationStatus.Unknown.Name</MudToggleItem>
+                    <MudToggleItem Value="@ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
+                    <MudToggleItem Value="@ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
+                </MudToggleGroup>
+                <MudTextField ReadOnly Underline="false" For="@(() => Model.NSDCase)" hidden />
+            </MudItem>
+        </MudGrid>
     </CatsMudStep>
 }
 
@@ -24,6 +51,7 @@
     public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
     {
         options.IncludeProperties(x => x.SpecificRisk);
+        options.IncludeProperties(x => x.IsSubjectToSHPO);
+        options.IncludeProperties(x => x.NSDCase);
     };
 }
-

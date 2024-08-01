@@ -2,6 +2,8 @@ using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Features.Assessments.Commands;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
+using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Server.UI.Pages.Risk;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
@@ -76,22 +78,57 @@ public partial class CaseSummary
 
     }
 
-    private bool CanAddRiskInformation() => true;
-    private bool CanRenewRiskInformation() => false;
+    private bool HasRiskInformation() => ParticipantSummaryDto.LatestRisk is not null;
+    private bool CanAddRiskInformation() => HasRiskInformation() is false;
+    private bool CanReviewRiskInformation() => HasRiskInformation();
 
-    public async Task AddRiskInformation()
+    public async Task ReviewRiskInformation()
     {
         var command = new AddRisk.Command
         {
             ParticipantId = ParticipantSummaryDto.Id
         };
 
+        var parameters = new DialogParameters<ReviewRiskDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<ReviewRiskDialog>("Review risk information for a participant", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            await AddRiskInformation(command);
+        }
+    }
+
+    public async Task AddRiskInformation(AddRisk.Command? command = null)
+    {
+        command ??= new AddRisk.Command
+        {
+            ParticipantId = ParticipantSummaryDto.Id,
+            ReviewReason = RiskReviewReason.InitialReview
+        };
+
         var result = await GetNewMediator().Send(command);
 
-        if (result.Succeeded)
+        if(result.Succeeded is false)
+        {
+            return;
+        }
+
+        if(command.ReviewReason.RequiresFurtherInformation)
         {
             Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/risk/{result.Data}");
         }
+        else
+        {
+            Navigation.Refresh(true);
+        }
+
     }
 
 }

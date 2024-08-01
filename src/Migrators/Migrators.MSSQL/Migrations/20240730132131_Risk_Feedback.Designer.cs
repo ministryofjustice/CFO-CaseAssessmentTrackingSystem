@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240730132131_Risk_Feedback")]
+    partial class Risk_Feedback
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -750,8 +753,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<bool?>("IsRelevantToCustody")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("IsSubjectToSHPO")
-                        .HasColumnType("int");
+                    b.Property<bool?>("IsSubjectToSHPO")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -772,8 +775,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<int?>("MappaLevel")
                         .HasColumnType("int");
 
-                    b.Property<int?>("NSDCase")
-                        .HasColumnType("int");
+                    b.Property<bool?>("NSDCase")
+                        .HasColumnType("bit");
 
                     b.Property<string>("PSFRestrictions")
                         .HasColumnType("nvarchar(max)");
@@ -785,46 +788,22 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(9)");
 
-                    b.Property<string>("ReviewJustification")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ReviewReason")
+                    b.Property<int?>("RiskToChildren")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RiskToChildrenInCommunity")
+                    b.Property<int?>("RiskToKnownAdult")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RiskToChildrenInCustody")
+                    b.Property<int?>("RiskToOtherPrisoners")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RiskToKnownAdultInCommunity")
+                    b.Property<int?>("RiskToPublic")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RiskToKnownAdultInCustody")
+                    b.Property<int?>("RiskToSelf")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RiskToOtherPrisonersInCommunity")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RiskToOtherPrisonersInCustody")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RiskToPublicInCommunity")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RiskToPublicInCustody")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RiskToSelfInCommunity")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RiskToSelfInCustody")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RiskToStaffInCommunity")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RiskToStaffInCustody")
+                    b.Property<int?>("RiskToStaff")
                         .HasColumnType("int");
 
                     b.Property<string>("SpecificRisk")
