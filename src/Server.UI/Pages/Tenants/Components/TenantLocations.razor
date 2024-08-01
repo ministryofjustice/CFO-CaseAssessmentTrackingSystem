@@ -5,8 +5,11 @@
 
 @inherits CatsComponentBase
 
-
-@if (_loading == false)
+@if (_loading)
+{
+    <MudProgressCircular Color="Color.Primary" Size="Size.Large" />
+}
+else
 {
     <MudCard Elevation="0" Class="d-flex flex-grow-0">
         <MudCardHeader>
@@ -18,44 +21,53 @@
         </MudCardHeader>
         <MudCardContent>
 
-            <MudTable Hover="true" 
-                Breakpoint="Breakpoint.Sm" 
-                Items="_locations" 
-                Height="500px"
-                FixedHeader="true"
-                GroupBy="_groupDefinition"
-                GroupHeaderStyle="background-color:var(--mud-palette-background-gray)">
-                <ColGroup>
-                    <col style="width: 60px;" />
-                    <col />
-                    <col />
-                </ColGroup>
-                <HeaderContent>
-                    <MudTh>Name</MudTh>
-                    <MudTh>Gender Provision</MudTh>
-                    <MudTh>Parent Location</MudTh>
-                </HeaderContent>
-                <GroupHeaderTemplate>
-                    <MudTh Class="mud-table-cell-custom-group" colspan="5">@($"{context.Key} ({context.Items.Count()})")</MudTh>
-                </GroupHeaderTemplate>
-                <RowTemplate>
-                    <MudTd DataLabel="Nm">@context.Name</MudTd>
-                    <MudTd DataLabel="Gp">@context.GenderProvision.Name</MudTd>
-                    <MudTd DataLabel="P">@context.ParentLocationName</MudTd>
-                </RowTemplate>
-            </MudTable>
-
-            @* <MudList T="string">
-                <MudGrid>
-                    @foreach (var location in _locations.OrderBy(l => l.Name))
-                    {
-                        <MudItem xs="12" lg="4">
-                            <MudListItem Icon="@GetLocationIcon(location)" T="string" Text="@location.Name" SecondaryText="@location.LocationType.Name"/>    
-                        </MudItem>
-                    }
-                </MudGrid>
-               
-            </MudList> *@
+            <MudExpansionPanels>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <div class="d-flex">
+                            <MudText Class="mt-1">Custody Locations</MudText>
+                            <MudBadge Content="@(_locations.Count(c => c.LocationType.IsCustody))" Color="Color.Default" Overlap="true" Class="d-flex ml-auto">
+                                <MudIcon Icon="@Icons.Material.Filled.Castle" Color="Color.Primary" />
+                            </MudBadge>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudList T="string">
+                            <MudGrid>
+                                @foreach (var l in _locations.Where(c => c.LocationType.IsCustody).OrderBy(l => l.Name))
+                                {
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudListItem Icon="@GetIcon(l.GenderProvision)" IconColor="Color.Primary" Text="@l.Name" SecondaryText="@l.LocationType.Name"></MudListItem>
+                                    </MudItem>
+                                }    
+                            </MudGrid>
+                        </MudList>
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <div class="d-flex">
+                            <MudText Class="mt-1">Community Locations</MudText>
+                            <MudBadge Content="@(_locations.Count(c => c.LocationType.IsCustody == false))" Color="Color.Default" Overlap="true" Class="d-flex ml-auto">
+                                <MudIcon Icon="@Icons.Material.Filled.Castle" Color="Color.Primary" />
+                            </MudBadge>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudList T="string">
+                            <MudGrid>
+                                @foreach (var l in _locations.Where(c => c.LocationType.IsCustody == false).OrderBy(l => l.Name))
+                                {
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudListItem Icon="@GetLocationIcon(l)" IconColor="Color.Primary" Text="@l.Name" SecondaryText="@l.LocationType.Name"></MudListItem>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </MudList>
+                    </ChildContent>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+            
         </MudCardContent>
     </MudCard>
 }
@@ -76,47 +88,66 @@
         };
 
     private bool _loading;
-    
+
     [Parameter, EditorRequired]
     public string TenantId { get; set; } = default!;
-    
+
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    private string _currentTenantId = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
     {
         try
         {
-            _loading = true;
-            
-            var mediator = GetNewMediator();
-        
-            var request = new GetAllLocationsQuery()
+            if (TenantId != _currentTenantId)
             {
-                UserProfile = UserProfile,
-                TenantId = this.TenantId
-            };
-
-            var result = await mediator.Send(request);
-            if (result.Succeeded)
-            {
-                _locations = result.Data!;
+                _loading = true;
+                _currentTenantId = TenantId;
+                await LoadData();
             }
-            else
-            {
-                _locations = [];
-            }
-
         }
         finally
         {
             _loading = false;
         }
-        
-        
-    
+
     }
 
+    private async Task LoadData()
+    {
 
+        var mediator = GetNewMediator();
+
+        var request = new GetAllLocationsQuery()
+            {
+                UserProfile = UserProfile,
+                TenantId = this.TenantId
+            };
+
+        var result = await mediator.Send(request);
+        if (result.Succeeded)
+        {
+            _locations = result.Data!;
+        }
+        else
+        {
+            _locations = [];
+        }
+    }
+
+    private string GetIcon(GenderProvision genderProvision)
+    {
+        if (genderProvision == GenderProvision.Male)
+        {
+            return Icons.Material.Filled.Male;
+        }
+        if(genderProvision == GenderProvision.Female)
+        {
+            return Icons.Material.Filled.Female;
+        }
+        return Icons.Material.Filled.Person;
+    }
 
     private string GetLocationIcon(LocationDto location)
     {
@@ -129,30 +160,30 @@
         {
             return Icons.Material.Filled.Warehouse;
         }
-        
+
         if (location.LocationType == LocationType.Outlying)
         {
             return Icons.Material.Filled.Domain;
         }
-        
+
         if (location.LocationType == LocationType.Feeder)
         {
             return Icons.Material.Filled.Business;
         }
-        
+
         if (location.LocationType == LocationType.Community)
         {
             return Icons.Material.Filled.People;
         }
-        
+
         if (location.LocationType == LocationType.Hub)
         {
             return Icons.Material.Filled.HomeWork;
         }
-        
+
         if (location.LocationType == LocationType.Satellite)
         {
-            return Icons.Material.Filled.Satellite;
+            return Icons.Material.Filled.SatelliteAlt;
         }
 
         return Icons.Material.Filled.Castle;

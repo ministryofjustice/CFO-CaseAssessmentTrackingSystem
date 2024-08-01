@@ -2,7 +2,7 @@
 
 namespace Cfo.Cats.Application.Features.Tenants.Queries.GetAll;
 
-public class GetAllTenantsQueryHandler : IRequestHandler<GetAllTenantsQuery, IEnumerable<TenantDto>>
+public class GetAllTenantsQueryHandler : IRequestHandler<GetAllTenantsQuery, Result<IEnumerable<TenantDto>>>
 {
     private readonly IStringLocalizer<GetAllTenantsQueryHandler> localizer;
     private readonly IMapper mapper;
@@ -19,15 +19,18 @@ public class GetAllTenantsQueryHandler : IRequestHandler<GetAllTenantsQuery, IEn
         this.localizer = localizer;
     }
 
-    public async Task<IEnumerable<TenantDto>> Handle(
+    public async Task<Result<IEnumerable<TenantDto>>> Handle(
         GetAllTenantsQuery request,
         CancellationToken cancellationToken
     )
     {
-        var data = await unitOfWork.DbContext
-            .Tenants.OrderBy(x => x.Name)
+        var data = await unitOfWork.DbContext.Tenants
+            .Where(t => t.Id.StartsWith(request.UserProfile!.TenantId!))
+            .OrderBy(x => x.Id)
             .ProjectTo<TenantDto>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
-        return data;
+        
+        return Result<IEnumerable<TenantDto>>.Success(data);
+        
     }
 }

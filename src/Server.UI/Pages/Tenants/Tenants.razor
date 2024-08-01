@@ -3,11 +3,11 @@
 @using Cfo.Cats.Application.Common.Interfaces.MultiTenant
 @using Cfo.Cats.Application.Features.Tenants.Commands
 @using Cfo.Cats.Application.Features.Tenants.DTOs
-@using Cfo.Cats.Application.Features.Tenants.Queries.Pagination
 @using Cfo.Cats.Application.Features.Tenants.Commands.AddEdit
 @using Cfo.Cats.Application.Features.Tenants.Commands.Delete
 @using Cfo.Cats.Application.Features.Tenants.Commands.Rename
 @using Cfo.Cats.Application.Features.Tenants.Queries.Export
+@using Cfo.Cats.Application.Features.Tenants.Queries.GetAll
 @using Cfo.Cats.Server.UI.Pages.Tenants.Components
 @using Cfo.Cats.Application.SecurityConstants
 
@@ -19,258 +19,139 @@
 
 @inherits CatsComponentBase
 
-<PageTitle>@Title</PageTitle>
 
-<MudDataGrid ServerData="@(ServerReload)"
-             T="TenantDto"
-             FixedHeader="true"
-             FixedFooter="false"
-             Height="calc(100vh - 300px)"
-             Loading="@loading"
-             @bind-RowsPerPage="defaultPageSize"
-             Hover="false" @ref="table">
-    <ToolBarContent>
-        <div class="d-flex align-start flex-grow-1">
-            <div class="d-flex gap-4">
-                <MudIcon Icon="@Icons.Material.Filled.Domain" Size="Size.Large"/>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption">@Title</MudText>
-                </div>
-            </div>
-            <div class="flex-grow-1"></div>
-            <div class="d-flex flex-column justify-end">
-                <div class="d-flex">
-                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                        <MudButton Variant="Variant.Outlined"
-                                   Size="Size.Small"
-                                   Disabled="@loading"
-                                   OnClick="@(() => OnRefresh())"
-                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
-                                   Style="margin-right: 4px; margin-bottom:4px">
-                            @ConstantString.Refresh
-                        </MudButton>
-                        @if (canCreate)
-                        {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Add"
-                                       Disabled="@loading"
-                                       Size="Size.Small"
-                                       OnClick="OnCreate"
-                                       Style="margin-right: 4px; margin-bottom:4px"
-                                       IconColor="Color.Surface">
-                                @ConstantString.New
-                            </MudButton>
-                        }
-                        @if (canExport)
-                        {
-                            <MudLoadingButton @bind-Loading="exporting" Variant="Variant.Outlined" Color="Color.Primary"
-                                              Label="@ConstantString.Export"
-                                              Disabled="@loading"
-                                              StartIcon="@Icons.Custom.FileFormats.FileExcel"
-                                              Size="Size.Small"
-                                              Style="margin-right: 4px; margin-bottom:4px"
-                                              OnClick="OnExport"
-                                              IconColor="Color.Surface">
-                                @ConstantString.Export
-                            </MudLoadingButton>
-                        }
 
-                    </MudHidden>
-                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
-                        @if (canCreate)
-                        {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Add"
-                                       Disabled="@loading"
-                                       Size="Size.Small"
-                                       OnClick="OnCreate"
-                                       Style="margin-right: 4px; margin-bottom:4px"
-                                       IconColor="Color.Surface">
-                                @ConstantString.New
-                            </MudButton>
-                        }
-                    </MudHidden>
-                </div>
-                @if (canSearch)
+<MudGrid>
+    <MudItem sm="6" md="4" >
+        @if (loading == false)
+        {
+            <MudTreeView T="TenantDto" Hover
+                SelectionMode="SelectionMode.SingleSelection"
+                SelectedValueChanged="OnSelectedTenantChanged">
+                @foreach (var node in GetRootNodes())
                 {
-                    <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Value="@searchString" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
-                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
-                    </MudTextField>
-                }
-
-            </div>
-        </div>
-    </ToolBarContent>
-    <Columns>
-        <HierarchyColumn T="TenantDto" ButtonDisabledFunc="@(x => x.Domains.Count() is 0)"/>
-        <TemplateColumn CellStyle="width:60px" Title="@ConstantString.Actions" Sortable="false">
-            <CellTemplate>
-                @if (canEdit || canDelete)
-                {
-                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
-                             Dense="true"
-                             EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
-                        @if (canEdit)
+                    <MudTreeViewItem Text="@node.Name" Value="@node" Expanded="true">
+                        @if (HasChildren(node))
                         {
-                            <MudMenuItem OnClick="@(() => OnAddDomain(context.Item))">New Domain</MudMenuItem>
-                            <MudMenuItem OnClick="@(() => OnRename(context.Item))">@ConstantString.Rename</MudMenuItem>
-                            <MudMenuItem OnClick="@(() => OnEdit(context.Item))">@ConstantString.Edit</MudMenuItem>
+                            @RenderChildNodes(node.Id)
                         }
-                        @if (canDelete)
+                    </MudTreeViewItem>
+                }
+            </MudTreeView>
+        }
+    </MudItem>
+    <MudItem sm="6" md="8">
+        @if (SelectedTenant is not null)
+        {
+            <MudCard Elevation="0" Class="d-flex flex-grow-0">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1">
+                            <strong>Allowed Domains</strong>
+                        </MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        @foreach (var domain in SelectedTenant.Domains)
                         {
-                            <MudMenuItem OnClick="@(() => OnDelete(context.Item))">@ConstantString.Delete</MudMenuItem>
+                            <MudItem xs="12" md="6" lg="4" Class="d-flex">
+                                <MudField Variant="Variant.Text">@domain</MudField>
+                                <MudIconButton OnClick="@(() => OnDeleteDomain(domain, SelectedTenant.Id))" Icon="@Icons.Material.Filled.Delete" aria-label="delete"></MudIconButton>
+                            </MudItem>
                         }
-                    </MudMenu>
-                }
-                else
-                {
-                    <MudButton Variant="Variant.Filled" 
-                               StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary" Size="Size.Small"
-                               Color="Color.Surface">
-                        @ConstantString.NoAllowed
-                    </MudButton>
-                }
-            </CellTemplate>
-        </TemplateColumn>
-        <PropertyColumn Property="x => x.Name" Title="@L[currentDto.GetMemberDescription(x => x.Name)]">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.Name</MudText>
-                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.Item.Description</MudText>
-                </div>
-            </CellTemplate>
-        </PropertyColumn>
+                    </MudGrid>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => OnAddDomain(SelectedTenant))">Add Domain</MudButton>
+                </MudCardActions>
+            </MudCard>
 
-    </Columns>
-    <ChildRowContent>
-        <MudGrid>
-            <MudItem xs="12" md="6">
-                <TenantLocations TenantId="@context.Item.Id" />
-            </MudItem>
-            <MudItem xs="12" md="6">
-                <MudCard Elevation="0" Class="d-flex flex-grow-0">
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.body1">
-                                <strong>Allowed Domains</strong>
-                            </MudText>
-                        </CardHeaderContent>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <MudGrid>
-                            @foreach (var domain in context.Item.Domains)
-                            {
-                                <MudItem xs="12" md="6" lg="4" Class="d-flex">
-                                    <MudField Variant="Variant.Text">@domain</MudField>
-                                    <MudIconButton OnClick="@(() => OnDeleteDomain(domain, context.Item.Id))" Icon="@Icons.Material.Filled.Delete" aria-label="delete"></MudIconButton>
-                                </MudItem>
-                            }
-                        </MudGrid>
-                    </MudCardContent>
-                </MudCard>
-            </MudItem>
-        </MudGrid>
-        
-      
-    </ChildRowContent>
-    <NoRecordsContent>
-        <MudText>@ConstantString.NoRecords</MudText>
-    </NoRecordsContent>
-    <LoadingContent>
-        <MudText>@ConstantString.Loading</MudText>
-    </LoadingContent>
-    <PagerContent>
-        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })"/>
-    </PagerContent>
-</MudDataGrid>
+            <TenantLocations TenantId="@SelectedTenant.Id" />
+        }
+    </MudItem>
+</MudGrid>
 
-<style>
-    .mud-table-toolbar {
-        height: 120px !important;
-    }
-</style>
+
+
+
 
 @code
 {
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
-    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
 
-    [Inject] private IBlazorDownloadFileService BlazorDownloadFileService { get; set; } = null!;
+    private TenantDto? SelectedTenant { get; set; }
 
-    public string? Title { get; private set; }
-    private int defaultPageSize = 15;
-    private MudDataGrid<TenantDto> table = default!;
-    private TenantDto currentDto = new() { Id = "" };
-    private string searchString = string.Empty;
     private bool loading;
-    private bool exporting;
 
-    private bool canSearch;
-    private bool canCreate;
-    private bool canEdit;
-    private bool canDelete;
-    private bool canExport;
-
-    private TenantsWithPaginationQuery Query { get; } = new();
+    private GetAllTenantsQuery Query { get; } = new();
+    private TenantDto[] Data { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
-        Title = L[currentDto.GetClassDescription()];
-        var state = await AuthState;
-        canCreate = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
-        canEdit = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
-        canDelete = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
-        canExport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
-        canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
+        await LoadData();
     }
 
-    private async Task<GridData<TenantDto>> ServerReload(GridState<TenantDto> state)
+    private void OnSelectedTenantChanged(TenantDto tenant)
     {
-        try
+        this.SelectedTenant = tenant;
+        StateHasChanged();
+    }
+
+    private IEnumerable<TenantDto> GetRootNodes()
+    {
+        var minDepth = Data.Min(n => n.Id.Count(c => c == '.'));
+        return Data.Where(n => n.Id.Count(c => c == '.') == minDepth);
+    }
+
+    private async Task LoadData()
+    {
+        loading = true;
+        await Task.CompletedTask; // get tenants
+
+        Query.UserProfile = this.UserProfile;
+
+        var result = await GetNewMediator().Send(Query);
+
+        if (result.Succeeded)
         {
-            loading = true;
-            Query.Keyword = searchString;
-            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Id";
-            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? false ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
-            Query.PageNumber = state.Page + 1;
-            Query.PageSize = state.PageSize;
-            var result = await GetNewMediator().Send(Query);
-            return new GridData<TenantDto> { TotalItems = result.TotalItems, Items = result.Items };
+            Data = result.Data!.ToArray();
+            StateHasChanged();
         }
-        finally
+        loading = false;
+    }
+
+    private RenderFragment RenderChildNodes(string parentId) => builder =>
+    {
+        var childNodes = Data.Where(n => n.Id.StartsWith(parentId) && n.Id.Count(c => c == '.') == parentId.Count(c => c == '.') + 1);
+
+        foreach (var child in childNodes)
         {
-            loading = false;
+            builder.OpenComponent<MudTreeViewItem<TenantDto>>(0);
+            builder.AddAttribute(1, "Text", child.Name);
+            if (child.Id.Count(c => c == '.') < 3)
+            {
+                builder.AddAttribute(2, "Expanded", true);
+            }
+            else{
+                builder.AddAttribute(2, "Expanded", false);
+            }
+            builder.AddAttribute(3, "Value", child);
+            if(HasChildren(child))
+            {
+                builder.AddAttribute(4, "ChildContent", (RenderFragment)((childBuilder) =>
+                {
+                    RenderChildNodes(child.Id)(childBuilder);
+                }));
+            }
+                       
+            builder.CloseComponent();
         }
-    }
+    };
 
-    private async Task OnSearch(string text)
+    private bool HasChildren(TenantDto node)
     {
-        searchString = text;
-        await table.ReloadServerData();
-    }
-
-    private async Task OnRefresh()
-    {
-        TenantService.Refresh();
-        searchString = string.Empty;
-        await table.ReloadServerData();
-    }
-
-    private async Task OnCreate()
-    {
-        var command = new AddEditTenantCommand();
-        var parameters = new DialogParameters<TenantFormDialog>
-        {
-            { x => x.Model, command }
-        };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = DialogService.Show<TenantFormDialog>
-            (L["Create a new Tenant"], parameters, options);
-        var state = await dialog.Result;
-        if (!state!.Canceled)
-        {
-            await table.ReloadServerData();
-        }
+        return Data.Any(n => n.Id.StartsWith(node.Id) && n.Id.Count(c => c == '.') == node.Id.Count(c => c == '.') + 1);
     }
 
     private async Task OnAddDomain(TenantDto dto)
@@ -290,9 +171,11 @@
         if (!state!.Canceled)
         {
             TenantService.Refresh();
-            await table.ReloadServerData();
+            await LoadData();
         }
     }
+
+
 
     private async Task OnDeleteDomain(string domain, string tenantId)
     {
@@ -313,7 +196,7 @@
         if (!state!.Canceled)
         {
             TenantService.Refresh();
-            await table.ReloadServerData();
+            await LoadData();
         }
     }
 
@@ -330,71 +213,9 @@
         var state = await dialog.Result;
         if (!state!.Canceled)
         {
-            await table.ReloadServerData();
+            await LoadData();
         }
     }
 
-    private async Task OnEdit(TenantDto dto)
-    {
-        var command = Mapper.Map<AddEditTenantCommand>(dto);
-        var parameters = new DialogParameters<TenantFormDialog>
-        {
-            { x => x.Model, command }
-        };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = DialogService.Show<TenantFormDialog>
-            (L["Edit the Tenant"], parameters, options);
-        var state = await dialog.Result;
-        if (!state!.Canceled)
-        {
-            await table.ReloadServerData();
-        }
-    }
-
-    private async Task OnExport()
-    {
-        exporting = true;
-        var request = new ExportTenantsQuery
-        {
-            Keyword = Query.Keyword,
-            CurrentUser = UserProfile,
-            OrderBy = table.SortDefinitions.Values.FirstOrDefault()?.SortBy ?? "Id",
-            SortDirection = table.SortDefinitions.Values.FirstOrDefault()?.Descending ?? false 
-                ? SortDirection.Descending.ToString() 
-                : SortDirection.Ascending.ToString()
-        };
-
-        var result = await GetNewMediator().Send(request);
-        if (result.Succeeded)
-        {
-            var downloadresult = await BlazorDownloadFileService.DownloadFile($"{L["Tenants"]}.xlsx", result.Data, "application/octet-stream");
-            Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
-        }
-        else
-        {
-            Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
-        }
-
-        exporting = false;
-
-    }
-
-    private async Task OnDelete(TenantDto dto)
-    {
-        var deleteContent = ConstantString.DeleteConfirmationWithId;
-        var command = new DeleteTenantCommand(new[] { dto.Id });
-        var parameters = new DialogParameters<DeleteConfirmation>
-        {
-            { x => x.Command, command },
-            { x => x.ContentText, string.Format(deleteContent, dto.Id) }
-        };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = DialogService.Show<DeleteConfirmation>(L["Delete the Tenant"], parameters, options);
-        var state = await dialog.Result;
-        if (!state!.Canceled)
-        {
-            await table.ReloadServerData();
-        }
-    }
 
 }
