@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.ValueObjects;
@@ -48,5 +49,15 @@ public static class DeleteDomainCommand
             return Result<int>.Success(1);
         }
     }
+    public class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+            RuleFor(r => r.TenantId)
+                .NotNull()
+                .NotEmpty()
+                .Matches(ValidationConstants.TenantId).WithMessage(ValidationConstants.TenantIdMessage);
 
+        }
+    }
 }

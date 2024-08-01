@@ -53,7 +53,7 @@ public static class AddConsent
         public Validator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            
+
             RuleFor(c => c.ParticipantId)
                 .NotNull()
                 .MinimumLength(9)
@@ -61,6 +61,11 @@ public static class AddConsent
                 .WithMessage("Invalid Participant Id")
                 .MustAsync(MustExist)
                 .WithMessage("Participant does not exist");
+
+            RuleFor(v => v.ConsentDate)
+                .NotNull()
+                .LessThanOrEqualTo(DateTime.Today)
+                .WithMessage("Consent Date must be less than or equal to today");
             
             RuleFor(v => v.UploadRequest)
                 .NotNull();

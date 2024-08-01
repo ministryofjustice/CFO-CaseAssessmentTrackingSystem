@@ -17,7 +17,7 @@ public class ChangePasswordModelValidator : AbstractValidator<ChangePasswordMode
         this.localizer = localizer;
         RuleFor(p => p.NewPassword)
             .NotEmpty()
-            .WithMessage(this.localizer["New password cannot be empty"])
+            .WithMessage(this.localizer["New password is required"])
             .MinimumLength(this.identitySettings.RequiredLength)
             .WithMessage(
             this.localizer[

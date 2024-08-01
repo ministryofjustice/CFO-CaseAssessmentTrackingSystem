@@ -3,6 +3,7 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.ValueObjects;
+using Cfo.Cats.Application.Common.Validators;
 
 namespace Cfo.Cats.Application.Features.Tenants.Commands;
 
@@ -52,7 +53,7 @@ public static class AddDomainCommand
         {
             RuleFor(v => v.Domain)
                 .MaximumLength(255)
-                .WithMessage("Domain must be no more than 255 characters")
+                .WithMessage("Domain must be less than or equal to 255 characters")
                 .NotEmpty()
                 .WithMessage("Domain is required");
 
@@ -63,12 +64,13 @@ public static class AddDomainCommand
              * @my-domain.com
             */
             RuleFor(v => v.Domain)
-                .Matches(@"^@[a-z0-9]+(?:[-]?[a-z0-9]+)*(?:\.[a-z0-9]+(?:[-]?[a-z0-9]+)*)+$")
-                .WithMessage("Must be in the format '@example.com'");
+                .Matches(ValidationConstants.TenantDomain)
+                .WithMessage(ValidationConstants.TenantDomainMessage);
 
             RuleFor(v => v.TenantId)
                 .NotEmpty()
-                .WithMessage("Tenant Id is required");
+                .WithMessage("Tenant Id is required")
+                .Matches(ValidationConstants.TenantId).WithMessage(ValidationConstants.TenantIdMessage);
         }
     }
 

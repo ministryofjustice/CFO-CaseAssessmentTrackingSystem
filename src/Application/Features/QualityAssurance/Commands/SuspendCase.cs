@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
@@ -35,7 +36,8 @@ public static class SuspendCase
                 .MaximumLength(9)
                 .WithMessage("Invalid Participant Id")
                 .MustAsync(MustExist)
-                .WithMessage("Participant does not exist");
+                .WithMessage("Participant does not exist")
+                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
         }
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
