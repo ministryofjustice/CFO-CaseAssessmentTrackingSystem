@@ -51,7 +51,7 @@ public static class AddRisk
             RuleFor(c => c.Justification)
                 .NotEmpty()
                 .When(c => c.ReviewReason.RequiresJustification)
-                .WithMessage("You must provide a justification with the selected review reason")
+                .WithMessage("You must provide a justification for the selected review reason")
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
         }
