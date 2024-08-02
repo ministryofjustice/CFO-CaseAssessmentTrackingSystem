@@ -72,7 +72,12 @@
         <MudCard Style="Height: 100%;">
             <MudCardHeader>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Risk Information</MudText>
+                    <div class="d-flex justify-space-between align-center">
+                        <MudText Typo="Typo.h6">Risk Information</MudText>
+                        <MudTooltip Text="Expand">
+                            <MudIconButton OnClick="ExpandRiskInformation" Icon="@Icons.Material.Outlined.OpenInNew" />
+                        </MudTooltip>
+                    </div>
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
@@ -98,14 +103,6 @@
                                 </dt>
                                 <dd>
                                     <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.LatestRisk!.CreatedBy).DisplayName</MudText>
-                                </dd>
-                            </div>
-                            <div class="description-pair">
-                                <dt>
-                                    <MudText Typo="Typo.subtitle2">Last review reason</MudText>
-                                </dt>
-                                <dd>
-                                    <MudChip T="string" Size="Size.Small" Color="Color.Primary">@ParticipantSummaryDto.LatestRisk!.ReviewReason.Name</MudChip>
                                 </dd>
                             </div>
                         </dl>

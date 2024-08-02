@@ -131,4 +131,23 @@ public partial class CaseSummary
 
     }
 
+    public async Task ExpandRiskInformation()
+    {
+        if (ParticipantSummaryDto.LatestRisk is null)
+        {
+            return;
+        }
+
+        var parameters = new DialogParameters<ExpandedRiskDialog>()
+        {
+            { x => x.Model, ParticipantSummaryDto.LatestRisk }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = DialogService.Show<ExpandedRiskDialog>("Risk Summary", parameters, options);
+
+        var result = await dialog.Result;
+    }
+
 }
