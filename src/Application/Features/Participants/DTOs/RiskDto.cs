@@ -228,11 +228,17 @@ public class RiskDto
 
             RuleFor(x => x.MappaCategory)
                 .NotNull()
-                .WithMessage("You must answer");
+                .WithMessage("You must answer")
+                .NotEqual(MappaCategory.NotApplicable)
+                .When(x => x.MappaLevel != MappaLevel.NotApplicable)
+                .WithMessage("This answer is incompatible with the selected level");
 
             RuleFor(x => x.MappaLevel)
                 .NotNull()
-                .WithMessage("You must answer");
+                .WithMessage("You must answer")
+                .NotEqual(MappaLevel.NotApplicable)
+                .When(x => x.MappaCategory != MappaCategory.NotApplicable)
+                .WithMessage("This answer is incompatible with the selected category");
 
             RuleFor(x => x.IsSubjectToSHPO)
                 .NotNull()
