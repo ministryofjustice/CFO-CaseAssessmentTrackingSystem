@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240802082017_Risk_v6")]
-    partial class Risk_v6
+    [Migration("20240802090432_Risk")]
+    partial class Risk
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -746,6 +746,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(36)
                         .HasColumnType("nvarchar(36)");
+
+                    b.Property<bool>("DeclarationSigned")
+                        .HasColumnType("bit");
 
                     b.Property<bool?>("IsRelevantToCommunity")
                         .HasColumnType("bit");
