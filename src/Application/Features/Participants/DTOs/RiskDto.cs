@@ -1,6 +1,5 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Entities.Participants;
-using FluentValidation;
 
 namespace Cfo.Cats.Application.Features.Participants.DTOs;
 
@@ -54,6 +53,18 @@ public class RiskDto
 
     public MappaCategory? MappaCategory { get; set; }
     public MappaLevel? MappaLevel { get; set; }
+
+    [Description("Referrer Name")]
+    public string? ReferrerName { get; set; }
+
+    [Description("Referrer Email")]
+    public string? ReferrerEmail { get; set; }
+
+    [Description("Referred on")]
+    public DateTime? ReferredOn { get; set; }
+
+    [Description("Declaration")]
+    public bool DeclarationSigned { get; set; } = false;
 
     private class Mapping : Profile
     {
@@ -247,6 +258,32 @@ public class RiskDto
             RuleFor(x => x.NSDCase)
                 .NotNull()
                 .WithMessage("You must answer");
+
+            RuleFor(x => x.DeclarationSigned)
+                .Equal(true)
+                .WithMessage("You must confirm");
+
+            When(x => x.DeclarationSigned, () =>
+            {
+                RuleFor(x => x.ReferrerName)
+                    .NotEmpty()
+                    .WithMessage("You must provide the referrers name")
+                    .Matches(ValidationConstants.NameCompliantWithDMS)
+                    .WithMessage(string.Format(ValidationConstants.NameCompliantWithDMSMessage, "Referrer Name"));
+
+                RuleFor(x => x.ReferrerEmail)
+                    .NotEmpty()
+                    .WithMessage("You must provide the referrers email")
+                    .EmailAddress()
+                    .WithMessage("Must be a valid email address");
+
+                RuleFor(x => x.ReferredOn)
+                    .NotEmpty()
+                    .WithMessage("You must provide the referral date")
+                    .LessThanOrEqualTo(DateTime.UtcNow.Date)
+                    .WithMessage(ValidationConstants.DateMustBeInPast);
+            });
+
         }
     }
 
