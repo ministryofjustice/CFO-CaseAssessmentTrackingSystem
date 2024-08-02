@@ -1,0 +1,70 @@
+﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Infrastructure.Services.Identity
+@using Humanizer
+
+@inject IUserService UserService
+
+<MudDialog>
+    <DialogContent>
+        <MudForm ReadOnly>
+            <div>
+                <dl class="description-list">
+                    <div class="description-pair">
+                        <dt>
+                            <MudText Typo="Typo.subtitle2">Last Reviewed</MudText>
+                        </dt>
+                        <dd>
+                            <MudTooltip Text="@Model.Created.ToString("dd/MM/yyyy hh:mm")">
+                                <MudText Typo="Typo.body2">
+                                    @Model.Created.Humanize()
+                                </MudText>
+                            </MudTooltip>
+                        </dd>
+                    </div>
+                    <div class="description-pair">
+                        <dt>
+                            <MudText Typo="Typo.subtitle2">Reviewed By</MudText>
+                        </dt>
+                        <dd>
+                            <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == Model.CreatedBy).DisplayName</MudText>
+                        </dd>
+                    </div>
+                    <div class="description-pair">
+                        <dt>
+                            <MudText Typo="Typo.subtitle2">Review reason</MudText>
+                        </dt>
+                        <dd>
+                            <MudChip T="string" Size="Size.Small" Color="Color.Primary">@Model.ReviewReason.Name</MudChip>
+                        </dd>
+                    </div>
+                    @if (Model.ReferredOn.HasValue)
+                    {
+                        <div class="description-pair">
+                            <dt>
+                                <MudText Typo="Typo.subtitle2">Referral Date</MudText>
+                            </dt>
+                            <dd>
+                                <MudText Typo="Typo.body2">@Model.ReferredOn.Value.ToString("dd/MM/yyyy")</MudText>
+                            </dd>
+                        </div>
+                    }
+                </dl>
+            </div>
+
+            @if(string.IsNullOrWhiteSpace(Model.ReviewJustification) is false)
+            {
+                <MudTextField @bind-Value="Model.ReviewJustification"
+                              Label="@Model.GetMemberDescription(x => x.ReviewJustification)"
+                              For="@(() => Model.ReviewJustification)"
+                              Lines="5"
+                              Class="mt-4" />
+            }
+        </MudForm>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [Parameter, EditorRequired]
+    public required RiskSummaryDto Model { get; set; }
+}

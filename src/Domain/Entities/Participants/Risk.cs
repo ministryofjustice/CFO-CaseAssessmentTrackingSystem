@@ -40,6 +40,7 @@ public class Risk : BaseAuditableEntity<Guid>
     public string? ActivityRestrictions { get; private set; }
     public DateTime? ActivityRestrictionsReceived { get; private set; }
     public string? AdditionalInformation { get; private set; }
+    public bool DeclarationSigned { get; private set; }
     public string? LicenseConditions { get; private set; }
     public DateTime? LicenseEnd { get; private set; }
     public bool? IsRelevantToCustody { get; private set; }
@@ -51,6 +52,9 @@ public class Risk : BaseAuditableEntity<Guid>
     public string ParticipantId { get; private set; }
     public string? PSFRestrictions { get; private set; }
     public DateTime? PSFRestrictionsReceived { get; private set; }
+    public string? ReferrerName { get; private set; }
+    public string? ReferrerEmail { get; private set; }
+    public DateTime? ReferredOn { get; private set; }
     public RiskReviewReason ReviewReason { get; private set; }
     public string? ReviewJustification { get; private set; }
     public RiskLevel? RiskToChildrenInCustody { get; private set; }

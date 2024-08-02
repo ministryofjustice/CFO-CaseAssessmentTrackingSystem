@@ -744,6 +744,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("nvarchar(36)");
 
+                    b.Property<bool>("DeclarationSigned")
+                        .HasColumnType("bit");
+
                     b.Property<bool?>("IsRelevantToCommunity")
                         .HasColumnType("bit");
 
@@ -784,6 +787,15 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<string>("ParticipantId")
                         .IsRequired()
                         .HasColumnType("nvarchar(9)");
+
+                    b.Property<DateTime?>("ReferredOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReferrerEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReferrerName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReviewJustification")
                         .HasColumnType("nvarchar(max)");
