@@ -5,7 +5,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.KeyValues.Queries.ByName;
 
-[RequestAuthorize(Policy = PolicyNames.AuthorizedUser)]
+[RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
 public class KeyValuesQueryByName : ICacheableRequest<IEnumerable<KeyValueDto>>
 {
     public KeyValuesQueryByName(Picklist name)

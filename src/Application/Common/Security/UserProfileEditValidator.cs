@@ -9,12 +9,12 @@ public class UserProfileEditValidator : AbstractValidator<UserProfile>
         IStringLocalizer<ApplicationUserDtoValidator> localizer1 = localizer;
         RuleFor(x => x.UserName)
             .NotEmpty()
-            .WithMessage(localizer1["User name cannot be empty"])
+            .WithMessage(localizer1["User name is required"])
             .Length(2, 100)
             .WithMessage(localizer1["User name must be between 2 and 100 characters"]);
         RuleFor(x => x.Email)
             .NotEmpty()
-            .WithMessage(localizer1["E-mail cannot be empty"])
+            .WithMessage(localizer1["E-mail is required"])
             .MaximumLength(100)
             .WithMessage(localizer1["E-mail must be less than 100 characters"])
             .EmailAddress()

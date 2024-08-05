@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.ValueObjects;
@@ -9,7 +10,7 @@ namespace Cfo.Cats.Application.Features.Tenants.Commands;
 [RequestAuthorize(Roles = "Admin")]
 public static class DeleteDomainCommand
 {
-    [RequestAuthorize(Policy = PolicyNames.SystemFunctionsWrite)]
+    [RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsWrite)]
     public class Command : IRequest<Result<int>>
     {
         [Description("Tenant Id")]
@@ -45,8 +46,18 @@ public static class DeleteDomainCommand
 
             tenantService.Refresh();
 
-            return await Result<int>.SuccessAsync(1);
+            return Result<int>.Success(1);
         }
     }
+    public class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+            RuleFor(r => r.TenantId)
+                .NotNull()
+                .NotEmpty()
+                .Matches(ValidationConstants.TenantId).WithMessage(ValidationConstants.TenantIdMessage);
 
+        }
+    }
 }

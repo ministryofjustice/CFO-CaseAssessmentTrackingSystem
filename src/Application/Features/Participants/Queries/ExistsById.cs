@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -6,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class CheckParticipantExistsById
 {
-    [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Query : ICacheableRequest<bool>
     {
         public required string Id { get; set; }
@@ -23,6 +24,18 @@ public static class CheckParticipantExistsById
                 .AnyAsync(p => p.Id == request.Id, cancellationToken);
         }
     }
+    public class Validator : AbstractValidator<Query>
+    {
+        public Validator()
+        {
+            RuleFor(x => x.Id)
+                .MinimumLength(9)
+                .MaximumLength(9)
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
+
+        }
+    }
 }
 

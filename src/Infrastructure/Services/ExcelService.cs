@@ -111,7 +111,7 @@ public class ExcelService : IExcelService
         using var workbook = new XLWorkbook(new MemoryStream(data));
         if (!workbook.Worksheets.Contains(sheetName))
         {
-            return await Result<IEnumerable<TEntity>>.FailureAsync(
+            return Result<IEnumerable<TEntity>>.Failure(
                 string.Format(localizer["Sheet with name {0} does not exist!"], sheetName)
             );
         }
@@ -146,7 +146,7 @@ public class ExcelService : IExcelService
 
         if (errors.Any())
         {
-            return await Result<IEnumerable<TEntity>>.FailureAsync(errors.ToArray());
+            return Result<IEnumerable<TEntity>>.Failure(errors.ToArray());
         }
 
         var lastRow = ws.LastRowUsed();
@@ -177,12 +177,12 @@ public class ExcelService : IExcelService
             }
             catch (Exception e)
             {
-                return await Result<IEnumerable<TEntity>>.FailureAsync(
+                return Result<IEnumerable<TEntity>>.Failure(
                     string.Format(localizer["Sheet name {0}:{1}"], sheetName, e.Message)
                 );
             }
         }
-
-        return await Result<IEnumerable<TEntity>>.SuccessAsync(list);
+        await Task.CompletedTask;
+        return Result<IEnumerable<TEntity>>.Success(list);
     }
 }

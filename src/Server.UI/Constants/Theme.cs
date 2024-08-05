@@ -15,18 +15,24 @@ public static class Theme
                 Black = "#000000",
                 TableLines = "#722660",
                 Tertiary = "#FFFFFF",
-                AppbarBackground = "#722660"
+                AppbarBackground = "#722660",
+                AppbarText = "#FFFFFF",
+                Error="#CC0033",
+                White = "#FFFFFF",
             },
             PaletteDark = new PaletteDark
             {
-                Primary = "#0092CC",
-                Secondary = "#494f56",
-                Success = "#66cc33",
-                Info = "#0c6980",
-                Black = "#000000",
-                TableLines = "#0092CC",
-                Tertiary = "#FFFFFF",
-                AppbarBackground = "#0092CC",
+                Primary = "#AA3C85", // Adjusted CFO Purple for dark mode
+                Secondary = "#666B73", // Lighter than #494f56 for better contrast on dark backgrounds
+                Success = "#76c043", // Slightly brighter than #62ae2f for visibility
+                Info = "#1493A3", // Brighter than #0c6980 for better contrast
+                Black = "#FFFFFF", // White to contrast dark backgrounds
+                TableLines = "#AA3C85", // Same as Primary to maintain consistency
+                Tertiary = "#FFFFFF", // Very dark grey for background contrast
+                AppbarBackground = "#AA3C85", // Matching Tertiary for a unified dark theme
+                AppbarText = "#FFFFFF",
+                Error = "#FF4D4D", // Brighter red than #CC0033 for better visibility,
+                White = "#FFFFFF",
             },
             Typography = new Typography
             {

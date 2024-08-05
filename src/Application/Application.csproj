@@ -32,8 +32,7 @@
         <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <None Remove="DependencyInjection.cs.bak" />
-        <None Remove="Application.csproj.bak" />
+        <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Features\Bio\Commands\" />

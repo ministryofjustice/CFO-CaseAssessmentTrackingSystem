@@ -11,6 +11,6 @@ public class DeleteKeyValueCommandHandler(IUnitOfWork unitOfWork) : IRequestHand
             item.AddDomainEvent(changeEvent);
             unitOfWork.DbContext.KeyValues.Remove(item);
         }
-        return await Result<int>.SuccessAsync(items.Count);
+        return Result<int>.Success(items.Count);
     }
 }

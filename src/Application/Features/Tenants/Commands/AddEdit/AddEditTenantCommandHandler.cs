@@ -31,6 +31,6 @@ public class AddEditTenantCommandHandler(
 
         
         tenantsService.Refresh();
-        return await Result<string>.SuccessAsync(item.Id);
+        return Result<string>.Success(item.Id);
     }
 }

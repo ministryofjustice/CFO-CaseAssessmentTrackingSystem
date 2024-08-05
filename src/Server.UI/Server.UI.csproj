@@ -17,20 +17,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ActualLab.Fusion" Version="8.0.8" />
-        <PackageReference Include="ActualLab.Fusion.Blazor" Version="8.0.8" />
-        <PackageReference Include="ActualLab.Fusion.Ext.Services" Version="8.0.8" />
-        <PackageReference Include="ActualLab.Generators" Version="8.0.8">
+        <PackageReference Include="ActualLab.Fusion" Version="9.0.33" />
+        <PackageReference Include="ActualLab.Fusion.Blazor" Version="9.0.33" />
+        <PackageReference Include="ActualLab.Fusion.Ext.Services" Version="9.0.33" />
+        <PackageReference Include="ActualLab.Generators" Version="9.0.33">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Blazor-Analytics" Version="3.12.0" />
-        <PackageReference Include="Blazor-ApexCharts" Version="3.3.0" />
+        <PackageReference Include="Blazor-ApexCharts" Version="3.4.0" />
         <PackageReference Include="BlazorDownloadFile" Version="2.4.0.2" />
         <PackageReference Include="BlazorTime" Version="1.0.3" />
-        <PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="7.0.0-rc.1" />
+        <PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="7.0.0" />
         <PackageReference Include="Faker.Net" Version="2.0.163" />
-        <PackageReference Include="Fluxor.Blazor.Web" Version="6.0.0" />
         <PackageReference Include="Humanizer" Version="2.14.1" />
         <PackageReference Include="Humanizer.Core.uk" Version="2.14.1" />
         <PackageReference Include="MemoryPack.Generator" Version="1.21.1">
@@ -42,20 +41,17 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="MudBlazor" Version="7.1.1" />
-        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
+        <PackageReference Include="MudBlazor" Version="7.3.0" />
         <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="5.1.0" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj" />
-        <ProjectReference Include="..\Migrators\Migrators.SqLite\Migrators.SqLite.csproj" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Update="Resources\Pages\Dashboard\Dashboard.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>Dashboard.Designer.cs</LastGenOutput>
         </EmbeddedResource>
-        <EmbeddedResource Remove="Pages\Assessment\**" />
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Resources\Pages\Dashboard\Dashboard.Designer.cs">
@@ -64,14 +60,6 @@
             <DependentUpon>Dashboard.resx</DependentUpon>
         </Compile>
     </ItemGroup>
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentQuestions\AssessmentMultipleChoiceQuestion.razor" />
-      <_ContentIncludedByDefault Remove="Pages\Assessment\AssessmentQuestions\AssessmentToggleQuestion.razor" />
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="logs\" />
-    </ItemGroup>
-    
 
 
 </Project>

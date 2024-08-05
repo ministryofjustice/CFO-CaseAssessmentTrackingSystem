@@ -10,17 +10,27 @@
     <link href="_content/CodeBeam.MudBlazor.Extensions/MudExtensions.min.css" rel="stylesheet"/>
     <link href="css/app.css" rel="stylesheet" />
     <link href="Cfo.Cats.Server.UI.styles.css" rel="stylesheet" />
-    <HeadOutlet @rendermode="RenderModeForPage" />
+    <title>Case Assessment and Tracking System (CATS)</title>
+    <link href="cats.ico" rel="icon" />
 </head>
 
 <body>
     <Routes @rendermode="RenderModeForPage" />
-    <script src="_framework/blazor.web.js"></script>
+    <script src="_framework/blazor.web.js" autostart="false"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="_content/BlazorDownloadFile/BlazorDownloadFileScript.js"></script>
     <script src="_content/CodeBeam.MudBlazor.Extensions/MudExtensions.min.js"></script>
     <script src="_content/BlazorTime/blazorTime.js"></script>
     <script src="js/toggleGroup.js"></script>
+    <script>
+        Blazor.start({
+            circuit: {
+                configureSignalR: function (builder) {
+                    builder.withServerTimeout(60000).withKeepAliveInterval(15000);
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

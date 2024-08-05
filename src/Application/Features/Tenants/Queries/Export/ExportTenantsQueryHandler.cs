@@ -25,6 +25,6 @@ public class ExportTenantsQueryHandler(IUnitOfWork unitOfWork, IExcelService exc
                 { localizer[dto.GetMemberDescription(x => x.Description)], item => item.Description }
             }
         );
-        return await Result<byte[]>.SuccessAsync(result);
+        return Result<byte[]>.Success(result);
     }
 }

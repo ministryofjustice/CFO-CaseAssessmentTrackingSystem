@@ -18,7 +18,7 @@ public class ResetPasswordFormModelValidator : AbstractValidator<ResetPasswordFo
 
         RuleFor(p => p.Password)
             .NotEmpty()
-            .WithMessage(this.localizer["Password cannot be empty"])
+            .WithMessage(this.localizer["Password is required"])
             .MinimumLength(this.identitySettings.RequiredLength)
             .WithMessage(
             this.localizer[

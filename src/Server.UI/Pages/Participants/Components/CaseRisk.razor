@@ -1,0 +1,132 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Risk.RiskComponents
+
+@inherits CatsComponentBase
+
+<style>
+    .readonly-toggle {
+        pointer-events: none; 
+    }
+</style>
+
+@if (_notFound)
+{
+    <MudAlert>
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No risk information found.</MudAlert>
+    </MudAlert>
+}
+
+@if(_model is not null)
+{
+    <MudForm @ref="form" ReadOnly Disabled>
+        <CascadingValue Value="form">
+            <MudExpansionPanels MultiExpansion="true">
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <MudText>License Conditions</MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <LicenseConditions Model="_model" />
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <MudText>Risk Overview</MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <RiskOverview Model="_model"/>
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <MudText>MAPPA</MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <Mappa Model="_model"/>
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <MudText>Specific Risk(s)</MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <SpecificRisk Model="_model" />
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <MudText>Recommendations</MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <Recommendations Model="_model" />
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <MudText>Restrictions</MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <Restrictions Model="_model"/>
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <MudText>Additional Information</MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <AdditionalInformation Model="_model" />
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <MudText>Declaration</MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <Declaration Model="_model" />
+                    </ChildContent>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        </CascadingValue>
+    </MudForm>
+}
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string ParticipantId { get; set; } = default!;
+
+    private MudForm? form;
+    private RiskDto? _model;
+    private bool _notFound = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await GetNewMediator().Send(new GetParticipantRisk.Query()
+            {
+                ParticipantId = ParticipantId
+            });
+
+            if(result.Succeeded && result.Data is not null)
+            {
+                _model = result.Data;
+            }
+            else
+            {
+                _notFound = true;
+            }
+        }
+        catch (NotFoundException)
+        {
+            _notFound = true;
+        }
+        finally
+        {
+            await base.OnInitializedAsync();
+        }
+
+    }
+}

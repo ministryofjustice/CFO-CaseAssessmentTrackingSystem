@@ -5,8 +5,6 @@ global using Cfo.Cats.Application.Common.Models;
 global using Cfo.Cats.Domain.Entities;
 global using Cfo.Cats.Infrastructure.Extensions;
 global using Cfo.Cats.Server.UI.Components;
-global using Fluxor;
-global using Fluxor.Blazor.Web.Components;
 global using MediatR;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.Extensions.Logging;

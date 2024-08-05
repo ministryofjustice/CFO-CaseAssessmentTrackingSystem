@@ -9,9 +9,10 @@
 
 @if (_model != null)
 {
+    <div tabindex="-1" @ref="topOfPageElement"></div>
 	<CatsMudStepper @ref="@Stepper" Color="Color.Primary" Variant="Variant.Filled"
 					MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
-					ActiveStepChanged="@OnStepChange" ShowSkipButton="false"  >
+                    ActiveStepChanged="@OnStepChange" ShowSkipButton="false" ShowPreviousButton="@_showPrevious">
 		<ChildContent>
 			<MudForm Model="@_model">
 				@*This top-level form is responsible for submission *@
@@ -20,20 +21,25 @@
                 {
                     <AssessmentPathway Model="pathway" />
                 }
-                <AssessmentResultStep Processing="@Processing" SubmissionSuccess="@SubmissionSuccess" />
+                <StatusResultStep Processing="@Processing" SubmissionSuccess="@SubmissionSuccess" SuccessText="Assessment Submitted" FailureText="Assessment failed to submit" Upci="@Upci" />
 			</MudForm>
 		</ChildContent>
 	</CatsMudStepper>
 }
 
 @code {
-    
 
-	[Parameter]
-	public string Upci { get; set; } = string.Empty;
+    private bool _showPrevious = false;
+    private ElementReference topOfPageElement;
+
+    [Parameter]
+    public string Upci { get; set; } = string.Empty;
 
     [Parameter]
     public Guid AssessmentId { get; set; } = Guid.Empty;
+
+    [Parameter]
+    public Cfo.Cats.Application.Features.Assessments.DTOs.Assessment? Model { get; set; }
 
 	private Cfo.Cats.Application.Features.Assessments.DTOs.Assessment? _model;
 
@@ -47,6 +53,8 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+        _model ??= Model;
+
         if (_model is null)
         {
             var response = await GetNewMediator().Send(new GetAssessment.Query()
@@ -64,17 +72,23 @@
 
 	private async Task OnStepChange(int step)
 	{
-        //todo add an explicit save button.
         Processing = true;
         await GetNewMediator().Send(new SaveAssessment.Command()
         {
             Assessment = _model!
         });
-		if (step == Stepper.Steps.Count())
+
+        // Do not show the previous step on the first or last steps.
+        _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
+        await topOfPageElement.FocusAsync();
+        if (step == Stepper.Steps.Count())
         {
 			await SubmitAssessment();
-		}
+        }
+        
         Processing = false;
+
+ 
     }
 
 	private async Task SubmitAssessment()

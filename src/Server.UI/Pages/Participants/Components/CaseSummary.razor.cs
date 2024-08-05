@@ -1,15 +1,22 @@
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Features.Assessments.Commands;
+using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
+using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Server.UI.Pages.Risk;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
 public partial class CaseSummary
 {
     private AssessmentSummaryDto? _latestAssessment;
-    [Inject] private IUserService UserService { get; set; } = default!;
+
+    [Inject] 
+    private IUserService UserService { get; set; } = default!;
+
     [CascadingParameter]
     public ParticipantSummaryDto ParticipantSummaryDto { get; set; } = default!;
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -18,6 +25,7 @@ public partial class CaseSummary
             : ParticipantSummaryDto.Assessments.OrderByDescending(a => a.AssessmentDate)
                 .First();
     }
+
     public async Task BeginAssessment()
     {
         var command = new BeginAssessment.Command
@@ -69,4 +77,77 @@ public partial class CaseSummary
                ParticipantSummaryDto.EnrolmentStatus.StatusSupportsReassessment();
 
     }
+
+    private bool HasRiskInformation() => ParticipantSummaryDto.LatestRisk is not null;
+    private bool CanAddRiskInformation() => HasRiskInformation() is false;
+    private bool CanReviewRiskInformation() => HasRiskInformation();
+
+    public async Task ReviewRiskInformation()
+    {
+        var command = new AddRisk.Command
+        {
+            ParticipantId = ParticipantSummaryDto.Id
+        };
+
+        var parameters = new DialogParameters<ReviewRiskDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<ReviewRiskDialog>("Review risk information for a participant", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            await AddRiskInformation(command);
+        }
+    }
+
+    public async Task AddRiskInformation(AddRisk.Command? command = null)
+    {
+        command ??= new AddRisk.Command
+        {
+            ParticipantId = ParticipantSummaryDto.Id,
+            ReviewReason = RiskReviewReason.InitialReview
+        };
+
+        var result = await GetNewMediator().Send(command);
+
+        if(result.Succeeded is false)
+        {
+            return;
+        }
+
+        if(command.ReviewReason.RequiresFurtherInformation)
+        {
+            Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/risk/{result.Data}");
+        }
+        else
+        {
+            Navigation.Refresh(true);
+        }
+
+    }
+
+    public async Task ExpandRiskInformation()
+    {
+        if (ParticipantSummaryDto.LatestRisk is null)
+        {
+            return;
+        }
+
+        var parameters = new DialogParameters<ExpandedRiskDialog>()
+        {
+            { x => x.Model, ParticipantSummaryDto.LatestRisk }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = DialogService.Show<ExpandedRiskDialog>("Risk Summary", parameters, options);
+
+        var result = await dialog.Result;
+    }
+
 }

@@ -1,5 +1,4 @@
-﻿@inherits FluxorComponent
-@inject IState<UserProfileState> UserProfileState
+﻿@inherits CatsComponentBase
 @inject IStringLocalizer<HeaderMenu> L
 
 <MudTooltip Arrow="true" Text="@L["User Profile"]">
@@ -51,13 +50,6 @@
                         <MudText>@L["Profile"]</MudText>
                     </div>
                 </MudMenuItem>
-                <MudMenuItem>
-                    <div class="d-flex">
-                        <MudIcon Class="mx-2"
-                                 Icon="@Icons.Material.Filled.Settings" />
-                        <MudText>@L["Settings"]</MudText>
-                    </div>
-                </MudMenuItem>
                 <div class="mt-4 mx-4">
                     <form action="@IdentityComponentsEndpointRouteBuilderExtensions.Logout" method="post">
                         <AntiforgeryToken />
@@ -83,7 +75,20 @@
 {
 
     [Parameter] public EventCallback<EventArgs> OnSettingClick { get; set; }
-    private bool IsLoading => UserProfileState.Value.IsLoading;
-    private UserProfile? UserProfile => UserProfileState.Value.UserProfile;
+    private bool IsLoading { get; set; }
+    private UserProfile? UserProfile { get; set; }
+    
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (UserProfile is null)
+        {
+            IsLoading = true;
+            var state = await AuthState;
+            this.UserProfile = state.User.GetUserProfileFromClaim();
+            IsLoading = false;
+        }
+    }
 
 }

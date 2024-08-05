@@ -6,7 +6,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.KeyValues.Queries.PaginationQuery;
 
-[RequestAuthorize(Policy = PolicyNames.AuthorizedUser)]
+[RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
 public class KeyValuesWithPaginationQuery : KeyValueAdvancedFilter, ICacheableRequest<PaginatedData<KeyValueDto>>
 {
     public KeyValueAdvancedSpecification Specification => new(this);

@@ -3,7 +3,6 @@ using System.Reflection;
 using BlazorDownloadFile;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants.Localization;
-using Cfo.Cats.Server.UI.Hubs;
 using Cfo.Cats.Server.UI.Services;
 using Cfo.Cats.Server.UI.Services.Fusion;
 using Cfo.Cats.Server.UI.Services.JsInterop;
@@ -32,6 +31,11 @@ public static class DependencyInjection
         var services = builder.Services;
         var config = builder.Configuration;
         var environment = builder.Environment;
+
+        services.AddAntiforgery(options =>
+        {
+            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        });
 
         services.AddRazorComponents().AddInteractiveServerComponents();
         services.AddCascadingAuthenticationState();
@@ -62,11 +66,6 @@ public static class DependencyInjection
         services.AddMudBlazorDialog();
         services.AddHotKeys2();
         
-        services.AddFluxor(options =>
-        {
-            options.ScanAssemblies(Assembly.GetExecutingAssembly());
-        });
-
         services.AddFusion(fusion => {
             fusion.AddInMemoryKeyValueStore();
             fusion.AddService<IUserSessionTracker, UserSessionTracker>();
@@ -85,15 +84,19 @@ public static class DependencyInjection
         services.AddMvc();
         services.AddControllers();
         
-        services.AddScoped<IApplicationHubWrapper, ServerHubWrapper>()
-            .AddSignalR();
+        services.AddSignalR(options =>
+            {
+                options.HandshakeTimeout = TimeSpan.FromSeconds(60); // Adjust as needed
+                options.KeepAliveInterval = TimeSpan.FromSeconds(10); // SignalR keep-alive interval
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(120); // SignalR client timeout interval
+            });
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
         services.AddHealthChecks();
         
         services.AddScoped<LocalTimezoneOffset>();
         services.AddHttpContextAccessor();
-        services.AddScoped<HubClient>();
+/*        services.AddScoped<HubClient>(); */
         services.AddMudExtensions()
             .AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>()
             .AddScoped<LayoutService>()
@@ -144,7 +147,8 @@ public static class DependencyInjection
         });
         
         app.UseAntiforgery();
-        app.UseHttpsRedirection();
+        
+        //app.UseHttpsRedirection();
         app.UseStaticFiles();
 
         if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), @"Files")))
@@ -167,16 +171,10 @@ public static class DependencyInjection
         app.UseExceptionHandler();
         
         app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
-        app.MapHub<ServerHub>(ISignalRHub.Url);
         
         app.MapAdditionalIdentityEndpoints();
         app.UseForwardedHeaders();
-        app.UseWebSockets(new WebSocketOptions()
-        { 
-            // We obviously need this
-            KeepAliveInterval = TimeSpan.FromSeconds(30), // Just in case
-        });
-        
+      
         return app;
     }
 

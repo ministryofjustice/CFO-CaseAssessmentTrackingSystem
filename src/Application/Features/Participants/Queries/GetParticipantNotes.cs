@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -6,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetParticipantNotes
 {
-    [RequestAuthorize(Policy = PolicyNames.AuthorizedUser)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<Result<ParticipantNoteDto[]>>
     {
         public required string ParticipantId { get; set; }
@@ -23,7 +24,23 @@ public static class GetParticipantNotes
             var notes = await query.ProjectTo<ParticipantNoteDto>(mapper.ConfigurationProvider)
                 .ToArrayAsync(cancellationToken) ?? [];
 
-            return await Result<ParticipantNoteDto[]>.SuccessAsync(notes);
+            return Result<ParticipantNoteDto[]>.Success(notes);
+        }
+    }
+    public class Validator : AbstractValidator<Query>
+    {
+        public Validator()
+        {
+
+            RuleFor(x => x.ParticipantId)
+                .NotNull();
+
+            RuleFor(x => x.ParticipantId)
+                .MinimumLength(9)
+                .MaximumLength(9)
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "ParticipantId"));
+
         }
     }
 

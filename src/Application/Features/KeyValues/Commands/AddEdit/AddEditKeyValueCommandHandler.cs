@@ -14,14 +14,14 @@ public class AddEditKeyValueCommandHandler(
             _ = keyValue ?? throw new NotFoundException($"KeyValue Pair  {request.Id} Not Found.");
             keyValue = mapper.Map(request, keyValue);
             keyValue.AddDomainEvent(new KeyValueUpdatedDomainEvent(keyValue));
-            return await Result<int>.SuccessAsync(keyValue.Id);
+            return Result<int>.Success(keyValue.Id);
         }
         else
         {
             var keyValue = mapper.Map<KeyValue>(request);
             keyValue.AddDomainEvent(new KeyValueUpdatedDomainEvent(keyValue));
             unitOfWork.DbContext.KeyValues.Add(keyValue);
-            return await Result<int>.SuccessAsync(keyValue.Id);
+            return Result<int>.Success(keyValue.Id);
         }
     }
 }

@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -7,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetParticipantSummary
 {
-    [RequestAuthorize(Policy = PolicyNames.AllowCandidateSearch)]
+    [RequestAuthorize(Policy = SecurityPolicies.CandidateSearch)]
     public class Query : ICacheableRequest<Result<ParticipantSummaryDto>>
     {
         public required string ParticipantId { get; set; } 
@@ -39,8 +40,14 @@ public static class GetParticipantSummary
                 .Where(pa => pa.ParticipantId == request.ParticipantId)
                 .ProjectTo<AssessmentSummaryDto>(mapper.ConfigurationProvider)
                 .ToArrayAsync(cancellationToken);
+
+            var risk = await unitOfWork.DbContext.Risks
+                .OrderByDescending(x => x.Created)
+                .FirstOrDefaultAsync(x => x.ParticipantId == request.ParticipantId, cancellationToken);
+
+            summary.LatestRisk = mapper.Map<RiskSummaryDto>(risk);
                 
-            return await Result<ParticipantSummaryDto>.SuccessAsync(summary);
+            return Result<ParticipantSummaryDto>.Success(summary);
 
         }
     }
@@ -50,9 +57,13 @@ public static class GetParticipantSummary
         public Validator()
         {
             RuleFor(x => x.ParticipantId)
+                .NotNull();
+
+            RuleFor(x => x.ParticipantId)
                 .MinimumLength(9)
                 .MaximumLength(9)
-                .WithMessage("Invalid participant id");
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "ParticipantId"));
         }
     }
 }

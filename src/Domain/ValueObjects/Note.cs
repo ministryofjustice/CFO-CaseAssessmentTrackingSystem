@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Identity;
 
 namespace Cfo.Cats.Domain.ValueObjects;
 
-public class Note : ValueObject, IAuditable
+public class Note : ValueObject, IAuditable, IMustHaveTenant
 {
     public required string Message { get; set; }
     public string? CallReference { get; set; }
@@ -12,10 +12,15 @@ public class Note : ValueObject, IAuditable
     public DateTime? LastModified { get; set; }
     public string? LastModifiedBy { get; set; }
     public virtual ApplicationUser? CreatedByUser { get; set; }
+    
+    public virtual ApplicationUser? LastModifiedByUser { get; set; }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return CreatedBy ?? Guid.NewGuid().ToString();
         yield return Created ?? DateTime.Now;
     }
+    public string TenantId { get; set; } = default!;
 }
+
+

@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
 
@@ -6,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 
 public static class AddRightToWork
 {
-    [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command : IRequest<Result<string>>
     {
         [Description("Participant Id")]
@@ -63,7 +64,8 @@ public static class AddRightToWork
                 .MaximumLength(9)
                 .WithMessage("Invalid Participant Id")
                 .MustAsync(MustExist)
-                .WithMessage("Participant does not exist");
+                .WithMessage("Participant does not exist")
+                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
             
             RuleFor(v => v.UploadRequest)
                 .NotNull();

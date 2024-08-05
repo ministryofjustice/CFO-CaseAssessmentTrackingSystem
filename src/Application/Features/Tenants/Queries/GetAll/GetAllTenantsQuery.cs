@@ -5,9 +5,8 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Tenants.Queries.GetAll;
 
-[RequestAuthorize(Policy = PolicyNames.SystemFunctionsRead)]
-public class GetAllTenantsQuery : ICacheableRequest<IEnumerable<TenantDto>>
+[RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsRead)]
+public class GetAllTenantsQuery : IRequest<Result<IEnumerable<TenantDto>>>
 {
-    public string CacheKey => TenantCacheKey.GetAllCacheKey;
-    public MemoryCacheEntryOptions? Options => TenantCacheKey.MemoryCacheEntryOptions;
+    public UserProfile? UserProfile { get; set; }
 }

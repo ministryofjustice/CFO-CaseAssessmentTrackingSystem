@@ -38,33 +38,55 @@ public class MenuService : IMenuService
                     new()
                     {
                         Title = "Reports",
-                        Roles = [RoleNames.SystemSupport, RoleNames.Statistics, RoleNames.ServiceDesk],
                         Icon = Icons.Material.Filled.Analytics,
                         Href = "/reports",
                         PageStatus = PageStatus.ComingSoon
                     },
+                  
+                }
+            },
+            new MenuSectionModel
+            {
+                Title = "QA",
+                Roles = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.QAFinance],
+                SectionItems = new List<MenuSectionItemModel>
+                {
                     new()
                     {
-                        Title = "PSF/DAF",
-                        Roles = [RoleNames.SystemSupport, RoleNames.Finance],
-                        Icon = Icons.Material.Filled.Money,
-                        Href = "/banking",
-                        PageStatus = PageStatus.ComingSoon
-                    },
-                    new()
-                    {
-                        Title = "Tasks",
-                        Roles = [RoleNames.SystemSupport],
-                        Icon = Icons.Material.Filled.CalendarToday,
-                        Href = "/Tasks",
-                        PageStatus = PageStatus.ComingSoon
+                        IsParent = true,
+                        Title = "Enrolments",
+                        Icon = Icons.Material.Filled.Approval,
+                        MenuItems = new List<MenuSectionSubItemModel>
+                        {
+                             new()
+                            {
+                                Title = "PQA",
+                                Href="/pages/qa/enrolments/pqa",
+                                PageStatus = PageStatus.Completed,
+                                Roles = [ RoleNames.QAFinance, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            },
+                            new()
+                            {
+                                Title = "QA1",
+                                PageStatus = PageStatus.Completed,
+                                Href="/pages/qa/enrolments/qa1",
+                                Roles = [ RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            },
+                            new()
+                            {
+                                Title = "QA2",
+                                PageStatus = PageStatus.Completed,
+                                Href="/pages/qa/enrolments/qa2",
+                                Roles = [  RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            }      
+                        }
                     }
                 }
             },
             new MenuSectionModel
             {
                 Title = "MANAGEMENT",
-                Roles = new[] { RoleNames.SystemSupport, RoleNames.ServiceDesk },
+                Roles = new[] { RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT },
                 SectionItems = new List<MenuSectionItemModel>
                 {
                     new()

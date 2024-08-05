@@ -5,7 +5,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.KeyValues.Commands.AddEdit;
 
-[RequestAuthorize(Policy = PolicyNames.SystemFunctionsWrite)]
+[RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsWrite)]
 public class AddEditKeyValueCommand : ICacheInvalidatorRequest<Result<int>>
 {
     [Description("Id")] public int Id { get; set; }

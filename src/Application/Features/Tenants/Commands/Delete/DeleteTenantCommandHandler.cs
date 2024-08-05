@@ -36,6 +36,6 @@ public class DeleteTenantCommandHandler : IRequestHandler<DeleteTenantCommand, R
         }
 
         tenantsService.Refresh();
-        return await Result<int>.SuccessAsync(items.Count);
+        return Result<int>.Success(items.Count);
     }
 }

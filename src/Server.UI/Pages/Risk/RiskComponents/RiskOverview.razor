@@ -1,0 +1,91 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Components.Stepper
+@using FluentValidation.Internal
+@using Humanizer
+
+@inherits CatsComponentBase
+@implements IValidatorStrategy<RiskDto>
+
+@if (Model is not null)
+{
+    <CatsMudStep Title="Risk Overview">
+        <MudGrid>
+            @* Is Relevant to Custody/Community *@
+            <MudItem xs="4">
+                Risk Details are relevant to
+            </MudItem>
+            <MudItem xs="8">
+                <div class="d-flex align-center gap-4">
+                    <MudCheckBox ReadOnly="ReadOnly" @bind-Value="@Model.IsRelevantToCustody" Label="@Model.GetMemberDescription(x => x.IsRelevantToCustody)" />
+                    <MudTextField ReadOnly Underline="false" For="@(() => Model.IsRelevantToCustody)" hidden />
+                </div>
+                <div class="d-flex align-center gap-4">
+                    <MudCheckBox ReadOnly="ReadOnly" @bind-Value="@Model.IsRelevantToCommunity" Label="@Model.GetMemberDescription(x => x.IsRelevantToCommunity)" />
+                    <MudTextField ReadOnly Underline="false" For="@(() => Model.IsRelevantToCommunity)" hidden />
+                </div>
+            </MudItem>
+
+            @if (HasOptionSelected)
+            {
+                <MudDivider Class="mt-6 mb-8"/>
+                <MudExpansionPanels MultiExpansion Elevation="@(ReadOnly ? 0 : 1)" Outlined="ReadOnly is false">
+                    @if (Model.IsRelevantToCustody)
+                    {
+                        <MudExpansionPanel Text="Risks in Custody" Expanded HideIcon="ReadOnly" Disabled="ReadOnly">
+                            <RiskDetail Model="Model.CustodyRiskDetail" />
+                        </MudExpansionPanel>
+                    }
+                    @if (Model.IsRelevantToCommunity)
+                    {
+                        <MudExpansionPanel Text="Risks in Community" Expanded HideIcon="ReadOnly" Disabled="ReadOnly">
+                            <RiskDetail Model="Model.CommunityRiskDetail" />
+                        </MudExpansionPanel>
+                    }
+                </MudExpansionPanels>
+            }
+        </MudGrid>
+    </CatsMudStep>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public required RiskDto Model { get; set; }
+
+    [CascadingParameter]
+    public MudForm? Form { get; set; }
+
+    public bool ReadOnly { get; private set; } = false;
+
+    protected override Task OnInitializedAsync()
+    {
+        if(Form is not null)
+        {
+            ReadOnly = Form.ReadOnly;
+        }
+
+        return base.OnInitializedAsync();
+    }
+
+    public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
+    {
+        options.IncludeProperties(x => x.CommunityRiskDetail.RiskToChildren);
+        options.IncludeProperties(x => x.CommunityRiskDetail.RiskToPublic);
+        options.IncludeProperties(x => x.CommunityRiskDetail.RiskToKnownAdult);
+        options.IncludeProperties(x => x.CommunityRiskDetail.RiskToStaff);
+        options.IncludeProperties(x => x.CommunityRiskDetail.RiskToOtherPrisoners);
+        options.IncludeProperties(x => x.CommunityRiskDetail.RiskToSelf);
+
+        options.IncludeProperties(x => x.CustodyRiskDetail.RiskToChildren);
+        options.IncludeProperties(x => x.CustodyRiskDetail.RiskToPublic);
+        options.IncludeProperties(x => x.CustodyRiskDetail.RiskToKnownAdult);
+        options.IncludeProperties(x => x.CustodyRiskDetail.RiskToStaff);
+        options.IncludeProperties(x => x.CustodyRiskDetail.RiskToOtherPrisoners);
+        options.IncludeProperties(x => x.CustodyRiskDetail.RiskToSelf);
+
+        options.IncludeProperties(x => x.IsRelevantToCommunity);
+        options.IncludeProperties(x => x.IsRelevantToCustody);
+    };
+
+    public bool HasOptionSelected => Model.IsRelevantToCommunity || Model.IsRelevantToCustody;
+}

@@ -50,19 +50,22 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     {
         var userId = currentUserService.UserId;
         var tenantId = currentUserService.TenantId;
-        foreach (var entry in context.ChangeTracker.Entries<IAuditable>())
+
+        var changes = context.ChangeTracker.Entries<IAuditable>().ToList();
+
+        foreach (var entry in changes)
         {
             switch (entry.State)
             {
                 case EntityState.Added:
                     entry.Entity.CreatedBy = userId;
                     entry.Entity.Created = dateTime.Now;
-                    if (entry.Entity is IMustHaveTenant mustTenant)
+                    if (entry.Entity is IMustHaveTenant mustTenant && string.IsNullOrEmpty(mustTenant.TenantId))
                     {
                         mustTenant.TenantId = tenantId!;
                     }
 
-                    if (entry.Entity is IMayHaveTenant mayTenant)
+                    if (entry.Entity is IMayHaveTenant mayTenant && string.IsNullOrEmpty(mayTenant.TenantId))
                     {
                         mayTenant.TenantId = tenantId;
                     }
@@ -103,7 +106,10 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         var tenantId = currentUserService.TenantId;
         context.ChangeTracker.DetectChanges();
         var temporaryAuditEntries = new List<AuditTrail>();
-        foreach (var entry in context.ChangeTracker.Entries<IAuditable>())
+
+        var changes = context.ChangeTracker.Entries<IAuditable>().ToList();
+
+        foreach (var entry in changes)
         {
             if (entry.State is EntityState.Detached or EntityState.Unchanged)
             {

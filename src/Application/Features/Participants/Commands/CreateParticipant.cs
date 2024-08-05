@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Candidates.DTOs;
 using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.SecurityConstants;
@@ -8,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 
 public static class CreateParticipant
 {
-    [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command: IRequest<Result<string>>
     {
         /// <summary>
@@ -64,17 +65,19 @@ public static class CreateParticipant
                 .MaximumLength(9)
                 .WithMessage("Invalid Cats Identifier")
                 .MustAsync(NotAlreadyExist)
-                .WithMessage("Participant is already enrolled");
+                .WithMessage("Participant is already enrolled")
+                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Identifier"));
 
             RuleFor(x => x.ReferralSource)
                 .NotNull()
-                .NotEmpty();
+                .NotEmpty()
+                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Referral source"));
 
             When(x => x.ReferralSource is "Other" or "Healthcare", () => {
                 RuleFor(x => x.ReferralComments)
-                    .NotNull()
                     .NotEmpty()
-                    .WithMessage("Comments are mandatory with this referral source");
+                    .WithMessage("Comments are mandatory with this referral source")
+                    .Matches(ValidationConstants.Notes).WithMessage(string.Format(ValidationConstants.NotesMessage, "Referral source comments"));
             });
 
  

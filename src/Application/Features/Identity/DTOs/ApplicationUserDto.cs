@@ -29,7 +29,7 @@ public class ApplicationUserDto
 
     [Description("Superior Name")] public string? SuperiorName { get; set; }
 
-    [Description("Assigned Roles")] public string[]? AssignedRoles { get; set; }
+    [Description("Assigned Roles")] public string[] AssignedRoles { get; set; } = [];
 
     [Description("Default Role")] public string? DefaultRole => AssignedRoles?.FirstOrDefault();
 

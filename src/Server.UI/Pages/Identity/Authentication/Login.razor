@@ -20,8 +20,8 @@
 <PageTitle>@title</PageTitle>
 
 <MudPaper Elevation="3" Class="pa-4">
-    <MudGrid Spacing="6" Justify="Justify.Center" Class="pa-4" >
-        <MudItem xs="6">
+    <MudGrid Spacing="6" Justify="Justify.Center" Class="pa-4">
+        <MudItem xs="12" md="6">
             <MudText Typo="Typo.h4" Align="Align.Center" Color="Color.Primary">WARNING</MudText>
             <MudText Typo="Typo.body1" Class="mt-2">
                 This system is owned by the Ministry of Justice and is protected by appropriate security protocols. Do not proceed if you are not an authorised user of this system and you should not access this system outside of England or Wales.
@@ -43,7 +43,7 @@
             </MudText>
 
         </MudItem>
-        <MudItem xs="6" Class="pa-4">
+        <MudItem xs="12" md="6" Class="pa-4">
             <div class="d-flex justify-center">
                 <MudImage Src="/img/cfo-burgundy-logo.svg" alt="logo" style="max-width: 128px;"/>
             </div>
@@ -181,10 +181,10 @@
 
     public sealed class InputModel
     {
-        [Required(ErrorMessage = "User name cannot be empty")]
+        [Required(ErrorMessage = "User name is required")]
         [StringLength(100, ErrorMessage = "Name length can't be more than 100.")]
         public string UserName { get; set; } = "";
-        [Required(ErrorMessage = "Password cannot be empty")]
+        [Required(ErrorMessage = "Password is required")]
         [StringLength(30, ErrorMessage = "Password must be at least 6 characters long.", MinimumLength = 6)]
         public string Password { get; set; } = "";
     }

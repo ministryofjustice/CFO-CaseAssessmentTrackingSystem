@@ -18,7 +18,7 @@ namespace Cfo.Cats.Application.Features.Assessments.Commands;
 
 public static class BeginAssessment
 {
-    [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command : ICacheInvalidatorRequest<Result<Guid>>
     {
         public required string ParticipantId { get; set; }
@@ -41,6 +41,8 @@ public static class BeginAssessment
 
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
         {
+            // We do nothing async in this method. Await the complete task.
+            await Task.CompletedTask;
             Assessment assessment = new Assessment()
             {
                 Id = Guid.NewGuid(),
@@ -70,7 +72,7 @@ public static class BeginAssessment
             }
 
             _unitOfWork.DbContext.ParticipantAssessments.Add(pa);
-            return await Result<Guid>.SuccessAsync(assessment.Id);
+            return Result<Guid>.Success(assessment.Id);
         }
     }
 

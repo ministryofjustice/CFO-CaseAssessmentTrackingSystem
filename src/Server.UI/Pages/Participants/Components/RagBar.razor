@@ -3,7 +3,7 @@
 
 @inherits CatsComponentBase
 
-<MudPaper Class="ma-2 d-flex justify-space-between flex-wrap" Elevation="1" Outlined="true">
+
     @if (_model is not null)
     {
         foreach (var pathway in _model.PathwayScore)
@@ -11,7 +11,7 @@
             <RagComponent Pathway="pathway"></RagComponent>
         }
     }
-</MudPaper>
+
 
 @code {
 
@@ -21,17 +21,21 @@
     [EditorRequired]
     public string ParticipantId { get; set; } = default!;
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
-        var query = new GetAssessmentScores.Query()
+        if (!string.IsNullOrEmpty(ParticipantId))
         {
-            ParticipantId = ParticipantId
-        };
-        var result = await GetNewMediator().Send(query);
-        if (result.Succeeded)
-        {
-            _model = result.Data!.MaxBy(pa => pa.CreatedDate);
+            var query = new GetAssessmentScores.Query()
+                {
+                    ParticipantId = ParticipantId
+                };
+
+            var result = await GetNewMediator().Send(query);
+
+            if (result.Succeeded && result.Data != null)
+            {
+                _model = result.Data.MaxBy(pa => pa.CreatedDate);
+            }
         }
     }
-
 }

@@ -1,9 +1,4 @@
 ﻿@page "/user/profile"
-@using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode
-@using Size = SixLabors.ImageSharp.Size
-@using SixLabors.ImageSharp.Processing
-@using SixLabors.ImageSharp
-@using SixLabors.ImageSharp.Formats.Png
 @using Cfo.Cats.Server.UI.Services.JsInterop
 @using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Domain.Identity
@@ -13,8 +8,6 @@
 @inject IValidationService Validator
 @inject IStringLocalizer<Profile> L
 @inject IJSRuntime Js
-@inject IState<UserProfileState> UserProfileState
-@inject IDispatcher Dispatcher
 @inject IUploadService UploadService
 @inject IIdentityService IdentityService
 
@@ -23,14 +16,13 @@
 
 <ErrorBoundary>
     <ChildContent>
-        @if (Model is null || IsLoading)
+        @if (Model is null)
         {
             <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7"/>
         }
         else
         {
-            <MudTabs Outlined="true" Position="Position.Top" Rounded="true" Border="true" Elevation="6" ActivePanelIndexChanged="ActivePanelIndexChanged"
-                     ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6">
+            <MudTabs Outlined="true" Position="Position.Top" Rounded="true" Border="true" Elevation="6" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6">
                 <MudTabPanel Text="@L["Profile"]">
                     <MudForm Model="@Model" @ref="@form" Validation="@(Validator.ValidateValue(Model))" Style="display: flex; align-content: center;  align-items: center; flex-direction: column;">
                         <MudGrid Justify="Justify.Center" Style="max-width:600px;display:flex;">
@@ -70,16 +62,6 @@
                                             </div>
                                         </MudElement>
                                     }
-                                    <MudTooltip Text="@L["Click upload a image"]">
-                                        <MudFileUpload T="IBrowserFile" Accept=".jpg, .jpeg, .png, .webp" FilesChanged="UploadPhoto" Style="margin-top:-10px;margin-left:-15px">
-                                            <ActivatorContent>
-                                                <MudIconButton HtmlTag="label"
-                                                               Icon="@Icons.Material.Filled.PhotoCamera">
-                                                </MudIconButton>
-                                            </ActivatorContent>
-                                        </MudFileUpload>
-                                    </MudTooltip>
-
                                 </div>
                             </MudItem>
                             <MudItem sm="6" xs="12">
@@ -162,11 +144,6 @@
                         </MudGrid>
                     </MudForm>
                 </MudTabPanel>
-                <MudTabPanel Text="@L["Org Chart"]">
-                    <div class="chart-container"
-                         style="height: calc(100vh - 265px);">
-                    </div>
-                </MudTabPanel>
             </MudTabs>
         }
     </ChildContent>
@@ -177,9 +154,9 @@
 
 @code{
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
-    
+
     private UserManager<ApplicationUser> userManager = default!;
-    
+
     public string Title { get; set; } = "Profile";
 
     private MudForm? form;
@@ -187,98 +164,19 @@
     private bool submitting;
 
     private ChangePasswordModel changePassword { get; } = new();
-    private readonly List<OrgItem> orgData = new();
 
-    public string Id => Guid.NewGuid().ToString();
-    private bool IsLoading => UserProfileState.Value.IsLoading;
-    private UserProfile Model => UserProfileState.Value.UserProfile!;
+    private UserProfile? Model { get; set; }
 
-
-    private async void ActivePanelIndexChanged(int index)
-    {
-        if (index == 2)
-        {
-            await LoadOrgData();
-        }
-    }
-
-    private async Task LoadOrgData()
-    {
-        var currerntuserName = (await AuthState).User.GetUserName();
-        var list = await userManager.Users.Include(x => x.UserRoles).ThenInclude(x => x.Role).Include(x => x.Superior).ToListAsync();
-
-        foreach (var item in list)
-        {
-            var roles = await userManager.GetRolesAsync(item);
-            var count = await userManager.Users.Where(x => x.SuperiorId == item.Id).CountAsync();
-            var orgitem = new OrgItem
-            {
-                Id = item.Id,
-                Name = item.DisplayName ?? item.UserName,
-                Area = item.TenantName,
-                ProfileUrl = item.ProfilePictureDataUrl,
-                ImageUrl = item.ProfilePictureDataUrl
-            };
-            if (currerntuserName == item.UserName)
-            {
-                orgitem.IsLoggedUser = true;
-            }
-
-            orgitem.Size = "";
-            orgitem.Tags = item.PhoneNumber ?? item.Email;
-            if (roles.Count > 0)
-            {
-                orgitem.PositionName = string.Join(',', roles);
-            }
-
-            orgitem.ParentId = item.SuperiorId;
-
-            orgitem.DirectSubordinates = count;
-            orgData.Add(orgitem);
-        }
-
-        await new OrgChart(Js).Create(orgData);
-    }
 
     protected override async Task OnInitializedAsync()
     {
         userManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
+        var state = await AuthState;
+
+        var user = state.User!;
+        Model = user.GetUserProfileFromClaim();
+
         await base.OnInitializedAsync();
-        UserProfileState.StateChanged += StateOnStateChanged;
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        base.Dispose(disposing);
-        UserProfileState.StateChanged -= StateOnStateChanged;
-    }
-
-    private void StateOnStateChanged(object? sender, EventArgs args)
-    {
-        InvokeAsync(StateHasChanged);
-    }
-
-    private async Task UploadPhoto(IBrowserFile file)
-    {
-        var filestream = file.OpenReadStream(GlobalVariable.MaxAllowedSize);
-        var imgstream = new MemoryStream();
-        await filestream.CopyToAsync(imgstream);
-        imgstream.Position = 0;
-        using (var outStream = new MemoryStream())
-        {
-            using (var image = Image.Load(imgstream))
-            {
-                image.Mutate(i => i.Resize(new ResizeOptions { Mode = ResizeMode.Crop, Size = new Size(128, 128) }));
-                image.Save(outStream, PngFormat.Instance);
-                var result = await UploadService.UploadAsync($"users/{Model.UserId}", new UploadRequest(Guid.NewGuid() + ".png", UploadType.ProfilePicture, outStream.ToArray()));
-                Model.ProfilePictureDataUrl = result;
-                var user = await userManager.Users.FirstOrDefaultAsync (u => u.Id == Model.UserId!);
-                user!.ProfilePictureDataUrl = Model.ProfilePictureDataUrl;
-                await userManager.UpdateAsync(user);
-                Snackbar.Add(L["The avatar has been updated"], Severity.Info);
-                Dispatcher.Dispatch(new UserProfileUpdateAction { UserProfile = Model });
-            }
-        }
     }
 
     private async Task Submit()
@@ -290,13 +188,12 @@
             if (form.IsValid)
             {
                 var state = await AuthState;
-                var user = await userManager.Users.FirstOrDefaultAsync (u => u.Id == Model.UserId!);
-                user!.PhoneNumber = Model.PhoneNumber;
+                var user = await userManager.Users.FirstOrDefaultAsync (u => u.Id == Model!.UserId!);
+                user!.PhoneNumber = Model!.PhoneNumber;
                 user.DisplayName = Model.DisplayName;
                 user.ProfilePictureDataUrl = Model.ProfilePictureDataUrl;
                 await userManager.UpdateAsync(user);
                 Snackbar.Add($"{ConstantString.UpdateSuccess}", Severity.Info);
-                Dispatcher.Dispatch(new UserProfileUpdateAction { UserProfile = Model });
             }
         }
         finally
@@ -313,7 +210,7 @@
             await passwordForm!.Validate();
             if (passwordForm!.IsValid)
             {
-                var user = await userManager.Users.FirstOrDefaultAsync (u => u.Id == Model.UserId!);
+                var user = await userManager.Users.FirstOrDefaultAsync (u => u.Id == Model!.UserId!);
                 var result = await userManager.ChangePasswordAsync(user!, changePassword.CurrentPassword, changePassword.NewPassword);
                 if (result.Succeeded)
                 {

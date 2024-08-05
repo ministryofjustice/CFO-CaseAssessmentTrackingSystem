@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Assessments.Caching;
 using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -13,7 +14,7 @@ public static class GetAssessment
     /// Returns an assessment, either the one specified by the AssessmentId or
     /// the latest on if that is not specified
     /// </summary>
-    [RequestAuthorize(Policy = PolicyNames.AllowEnrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Query : IRequest<Result<Assessment>>
     {
         public required string ParticipantId { get; set; }
@@ -52,7 +53,7 @@ public static class GetAssessment
             {
                 TypeNameHandling = TypeNameHandling.Auto
             })!;
-            return await Result<Assessment>.SuccessAsync(assessment);
+            return Result<Assessment>.Success(assessment);
         }
     }
 
@@ -60,12 +61,16 @@ public static class GetAssessment
     {
         public Validator()
         {
+
             RuleFor(x => x.ParticipantId)
                 .NotNull();
 
             RuleFor(x => x.ParticipantId)
                 .MinimumLength(9)
-                .MaximumLength(9);
+                .MaximumLength(9)
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+;
         }
     }
 }

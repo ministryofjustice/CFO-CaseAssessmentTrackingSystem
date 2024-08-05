@@ -1,0 +1,153 @@
+﻿@using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Server.UI.Components.Stepper
+@using Cfo.Cats.Server.UI.Pages.Risk.RiskComponents
+@using FluentValidation.Internal
+
+@inherits CatsComponentBase
+
+@page "/pages/participants/{Upci}/risk/{RiskId:guid}"
+
+@if(_model is not null)
+{
+    <CatsMudStepper @ref="stepper" Color="Color.Primary" Variant="Variant.Filled"
+                    MobileView="false" HeaderBadgeView="HeaderBadgeView.GreyOutIncomplete" HeaderTextView="HeaderTextView.All"
+                    ActiveStepChanged="@OnStepChange" OnChangeAsync="OnChange" ShowSkipButton="false" Linear>
+        <ChildContent>
+            <MudCard Class="px-8 pt-4 pb-8">
+                <MudForm @ref="form" Model="_model" Validation="Validator.ValidateValue(_model)">
+                    <CascadingValue Value="form">
+                        <LicenseConditions Model="_model" />
+                        <RiskOverview Model="_model" />
+                        <Mappa Model="_model" />
+                        <SpecificRisk Model="_model" />
+                        <Recommendations Model="_model" />
+                        <Restrictions Model="_model" />
+                        <AdditionalInformation Model="_model" />
+                        <Declaration Model="_model"/>
+                        <StatusResultStep Processing="@Processing" SubmissionSuccess="@SubmissionSuccess" SuccessText="Risk Submitted" FailureText="Risk failed to submit" Upci="@Upci" />
+                    </CascadingValue>
+                </MudForm>
+            </MudCard>
+        </ChildContent>
+    </CatsMudStepper>
+}
+
+@code {
+    private MudForm? form;
+    private RiskDto? _model;
+    private CatsMudStepper stepper { get; set; } = new();
+    public bool Processing { get; set; } = false;
+    public bool SubmissionSuccess { get; set; } = false;
+
+    [Parameter]
+    public required string Upci { get; set; }
+
+    [Parameter]
+    public required Guid RiskId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await GetNewMediator().Send(new GetParticipantRisk.Query()
+            {
+                ParticipantId = Upci,
+                RiskId = RiskId
+            });
+
+            if (result.Succeeded && result.Data is not null)
+            {
+                _model = result.Data;
+            }
+
+        }
+        finally
+        {
+
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    private async void OnStepChange(int step)
+    {
+        if(stepper.IsResultStep is false)
+        {
+            form!.ResetValidation();
+            return;
+        }
+
+        await form!.Validate();
+
+        if(form.IsValid)
+        {
+            await Submit();
+        }
+    }
+
+    private async Task Submit()
+    {
+        if(_model is null)
+        {
+            return;
+        }
+
+        bool isSuccess = false;
+
+        var command = new SaveRisk.Command()
+        {
+            RiskId = RiskId,
+            Risk = _model
+        };
+
+        try
+        {
+            Processing = true;
+            var result = await GetNewMediator().Send(command);
+            isSuccess = result.Succeeded;
+        }
+        finally
+        {
+            Processing = false;
+            SubmissionSuccess = isSuccess;
+
+            StateHasChanged();
+        }
+
+    }
+
+    private async Task<bool> OnChange(StepChangeDirection direction, int index)
+    {
+        bool isValid = false;
+
+        if(_model is null)
+        {
+            return isValid;
+        }
+
+        if (direction is StepChangeDirection.Backward)
+        {
+            return true;
+        }
+
+        var content = stepper.ActiveStep.ChildContent;
+
+        if(content is null)
+        {
+            return isValid;
+        }
+
+        if(content.Target is IValidatorStrategy<RiskDto> partial)
+        {
+            var validator = new RiskDto.Validator();
+            var result = await validator.ValidateAsync(_model, partial.Strategy);
+            await form!.Validate();
+            isValid = result.IsValid;
+        }
+
+        return isValid;
+    }
+
+}

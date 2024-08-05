@@ -1,0 +1,234 @@
+@page "/pages/qa/enrolments/qa1/{id:guid}"
+
+@using Cfo.Cats.Application.Features.Documents.Queries
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Application.Features.QualityAssurance.Commands
+@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
+@using Cfo.Cats.Application.Features.QualityAssurance.Queries
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Domain.Common.Enums
+
+@inherits CatsComponentBase
+
+@attribute [Authorize(Policy = SecurityPolicies.Qa1)]
+
+<style>
+    .document-container {
+        width: 90%;
+        height: calc(100vh - 150px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .full-size-object {
+        width: 100%;
+        height: 100%;
+    }
+
+    .mud-radio {
+        display: block;
+        margin-bottom: 0.5rem; 
+    }
+    
+</style>
+
+
+
+@if (_participantDto is not null && _participantDto.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus)
+{
+    
+    @if (_queueEntry!.IsAccepted)
+    {
+        <MudAlert Severity="Severity.Warning">
+            This entry has already been processed
+        </MudAlert>
+    }
+
+    <MudGrid Style="height: 100vh; width: 100vw;">
+        <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
+            <MudText Typo="Typo.h2">
+                Participant
+            </MudText>
+
+            <MudList T="string">
+                <MudListItem T="string" Text="@_participantDto.Id"></MudListItem>
+                <MudListItem T="string" Text="@_participantDto.FirstName"></MudListItem>
+                <MudListItem T="string" Text="@_participantDto.LastName"></MudListItem>
+                <MudListItem T="string" Text="@_participantDto.DateOfBirth.ToString()"></MudListItem>
+                <MudListItem T="string" Text="@_participantDto.CurrentLocation.Name"></MudListItem>
+            </MudList>
+
+            <MudRadioGroup T="Guid" Class="mud-radio" ValueChanged="OnSelectedDocumentChanged">
+                @foreach (var consent in _participantDto.Consents)
+                {
+                    <MudRadio T="Guid" Color="Color.Primary" Value="@consent.DocumentId!.Value">
+                        @consent.FileName
+                    </MudRadio>
+                }
+
+                @if (_participantDto.RightToWorks is [])
+                {
+                    <MudRadio T="Guid" Color="Color.Primary" Disabled="true">
+                        No right to work provided
+                    </MudRadio>
+                }
+
+                @foreach (var rtw in _participantDto.RightToWorks)
+                {
+                    <MudRadio T="Guid" Color="Color.Primary" Value="@rtw.DocumentId!.Value">
+                        @rtw.FileName
+                    </MudRadio>
+                }
+            </MudRadioGroup>
+
+            @if (_queueEntry.IsCompleted == false)
+            {
+                <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
+                    <MudItem xs="12">
+                        <MudRadioGroup T="bool?" @bind-Value="Command.Accept" Required="true">
+                            <MudRadio T="bool?" Value="true" Color="Color.Primary">
+                                Accept
+                            </MudRadio>
+                            <MudRadio T="bool?" Value="false" Color="Color.Secondary">
+                                Return
+                            </MudRadio>
+                        </MudRadioGroup>    
+                    </MudItem>
+                    
+                    <MudTextField T="string" Label="Message" For="(() => Command.Message)" />
+                </MudForm>
+                <MudContainer Class="d-flex px-0 pt-8">
+                    <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
+                </MudContainer>
+   
+            }
+            
+
+        </MudItem>
+        <MudItem xs="8" Style="height: 100%; width: 100%;">
+            <MudPaper Class="document-container">
+                @if (fileBase64 != null && extension!.Equals("pdf", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    <object data="data:application/pdf;base64,@fileBase64" type="application/pdf" class="full-size-object">
+                        <p>PDF cannot be displayed.</p>
+                    </object>
+                }
+                else
+                {
+                    <MudText Typo="Typo.caption">
+                        Please select a file to display
+                    </MudText>
+                }
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+}
+
+
+@code {
+
+    private MudForm? _form;
+    private EnrolmentQueueEntryDto? _queueEntry = null;
+    private ParticipantDto? _participantDto = null;
+    
+    [Parameter]
+    public Guid Id { get; set; }
+
+    [CascadingParameter]
+    public UserProfile? UserProfile { get; set; } = null!;
+
+    protected Guid SelectedDocument { get; set; } = Guid.Empty;
+
+    private string? fileBase64;
+    private string? extension;
+
+    private SubmitQa1Response.Command Command { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_participantDto is null)
+        {
+            var result = await GetNewMediator().Send(new GetQa1EntryById.Query()
+            {
+                Id = Id,
+                CurrentUser = UserProfile
+            });
+
+            if (result.Succeeded)
+            {
+                _queueEntry = result.Data!;
+                _participantDto = await GetNewMediator().Send(new GetParticipantById.Query()
+                {
+                    Id = _queueEntry.ParticipantId
+                });
+
+                Command = new SubmitQa1Response.Command()
+                {
+                    QueueEntryId = Id
+                };
+            }
+            StateHasChanged();    
+        }
+    }
+
+    protected async Task SubmitToQa()
+    {
+        await _form!.Validate().ConfigureAwait(false);
+        if (_form.IsValid)
+        {
+            var result = await GetNewMediator().Send(Command);
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add("Participant submitted to QA2", Severity.Info);
+                Navigation.NavigateTo("/pages/qa/enrolments/qa1");
+            }
+            else
+            {
+                ShowActionFailure("Failed to submit", result);
+            }
+        }
+       
+    }
+    
+    private void ShowActionFailure(string title, IResult result)
+    {
+        Snackbar.Add(
+        @<div>
+            <h2>@title</h2>
+            <ul>
+                @foreach (var e in result.Errors)
+                {
+                    <li>@e</li>
+                }
+            </ul>
+        </div>
+        , Severity.Error, options => {
+            options.RequireInteraction = true;
+            options.SnackbarVariant = Variant.Text;
+        } );
+    }
+
+    private async Task OnSelectedDocumentChanged(Guid documentId)
+    {
+        if (documentId != Guid.Empty)
+        {
+            var query = new GetDocumentById.Query()
+            {
+                Id = documentId
+            };
+
+            var result = await GetNewMediator().Send(query);
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await result.FileStream.CopyToAsync(memoryStream);
+                var bytes = memoryStream.ToArray();
+                fileBase64 = Convert.ToBase64String(bytes);
+            }
+            extension = result.FileExtension;
+        }
+    }
+}

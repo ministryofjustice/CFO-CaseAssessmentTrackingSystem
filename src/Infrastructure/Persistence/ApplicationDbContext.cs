@@ -5,6 +5,7 @@ using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Identity;
+using Cfo.Cats.Infrastructure.Persistence.Configurations.Enrolments;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 
 namespace Cfo.Cats.Infrastructure.Persistence;
@@ -17,7 +18,7 @@ public class ApplicationDbContext
         string,
         ApplicationUserClaim,
         ApplicationUserRole,
-        ApplicationUserLogin,
+        UserLogin,
         ApplicationRoleClaim,
         ApplicationUserToken
     >,
@@ -36,6 +37,8 @@ public class ApplicationDbContext
     public DbSet<Document> Documents => Set<Document>();
     public DbSet<Participant> Participants => Set<Participant>();
 
+    public DbSet<Risk> Risks => Set<Risk>();
+
     public DbSet<ParticipantAssessment> ParticipantAssessments => Set<ParticipantAssessment>();
     
     public DbSet<KeyValue> KeyValues => Set<KeyValue>();
@@ -46,14 +49,19 @@ public class ApplicationDbContext
     public DbSet<Location> Locations => Set<Location>();
 
     public DbSet<Timeline> Timelines => Set<Timeline>();
+    public DbSet<EnrolmentPqaQueueEntry> EnrolmentPqaQueue => Set<EnrolmentPqaQueueEntry>();
+    public DbSet<EnrolmentQa1QueueEntry> EnrolmentQa1Queue => Set<EnrolmentQa1QueueEntry>();
+    public DbSet<EnrolmentQa2QueueEntry> EnrolmentQa2Queue => Set<EnrolmentQa2QueueEntry>();
+    public DbSet<EnrolmentEscalationQueueEntry> EnrolmentEscalationQueue => Set<EnrolmentEscalationQueueEntry>();
 
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
-
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+
         builder.ApplyGlobalFilters<ISoftDelete>(s => s.Deleted == null);
     }
 
@@ -62,3 +70,4 @@ public class ApplicationDbContext
         if (!optionsBuilder.IsConfigured) { }
     }
 }
+
