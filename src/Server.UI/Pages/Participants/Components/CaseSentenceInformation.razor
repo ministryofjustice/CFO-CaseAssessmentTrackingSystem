@@ -8,6 +8,11 @@
                         <CardHeaderContent>
                             Custody
                         </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudTooltip Text="Expand">
+                                <MudIconButton OnClick="Expand" Icon="@Icons.Material.Filled.OpenInNew" />
+                            </MudTooltip>
+                        </CardHeaderActions>
                         <CardHeaderAvatar>
                             <MudAvatar Color="Color.Primary">
                                 <MudIcon Icon="@Icons.Material.Filled.Person" />
@@ -27,6 +32,11 @@
                         <CardHeaderContent>
                             Sentence
                         </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudTooltip Text="Expand">
+                                <MudIconButton OnClick="Expand" Icon="@Icons.Material.Filled.OpenInNew" />
+                            </MudTooltip>
+                        </CardHeaderActions>
                     </MudCardHeader>
                     <MudCardContent>
                         <MudGrid>
@@ -70,6 +80,11 @@
                         <CardHeaderContent>
                             Community
                         </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudTooltip Text="Expand">
+                                <MudIconButton OnClick="Expand" Icon="@Icons.Material.Filled.OpenInNew" />
+                            </MudTooltip>
+                        </CardHeaderActions>
                         <CardHeaderAvatar>
                             <MudAvatar Color="Color.Primary">
                                 <MudIcon Icon="@Icons.Material.Filled.Person" />
@@ -92,6 +107,11 @@
                         <CardHeaderContent>
                             Supervising Officer / Offender Manager
                         </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudTooltip Text="Expand">
+                                <MudIconButton OnClick="Expand" Icon="@Icons.Material.Filled.OpenInNew" />
+                            </MudTooltip>
+                        </CardHeaderActions>
                     </MudCardHeader>
                     <MudCardContent>
                         <MudTextField Value="Model.OffenderManager.Name" Label="Name" />
@@ -170,6 +190,12 @@
             )
         );
 
-       base.OnInitialized();
+        base.OnInitialized();
     }
+
+    private async Task Expand()
+    {
+        await DialogService.ShowMessageBox("Expanded Information", "More information...");
+    }
+
 }
