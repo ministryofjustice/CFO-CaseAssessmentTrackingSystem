@@ -99,7 +99,7 @@
                     </MudForm>
                 </MudTabPanel>
                 <MudTabPanel Text="@L["Change Password"]">
-                    <MudForm id="passwordChangeLogoutForm" Model="@changePassword" @ref="@passwordForm" Validation="@(Validator.ValidateValue(changePassword))" Style="display: flex; align-content: center;  align-items: center; flex-direction: column;">
+                    <MudForm Model="@changePassword" @ref="@passwordForm" Validation="@(Validator.ValidateValue(changePassword))" Style="display: flex; align-content: center;  align-items: center; flex-direction: column;">
                         <MudGrid Justify="Justify.Center" Style="max-width:300px">
                             <AntiforgeryToken />
                             <MudItem sm="12" xs="12">
@@ -153,23 +153,11 @@
         <CustomError Exception="context"></CustomError>
     </ErrorContent>
 </ErrorBoundary>
-<script>
-    function LogoutAfterChangePassword(uriValue) {
-        let passwordForm = document.getElementById("passwordChangeLogoutForm");
-
-        document.getElementById("ReturnUrl").value = "/";
-
-        passwordForm.action = uriValue;
-        passwordForm.method = "post";
-
-        passwordForm.submit();
-    }
-
-</script>
 @code{
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
 
     private UserManager<ApplicationUser> userManager = default!;
+    private SignInManager<ApplicationUser> signinManager = default!;
 
     public string Title { get; set; } = "Profile";
 
@@ -185,6 +173,7 @@
     protected override async Task OnInitializedAsync()
     {
         userManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
+        signinManager = ScopedServices.GetRequiredService<SignInManager<ApplicationUser>>();
         var state = await AuthState;
 
         var user = state.User!;
@@ -230,10 +219,7 @@
                 {
                     Snackbar.Add($"{L["Password changed successfully... Logging out"]}", Severity.Info);
 
-                    //delay for user to read the message, before logging out
-                    await Task.Delay(3000).ContinueWith(_ =>
-                         Js.InvokeVoidAsync("LogoutAfterChangePassword", @IdentityComponentsEndpointRouteBuilderExtensions.Logout)
-                    );
+                    Navigation.NavigateTo(@IdentityComponentsEndpointRouteBuilderExtensions.Logout, true);
 
                 }
                 else
