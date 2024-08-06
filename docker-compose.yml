@@ -17,7 +17,7 @@ services:
       SA_PASSWORD: "YourStrong@Passw0rd"
       TZ: "Europe/London"
     ports:
-      - "65055:1433"
+      - "1433:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
 
