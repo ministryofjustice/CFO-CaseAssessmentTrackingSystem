@@ -18,15 +18,10 @@ public class ApplicationUserDtoValidator : AbstractValidator<ApplicationUserDto>
             .NotEmpty().WithMessage(_localizer["Tenant name is required"])
             .Matches(ValidationConstants.TenantId).WithMessage(_localizer[ValidationConstants.TenantIdMessage]);
 
-        RuleFor(x => x.ProviderId)
-            .MaximumLength(50).WithMessage(_localizer["Provider must be less than 50 characters"])
-            .NotEmpty().WithMessage(_localizer["Provider is required"])
-            .Matches(ValidationConstants.AlphaNumeric).WithMessage(_localizer[string.Format(ValidationConstants.AlphaNumericMessage, "Provider Id")]);
-
         RuleFor(x => x.DisplayName)
             .MaximumLength(100).WithMessage(_localizer["Display Name is required and must be less than or equal to 100 characters"])
             .NotEmpty().WithMessage(_localizer["Display Name is required"])
-            .Matches(ValidationConstants.AlphaNumeric).WithMessage(_localizer[string.Format(ValidationConstants.AlphaNumericMessage, "Display Name")]);
+            .Matches(ValidationConstants.NameCompliantWithDMS).WithMessage(_localizer[string.Format(ValidationConstants.NameCompliantWithDMSMessage, "Display Name")]);
 
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage(_localizer["E-mail is required"])
@@ -58,14 +53,16 @@ public class ApplicationUserDtoValidator : AbstractValidator<ApplicationUserDto>
 
         RuleFor(x => x.PhoneNumber)
             .MaximumLength(20).WithMessage(_localizer["Mobile number must be less than or equal to 20 digits"])
-            .Matches(ValidationConstants.AlphaNumeric).WithMessage(_localizer[string.Format(ValidationConstants.AlphaNumericMessage, "Mobile number")]);
+            .Matches(ValidationConstants.Numbers).WithMessage(_localizer[string.Format(ValidationConstants.NumbersMessage, "Mobile number")]);
 
         RuleFor(x => x.MemorablePlace)
             .MaximumLength(50).WithMessage(_localizer["Memorable place must be less than or equal to 50 characters"])
-            .Matches(ValidationConstants.AlphaNumeric).WithMessage(_localizer[string.Format(ValidationConstants.AlphaNumericMessage, "Memorable place")]);
+            .Matches(ValidationConstants.LettersSpacesCommaApostorphe).WithMessage(_localizer[string.Format(ValidationConstants.LettersSpacesCommaApostropheMessage, "Memorable place")]);
 
         RuleFor(x => x.MemorableDate)
-            .NotEmpty().WithMessage(_localizer["Memorable date is required"]);
+            .NotEmpty().WithMessage(_localizer["Memorable date is required"])
+            .MaximumLength(50).WithMessage(_localizer["Memorable place must be less than or equal to 50 characters"])
+            .Matches(ValidationConstants.AlphabetsDigitsSpaceSlashHyphenDot).WithMessage(_localizer[string.Format(ValidationConstants.AlphabetsDigitsSpaceSlashHyphenDotMessage, "Memorable date")]); ;
 
         RuleForEach(x => x.Notes).ChildRules(notes =>
         {
