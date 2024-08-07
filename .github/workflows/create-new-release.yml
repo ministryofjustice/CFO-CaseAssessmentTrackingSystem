@@ -48,7 +48,7 @@ jobs:
 
       # Run EF migrations
       - name: Run EF migrations
-        run: dotnet ef migrations script --no-build --project src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj --startup-project src/Server.UI/Server.UI.csproj --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --idempotent -o ./publish/Migration.sql
+        run: dotnet ef migrations script --no-build --configuration Release --project src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj --startup-project src/Server.UI/Server.UI.csproj --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --idempotent -o ./publish/Migration.sql
 
       # Compress the build artifacts into a ZIP file
       - name: Compress build artifacts
