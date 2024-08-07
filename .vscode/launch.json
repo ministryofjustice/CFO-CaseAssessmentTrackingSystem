@@ -22,17 +22,6 @@
             }
         },
         {
-            "name": "Launch Build Console App",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "Build (Build Project)",
-            "program": "${workspaceFolder}/build/bin/Debug/net8.0/Build.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/build",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
             "name": ".net Core Attach",
             "type": "coreclr",
             "request": "attach",
