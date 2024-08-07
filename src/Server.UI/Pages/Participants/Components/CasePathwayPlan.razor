@@ -19,12 +19,12 @@
                     <ChildContent>
                         <div class="d-flex gap-2 align-center">
                             <MudText Typo="Typo.subtitle2">@objective.Title</MudText>
-                            <MudText>(@objective.Tasks.Count(x => x.Completed)/@objective.Tasks.Length)</MudText>
-                            @if(objective.Tasks.Any(x => IsOverdue(x.DueDate)))
+                            <MudText>(@objective.Tasks.Count(x => x.Completed is not null)/@objective.Tasks.Length)</MudText>
+                            @if(objective.Tasks.Any(x => IsOverdue(x)))
                             {
                                 <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.AccessTime"/>
                             }
-                            else if (objective.Tasks.Any(x => IsDueSoon(x.DueDate)))
+                            else if (objective.Tasks.Any(x => IsDueSoon(x)))
                             {
                                 <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
                             }
@@ -40,20 +40,30 @@
                                             <MudText>
                                                 @task.Title
                                             </MudText>
-                                            @if (IsOverdue(task.DueDate))
+                                            @if (IsNotComplete(task))
                                             {
-                                                <MudTooltip Text="Due date passed">
-                                                    <MudChip Text="Overdue" Size="Size.Small" Color="Color.Error" Icon="@Icons.Material.Filled.AccessTime" />
-                                                </MudTooltip>
-                                            }
-                                            else if (IsDueSoon(task.DueDate))
-                                            {
-                                                <MudTooltip Text="Due in under a week">
-                                                    <MudChip Text="Due soon" Size="Size.Small" Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
-                                                </MudTooltip>
+                                                @if (IsOverdue(task))
+                                                {
+                                                    <MudTooltip Text="Due date passed">
+                                                        <MudChip Text="Overdue" Size="Size.Small" Color="Color.Error" Icon="@Icons.Material.Filled.AccessTime" />
+                                                    </MudTooltip>
+                                                }
+                                                else if (IsDueSoon(task))
+                                                {
+                                                    <MudTooltip Text="Due in under a week">
+                                                        <MudChip Text="Due soon" Size="Size.Small" Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
+                                                    </MudTooltip>
+                                                }
                                             }
                                         </div>
-                                        <MudText Typo="Typo.body2">Due @($"{task.DueDate.Humanize()} ({task.DueDate.ToShortDateString()})")</MudText>
+                                        @if(task.Completed is null)
+                                        {
+                                            <MudText Typo="Typo.body2">Due @($"{task.DueDate.Humanize()} ({task.DueDate.ToShortDateString()})")</MudText>
+                                        }
+                                        else
+                                        {
+                                            <MudText Typo="Typo.body2">Completed @task.Completed.Humanize()</MudText>
+                                        }
                                     </div>
                                     <div class="mr-4">
                                         <MudTooltip Text="Edit" Style="height: fit-content">
@@ -104,7 +114,7 @@
                 {
                     Title = "Managing finances and debt",
                     DueDate = today.AddDays(14),
-                    Completed = true
+                    Completed = DateTime.UtcNow.AddMinutes(-30)
                 }
             }),
             new Objective("Identification", new ObjectiveTask[]
@@ -125,7 +135,7 @@
             })
         };
 
-        SelectedTasks = Model.SelectMany(objective => objective.Tasks.Where(task => task.Completed))
+        SelectedTasks = Model.SelectMany(objective => objective.Tasks.Where(task => task.Completed is not null))
             .ToList()
             .AsReadOnly();
 
@@ -134,17 +144,22 @@
 
     public void Select(IReadOnlyCollection<ObjectiveTask>? tasks)
     {
-        foreach(var task in SelectedTasks)
+        if (tasks is null)
         {
-            task.Completed = false;
+            return;
         }
 
-        foreach(var task in tasks ?? [])
+        foreach(var task in SelectedTasks.Except(tasks))
         {
-            task.Completed = true;
+            task.Completed = null;
         }
 
-        SelectedTasks = tasks ?? [];
+        foreach (var task in tasks.Where(IsNotComplete))
+        {
+            task.Completed = DateTime.UtcNow;
+        }
+
+        SelectedTasks = tasks;
     }
 
     public async Task Edit(ObjectiveTask task)
@@ -152,14 +167,15 @@
         await DialogService.ShowMessageBox("Edit Task", "Editing...");
     }
 
-    public bool IsOverdue(DateOnly DueDate) => DateOnly.FromDateTime(DateTime.UtcNow) > DueDate;
-    public bool IsDueSoon(DateOnly DueDate, int daysNo = 7) => DateOnly.FromDateTime(DateTime.UtcNow).AddDays(daysNo) > DueDate;
+    public bool IsOverdue(ObjectiveTask task) => IsNotComplete(task) && DateOnly.FromDateTime(DateTime.UtcNow) > task.DueDate;
+    public bool IsDueSoon(ObjectiveTask task, int daysNo = 7) => IsNotComplete(task) && DateOnly.FromDateTime(DateTime.UtcNow).AddDays(daysNo) > task.DueDate;
+    public bool IsNotComplete(ObjectiveTask task) => task.Completed is null;
 
     public record Objective(string Title, ObjectiveTask[] Tasks);
     public class ObjectiveTask
     {
         public required string Title { get; set; }
         public required DateOnly DueDate { get; set; }
-        public bool Completed { get; set; } = false;
+        public DateTime? Completed { get; set; }
     }
 }
