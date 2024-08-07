@@ -44,11 +44,11 @@ jobs:
 
       # Publish the build artifacts
       - name: Publish
-        run: dotnet publish --configuration Release --output ./publish
+        run: dotnet publish --no-build --configuration Release --output ./publish
 
       # Run EF migrations
       - name: Run EF migrations
-        run: dotnet ef migrations script --project src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj --startup-project src/Server.UI/Server.UI.csproj --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --idempotent -o ./publish/Migration.sql
+        run: dotnet ef migrations script --no-build --project src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj --startup-project src/Server.UI/Server.UI.csproj --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --idempotent -o ./publish/Migration.sql
 
       # Compress the build artifacts into a ZIP file
       - name: Compress build artifacts
@@ -56,11 +56,33 @@ jobs:
           cd publish
           zip -r ../build-artifacts.zip .
 
-      # Generate tag and release names based on date
+      # Read and increment version number
+      - name: Increment Version
+        id: increment_version
+        run: |
+          # Read the current version from the GitHub secret
+          CURRENT_VERSION=${{ secrets.INITIAL_VERSION }}
+          
+          # Split the version into major, minor, and patch
+          IFS='.' read -r -a VERSION_PARTS <<< "$CURRENT_VERSION"
+          MAJOR=${VERSION_PARTS[0]}
+          MINOR=${VERSION_PARTS[1]}
+          PATCH=${VERSION_PARTS[2]}
+          
+          # Increment the patch version
+          PATCH=$((PATCH + 1))
+          
+          # Form the new version
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          
+          # Set the new version as an environment variable
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      # Generate tag and release names based on the new version
       - name: Set Release Version
         id: set_release_version
         run: |
-          TAG_NAME="v$(date +'%Y%m%d%H%M%S')"
+          TAG_NAME="v${{ env.NEW_VERSION }}"
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
           echo "RELEASE_NAME=Release $TAG_NAME" >> $GITHUB_ENV
 
@@ -73,7 +95,7 @@ jobs:
         with:
           tag_name: ${{ env.TAG_NAME }}
           release_name: ${{ env.RELEASE_NAME }}
-          body: 'Automatic release based on date and time.'
+          body: 'Automatic release with incremented version number.'
           draft: false
           prerelease: false
 
