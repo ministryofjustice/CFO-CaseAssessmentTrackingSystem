@@ -14,20 +14,6 @@
                 "kind": "build",
                 "isDefault": true
             }
-        },
-        {
-            "label": "Build (Build Project)",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "build",
-                "${workspaceFolder}/build/Build.csproj"
-            ],
-            "problemMatcher": "$msCompile",
-            "group":{
-                "kind": "build",
-                "isDefault": true
-            }
         }
     ]
 }
