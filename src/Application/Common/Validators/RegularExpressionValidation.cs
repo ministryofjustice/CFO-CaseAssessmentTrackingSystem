@@ -6,7 +6,7 @@
         public const string LettersSpacesUnderscoresMessage = "{0} must contain only letters, spaces, and underscores.";
 
         public const string LettersSpacesCommaApostorphe = @"^[A-Za-z ',’]+$";
-        public const string LettersSpacesCommaApostorpheMessage = "{0} must contain only letters, spaces, comma and an apostrophe.";
+        public const string LettersSpacesCommaApostropheMessage = "{0} must contain only letters, spaces, comma and an apostrophe.";
 
         public const string AlphabetsDigitsSpaceSlashHyphenDot= @"^[a-zA-Z0-9\s\\\/\-.]+$";
         public const string AlphabetsDigitsSpaceSlashHyphenDotMessage = "{0} must contain only alphabet (both uppercase and lowercase), digit, space, backslash, forward slash, hyphen, and dot.";
@@ -40,7 +40,7 @@
         public const string MaximumPageSizeMessage = "Page size must be between 1 and 50.";
 
         public const string TenantId = @"^(\d+(\.\d+)*\.)$";
-        public const string TenantIdMessage = "Must start with a number and end with a period for example 1.2.1.";
+        public const string TenantIdMessage = "Invalid format for Tenant Id";
 
         public const string TenantDomain = @"^@[a-z0-9]+(?:[-]?[a-z0-9]+)*(?:\.[a-z0-9]+(?:[-]?[a-z0-9]+)*)+$";
         public const string TenantDomainMessage = "Must be in the format '@example.com'";
