@@ -38,7 +38,9 @@ internal static class DatabaseConstants
         public const string EnrolmentQa1Queue = "Qa1Queue";
         public const string EnrolmentQa2Queue = "Qa2Queue";
         public const string EnrolmentEscalationQueue = "EscalationQueue";
-        
+
+        public const string PasswordHistory = nameof(PasswordHistory);
+
 
 
     }
