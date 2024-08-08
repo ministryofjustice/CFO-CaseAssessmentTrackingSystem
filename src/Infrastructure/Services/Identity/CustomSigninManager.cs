@@ -17,24 +17,25 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
         }
 
         var ipAddress = httpContextAccessor.HttpContext!.Connection.RemoteIpAddress?.ToString();
-        if (string.IsNullOrWhiteSpace(ipAddress) == false && allowlistOptions.Value.AllowedIPs.Contains(ipAddress))
+        
+        var passwordCheckResult = await CheckPasswordSignInAsync(user, password, lockoutOnFailure);
+
+        if (PasswordChecksOutAndRequiresPasswordReset(passwordCheckResult, user))
         {
-            var result = await CheckPasswordSignInAsync(user, password, lockoutOnFailure);
-
-            if (result.Succeeded)
-            {
-                if (user.RequiresPasswordReset)
-                {
-                    return CustomSignInResult.PasswordResetRequired;
-                }
-
-                await SignInAsync(user, isPersistent);
-            }
-
-            return result;
+            return CustomSignInResult.PasswordResetRequired;
         }
+        
+        if (PasswordCheckSucceededAndTwoFactorDisabledForIpRange(passwordCheckResult, ipAddress))
+        {
+            await SignInAsync(user, isPersistent);
+            return passwordCheckResult;
+        }
+        
+        
         return await base.PasswordSignInAsync(userName, password, isPersistent, lockoutOnFailure);
     }
+    private bool PasswordCheckSucceededAndTwoFactorDisabledForIpRange(SignInResult passwordCheckResult, string? ipAddress) => passwordCheckResult.Succeeded && string.IsNullOrWhiteSpace(ipAddress) == false && allowlistOptions.Value.AllowedIPs.Contains(ipAddress);
+    private static bool PasswordChecksOutAndRequiresPasswordReset(SignInResult passwordCheckResult, ApplicationUser user) => passwordCheckResult.Succeeded && user.RequiresPasswordReset;
 
     public class CustomSignInResult : SignInResult
     {

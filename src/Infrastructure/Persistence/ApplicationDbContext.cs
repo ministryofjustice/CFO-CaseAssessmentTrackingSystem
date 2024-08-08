@@ -54,6 +54,8 @@ public class ApplicationDbContext
     public DbSet<EnrolmentQa2QueueEntry> EnrolmentQa2Queue => Set<EnrolmentQa2QueueEntry>();
     public DbSet<EnrolmentEscalationQueueEntry> EnrolmentEscalationQueue => Set<EnrolmentEscalationQueueEntry>();
 
+    public DbSet<PasswordHistory> PasswordHistories => Set<PasswordHistory>();
+
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
     protected override void OnModelCreating(ModelBuilder builder)

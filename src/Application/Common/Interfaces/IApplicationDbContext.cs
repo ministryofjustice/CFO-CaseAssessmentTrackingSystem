@@ -45,6 +45,8 @@ public interface IApplicationDbContext
     ChangeTracker ChangeTracker { get; }
 
     DbSet<DataProtectionKey> DataProtectionKeys { get; }
+    
+    DbSet<PasswordHistory> PasswordHistories { get; }
 
 }
 

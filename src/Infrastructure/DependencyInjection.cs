@@ -189,10 +189,12 @@ public static class DependencyInjection
             .AddIdentityCore<ApplicationUser>()
             .AddRoles<ApplicationRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddUserManager<ApplicationUserManager>()
             //.AddSignInManager()
             .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
             .AddDefaultTokenProviders();
 
+        services.AddScoped<UserManager<ApplicationUser>, ApplicationUserManager>();
         services.AddScoped<SignInManager<ApplicationUser>, CustomSigninManager>();
         services.AddScoped<ISecurityStampValidator, SecurityStampValidator<ApplicationUser>>();
 
@@ -210,10 +212,8 @@ public static class DependencyInjection
             options.Password.RequireLowercase = identitySettings.RequireLowerCase;
 
             // Lockout settings
-            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(
-            identitySettings.DefaultLockoutTimeSpan
-            );
-            options.Lockout.MaxFailedAccessAttempts = 10;
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(identitySettings.DefaultLockoutTimeSpan * 365);
+            options.Lockout.MaxFailedAccessAttempts = identitySettings.MaxFailedAccessAttempts;
             options.Lockout.AllowedForNewUsers = true;
 
             // Default SignIn settings.
