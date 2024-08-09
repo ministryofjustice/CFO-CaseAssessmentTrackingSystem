@@ -38,6 +38,8 @@ public class ApplicationDbContext
     public DbSet<Participant> Participants => Set<Participant>();
 
     public DbSet<Risk> Risks => Set<Risk>();
+    public DbSet<Objective> Objectives => Set<Objective>();
+    public DbSet<ObjectiveTask> ObjectiveTasks => Set<ObjectiveTask>();
 
     public DbSet<ParticipantAssessment> ParticipantAssessments => Set<ParticipantAssessment>();
     
