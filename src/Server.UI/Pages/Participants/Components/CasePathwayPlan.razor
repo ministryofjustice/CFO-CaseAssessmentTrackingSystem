@@ -1,7 +1,13 @@
-﻿@using Humanizer
+﻿@using Cfo.Cats.Application.Features.Objectives.Commands
+@using Cfo.Cats.Server.UI.Pages.Objectives.Tasks
+@using Humanizer
+
+@inherits CatsComponentBase
 
 <style>
-    .mud-list-item:hover, .mud-list-item:focus, .mud-icon-button:hover {
+    .mud-list-item:hover:not(.mud-list-item-header), 
+    .mud-list-item:focus, 
+    .mud-icon-button:hover {
         background-color: initial !important;
     }
 </style>
@@ -15,18 +21,22 @@
             </MudListSubheader>
             @foreach (var objective in Model)
             {
-                <MudListItem Ripple="false" Expanded>
+                <MudListItem Class="mud-list-item-header" Ripple="false" Expanded>
                     <ChildContent>
                         <div class="d-flex gap-2 align-center">
                             <MudText Typo="Typo.subtitle2">@objective.Title</MudText>
                             <MudText>(@objective.Tasks.Count(x => x.Completed is not null)/@objective.Tasks.Length)</MudText>
-                            @if(objective.Tasks.Any(x => IsOverdue(x)))
+                            @if(objective.Tasks.Any(IsOverdue))
                             {
                                 <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.AccessTime"/>
                             }
-                            else if (objective.Tasks.Any(x => IsDueSoon(x)))
+                            else if (objective.Tasks.Any(IsDueSoon))
                             {
                                 <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
+                            }
+                            else if(objective.Tasks.All(IsComplete))
+                            {
+                                <MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
                             }
                         </div>
                     </ChildContent>
@@ -40,39 +50,63 @@
                                             <MudText>
                                                 @task.Title
                                             </MudText>
-                                            @if (IsNotComplete(task))
+                                            @if (IsComplete(task))
                                             {
-                                                @if (IsOverdue(task))
+                                                <MudTooltip Text="Completed">
+                                                    <MudChip Text="Done" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
+                                                </MudTooltip>
+                                            }
+                                            else
+                                            {
+                                                if (IsOverdue(task))
                                                 {
-                                                    <MudTooltip Text="Due date passed">
-                                                        <MudChip Text="Overdue" Size="Size.Small" Color="Color.Error" Icon="@Icons.Material.Filled.AccessTime" />
+                                                    <MudTooltip>
+                                                        <TooltipContent>
+                                                            Due @task.DueDate.ToDateTime(TimeOnly.MinValue).ToString("MMM, yyyy")
+                                                        </TooltipContent>
+                                                        <ChildContent>
+                                                            <MudChip Text="Overdue" Size="Size.Small" Color="Color.Error" Icon="@Icons.Material.Filled.AccessTime" />
+                                                        </ChildContent>
                                                     </MudTooltip>
                                                 }
                                                 else if (IsDueSoon(task))
                                                 {
-                                                    <MudTooltip Text="Due in under a week">
-                                                        <MudChip Text="Due soon" Size="Size.Small" Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
+                                                    <MudTooltip>
+                                                        <TooltipContent>
+                                                            Due @task.DueDate.ToDateTime(TimeOnly.MinValue).ToString("MMM, yyyy")
+                                                        </TooltipContent>
+                                                        <ChildContent>
+                                                            <MudChip Text="Due soon" Size="Size.Small" Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
+                                                        </ChildContent>
                                                     </MudTooltip>
                                                 }
                                             }
                                         </div>
                                         @if(task.Completed is null)
                                         {
-                                            <MudText Typo="Typo.body2">Due @($"{task.DueDate.Humanize()} ({task.DueDate.ToShortDateString()})")</MudText>
+                                            <MudText Typo="Typo.body2">Due @task.DueDate.ToDateTime(TimeOnly.MinValue).ToString("MMM, yyyy")</MudText>
                                         }
                                         else
                                         {
                                             <MudText Typo="Typo.body2">Completed @task.Completed.Humanize()</MudText>
                                         }
                                     </div>
-                                    <div class="mr-4">
+                                    <div class="mr-4 d-flex gap-2">
                                         <MudTooltip Text="Edit" Style="height: fit-content">
                                             <MudIconButton OnClick="async() => await Edit(task)" Icon="@Icons.Material.Filled.Edit" Ripple="false" Size="Size.Small" Variant="Variant.Text" />
+                                        </MudTooltip>
+                                        <MudTooltip Text="Close" Style="height: fit-content">
+                                            <MudIconButton OnClick="async() => await Close(task)" Icon="@Icons.Material.Filled.Close" Ripple="false" Size="Size.Small" Variant="Variant.Text" />
                                         </MudTooltip>
                                     </div>
                                 </div>
                             </MudListItem>
                         }
+                        <div class="ml-6 mb-2">
+                            <MudTooltip Text="New">
+                                <MudIconButton OnClick="async() => await AddTask(objective)" Icon="@Icons.Material.Filled.Add" />
+                            </MudTooltip>
+                        </div>
                     </NestedList>
                 </MudListItem>
                 <MudDivider />
@@ -82,6 +116,11 @@
 }
 
 @code {
+    static DateOnly ToMonth(DateTime dateTime) => DateOnly.FromDateTime(new DateTime(dateTime.Year, dateTime.Month, 1));
+    static DateOnly ToMonth(DateOnly date) => DateOnly.FromDateTime(new DateTime(date.Year, date.Month, 1));
+
+    readonly DateOnly currentMonth = ToMonth(DateTime.UtcNow);
+
     [Parameter, EditorRequired]
     public required string ParticipantId { get; set; }
 
@@ -91,21 +130,19 @@
 
     protected override void OnInitialized()
     {
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
-
         Model = new List<Objective>()
         {
-            new Objective("Employability Aid", new ObjectiveTask[]
+            new Objective("Make Doris more employable because she has been unemployed for 6 months", new ObjectiveTask[]
             {
                 new ObjectiveTask()
                 {
-                    Title = "Construct a CV",
-                    DueDate = today.AddDays(-1)
+                    Title = "Sort their appearance",
+                    DueDate = currentMonth.AddMonths(-1)
                 },
                 new ObjectiveTask()
                 {
-                    Title = "Interview practice/preparation",
-                    DueDate = today.AddDays(6)
+                    Title = "Create a CV",
+                    DueDate = currentMonth
                 }
             }),
             new Objective("Finance and Debt", new ObjectiveTask[]
@@ -113,7 +150,7 @@
                 new ObjectiveTask()
                 {
                     Title = "Managing finances and debt",
-                    DueDate = today.AddDays(14),
+                    DueDate = currentMonth,
                     Completed = DateTime.UtcNow.AddMinutes(-30)
                 }
             }),
@@ -122,7 +159,7 @@
                 new ObjectiveTask()
                 {
                     Title = "Obtain a new passport",
-                    DueDate = today.AddDays(60)
+                    DueDate = currentMonth.AddMonths(2)
                 }
             }),
             new Objective("Disclosure Advice", new ObjectiveTask[]
@@ -130,7 +167,7 @@
                 new ObjectiveTask()
                 {
                     Title = "Offence disclosure discussion",
-                    DueDate = today.AddDays(3)
+                    DueDate = currentMonth.AddMonths(1)
                 }
             })
         };
@@ -162,14 +199,43 @@
         SelectedTasks = tasks;
     }
 
+    public async Task AddTask(Objective to)
+    {
+        var command = new AddTask.Command()
+        {
+            ObjectiveId = Guid.NewGuid()
+        };
+
+        var parameters = new DialogParameters<AddTaskDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<AddTaskDialog>("Add task to objective", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            await GetNewMediator().Send(command);
+        }
+    }
+
     public async Task Edit(ObjectiveTask task)
     {
         await DialogService.ShowMessageBox("Edit Task", "Editing...");
     }
 
-    public bool IsOverdue(ObjectiveTask task) => IsNotComplete(task) && DateOnly.FromDateTime(DateTime.UtcNow) > task.DueDate;
-    public bool IsDueSoon(ObjectiveTask task, int daysNo = 7) => IsNotComplete(task) && DateOnly.FromDateTime(DateTime.UtcNow).AddDays(daysNo) > task.DueDate;
-    public bool IsNotComplete(ObjectiveTask task) => task.Completed is null;
+    public async Task Close(ObjectiveTask task)
+    {
+        await DialogService.ShowMessageBox("Close Task", "Closing...");
+    }
+
+    public bool IsOverdue(ObjectiveTask task) => IsNotComplete(task) && ToMonth(DateTime.UtcNow) > ToMonth(task.DueDate.ToDateTime(TimeOnly.MinValue));
+    public bool IsDueSoon(ObjectiveTask task) => IsNotComplete(task) && ToMonth(task.DueDate).Equals(currentMonth) || DateOnly.FromDateTime(DateTime.UtcNow.AddDays(14)) >= ToMonth(task.DueDate);
+    public bool IsNotComplete(ObjectiveTask task) => IsComplete(task) is false;
+    public bool IsComplete(ObjectiveTask task) => task.Completed is not null;
 
     public record Objective(string Title, ObjectiveTask[] Tasks);
     public class ObjectiveTask
