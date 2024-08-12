@@ -1,5 +1,75 @@
-﻿<h3>ReviewTaskDialog</h3>
+﻿@using Cfo.Cats.Application.Features.Objectives.Commands
+
+@inherits CatsComponentBase
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+            <MudTextField @bind-Value="Model.Title"
+                          Label="@Model.GetMemberDescription(x => x.Title)"
+                          For="@(() => Model.Title)" 
+                          Disabled />
+
+            <MudDivider />
+
+            <MudCheckBox T="bool" Label="Reoccurs" @bind-Value="reoccurs" />
+
+            <MudDatePicker @bind-Date="Model.Due"
+                           FixDay="1"
+                           DateFormat="MMM, yyyy"
+                           TitleDateFormat="MMM, yyyy"
+                           MinDate="new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1)"
+                           Label="@Model.GetMemberDescription(x => x.Due)"
+                           For="@(() => Model.Due)" 
+                           Disabled="reoccurs is false" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Complete</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
 
 @code {
+    MudForm? form;
+    bool saving;
+    bool reoccurs;
+
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public required AddTask.Command Model { get; set; }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            saving = true;
+
+            if (form is null)
+            {
+                saving = false;
+                return;
+            }
+
+            await form.Validate();
+
+            if (form.IsValid)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
 
 }

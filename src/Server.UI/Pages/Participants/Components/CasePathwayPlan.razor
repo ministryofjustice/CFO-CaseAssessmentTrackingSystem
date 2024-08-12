@@ -1,13 +1,14 @@
 ﻿@using Cfo.Cats.Application.Features.Objectives.Commands
+@using Cfo.Cats.Application.Features.Objectives.DTOs
+@using Cfo.Cats.Application.Features.Objectives.Queries
 @using Cfo.Cats.Server.UI.Pages.Objectives.Tasks
 @using Humanizer
 
 @inherits CatsComponentBase
 
 <style>
-    .mud-list-item:hover:not(.mud-list-item-header), 
-    .mud-list-item:focus, 
-    .mud-icon-button:hover {
+    .mud-list-item-child:hover, 
+    .mud-list-item-child:focus {
         background-color: initial !important;
     }
 </style>
@@ -15,26 +16,39 @@
 @if(Model is not null)
 {
     <MudPaper>
-        <MudList T="ObjectiveTask" SelectedValues="SelectedTasks" SelectedValuesChanged="Select" SelectionMode="SelectionMode.MultiSelection">
+        <MudList T="ObjectiveTaskDto">
             <MudListSubheader>
-                <MudText>Select your tasks:</MudText>
+                <div class="d-flex gap-2 align-center">
+                    <MudTooltip Text="New objective">
+                        <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Class="rounded-circle" />
+                    </MudTooltip>
+                    @if(Model.Any())
+                    {
+                        <MudText>Add another objective</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Add an objective</MudText>
+                    }
+                </div>
+                <MudDivider Class="my-3"/>
             </MudListSubheader>
             @foreach (var objective in Model)
             {
-                <MudListItem Class="mud-list-item-header" Ripple="false" Expanded>
+                <MudListItem Ripple="false" Expanded>
                     <ChildContent>
                         <div class="d-flex gap-2 align-center">
                             <MudText Typo="Typo.subtitle2">@objective.Title</MudText>
-                            <MudText>(@objective.Tasks.Count(x => x.Completed is not null)/@objective.Tasks.Length)</MudText>
-                            @if(objective.Tasks.Any(IsOverdue))
+                            <MudText>(@objective.Tasks.Count(x => x.IsCompleted)/@objective.Tasks.Count())</MudText>
+                            @if(objective.Tasks.Any(task => task.IsOverdue))
                             {
                                 <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.AccessTime"/>
                             }
-                            else if (objective.Tasks.Any(IsDueSoon))
+                            else if (objective.Tasks.Any(task => task.IsDueSoon))
                             {
                                 <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
                             }
-                            else if(objective.Tasks.All(IsComplete))
+                            else if(objective.Tasks.All(task => task.IsCompleted))
                             {
                                 <MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
                             }
@@ -43,67 +57,86 @@
                     <NestedList>
                         @foreach (var task in objective.Tasks)
                         {
-                            <MudListItem Value="@task" Class="cursor-default" Ripple="false" OnClickPreventDefault>
-                                <div class="d-flex justify-space-between align-center">
-                                    <div>
-                                        <div class="d-flex gap-2 align-center">
-                                            <MudText>
-                                                @task.Title
-                                            </MudText>
-                                            @if (IsComplete(task))
+                            <MudListItem Value="@task" Class="cursor-default mud-list-item-child" Ripple="false" OnClickPreventDefault>
+                                <AvatarContent>
+                                    @if(task.IsCompleted)
+                                    {
+                                        <MudIconButton OnClick="async() => await ToggleTask(task)" Icon="@Icons.Material.Filled.CheckBox" Disabled />
+                                    }
+                                    else
+                                    {
+                                        <MudIconButton OnClick="async() => await ToggleTask(task)" Icon="@Icons.Material.Filled.CheckBoxOutlineBlank"/>
+                                    }
+                                </AvatarContent>
+                                <ChildContent>
+                                    <div class="d-flex justify-space-between align-center">
+                                        <div>
+                                            <div class="d-flex gap-2 align-center">
+                                                <MudText>
+                                                    @task.Title
+                                                </MudText>
+                                                @if (task.IsCompleted)
+                                                {
+                                                    <MudTooltip Text="Completed">
+                                                        <MudChip Text="Done" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
+                                                    </MudTooltip>
+                                                }
+                                                else
+                                                {
+                                                    if (task.IsOverdue)
+                                                    {
+                                                        <MudTooltip>
+                                                            <TooltipContent>
+                                                                Due @task.Due.ToString("MMM, yyyy")
+                                                            </TooltipContent>
+                                                            <ChildContent>
+                                                                <MudChip Text="Overdue" Size="Size.Small" Color="Color.Error" Icon="@Icons.Material.Filled.AccessTime" />
+                                                            </ChildContent>
+                                                        </MudTooltip>
+                                                    }
+                                                    else if (task.IsDueSoon)
+                                                    {
+                                                        <MudTooltip>
+                                                            <TooltipContent>
+                                                                Due @task.Due.ToString("MMM, yyyy")
+                                                            </TooltipContent>
+                                                            <ChildContent>
+                                                                <MudChip Text="Due soon" Size="Size.Small" Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
+                                                            </ChildContent>
+                                                        </MudTooltip>
+                                                    }
+                                                }
+                                            </div>
+                                            @if(task.IsCompleted)
                                             {
-                                                <MudTooltip Text="Completed">
-                                                    <MudChip Text="Done" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
-                                                </MudTooltip>
+                                                <MudText Typo="Typo.body2">Completed @task.Completed.Humanize()</MudText>
                                             }
                                             else
                                             {
-                                                if (IsOverdue(task))
-                                                {
-                                                    <MudTooltip>
-                                                        <TooltipContent>
-                                                            Due @task.DueDate.ToDateTime(TimeOnly.MinValue).ToString("MMM, yyyy")
-                                                        </TooltipContent>
-                                                        <ChildContent>
-                                                            <MudChip Text="Overdue" Size="Size.Small" Color="Color.Error" Icon="@Icons.Material.Filled.AccessTime" />
-                                                        </ChildContent>
-                                                    </MudTooltip>
-                                                }
-                                                else if (IsDueSoon(task))
-                                                {
-                                                    <MudTooltip>
-                                                        <TooltipContent>
-                                                            Due @task.DueDate.ToDateTime(TimeOnly.MinValue).ToString("MMM, yyyy")
-                                                        </TooltipContent>
-                                                        <ChildContent>
-                                                            <MudChip Text="Due soon" Size="Size.Small" Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
-                                                        </ChildContent>
-                                                    </MudTooltip>
-                                                }
+                                                <MudText Typo="Typo.body2">Due @task.Due.ToString("MMM, yyyy")</MudText>
                                             }
                                         </div>
-                                        @if(task.Completed is null)
-                                        {
-                                            <MudText Typo="Typo.body2">Due @task.DueDate.ToDateTime(TimeOnly.MinValue).ToString("MMM, yyyy")</MudText>
-                                        }
-                                        else
-                                        {
-                                            <MudText Typo="Typo.body2">Completed @task.Completed.Humanize()</MudText>
-                                        }
+                                        <div class="d-flex gap-2 align-center mr-4">
+                                            <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" Dense>
+                                                <MudMenuItem>Extend date</MudMenuItem>
+                                                <MudMenuItem OnClick="async() => await RenameTask(task)">Rename</MudMenuItem>
+                                                <MudMenuItem OnClick="async() => await CancelTask(task)">Cancel</MudMenuItem>
+                                            </MudMenu>
+                                            <MudTooltip>
+                                                <TooltipContent>
+                                                    Added @task.Created.Humanize()
+                                                </TooltipContent>
+                                                <ChildContent>
+                                                    <MudIcon Icon="@Icons.Material.Filled.Info" />
+                                                </ChildContent>
+                                            </MudTooltip>
+                                        </div>
                                     </div>
-                                    <div class="mr-4 d-flex gap-2">
-                                        <MudTooltip Text="Edit" Style="height: fit-content">
-                                            <MudIconButton OnClick="async() => await Edit(task)" Icon="@Icons.Material.Filled.Edit" Ripple="false" Size="Size.Small" Variant="Variant.Text" />
-                                        </MudTooltip>
-                                        <MudTooltip Text="Close" Style="height: fit-content">
-                                            <MudIconButton OnClick="async() => await Close(task)" Icon="@Icons.Material.Filled.Close" Ripple="false" Size="Size.Small" Variant="Variant.Text" />
-                                        </MudTooltip>
-                                    </div>
-                                </div>
+                                </ChildContent>
                             </MudListItem>
                         }
                         <div class="ml-6 mb-2">
-                            <MudTooltip Text="New">
+                            <MudTooltip Text="New Task">
                                 <MudIconButton OnClick="async() => await AddTask(objective)" Icon="@Icons.Material.Filled.Add" />
                             </MudTooltip>
                         </div>
@@ -116,94 +149,42 @@
 }
 
 @code {
-    static DateOnly ToMonth(DateTime dateTime) => DateOnly.FromDateTime(new DateTime(dateTime.Year, dateTime.Month, 1));
-    static DateOnly ToMonth(DateOnly date) => DateOnly.FromDateTime(new DateTime(date.Year, date.Month, 1));
-
-    readonly DateOnly currentMonth = ToMonth(DateTime.UtcNow);
-
     [Parameter, EditorRequired]
     public required string ParticipantId { get; set; }
 
-    public IEnumerable<Objective>? Model { get; set; }
+    public IEnumerable<ObjectiveDto>? Model { get; set; }
 
-    IReadOnlyCollection<ObjectiveTask> SelectedTasks = [];
+    IReadOnlyCollection<ObjectiveTaskDto> SelectedTasks = [];
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        Model = new List<Objective>()
-        {
-            new Objective("Make Doris more employable because she has been unemployed for 6 months", new ObjectiveTask[]
-            {
-                new ObjectiveTask()
-                {
-                    Title = "Sort their appearance",
-                    DueDate = currentMonth.AddMonths(-1)
-                },
-                new ObjectiveTask()
-                {
-                    Title = "Create a CV",
-                    DueDate = currentMonth
-                }
-            }),
-            new Objective("Finance and Debt", new ObjectiveTask[]
-            {
-                new ObjectiveTask()
-                {
-                    Title = "Managing finances and debt",
-                    DueDate = currentMonth,
-                    Completed = DateTime.UtcNow.AddMinutes(-30)
-                }
-            }),
-            new Objective("Identification", new ObjectiveTask[]
-            {
-                new ObjectiveTask()
-                {
-                    Title = "Obtain a new passport",
-                    DueDate = currentMonth.AddMonths(2)
-                }
-            }),
-            new Objective("Disclosure Advice", new ObjectiveTask[]
-            {
-                new ObjectiveTask()
-                {
-                    Title = "Offence disclosure discussion",
-                    DueDate = currentMonth.AddMonths(1)
-                }
-            })
-        };
+        await OnRefresh();
+        await base.OnInitializedAsync();
+    }
 
-        SelectedTasks = Model.SelectMany(objective => objective.Tasks.Where(task => task.Completed is not null))
+    private async Task OnRefresh()
+    {
+        Model = await GetNewMediator().Send(new GetObjectivesByParticipantId.Query()
+        {
+            ParticipantId = ParticipantId
+        });
+
+        SelectedTasks = Model.SelectMany(objective => objective.Tasks
+            .Where(task => task.IsCompleted))
             .ToList()
-            .AsReadOnly();
-
-        base.OnInitialized();
+            .AsReadOnly();   
     }
 
-    public void Select(IReadOnlyCollection<ObjectiveTask>? tasks)
+    public async Task ToggleTask(ObjectiveTaskDto task)
     {
-        if (tasks is null)
-        {
-            return;
-        }
-
-        foreach(var task in SelectedTasks.Except(tasks))
-        {
-            task.Completed = null;
-        }
-
-        foreach (var task in tasks.Where(IsNotComplete))
-        {
-            task.Completed = DateTime.UtcNow;
-        }
-
-        SelectedTasks = tasks;
+        await Task.CompletedTask;
     }
 
-    public async Task AddTask(Objective to)
+    public async Task AddTask(ObjectiveDto to)
     {
         var command = new AddTask.Command()
         {
-            ObjectiveId = Guid.NewGuid()
+            ObjectiveId = to.Id
         };
 
         var parameters = new DialogParameters<AddTaskDialog>()
@@ -218,30 +199,24 @@
 
         if (state!.Canceled is false)
         {
-            await GetNewMediator().Send(command);
+            var result = await GetNewMediator().Send(command);
+
+            if(result.Succeeded)
+            {
+                await OnRefresh();
+            }
+
         }
     }
 
-    public async Task Edit(ObjectiveTask task)
+    public async Task RenameTask(ObjectiveTaskDto task)
     {
         await DialogService.ShowMessageBox("Edit Task", "Editing...");
     }
 
-    public async Task Close(ObjectiveTask task)
+    public async Task CancelTask(ObjectiveTaskDto task)
     {
         await DialogService.ShowMessageBox("Close Task", "Closing...");
     }
 
-    public bool IsOverdue(ObjectiveTask task) => IsNotComplete(task) && ToMonth(DateTime.UtcNow) > ToMonth(task.DueDate.ToDateTime(TimeOnly.MinValue));
-    public bool IsDueSoon(ObjectiveTask task) => IsNotComplete(task) && ToMonth(task.DueDate).Equals(currentMonth) || DateOnly.FromDateTime(DateTime.UtcNow.AddDays(14)) >= ToMonth(task.DueDate);
-    public bool IsNotComplete(ObjectiveTask task) => IsComplete(task) is false;
-    public bool IsComplete(ObjectiveTask task) => task.Completed is not null;
-
-    public record Objective(string Title, ObjectiveTask[] Tasks);
-    public class ObjectiveTask
-    {
-        public required string Title { get; set; }
-        public required DateOnly DueDate { get; set; }
-        public DateTime? Completed { get; set; }
-    }
 }

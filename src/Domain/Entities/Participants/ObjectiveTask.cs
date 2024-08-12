@@ -12,10 +12,10 @@ public class ObjectiveTask : BaseAuditableEntity<Guid>
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public void Complete(DateTime? nextDue)
+    public void Complete()
     {
         Completed = DateTime.UtcNow;
-        Due = nextDue;
+        AddDomainEvent(new ObjectiveTaskCompletedDomainEvent(this));
     }
 
     public static ObjectiveTask Create(string title, DateTime due)
@@ -36,7 +36,4 @@ public class ObjectiveTask : BaseAuditableEntity<Guid>
     public string Title { get; private set; }
 
     public virtual ApplicationUser? CompletedByUser { get; set; }
-
-    // public bool IsOverdue() => Due > DateTime.UtcNow;
-    // public bool IsDueSoon() => Due > DateTime.UtcNow.AddDays(-14);
 }

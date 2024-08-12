@@ -5,42 +5,38 @@ using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.Objectives.Commands;
 
-public static class AddTask
+public class ReviewTask
 {
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command : IRequest<Result>
     {
         [Description("Objective Id")]
-        public required Guid ObjectiveId { get; set; }
+        public required Guid TaskId { get; set; }
 
-        public string? Title { get; set; }
+        [Description("Reoccurs")]
+        public bool Reoccurs { get; set; }
 
+        [Description("Due")]
         public DateTime? Due { get; set; }
-
-        public class Mapping : Profile
-        {
-            public Mapping()
-            {
-                CreateMap<Command, ObjectiveTask>(MemberList.None)
-                    .ConstructUsing(dto => ObjectiveTask.Create(dto.Title!, dto.Due!.Value));
-            }
-        }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            var objective = await unitOfWork.DbContext.Objectives.FindAsync(request.ObjectiveId);
+            var task = await unitOfWork.DbContext.ObjectiveTasks.FindAsync(request.TaskId);
 
-            if (objective is null)
+            if (task is null)
             {
-                throw new NotFoundException("Cannot find objective", request.ObjectiveId); 
+                throw new NotFoundException("Cannot find task", request.TaskId);
             }
 
-            var task = mapper.Map<ObjectiveTask>(request);
+            task.Complete();
 
-            objective.AddTask(task);
+            if(request.Reoccurs)
+            {
+
+            }
 
             return Result.Success();
         }
@@ -52,14 +48,8 @@ public static class AddTask
         {
             var today = DateTime.UtcNow;
 
-            RuleFor(x => x.ObjectiveId)
+            RuleFor(x => x.TaskId)
                 .NotNull();
-
-            RuleFor(x => x.Title)
-                .NotEmpty()
-                .WithMessage("You must provide a title")
-                .Matches(ValidationConstants.AlphabetsDigitsSpaceSlashHyphenDot)
-                .WithMessage(string.Format(ValidationConstants.AlphabetsDigitsSpaceSlashHyphenDotMessage, "Title"));
 
             RuleFor(x => x.Due)
                 .NotNull()
