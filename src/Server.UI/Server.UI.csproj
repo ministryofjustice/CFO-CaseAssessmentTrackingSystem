@@ -61,5 +61,12 @@
         </Compile>
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="web.config">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+    
+
 
 </Project>
