@@ -1,10 +1,10 @@
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 @using Cfo.Cats.Server.UI.Constants
 @implements IDisposable
 
 @inject LayoutService LayoutService
 @inject NavigationManager NavigationManager
-@inject IConfiguration Configuration
+
 
 <PageTitle>@ApplicationSettings.AppName</PageTitle>
 <MudRTLProvider RightToLeft="@LayoutService.IsRTL">
