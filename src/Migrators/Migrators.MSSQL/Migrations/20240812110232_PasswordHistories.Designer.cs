@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240812110232_PasswordHistories")]
+    partial class PasswordHistories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -593,42 +596,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("Qa2Queue", "Enrolment");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Objective", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.ToTable("Objective", "Participant");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Participant", b =>
@@ -1884,66 +1851,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("Participant");
 
                     b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Objective", b =>
-                {
-                    b.OwnsMany("Cfo.Cats.Domain.Entities.Participants.ObjectiveTask", "Tasks", b1 =>
-                        {
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<DateTime?>("Completed")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("CompletedBy")
-                                .HasMaxLength(36)
-                                .HasColumnType("nvarchar(36)");
-
-                            b1.Property<DateTime?>("Created")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("CreatedBy")
-                                .HasMaxLength(36)
-                                .HasColumnType("nvarchar(36)");
-
-                            b1.Property<DateTime?>("Due")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<DateTime?>("LastModified")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("LastModifiedBy")
-                                .HasMaxLength(36)
-                                .HasColumnType("nvarchar(36)");
-
-                            b1.Property<Guid>("ObjectiveId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Title")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("CompletedBy");
-
-                            b1.HasIndex("ObjectiveId");
-
-                            b1.ToTable("ObjectiveTask", "Participant");
-
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CompletedByUser")
-                                .WithMany()
-                                .HasForeignKey("CompletedBy");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ObjectiveId");
-
-                            b1.Navigation("CompletedByUser");
-                        });
-
-                    b.Navigation("Tasks");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Participant", b =>

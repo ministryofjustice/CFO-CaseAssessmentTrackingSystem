@@ -1,12 +1,13 @@
 ﻿@page "/pages/authentication/login"
 
-@using Cfo.Cats.Application.Features.Identity.Notifications.SendFactorCode
+
 @using Microsoft.AspNetCore.Authentication
 @using Cfo.Cats.Domain.Identity
 @using Cfo.Cats.Application.Common.Interfaces.Identity
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.WebUtilities
 @using System.Text
+@using Cfo.Cats.Application.Features.Identity.Notifications.SendTwoFactorCode
 @using static Cfo.Cats.Infrastructure.Services.Identity.CustomSigninManager
 
 @inject ILogger<Login> Logger
@@ -164,9 +165,9 @@
         {
             user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
             var token = await UserManager.GenerateTwoFactorTokenAsync(user!, "Email");
-            await Sender.Publish(new SendFactorCodeNotification(user!.Email!, user.UserName!, token));
+            await Sender.Publish(new SendTwoFactorEmailCodeNotification(user!.Email!, user.UserName!, token));
 
-            RedirectManager.RedirectTo(LoginWith2fa.PageUrl, new() { ["returnUrl"] = ReturnUrl, ["rememberMe"] = false });
+            RedirectManager.RedirectTo(LoginWith2fa.PageUrl);
         }
         else if (result.IsLockedOut)
         {

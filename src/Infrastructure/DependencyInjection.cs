@@ -5,6 +5,7 @@ using Cfo.Cats.Application.Common.Interfaces.Serialization;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Configurations;
+using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Cfo.Cats.Infrastructure.Persistence.Interceptors;
 using Cfo.Cats.Infrastructure.Services.Candidates;
@@ -189,10 +190,12 @@ public static class DependencyInjection
             .AddIdentityCore<ApplicationUser>()
             .AddRoles<ApplicationRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddUserManager<ApplicationUserManager>()
             //.AddSignInManager()
             .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
             .AddDefaultTokenProviders();
 
+        services.AddScoped<UserManager<ApplicationUser>, ApplicationUserManager>();
         services.AddScoped<SignInManager<ApplicationUser>, CustomSigninManager>();
         services.AddScoped<ISecurityStampValidator, SecurityStampValidator<ApplicationUser>>();
 
@@ -210,10 +213,8 @@ public static class DependencyInjection
             options.Password.RequireLowercase = identitySettings.RequireLowerCase;
 
             // Lockout settings
-            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(
-            identitySettings.DefaultLockoutTimeSpan
-            );
-            options.Lockout.MaxFailedAccessAttempts = 10;
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(identitySettings.DefaultLockoutTimeSpan * 365);
+            options.Lockout.MaxFailedAccessAttempts = identitySettings.MaxFailedAccessAttempts;
             options.Lockout.AllowedForNewUsers = true;
 
             // Default SignIn settings.
@@ -232,57 +233,67 @@ public static class DependencyInjection
 
                 options.AddPolicy(SecurityPolicies.Export, policy => {
                     policy.RequireAuthenticatedUser();
-
+                    policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
                     policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager);
                     
                 });
 
                 options.AddPolicy(SecurityPolicies.CandidateSearch, policy => {
+                    policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
                     policy.RequireAuthenticatedUser();
                 });
 
                 options.AddPolicy(SecurityPolicies.DocumentUpload, policy => {
+                    policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
                     policy.RequireAuthenticatedUser();
                 });
 
                 options.AddPolicy(SecurityPolicies.AuthorizedUser, policy => {
+                    policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
                     policy.RequireAuthenticatedUser();
                 });
 
                 options.AddPolicy(SecurityPolicies.Enrol, policy => {
+                    policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
                     policy.RequireAuthenticatedUser();
                 });
                 
                 options.AddPolicy(SecurityPolicies.Import, policy => {
+                    policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
                     policy.RequireAuthenticatedUser();
                     policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager);
                 });
                 
                 options.AddPolicy(SecurityPolicies.SystemFunctionsRead, policy => {
                     policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
                     policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer, RoleNames.QASupportManager);
                 });
                 
                 options.AddPolicy(SecurityPolicies.SystemFunctionsWrite, policy => {
                     policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
                     policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer, RoleNames.QASupportManager);
                 });
                 
                 options.AddPolicy(SecurityPolicies.Pqa, policy =>
                 {
                     policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
                     policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAFinance);
                 });
                 
                 options.AddPolicy(SecurityPolicies.Qa1, policy =>
                 {
                     policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
                     policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.QAOfficer);
                 });
                 
                 options.AddPolicy(SecurityPolicies.Qa2, policy =>
                 {
                     policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
                     policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QASupportManager);
                 });
 

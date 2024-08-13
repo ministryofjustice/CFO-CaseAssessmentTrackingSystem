@@ -1,10 +1,22 @@
 ﻿@inject NavigationManager NavigationManager
 
 @code {
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState { get; set; } = default!;
 
-    protected override void OnInitialized()
+
+    protected override async Task OnInitializedAsync()
     {
-        NavigationManager.NavigateTo("/pages/authentication/login", true);
+        var state = await AuthenticationState;
+
+        if(state.User is not null)
+        {
+            NavigationManager.NavigateTo(IdentityComponentsEndpointRouteBuilderExtensions.Logout, true);
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/pages/authentication/login", true);
+        }        
     }
 
 }
