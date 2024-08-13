@@ -3,6 +3,8 @@
 @implements IDisposable
 
 @inject LayoutService LayoutService
+@inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
 
 <PageTitle>@ApplicationSettings.AppName</PageTitle>
 <MudRTLProvider RightToLeft="@LayoutService.IsRTL">
@@ -16,6 +18,15 @@
 
 @code
 {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationState {get;set;} = default!;
+
+
+
+    private System.Timers.Timer? _timer; 
+
+    
 
     private MudThemeProvider _mudThemeProvider = null!;
     private bool _defaultDarkMode;
@@ -33,8 +44,39 @@
         {
             await ApplyUserPreferences();
             StateHasChanged();
+
+            int idleTimeOutMinutes = int.Parse(Configuration["IdleTimeoutMinutes"] ?? "20");
+        
+
+            _timer = new System.Timers.Timer(60000 * idleTimeOutMinutes); 
+            _timer.Elapsed += UpdateTimer;
+            _timer.AutoReset = false;
+
+            await JS.InvokeVoidAsync("timeOutCall", DotNetObjectReference.Create(this));
         }
     }
+
+    [JSInvokable]  
+    public void TimerInterval()  
+    {  
+        // Resetting the Timer if the user in active state.  
+        _timer!.Stop();  
+        // Call the TimeInterval to logout when the user is inactive.  
+        _timer!.Start();  
+    }  
+
+    private void UpdateTimer(object? source, System.Timers.ElapsedEventArgs e)  
+    {  
+         InvokeAsync(async() => {  
+             // Log out when the user is inactive.  
+             var authstate = await AuthenticationState;  
+             var user = authstate?.User;
+             if (user?.Identity is not null && user.Identity.IsAuthenticated)
+             {  
+                 NavigationManager.NavigateTo(IdentityComponentsEndpointRouteBuilderExtensions.Logout, true);  
+             }  
+         });  
+     }  
 
     private async Task ApplyUserPreferences()
     {
