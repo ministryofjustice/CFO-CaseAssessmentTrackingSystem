@@ -10,24 +10,32 @@ public static class GetDocumentById
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-    public class Query : IRequest<DownloadDocumentDto>
+    public class Query : IRequest<Result<DownloadDocumentDto>>
     {
         public Guid Id { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IUploadService uploadService) : IRequestHandler<Query, DownloadDocumentDto>
+    public class Handler(IUnitOfWork unitOfWork, IUploadService uploadService) : IRequestHandler<Query, Result<DownloadDocumentDto>>
     {
-        public async Task<DownloadDocumentDto> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<DownloadDocumentDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var document = await unitOfWork.DbContext.Documents.FindAsync(request.Id);
-            var stream = await uploadService.DownloadAsync(document!.URL!);
-            DownloadDocumentDto dto = new DownloadDocumentDto()
+            var streamResult = await uploadService.DownloadAsync(document!.URL!);
+
+            if(streamResult.Succeeded)
             {
-                FileStream = stream,
-                FileExtension = document.Title!.Split(".").Last(),
-                FileName = document.Title!
-            };
-            return dto;
+                DownloadDocumentDto dto = new DownloadDocumentDto()
+                {
+                    FileStream = streamResult,
+                    FileExtension = document.Title!.Split(".").Last(),
+                    FileName = document.Title!
+                };
+                return dto;
+            }
+            else
+            {
+                return Result<DownloadDocumentDto>.Failure(streamResult.Errors);
+            }
         }
     }
     public class Validator : AbstractValidator<Query>

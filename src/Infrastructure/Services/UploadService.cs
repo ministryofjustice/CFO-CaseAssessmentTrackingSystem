@@ -62,18 +62,42 @@ public class UploadService : IUploadService
     }
     public async Task<Result<Stream>> DownloadAsync(string key)
     {
-        var getRequest = new GetObjectRequest()
-        {
+        
+        var getTagRequest = new GetObjectTaggingRequest(){
             BucketName = _bucketName,
             Key = key
         };
 
-        using var response = await _client.GetObjectAsync(getRequest)
-            .ConfigureAwait(false);
-        var stream = new MemoryStream();
-        await response.ResponseStream.CopyToAsync(stream);
-        stream.Position = 0;
-        return stream;
+        var tagResponse = await _client.GetObjectTaggingAsync(getTagRequest);
+        
+        if(tagResponse.HttpStatusCode == HttpStatusCode.OK)
+        {
+
+            // the GuardDutyMalwareScanStatus must exist
+            if(tagResponse.Tagging.Any(t => t.Key == "GuardDutyMalwareScanStatus" && t.Value == "NO_THREATS_FOUND") == false)
+            {
+                return Result<Stream>.Failure("Cannot verify malware check");
+            }
+
+            var getRequest = new GetObjectRequest()
+            {
+                BucketName = _bucketName,
+                Key = key
+            };
+
+            
+
+            using var response = await _client.GetObjectAsync(getRequest)
+                .ConfigureAwait(false);
+            var stream = new MemoryStream();
+            await response.ResponseStream.CopyToAsync(stream);
+            stream.Position = 0;
+            return Result<Stream>.Success(stream);
+        }
+
+
+        return Result<Stream>.Failure("Could not download file");
+       
     }
 
     private static Dictionary<string, object> CreateScopeInformation(string folder, UploadRequest uploadRequest)
