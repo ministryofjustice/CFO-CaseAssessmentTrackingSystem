@@ -20,57 +20,41 @@ public class ApplicationUserClaimsPrincipalFactory
     public override async Task<ClaimsPrincipal> CreateAsync(ApplicationUser user)
     {
         var principal = await base.CreateAsync(user);
-        if (!string.IsNullOrEmpty(user.TenantId))
-        {
-            ((ClaimsIdentity)principal.Identity)?.AddClaims(
-                new[] { new Claim(ApplicationClaimTypes.TenantId, user.TenantId) }
-            );
-        }
+        ClaimsIdentity claimsIdentity = principal.Identity as ClaimsIdentity;
 
-        if (!string.IsNullOrEmpty(user.TenantName))
+        if(claimsIdentity is not null)
         {
-            ((ClaimsIdentity)principal.Identity)?.AddClaims(
-                new[] { new Claim(ApplicationClaimTypes.TenantName, user.TenantName) }
-            );
-        }
-
-        if (!string.IsNullOrEmpty(user.SuperiorId))
-        {
-            ((ClaimsIdentity)principal.Identity)?.AddClaims(new[]
+            claimsIdentity.AddClaims(
+                [
+                    new Claim(ApplicationClaimTypes.TenantId, user.TenantId!),
+                    new Claim(ApplicationClaimTypes.TenantName, user.TenantName),
+                    new Claim(ClaimTypes.GivenName, user.DisplayName),
+                ]);
+            
+            if (string.IsNullOrEmpty(user.ProfilePictureDataUrl) == false)
             {
-                new Claim(ApplicationClaimTypes.SuperiorId, user.SuperiorId)
-            });
+                claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.ProfilePictureDataUrl, user.ProfilePictureDataUrl));
+            }
+
+            if (user.LockoutEnd is not null)
+            {
+                claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.AccountLocked, "True"));
+            }
+            else
+            {
+                claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.AccountLocked, "False"));
+            }
+
+            var appUser = await UserManager.Users.Where(u => u.Id == user.Id).FirstAsync(); // 
+            var roles = await UserManager.GetRolesAsync(appUser!);
+            if (roles.Count > 0)
+            {
+                var rolesStr = string.Join(",", roles);
+                claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.AssignedRoles, rolesStr));
+            }
         }
 
-        if (!string.IsNullOrEmpty(user.DisplayName))
-        {
-            ((ClaimsIdentity)principal.Identity)?.AddClaims(
-                new[] { new Claim(ClaimTypes.GivenName, user.DisplayName) }
-            );
-        }
-
-        if (!string.IsNullOrEmpty(user.ProfilePictureDataUrl))
-        {
-            ((ClaimsIdentity)principal.Identity)?.AddClaims(
-                new[]
-                {
-                    new Claim(
-                        ApplicationClaimTypes.ProfilePictureDataUrl,
-                        user.ProfilePictureDataUrl
-                    )
-                }
-            );
-        }
-
-        var appuser = await UserManager.Users.Where(u => u.Id == user.Id).FirstOrDefaultAsync(); // 
-        var roles = await UserManager.GetRolesAsync(appuser!);
-        if (roles.Count > 0)
-        {
-            var rolesStr = string.Join(",", roles);
-            ((ClaimsIdentity)principal.Identity)?.AddClaims(
-                new[] { new Claim(ApplicationClaimTypes.AssignedRoles, rolesStr) }
-            );
-        }
+        
 
         return principal;
     }
