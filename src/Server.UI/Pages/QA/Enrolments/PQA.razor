@@ -115,6 +115,12 @@
                         <p>PDF cannot be displayed.</p>
                     </object>
                 }
+                else if(IsFileRejected)
+                {
+                    <MudText Typo="Typo.caption">
+                        File cannot be displayed. Please contact support.
+                    </MudText>
+                }
                 else
                 {
                     <MudText Typo="Typo.caption">
@@ -132,6 +138,8 @@
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry = null;
     private ParticipantDto? _participantDto = null;
+
+    private bool IsFileRejected {get; set;}
     
     [Parameter]
     public Guid Id { get; set; }
@@ -223,14 +231,21 @@
             };
 
             var result = await GetNewMediator().Send(query);
-
-            using (var memoryStream = new MemoryStream())
+            if(result.Succeeded)
             {
-                await result.FileStream.CopyToAsync(memoryStream);
-                var bytes = memoryStream.ToArray();
-                fileBase64 = Convert.ToBase64String(bytes);
+                IsFileRejected = false;
+                using (var memoryStream = new MemoryStream())
+                {
+                    await result.Data!.FileStream.CopyToAsync(memoryStream);
+                    var bytes = memoryStream.ToArray();
+                    fileBase64 = Convert.ToBase64String(bytes);
+                }
+                extension = result.Data!.FileExtension;
             }
-            extension = result.FileExtension;
+            else 
+            {
+                IsFileRejected = true;
+            }
         }
     }
 }
