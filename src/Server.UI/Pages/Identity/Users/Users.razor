@@ -33,291 +33,294 @@
 
 <PageTitle>@Title</PageTitle>
 
-<MudDataGrid @ref="_table"
-    T="ApplicationUserDto"
-    FixedHeader="true"
-    FixedFooter="false"
-    Height="calc(100vh - 300px)"
-    @bind-RowsPerPage="_defaultPageSize"
-    Hover="true"
-    Loading="@_loading"
-    ServerData="@(ServerReload)">
-    <ToolBarContent>|
-        <div class="d-flex align-start flex-grow-1">
-            <div class="d-flex gap-4">
-                <MudIcon Icon="@Icons.Material.Filled.SwitchAccount" Size="Size.Large"/>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption" Class="mb-2">@L[_currentDto.GetClassDescription()]</MudText>
-                    <MudSelect T="string" Style="min-width:120px" ValueChanged="OnChangedListView" Value="@_selectedTenantId" Dense="true" Label="List View">
-                        <MudSelectItem T="string" Value="@(" ")">@L["ALL"]</MudSelectItem>
-                        @foreach (var item in TenantsService.DataSource.OrderBy(t => t.Id))
-                        {
-                            <MudSelectItem T="string" Value="@item.Id">@item.Name</MudSelectItem>
-                        }
-                    </MudSelect>
-                </div>
-            </div>
-            <div class="flex-grow-1"></div>
-            <div class="d-flex flex-column justify-end">
-                <div class="d-flex">
-                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                        <MudButton Variant="Variant.Outlined"
-                                   Size="Size.Small"
-                                   Disabled="@_loading"
-                                   OnClick="@(OnRefresh)"
-                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary">
-                            @ConstantString.Refresh
-                        </MudButton>
-                        @if (_canCreate)
+@if(_initialised)
+{
+    <MudDataGrid @ref="_table"
+        T="ApplicationUserDto"
+        FixedHeader="true"
+        FixedFooter="false"
+        Height="calc(100vh - 300px)"
+        @bind-RowsPerPage="_defaultPageSize"
+        Hover="true"
+        Loading="@_loading"
+        ServerData="@(ServerReload)">
+        <ToolBarContent>|
+            <div class="d-flex align-start flex-grow-1">
+                <div class="d-flex gap-4">
+                    <MudIcon Icon="@Icons.Material.Filled.SwitchAccount" Size="Size.Large"/>
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.caption" Class="mb-2">@L[_currentDto.GetClassDescription()]</MudText>
+                        <MudSelect T="string" Style="min-width:120px" ValueChanged="OnChangedListView" Value="@_selectedTenantId" Dense="true" Label="List View">
+                            <MudSelectItem T="string" Value="@(" ")">@L["ALL"]</MudSelectItem>
+                            @foreach (var item in TenantsService.DataSource.OrderBy(t => t.Id))
                             {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Add"
-                                       Size="Size.Small"
-                                       OnClick="OnCreate"
-                                       IconColor="Color.Surface">
-                                @ConstantString.New
-                            </MudButton>
-                            }
-                        @if (_canExport)
-                        {
-                        <MudLoadingButton Variant="Variant.Outlined" Color="Color.Primary"
-                                          StartIcon="@Icons.Material.Filled.Download"
-                                          Size="Size.Small"
-                                          @bind-Loading="_exporting" LoadingAdornment="Adornment.Start" OnClick="OnExport"
-                                          IconColor="Color.Surface">
-                            @ConstantString.Export
-                        </MudLoadingButton>
-                        }
-                        @if (_canImport)
-                        {
-                            <MudFileUpload T="IBrowserFile" FilesChanged="OnImportData" Accept=".xlsx">
-                                <ActivatorContent>
-                                    <MudButton Size="Size.Small"
-                                               Variant="Variant.Outlined"
-                                               Color="Color.Primary"
-                                               Disabled="@_loading"
-                                               StartIcon="@Icons.Material.Filled.Upload">
-                                        @if (_uploading)
-                                        {
-                                            <MudProgressCircular Size="Size.Small" Indeterminate="true"/>
-                                            @ConstantString.Uploading
-                                        }
-                                        else
-                                        {
-                                            @ConstantString.Import
-                                        }
-                                    </MudButton>
-                                </ActivatorContent>
-                            </MudFileUpload>
-                        }
-                    </MudHidden>
-                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
-                        @if (_canCreate)
-                        {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Add"
-                                       Size="Size.Small"
-                                       OnClick="OnCreate"
-                                       IconColor="Color.Surface">
-                                @ConstantString.New
-                            </MudButton>
-                        }
-                    </MudHidden>
-                </div>
-                @if (_canSearch)
-                {
-                    <MudStack Row="true" AlignItems="AlignItems.Stretch">
-                        <MudSelect T="string" Placeholder="Search for role name" Value="@_searchRole" Clearable="true" ValueChanged="@(OnSearchRole)" Style="width:150px">
-                            @foreach (var str in _roles)
-                            {
-                            <MudSelectItem Value="@str">@str</MudSelectItem>
+                                <MudSelectItem T="string" Value="@item.Id">@item.Name</MudSelectItem>
                             }
                         </MudSelect>
-                        <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                            <MudTextField T="string" Immediate="false" ValueChanged="@(OnSearch)" Value="@_searchString" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
-                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
-                            </MudTextField>
-                        </MudHidden>
-                    </MudStack>
-                }
-
-            </div>
-        </div>
-    </ToolBarContent>
-    <Columns>
-        <HierarchyColumn T="ApplicationUserDto" ButtonDisabledFunc="@(x => x.Notes.Count() is 0)" />
-        <TemplateColumn CellStyle="width:60px" Title="@ConstantString.Actions" Sortable="false">
-            <CellTemplate>
-                @if (_canEdit || _canArchive || _canManageRoles || _canResetPassword || _canActive || _canManagePermissions)
-                {
-                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
-                             Dense="true"
-                             EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
-                        @if (_canEdit)
-                        {
-                            <MudMenuItem OnClick="@(() => OnEdit(context.Item))">@ConstantString.Edit</MudMenuItem>
-                        }
-                        @if (_canArchive)
-                        {
-                            <MudMenuItem OnClick="@(() => OnArchive(context.Item))">@ConstantString.Archive</MudMenuItem>
-                        }
-                        @if (_canActive)
-                        {
-                            @if (context.Item.IsActive)
-                            {
-                                <MudMenuItem OnClick="@(() => OnSetActive(context.Item))">@L["Deactivate"]</MudMenuItem>
-                            }
-                            else
-                            {
-                                <MudMenuItem OnClick="@(() => OnSetActive(context.Item))">@L["Activate"]</MudMenuItem>
-                            }
-                        }
-                        @if(_canResetPassword)
-                        {
-                            <MudMenuItem Disabled="@(!context.Item.IsActive)" OnClick="@(() => OnResetPassword(context.Item))">@L["Reset Password"]</MudMenuItem>
-                        }
-                    </MudMenu>
-                }
-                else
-                {
-                    <MudButton Variant="Variant.Filled"
-                               StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary" Size="Size.Small"
-                               Color="Color.Surface">
-                        @ConstantString.NoAllowed
-                    </MudButton>
-                }
-            </CellTemplate>
-        </TemplateColumn>
-        <PropertyColumn Property="x => x.TenantId" Title="@L[_currentDto.GetMemberDescription(x => x.TenantName)]">
-            <CellTemplate>
-                <div>
-                    <MudText Typo="Typo.body2">@context.Item.TenantName</MudText>
-                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.Item.TenantId</MudText>
-                </div>
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.UserName" Title="@L[_currentDto.GetMemberDescription(x => x.UserName)]">
-            <CellTemplate>
-                <div class="d-flex align-items-center">
-                    <MudBadge Color="@(IsOnline(context.Item.DisplayName??context.Item.UserName) ? Color.Success : Color.Error)" Overlap="false" Dot="true" Bordered="true">
-                        <MudAvatar>
-                            @if (string.IsNullOrEmpty(context.Item.ProfilePictureDataUrl))
-                            {
-                            @context.Item.UserName.First()
-                            }
-                            else
-                            {
-                            <MudImage Src="@context.Item.ProfilePictureDataUrl"></MudImage>
-                            }
-                        </MudAvatar>
-                    </MudBadge>
-                    <div class="pl-3">
-                        <MudText Class="ml-2 align-self-center">@context.Item.UserName</MudText>
-                        <MudText Typo="Typo.body2" Class="ml-2 align-self-center mud-text-secondary">@context.Item.Email</MudText>
                     </div>
                 </div>
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.Email" Title="@L["Display Name / PhoneNumber"]">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.DisplayName</MudText>
-                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.Item.PhoneNumber</MudText>
-                </div>
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.SuperiorId" Title="@L[_currentDto.GetMemberDescription(x => x.SuperiorName)]">
-            <CellTemplate>
-                @context.Item.SuperiorName
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Sortable="false" Property="x => x.AssignedRoles" Title="@L[_currentDto.GetMemberDescription(x => x.AssignedRoles)]">
-            <CellTemplate>
-                @if (context.Item.AssignedRoles is not null)
-                {
-                foreach (var str in context.Item.AssignedRoles)
-                {
-                <MudChip Size="Size.Small" Variant="Variant.Text">@str</MudChip>
-                }
-                }
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.IsActive" Title="@L[_currentDto.GetMemberDescription(x => x.IsActive)]">
-            <CellTemplate>
-                <div>
-                    @if (context.Item.IsActive)
-                    {
-                    <MudChip Color="Color.Success" Size="Size.Small" Icon="@Icons.Material.Filled.CheckCircleOutline">@L["Active"]</MudChip>
-                    @if (context.Item.LockoutEnd is not null)
-                    {
+                <div class="flex-grow-1"></div>
+                <div class="d-flex flex-column justify-end">
                     <div class="d-flex">
-                        <p>@L["Lockout End"]: </p>
-                        <ToLocal DateTime="@context.Item.LockoutEnd.Value.UtcDateTime.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
+                        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                            <MudButton Variant="Variant.Outlined"
+                                       Size="Size.Small"
+                                       Disabled="@_loading"
+                                       OnClick="@(OnRefresh)"
+                                       StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary">
+                                @ConstantString.Refresh
+                            </MudButton>
+                            @if (_canCreate)
+                                {
+                                <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.Add"
+                                           Size="Size.Small"
+                                           OnClick="OnCreate"
+                                           IconColor="Color.Surface">
+                                    @ConstantString.New
+                                </MudButton>
+                                }
+                            @if (_canExport)
+                            {
+                            <MudLoadingButton Variant="Variant.Outlined" Color="Color.Primary"
+                                              StartIcon="@Icons.Material.Filled.Download"
+                                              Size="Size.Small"
+                                              @bind-Loading="_exporting" LoadingAdornment="Adornment.Start" OnClick="OnExport"
+                                              IconColor="Color.Surface">
+                                @ConstantString.Export
+                            </MudLoadingButton>
+                            }
+                            @if (_canImport)
+                            {
+                                <MudFileUpload T="IBrowserFile" FilesChanged="OnImportData" Accept=".xlsx">
+                                    <ActivatorContent>
+                                        <MudButton Size="Size.Small"
+                                                   Variant="Variant.Outlined"
+                                                   Color="Color.Primary"
+                                                   Disabled="@_loading"
+                                                   StartIcon="@Icons.Material.Filled.Upload">
+                                            @if (_uploading)
+                                            {
+                                                <MudProgressCircular Size="Size.Small" Indeterminate="true"/>
+                                                @ConstantString.Uploading
+                                            }
+                                            else
+                                            {
+                                                @ConstantString.Import
+                                            }
+                                        </MudButton>
+                                    </ActivatorContent>
+                                </MudFileUpload>
+                            }
+                        </MudHidden>
+                        <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                            @if (_canCreate)
+                            {
+                                <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.Add"
+                                           Size="Size.Small"
+                                           OnClick="OnCreate"
+                                           IconColor="Color.Surface">
+                                    @ConstantString.New
+                                </MudButton>
+                            }
+                        </MudHidden>
                     </div>
+                    @if (_canSearch)
+                    {
+                        <MudStack Row="true" AlignItems="AlignItems.Stretch">
+                            <MudSelect T="string" Placeholder="Search for role name" Value="@_searchRole" Clearable="true" ValueChanged="@(OnSearchRole)" Style="width:150px">
+                                @foreach (var str in _roles.Select(x => x.Name))
+                                {
+                                    <MudSelectItem Value="@str">@str</MudSelectItem>
+                                }
+                            </MudSelect>
+                            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                                <MudTextField T="string" Immediate="false" ValueChanged="@(OnSearch)" Value="@_searchString" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                                </MudTextField>
+                            </MudHidden>
+                        </MudStack>
                     }
+
+                </div>
+            </div>
+        </ToolBarContent>
+        <Columns>
+            <HierarchyColumn T="ApplicationUserDto" ButtonDisabledFunc="@(x => x.Notes.Count() is 0)" />
+            <TemplateColumn CellStyle="width:60px" Title="@ConstantString.Actions" Sortable="false">
+                <CellTemplate>
+                    @if (_canEdit || _canArchive || _canManageRoles || _canResetPassword || _canToggleActiveStatus || _canManagePermissions)
+                    {
+                        <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                                 Dense="true"
+                                 EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                            @if (_canEdit)
+                            {
+                                <MudMenuItem OnClick="@(() => OnEdit(context.Item))">@ConstantString.Edit</MudMenuItem>
+                            }
+                            @if (_canArchive)
+                            {
+                                <MudMenuItem OnClick="@(() => OnArchive(context.Item))">@ConstantString.Archive</MudMenuItem>
+                            }
+                            @if (_canToggleActiveStatus)
+                            {
+                                @if (context.Item.IsActive)
+                                {
+                                    <MudMenuItem OnClick="@(() => OnSetActive(context.Item))">@L["Deactivate"]</MudMenuItem>
+                                }
+                                else
+                                {
+                                    <MudMenuItem OnClick="@(() => OnSetActive(context.Item))">@L["Activate"]</MudMenuItem>
+                                }
+                            }
+                            @if(CanResetPassword(context.Item.AssignedRoles))
+                            {
+                                <MudMenuItem Disabled="@(!context.Item.IsActive)" OnClick="@(() => OnResetPassword(context.Item))">@L["Reset Password"]</MudMenuItem>
+                            }
+                        </MudMenu>
                     }
                     else
                     {
-                    <MudChip Class="flex-grow-0" Color="Color.Surface" Size="Size.Small" Icon="@Icons.Material.Filled.HighlightOff">@L["Inactive"]</MudChip>
-                    @if (context.Item.LockoutEnd is not null)
-                    {
-                    <div class="d-flex">
-                        <p>@L["Lockout End"]: </p>
-                        <ToLocal DateTime="@context.Item.LockoutEnd.Value.UtcDateTime.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
+                        <MudButton Variant="Variant.Filled"
+                                   StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary" Size="Size.Small"
+                                   Color="Color.Surface">
+                            @ConstantString.NoAllowed
+                        </MudButton>
+                    }
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="x => x.TenantId" Title="@L[_currentDto.GetMemberDescription(x => x.TenantName)]">
+                <CellTemplate>
+                    <div>
+                        <MudText Typo="Typo.body2">@context.Item.TenantName</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.Item.TenantId</MudText>
                     </div>
-                    }
-                    }
-                </div>
-            </CellTemplate>
-        </PropertyColumn>
-    </Columns>
-    <ChildRowContent>
-        <MudCard Elevation="0" Class="d-flex flex-grow-0">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.body1">
-                        <strong>Additional Information</strong>
-                    </MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                @{
-                    if(context.Open)
-                    {
-                        var notes = context.Item.Notes;
-
-                        <MudSimpleTable Hover="true" Bordered="true" Striped>
-                            <thead>
-                                <tr>
-                                    <th>@L["Call Reference"]</th>
-                                    <th>@L["Message"]</th>
-                                    <th>@L["Created By"]</th>
-                                    <th>@L["Created Date"]</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var note in notes.OrderByDescending(x => x.Created))
+                </CellTemplate>
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.UserName" Title="@L[_currentDto.GetMemberDescription(x => x.UserName)]">
+                <CellTemplate>
+                    <div class="d-flex align-items-center">
+                        <MudBadge Color="@(IsOnline(context.Item.DisplayName??context.Item.UserName) ? Color.Success : Color.Error)" Overlap="false" Dot="true" Bordered="true">
+                            <MudAvatar>
+                                @if (string.IsNullOrEmpty(context.Item.ProfilePictureDataUrl))
                                 {
-                                    <tr>
-                                        <td>@(note.CallReference ?? "None")</td>
-                                        <td>@note.Message</td>
-                                        <td>@(UserService.DataSource.SingleOrDefault(x => x.Id == note.CreatedBy)?.DisplayName ?? "Unknown")</td>
-                                        <td>
-                                            <ToLocal DateTime="@note.Created.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
-                                        </td>
-                                    </tr>
+                                @context.Item.UserName.First()
                                 }
-                            </tbody>
-                        </MudSimpleTable>
+                                else
+                                {
+                                <MudImage Src="@context.Item.ProfilePictureDataUrl"></MudImage>
+                                }
+                            </MudAvatar>
+                        </MudBadge>
+                        <div class="pl-3">
+                            <MudText Class="ml-2 align-self-center">@context.Item.UserName</MudText>
+                            <MudText Typo="Typo.body2" Class="ml-2 align-self-center mud-text-secondary">@context.Item.Email</MudText>
+                        </div>
+                    </div>
+                </CellTemplate>
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.Email" Title="@L["Display Name / PhoneNumber"]">
+                <CellTemplate>
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.body2">@context.Item.DisplayName</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.Item.PhoneNumber</MudText>
+                    </div>
+                </CellTemplate>
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.SuperiorId" Title="@L[_currentDto.GetMemberDescription(x => x.SuperiorName)]">
+                <CellTemplate>
+                    @context.Item.SuperiorName
+                </CellTemplate>
+            </PropertyColumn>
+            <PropertyColumn Sortable="false" Property="x => x.AssignedRoles" Title="@L[_currentDto.GetMemberDescription(x => x.AssignedRoles)]">
+                <CellTemplate>
+                    @if (context.Item.AssignedRoles is not null)
+                    {
+                    foreach (var str in context.Item.AssignedRoles)
+                    {
+                    <MudChip Size="Size.Small" Variant="Variant.Text">@str</MudChip>
                     }
-                }
-            </MudCardContent>
-        </MudCard>
-    </ChildRowContent>
-    <PagerContent>
-        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })"/>
-    </PagerContent>
-</MudDataGrid>
+                    }
+                </CellTemplate>
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.IsActive" Title="@L[_currentDto.GetMemberDescription(x => x.IsActive)]">
+                <CellTemplate>
+                    <div>
+                        @if (context.Item.IsActive)
+                        {
+                        <MudChip Color="Color.Success" Size="Size.Small" Icon="@Icons.Material.Filled.CheckCircleOutline">@L["Active"]</MudChip>
+                        @if (context.Item.LockoutEnd is not null)
+                        {
+                        <div class="d-flex">
+                            <p>@L["Lockout End"]: </p>
+                            <ToLocal DateTime="@context.Item.LockoutEnd.Value.UtcDateTime.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
+                        </div>
+                        }
+                        }
+                        else
+                        {
+                        <MudChip Class="flex-grow-0" Color="Color.Surface" Size="Size.Small" Icon="@Icons.Material.Filled.HighlightOff">@L["Inactive"]</MudChip>
+                        @if (context.Item.LockoutEnd is not null)
+                        {
+                        <div class="d-flex">
+                            <p>@L["Lockout End"]: </p>
+                            <ToLocal DateTime="@context.Item.LockoutEnd.Value.UtcDateTime.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
+                        </div>
+                        }
+                        }
+                    </div>
+                </CellTemplate>
+            </PropertyColumn>
+        </Columns>
+        <ChildRowContent>
+            <MudCard Elevation="0" Class="d-flex flex-grow-0">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1">
+                            <strong>Additional Information</strong>
+                        </MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    @{
+                        if(context.Open)
+                        {
+                            var notes = context.Item.Notes;
+
+                            <MudSimpleTable Hover="true" Bordered="true" Striped>
+                                <thead>
+                                    <tr>
+                                        <th>@L["Call Reference"]</th>
+                                        <th>@L["Message"]</th>
+                                        <th>@L["Created By"]</th>
+                                        <th>@L["Created Date"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var note in notes.OrderByDescending(x => x.Created))
+                                    {
+                                        <tr>
+                                            <td>@(note.CallReference ?? "None")</td>
+                                            <td>@note.Message</td>
+                                            <td>@(UserService.DataSource.SingleOrDefault(x => x.Id == note.CreatedBy)?.DisplayName ?? "Unknown")</td>
+                                            <td>
+                                                <ToLocal DateTime="@note.Created.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                        }
+                    }
+                </MudCardContent>
+            </MudCard>
+        </ChildRowContent>
+        <PagerContent>
+            <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })"/>
+        </PagerContent>
+    </MudDataGrid>
+}
 
 <PermissionsDrawer OnAssignAllChanged="OnAssignAllChangedHandler" Waiting="@_processing" OnOpenChanged="OnOpenChangedHandler" Open="_showPermissionsDrawer" Permissions="_permissions" OnAssignChanged="OnAssignChangedHandler"></PermissionsDrawer>
 
@@ -331,14 +334,16 @@
 @code {
     [CascadingParameter] 
     private Task<AuthenticationState> AuthState { get; set; } = default!;
-    
+
     private UserManager<ApplicationUser> UserManager = null!;
     private RoleManager<ApplicationRole> RoleManager = null!;
 
     [CascadingParameter] 
     public UserProfile UserProfile { get; set; } = default!;
-    
-    
+
+    private ApplicationUser? CurrentUser = default;
+    private IEnumerable<string> CurrentRoles = [];
+
     private int _defaultPageSize = 15;
     private readonly ApplicationUserDto _currentDto = new();
     private string _searchString = string.Empty;
@@ -351,13 +356,14 @@
 
 
     private MudDataGrid<ApplicationUserDto> _table = null!;
+    private bool _initialised;
     private bool _processing;
     private bool _showPermissionsDrawer;
     private bool _canCreate;
     private bool _canSearch;
     private bool _canEdit;
     private bool _canArchive;
-    private bool _canActive;
+    private bool _canToggleActiveStatus;
     private bool _canManageRoles;
     private bool _canResetPassword;
     private bool _canManagePermissions;
@@ -366,26 +372,52 @@
     private bool _loading;
     private bool _exporting;
     private bool _uploading;
-    private List<string?> _roles = new();
+    private List<ApplicationRoleDto> _roles = new();
     private string? _searchRole;
+    private Dictionary<string, bool>? policies;
 
     protected override async Task OnInitializedAsync()
     {
+        _initialised = false;
+
         Title = L[_currentDto.GetClassDescription()];
         RoleManager = ScopedServices.GetRequiredService<RoleManager<ApplicationRole>>();
         UserManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
+
         var state = await AuthState;
-        _canCreate = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
-        _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsRead)).Succeeded;
-        _canEdit = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
-        _canArchive = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
-        _canActive = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
-        _canManageRoles = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
-        _canResetPassword = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
-        _canManagePermissions = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
-        _canImport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Import)).Succeeded;
-        _canExport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Export)).Succeeded;
-        _roles = await RoleManager.Roles.Select(x => x.Name).ToListAsync();
+        CurrentUser = await UserManager.GetUserAsync(state.User);
+        CurrentRoles = await UserManager.GetRolesAsync(CurrentUser!);
+
+        policies ??= new()
+        {
+            { SecurityPolicies.SystemFunctionsWrite, (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded },
+            { SecurityPolicies.Import, (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Import)).Succeeded },
+            { SecurityPolicies.Export, (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Export)).Succeeded }
+        };
+
+        _canCreate = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
+        _canSearch = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
+        _canEdit = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
+        _canArchive = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
+        _canToggleActiveStatus = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
+        _canManageRoles = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
+        _canResetPassword = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
+        _canManagePermissions = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
+        _canImport = policies.GetValueOrDefault(SecurityPolicies.Import);
+        _canExport = policies.GetValueOrDefault(SecurityPolicies.Export);
+
+        _roles = await RoleManager.Roles
+            .ProjectTo<ApplicationRoleDto>(Mapper.ConfigurationProvider)
+            .ToListAsync();
+
+        _initialised = true;
+    }
+
+    private bool CanResetPassword(string[] roles)
+    {
+        var userRole = _roles.Where(role => roles.Contains(role.Name)).MinBy(role => role.RoleRank);
+        var currentUserRole = _roles.Where(role => CurrentRoles.Contains(role.Name)).MinBy(role => role.RoleRank);
+        return _canResetPassword && currentUserRole?.RoleRank <= userRole?.RoleRank;
     }
 
     private bool IsOnline(string username)

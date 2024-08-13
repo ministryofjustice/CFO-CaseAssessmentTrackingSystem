@@ -31,7 +31,7 @@ public static class SecurityPolicies
     /// <summary>
     /// The user is permitted to import data into the system.
     /// </summary>
-    public const string Import = nameof(Export);
+    public const string Import = nameof(Import);
 
     public const string Enrol = nameof(Enrol);
 
