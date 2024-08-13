@@ -4,7 +4,7 @@
 
 @inject LayoutService LayoutService
 @inject NavigationManager NavigationManager
-@inject IConfiguration Configuration
+
 
 <PageTitle>@ApplicationSettings.AppName</PageTitle>
 <MudRTLProvider RightToLeft="@LayoutService.IsRTL">
@@ -27,6 +27,9 @@
     private System.Timers.Timer? _timer; 
 
     
+
+    [Inject]
+    protected IConfiguration Configuration { get; set; } = default!;
 
     private MudThemeProvider _mudThemeProvider = null!;
     private bool _defaultDarkMode;
@@ -87,7 +90,10 @@
     protected override void OnInitialized()
     {
         LayoutService.MajorUpdateOccured += LayoutServiceOnMajorUpdateOccured;
-        LayoutService.SetBaseTheme(Theme.ApplicationTheme());
+
+        string primaryColour = Configuration["PrimaryColour"] ?? Theme.DefaultPrimaryColour;
+
+        LayoutService.SetBaseTheme(Theme.ApplicationTheme(primaryColour));
     }
 
     private void LayoutServiceOnMajorUpdateOccured(object? sender, EventArgs e)
