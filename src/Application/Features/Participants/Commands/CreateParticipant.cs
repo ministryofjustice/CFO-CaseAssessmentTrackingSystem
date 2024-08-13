@@ -71,7 +71,7 @@ public static class CreateParticipant
             RuleFor(x => x.ReferralSource)
                 .NotNull()
                 .NotEmpty()
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Referral source"));
+                .Matches(ValidationConstants.Notes).WithMessage(string.Format(ValidationConstants.NotesMessage, "Referral source"));
 
             When(x => x.ReferralSource is "Other" or "Healthcare", () => {
                 RuleFor(x => x.ReferralComments)
