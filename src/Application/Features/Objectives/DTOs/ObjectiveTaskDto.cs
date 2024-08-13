@@ -12,9 +12,14 @@ public class ObjectiveTaskDto
     public DateTime? Completed { get; set; }
     public string? CompletedByName { get; set; }
 
+    public TaskCompletionStatus? CompletedStatus { get; set; }
     public bool IsCompleted => Completed.HasValue;
-    public bool IsOverdue => IsCompleted is false && ToFirstDayOfMonth(DateTime.UtcNow) > ToFirstDayOfMonth(Due);
-    public bool IsDueSoon => IsCompleted is false && ToFirstDayOfMonth(DateTime.UtcNow).Equals(ToFirstDayOfMonth(Due));
+    public bool IsOverdue => IsCompleted is false
+        && (ToFirstDayOfMonth(DateTime.UtcNow) > ToFirstDayOfMonth(Due));
+
+    public bool IsDueSoon => IsCompleted is false
+        && (ToFirstDayOfMonth(DateTime.UtcNow).Equals(ToFirstDayOfMonth(Due))
+        || IsOverdue is false && (DateTime.UtcNow.AddDays(14) > ToFirstDayOfMonth(Due)));
 
     public class Mapping : Profile
     {

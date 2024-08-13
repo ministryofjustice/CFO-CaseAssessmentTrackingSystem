@@ -5,16 +5,14 @@
 <MudDialog>
     <DialogContent>
         <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
-            <MudTextField 
-                @bind-Value="Model.Justification"
-                Label="@Model.GetMemberDescription(x => x.Justification)"
-                For="@(() => Model.Justification)"
-                Lines="5" />
+            <MudTextField @bind-Value="Model.Title"
+                          Label="@Model.GetMemberDescription(x => x.Title)"
+                          For="@(() => Model.Title)" />
         </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Complete</MudLoadingButton>
+        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>
 
@@ -25,7 +23,7 @@
     [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter, EditorRequired]
-    public required ReviewTask.Command Model { get; set; }
+    public required EditTask.Command Model { get; set; }
 
     private void Cancel()
     {

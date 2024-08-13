@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240813134025_Objectives_v2")]
+    partial class Objectives_v2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1894,15 +1897,21 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .ValueGeneratedOnAdd()
                                 .HasColumnType("uniqueidentifier");
 
+                            b1.Property<DateTime?>("Cancelled")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("CancelledBy")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("CancelledReason")
+                                .HasColumnType("nvarchar(max)");
+
                             b1.Property<DateTime?>("Completed")
                                 .HasColumnType("datetime2");
 
                             b1.Property<string>("CompletedBy")
                                 .HasMaxLength(36)
                                 .HasColumnType("nvarchar(36)");
-
-                            b1.Property<int?>("CompletedStatus")
-                                .HasColumnType("int");
 
                             b1.Property<DateTime?>("Created")
                                 .HasColumnType("datetime2");
@@ -1913,9 +1922,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.Property<DateTime>("Due")
                                 .HasColumnType("datetime2");
-
-                            b1.Property<string>("Justification")
-                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<DateTime?>("LastModified")
                                 .HasColumnType("datetime2");

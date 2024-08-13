@@ -5,29 +5,25 @@ using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.Objectives.Commands;
 
-public static class AddTask
+public static class EditTask
 {
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command : IRequest<Result>
     {
+        [Description("Task Id")]
+        public required Guid TaskId { get; set; }
+
         [Description("Objective Id")]
         public required Guid ObjectiveId { get; set; }
 
+        [Description("Title")]
         public string? Title { get; set; }
 
+        [Description("Due")]
         public DateTime? Due { get; set; }
-
-        public class Mapping : Profile
-        {
-            public Mapping()
-            {
-                CreateMap<Command, ObjectiveTask>(MemberList.None)
-                    .ConstructUsing(dto => ObjectiveTask.Create(dto.Title!, dto.Due!.Value));
-            }
-        }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -35,12 +31,25 @@ public static class AddTask
 
             if (objective is null)
             {
-                throw new NotFoundException("Cannot find objective", request.ObjectiveId); 
+                throw new NotFoundException("Cannot find objective", request.ObjectiveId);
             }
 
-            var task = mapper.Map<ObjectiveTask>(request);
+            var task = objective.Tasks.FirstOrDefault(x => x.Id == request.TaskId);
 
-            objective.AddTask(task);
+            if (task is null)
+            {
+                throw new NotFoundException("Cannot find task", request.TaskId);
+            }
+
+            if(request.Title is not null)
+            {
+                task.Rename(request.Title);
+            }
+
+            if(request.Due.HasValue)
+            {
+                task.Extend(request.Due.Value);
+            }
 
             return Result.Success();
         }
@@ -53,6 +62,9 @@ public static class AddTask
             var today = DateTime.UtcNow;
 
             RuleFor(x => x.ObjectiveId)
+                .NotNull();
+
+            RuleFor(x => x.TaskId)
                 .NotNull();
 
             RuleFor(x => x.Title)

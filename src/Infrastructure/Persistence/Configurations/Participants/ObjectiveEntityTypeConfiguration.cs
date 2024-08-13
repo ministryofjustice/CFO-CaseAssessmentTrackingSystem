@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Domain.Entities.Participants;
+﻿using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -29,9 +30,13 @@ public class ObjectiveEntityTypeConfiguration
         builder.Property(o => o.LastModifiedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
+        builder.Navigation(e => e.Tasks).AutoInclude();
+
         builder.OwnsMany(o => o.Tasks, task =>
         {
-            task.WithOwner();
+            task.WithOwner()
+                .HasForeignKey(x => x.ObjectiveId);
+
             task.ToTable(
                 DatabaseConstants.Tables.ObjectiveTask, 
                 DatabaseConstants.Schemas.Participant);
@@ -50,6 +55,12 @@ public class ObjectiveEntityTypeConfiguration
             task.HasOne(t => t.CompletedByUser)
                 .WithMany()
                 .HasForeignKey(t => t.CompletedBy);
+
+            task.Property(t => t.CompletedStatus)
+                .HasConversion(
+                    x => x!.Value,
+                    x => TaskCompletionStatus.FromValue(x)
+                );
         });
     }
 }

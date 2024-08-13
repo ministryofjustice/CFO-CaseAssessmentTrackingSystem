@@ -5,16 +5,18 @@
 <MudDialog>
     <DialogContent>
         <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
-            <MudTextField 
-                @bind-Value="Model.Justification"
-                Label="@Model.GetMemberDescription(x => x.Justification)"
-                For="@(() => Model.Justification)"
-                Lines="5" />
+            <MudDatePicker @bind-Date="Model.Due"
+                           FixDay="1"
+                           DateFormat="MMM, yyyy"
+                           TitleDateFormat="MMM, yyyy"
+                           MinDate="new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1)"
+                           Label="@Model.GetMemberDescription(x => x.Due)"
+                           For="@(() => Model.Due)" />
         </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Complete</MudLoadingButton>
+        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>
 
@@ -25,7 +27,7 @@
     [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter, EditorRequired]
-    public required ReviewTask.Command Model { get; set; }
+    public required EditTask.Command Model { get; set; }
 
     private void Cancel()
     {

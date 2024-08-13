@@ -1,6 +1,8 @@
 ﻿@using Cfo.Cats.Application.Features.Objectives.Commands
 @using Cfo.Cats.Application.Features.Objectives.DTOs
 @using Cfo.Cats.Application.Features.Objectives.Queries
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Objectives
 @using Cfo.Cats.Server.UI.Pages.Objectives.Tasks
 @using Humanizer
 
@@ -17,55 +19,70 @@
 {
     <MudPaper>
         <MudList T="ObjectiveTaskDto">
-            <MudListSubheader>
-                <div class="d-flex gap-2 align-center">
-                    <MudTooltip Text="New objective">
-                        <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Class="rounded-circle" />
-                    </MudTooltip>
-                    @if(Model.Any())
-                    {
-                        <MudText>Add another objective</MudText>
-                    }
-                    else
-                    {
-                        <MudText>Add an objective</MudText>
-                    }
+            <MudListSubheader Class="py-8">
+                <div class="d-flex">
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small">Review Pathway</MudButton>
                 </div>
-                <MudDivider Class="my-3"/>
+                <MudDivider Class="my-6"/>
+                <div class="d-flex">
+                    <div class="d-flex gap-4 align-center">
+                        <MudTooltip Text="New objective">
+                            <MudIconButton OnClick="AddObjective" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Class="rounded-circle" />
+                        </MudTooltip>
+                        @if (Model.Any())
+                        {
+                            <MudText>Add another objective</MudText>
+                        }
+                        else
+                        {
+                            <MudText>Add an objective</MudText>
+                        }
+                    </div>
+                    <MudSpacer />
+                    <MudCheckBox @bind-Value="hideCompleted" Label="Hide completed tasks" Disabled="Model.Any() is false" />
+                </div>
+                <MudDivider Class="mt-6"/>
             </MudListSubheader>
-            @foreach (var objective in Model)
+            @foreach (var objective in Model.OrderBy(x => x.Created))
             {
+                var tasks = objective.Tasks
+                    .Where(task => task.IsCompleted is false || hideCompleted is false)
+                    .OrderBy(task => task.Created);
+
                 <MudListItem Ripple="false" Expanded>
                     <ChildContent>
                         <div class="d-flex gap-2 align-center">
                             <MudText Typo="Typo.subtitle2">@objective.Title</MudText>
-                            <MudText>(@objective.Tasks.Count(x => x.IsCompleted)/@objective.Tasks.Count())</MudText>
-                            @if(objective.Tasks.Any(task => task.IsOverdue))
+                            <MudText>(@tasks.Count(x => x.IsCompleted)/@tasks.Count())</MudText>
+                            @if(tasks.Any())
                             {
-                                <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.AccessTime"/>
-                            }
-                            else if (objective.Tasks.Any(task => task.IsDueSoon))
-                            {
-                                <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
-                            }
-                            else if(objective.Tasks.All(task => task.IsCompleted))
-                            {
-                                <MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
+                                if (tasks.Any(task => task.IsOverdue))
+                                {
+                                    <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.AccessTime" />
+                                }
+                                else if (tasks.Any(task => task.IsDueSoon))
+                                {
+                                    <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
+                                }
+                                else if (tasks.All(task => task.IsCompleted))
+                                {
+                                    <MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
+                                }
                             }
                         </div>
                     </ChildContent>
                     <NestedList>
-                        @foreach (var task in objective.Tasks)
+                        @foreach (var task in tasks.OrderBy(x => x.Created))
                         {
                             <MudListItem Value="@task" Class="cursor-default mud-list-item-child" Ripple="false" OnClickPreventDefault>
                                 <AvatarContent>
                                     @if(task.IsCompleted)
                                     {
-                                        <MudIconButton OnClick="async() => await ToggleTask(task)" Icon="@Icons.Material.Filled.CheckBox" Disabled />
+                                        <MudIconButton Icon="@Icons.Material.Filled.CheckBox" Disabled />
                                     }
                                     else
                                     {
-                                        <MudIconButton OnClick="async() => await ToggleTask(task)" Icon="@Icons.Material.Filled.CheckBoxOutlineBlank"/>
+                                        <MudIconButton OnClick="async() => await ReviewTask(task)" Icon="@Icons.Material.Filled.CheckBoxOutlineBlank"/>
                                     }
                                 </AvatarContent>
                                 <ChildContent>
@@ -78,7 +95,14 @@
                                                 @if (task.IsCompleted)
                                                 {
                                                     <MudTooltip Text="Completed">
-                                                        <MudChip Text="Done" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
+                                                        @if(task.CompletedStatus == TaskCompletionStatus.Done)
+                                                        {
+                                                            <MudChip Text="Done" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
+                                                        }
+                                                        else if(task.CompletedStatus == TaskCompletionStatus.Closed)
+                                                        {
+                                                            <MudChip Text="Closed" Size="Size.Small" Color="Color.Dark" Icon="@Icons.Material.Filled.Close" />
+                                                        }
                                                     </MudTooltip>
                                                 }
                                                 else
@@ -117,11 +141,20 @@
                                             }
                                         </div>
                                         <div class="d-flex gap-2 align-center mr-4">
-                                            <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" Dense>
-                                                <MudMenuItem>Extend date</MudMenuItem>
-                                                <MudMenuItem OnClick="async() => await RenameTask(task)">Rename</MudMenuItem>
-                                                <MudMenuItem OnClick="async() => await CancelTask(task)">Cancel</MudMenuItem>
-                                            </MudMenu>
+                                            <MudTooltip Text="Actions">
+                                                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Disabled="task.IsCompleted" Size="Size.Small" Dense>
+                                                    <MudMenuItem OnClick="async() => await ExtendDate(task)">Extend date</MudMenuItem>
+                                                    <MudMenuItem OnClick="async() => await RenameTask(task)">Rename</MudMenuItem>
+                                                    <MudMenuItem OnClick="async() => await ReviewTask(task, close: true)">Close</MudMenuItem>
+                                                </MudMenu>
+                                            </MudTooltip>
+                                            <MudTooltip Text="Record">
+                                                <MudMenu Icon="@Icons.Material.Filled.LibraryAdd" Variant="Variant.Filled" Size="Size.Small" Dense>
+                                                    <MudMenuItem>New Activity</MudMenuItem>
+                                                    <MudMenuItem>New ETE</MudMenuItem>
+                                                    <MudMenuItem>New PSF</MudMenuItem>
+                                                </MudMenu>
+                                            </MudTooltip>
                                             <MudTooltip>
                                                 <TooltipContent>
                                                     Added @task.Created.Humanize()
@@ -149,6 +182,8 @@
 }
 
 @code {
+    private bool hideCompleted = false;
+
     [Parameter, EditorRequired]
     public required string ParticipantId { get; set; }
 
@@ -175,9 +210,64 @@
             .AsReadOnly();   
     }
 
-    public async Task ToggleTask(ObjectiveTaskDto task)
+    public async Task AddObjective()
     {
-        await Task.CompletedTask;
+        var command = new AddObjective.Command()
+        {
+            ParticipantId = ParticipantId
+        };
+
+        var parameters = new DialogParameters<AddObjectiveDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<AddObjectiveDialog>("Add objective", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                await OnRefresh();
+            }
+
+        }
+    }
+
+    public async Task ReviewTask(ObjectiveTaskDto task, bool close = false)
+    {
+        var command = new ReviewTask.Command()
+        {
+            ObjectiveId = task.ObjectiveId,
+            TaskId = task.Id,
+            Close = close
+        };
+
+        var parameters = new DialogParameters<ReviewTaskDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<ReviewTaskDialog>(string.Format("{0} task", close ? "Close" : "Complete"), parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                await OnRefresh();
+            }
+
+        }
     }
 
     public async Task AddTask(ObjectiveDto to)
@@ -192,7 +282,7 @@
             { x => x.Model, command }
         };
 
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
         var dialog = DialogService.Show<AddTaskDialog>("Add task to objective", parameters, options);
 
         var state = await dialog.Result;
@@ -209,14 +299,68 @@
         }
     }
 
-    public async Task RenameTask(ObjectiveTaskDto task)
+    public async Task ExtendDate(ObjectiveTaskDto task)
     {
-        await DialogService.ShowMessageBox("Edit Task", "Editing...");
+        var command = new EditTask.Command()
+        {
+            TaskId = task.Id,
+            ObjectiveId = task.ObjectiveId,
+            Title = task.Title,
+            Due = task.Due
+        };
+
+        var parameters = new DialogParameters<ExtendDateTaskDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<ExtendDateTaskDialog>("Extend date", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                await OnRefresh();
+            }
+
+        }
     }
 
-    public async Task CancelTask(ObjectiveTaskDto task)
+    public async Task RenameTask(ObjectiveTaskDto task)
     {
-        await DialogService.ShowMessageBox("Close Task", "Closing...");
+        var command = new EditTask.Command()
+        {
+            TaskId = task.Id,
+            ObjectiveId = task.ObjectiveId,
+            Title = task.Title,
+            Due = task.Due
+        };
+
+        var parameters = new DialogParameters<RenameTaskDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<RenameTaskDialog>("Rename task", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                await OnRefresh();
+            }
+
+        }
     }
 
 }

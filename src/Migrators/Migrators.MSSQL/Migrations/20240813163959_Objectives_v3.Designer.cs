@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240813163959_Objectives_v3")]
+    partial class Objectives_v3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1894,15 +1897,18 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .ValueGeneratedOnAdd()
                                 .HasColumnType("uniqueidentifier");
 
+                            b1.Property<DateTime?>("Closed")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("ClosedBy")
+                                .HasColumnType("nvarchar(max)");
+
                             b1.Property<DateTime?>("Completed")
                                 .HasColumnType("datetime2");
 
                             b1.Property<string>("CompletedBy")
                                 .HasMaxLength(36)
                                 .HasColumnType("nvarchar(36)");
-
-                            b1.Property<int?>("CompletedStatus")
-                                .HasColumnType("int");
 
                             b1.Property<DateTime?>("Created")
                                 .HasColumnType("datetime2");
