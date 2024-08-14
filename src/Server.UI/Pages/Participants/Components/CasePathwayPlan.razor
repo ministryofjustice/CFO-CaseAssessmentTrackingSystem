@@ -1,4 +1,4 @@
-﻿@using Cfo.Cats.Application.Features.Objectives.Commands
+@using Cfo.Cats.Application.Features.Objectives.Commands
 @using Cfo.Cats.Application.Features.Objectives.DTOs
 @using Cfo.Cats.Application.Features.Objectives.Queries
 @using Cfo.Cats.Domain.Common.Enums
@@ -24,7 +24,7 @@
                     <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small">Review Pathway</MudButton>
                 </div>
                 <MudDivider Class="my-6"/>
-                <div class="d-flex">
+                <div class="d-flex align-center">
                     <div class="d-flex gap-4 align-center">
                         <MudTooltip Text="New objective">
                             <MudIconButton OnClick="AddObjective" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Class="rounded-circle" />
@@ -222,7 +222,7 @@
             { x => x.Model, command }
         };
 
-        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
         var dialog = DialogService.Show<AddObjectiveDialog>("Add objective", parameters, options);
 
         var state = await dialog.Result;
@@ -253,7 +253,7 @@
             { x => x.Model, command }
         };
 
-        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
         var dialog = DialogService.Show<ReviewTaskDialog>(string.Format("{0} task", close ? "Close" : "Complete"), parameters, options);
 
         var state = await dialog.Result;
@@ -282,7 +282,7 @@
             { x => x.Model, command }
         };
 
-        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
         var dialog = DialogService.Show<AddTaskDialog>("Add task to objective", parameters, options);
 
         var state = await dialog.Result;
@@ -314,7 +314,7 @@
             { x => x.Model, command }
         };
 
-        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
         var dialog = DialogService.Show<ExtendDateTaskDialog>("Extend date", parameters, options);
 
         var state = await dialog.Result;
@@ -346,7 +346,7 @@
             { x => x.Model, command }
         };
 
-        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
         var dialog = DialogService.Show<RenameTaskDialog>("Rename task", parameters, options);
 
         var state = await dialog.Result;
