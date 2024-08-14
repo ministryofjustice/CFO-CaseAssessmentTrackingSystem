@@ -21,7 +21,7 @@ public class Participant : OwnerPropertyEntity<string>
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public static Participant CreateFrom(string id, string firstName, string lastName, DateTime dateOfBirth, string referralSource, string? referralComments)
+    public static Participant CreateFrom(string id, string firstName, string lastName, DateTime dateOfBirth, string referralSource, string? referralComments, int locationId)
     {
         Participant p = new Participant
         {
@@ -33,7 +33,7 @@ public class Participant : OwnerPropertyEntity<string>
             LastName = lastName,
             ReferralSource = referralSource,
             ReferralComments = referralComments,
-            _currentLocationId = 1
+            _currentLocationId = locationId
         };
         
         p.AddDomainEvent(new ParticipantCreatedDomainEvent(p));
