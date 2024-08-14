@@ -129,4 +129,76 @@
             </MudCardActions>
         </MudCard>
     </MudItem>
+    <MudItem xs="12" md="4">
+        <MudCard Style="Height: 100%;">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Bio Information</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent Class="d-flex justify-space-between align-center">
+
+                @if (_bio is null)
+                {
+                    <MudText Typo="Typo.body2">No Bio has been created.</MudText>
+                }
+                else
+                {
+                    <div>
+                        <dl class="description-list">
+                            <div class="description-pair">
+                                <dt>
+                                    <MudText Typo="Typo.subtitle2">Date Created</MudText>
+                                </dt>
+                                <dd>
+                                    <MudText Typo="Typo.body2">@_bio.BioDate!.Value.ToString("dd/MM/yyyy")</MudText>
+                                </dd>
+                            </div>
+                            <div class="description-pair">
+                                <dt>
+                                    <MudText Typo="Typo.subtitle2">Created By</MudText>
+                                </dt>
+                                <dd>
+                                    <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == _bio.BioCreator).DisplayName</MudText>
+                                </dd>
+                            </div>
+                            <div class="description-pair">
+                                <dt>
+                                    <MudText Typo="Typo.subtitle2">Status</MudText>
+                                </dt>
+                                <dd>
+                                    <MudText Typo="Typo.body2">@_bio.BioStatus!.Name.Humanize()</MudText>
+                                </dd>
+                            </div>
+                        </dl>
+
+
+                    </div>
+
+                }
+            </MudCardContent>
+            <MudCardActions>
+
+                @if (CanBeginBio())
+                {
+                    <MudTooltip Text="Create Bio">
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginBio" />
+                    </MudTooltip>
+
+                }
+                @if (CanContinueBio())
+                {
+                    <MudTooltip Text="Continue Bio">
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinueBio" />
+                    </MudTooltip>
+                }
+                @if (CanSkipBio())
+                {
+                    <MudTooltip Text="Skip Bio For Now">
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.NoMeetingRoom" Variant="Variant.Outlined" OnClick="SkipBioForNow" />
+                    </MudTooltip>
+                }
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
 </MudGrid>

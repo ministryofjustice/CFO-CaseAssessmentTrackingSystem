@@ -9,8 +9,7 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
-      <Compile Remove="Features\Bio\Commands\BeginBio.cs" />
-      <Compile Remove="Features\Bio\Commands\SaveAssessment.cs" />
+      <Compile Remove="Features\Bios\Commands\SaveAssessment.cs" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Humanizer.Core.uk" Version="2.14.1" />
@@ -33,10 +32,5 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Domain\Domain.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Features\Bio\Commands\" />
-      <Folder Include="Features\Bio\Exceptions\" />
-      <Folder Include="Features\Bio\Queries\" />
     </ItemGroup>
 </Project>

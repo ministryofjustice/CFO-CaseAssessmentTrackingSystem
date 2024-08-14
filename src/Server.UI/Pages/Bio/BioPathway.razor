@@ -1,0 +1,87 @@
+﻿@using Cfo.Cats.Application.Features.Bios.DTOs
+@using Cfo.Cats.Server.UI.Components.Stepper
+
+
+<style>
+    .two-columns {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Two columns */
+        gap: 10px; /* Adjust the gap between items as needed */
+    }
+
+    .toggle-item {
+        box-sizing: border-box; /* Ensure padding and borders are included in width/height */
+        padding: 10px; /* Add padding if needed */
+        justify-content: left !important;
+    }
+</style>
+
+@if (Model != null)
+{
+    <CatsMudStep Icon="@Model.Icon" Title="@Model.Title" Condition="@Validate" >
+        <ChildContent>
+            <MudForm @ref="@form" Model="@Model" Validation="@(Validator.ValidateAsync(Model))">
+
+                <CascadingValue Value="@Model">
+                    <MudGrid Class="mb-4 px-10">
+
+                        @foreach (var question in Model.Questions())
+                        {
+
+                            <MudItem xs="4">
+                                <Cfo.Cats.Server.UI.Pages.Bio.BioComponents.BioQuestion Question="@question.Question" HelperText="@question.OtherInformation" />
+                                @if (validateCalled && question.IsValid() == false)
+                                {
+                                    <MudText Typo="Typo.caption" Color="Color.Error">
+                                        You must select an option!
+                                    </MudText>
+                                }
+                            </MudItem>
+
+                            <MudItem xs="8">
+                                @if (question is SingleChoiceQuestion atq)
+                                {
+                                    <MudToggleGroup T="string" SelectionMode="SelectionMode.SingleSelection" @bind-Value="@atq.Answer" CheckMark FixedContent Color="Color.Primary">
+                                        @foreach (var item in atq.Options)
+                                        {
+                                            <MudToggleItem Value="@item" Text="@item" />
+                                        }
+                                    </MudToggleGroup>
+
+                                }
+                            </MudItem>
+                            <MudDivider />
+                        }
+                    </MudGrid>
+                </CascadingValue>
+            </MudForm>
+        </ChildContent>
+    </CatsMudStep>
+}
+
+@code {
+
+    private MudForm form = new();
+
+    private bool validateCalled = false;
+
+
+    [Parameter]
+    public PathwayBase? Model { get; set; }
+
+    private async Task<bool> Validate()
+    {
+        validateCalled = true;
+        BioPathwayValidator validator = new BioPathwayValidator();
+        var result = await validator.ValidateAsync(Model!);
+        return result.IsValid;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("removeInlineStyle", ".two-columns");
+        }
+    }
+}

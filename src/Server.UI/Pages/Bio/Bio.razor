@@ -1,0 +1,115 @@
+﻿@using Cfo.Cats.Application.Features.Bios.Commands
+@using Cfo.Cats.Application.Features.Bios.DTOs
+@using Cfo.Cats.Application.Features.Bios.Queries
+@using Cfo.Cats.Server.UI.Components.Stepper
+
+@inherits CatsComponentBase
+
+@page "/pages/participants/{Upci}/bio/{BioId:guid}"
+
+@if (_model != null)
+{
+    <div tabindex="-1" @ref="topOfPageElement"></div>
+	<CatsMudStepper @ref="@Stepper" Color="Color.Primary" Variant="Variant.Filled"
+					MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
+                    ActiveStepChanged="@OnStepChange" ShowSkipButton="false" ShowPreviousButton="@_showPrevious">
+		<ChildContent>
+			<MudForm Model="@_model">
+				@*This top-level form is responsible for submission *@
+                
+                @foreach (var pathway in _model.Pathways)
+                {
+                    <BioPathway Model="pathway" />
+                }
+                <StatusResultStep Processing="@Processing" SubmissionSuccess="@SubmissionSuccess" SuccessText="Bio Submitted" FailureText="Bio failed to submit" Upci="@Upci" />
+			</MudForm>
+		</ChildContent>
+	</CatsMudStepper>
+}
+
+@code {
+
+    private bool _showPrevious = false;
+    private ElementReference topOfPageElement;
+
+    [Parameter]
+    public string Upci { get; set; } = string.Empty;
+
+    [Parameter]
+    public Guid BioId { get; set; } = Guid.Empty;
+
+    [Parameter]
+    public Cfo.Cats.Application.Features.Bios.DTOs.Bio? Model { get; set; }
+
+	private Cfo.Cats.Application.Features.Bios.DTOs.Bio? _model;
+
+	private CatsMudStepper Stepper { get; set; } = new();
+
+	private int TabsLength => Stepper.Steps.Count();
+
+	//These should be local to result step component in future.
+	private bool Processing { get; set; }
+	private bool SubmissionSuccess { get; set; } = false;
+
+	protected override async Task OnInitializedAsync()
+	{
+        _model ??= Model;
+
+        if (_model is null)
+        {
+            var response = await GetNewMediator().Send(new GetBio.Query()
+            {
+                BioId = BioId,
+                ParticipantId = Upci
+            });
+
+            if (response.Succeeded)
+            {
+                _model = response.Data!;
+            }
+        }
+    }
+
+	private async Task OnStepChange(int step)
+	{
+        Processing = true;
+        await GetNewMediator().Send(new SaveBio.Command()
+        {
+            Bio = _model!
+        });
+
+        // Do not show the previous step on the first or last steps.
+        _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
+        await topOfPageElement.FocusAsync();
+        if (step == Stepper.Steps.Count())
+        {
+			await SubmitBio();
+        }
+        
+        Processing = false;
+
+ 
+    }
+
+	private async Task SubmitBio()
+	{
+		if (Stepper.IsAllStepsCompleted())
+        {
+            var validator = new BioValidator();
+            var result = await validator.ValidateAsync(_model!);
+
+			if (result.IsValid)
+			{
+				Processing = true;
+                var response = await GetNewMediator().Send(new SaveBio.Command()
+                {
+                    Bio = _model!,
+                    Submit = true
+                });
+				Processing = false;
+                SubmissionSuccess = response.Succeeded;
+            }
+			
+		}
+	}
+}

@@ -3,6 +3,6 @@ using Cfo.Cats.Domain.Entities.Bios;
 
 namespace Cfo.Cats.Domain.Events;
 
-public sealed class BioCreatedDomainEvent(Bio entity)
-    : CreatedDomainEvent<Bio>(entity);
+public sealed class BioCreatedDomainEvent(ParticipantBio entity)
+    : CreatedDomainEvent<ParticipantBio>(entity);
 
