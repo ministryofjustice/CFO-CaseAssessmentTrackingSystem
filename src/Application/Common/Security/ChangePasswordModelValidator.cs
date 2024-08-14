@@ -47,6 +47,6 @@ public class ChangePasswordModelValidator : AbstractValidator<ChangePasswordMode
 
         RuleFor(x => x.ConfirmPassword)
             .Equal(x => x.NewPassword)
-            .WithMessage(this.localizer["Confirm password must match the new password"]);
+            .WithMessage(this.localizer["Confirm New Password must match the New Password"]);
     }
 }
