@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 public static class SetEnrolmentLocation
 {
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
-    public class Command(string identifier, LocationDto currentLocation, LocationDto enrolmentLocation, string? justificationReason)
+    public class Command(string identifier, LocationDto currentLocation, LocationDto? enrolmentLocation, string? justificationReason)
         : ICacheInvalidatorRequest<Result<string>>
     {
 
@@ -27,7 +27,7 @@ public static class SetEnrolmentLocation
         /// <summary>
         /// The location to assign the enrolment to
         /// </summary>
-        public LocationDto EnrolmentLocation { get; set; } = enrolmentLocation;
+        public LocationDto? EnrolmentLocation { get; set; } = enrolmentLocation;
 
         /// <summary>
         /// A justification for enrolling a participant in a location
@@ -37,7 +37,7 @@ public static class SetEnrolmentLocation
         public string? JustificationReason { get; set; } = justificationReason;
 
         [Description("Enrol at an alternative location enrolment")]
-        public bool EnrolFromOtherLocation { get; set; } = enrolmentLocation.Id != currentLocation.Id;
+        public bool EnrolFromOtherLocation { get; set; } 
         
         public string[] CacheKeys => [ParticipantCacheKey.GetCacheKey($"Id:{this.Identifier}")];
         public CancellationTokenSource? SharedExpiryTokenSource 
@@ -60,7 +60,7 @@ public static class SetEnrolmentLocation
                 throw new ConflictException($"Participant {request.Identifier} is already enrolled");
             }
 
-            participant.SetEnrolmentLocation(request.EnrolmentLocation.Id, request.JustificationReason);
+            participant.SetEnrolmentLocation(request.EnrolmentLocation?.Id ?? request.CurrentLocation.Id, request.JustificationReason);
             return participant.Id;
         }
     }
@@ -80,7 +80,6 @@ public static class SetEnrolmentLocation
                     .Must((model, enrolmentLocation) => model.CurrentLocation != enrolmentLocation)
                     .WithMessage("Enrolment location must be different when Enrol from another location is selected");
             });
-            
             
             When(x => x.CurrentLocation != x.EnrolmentLocation, () => {
                 RuleFor(x => x.JustificationReason)

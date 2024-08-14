@@ -2,1515 +2,1515 @@
 using Cfo.Cats.Application.Features.Candidates.Queries.Search;
 using Matching.Core.Search;
 
-
 namespace Cfo.Cats.Infrastructure.Services.Candidates;
 
 public class DummyCandidateService : ICandidateService
 {
-    IReadOnlyList<CandidateDto> Candidates =>
+    public IReadOnlyList<CandidateDto> Candidates =>
     [
-        
-    new CandidateDto
-    {
-        Identifier = "1CFG1109X",
-        FirstName = "Barry",
-        LastName = "Stone",
-        DateOfBirth = new DateTime(1979, 01, 18),
-        Gender = "Male",
-        Crn = "B008622",
-        NomisNumber = "A7022B",
-        Nationality = "American",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Eastwood Park",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG3305M",
-        FirstName = "Clark",
-        LastName = "Queen",
-        DateOfBirth = new DateTime(1985, 07, 16),
-        Gender = "Female",
-        Crn = "B004786",
-        NomisNumber = "A7373X",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Southampton",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG3647Z",
-        FirstName = "Hal",
-        LastName = "Parker",
-        DateOfBirth = new DateTime(2000, 08, 31),
-        Gender = "Male",
-        Crn = "B006754",
-        NomisNumber = "A1118O",
-        Nationality = "German",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Guys Marsh",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG4819M",
-        FirstName = "Arthur",
-        LastName = "Stone",
-        DateOfBirth = new DateTime(1961, 03, 08),
-        Gender = "Female",
-        Crn = "B008866",
-        NomisNumber = "A6972X",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Stoke",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG3977A",
-        FirstName = "Oliver",
-        LastName = "Kent",
-        DateOfBirth = new DateTime(1966, 08, 16),
-        Gender = "Male",
-        Crn = "B004529",
-        NomisNumber = "A3749H",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Lancaster",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG4580T",
-        FirstName = "Barry",
-        LastName = "Jordan",
-        DateOfBirth = new DateTime(1979, 06, 18),
-        Gender = "Male",
-        Crn = "B007498",
-        NomisNumber = "A6102N",
-        Nationality = "German",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Northumberland",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG7754K",
-        FirstName = "Victor",
-        LastName = "Kent",
-        DateOfBirth = new DateTime(1956, 10, 21),
-        Gender = "Male",
-        Crn = "B003913",
-        NomisNumber = "A2817B",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Brixton",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG1873Q",
-        FirstName = "Arthur",
-        LastName = "Wayne",
-        DateOfBirth = new DateTime(1988, 08, 15),
-        Gender = "Male",
-        Crn = "B004044",
-        NomisNumber = "A8654X",
-        Nationality = "American",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Peterborough (M)",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG5221C",
-        FirstName = "Victor",
-        LastName = "Parker",
-        DateOfBirth = new DateTime(1977, 09, 14),
-        Gender = "Male",
-        Crn = "B003506",
-        NomisNumber = "A3576S",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Lewisham",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG5006P",
-        FirstName = "Clark",
-        LastName = "Kent",
-        DateOfBirth = new DateTime(1988, 09, 09),
-        Gender = "Female",
-        Crn = "B001407",
-        NomisNumber = "A8065E",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Exeter",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG2001T",
-        FirstName = "Oliver",
-        LastName = "Jordan",
-        DateOfBirth = new DateTime(2004, 09, 30),
-        Gender = "Female",
-        Crn = "B003237",
-        NomisNumber = "A6587Y",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Portland",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG5437L",
-        FirstName = "Hal",
-        LastName = "Parker",
-        DateOfBirth = new DateTime(1956, 09, 25),
-        Gender = "Male",
-        Crn = "B003171",
-        NomisNumber = "A6952Z",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "High Down",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG2883L",
-        FirstName = "Oliver",
-        LastName = "Prince",
-        DateOfBirth = new DateTime(1961, 08, 29),
-        Gender = "Male",
-        Crn = "B007887",
-        NomisNumber = "A3402I",
-        Nationality = "American",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Guys Marsh",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG2167R",
-        FirstName = "Bruce",
-        LastName = "Allen",
-        DateOfBirth = new DateTime(1969, 08, 27),
-        Gender = "Female",
-        Crn = "B009234",
-        NomisNumber = "A7364G",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Stoke",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG9064R",
-        FirstName = "Bruce",
-        LastName = "Jordan",
-        DateOfBirth = new DateTime(1982, 07, 19),
-        Gender = "Male",
-        Crn = "B004752",
-        NomisNumber = "A6222S",
-        Nationality = "American",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Leeds",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG1900I",
-        FirstName = "Oliver",
-        LastName = "Curry",
-        DateOfBirth = new DateTime(1983, 06, 30),
-        Gender = "Male",
-        Crn = "B005270",
-        NomisNumber = "A9293C",
-        Nationality = "German",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Leeds",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG2847D",
-        FirstName = "Bruce",
-        LastName = "Jordan",
-        DateOfBirth = new DateTime(1991, 09, 17),
-        Gender = "Female",
-        Crn = "B005459",
-        NomisNumber = "A5884J",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Peterborough",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG7892B",
-        FirstName = "Arthur",
-        LastName = "Wayne",
-        DateOfBirth = new DateTime(1952, 08, 22),
-        Gender = "Male",
-        Crn = "B006933",
-        NomisNumber = "A9162Q",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Leeds",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG6906H",
-        FirstName = "Diana",
-        LastName = "Curry",
-        DateOfBirth = new DateTime(1980, 08, 09),
-        Gender = "Male",
-        Crn = "B005260",
-        NomisNumber = "A6150I",
-        Nationality = "German",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Hull",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG1333S",
-        FirstName = "Peter",
-        LastName = "Allen",
-        DateOfBirth = new DateTime(1989, 12, 02),
-        Gender = "Female",
-        Crn = "B002552",
-        NomisNumber = "A2257F",
-        Nationality = "German",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Haverigg",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG1479H",
-        FirstName = "Peter",
-        LastName = "Prince",
-        DateOfBirth = new DateTime(1956, 07, 18),
-        Gender = "Female",
-        Crn = "B004442",
-        NomisNumber = "A6948J",
-        Nationality = "American",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Woodhill",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG7788V",
-        FirstName = "Diana",
-        LastName = "Lance",
-        DateOfBirth = new DateTime(1953, 10, 27),
-        Gender = "Male",
-        Crn = "B004219",
-        NomisNumber = "A9649A",
-        Nationality = "Canadian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Liverpool",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG1553F",
-        FirstName = "Victor",
-        LastName = "Jordan",
-        DateOfBirth = new DateTime(1978, 12, 08),
-        Gender = "Female",
-        Crn = "B008576",
-        NomisNumber = "A9860R",
-        Nationality = "German",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Hindley",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG4867Q",
-        FirstName = "Oliver",
-        LastName = "Jordan",
-        DateOfBirth = new DateTime(2000, 02, 03),
-        Gender = "Male",
-        Crn = "B008340",
-        NomisNumber = "A1567L",
-        Nationality = "German",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Lancaster",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG5854G",
-        FirstName = "Dinah",
-        LastName = "Queen",
-        DateOfBirth = new DateTime(1952, 10, 09),
-        Gender = "Female",
-        Crn = "B009885",
-        NomisNumber = "A9937F",
-        Nationality = "Canadian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Ranby",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG5469L",
-        FirstName = "Peter",
-        LastName = "Queen",
-        DateOfBirth = new DateTime(1953, 11, 18),
-        Gender = "Male",
-        Crn = "B001257",
-        NomisNumber = "A4692D",
-        Nationality = "German",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Peterborough (F)",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG5502H",
-        FirstName = "Bruce",
-        LastName = "Kent",
-        DateOfBirth = new DateTime(1978, 02, 11),
-        Gender = "Male",
-        Crn = "B009194",
-        NomisNumber = "A1411Y",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "North West Community",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG2825E",
-        FirstName = "Peter",
-        LastName = "Prince",
-        DateOfBirth = new DateTime(1975, 12, 23),
-        Gender = "Female",
-        Crn = "B009268",
-        NomisNumber = "A7907D",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Thameside",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG8516T",
-        FirstName = "Dinah",
-        LastName = "Kent",
-        DateOfBirth = new DateTime(1954, 06, 19),
-        Gender = "Female",
-        Crn = "B009761",
-        NomisNumber = "A7400N",
-        Nationality = "Canadian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Brixton",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG5298O",
-        FirstName = "Victor",
-        LastName = "Jordan",
-        DateOfBirth = new DateTime(1961, 07, 28),
-        Gender = "Male",
-        Crn = "B007256",
-        NomisNumber = "A8430T",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Bullingdon",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG9775P",
-        FirstName = "Barry",
-        LastName = "Stone",
-        DateOfBirth = new DateTime(1960, 08, 14),
-        Gender = "Female",
-        Crn = "B008155",
-        NomisNumber = "A1067S",
-        Nationality = "Canadian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Wealstun",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG6849L",
-        FirstName = "Bruce",
-        LastName = "Parker",
-        DateOfBirth = new DateTime(1977, 02, 20),
-        Gender = "Male",
-        Crn = "B009597",
-        NomisNumber = "A7483A",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "East Sutton Park",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG8347B",
-        FirstName = "Clark",
-        LastName = "Queen",
-        DateOfBirth = new DateTime(2005, 10, 06),
-        Gender = "Female",
-        Crn = "B005305",
-        NomisNumber = "A1056J",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "South West Community",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG4189E",
-        FirstName = "Bruce",
-        LastName = "Curry",
-        DateOfBirth = new DateTime(1956, 04, 14),
-        Gender = "Female",
-        Crn = "B006480",
-        NomisNumber = "A3064C",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Stoke Heath",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG5514M",
-        FirstName = "Clark",
-        LastName = "Curry",
-        DateOfBirth = new DateTime(1962, 05, 28),
-        Gender = "Female",
-        Crn = "B005528",
-        NomisNumber = "A7236E",
-        Nationality = "American",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Channings Wood",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG5252T",
-        FirstName = "Peter",
-        LastName = "Queen",
-        DateOfBirth = new DateTime(1964, 09, 23),
-        Gender = "Female",
-        Crn = "B008719",
-        NomisNumber = "A4570W",
-        Nationality = "American",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Newcastle",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG6789D",
-        FirstName = "Clark",
-        LastName = "Parker",
-        DateOfBirth = new DateTime(1968, 10, 24),
-        Gender = "Male",
-        Crn = "B002584",
-        NomisNumber = "A6440G",
-        Nationality = "Canadian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Send",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG1848U",
-        FirstName = "Barry",
-        LastName = "Jordan",
-        DateOfBirth = new DateTime(1981, 06, 09),
-        Gender = "Female",
-        Crn = "B004852",
-        NomisNumber = "A7126Q",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "South West Community",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG4892S",
-        FirstName = "Arthur",
-        LastName = "Allen",
-        DateOfBirth = new DateTime(1960, 10, 09),
-        Gender = "Male",
-        Crn = "B008270",
-        NomisNumber = "A6249N",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Doncaster",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG5866O",
-        FirstName = "Peter",
-        LastName = "Jordan",
-        DateOfBirth = new DateTime(2001, 10, 07),
-        Gender = "Female",
-        Crn = "B008561",
-        NomisNumber = "A9186B",
-        Nationality = "American",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Hindley",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG7842D",
-        FirstName = "Diana",
-        LastName = "Queen",
-        DateOfBirth = new DateTime(1982, 07, 15),
-        Gender = "Female",
-        Crn = "B005033",
-        NomisNumber = "A2699Z",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "East Midlands Community",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG8262O",
-        FirstName = "Peter",
-        LastName = "Curry",
-        DateOfBirth = new DateTime(1984, 07, 02),
-        Gender = "Male",
-        Crn = "B001022",
-        NomisNumber = "A2865U",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Dartmoor",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG6353O",
-        FirstName = "Hal",
-        LastName = "Stone",
-        DateOfBirth = new DateTime(1952, 01, 15),
-        Gender = "Male",
-        Crn = "B002433",
-        NomisNumber = "A4973L",
-        Nationality = "German",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "South West Community",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG2308N",
-        FirstName = "Clark",
-        LastName = "Parker",
-        DateOfBirth = new DateTime(2004, 06, 26),
-        Gender = "Male",
-        Crn = "B006501",
-        NomisNumber = "A3961U",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Pentonville",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG8867D",
-        FirstName = "Arthur",
-        LastName = "Curry",
-        DateOfBirth = new DateTime(1951, 09, 20),
-        Gender = "Male",
-        Crn = "B009689",
-        NomisNumber = "A8052R",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Doncaster",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG5131C",
-        FirstName = "Barry",
-        LastName = "Allen",
-        DateOfBirth = new DateTime(1981, 06, 26),
-        Gender = "Male",
-        Crn = "B005370",
-        NomisNumber = "A5295T",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Wayland",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG8864M",
-        FirstName = "Arthur",
-        LastName = "Curry",
-        DateOfBirth = new DateTime(1985, 03, 14),
-        Gender = "Female",
-        Crn = "B001879",
-        NomisNumber = "A4162O",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Hull",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG5544Z",
-        FirstName = "Hal",
-        LastName = "Allen",
-        DateOfBirth = new DateTime(1954, 08, 11),
-        Gender = "Female",
-        Crn = "B007141",
-        NomisNumber = "A3667G",
-        Nationality = "Canadian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Luton",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG9475S",
-        FirstName = "Victor",
-        LastName = "Jordan",
-        DateOfBirth = new DateTime(1950, 04, 10),
-        Gender = "Female",
-        Crn = "B009820",
-        NomisNumber = "A1011F",
-        Nationality = "American",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Elmley",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG8570M",
-        FirstName = "Bruce",
-        LastName = "Queen",
-        DateOfBirth = new DateTime(1951, 07, 21),
-        Gender = "Male",
-        Crn = "B005022",
-        NomisNumber = "A2364M",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Woodhill",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG1646R",
-        FirstName = "Hal",
-        LastName = "Kent",
-        DateOfBirth = new DateTime(1957, 08, 21),
-        Gender = "Female",
-        Crn = "B008390",
-        NomisNumber = "A9321H",
-        Nationality = "Canadian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Brinsford",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG7199D",
-        FirstName = "Hal",
-        LastName = "Prince",
-        DateOfBirth = new DateTime(1990, 06, 25),
-        Gender = "Female",
-        Crn = "B006153",
-        NomisNumber = "A2303F",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Durham",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG8089M",
-        FirstName = "Barry",
-        LastName = "Parker",
-        DateOfBirth = new DateTime(1982, 10, 31),
-        Gender = "Female",
-        Crn = "B005799",
-        NomisNumber = "A8614G",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Kirklevington Grange",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG5547B",
-        FirstName = "Barry",
-        LastName = "Lance",
-        DateOfBirth = new DateTime(1990, 01, 17),
-        Gender = "Female",
-        Crn = "B002156",
-        NomisNumber = "A7019I",
-        Nationality = "American",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Lambeth",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG2192B",
-        FirstName = "Victor",
-        LastName = "Allen",
-        DateOfBirth = new DateTime(1999, 07, 30),
-        Gender = "Female",
-        Crn = "B009460",
-        NomisNumber = "A2301T",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Croydon",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG9918N",
-        FirstName = "Barry",
-        LastName = "Stone",
-        DateOfBirth = new DateTime(1962, 03, 25),
-        Gender = "Male",
-        Crn = "B007272",
-        NomisNumber = "A7368N",
-        Nationality = "American",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Lewisham",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG1461R",
-        FirstName = "Peter",
-        LastName = "Parker",
-        DateOfBirth = new DateTime(1995, 03, 25),
-        Gender = "Male",
-        Crn = "B004903",
-        NomisNumber = "A9368J",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Humber",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG2867U",
-        FirstName = "Diana",
-        LastName = "Lance",
-        DateOfBirth = new DateTime(1968, 06, 27),
-        Gender = "Male",
-        Crn = "B009542",
-        NomisNumber = "A4368J",
-        Nationality = "Canadian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Askham Grange",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG3069P",
-        FirstName = "Dinah",
-        LastName = "Stone",
-        DateOfBirth = new DateTime(1987, 06, 22),
-        Gender = "Female",
-        Crn = "B009809",
-        NomisNumber = "A1436V",
-        Nationality = "Canadian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Lindholme",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG7072K",
-        FirstName = "Arthur",
-        LastName = "Queen",
-        DateOfBirth = new DateTime(1975, 10, 05),
-        Gender = "Male",
-        Crn = "B009199",
-        NomisNumber = "A6247X",
-        Nationality = "Canadian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Stanford Hill",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG2438I",
-        FirstName = "Barry",
-        LastName = "Prince",
-        DateOfBirth = new DateTime(1971, 07, 08),
-        Gender = "Female",
-        Crn = "B003456",
-        NomisNumber = "A5176N",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Highpoint",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG6580Z",
-        FirstName = "Dinah",
-        LastName = "Allen",
-        DateOfBirth = new DateTime(1960, 03, 05),
-        Gender = "Female",
-        Crn = "B003215",
-        NomisNumber = "A4206S",
-        Nationality = "German",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Yorkshire and Humberside Community",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG1303N",
-        FirstName = "Diana",
-        LastName = "Lance",
-        DateOfBirth = new DateTime(1984, 05, 05),
-        Gender = "Male",
-        Crn = "B002668",
-        NomisNumber = "A5319A",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Humber",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG2282K",
-        FirstName = "Barry",
-        LastName = "Lance",
-        DateOfBirth = new DateTime(1960, 11, 30),
-        Gender = "Female",
-        Crn = "B006078",
-        NomisNumber = "A8725W",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Wolverhampton",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG7502D",
-        FirstName = "Hal",
-        LastName = "Prince",
-        DateOfBirth = new DateTime(1965, 09, 03),
-        Gender = "Male",
-        Crn = "B005846",
-        NomisNumber = "A7652N",
-        Nationality = "American",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Haverigg",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG8236D",
-        FirstName = "Bruce",
-        LastName = "Allen",
-        DateOfBirth = new DateTime(1999, 02, 24),
-        Gender = "Male",
-        Crn = "B001005",
-        NomisNumber = "A6250U",
-        Nationality = "American",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Haverigg",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG4926U",
-        FirstName = "Peter",
-        LastName = "Jordan",
-        DateOfBirth = new DateTime(1990, 04, 04),
-        Gender = "Female",
-        Crn = "B008641",
-        NomisNumber = "A3877T",
-        Nationality = "German",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Woodhill",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG3204I",
-        FirstName = "Bruce",
-        LastName = "Jordan",
-        DateOfBirth = new DateTime(1958, 05, 02),
-        Gender = "Male",
-        Crn = "B007677",
-        NomisNumber = "A1403D",
-        Nationality = "German",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "The Verne",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG3962X",
-        FirstName = "Arthur",
-        LastName = "Parker",
-        DateOfBirth = new DateTime(1981, 02, 12),
-        Gender = "Female",
-        Crn = "B007012",
-        NomisNumber = "A6308N",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Dovegate",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG7281E",
-        FirstName = "Peter",
-        LastName = "Stone",
-        DateOfBirth = new DateTime(1958, 07, 02),
-        Gender = "Male",
-        Crn = "B001642",
-        NomisNumber = "A6119B",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Sheffield",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG1626P",
-        FirstName = "Bruce",
-        LastName = "Curry",
-        DateOfBirth = new DateTime(1996, 05, 24),
-        Gender = "Male",
-        Crn = "B002835",
-        NomisNumber = "A5610C",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Liverpool",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG1773W",
-        FirstName = "Peter",
-        LastName = "Allen",
-        DateOfBirth = new DateTime(2005, 07, 21),
-        Gender = "Male",
-        Crn = "B007895",
-        NomisNumber = "A9218R",
-        Nationality = "Canadian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Humber",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG1359X",
-        FirstName = "Bruce",
-        LastName = "Parker",
-        DateOfBirth = new DateTime(1954, 02, 23),
-        Gender = "Male",
-        Crn = "B004099",
-        NomisNumber = "A5852K",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Channings Wood",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG5462D",
-        FirstName = "Oliver",
-        LastName = "Queen",
-        DateOfBirth = new DateTime(1975, 07, 10),
-        Gender = "Female",
-        Crn = "B007065",
-        NomisNumber = "A6399O",
-        Nationality = "German",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Birmingham",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG5813Z",
-        FirstName = "Hal",
-        LastName = "Wayne",
-        DateOfBirth = new DateTime(1969, 12, 28),
-        Gender = "Male",
-        Crn = "B004062",
-        NomisNumber = "A7138M",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Nottingham",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG2975B",
-        FirstName = "Peter",
-        LastName = "Queen",
-        DateOfBirth = new DateTime(1996, 02, 13),
-        Gender = "Male",
-        Crn = "B009564",
-        NomisNumber = "A3824O",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Yorkshire and Humberside Community",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG7191X",
-        FirstName = "Dinah",
-        LastName = "Parker",
-        DateOfBirth = new DateTime(1992, 06, 27),
-        Gender = "Male",
-        Crn = "B002061",
-        NomisNumber = "A4383X",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Stocken",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG4565H",
-        FirstName = "Barry",
-        LastName = "Jordan",
-        DateOfBirth = new DateTime(1978, 08, 05),
-        Gender = "Female",
-        Crn = "B003240",
-        NomisNumber = "A4101Q",
-        Nationality = "Canadian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Askham Grange",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG9573P",
-        FirstName = "Bruce",
-        LastName = "Allen",
-        DateOfBirth = new DateTime(1989, 12, 10),
-        Gender = "Female",
-        Crn = "B004658",
-        NomisNumber = "A6701W",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Peterborough (M)",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG7276C",
-        FirstName = "Oliver",
-        LastName = "Prince",
-        DateOfBirth = new DateTime(1998, 08, 16),
-        Gender = "Female",
-        Crn = "B005676",
-        NomisNumber = "A8257O",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Lewisham",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG7041Z",
-        FirstName = "Bruce",
-        LastName = "Stone",
-        DateOfBirth = new DateTime(1997, 10, 22),
-        Gender = "Male",
-        Crn = "B002248",
-        NomisNumber = "A8067P",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Thorn Cross",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG7680G",
-        FirstName = "Hal",
-        LastName = "Parker",
-        DateOfBirth = new DateTime(1953, 08, 01),
-        Gender = "Female",
-        Crn = "B005014",
-        NomisNumber = "A7056P",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Newcastle",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG9326Y",
-        FirstName = "Bruce",
-        LastName = "Kent",
-        DateOfBirth = new DateTime(1968, 10, 20),
-        Gender = "Male",
-        Crn = "B003336",
-        NomisNumber = "A8225D",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Forest Bank",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG4936J",
-        FirstName = "Victor",
-        LastName = "Jordan",
-        DateOfBirth = new DateTime(1982, 04, 12),
-        Gender = "Male",
-        Crn = "B006762",
-        NomisNumber = "A3361E",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Low Newton",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG7256O",
-        FirstName = "Barry",
-        LastName = "Parker",
-        DateOfBirth = new DateTime(1972, 03, 17),
-        Gender = "Female",
-        Crn = "B001484",
-        NomisNumber = "A6272W",
-        Nationality = "German",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Bullingdon",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG9960M",
-        FirstName = "Bruce",
-        LastName = "Lance",
-        DateOfBirth = new DateTime(1969, 03, 04),
-        Gender = "Female",
-        Crn = "B005605",
-        NomisNumber = "A3591S",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Humber",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG8432I",
-        FirstName = "Hal",
-        LastName = "Curry",
-        DateOfBirth = new DateTime(1950, 07, 15),
-        Gender = "Male",
-        Crn = "B007158",
-        NomisNumber = "A4526N",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Stocken",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG4595K",
-        FirstName = "Clark",
-        LastName = "Kent",
-        DateOfBirth = new DateTime(1982, 09, 09),
-        Gender = "Female",
-        Crn = "B009462",
-        NomisNumber = "A3837U",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Dovegate",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG4261Y",
-        FirstName = "Diana",
-        LastName = "Wayne",
-        DateOfBirth = new DateTime(1997, 07, 25),
-        Gender = "Male",
-        Crn = "B005300",
-        NomisNumber = "A5265W",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Durham",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG2622V",
-        FirstName = "Dinah",
-        LastName = "Jordan",
-        DateOfBirth = new DateTime(1953, 02, 10),
-        Gender = "Male",
-        Crn = "B002298",
-        NomisNumber = "A9419J",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Sunderland",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG2457U",
-        FirstName = "Bruce",
-        LastName = "Wayne",
-        DateOfBirth = new DateTime(1970, 11, 03),
-        Gender = "Female",
-        Crn = "B004351",
-        NomisNumber = "A7217C",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Isis",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG8391O",
-        FirstName = "Hal",
-        LastName = "Kent",
-        DateOfBirth = new DateTime(2004, 05, 28),
-        Gender = "Male",
-        Crn = "B004107",
-        NomisNumber = "A3664K",
-        Nationality = "German",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "East Sutton Park",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG2959S",
-        FirstName = "Clark",
-        LastName = "Lance",
-        DateOfBirth = new DateTime(1951, 01, 27),
-        Gender = "Male",
-        Crn = "B005811",
-        NomisNumber = "A8953A",
-        Nationality = "Canadian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Rochester",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG6390M",
-        FirstName = "Arthur",
-        LastName = "Lance",
-        DateOfBirth = new DateTime(1998, 09, 15),
-        Gender = "Male",
-        Crn = "B009365",
-        NomisNumber = "A4773V",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Featherstone",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG8062R",
-        FirstName = "Arthur",
-        LastName = "Kent",
-        DateOfBirth = new DateTime(1988, 05, 27),
-        Gender = "Female",
-        Crn = "B009001",
-        NomisNumber = "A2146Z",
-        Nationality = "Canadian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Winchester",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG9884C",
-        FirstName = "Oliver",
-        LastName = "Lance",
-        DateOfBirth = new DateTime(1979, 09, 15),
-        Gender = "Male",
-        Crn = "B009645",
-        NomisNumber = "A9574H",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Liverpool",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG7900F",
-        FirstName = "Barry",
-        LastName = "Curry",
-        DateOfBirth = new DateTime(1968, 04, 13),
-        Gender = "Male",
-        Crn = "B009738",
-        NomisNumber = "A6760E",
-        Nationality = "French",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Huddersfield",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG3726I",
-        FirstName = "Clark",
-        LastName = "Stone",
-        DateOfBirth = new DateTime(1974, 09, 11),
-        Gender = "Female",
-        Crn = "B005227",
-        NomisNumber = "A8764J",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Wealstun",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG9798U",
-        FirstName = "Hal",
-        LastName = "Queen",
-        DateOfBirth = new DateTime(1996, 05, 07),
-        Gender = "Female",
-        Crn = "B003704",
-        NomisNumber = "A3850Z",
-        Nationality = "Australian",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "Nottingham",
-    },
-    
-    new CandidateDto
-    {
-        Identifier = "1CFG6059P",
-        FirstName = "Oliver",
-        LastName = "Kent",
-        DateOfBirth = new DateTime(2002, 10, 26),
-        Gender = "Female",
-        Crn = "B008239",
-        NomisNumber = "A6307B",
-        Nationality = "British",
-        Ethnicity = "",
-        Primary = "Nomis",
-        CurrentLocation = "London Community",
-    },
-    
+        new CandidateDto
+        {
+            Identifier = "1CFG1109X",
+            FirstName = "Barry",
+            LastName = "Stone",
+            DateOfBirth = new DateTime(1979, 1, 18),
+            Gender = "Male",
+            Crn = "B008622",
+            NomisNumber = "A7022B",
+            Primary = "Nomis",
+            EstCode = "LNS",
+            CurrentLocation = "Lincolnshire",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG3305M",
+            FirstName = "Clark",
+            LastName = "Queen",
+            DateOfBirth = new DateTime(1985, 7, 16),
+            Gender = "Female",
+            Crn = "B004786",
+            NomisNumber = "A7373X",
+            Primary = "Nomis",
+            EstCode = "HBI",
+            CurrentLocation = "Hollesley Bay",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG3647Z",
+            FirstName = "Hal",
+            LastName = "Parker",
+            DateOfBirth = new DateTime(2000, 8, 31),
+            Gender = "Male",
+            Crn = "B006754",
+            NomisNumber = "A1118O",
+            Primary = "Nomis",
+            EstCode = "N22",
+            CurrentLocation = "External - NPS Midlands",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG4819M",
+            FirstName = "Arthur",
+            LastName = "Stone",
+            DateOfBirth = new DateTime(1961, 3, 8),
+            Gender = "Female",
+            Crn = "B008866",
+            NomisNumber = "A6972X",
+            Primary = "Nomis",
+            EstCode = "GNI",
+            CurrentLocation = "Grendon",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG3977A",
+            FirstName = "Oliver",
+            LastName = "Kent",
+            DateOfBirth = new DateTime(1966, 8, 16),
+            Gender = "Male",
+            Crn = "B004529",
+            NomisNumber = "A3749H",
+            Primary = "Nomis",
+            EstCode = "SKI",
+            CurrentLocation = "Stocken",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG4580T",
+            FirstName = "Barry",
+            LastName = "Jordan",
+            DateOfBirth = new DateTime(1979, 6, 18),
+            Gender = "Male",
+            Crn = "B007498",
+            NomisNumber = "A6102N",
+            Primary = "Nomis",
+            EstCode = "N07",
+            CurrentLocation = "London",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG7754K",
+            FirstName = "Victor",
+            LastName = "Kent",
+            DateOfBirth = new DateTime(1956, 10, 21),
+            Gender = "Male",
+            Crn = "B003913",
+            NomisNumber = "A2817B",
+            Primary = "Nomis",
+            EstCode = "FYI",
+            CurrentLocation = "Feltham",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG1873Q",
+            FirstName = "Arthur",
+            LastName = "Wayne",
+            DateOfBirth = new DateTime(1988, 8, 15),
+            Gender = "Male",
+            Crn = "B004044",
+            NomisNumber = "A8654X",
+            Primary = "Nomis",
+            EstCode = "YSN",
+            CurrentLocation = "York and North Yorkshire",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG5221C",
+            FirstName = "Victor",
+            LastName = "Parker",
+            DateOfBirth = new DateTime(1977, 9, 14),
+            Gender = "Male",
+            Crn = "B003506",
+            NomisNumber = "A3576S",
+            Primary = "Nomis",
+            EstCode = "OUT",
+            CurrentLocation = "Outside Prison",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG5006P",
+            FirstName = "Clark",
+            LastName = "Kent",
+            DateOfBirth = new DateTime(1988, 9, 9),
+            Gender = "Female",
+            Crn = "B001407",
+            NomisNumber = "A8065E",
+            Primary = "Nomis",
+            EstCode = "CWI",
+            CurrentLocation = "Channings Wood",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG2001T",
+            FirstName = "Oliver",
+            LastName = "Jordan",
+            DateOfBirth = new DateTime(2004, 9, 30),
+            Gender = "Female",
+            Crn = "B003237",
+            NomisNumber = "A6587Y",
+            Primary = "Nomis",
+            EstCode = "N31",
+            CurrentLocation = "Ext - East Midlands Region",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG5437L",
+            FirstName = "Hal",
+            LastName = "Parker",
+            DateOfBirth = new DateTime(1956, 9, 25),
+            Gender = "Male",
+            Crn = "B003171",
+            NomisNumber = "A6952Z",
+            Primary = "Nomis",
+            EstCode = "N26",
+            CurrentLocation = "External - NPS South West & SC",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG2883L",
+            FirstName = "Oliver",
+            LastName = "Prince",
+            DateOfBirth = new DateTime(1961, 8, 29),
+            Gender = "Male",
+            Crn = "B007887",
+            NomisNumber = "A3402I",
+            Primary = "Nomis",
+            EstCode = "GMI",
+            CurrentLocation = "Guys Marsh",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG2167R",
+            FirstName = "Bruce",
+            LastName = "Allen",
+            DateOfBirth = new DateTime(1969, 8, 27),
+            Gender = "Female",
+            Crn = "B009234",
+            NomisNumber = "A7364G",
+            Primary = "Nomis",
+            EstCode = "PBI",
+            CurrentLocation = "Peterborough",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG9064R",
+            FirstName = "Bruce",
+            LastName = "Jordan",
+            DateOfBirth = new DateTime(1982, 7, 19),
+            Gender = "Male",
+            Crn = "B004752",
+            NomisNumber = "A6222S",
+            Primary = "Nomis",
+            EstCode = "N07",
+            CurrentLocation = "London",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG1900I",
+            FirstName = "Oliver",
+            LastName = "Curry",
+            DateOfBirth = new DateTime(1983, 6, 30),
+            Gender = "Male",
+            Crn = "B005270",
+            NomisNumber = "A9293C",
+            Primary = "Nomis",
+            EstCode = "IWI",
+            CurrentLocation = "Isle Of Wight",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG2847D",
+            FirstName = "Bruce",
+            LastName = "Jordan",
+            DateOfBirth = new DateTime(1991, 9, 17),
+            Gender = "Female",
+            Crn = "B005459",
+            NomisNumber = "A5884J",
+            Primary = "Nomis",
+            EstCode = "DTV",
+            CurrentLocation = "Durham and Tees Valley",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG7892B",
+            FirstName = "Arthur",
+            LastName = "Wayne",
+            DateOfBirth = new DateTime(1952, 8, 22),
+            Gender = "Male",
+            Crn = "B006933",
+            NomisNumber = "A9162Q",
+            Primary = "Nomis",
+            EstCode = "C19",
+            CurrentLocation = "CPA Dorset Devon and Cornwall",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG6906H",
+            FirstName = "Diana",
+            LastName = "Curry",
+            DateOfBirth = new DateTime(1980, 8, 9),
+            Gender = "Male",
+            Crn = "B005260",
+            NomisNumber = "A6150I",
+            Primary = "Nomis",
+            EstCode = "EHI",
+            CurrentLocation = "Standford Hill",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG1333S",
+            FirstName = "Peter",
+            LastName = "Allen",
+            DateOfBirth = new DateTime(1989, 12, 2),
+            Gender = "Female",
+            Crn = "B002552",
+            NomisNumber = "A2257F",
+            Primary = "Nomis",
+            EstCode = "BXI",
+            CurrentLocation = "Brixton",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG1479H",
+            FirstName = "Peter",
+            LastName = "Prince",
+            DateOfBirth = new DateTime(1956, 7, 18),
+            Gender = "Female",
+            Crn = "B004442",
+            NomisNumber = "A6948J",
+            Primary = "Nomis",
+            EstCode = "LTS",
+            CurrentLocation = "Leicestershire & Rutland",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG7788V",
+            FirstName = "Diana",
+            LastName = "Lance",
+            DateOfBirth = new DateTime(1953, 10, 27),
+            Gender = "Male",
+            Crn = "B004219",
+            NomisNumber = "A9649A",
+            Primary = "Nomis",
+            EstCode = "ESX",
+            CurrentLocation = "Essex",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG1553F",
+            FirstName = "Victor",
+            LastName = "Jordan",
+            DateOfBirth = new DateTime(1978, 12, 8),
+            Gender = "Female",
+            Crn = "B008576",
+            NomisNumber = "A9860R",
+            Primary = "Nomis",
+            EstCode = "C20",
+            CurrentLocation = "CPA Hampshire and Isle of Wight",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG4867Q",
+            FirstName = "Oliver",
+            LastName = "Jordan",
+            DateOfBirth = new DateTime(2000, 2, 3),
+            Gender = "Male",
+            Crn = "B008340",
+            NomisNumber = "A1567L",
+            Primary = "Nomis",
+            EstCode = "CWI",
+            CurrentLocation = "Channings Wood",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG5854G",
+            FirstName = "Dinah",
+            LastName = "Queen",
+            DateOfBirth = new DateTime(1952, 10, 9),
+            Gender = "Female",
+            Crn = "B009885",
+            NomisNumber = "A9937F",
+            Primary = "Nomis",
+            EstCode = "RCI",
+            CurrentLocation = "Rochester",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG5469L",
+            FirstName = "Peter",
+            LastName = "Queen",
+            DateOfBirth = new DateTime(1953, 11, 18),
+            Gender = "Male",
+            Crn = "B001257",
+            NomisNumber = "A4692D",
+            Primary = "Nomis",
+            EstCode = "WCI",
+            CurrentLocation = "Winchester",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG5502H",
+            FirstName = "Bruce",
+            LastName = "Kent",
+            DateOfBirth = new DateTime(1978, 2, 11),
+            Gender = "Male",
+            Crn = "B009194",
+            NomisNumber = "A1411Y",
+            Primary = "Nomis",
+            EstCode = "WMI",
+            CurrentLocation = "Wymott",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG2825E",
+            FirstName = "Peter",
+            LastName = "Prince",
+            DateOfBirth = new DateTime(1975, 12, 23),
+            Gender = "Female",
+            Crn = "B009268",
+            NomisNumber = "A7907D",
+            Primary = "Nomis",
+            EstCode = "ESX",
+            CurrentLocation = "Essex",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG8516T",
+            FirstName = "Dinah",
+            LastName = "Kent",
+            DateOfBirth = new DateTime(1954, 6, 19),
+            Gender = "Female",
+            Crn = "B009761",
+            NomisNumber = "A7400N",
+            Primary = "Nomis",
+            EstCode = "SDI",
+            CurrentLocation = "Send",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG5298O",
+            FirstName = "Victor",
+            LastName = "Jordan",
+            DateOfBirth = new DateTime(1961, 7, 28),
+            Gender = "Male",
+            Crn = "B007256",
+            NomisNumber = "A8430T",
+            Primary = "Nomis",
+            EstCode = "AYI",
+            CurrentLocation = "Aylesbury",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG9775P",
+            FirstName = "Barry",
+            LastName = "Stone",
+            DateOfBirth = new DateTime(1960, 8, 14),
+            Gender = "Female",
+            Crn = "B008155",
+            NomisNumber = "A1067S",
+            Primary = "Nomis",
+            EstCode = "N06",
+            CurrentLocation = "NPS South East and Eastern",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG6849L",
+            FirstName = "Bruce",
+            LastName = "Parker",
+            DateOfBirth = new DateTime(1977, 2, 20),
+            Gender = "Male",
+            Crn = "B009597",
+            NomisNumber = "A7483A",
+            Primary = "Nomis",
+            EstCode = "WWI",
+            CurrentLocation = "Wandsworth",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG8347B",
+            FirstName = "Clark",
+            LastName = "Queen",
+            DateOfBirth = new DateTime(2005, 10, 6),
+            Gender = "Female",
+            Crn = "B005305",
+            NomisNumber = "A1056J",
+            Primary = "Nomis",
+            EstCode = "NWI",
+            CurrentLocation = "Norwich",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG4189E",
+            FirstName = "Bruce",
+            LastName = "Curry",
+            DateOfBirth = new DateTime(1956, 4, 14),
+            Gender = "Female",
+            Crn = "B006480",
+            NomisNumber = "A3064C",
+            Primary = "Nomis",
+            EstCode = "DTV",
+            CurrentLocation = "Durham and Tees Valley",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG5514M",
+            FirstName = "Clark",
+            LastName = "Curry",
+            DateOfBirth = new DateTime(1962, 5, 28),
+            Gender = "Female",
+            Crn = "B005528",
+            NomisNumber = "A7236E",
+            Primary = "Nomis",
+            EstCode = "FHI",
+            CurrentLocation = "Foston Hall",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG5252T",
+            FirstName = "Peter",
+            LastName = "Queen",
+            DateOfBirth = new DateTime(1964, 9, 23),
+            Gender = "Female",
+            Crn = "B008719",
+            NomisNumber = "A4570W",
+            Primary = "Nomis",
+            EstCode = "C08",
+            CurrentLocation = "CPA Derby Leics Notts Rutland",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG6789D",
+            FirstName = "Clark",
+            LastName = "Parker",
+            DateOfBirth = new DateTime(1968, 10, 24),
+            Gender = "Male",
+            Crn = "B002584",
+            NomisNumber = "A6440G",
+            Primary = "Nomis",
+            EstCode = "SLI",
+            CurrentLocation = "Swaleside",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG1848U",
+            FirstName = "Barry",
+            LastName = "Jordan",
+            DateOfBirth = new DateTime(1981, 6, 9),
+            Gender = "Female",
+            Crn = "B004852",
+            NomisNumber = "A7126Q",
+            Primary = "Nomis",
+            EstCode = "BWI",
+            CurrentLocation = "Berwyn",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG4892S",
+            FirstName = "Arthur",
+            LastName = "Allen",
+            DateOfBirth = new DateTime(1960, 10, 9),
+            Gender = "Male",
+            Crn = "B008270",
+            NomisNumber = "A6249N",
+            Primary = "Nomis",
+            EstCode = "MDI",
+            CurrentLocation = "Moorland",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG5866O",
+            FirstName = "Peter",
+            LastName = "Jordan",
+            DateOfBirth = new DateTime(2001, 10, 7),
+            Gender = "Female",
+            Crn = "B008561",
+            NomisNumber = "A9186B",
+            Primary = "Nomis",
+            EstCode = "DRS",
+            CurrentLocation = "Dorset",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG7842D",
+            FirstName = "Diana",
+            LastName = "Queen",
+            DateOfBirth = new DateTime(1982, 7, 15),
+            Gender = "Female",
+            Crn = "B005033",
+            NomisNumber = "A2699Z",
+            Primary = "Nomis",
+            EstCode = "WTI",
+            CurrentLocation = "Whatton",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG8262O",
+            FirstName = "Peter",
+            LastName = "Curry",
+            DateOfBirth = new DateTime(1984, 7, 2),
+            Gender = "Male",
+            Crn = "B001022",
+            NomisNumber = "A2865U",
+            Primary = "Nomis",
+            EstCode = "EXI",
+            CurrentLocation = "Exeter",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG6353O",
+            FirstName = "Hal",
+            LastName = "Stone",
+            DateOfBirth = new DateTime(1952, 1, 15),
+            Gender = "Male",
+            Crn = "B002433",
+            NomisNumber = "A4973L",
+            Primary = "Nomis",
+            EstCode = "N52",
+            CurrentLocation = "West Midlands Region",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG2308N",
+            FirstName = "Clark",
+            LastName = "Parker",
+            DateOfBirth = new DateTime(2004, 6, 26),
+            Gender = "Male",
+            Crn = "B006501",
+            NomisNumber = "A3961U",
+            Primary = "Nomis",
+            EstCode = "SPI",
+            CurrentLocation = "Spring Hill",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG8867D",
+            FirstName = "Arthur",
+            LastName = "Curry",
+            DateOfBirth = new DateTime(1951, 9, 20),
+            Gender = "Male",
+            Crn = "B009689",
+            NomisNumber = "A8052R",
+            Primary = "Nomis",
+            EstCode = "DWI",
+            CurrentLocation = "Downview",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG5131C",
+            FirstName = "Barry",
+            LastName = "Allen",
+            DateOfBirth = new DateTime(1981, 6, 26),
+            Gender = "Male",
+            Crn = "B005370",
+            NomisNumber = "A5295T",
+            Primary = "Nomis",
+            EstCode = "PFI",
+            CurrentLocation = "Peterborough",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG8864M",
+            FirstName = "Arthur",
+            LastName = "Curry",
+            DateOfBirth = new DateTime(1985, 3, 14),
+            Gender = "Female",
+            Crn = "B001879",
+            NomisNumber = "A4162O",
+            Primary = "Nomis",
+            EstCode = "PDI",
+            CurrentLocation = "Portland",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG5544Z",
+            FirstName = "Hal",
+            LastName = "Allen",
+            DateOfBirth = new DateTime(1954, 8, 11),
+            Gender = "Female",
+            Crn = "B007141",
+            NomisNumber = "A3667G",
+            Primary = "Nomis",
+            EstCode = "CHS",
+            CurrentLocation = "Cheshire",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG9475S",
+            FirstName = "Victor",
+            LastName = "Jordan",
+            DateOfBirth = new DateTime(1950, 4, 10),
+            Gender = "Female",
+            Crn = "B009820",
+            NomisNumber = "A1011F",
+            Primary = "Nomis",
+            EstCode = "BMI",
+            CurrentLocation = "Birmingham",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG8570M",
+            FirstName = "Bruce",
+            LastName = "Queen",
+            DateOfBirth = new DateTime(1951, 7, 21),
+            Gender = "Male",
+            Crn = "B005022",
+            NomisNumber = "A2364M",
+            Primary = "Nomis",
+            EstCode = "TRN",
+            CurrentLocation = "In Transfer",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG1646R",
+            FirstName = "Hal",
+            LastName = "Kent",
+            DateOfBirth = new DateTime(1957, 8, 21),
+            Gender = "Female",
+            Crn = "B008390",
+            NomisNumber = "A9321H",
+            Primary = "Nomis",
+            EstCode = "FEI",
+            CurrentLocation = "Fosse Way",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG7199D",
+            FirstName = "Hal",
+            LastName = "Prince",
+            DateOfBirth = new DateTime(1990, 6, 25),
+            Gender = "Female",
+            Crn = "B006153",
+            NomisNumber = "A2303F",
+            Primary = "Nomis",
+            EstCode = "MTI",
+            CurrentLocation = "The Mount",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG8089M",
+            FirstName = "Barry",
+            LastName = "Parker",
+            DateOfBirth = new DateTime(1982, 10, 31),
+            Gender = "Female",
+            Crn = "B005799",
+            NomisNumber = "A8614G",
+            Primary = "Nomis",
+            EstCode = "HRI",
+            CurrentLocation = "Haslar",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG5547B",
+            FirstName = "Barry",
+            LastName = "Lance",
+            DateOfBirth = new DateTime(1990, 1, 17),
+            Gender = "Female",
+            Crn = "B002156",
+            NomisNumber = "A7019I",
+            Primary = "Nomis",
+            EstCode = "FSI",
+            CurrentLocation = "Featherstone",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG2192B",
+            FirstName = "Victor",
+            LastName = "Allen",
+            DateOfBirth = new DateTime(1999, 7, 30),
+            Gender = "Female",
+            Crn = "B009460",
+            NomisNumber = "A2301T",
+            Primary = "Nomis",
+            EstCode = "GHI",
+            CurrentLocation = "Garth",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG9918N",
+            FirstName = "Barry",
+            LastName = "Stone",
+            DateOfBirth = new DateTime(1962, 3, 25),
+            Gender = "Male",
+            Crn = "B007272",
+            NomisNumber = "A7368N",
+            Primary = "Nomis",
+            EstCode = "STI",
+            CurrentLocation = "Styal",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG1461R",
+            FirstName = "Peter",
+            LastName = "Parker",
+            DateOfBirth = new DateTime(1995, 3, 25),
+            Gender = "Male",
+            Crn = "B004903",
+            NomisNumber = "A9368J",
+            Primary = "Nomis",
+            EstCode = "WNI",
+            CurrentLocation = "Werrington",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG2867U",
+            FirstName = "Diana",
+            LastName = "Lance",
+            DateOfBirth = new DateTime(1968, 6, 27),
+            Gender = "Male",
+            Crn = "B009542",
+            NomisNumber = "A4368J",
+            Primary = "Nomis",
+            EstCode = "STI",
+            CurrentLocation = "Styal",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG3069P",
+            FirstName = "Dinah",
+            LastName = "Stone",
+            DateOfBirth = new DateTime(1987, 6, 22),
+            Gender = "Female",
+            Crn = "B009809",
+            NomisNumber = "A1436V",
+            Primary = "Nomis",
+            EstCode = "CDI",
+            CurrentLocation = "Chelmsford",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG7072K",
+            FirstName = "Arthur",
+            LastName = "Queen",
+            DateOfBirth = new DateTime(1975, 10, 5),
+            Gender = "Male",
+            Crn = "B009199",
+            NomisNumber = "A6247X",
+            Primary = "Nomis",
+            EstCode = "C04",
+            CurrentLocation = "CPA Humber Lincs & N Yorks",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG2438I",
+            FirstName = "Barry",
+            LastName = "Prince",
+            DateOfBirth = new DateTime(1971, 7, 8),
+            Gender = "Female",
+            Crn = "B003456",
+            NomisNumber = "A5176N",
+            Primary = "Nomis",
+            EstCode = "GCS",
+            CurrentLocation = "Gloucestershire",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG6580Z",
+            FirstName = "Dinah",
+            LastName = "Allen",
+            DateOfBirth = new DateTime(1960, 3, 5),
+            Gender = "Female",
+            Crn = "B003215",
+            NomisNumber = "A4206S",
+            Primary = "Nomis",
+            EstCode = "TCI",
+            CurrentLocation = "Thorn Cross",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG1303N",
+            FirstName = "Diana",
+            LastName = "Lance",
+            DateOfBirth = new DateTime(1984, 5, 5),
+            Gender = "Male",
+            Crn = "B002668",
+            NomisNumber = "A5319A",
+            Primary = "Nomis",
+            EstCode = "C20",
+            CurrentLocation = "CPA Hampshire and Isle of Wight",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG2282K",
+            FirstName = "Barry",
+            LastName = "Lance",
+            DateOfBirth = new DateTime(1960, 11, 30),
+            Gender = "Female",
+            Crn = "B006078",
+            NomisNumber = "A8725W",
+            Primary = "Nomis",
+            EstCode = "PVI",
+            CurrentLocation = "Pentonville",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG7502D",
+            FirstName = "Hal",
+            LastName = "Prince",
+            DateOfBirth = new DateTime(1965, 9, 3),
+            Gender = "Male",
+            Crn = "B005846",
+            NomisNumber = "A7652N",
+            Primary = "Nomis",
+            EstCode = "N23",
+            CurrentLocation = "External - NPS North East",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG8236D",
+            FirstName = "Bruce",
+            LastName = "Allen",
+            DateOfBirth = new DateTime(1999, 2, 24),
+            Gender = "Male",
+            Crn = "B001005",
+            NomisNumber = "A6250U",
+            Primary = "Nomis",
+            EstCode = "OUT",
+            CurrentLocation = "Outside Prison",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG4926U",
+            FirstName = "Peter",
+            LastName = "Jordan",
+            DateOfBirth = new DateTime(1990, 4, 4),
+            Gender = "Female",
+            Crn = "B008641",
+            NomisNumber = "A3877T",
+            Primary = "Nomis",
+            EstCode = "ESI",
+            CurrentLocation = "East Sutton Park",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG3204I",
+            FirstName = "Bruce",
+            LastName = "Jordan",
+            DateOfBirth = new DateTime(1958, 5, 2),
+            Gender = "Male",
+            Crn = "B007677",
+            NomisNumber = "A1403D",
+            Primary = "Nomis",
+            EstCode = "WSI",
+            CurrentLocation = "Wormwood Scrubs",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG3962X",
+            FirstName = "Arthur",
+            LastName = "Parker",
+            DateOfBirth = new DateTime(1981, 2, 12),
+            Gender = "Female",
+            Crn = "B007012",
+            NomisNumber = "A6308N",
+            Primary = "Nomis",
+            EstCode = "EXI",
+            CurrentLocation = "Exeter",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG7281E",
+            FirstName = "Peter",
+            LastName = "Stone",
+            DateOfBirth = new DateTime(1958, 7, 2),
+            Gender = "Male",
+            Crn = "B001642",
+            NomisNumber = "A6119B",
+            Primary = "Nomis",
+            EstCode = "C07",
+            CurrentLocation = "CPA Cheshire and Gtr Manchester",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG1626P",
+            FirstName = "Bruce",
+            LastName = "Curry",
+            DateOfBirth = new DateTime(1996, 5, 24),
+            Gender = "Male",
+            Crn = "B002835",
+            NomisNumber = "A5610C",
+            Primary = "Nomis",
+            EstCode = "TCI",
+            CurrentLocation = "Thorn Cross",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG1773W",
+            FirstName = "Peter",
+            LastName = "Allen",
+            DateOfBirth = new DateTime(2005, 7, 21),
+            Gender = "Male",
+            Crn = "B007895",
+            NomisNumber = "A9218R",
+            Primary = "Nomis",
+            EstCode = "EXI",
+            CurrentLocation = "Exeter",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG1359X",
+            FirstName = "Bruce",
+            LastName = "Parker",
+            DateOfBirth = new DateTime(1954, 2, 23),
+            Gender = "Male",
+            Crn = "B004099",
+            NomisNumber = "A5852K",
+            Primary = "Nomis",
+            EstCode = "WII",
+            CurrentLocation = "Warren Hill",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG5462D",
+            FirstName = "Oliver",
+            LastName = "Queen",
+            DateOfBirth = new DateTime(1975, 7, 10),
+            Gender = "Female",
+            Crn = "B007065",
+            NomisNumber = "A6399O",
+            Primary = "Nomis",
+            EstCode = "FYI",
+            CurrentLocation = "Feltham",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG5813Z",
+            FirstName = "Hal",
+            LastName = "Wayne",
+            DateOfBirth = new DateTime(1969, 12, 28),
+            Gender = "Male",
+            Crn = "B004062",
+            NomisNumber = "A7138M",
+            Primary = "Nomis",
+            EstCode = "TSI",
+            CurrentLocation = "Thameside",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG2975B",
+            FirstName = "Peter",
+            LastName = "Queen",
+            DateOfBirth = new DateTime(1996, 2, 13),
+            Gender = "Male",
+            Crn = "B009564",
+            NomisNumber = "A3824O",
+            Primary = "Nomis",
+            EstCode = "N01",
+            CurrentLocation = "NPS North West",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG7191X",
+            FirstName = "Dinah",
+            LastName = "Parker",
+            DateOfBirth = new DateTime(1992, 6, 27),
+            Gender = "Male",
+            Crn = "B002061",
+            NomisNumber = "A4383X",
+            Primary = "Nomis",
+            EstCode = "RHI",
+            CurrentLocation = "Rye Hill",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG4565H",
+            FirstName = "Barry",
+            LastName = "Jordan",
+            DateOfBirth = new DateTime(1978, 8, 5),
+            Gender = "Female",
+            Crn = "B003240",
+            NomisNumber = "A4101Q",
+            Primary = "Nomis",
+            EstCode = "LDN",
+            CurrentLocation = "London",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG9573P",
+            FirstName = "Bruce",
+            LastName = "Allen",
+            DateOfBirth = new DateTime(1989, 12, 10),
+            Gender = "Female",
+            Crn = "B004658",
+            NomisNumber = "A6701W",
+            Primary = "Nomis",
+            EstCode = "HLI",
+            CurrentLocation = "Hull",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG7276C",
+            FirstName = "Oliver",
+            LastName = "Prince",
+            DateOfBirth = new DateTime(1998, 8, 16),
+            Gender = "Female",
+            Crn = "B005676",
+            NomisNumber = "A8257O",
+            Primary = "Nomis",
+            EstCode = "EYI",
+            CurrentLocation = "Elmley",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG7041Z",
+            FirstName = "Bruce",
+            LastName = "Stone",
+            DateOfBirth = new DateTime(1997, 10, 22),
+            Gender = "Male",
+            Crn = "B002248",
+            NomisNumber = "A8067P",
+            Primary = "Nomis",
+            EstCode = "TSI",
+            CurrentLocation = "Thameside",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG7680G",
+            FirstName = "Hal",
+            LastName = "Parker",
+            DateOfBirth = new DateTime(1953, 8, 1),
+            Gender = "Female",
+            Crn = "B005014",
+            NomisNumber = "A7056P",
+            Primary = "Nomis",
+            EstCode = "MRS",
+            CurrentLocation = "Merseyside",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG9326Y",
+            FirstName = "Bruce",
+            LastName = "Kent",
+            DateOfBirth = new DateTime(1968, 10, 20),
+            Gender = "Male",
+            Crn = "B003336",
+            NomisNumber = "A8225D",
+            Primary = "Nomis",
+            EstCode = "PRI",
+            CurrentLocation = "Parc",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG4936J",
+            FirstName = "Victor",
+            LastName = "Jordan",
+            DateOfBirth = new DateTime(1982, 4, 12),
+            Gender = "Male",
+            Crn = "B006762",
+            NomisNumber = "A3361E",
+            Primary = "Nomis",
+            EstCode = "ISI",
+            CurrentLocation = "Isis",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG7256O",
+            FirstName = "Barry",
+            LastName = "Parker",
+            DateOfBirth = new DateTime(1972, 3, 17),
+            Gender = "Female",
+            Crn = "B001484",
+            NomisNumber = "A6272W",
+            Primary = "Nomis",
+            EstCode = "N03",
+            CurrentLocation = "Wales",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG9960M",
+            FirstName = "Bruce",
+            LastName = "Lance",
+            DateOfBirth = new DateTime(1969, 3, 4),
+            Gender = "Female",
+            Crn = "B005605",
+            NomisNumber = "A3591S",
+            Primary = "Nomis",
+            EstCode = "BNI",
+            CurrentLocation = "Bullingdon",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG8432I",
+            FirstName = "Hal",
+            LastName = "Curry",
+            DateOfBirth = new DateTime(1950, 7, 15),
+            Gender = "Male",
+            Crn = "B007158",
+            NomisNumber = "A4526N",
+            Primary = "Nomis",
+            EstCode = "SWM",
+            CurrentLocation = "Staffordshire and West Midlands",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG4595K",
+            FirstName = "Clark",
+            LastName = "Kent",
+            DateOfBirth = new DateTime(1982, 9, 9),
+            Gender = "Female",
+            Crn = "B009462",
+            NomisNumber = "A3837U",
+            Primary = "Nomis",
+            EstCode = "CFI",
+            CurrentLocation = "Cardiff",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG4261Y",
+            FirstName = "Diana",
+            LastName = "Wayne",
+            DateOfBirth = new DateTime(1997, 7, 25),
+            Gender = "Male",
+            Crn = "B005300",
+            NomisNumber = "A5265W",
+            Primary = "Nomis",
+            EstCode = "SFI",
+            CurrentLocation = "Stafford",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG2622V",
+            FirstName = "Dinah",
+            LastName = "Jordan",
+            DateOfBirth = new DateTime(1953, 2, 10),
+            Gender = "Male",
+            Crn = "B002298",
+            NomisNumber = "A9419J",
+            Primary = "Nomis",
+            EstCode = "LNS",
+            CurrentLocation = "Lincolnshire",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG2457U",
+            FirstName = "Bruce",
+            LastName = "Wayne",
+            DateOfBirth = new DateTime(1970, 11, 3),
+            Gender = "Female",
+            Crn = "B004351",
+            NomisNumber = "A7217C",
+            Primary = "Nomis",
+            EstCode = "BCI",
+            CurrentLocation = "Buckley Hall",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG8391O",
+            FirstName = "Hal",
+            LastName = "Kent",
+            DateOfBirth = new DateTime(2004, 5, 28),
+            Gender = "Male",
+            Crn = "B004107",
+            NomisNumber = "A3664K",
+            Primary = "Nomis",
+            EstCode = "FBI",
+            CurrentLocation = "Forest Bank",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG2959S",
+            FirstName = "Clark",
+            LastName = "Lance",
+            DateOfBirth = new DateTime(1951, 1, 27),
+            Gender = "Male",
+            Crn = "B005811",
+            NomisNumber = "A8953A",
+            Primary = "Nomis",
+            EstCode = "N24",
+            CurrentLocation = "External - NPS North West",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG6390M",
+            FirstName = "Arthur",
+            LastName = "Lance",
+            DateOfBirth = new DateTime(1998, 9, 15),
+            Gender = "Male",
+            Crn = "B009365",
+            NomisNumber = "A4773V",
+            Primary = "Nomis",
+            EstCode = "WRI",
+            CurrentLocation = "Whitemoor",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG8062R",
+            FirstName = "Arthur",
+            LastName = "Kent",
+            DateOfBirth = new DateTime(1988, 5, 27),
+            Gender = "Female",
+            Crn = "B009001",
+            NomisNumber = "A2146Z",
+            Primary = "Nomis",
+            EstCode = "PFI",
+            CurrentLocation = "Peterborough",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG9884C",
+            FirstName = "Oliver",
+            LastName = "Lance",
+            DateOfBirth = new DateTime(1979, 9, 15),
+            Gender = "Male",
+            Crn = "B009645",
+            NomisNumber = "A9574H",
+            Primary = "Nomis",
+            EstCode = "N58",
+            CurrentLocation = "South West",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG7900F",
+            FirstName = "Barry",
+            LastName = "Curry",
+            DateOfBirth = new DateTime(1968, 4, 13),
+            Gender = "Male",
+            Crn = "B009738",
+            NomisNumber = "A6760E",
+            Primary = "Nomis",
+            EstCode = "N51",
+            CurrentLocation = "North West Region",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG3726I",
+            FirstName = "Clark",
+            LastName = "Stone",
+            DateOfBirth = new DateTime(1974, 9, 11),
+            Gender = "Female",
+            Crn = "B005227",
+            NomisNumber = "A8764J",
+            Primary = "Nomis",
+            EstCode = "DHI",
+            CurrentLocation = "Drake Hall",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG9798U",
+            FirstName = "Hal",
+            LastName = "Queen",
+            DateOfBirth = new DateTime(1996, 5, 7),
+            Gender = "Female",
+            Crn = "B003704",
+            NomisNumber = "A3850Z",
+            Primary = "Nomis",
+            EstCode = "T01",
+            CurrentLocation = "Migration artifact - do not use",
+            Nationality = "",
+            Ethnicity = ""
+        },
+        new CandidateDto
+        {
+            Identifier = "1CFG6059P",
+            FirstName = "Oliver",
+            LastName = "Kent",
+            DateOfBirth = new DateTime(2002, 10, 26),
+            Gender = "Female",
+            Crn = "B008239",
+            NomisNumber = "A6307B",
+            Primary = "Nomis",
+            EstCode = "HPS",
+            CurrentLocation = "Hampshire",
+            Nationality = "",
+            Ethnicity = ""
+        }
     ];
+
+
 
     public async Task<CandidateDto?> GetByUpciAsync(string upci)
     {
@@ -1520,18 +1520,21 @@ public class DummyCandidateService : ICandidateService
 
     public async Task<IEnumerable<SearchResult>?> SearchAsync(CandidateSearchQuery searchQuery)
     {
-        string lastName = searchQuery.LastName;
-        string identifier = searchQuery.ExternalIdentifier;
-        DateOnly dateOfBirth = DateOnly.FromDateTime((DateTime)searchQuery.DateOfBirth!);
+        var lastName = searchQuery.LastName;
+        var identifier = searchQuery.ExternalIdentifier;
+        var dateOfBirth = DateOnly.FromDateTime((DateTime)searchQuery.DateOfBirth!);
 
         var blocks = Candidates
             .Where(e => e.LastName.Equals(searchQuery.LastName, StringComparison.CurrentCultureIgnoreCase) && e.DateOfBirth == searchQuery.DateOfBirth)
             .Union
             (
-                Candidates.Where(e => new[] { e.Crn, e.NomisNumber }.Contains(searchQuery.ExternalIdentifier.ToUpper()))
+            Candidates.Where(e => new[]
+            {
+                e.Crn, e.NomisNumber
+            }.Contains(searchQuery.ExternalIdentifier.ToUpper()))
             );
 
-        if(blocks.Count() is 0)
+        if (blocks.Count() is 0)
         {
             return [];
         }
@@ -1539,7 +1542,7 @@ public class DummyCandidateService : ICandidateService
         var scores = blocks.Select(block => Score((identifier, lastName, dateOfBirth), block.Crn ?? string.Empty, block))
             .Union
             (
-                blocks.Select(block => Score((identifier, lastName, dateOfBirth), block.NomisNumber ?? string.Empty, block))
+            blocks.Select(block => Score((identifier, lastName, dateOfBirth), block.NomisNumber ?? string.Empty, block))
             )
             .GroupBy(result => result.Upci)
             .Select(result => new SearchResult(result.Key, result.Min(r => r.Precedence)));
@@ -1547,24 +1550,20 @@ public class DummyCandidateService : ICandidateService
         return await Task.FromResult(scores);
     }
 
-    static SearchResult Score((string externalIdentifier, string lastName, DateOnly dateOfBirth) query, string identifier, CandidateDto block) => 
+    private static SearchResult Score((string externalIdentifier, string lastName, DateOnly dateOfBirth) query, string identifier, CandidateDto block) =>
         new(block.Identifier, Precedence.GetPrecedence
         (
-            identifiers:
-            (
-                query.externalIdentifier,
-                identifier
-            ),
-            lastNames:
-            (
-                query.lastName,
-                block.LastName
-            ),
-            dateOfBirths:
-            (
-                query.dateOfBirth,
-                DateOnly.FromDateTime(block.DateOfBirth)
-            )
+        (
+            query.externalIdentifier,
+            identifier
+        ),
+        (
+            query.lastName,
+            block.LastName
+        ),
+        (
+            query.dateOfBirth,
+            DateOnly.FromDateTime(block.DateOfBirth)
+        )
         ));
-
 }

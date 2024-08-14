@@ -129,7 +129,7 @@
             SetEnrolmentCommand = new SetEnrolmentLocation.Command(
                 _participant.Id,
                 _participant.CurrentLocation,
-                _participant.EnrolmentLocation ?? _participant.CurrentLocation,
+                _participant.EnrolmentLocation,
                 _participant.EnrolmentLocationJustification
             );
 

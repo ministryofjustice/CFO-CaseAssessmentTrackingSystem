@@ -58,6 +58,8 @@ public class ApplicationDbContext
 
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
+    public DbSet<LocationMapping> LocationMappings => Set<LocationMapping>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

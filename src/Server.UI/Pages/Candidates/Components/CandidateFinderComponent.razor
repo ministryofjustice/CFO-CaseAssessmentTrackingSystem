@@ -8,25 +8,35 @@
         @if (Query is not null)
         {
             <MudForm Model="@Query" @ref="_form" Validation="@(Validator.ValidateValue(Query))">
-                <MudItem xs="12">
-                    <MudTextField Label="External Identifier (PNomis/NDelius Id)" @bind-Value="Query.ExternalIdentifier" For="(() => Query.ExternalIdentifier)" Immediate="true"/>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudTextField Label="First Name" @bind-Value="Query.FirstName" For="(() => Query.FirstName)" Immediate="true"/>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudTextField Label="Last Name" @bind-Value="Query.LastName" For="(() => Query.LastName)" Immediate="true"/>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudDatePicker Label="Date Of Birth" @bind-Date="Query.DateOfBirth" For="(() => Query.DateOfBirth)" ImmediateText="true" Editable="true" MaxDate="DateTime.Now.Date"/>
-                </MudItem>
+                <MudFocusTrap>
+                    <MudItem xs="12">
+
+                        <MudTextField Label="External Identifier (PNomis/NDelius Id)" @bind-Value="Query.ExternalIdentifier"
+                            For="(() => Query.ExternalIdentifier)" Immediate="true" />
+
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField Label="First Name" @bind-Value="Query.FirstName" For="(() => Query.FirstName)"
+                            Immediate="true" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField Label="Last Name" @bind-Value="Query.LastName" For="(() => Query.LastName)"
+                            Immediate="true" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudDatePicker Label="Date Of Birth" @bind-Date="Query.DateOfBirth" For="(() => Query.DateOfBirth)"
+                            ImmediateText="true" Editable="true" MaxDate="DateTime.Now.Date" />
+                    </MudItem>
+                </MudFocusTrap>
             </MudForm>
             <MudContainer Class="d-flex px-0 pt-8">
-                <MudSpacer/>
-                <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Search" Loading="false" Disabled="false">
+                <MudSpacer />
+                <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Search" Loading="false"
+                    Disabled="false">
                     Search
                 </MudLoadingButton>
             </MudContainer>
+
         }
     </MudItem>
 </MudGrid>
