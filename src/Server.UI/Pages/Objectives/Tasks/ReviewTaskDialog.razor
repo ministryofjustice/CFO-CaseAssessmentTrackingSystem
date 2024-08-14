@@ -1,20 +1,31 @@
 ﻿@using Cfo.Cats.Application.Features.Objectives.Commands
+@using Cfo.Cats.Domain.Common.Enums
 
 @inherits CatsComponentBase
 
 <MudDialog>
     <DialogContent>
         <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
-            <MudTextField 
-                @bind-Value="Model.Justification"
-                Label="@Model.GetMemberDescription(x => x.Justification)"
-                For="@(() => Model.Justification)"
-                Lines="5" />
+            <MudSelect @bind-Value="Model.Reason"
+                       Label="@Model.GetMemberDescription(x => x.Reason)"
+                       For="@(() => Model.Reason)">
+                @foreach(var status in TaskCompletionStatus.List)
+                {
+                    <MudSelectItem Value="status">@status.Name</MudSelectItem>
+                }
+            </MudSelect>
+            <MudTextField @bind-Value="Model.Justification"
+                          Label="@Model.GetMemberDescription(x => x.Justification)"
+                          For="@(() => Model.Justification)"
+                          Lines="5"
+                          Class="mt-4" />
         </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Complete</MudLoadingButton>
+        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">
+            @($"{ConstantString.Complete} Task")
+        </MudLoadingButton>
     </DialogActions>
 </MudDialog>
 

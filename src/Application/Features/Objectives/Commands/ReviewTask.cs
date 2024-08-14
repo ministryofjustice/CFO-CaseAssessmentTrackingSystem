@@ -15,8 +15,8 @@ public class ReviewTask
         [Description("Objective Id")]
         public required Guid ObjectiveId { get; set; }
 
-        [Description("Cancel")]
-        public required bool Close { get; set; }
+        [Description("Reason")]
+        public TaskCompletionStatus Reason { get; set; } = TaskCompletionStatus.Done;
 
         [Description("Justification")]
         public string Justification { get; set; } = string.Empty;
@@ -42,14 +42,7 @@ public class ReviewTask
                 throw new NotFoundException("Cannot find task", request.TaskId);
             }
 
-            if (request.Close)
-            {
-                task.Close(request.Justification);
-            }
-            else
-            {
-                task.Complete(request.Justification);
-            }
+            task.Review(request.Reason, request.Justification);
 
             return Result.Success();
         }
@@ -65,11 +58,11 @@ public class ReviewTask
             RuleFor(x => x.ObjectiveId)
                 .NotNull();
 
-            When(x => x.Close, () =>
+            When(x => x.Reason.RequiresJustification, () =>
             {
                 RuleFor(x => x.Justification)
                     .NotEmpty()
-                    .WithMessage("Justification is required when closing a task");
+                    .WithMessage("Justification is required for the selected reason");
             });
 
             RuleFor(x => x.Justification)
