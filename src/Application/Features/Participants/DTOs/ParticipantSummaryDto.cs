@@ -21,6 +21,8 @@ public class ParticipantSummaryDto
     /// </summary>
     public required string Location { get; set; }
     
+    public string? EnrolmentLocation { get; set; }
+    
     /// <summary>
     /// The participant's date of birth
     /// </summary>
@@ -48,6 +50,9 @@ public class ParticipantSummaryDto
             CreateMap<Participant, ParticipantSummaryDto>(MemberList.None)
                 .ForMember(target => target.Id, options => options.MapFrom(source => source.Id))
                 .ForMember(target => target.Location, options => options.MapFrom(source => source.CurrentLocation.Name))
+ #pragma warning disable CS8602 // Dereference of a possibly null reference.
+                .ForMember(target => target.EnrolmentLocation, options => options.MapFrom(source => source.EnrolmentLocation.Name))
+ #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 .ForMember(target => target.OwnerName, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.ParticipantName, options => options.MapFrom(source => source.FirstName + ' ' + source.LastName));
 

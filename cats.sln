@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_Solution
 		LICENSE = LICENSE
 		NuGet.config = NuGet.config
 		README.md = README.md
+		LocalPublish.ps1 = LocalPublish.ps1
+		ModifyDatabase.ps1 = ModifyDatabase.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{62ABFE2F-D4F3-4E44-AA07-20D679B04CF3}"

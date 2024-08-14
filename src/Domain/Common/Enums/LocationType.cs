@@ -12,6 +12,7 @@ public class LocationType : SmartEnum<LocationType>
     public static readonly LocationType Community = new(nameof(Community), 4);
     public static readonly LocationType Hub = new(nameof(Hub), 5);
     public static readonly LocationType Satellite = new(nameof(Satellite), 6);
+    public static readonly LocationType Unknown = new(nameof(Unknown), 6, false); 
 
     private LocationType(string name, int value, bool isCustody = false) : base(name, value)
     {

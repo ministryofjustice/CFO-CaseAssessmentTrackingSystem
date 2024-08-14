@@ -11,7 +11,7 @@ public class Location : BaseAuditableEntity<int>, ILifetime
 {
 
     private string _name;
-    private string _contractId;
+    private string? _contractId;
     private int _genderProvisionId;
     private int _locationTypeId;
     private Lifetime _lifetime;
