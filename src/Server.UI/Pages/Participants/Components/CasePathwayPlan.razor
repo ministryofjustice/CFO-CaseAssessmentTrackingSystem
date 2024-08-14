@@ -20,30 +20,28 @@
     <MudPaper>
         <MudList T="ObjectiveTaskDto">
             <MudListSubheader Class="py-8">
-                <div class="d-flex">
-                    <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small">Review Pathway</MudButton>
-                </div>
-                <MudDivider Class="my-6"/>
-                <div class="d-flex align-center">
-                    <div class="d-flex gap-4 align-center">
-                        <MudTooltip Text="New objective">
-                            <MudIconButton OnClick="AddObjective" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Class="rounded-circle" />
-                        </MudTooltip>
-                        @if (Model.Any())
-                        {
-                            <MudText>Add another objective</MudText>
-                        }
-                        else
-                        {
-                            <MudText>Add an objective</MudText>
-                        }
-                    </div>
+                <div class="d-flex flex-column flex-sm-row align-center gap-2">
+                    <MudSelect @bind-Value="selector" Label="Sort objectives by" Dense Style="width: 120px">
+                        <MudSelectItem Value="@("Created")">Date added</MudSelectItem>
+                        <MudSelectItem Value="@("Title")">Title</MudSelectItem>
+                        <MudSelectItem Value="@("Outstanding")">No. of outstanding tasks</MudSelectItem>
+                    </MudSelect>
+                    <MudSelect @bind-Value="sortDirection" Label="Direction" Dense Style="width: 60px">
+                        <MudSelectItem Value="SortDirection.Ascending">Ascending</MudSelectItem>
+                        <MudSelectItem Value="SortDirection.Descending">Descending</MudSelectItem>
+                    </MudSelect>
                     <MudSpacer />
                     <MudCheckBox @bind-Value="hideCompleted" Label="Hide completed tasks" Disabled="Model.Any() is false" />
                 </div>
-                <MudDivider Class="mt-6"/>
+                <div class="d-flex gap-4 align-center mt-6">
+                    <MudTooltip Text="New objective">
+                        <MudIconButton OnClick="AddObjective" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Class="rounded-circle" />
+                    </MudTooltip>
+                    <MudText>New objective</MudText>
+                </div>
+                <MudDivider Class="mt-6" />
             </MudListSubheader>
-            @foreach (var objective in Model.OrderBy(x => x.Created))
+            @foreach (var objective in Model.OrderByDirection(sortDirection, selectors[selector]))
             {
                 var tasks = objective.Tasks
                     .Where(task => task.IsCompleted is false || hideCompleted is false)
@@ -97,11 +95,11 @@
                                                     <MudTooltip Text="Completed">
                                                         @if(task.CompletedStatus == TaskCompletionStatus.Done)
                                                         {
-                                                            <MudChip Text="Done" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
+                                                            <MudChip Text="@task.CompletedStatus.Name" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
                                                         }
-                                                        else if(task.CompletedStatus == TaskCompletionStatus.Closed)
+                                                        else if(task.CompletedStatus == TaskCompletionStatus.NotRequired)
                                                         {
-                                                            <MudChip Text="Closed" Size="Size.Small" Color="Color.Dark" Icon="@Icons.Material.Filled.Close" />
+                                                            <MudChip Text="@task.CompletedStatus.Name" Size="Size.Small" Color="Color.Dark" Icon="@Icons.Material.Filled.Close" />
                                                         }
                                                     </MudTooltip>
                                                 }
@@ -145,7 +143,6 @@
                                                 <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Disabled="task.IsCompleted" Size="Size.Small" Dense>
                                                     <MudMenuItem OnClick="async() => await ExtendDate(task)">Extend date</MudMenuItem>
                                                     <MudMenuItem OnClick="async() => await RenameTask(task)">Rename</MudMenuItem>
-                                                    <MudMenuItem OnClick="async() => await ReviewTask(task, close: true)">Close</MudMenuItem>
                                                 </MudMenu>
                                             </MudTooltip>
                                             <MudTooltip Text="Record">
@@ -184,12 +181,20 @@
 @code {
     private bool hideCompleted = false;
 
+    private string selector = "Created";
+    private Dictionary<string, Func<ObjectiveDto, dynamic>> selectors = new()
+    {
+        { "Created", (objective) => objective.Created },
+        { "Title", (objective) => objective.Title },
+        { "Outstanding", (objective) => objective.Tasks.Where(task => task.IsCompleted is false).Count() },
+    };
+
+    private SortDirection sortDirection = SortDirection.Ascending;
+
     [Parameter, EditorRequired]
     public required string ParticipantId { get; set; }
 
     public IEnumerable<ObjectiveDto>? Model { get; set; }
-
-    IReadOnlyCollection<ObjectiveTaskDto> SelectedTasks = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -202,12 +207,7 @@
         Model = await GetNewMediator().Send(new GetObjectivesByParticipantId.Query()
         {
             ParticipantId = ParticipantId
-        });
-
-        SelectedTasks = Model.SelectMany(objective => objective.Tasks
-            .Where(task => task.IsCompleted))
-            .ToList()
-            .AsReadOnly();   
+        }); 
     }
 
     public async Task AddObjective()
@@ -239,13 +239,12 @@
         }
     }
 
-    public async Task ReviewTask(ObjectiveTaskDto task, bool close = false)
+    public async Task ReviewTask(ObjectiveTaskDto task)
     {
         var command = new ReviewTask.Command()
         {
             ObjectiveId = task.ObjectiveId,
-            TaskId = task.Id,
-            Close = close
+            TaskId = task.Id
         };
 
         var parameters = new DialogParameters<ReviewTaskDialog>()
@@ -254,7 +253,7 @@
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
-        var dialog = DialogService.Show<ReviewTaskDialog>(string.Format("{0} task", close ? "Close" : "Complete"), parameters, options);
+        var dialog = DialogService.Show<ReviewTaskDialog>("Complete task", parameters, options);
 
         var state = await dialog.Result;
 
