@@ -14,8 +14,15 @@
                                       For="@(() => Model.Message)"
                                       ReadOnly="false"
                                       Required="true"
-                                      RequiredError="Message is required!">
+                                      RequiredError="Message is required!"
+                                      Lines="5"
+                                      MaxLength=@maxChars
+                                      Immediate="true"> 
                         </MudTextField>
+                        <MudText Color="Color.Secondary">
+                            @($"{Model.Message.Length}/{maxChars} characters")
+                        </MudText>
+                        
                     </MudItem>
                 </MudGrid>
             </MudForm>
@@ -30,7 +37,7 @@
 @code
 {
     private MudForm? form;
-
+    int maxChars = 255;
     [CascadingParameter] 
     private MudDialogInstance MudDialog { get; set; } = default!;
 
