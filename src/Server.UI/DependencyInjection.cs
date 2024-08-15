@@ -31,10 +31,17 @@ public static class DependencyInjection
         var services = builder.Services;
         var config = builder.Configuration;
         var environment = builder.Environment;
-
+        
+        
+        CookieSecurePolicy policy = CookieSecurePolicy.SameAsRequest;
+        if(config["IdentitySettings:SecureCookies"] is not null && config["IdentitySettings:SecureCookies"]!.Equals("True", StringComparison.CurrentCultureIgnoreCase))
+        {
+            policy = CookieSecurePolicy.Always;
+        }
+    
         services.AddAntiforgery(options =>
         {
-            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            options.Cookie.SecurePolicy = policy;
         });
 
         services.AddRazorComponents().AddInteractiveServerComponents();
