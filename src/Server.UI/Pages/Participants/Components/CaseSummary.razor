@@ -129,4 +129,66 @@
             </MudCardActions>
         </MudCard>
     </MudItem>
+    <MudItem xs="12" md="4">
+        <MudCard Style="Height: 100%;">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <div class="d-flex justify-space-between align-center">
+                        <MudText Typo="Typo.h6">Pathway Plan</MudText>
+                    </div>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                @if (HasPathwayPlan)
+                {
+                    <div>
+                        <dl class="description-list">
+                            <div class="description-pair">
+                                <dt>
+                                    <MudText Typo="Typo.subtitle2">Last Reviewed</MudText>
+                                </dt>
+                                <dd>
+                                    @if (HasPathwayBeenReviewed)
+                                    {
+                                        <MudTooltip Text="@ParticipantSummaryDto.PathwayPlan!.LastReviewed!.Value.ToString("dd/MM/yyyy hh:mm")">
+                                            <MudText Typo="Typo.body2">
+                                                @ParticipantSummaryDto.PathwayPlan!.LastReviewed!.Value.Humanize()
+                                            </MudText>
+                                        </MudTooltip>
+                                    }
+                                    else
+                                    {
+                                        <MudText Typo="Typo.body2">Never</MudText>
+                                    }
+                                </dd>
+                            </div>
+                            @if (HasPathwayBeenReviewed)
+                            {
+                                <div class="description-pair">
+                                    <dt>
+                                        <MudText Typo="Typo.subtitle2">Reviewed By</MudText>
+                                    </dt>
+                                    <dd>
+                                        <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.LastReviewedBy!).DisplayName</MudText>
+                                    </dd>
+                                </div>
+                            }
+                        </dl>
+                    </div>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body2">No pathway plan found.</MudText>
+                }
+            </MudCardContent>
+            <MudCardActions>
+                @if (HasPathwayPlan)
+                {
+                    <MudTooltip Text="Review Information">
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="ReviewPathwayPlan" />
+                    </MudTooltip>
+                }
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
 </MudGrid>

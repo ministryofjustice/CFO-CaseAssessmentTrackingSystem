@@ -17,7 +17,7 @@ public class Objective : BaseAuditableEntity<Guid>
     public DateTime? Completed { get; set; }
     public CompletionStatus? CompletedStatus { get; set; }
 
-    public string ParticipantId { get; private set; }
+    public Guid PathwayPlanId { get; private set; }
 
     public string Title { get; private set; }
     
@@ -50,12 +50,12 @@ public class Objective : BaseAuditableEntity<Guid>
         // AddDomainEvent
     }
 
-    public static Objective Create(string title, string participantId)
+    public static Objective Create(string title, Guid pathwayPlanId)
     {
         Objective objective = new()
         {
             Title = title,
-            ParticipantId = participantId
+            PathwayPlanId = pathwayPlanId
         };
 
         objective.AddDomainEvent(new ObjectiveCreatedDomainEvent(objective));

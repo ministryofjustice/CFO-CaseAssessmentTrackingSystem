@@ -1,6 +1,6 @@
-﻿@using Cfo.Cats.Application.Features.Objectives.Commands
-@using Cfo.Cats.Application.Features.Objectives.DTOs
-@using Cfo.Cats.Application.Features.Objectives.Queries
+﻿@using Cfo.Cats.Application.Features.PathwayPlans.Commands
+@using Cfo.Cats.Application.Features.PathwayPlans.DTOs
+@using Cfo.Cats.Application.Features.PathwayPlans.Queries
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Objectives
 @using Cfo.Cats.Server.UI.Pages.Objectives.Tasks
@@ -46,7 +46,7 @@
         .Where(task => task.IsCompleted is false || HideCompletedTasks is false)
         .OrderBy(task => task.Created))
         {
-            <ObjectiveTask Model="task" OnChange="async() => await OnChange.InvokeAsync()" />
+            <ObjectiveTask Model="task" OnChange="async() => await OnChange.InvokeAsync()" PathwayPlanId="Model.PathwayPlanId" />
         }
         <div class="d-flex align-center ml-2 mt-4 mb-2">
             <MudTooltip Text="Review">
@@ -67,47 +67,16 @@
     public required ObjectiveDto Model { get; set; }
 
     [Parameter, EditorRequired]
-    public required string ParticipantId { get; set; }
-
-    [Parameter, EditorRequired]
     public required bool HideCompletedTasks { get; set; }
 
     [Parameter]
     public EventCallback OnChange { get; set; }
 
-    public async Task AddObjective()
-    {
-        var command = new AddObjective.Command()
-        {
-            ParticipantId = ParticipantId
-        };
-
-        var parameters = new DialogParameters<AddObjectiveDialog>()
-        {
-            { x => x.Model, command }
-        };
-
-        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
-        var dialog = DialogService.Show<AddObjectiveDialog>("Add objective", parameters, options);
-
-        var state = await dialog.Result;
-
-        if (state!.Canceled is false)
-        {
-            var result = await GetNewMediator().Send(command);
-
-            if (result.Succeeded)
-            {
-                await OnChange.InvokeAsync();
-            }
-
-        }
-    }
-
     public async Task Review()
     {
         var command = new ReviewObjective.Command()
         {
+            PathwayPlanId = Model.PathwayPlanId,
             ObjectiveId = Model.Id
         };
 
@@ -137,6 +106,7 @@
     {
         var command = new AddTask.Command()
         {
+            PathwayPlanId = Model.PathwayPlanId,
             ObjectiveId = Model.Id
         };
 
@@ -166,6 +136,7 @@
     {
         var command = new EditObjective.Command()
         {
+            PathwayPlanId = Model.PathwayPlanId,
             ObjectiveId = Model.Id,
             Title = Model.Title
         };

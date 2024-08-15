@@ -1,5 +1,5 @@
-﻿@using Cfo.Cats.Application.Features.Objectives.Commands
-@using Cfo.Cats.Application.Features.Objectives.DTOs
+﻿@using Cfo.Cats.Application.Features.PathwayPlans.Commands
+@using Cfo.Cats.Application.Features.PathwayPlans.DTOs
 @using Cfo.Cats.Domain.Common.Enums
 @using Humanizer
 
@@ -102,6 +102,9 @@
     [Parameter, EditorRequired]
     public required ObjectiveTaskDto Model { get; set; }
 
+    [Parameter, EditorRequired]
+    public required Guid PathwayPlanId { get; set; }
+
     [Parameter]
     public EventCallback OnChange { get; set; }
 
@@ -110,7 +113,8 @@
         var command = new ReviewTask.Command()
         {
             TaskId = Model.Id,
-            ObjectiveId = Model.ObjectiveId
+            ObjectiveId = Model.ObjectiveId,
+            PathwayPlanId = PathwayPlanId
         };
 
         var parameters = new DialogParameters<ReviewTaskDialog>()
@@ -142,7 +146,8 @@
             TaskId = Model.Id,
             ObjectiveId = Model.ObjectiveId,
             Title = Model.Title,
-            Due = Model.Due
+            Due = Model.Due,
+            PathwayPlanId = PathwayPlanId
         };
 
         var parameters = new DialogParameters<ExtendDateTaskDialog>()
@@ -174,7 +179,8 @@
             TaskId = Model.Id,
             ObjectiveId = Model.ObjectiveId,
             Title = Model.Title,
-            Due = Model.Due
+            Due = Model.Due,
+            PathwayPlanId = PathwayPlanId
         };
 
         var parameters = new DialogParameters<RenameTaskDialog>()

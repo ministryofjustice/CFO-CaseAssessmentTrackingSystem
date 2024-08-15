@@ -1,11 +1,12 @@
 ﻿using Cfo.Cats.Domain.Entities.Participants;
 
-namespace Cfo.Cats.Application.Features.Objectives.DTOs;
+namespace Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 
 public class ObjectiveDto
 {
     public required Guid Id { get; set; }
-    public required string ParticipantId { get; set; }
+    public required Guid PathwayPlanId { get; set; }
+
     public required string Title { get; set; }
     public DateTime? Completed { get; set; }
     public CompletionStatus? CompletedStatus { get; set; }

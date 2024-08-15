@@ -2,6 +2,7 @@ using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Features.Assessments.Commands;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
+using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Pages.Risk;
 
@@ -148,6 +149,14 @@ public partial class CaseSummary
         var dialog = DialogService.Show<ExpandedRiskDialog>("Risk Summary", parameters, options);
 
         var result = await dialog.Result;
+    }
+
+    private bool HasPathwayPlan => ParticipantSummaryDto.PathwayPlan is not null;
+    private bool HasPathwayBeenReviewed => HasPathwayPlan && ParticipantSummaryDto.PathwayPlan?.LastReviewed is not null;
+
+    public async Task ReviewPathwayPlan()
+    {
+        await Task.CompletedTask;
     }
 
 }

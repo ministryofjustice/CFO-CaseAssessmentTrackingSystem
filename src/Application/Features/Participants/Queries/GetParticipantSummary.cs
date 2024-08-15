@@ -2,6 +2,7 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.Features.Participants.DTOs;
+using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
@@ -41,14 +42,19 @@ public static class GetParticipantSummary
                 .ProjectTo<AssessmentSummaryDto>(mapper.ConfigurationProvider)
                 .ToArrayAsync(cancellationToken);
 
-            var risk = await unitOfWork.DbContext.Risks
+            summary.LatestRisk = await unitOfWork.DbContext.Risks
                 .OrderByDescending(x => x.Created)
+                .ProjectTo<RiskSummaryDto>(mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(x => x.ParticipantId == request.ParticipantId, cancellationToken);
 
-            summary.LatestRisk = mapper.Map<RiskSummaryDto>(risk);
-                
-            return Result<ParticipantSummaryDto>.Success(summary);
+            summary.PathwayPlan = await unitOfWork.DbContext.PathwayPlans
+                .IgnoreAutoIncludes()
+                .Include(x => x.ReviewHistories)
+                .Where(x => x.ParticipantId == request.ParticipantId)
+                .ProjectTo<PathwayPlanSummaryDto>(mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(cancellationToken);
 
+            return Result<ParticipantSummaryDto>.Success(summary);
         }
     }
 

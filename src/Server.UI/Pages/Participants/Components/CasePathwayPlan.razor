@@ -1,6 +1,6 @@
-@using Cfo.Cats.Application.Features.Objectives.Commands
-@using Cfo.Cats.Application.Features.Objectives.DTOs
-@using Cfo.Cats.Application.Features.Objectives.Queries
+@using Cfo.Cats.Application.Features.PathwayPlans.Commands
+@using Cfo.Cats.Application.Features.PathwayPlans.DTOs
+@using Cfo.Cats.Application.Features.PathwayPlans.Queries
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Objectives
 @using Cfo.Cats.Server.UI.Pages.Objectives.Tasks
@@ -20,39 +20,47 @@
     <MudPaper>
         <MudList T="ObjectiveTaskDto">
             <MudListSubheader Class="py-8">
-                <div class="d-flex flex-column flex-sm-row align-center gap-2">
-                    <MudSelect @bind-Value="selector" Label="Sort objectives by">
+                <div class="d-flex gap-4 align-center">
+                    <MudTooltip Text="New objective">
+                        <MudIconButton OnClick="AddObjective" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Class="rounded-circle" />
+                    </MudTooltip>
+                    <MudText>New objective</MudText>
+                    <MudSpacer />
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small">Reviewed Pathway Plan</MudButton>
+                </div>
+                <div class="d-flex flex-column flex-sm-row align-center gap-2 mt-6">
+                    <MudSelect @bind-Value="selector" Label="Sort objectives by" Disabled="Model.Objectives.Any() is false" >
                         <MudSelectItem Value="@("Created")">Date added</MudSelectItem>
                         <MudSelectItem Value="@("Title")">Title</MudSelectItem>
                         <MudSelectItem Value="@("Outstanding")">No. of outstanding tasks</MudSelectItem>
                     </MudSelect>
-                    <MudSelect @bind-Value="sortDirection" Label="Direction">
+                        <MudSelect @bind-Value="sortDirection" Label="Direction" Disabled="Model.Objectives.Any() is false" >
                         <MudSelectItem Value="SortDirection.Ascending">Ascending</MudSelectItem>
                         <MudSelectItem Value="SortDirection.Descending">Descending</MudSelectItem>
                     </MudSelect>
                     <MudSpacer />
                     <div class="d-flex flex-column">
-                        <MudCheckBox @bind-Value="hideCompletedObjectives" Label="Hide completed objectives" Disabled="Model.Any() is false" />
-                        <MudCheckBox @bind-Value="hideCompletedTasks" Label="Hide completed tasks" Disabled="Model.SelectMany(x => x.Tasks).Any() is false" />
+                        <MudCheckBox @bind-Value="hideCompletedObjectives" Label="Hide completed objectives" Disabled="Model.Objectives.Any() is false" />
+                        <MudCheckBox @bind-Value="hideCompletedTasks" Label="Hide completed tasks" Disabled="Model.Objectives.SelectMany(x => x.Tasks).Any() is false" />
                     </div>
-                </div>
-                <div class="d-flex gap-4 align-center mt-6">
-                    <MudTooltip Text="New objective">
-                        <MudIconButton OnClick="AddObjective" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Class="rounded-circle" />
-                    </MudTooltip>
-                    <MudText>New objective</MudText>
                 </div>
                 <MudDivider Class="mt-6" />
             </MudListSubheader>
-            @foreach (var objective in Model
+            @foreach (var objective in Model.Objectives
            .Where(objective => objective.IsCompleted is false || hideCompletedObjectives is false)
            .OrderByDirection(sortDirection, selectors[selector]))
             {
-                <Objective Model="objective" ParticipantId="ParticipantId" HideCompletedTasks="hideCompletedTasks" OnChange="OnRefresh" />
+                <Objective Model="objective" HideCompletedTasks="hideCompletedTasks" OnChange="OnRefresh" />
                 <MudDivider />
             }
         </MudList>
     </MudPaper>
+}
+else
+{
+    <MudAlert>
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No pathway plan found.</MudAlert>
+    </MudAlert>
 }
 
 @code {
@@ -72,7 +80,7 @@
     [Parameter, EditorRequired]
     public required string ParticipantId { get; set; }
 
-    public IEnumerable<ObjectiveDto>? Model { get; set; }
+    public PathwayPlanDto? Model { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,17 +90,17 @@
 
     private async Task OnRefresh()
     {
-        Model = await GetNewMediator().Send(new GetObjectivesByParticipantId.Query()
+        Model = await GetNewMediator().Send(new GetPathwayPlanByParticipantId.Query()
         {
             ParticipantId = ParticipantId
-        }); 
+        });
     }
 
     public async Task AddObjective()
     {
         var command = new AddObjective.Command()
         {
-            ParticipantId = ParticipantId
+            PathwayPlanId = Model!.Id
         };
 
         var parameters = new DialogParameters<AddObjectiveDialog>()

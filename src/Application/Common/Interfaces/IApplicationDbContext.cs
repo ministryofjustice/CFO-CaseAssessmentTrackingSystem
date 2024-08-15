@@ -25,10 +25,9 @@ public interface IApplicationDbContext
     
     public DbSet<Participant> Participants { get; }
 
-    public DbSet<Risk> Risks { get; }
+    public DbSet<PathwayPlan> PathwayPlans { get; }
 
-    public DbSet<Objective> Objectives { get; }
-    public DbSet<ObjectiveTask> ObjectiveTasks { get; }
+    public DbSet<Risk> Risks { get; }
 
     public DbSet<KeyValue> KeyValues { get; }
     
