@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Features.Bios.DTOs;
 using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.Participants;
 
@@ -42,6 +43,7 @@ public class ParticipantSummaryDto
 
     public RiskSummaryDto? LatestRisk { get; set; }
 
+    public BioSummaryDto? BioSummary { get; set; }
 
     private class Mapping : Profile
     {
@@ -61,6 +63,12 @@ public class ParticipantSummaryDto
                 .ForMember(target => target.AssessmentDate, options => options.MapFrom(source => source.Created))
                 .ForMember(target => target.AssessmentCreator, options => options.MapFrom(source => source.CreatedBy))
                 .ForMember(target => target.AssessmentScored, options => options.MapFrom(source => source.Scores.All(s => s.Score >= 0)));
+
+            CreateMap<Domain.Entities.Bios.ParticipantBio, BioSummaryDto>()
+                .ForMember(target => target.BioId, options => options.MapFrom(source => source.Id))
+                .ForMember(target => target.BioDate, options => options.MapFrom(source => source.Created))
+                .ForMember(target => target.BioStatus, options => options.MapFrom(source => source.Status))
+                .ForMember(target => target.BioCreator, options => options.MapFrom(source => source.CreatedBy));
         }
     }
 
@@ -90,4 +98,29 @@ public class AssessmentSummaryDto
     /// submitted and should make the assessment read-only
     /// </summary>
     public bool? AssessmentScored { get; set; }
+}
+
+public class BioSummaryDto
+{
+    /// <summary>
+    /// The id of the one and only Bio, atleast for now
+    /// </summary>
+    public Guid? BioId { get; set; }
+
+
+    /// <summary>
+    /// The date when Bio was created.
+    /// </summary>
+    public DateTime? BioDate { get; set; }
+
+    /// <summary>
+    /// Who created the Bio (if available)
+    /// </summary>
+    public string? BioCreator { get; set; }
+
+    /// <summary>
+    /// Status of the Bio
+    /// </summary>
+    public BioStatus BioStatus { get; set; } = BioStatus.NotStarted;
+
 }

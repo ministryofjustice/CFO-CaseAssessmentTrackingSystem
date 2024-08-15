@@ -46,7 +46,13 @@ public static class GetParticipantSummary
                 .FirstOrDefaultAsync(x => x.ParticipantId == request.ParticipantId, cancellationToken);
 
             summary.LatestRisk = mapper.Map<RiskSummaryDto>(risk);
-                
+            
+            var bio = await unitOfWork.DbContext.ParticipantBios
+                .OrderByDescending(x => x.Created)
+                .FirstOrDefaultAsync(x => x.ParticipantId == request.ParticipantId, cancellationToken);
+
+            summary.BioSummary = mapper.Map<BioSummaryDto>(bio);
+
             return Result<ParticipantSummaryDto>.Success(summary);
 
         }

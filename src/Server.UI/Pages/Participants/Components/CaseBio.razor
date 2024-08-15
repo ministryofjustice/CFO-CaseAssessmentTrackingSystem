@@ -1,0 +1,121 @@
+﻿@using Cfo.Cats.Application.Features.Bios.DTOs
+@using Cfo.Cats.Application.Features.Bios.Queries
+@using Cfo.Cats.Domain.Common.Enums
+
+@inherits CatsComponentBase
+
+<style>
+    .readonly-toggle {
+        pointer-events: none;
+    }
+
+    .two-columns {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Two columns */
+        gap: 10px; /* Adjust the gap between items as needed */
+    }
+
+    .toggle-item {
+        box-sizing: border-box; /* Ensure padding and borders are included in width/height */
+        padding: 10px; /* Add padding if needed */
+        justify-content: left !important;
+    }
+</style>
+
+@if (_notFound)
+{
+    <MudAlert>
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No assessment found.</MudAlert>
+    </MudAlert>
+}
+
+
+@if (_model is not null)
+{
+    <MudExpansionPanels Class="pa-3 m-3" MultiExpansion="true">
+
+        @foreach (var pathway in _model.Pathways)
+        {
+            <MudExpansionPanel>
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudIcon Icon="@pathway.Icon" Color="Color.Primary" class="mr-3" />
+                        <MudText>@pathway.Title</MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <MudGrid Class="mb-4 px-10">
+
+                        @foreach (var question in pathway.Questions())
+                        {
+
+                            <MudItem xs="4">
+                                <Cfo.Cats.Server.UI.Pages.Bio.BioComponents.BioQuestion Question="@question.Question" HelperText="@question.OtherInformation" />
+                            </MudItem>
+
+                            <MudItem xs="8">
+                                @if (question is SingleChoiceQuestion atq)
+                                {
+                                    <MudToggleGroup T="string" Class="readonly-toggle" SelectionMode="SelectionMode.SingleSelection" @bind-Value="@atq.Answer" CheckMark FixedContent Color="Color.Primary">
+                                        @foreach (var item in atq.Options)
+                                        {
+                                            <MudToggleItem Value="@item" Text="@item" />
+                                        }
+                                    </MudToggleGroup>
+
+                                }
+                            </MudItem>
+                            <MudDivider />
+                        }
+                    </MudGrid>
+                </ChildContent>
+            </MudExpansionPanel>
+        }
+
+    </MudExpansionPanels>
+}
+
+
+
+@code {
+
+    private Bio? _model;
+    private bool _notFound = false;
+
+    [Parameter]
+    [EditorRequired]
+    public string ParticipantId { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_model is not null)
+        {
+            return;
+        }
+
+        try
+        {
+            var result = await GetNewMediator().Send(new GetBio.Query()
+                {
+                    ParticipantId = ParticipantId
+                });
+
+            if (result.Succeeded)
+            {
+                _model = result.Data;
+            }
+
+        }
+        finally
+        {
+            _notFound = _model is null;
+        }
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("removeInlineStyle", ".two-columns");
+    }
+
+}

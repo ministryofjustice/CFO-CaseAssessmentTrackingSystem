@@ -4,6 +4,7 @@ using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Entities.Participants;
+using Cfo.Cats.Domain.Entities.Bios;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Persistence.Configurations.Enrolments;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
@@ -40,7 +41,8 @@ public class ApplicationDbContext
     public DbSet<Risk> Risks => Set<Risk>();
 
     public DbSet<ParticipantAssessment> ParticipantAssessments => Set<ParticipantAssessment>();
-    
+
+    public DbSet<ParticipantBio> ParticipantBios => Set<ParticipantBio>();
     public DbSet<KeyValue> KeyValues => Set<KeyValue>();
     
     

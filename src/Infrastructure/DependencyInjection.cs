@@ -308,10 +308,17 @@ public static class DependencyInjection
 
         services.AddSingleton<IPasswordService, PasswordService>();
 
+        CookieSecurePolicy policy = CookieSecurePolicy.SameAsRequest;
+        if(configuration["IdentitySettings:SecureCookies"] is not null && configuration["IdentitySettings:SecureCookies"]!.Equals("True", StringComparison.CurrentCultureIgnoreCase))
+        {
+            policy = CookieSecurePolicy.Always;
+        }
+        
+
         services.ConfigureApplicationCookie(options => {
             options.LoginPath = "/pages/authentication/login";
             options.Cookie.SameSite = SameSiteMode.Strict;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            options.Cookie.SecurePolicy = policy;
         });
 
         services

@@ -22,6 +22,7 @@ internal static class DatabaseConstants
         public const string LocationMapping = nameof(LocationMapping);
         public const string Participant = nameof(Participant);
         public const string Assessment = nameof(Assessment);
+        public const string Bio = nameof(Bio);
         public const string Note = nameof(Note);
         public const string Tenant = nameof(Tenant);
         public const string TenantDomain = nameof(TenantDomain);
