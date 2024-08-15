@@ -16,8 +16,6 @@ namespace Cfo.Cats.Domain.Entities.Bios
         }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-
-
         public string ParticipantId { get; private set; }
         public string BioJson { get; private set; }
         public BioStatus Status { get; private set; } = BioStatus.NotStarted;
@@ -32,8 +30,7 @@ namespace Cfo.Cats.Domain.Entities.Bios
 
         public ParticipantBio UpdateJson(string json)
         {
-            //TODO: Add events for update, and logic to stop locked assessments being updated
-            this.BioJson = json;
+            BioJson = json;
             return this;
         }
 
@@ -44,7 +41,6 @@ namespace Cfo.Cats.Domain.Entities.Bios
             return this;
         }
 
-
         public static ParticipantBio Create(Guid id, string participantId, string bioJson, BioStatus status)
         {
             return new ParticipantBio(id, participantId, bioJson, status);
@@ -52,7 +48,10 @@ namespace Cfo.Cats.Domain.Entities.Bios
 
         public ParticipantBio UpdateStatus(BioStatus status)
         {
-            this.Status = status;
+            if(Status != BioStatus.Complete)
+            {
+                Status = status;
+            }
             return this;
         }
     }

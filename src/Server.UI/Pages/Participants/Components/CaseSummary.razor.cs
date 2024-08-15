@@ -6,6 +6,7 @@ using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Pages.Risk;
 
+
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
 public partial class CaseSummary
@@ -171,54 +172,25 @@ public partial class CaseSummary
     }
     public async Task SkipBioForNow()
     {
-        Result<Guid>? resultBioCreated;
-        if (_bio is null)
+        var command = new SkipBioForNow.Command() 
         {
-            var commandCreateBio = new BeginBio.Command
-            {
-                ParticipantId = ParticipantSummaryDto.Id
-            };
-            resultBioCreated = await GetNewMediator().Send(commandCreateBio);
-            if (resultBioCreated.Succeeded)
-            {
-                var commandSkipBio = new SkipBioForNow.Command
-                {
-                    BioId = resultBioCreated.Data
-                };
-                var resultBioSkipped = await GetNewMediator().Send(commandSkipBio);
+            ParticipantId = ParticipantSummaryDto.Id
+        };
 
-                if (resultBioSkipped.Succeeded)
-                {
-                    Snackbar.Add($"Bio skipped for now, you can add bio information at any time by clicking Continue Bio button", Severity.Info,
-                        config => { config.ShowTransitionDuration = 500; config.HideTransitionDuration = 500; config.ShowCloseIcon = false; });
-                    await Task.Delay(2000);
-                    Navigation.Refresh(true);
-                }
-                else
-                {
-                    Snackbar.Add($"{resultBioSkipped.ErrorMessage}", Severity.Error);
-                }
-            }
+        var result = await GetNewMediator().Send(command);
+        if (result.Succeeded)
+        {
+            Snackbar.Add($"Bio skipped for now, you can add bio information at any time by clicking Continue Bio button", Severity.Info,
+            config => {
+                config.ShowTransitionDuration = 500;
+                config.HideTransitionDuration = 500;
+                config.ShowCloseIcon = false;
+            });
+            Navigation.Refresh(true);
         }
         else
         {
-            var commandSkipExistingBio = new SkipBioForNow.Command
-            {
-                BioId = _bio!.BioId!.Value
-            };
-            var result = await GetNewMediator().Send(commandSkipExistingBio);
-
-            if (result.Succeeded)
-            {
-                Snackbar.Add($"Bio skipped for now, you can add bio information at any time by clicking Continue Bio button", Severity.Info, 
-                    config => { config.ShowTransitionDuration = 500;config.HideTransitionDuration = 500;config.ShowCloseIcon = false;});
-                await Task.Delay(2000);
-                Navigation.Refresh(true);
-            }
-            else
-            {
-                Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
-            }
+            Snackbar.Add($"Skipping bio failed", Severity.Error);
         }
     }
     public void ContinueBio()
