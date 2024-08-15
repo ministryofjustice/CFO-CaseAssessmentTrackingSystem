@@ -102,3 +102,8 @@
     margin: 0;
     flex: 1;
 }
+
+.word-wrap {    
+    word-wrap: break-word;
+    white-space: normal;
+}
