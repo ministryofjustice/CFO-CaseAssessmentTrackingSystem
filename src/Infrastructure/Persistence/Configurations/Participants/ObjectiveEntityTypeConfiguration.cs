@@ -30,6 +30,12 @@ public class ObjectiveEntityTypeConfiguration
         builder.Property(o => o.LastModifiedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
+        builder.Property(t => t.CompletedStatus)
+            .HasConversion(
+                x => x!.Value,
+                x => CompletionStatus.FromValue(x)
+            );
+
         builder.Navigation(e => e.Tasks).AutoInclude();
 
         builder.OwnsMany(o => o.Tasks, task =>
@@ -59,7 +65,7 @@ public class ObjectiveEntityTypeConfiguration
             task.Property(t => t.CompletedStatus)
                 .HasConversion(
                     x => x!.Value,
-                    x => TaskCompletionStatus.FromValue(x)
+                    x => CompletionStatus.FromValue(x)
                 );
         });
     }

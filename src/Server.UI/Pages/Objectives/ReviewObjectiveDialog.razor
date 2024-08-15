@@ -9,22 +9,27 @@
             <MudSelect @bind-Value="Model.Reason"
                        Label="@Model.GetMemberDescription(x => x.Reason)"
                        For="@(() => Model.Reason)">
-                @foreach(var status in CompletionStatus.List)
+                @foreach (var status in CompletionStatus.List)
                 {
                     <MudSelectItem Value="status">@status.Name</MudSelectItem>
                 }
             </MudSelect>
+
             <MudTextField @bind-Value="Model.Justification"
                           Label="@Model.GetMemberDescription(x => x.Justification)"
                           For="@(() => Model.Justification)"
                           Lines="5"
                           Class="mt-4" />
+
+            <MudCheckBox @bind-Value="understood" 
+                         Label="@(@"I understand that completing this objective will also complete any outstanding tasks and I won't be able to make any further changes (with the exception of recording Activities, ETEs, and PSFs).")"
+                         Class="mt-4" />
         </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">
-            @($"{ConstantString.Complete} Task")
+        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit" Disabled="understood is false">
+            @($"{ConstantString.Complete} Objective")
         </MudLoadingButton>
     </DialogActions>
 </MudDialog>
@@ -32,11 +37,12 @@
 @code {
     MudForm? form;
     bool saving;
+    bool understood;
 
     [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter, EditorRequired]
-    public required ReviewTask.Command Model { get; set; }
+    public required ReviewObjective.Command Model { get; set; }
 
     private void Cancel()
     {

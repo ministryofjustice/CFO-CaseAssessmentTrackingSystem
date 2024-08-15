@@ -12,7 +12,7 @@ public class ObjectiveTaskDto
     public DateTime? Completed { get; set; }
     public string? CompletedByName { get; set; }
 
-    public TaskCompletionStatus? CompletedStatus { get; set; }
+    public CompletionStatus? CompletedStatus { get; set; }
     public bool IsCompleted => Completed.HasValue;
     public bool IsOverdue => IsCompleted is false
         && (ToFirstDayOfMonth(DateTime.UtcNow) > ToFirstDayOfMonth(Due));

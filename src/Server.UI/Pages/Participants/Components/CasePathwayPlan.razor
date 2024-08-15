@@ -52,19 +52,16 @@
                         <div class="d-flex gap-2 align-center">
                             <MudText Typo="Typo.subtitle2">@objective.Title</MudText>
                             <MudText>(@tasks.Count(x => x.IsCompleted)/@tasks.Count())</MudText>
-                            @if(tasks.Any())
+                            @if(objective.IsCompleted)
                             {
-                                if (tasks.Any(task => task.IsOverdue))
+                                <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Small" />
+                                @if (objective.CompletedStatus == CompletionStatus.Done)
                                 {
-                                    <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.AccessTime" />
+                                    <MudChip Text="@objective.CompletedStatus.Name" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
                                 }
-                                else if (tasks.Any(task => task.IsDueSoon))
+                                else if (objective.CompletedStatus == CompletionStatus.NotRequired)
                                 {
-                                    <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
-                                }
-                                else if (tasks.All(task => task.IsCompleted))
-                                {
-                                    <MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
+                                    <MudChip Text="@objective.CompletedStatus.Name" Size="Size.Small" Color="Color.Dark" Icon="@Icons.Material.Filled.Close" />
                                 }
                             }
                         </div>
@@ -93,11 +90,11 @@
                                                 @if (task.IsCompleted)
                                                 {
                                                     <MudTooltip Text="Completed">
-                                                        @if(task.CompletedStatus == TaskCompletionStatus.Done)
+                                                        @if(task.CompletedStatus == CompletionStatus.Done)
                                                         {
                                                             <MudChip Text="@task.CompletedStatus.Name" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
                                                         }
-                                                        else if(task.CompletedStatus == TaskCompletionStatus.NotRequired)
+                                                        else if(task.CompletedStatus == CompletionStatus.NotRequired)
                                                         {
                                                             <MudChip Text="@task.CompletedStatus.Name" Size="Size.Small" Color="Color.Dark" Icon="@Icons.Material.Filled.Close" />
                                                         }
@@ -166,14 +163,14 @@
                             </MudListItem>
                         }
                         <div class="d-flex align-center ml-2 mt-4 mb-2">
-                            <MudTooltip Text="Lock">
-                                <MudIconButton Icon="@Icons.Material.Filled.Lock" />
+                            <MudTooltip Text="Review">
+                                <MudIconButton OnClick="async() => await ReviewObjective(objective)" Icon="@Icons.Material.Filled.Lock" Disabled="objective.IsCompleted" />
                             </MudTooltip>
                             <MudTooltip Text="Rename">
-                                <MudIconButton OnClick="async() => await RenameObjective(objective)" Icon="@Icons.Material.Filled.EditNote" />
+                                <MudIconButton OnClick="async() => await RenameObjective(objective)" Icon="@Icons.Material.Filled.EditNote" Disabled="objective.IsCompleted" />
                             </MudTooltip>
                             <MudTooltip Text="New Task">
-                                <MudIconButton OnClick="async() => await AddTask(objective)" Icon="@Icons.Material.Filled.Add" />
+                                <MudIconButton OnClick="async() => await AddTask(objective)" Icon="@Icons.Material.Filled.Add" Disabled="objective.IsCompleted" />
                             </MudTooltip>
                         </div>
                     </NestedList>
@@ -230,6 +227,35 @@
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
         var dialog = DialogService.Show<AddObjectiveDialog>("Add objective", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                await OnRefresh();
+            }
+
+        }
+    }
+
+    public async Task ReviewObjective(ObjectiveDto objective)
+    {
+        var command = new ReviewObjective.Command()
+        {
+            ObjectiveId = objective.Id
+        };
+
+        var parameters = new DialogParameters<ReviewObjectiveDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+        var dialog = DialogService.Show<ReviewObjectiveDialog>("Review objective", parameters, options);
 
         var state = await dialog.Result;
 
