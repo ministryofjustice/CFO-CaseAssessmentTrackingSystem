@@ -28,6 +28,17 @@
                     <MudChip T="string" Text="@Model.CompletedStatus.Name" Size="Size.Small" Color="Color.Dark" Icon="@Icons.Material.Filled.Close" />
                 }
             }
+            else
+            {
+                if(Model.Tasks.Any(task => task.IsOverdue))
+                {
+                    <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.AccessTime" />
+                }
+                else if(Model.Tasks.Any(task => task.IsDueSoon))
+                {
+                    <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
+                }
+            }
         </div>
     </ChildContent>
     <NestedList>
