@@ -1,9 +1,13 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Bios.DTOs;
+using Cfo.Cats.Application.Features.Bios.DTOs.V1.Pathways.ChildhoodExperiences;
+using Cfo.Cats.Application.Features.Bios.DTOs.V1.Pathways.Diversity;
+using Cfo.Cats.Application.Features.Bios.DTOs.V1.Pathways.RecentExperiences;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Bios;
 using DocumentFormat.OpenXml.Office.PowerPoint.Y2021.M06.Main;
+using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Bios.Commands;
 
@@ -23,7 +27,24 @@ public static class SkipBioForNow
 
             if (bio == null)
             {
-                bio = ParticipantBio.Create(Guid.NewGuid(), request.ParticipantId!, string.Empty, BioStatus.NotStarted);
+                Bio newBio = new Bio()
+                {
+                    Id = Guid.NewGuid(),
+                    ParticipantId = request.ParticipantId!,
+                    Pathways =
+                       [
+                           new ChildhoodExperiencesPathway(),
+                           new DiversityPathway(),
+                           new RecentExperiencesPathway(),
+                        ]
+                };
+
+                string json = JsonConvert.SerializeObject(newBio, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto
+                });
+
+                bio = ParticipantBio.Create(Guid.NewGuid(), request.ParticipantId!, json, BioStatus.NotStarted);
                 unitOfWork.DbContext.ParticipantBios.Add(bio);
             }
 
