@@ -236,6 +236,8 @@ BEGIN TRY
     INSERT INTO Configuration.KeyValue (Id, Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (18, N'ReferralSource', N'Courts', N'Courts', N'A referral source', @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.KeyValue (Id, Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (19, N'ReferralSource', N'Self-referral', N'Self-referral', N'A referral source', @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.KeyValue (Id, Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (20, N'ReferralSource', N'Other', N'Other', N'A referral source (please state)', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Id, Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (21, N'ReferralSource', N'Previously enrolled on CFO3', N'Previously enrolled on CFO3', N'A referral source', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Id, Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (22, N'ReferralSource', N'Previously enrolled on CFO Activity Hubs', N'Previously enrolled on CFO Activity Hubs', N'A referral source', @Created, @CreatedUserId, null, null);
 
     SET IDENTITY_INSERT [Configuration].[KeyValue] OFF;
 
