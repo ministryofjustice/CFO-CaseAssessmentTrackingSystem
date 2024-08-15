@@ -7,6 +7,9 @@ public abstract class CatsComponentBase : OwningComponentBase
 
     private readonly List<IServiceScope> _scopes = new();
     private bool _disposed = false;
+
+    [Parameter]
+    public EventCallback OnUpdate { get; set; } = new EventCallback();
     
     protected IMediator GetNewMediator()
     {

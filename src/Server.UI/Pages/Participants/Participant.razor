@@ -91,7 +91,7 @@
                         <CaseRisk ParticipantId="@Id" />
                     </MudTabPanel>
                     <MudTabPanel Text="Pathway Plan">
-                        <CasePathwayPlan ParticipantId="@Id" />
+                        <CasePathwayPlan ParticipantId="@Id" OnUpdate="Refresh" />
                     </MudTabPanel>
                     <MudTabPanel Text="Contact Log" Disabled>
 
@@ -120,13 +120,19 @@
 
 @code {
     [Parameter] public string Id { get; set; } = default!;
-    
+
     [CascadingParameter] 
     public UserProfile UserProfile { get; set; } = default!;
 
     private ParticipantSummaryDto? _participant = null;
 
     protected override async Task OnInitializedAsync()
+    {
+        await Refresh();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Refresh()
     {
         _participant = await GetNewMediator().Send(new GetParticipantSummary.Query()
         {
