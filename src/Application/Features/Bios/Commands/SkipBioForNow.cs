@@ -44,7 +44,7 @@ public static class SkipBioForNow
                     TypeNameHandling = TypeNameHandling.Auto
                 });
 
-                bio = ParticipantBio.Create(Guid.NewGuid(), request.ParticipantId!, json, BioStatus.NotStarted);
+                bio = ParticipantBio.Create(newBio.Id, request.ParticipantId!, json, BioStatus.NotStarted);
                 unitOfWork.DbContext.ParticipantBios.Add(bio);
             }
 
