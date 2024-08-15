@@ -21,12 +21,12 @@
         <MudList T="ObjectiveTaskDto">
             <MudListSubheader Class="py-8">
                 <div class="d-flex flex-column flex-sm-row align-center gap-2">
-                    <MudSelect @bind-Value="selector" Label="Sort objectives by" Dense Style="width: 120px">
+                    <MudSelect @bind-Value="selector" Label="Sort objectives by">
                         <MudSelectItem Value="@("Created")">Date added</MudSelectItem>
                         <MudSelectItem Value="@("Title")">Title</MudSelectItem>
                         <MudSelectItem Value="@("Outstanding")">No. of outstanding tasks</MudSelectItem>
                     </MudSelect>
-                    <MudSelect @bind-Value="sortDirection" Label="Direction" Dense Style="width: 60px">
+                    <MudSelect @bind-Value="sortDirection" Label="Direction">
                         <MudSelectItem Value="SortDirection.Ascending">Ascending</MudSelectItem>
                         <MudSelectItem Value="SortDirection.Descending">Descending</MudSelectItem>
                     </MudSelect>
@@ -165,7 +165,13 @@
                                 </ChildContent>
                             </MudListItem>
                         }
-                        <div class="ml-6 mb-2">
+                        <div class="d-flex align-center ml-2 mt-4 mb-2">
+                            <MudTooltip Text="Lock">
+                                <MudIconButton Icon="@Icons.Material.Filled.Lock" />
+                            </MudTooltip>
+                            <MudTooltip Text="Rename">
+                                <MudIconButton OnClick="async() => await RenameObjective(objective)" Icon="@Icons.Material.Filled.EditNote" />
+                            </MudTooltip>
                             <MudTooltip Text="New Task">
                                 <MudIconButton OnClick="async() => await AddTask(objective)" Icon="@Icons.Material.Filled.Add" />
                             </MudTooltip>
@@ -362,4 +368,33 @@
         }
     }
 
+    public async Task RenameObjective(ObjectiveDto objective)
+    {
+        var command = new EditObjective.Command()
+        {
+            ObjectiveId = objective.Id,
+            Title = objective.Title
+        };
+
+        var parameters = new DialogParameters<RenameObjectiveDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+        var dialog = DialogService.Show<RenameObjectiveDialog>("Rename objective", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                await OnRefresh();
+            }
+
+        }
+    }
 }

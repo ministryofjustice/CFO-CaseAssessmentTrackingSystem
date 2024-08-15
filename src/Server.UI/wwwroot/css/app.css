@@ -102,3 +102,8 @@
     margin: 0;
     flex: 1;
 }
+
+.mud-tooltip-root {
+    height: fit-content;
+    display: flex !important;
+}

@@ -1,0 +1,60 @@
+﻿@using Cfo.Cats.Application.Features.Objectives.Commands
+
+@inherits CatsComponentBase
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+            <MudTextField @bind-Value="Model.Title"
+                          Label="@Model.GetMemberDescription(x => x.Title)"
+                          For="@(() => Model.Title)" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    MudForm? form;
+    bool saving;
+
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public required EditObjective.Command Model { get; set; }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            saving = true;
+
+            if (form is null)
+            {
+                saving = false;
+                return;
+            }
+
+            await form.Validate();
+
+            if (form.IsValid)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+
+}

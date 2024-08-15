@@ -26,6 +26,11 @@ public class Objective : BaseAuditableEntity<Guid>
         return this;
     }
 
+    public void Rename(string title)
+    {
+        Title = title;
+    }
+
     public static Objective Create(string title, string participantId)
     {
         Objective objective = new()
