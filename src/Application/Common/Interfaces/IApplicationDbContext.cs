@@ -2,6 +2,7 @@
 using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Entities.Participants;
+using Cfo.Cats.Domain.Entities.Bios;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Domain.ValueObjects;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
@@ -30,7 +31,7 @@ public interface IApplicationDbContext
     DbSet<KeyValue> KeyValues { get; }
 
     DbSet<ParticipantAssessment> ParticipantAssessments { get; }
-
+    DbSet<ParticipantBio> ParticipantBios { get; }
     DbSet<ParticipantEnrolmentHistory> ParticipantEnrolmentHistories { get; }
 
     DbSet<Timeline> Timelines { get; }

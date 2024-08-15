@@ -1,0 +1,21 @@
+﻿
+
+
+@code {
+
+	public string Statement = string.Empty;
+	public bool Toggle;
+
+	public BioCheckbox()
+	{ }
+
+	public BioCheckbox(string statement) : this()
+	{
+		Statement = statement;
+	}
+
+	public BioCheckbox(string statement, bool toggle) : this(statement)
+	{
+		Toggle = toggle;
+	}
+}

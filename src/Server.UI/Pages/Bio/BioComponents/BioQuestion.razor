@@ -1,0 +1,21 @@
+﻿
+<MudStack>
+	<MudText Typo="Typo.h6">
+		@Question
+	</MudText>
+	@if (HelperText is not null)
+	{
+		<MudText Typo="Typo.body2">
+			@HelperText
+		</MudText>
+	}
+</MudStack>
+
+@code {
+
+	[Parameter, EditorRequired]
+	public required string Question { get; init; } = string.Empty;
+
+	[Parameter]
+	public string? HelperText { get; init; }
+}

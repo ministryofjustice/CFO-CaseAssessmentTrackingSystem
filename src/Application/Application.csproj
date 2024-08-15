@@ -27,8 +27,4 @@
     <ItemGroup>
         <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <None Remove="DependencyInjection.cs.bak" />
-        <None Remove="Application.csproj.bak" />
-    </ItemGroup>
 </Project>
