@@ -101,6 +101,7 @@
                 <MudTabPanel Text="@L["Change Password"]">
                     <MudForm Model="@changePassword" @ref="@passwordForm" Validation="@(Validator.ValidateValue(changePassword))" Style="display: flex; align-content: center;  align-items: center; flex-direction: column;">
                         <MudGrid Justify="Justify.Center" Style="max-width:300px">
+                            <AntiforgeryToken />
                             <MudItem sm="12" xs="12">
                                 <MudPasswordField Immediate="true"
                                                   Label="@L["Current Password"]"
@@ -128,6 +129,7 @@
                                                   PasswordMode="true"
                                                   Required="true"/>
                             </MudItem>
+                            <input type="hidden" id="ReturnUrl" name="ReturnUrl" /> 
                             <MudItem sm="12" xs="12" Class="d-flex justify-end">
                                 <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await ChangePassword())">
                                     @if (submitting)
@@ -151,11 +153,11 @@
         <CustomError Exception="context"></CustomError>
     </ErrorContent>
 </ErrorBoundary>
-
 @code{
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
 
     private UserManager<ApplicationUser> userManager = default!;
+    private SignInManager<ApplicationUser> signinManager = default!;
 
     public string Title { get; set; } = "Profile";
 
@@ -171,6 +173,7 @@
     protected override async Task OnInitializedAsync()
     {
         userManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
+        signinManager = ScopedServices.GetRequiredService<SignInManager<ApplicationUser>>();
         var state = await AuthState;
 
         var user = state.User!;
@@ -214,7 +217,10 @@
                 var result = await userManager.ChangePasswordAsync(user!, changePassword.CurrentPassword, changePassword.NewPassword);
                 if (result.Succeeded)
                 {
-                    Snackbar.Add($"{L["Password changed successfully"]}", Severity.Info);
+                    Snackbar.Add($"{L["Password changed successfully... Logging out"]}", Severity.Info);
+
+                    Navigation.NavigateTo(@IdentityComponentsEndpointRouteBuilderExtensions.Logout, true);
+
                 }
                 else
                 {
@@ -227,6 +233,4 @@
             submitting = false;
         }
     }
-
-
 }

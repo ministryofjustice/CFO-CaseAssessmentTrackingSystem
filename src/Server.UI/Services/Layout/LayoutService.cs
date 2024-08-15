@@ -10,14 +10,15 @@ public class LayoutService
     public UserPreferences.UserPreferences UserPreferences { get; private set; } = new();
     public DarkLightMode DarkModeToggle = DarkLightMode.System;
 
-    public LayoutService(IUserPreferencesService userPreferencesService)
+    public LayoutService(IUserPreferencesService userPreferencesService, IConfiguration configuration)
     {
         this.userPreferencesService = userPreferencesService;
+        this.PrimaryColor = configuration["PrimaryColour"] ?? "#722660";
     }
 
     public bool IsRTL { get; private set; }
     public bool IsDarkMode { get; private set; }
-    public string PrimaryColor { get; set; } = "#722660";
+    public string PrimaryColor { get; set; }
     public string DarkPrimaryColor { get; set; } = "#AA3C85";
     public string SecondaryColor { get; set; } = "#ff4081";
     public double BorderRadius { get; set; } = 4;

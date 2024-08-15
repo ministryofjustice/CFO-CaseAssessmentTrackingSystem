@@ -4,9 +4,25 @@ namespace Cfo.Cats.Infrastructure.Services;
 
 public class CommunicationsService(IOptions<NotifyOptions> options, ILogger<CommunicationsService> logger) : ICommunicationsService
 {
-    public Task SendSmsCodeAsync(string mobileNumber, string code)
+    public async Task SendSmsCodeAsync(string mobileNumber, string code)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var client = Client();
+            var response = await client.SendSmsAsync(mobileNumber: mobileNumber,
+            templateId: options.Value.SmsTemplate,
+            personalisation: new Dictionary<string, dynamic>()
+            {
+                {
+                    "body", 
+                    $"Your two factor authentication code is {code}"
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            logger.LogError("Failed to send SMS code. {e}", e);
+        }
     }
     public async Task SendEmailCodeAsync(string email, string code)
     {

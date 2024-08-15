@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject IStringLocalizer<SharedResource> L
 <MudRTLProvider>
-    <MudThemeProvider Theme="Constants.Theme.ApplicationTheme()"/>
+    <MudThemeProvider Theme="Constants.Theme.ApplicationTheme(PrimaryColour)"/>
     <MudLayout>
         <AuthorizeView>
             <NotAuthorized>
@@ -26,7 +26,12 @@
     </MudLayout>
 </MudRTLProvider>
 
+
+
 @code
 {
+   [Inject]
+   protected IConfiguration Configuration { get; set; } = default!;
 
+   protected string PrimaryColour => Configuration["PrimaryColour"] ?? Constants.Theme.DefaultPrimaryColour;
 }

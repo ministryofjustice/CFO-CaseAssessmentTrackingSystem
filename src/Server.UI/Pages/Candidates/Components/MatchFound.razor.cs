@@ -68,8 +68,11 @@ public partial class MatchFound
         await _form!.Validate().ConfigureAwait(false);
         if (_form!.IsValid)
         {
-            await GetNewMediator().Send(Model!);
-            await OnParticipantEnrolled.InvokeAsync();
+            var result = await GetNewMediator().Send(Model!);
+            if (result.Succeeded)
+            {
+                await OnParticipantEnrolled.InvokeAsync();
+            }
         }
     }
 

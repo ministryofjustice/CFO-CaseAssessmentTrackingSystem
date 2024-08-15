@@ -19,19 +19,19 @@ function Add-Migration {
 }
 
 function Remove-LastMigration {
-    $command = "dotnet ef migrations remove --project src\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj --startup-project src\Server.UI\Server.UI.csproj --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --configuration Debug"
+    $command = "dotnet ef migrations remove --project src\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj --startup-project src\Server.UI\Server.UI.csproj --no-build --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --configuration Debug"
     Write-Host "Executing: $command"
     Invoke-Expression $command
 }
 
 function Remove-Database {
-    $command = "dotnet ef database drop --project src\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj --startup-project src\Server.UI\Server.UI.csproj --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --configuration Debug --force"
+    $command = "dotnet ef database drop --project src\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj --startup-project src\Server.UI\Server.UI.csproj --no-build --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --configuration Debug --force"
     Write-Host "Executing: $command"
     Invoke-Expression $command
 }
 
 function Update-Database {
-    $command = "dotnet ef database update --project src\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj --startup-project src\Server.UI\Server.UI.csproj --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --configuration Debug"
+    $command = "dotnet ef database update --project src\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj --startup-project src\Server.UI\Server.UI.csproj --no-build --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --configuration Debug"
     Write-Host "Executing: $command"
     Invoke-Expression $command
 }

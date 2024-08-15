@@ -42,7 +42,13 @@ public class IdentitySettings : IIdentitySettings
 
     // Lockout settings.
     /// <summary>
-    ///     Gets or sets a value indicating what the default lockout TimeSpan should be, measured in minutes.
+    ///     Gets or sets a value indicating what the default lockout TimeSpan should be, measured in years.
     /// </summary>
-    public int DefaultLockoutTimeSpan { get; set; } = 30;
+    public int DefaultLockoutTimeSpan { get; set; } = 10;
+
+    /// <summary>
+    ///     Gets or sets a value indicating how many failed attempts will trigger an account lockout
+    /// </summary>
+    public int MaxFailedAccessAttempts { get; set; } = 5;
+
 }

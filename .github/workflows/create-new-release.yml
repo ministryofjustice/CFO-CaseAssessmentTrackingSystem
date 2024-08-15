@@ -44,11 +44,11 @@ jobs:
 
       # Publish the build artifacts
       - name: Publish
-        run: dotnet publish --configuration Release --output ./publish
+        run: dotnet publish --configuration Release --no-build --output ./publish
 
       # Run EF migrations
       - name: Run EF migrations
-        run: dotnet ef migrations script --project src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj --startup-project src/Server.UI/Server.UI.csproj --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --idempotent -o ./publish/Migration.sql
+        run: dotnet ef migrations script --project src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj --startup-project src/Server.UI/Server.UI.csproj --no-build --configuration Release --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --idempotent -o ./publish/Migration.sql
 
       # Compress the build artifacts into a ZIP file
       - name: Compress build artifacts

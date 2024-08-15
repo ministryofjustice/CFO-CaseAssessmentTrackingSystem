@@ -42,8 +42,13 @@ public static class CreateParticipant
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
             var candidate = request.Candidate;
+
+            var location = await unitOfWork.DbContext.LocationMappings
+                .Include(l => l.Location)
+                .SingleAsync(l => l.Code == candidate.EstCode, cancellationToken);
+
             Participant participant = Participant.CreateFrom(candidate.Identifier, candidate.FirstName, candidate.LastName, candidate.DateOfBirth, 
-            request.ReferralSource!, request.ReferralComments);
+            request.ReferralSource!, request.ReferralComments, location.Location?.Id ?? 0);
             participant.AssignTo(currentUserService.UserId);
         
             await unitOfWork.DbContext.Participants.AddAsync(participant, cancellationToken);
@@ -64,14 +69,25 @@ public static class CreateParticipant
                 .MinimumLength(9)
                 .MaximumLength(9)
                 .WithMessage("Invalid Cats Identifier")
+                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Identifier"))
                 .MustAsync(NotAlreadyExist)
-                .WithMessage("Participant is already enrolled")
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Identifier"));
-
+                .WithMessage("Participant is already enrolled");
+            
+            RuleFor(x => x.Candidate.EstCode)
+                .NotNull()
+                .MaximumLength(3)
+                .WithMessage("Invalid establishment code")
+                .MinimumLength(3)
+                .WithMessage("Invalid establishment code")
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage("Invalid establishment code")
+                .MustAsync(MappedLocation)
+                .WithMessage("Unknown establishment location");
+                
             RuleFor(x => x.ReferralSource)
                 .NotNull()
                 .NotEmpty()
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Referral source"));
+                .Matches(ValidationConstants.Notes).WithMessage(string.Format(ValidationConstants.NotesMessage, "Referral source"));
 
             When(x => x.ReferralSource is "Other" or "Healthcare", () => {
                 RuleFor(x => x.ReferralComments)
@@ -82,6 +98,9 @@ public static class CreateParticipant
 
  
         }
+        private async Task<bool> MappedLocation(string estCode, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.LocationMappings.AnyAsync(l => l.Code == estCode, cancellationToken);
+       
         private async Task<bool> NotAlreadyExist(string identifier, CancellationToken cancellationToken) 
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken) == false;
 

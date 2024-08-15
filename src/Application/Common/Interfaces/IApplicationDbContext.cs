@@ -13,39 +13,43 @@ namespace Cfo.Cats.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {
-    public DatabaseFacade Database { get; }
-    
+    DatabaseFacade Database { get; }
+
     DbSet<AuditTrail> AuditTrails { get; }
     DbSet<Tenant> Tenants { get; }
 
-    DbSet<Contract> Contracts { get;  }
+    DbSet<Contract> Contracts { get; }
 
     DbSet<Location> Locations { get; }
 
-    public DbSet<Document> Documents { get; }
-    
-    public DbSet<Participant> Participants { get; }
+    DbSet<Document> Documents { get; }
 
-    public DbSet<Risk> Risks { get; }
+    DbSet<Participant> Participants { get; }
 
-    public DbSet<KeyValue> KeyValues { get; }
-    
-    public DbSet<ParticipantAssessment> ParticipantAssessments { get; }
-    public DbSet<ParticipantBio> ParticipantBios { get; }
-    public DbSet<ParticipantEnrolmentHistory> ParticipantEnrolmentHistories { get; }
+    DbSet<Risk> Risks { get; }
 
-    public DbSet<Timeline> Timelines { get; }
-    
-    public DbSet<ApplicationUser> Users { get; }
-    
-    public DbSet<EnrolmentPqaQueueEntry> EnrolmentPqaQueue { get; }
-    public DbSet<EnrolmentQa1QueueEntry> EnrolmentQa1Queue { get; }
-    public DbSet<EnrolmentQa2QueueEntry> EnrolmentQa2Queue { get; }
-    public DbSet<EnrolmentEscalationQueueEntry> EnrolmentEscalationQueue { get; }
-    
+    DbSet<KeyValue> KeyValues { get; }
+
+    DbSet<ParticipantAssessment> ParticipantAssessments { get; }
+    DbSet<ParticipantBio> ParticipantBios { get; }
+    DbSet<ParticipantEnrolmentHistory> ParticipantEnrolmentHistories { get; }
+
+    DbSet<Timeline> Timelines { get; }
+
+    DbSet<ApplicationUser> Users { get; }
+
+    DbSet<EnrolmentPqaQueueEntry> EnrolmentPqaQueue { get; }
+    DbSet<EnrolmentQa1QueueEntry> EnrolmentQa1Queue { get; }
+    DbSet<EnrolmentQa2QueueEntry> EnrolmentQa2Queue { get; }
+    DbSet<EnrolmentEscalationQueueEntry> EnrolmentEscalationQueue { get; }
+
+    DbSet<LocationMapping> LocationMappings { get; }
+
     ChangeTracker ChangeTracker { get; }
 
     DbSet<DataProtectionKey> DataProtectionKeys { get; }
+
+    DbSet<PasswordHistory> PasswordHistories { get; }
 
 }
 
