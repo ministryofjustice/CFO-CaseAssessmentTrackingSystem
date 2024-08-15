@@ -41,7 +41,8 @@
                 <MudButton Color="Color.Primary" Variant="@(_isRequired ? Variant.Filled : Variant.Outlined)" OnClick="() => _isRequired = true">Yes, Right to Work is required</MudButton>
                 <MudButton Color="Color.Primary" Variant="@(_isRequired ? Variant.Outlined : Variant.Filled)" OnClick="() => _isRequired = false">No, Right to Work is not required</MudButton>
             </MudButtonGroup>
-            
+            <MudCheckBox @ref="IndefiniteRtw" T="bool" Label="Indefinite Right To Work" ValueChanged="IndefiniteRtwOnValueChanged" />
+
             @if (_isRequired)
             {
                 <MudDatePicker Label="Valid From" Editable="true"
@@ -49,10 +50,10 @@
                                MinDate="DateTime.Now.AddYears(-5).Date"
                                @bind-Date="Model.ValidFrom" Required/>
 
-                <MudDatePicker Label="Valid To" Editable="true"
+                <MudDatePicker @ref="_dpValidTo" Label="Valid To" Editable="true"
                                MaxDate="DateTime.MaxValue.Date"
                                MinDate="DateTime.Now.Date"
-                               @bind-Date="Model.ValidTo" Required/>
+                               @bind-Date="Model.ValidTo" Disabled="_disabled" Required />
 
                 <div class="mb-4 mt-8">
                     <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1" Accept=".pdf">
@@ -83,14 +84,17 @@
 
     private bool _isRequired = true;
     private bool _uploading = false;
-    
+    private bool _disabled = false;
+    private MudDatePicker? _dpValidTo;
+    MudCheckBox<bool> IndefiniteRtw { get; set; } = default!;
+
     [EditorRequired]
     [Parameter]
     public AddRightToWork.Command? Model { get; set; } 
 
     [Parameter]
     public RightToWorkDto[]? RightToWorkDtos { get; set; }
-    
+
     private MudForm? Form { get; set; }
 
     public async Task<bool> Validate()
@@ -99,7 +103,7 @@
         {
             return true;
         }
-        
+
         await Form!.Validate();
 
         if (Form.IsValid)
@@ -132,11 +136,24 @@
                 await using var stream = file.OpenReadStream(maxFileSize);
                 using var memoryStream = new MemoryStream();
                 await stream.CopyToAsync(memoryStream);
-        
+
                 Model!.UploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
                 _uploading = false;
             }
         }
     }
 
+    private void IndefiniteRtwOnValueChanged()
+    {
+        if (IndefiniteRtw.Value)
+        {
+            _disabled = true;
+            Model!.ValidTo = new DateTime(9999, 12, 31);
+        }
+        else
+        {
+            _disabled = false;
+            Model!.ValidTo = null;
+        }
+    }
 }
