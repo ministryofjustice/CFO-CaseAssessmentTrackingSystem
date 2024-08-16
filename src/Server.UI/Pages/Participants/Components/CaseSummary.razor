@@ -144,35 +144,53 @@
                     <div>
                         <dl class="description-list">
                             <div class="description-pair">
-                                <dt>
-                                    <MudText Typo="Typo.subtitle2">Last Reviewed</MudText>
-                                </dt>
-                                <dd>
-                                    @if (HasPathwayBeenReviewed)
-                                    {
+                                @if(HasPathwayBeenReviewed)
+                                {
+                                    <dt>
+                                        <MudText Typo="Typo.subtitle2">Last Reviewed</MudText>
+                                    </dt>
+                                    <dd>
                                         <MudTooltip Text="@ParticipantSummaryDto.PathwayPlan!.LastReviewed!.Value.ToString("dd/MM/yyyy hh:mm")">
                                             <MudText Typo="Typo.body2">
                                                 @ParticipantSummaryDto.PathwayPlan!.LastReviewed!.Value.Humanize()
                                             </MudText>
                                         </MudTooltip>
-                                    }
-                                    else
-                                    {
-                                        <MudText Typo="Typo.body2">Never</MudText>
-                                    }
-                                </dd>
+                                    </dd>
+                                }
+                                else
+                                {
+                                    <dt>
+                                        <MudText Typo="Typo.subtitle2">Date Created</MudText>
+                                    </dt>
+                                    <dd>
+                                        <MudTooltip Text="@ParticipantSummaryDto.PathwayPlan!.Created.ToString("dd/MM/yyyy hh:mm")">
+                                            <MudText Typo="Typo.body2">
+                                                @ParticipantSummaryDto.PathwayPlan!.Created.Humanize()
+                                            </MudText>
+                                        </MudTooltip>
+                                    </dd>
+                                }
                             </div>
-                            @if (HasPathwayBeenReviewed)
-                            {
-                                <div class="description-pair">
+                            <div class="description-pair">
+                                @if(HasPathwayBeenReviewed)
+                                {
                                     <dt>
                                         <MudText Typo="Typo.subtitle2">Reviewed By</MudText>
                                     </dt>
                                     <dd>
                                         <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.LastReviewedBy!).DisplayName</MudText>
                                     </dd>
-                                </div>
-                            }
+                                }
+                                else
+                                {
+                                    <dt>
+                                        <MudText Typo="Typo.subtitle2">Created By</MudText>
+                                    </dt>
+                                    <dd>
+                                        <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.CreatedBy).DisplayName</MudText>
+                                    </dd>
+                                }
+                            </div>
                         </dl>
                     </div>
                 }

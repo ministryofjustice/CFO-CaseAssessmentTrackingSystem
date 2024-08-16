@@ -18,6 +18,7 @@ public static class GetPathwayPlanByParticipantId
         public async Task<PathwayPlanDto?> Handle(Query request, CancellationToken cancellationToken)
         {
             var pathwayPlan = await unitOfWork.DbContext.PathwayPlans
+                .Include(p => p.ReviewHistories)
                 .Where(p => p.ParticipantId == request.ParticipantId)
                 .ProjectTo<PathwayPlanDto>(mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync(cancellationToken);
