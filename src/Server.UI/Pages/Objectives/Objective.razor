@@ -15,7 +15,7 @@
             {
                 <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Small" />
             }
-            <MudText Typo="Typo.subtitle2">@Model.Title</MudText>
+            <MudText Typo="Typo.subtitle2">@Model.DisplayName</MudText>
             <MudText>(@Model.Tasks.Count(x => x.IsCompleted)/@Model.Tasks.Count())</MudText>
             @if(Model.IsCompleted)
             {

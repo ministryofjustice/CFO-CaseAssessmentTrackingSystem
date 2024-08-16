@@ -10,9 +10,9 @@ public class ObjectiveTaskDto
     public required DateTime Due { get; set; }
     public required DateTime Created { get; set; }
     public DateTime? Completed { get; set; }
-    public string? CompletedByName { get; set; }
-
     public CompletionStatus? CompletedStatus { get; set; }
+    public required int Index { get; set; }
+    public string DisplayName => $"{Index}. {Title}";
     public bool IsCompleted => Completed.HasValue;
     public bool IsOverdue => IsCompleted is false
         && (ToFirstDayOfMonth(DateTime.UtcNow) > ToFirstDayOfMonth(Due));
@@ -25,8 +25,7 @@ public class ObjectiveTaskDto
     {
         public Mapping()
         {
-            CreateMap<ObjectiveTask, ObjectiveTaskDto>()
-                .ForMember(target => target.CompletedByName, options => options.MapFrom(source => source.CompletedByUser!.DisplayName));
+            CreateMap<ObjectiveTask, ObjectiveTaskDto>();
         }
     }
 

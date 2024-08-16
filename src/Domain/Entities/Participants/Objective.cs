@@ -1,4 +1,4 @@
-using Cfo.Cats.Domain.Common.Entities;
+﻿using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Events;
 
@@ -17,6 +17,8 @@ public class Objective : BaseAuditableEntity<Guid>
     public DateTime? Completed { get; private set; }
     public CompletionStatus? CompletedStatus { get; private set; }
 
+    public int Index { get; private set; }
+
     public Guid PathwayPlanId { get; private set; }
 
     public string Title { get; private set; }
@@ -27,8 +29,14 @@ public class Objective : BaseAuditableEntity<Guid>
 
     public Objective AddTask(ObjectiveTask task)
     {
-        _tasks.Add(task);
+        _tasks.Add(task.AtIndex(_tasks.Count + 1));
         AddDomainEvent(new ObjectiveTaskAddedToObjectiveDomainEvent(this, task));
+        return this;
+    }
+
+    public Objective AtIndex(int index)
+    {
+        Index = index;
         return this;
     }
 

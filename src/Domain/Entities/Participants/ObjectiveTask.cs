@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Events;
 using Cfo.Cats.Domain.Identity;
@@ -43,11 +43,17 @@ public class ObjectiveTask : BaseAuditableEntity<Guid>
         Title = title;
     }
 
+    public ObjectiveTask AtIndex(int index)
+    {
+        Index = index;
+        return this;
+    }
+
     public DateTime Due { get; private set; }
     public DateTime? Completed { get; private set; }
     public string? CompletedBy { get; private set; }
     public CompletionStatus? CompletedStatus { get; private set; }
-
+    public int Index { get; private set; }
     public string? Justification { get; private set; }
     public Guid ObjectiveId { get; private set; }
     public string Title { get; private set; }

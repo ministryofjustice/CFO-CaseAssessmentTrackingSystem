@@ -21,7 +21,7 @@ public class PathwayPlan : BaseAuditableEntity<Guid>
 
     public void AddObjective(Objective objective)
     {
-        _objectives.Add(objective);
+        _objectives.Add(objective.AtIndex(_objectives.Count + 1));
     }
 
     public void Review()
