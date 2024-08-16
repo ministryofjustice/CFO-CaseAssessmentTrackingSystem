@@ -63,8 +63,8 @@ public static class AddTask
             RuleFor(x => x.Title)
                 .NotEmpty()
                 .WithMessage("You must provide a title")
-                .Matches(ValidationConstants.AlphabetsDigitsSpaceSlashHyphenDot)
-                .WithMessage(string.Format(ValidationConstants.AlphabetsDigitsSpaceSlashHyphenDotMessage, "Title"));
+                .Matches(ValidationConstants.LettersSpacesCommaApostrophe)
+                .WithMessage(string.Format(ValidationConstants.LettersSpacesCommaApostropheMessage, "Title"));
 
             RuleFor(x => x.Due)
                 .Must(x => x.HasValue)
