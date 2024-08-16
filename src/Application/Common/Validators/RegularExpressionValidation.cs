@@ -5,7 +5,7 @@
         public const string LettersSpacesUnderscores = @"^[A-Za-z_ ]+$";
         public const string LettersSpacesUnderscoresMessage = "{0} must contain only letters, spaces, and underscores.";
 
-        public const string LettersSpacesCommaApostorphe = @"^[A-Za-z ',’]+$";
+        public const string LettersSpacesCommaApostrophe = @"^[A-Za-z ',’]+$";
         public const string LettersSpacesCommaApostropheMessage = "{0} must contain only letters, spaces, comma and an apostrophe.";
 
         public const string AlphabetsDigitsSpaceSlashHyphenDot= @"^[a-zA-Z0-9\s\\\/\-.]+$";

@@ -57,7 +57,7 @@ public class ApplicationUserDtoValidator : AbstractValidator<ApplicationUserDto>
 
         RuleFor(x => x.MemorablePlace)
             .MaximumLength(50).WithMessage(_localizer["Memorable place must be less than or equal to 50 characters"])
-            .Matches(ValidationConstants.LettersSpacesCommaApostorphe).WithMessage(_localizer[string.Format(ValidationConstants.LettersSpacesCommaApostropheMessage, "Memorable place")]);
+            .Matches(ValidationConstants.LettersSpacesCommaApostrophe).WithMessage(_localizer[string.Format(ValidationConstants.LettersSpacesCommaApostropheMessage, "Memorable place")]);
 
         RuleFor(x => x.MemorableDate)
             .NotEmpty().WithMessage(_localizer["Memorable date is required"])
