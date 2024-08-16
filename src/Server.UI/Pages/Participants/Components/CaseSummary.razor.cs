@@ -1,17 +1,19 @@
 using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Features.Assessments.Commands;
+using Cfo.Cats.Application.Features.Bios.Commands;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Pages.Risk;
 
+
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
 public partial class CaseSummary
 {
     private AssessmentSummaryDto? _latestAssessment;
-
+    private BioSummaryDto? _bio;
     [Inject] 
     private IUserService UserService { get; set; } = default!;
 
@@ -25,6 +27,7 @@ public partial class CaseSummary
             ? null
             : ParticipantSummaryDto.Assessments.OrderByDescending(a => a.AssessmentDate)
                 .First();
+        _bio = ParticipantSummaryDto.BioSummary;
     }
 
     public async Task BeginAssessment()
@@ -151,7 +154,71 @@ public partial class CaseSummary
         var result = await dialog.Result;
     }
 
+    public async Task BeginBio()
+    {
+        var command = new BeginBio.Command
+        {
+            ParticipantId = ParticipantSummaryDto.Id
+        };
+        var result = await GetNewMediator().Send(command);
+
+        if (result.Succeeded)
+        {
+            Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/bio/{result.Data}");
+        }
+        else
+        {
+            Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
+        }
+    }
+    public async Task SkipBioForNow()
+    {
+        var command = new SkipBioForNow.Command() 
+        {
+            ParticipantId = ParticipantSummaryDto.Id
+        };
+
+        var result = await GetNewMediator().Send(command);
+        if (result.Succeeded)
+        {
+            Snackbar.Add($"Bio skipped for now, you can add bio information at any time by clicking Continue Bio button", Severity.Info,
+            config => {
+                config.ShowTransitionDuration = 500;
+                config.HideTransitionDuration = 500;
+                config.ShowCloseIcon = false;
+            });
+            Navigation.Refresh(true);
+        }
+        else
+        {
+            Snackbar.Add($"Skipping bio failed", Severity.Error);
+        }
+    }
+    public void ContinueBio()
+    {
+        Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/bio/{_bio!.BioId}");
+    }
+
+    /// <summary>
+    /// If true, indicates we are creating Bio. 
+    /// </summary>
+    private bool CanBeginBio() => _bio == null;
+
+    /// <summary>
+    /// If true indicates we have a Bio that is continuable
+    /// (i.e. Id is not null or do we need a status (Complete or Incomplete etc.))
+    /// </summary>
+    /// <returns></returns>
+    private bool CanContinueBio() => _bio != null;
+
+    /// <summary>
+    /// If true, indicates that either the bio doesn't exist OR No step is completed yet  
+    /// </summary>
+    private bool CanSkipBio()
+    {
+        return _bio is null || _bio!.BioStatus == BioStatus.NotStarted;
+    }
+    
     private bool HasPathwayPlan => ParticipantSummaryDto.PathwayPlan is not null;
     private bool HasPathwayBeenReviewed => HasPathwayPlan && ParticipantSummaryDto.PathwayPlan?.LastReviewed is not null;
-
 }

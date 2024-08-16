@@ -54,6 +54,12 @@ public static class GetParticipantSummary
                 .ProjectTo<PathwayPlanSummaryDto>(mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(cancellationToken);
 
+            var bio = await unitOfWork.DbContext.ParticipantBios
+                .OrderByDescending(x => x.Created)
+                .FirstOrDefaultAsync(x => x.ParticipantId == request.ParticipantId, cancellationToken);
+
+            summary.BioSummary = mapper.Map<BioSummaryDto>(bio);
+
             return Result<ParticipantSummaryDto>.Success(summary);
         }
     }

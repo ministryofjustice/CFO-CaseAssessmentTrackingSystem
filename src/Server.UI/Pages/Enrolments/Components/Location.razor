@@ -17,7 +17,15 @@
                 </MudTextField>
             </MudItem>
             <MudItem xs="12">
+                @if (_mustEnrolInOtherLocation)
+                {
+                    <MudAlert Severity="Severity.Warning">
+                        This candidate is outside your area.
+                        You must select a different enrolment location
+                    </MudAlert>
+                }
                 <MudCheckBox T="bool" @bind-Value="Model.EnrolFromOtherLocation"
+                             Disabled="_mustEnrolInOtherLocation"
                              Label="@L[Model.GetMemberDescription(x => x.EnrolFromOtherLocation)]">
                 </MudCheckBox>
             </MudItem>
@@ -28,7 +36,7 @@
                                Label="@L["Alternative Location"]"
                                Required="true"
                                @bind-Value="@Model.EnrolmentLocation"
-                               For="@(()=>Model.EnrolmentLocation)">
+                               For="@(()=>Model.EnrolmentLocation!)">
                         @foreach (var item in Locations!)
                         {
                             <MudSelectItem T="LocationDto" Value="@item">
@@ -46,16 +54,15 @@
             }
         </MudGrid>
 
-        @* 
-
-       
-        <MudTextFieldExtended T="string" @bind-Value="Model.JustificationReason" Label="" Disabled="!Model.EnrolFromOtherLocation"/> *@
+        
     </MudForm>
 }
 
 @code {
 
     MudForm? _form;
+
+    private bool _mustEnrolInOtherLocation = false;
     
     SetEnrolmentLocation.Validator _modelValidator = new();
 
@@ -65,7 +72,16 @@
 
     [EditorRequired]
     [Parameter]
-    public LocationDto[]? Locations { get; set; } 
+    public LocationDto[]? Locations { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Model is not null && Locations is not null && Locations.Any(l => l.Id == Model!.CurrentLocation.Id) == false)
+        {
+            Model!.EnrolFromOtherLocation = true;
+            _mustEnrolInOtherLocation = true;
+        }
+    }
 
     public async Task<bool> Validate()
     {

@@ -275,6 +275,45 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.ToTable("AuditTrail", "Audit");
                 });
 
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Bios.ParticipantBio", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BioJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("ParticipantId")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.ToTable("Bio", "Participant");
+                });
+
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Documents.Document", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1469,6 +1508,15 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Bios.ParticipantBio", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
+                        .WithMany()
+                        .HasForeignKey("ParticipantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Documents.Document", b =>

@@ -236,11 +236,14 @@ BEGIN TRY
     INSERT INTO Configuration.KeyValue (Id, Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (18, N'ReferralSource', N'Courts', N'Courts', N'A referral source', @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.KeyValue (Id, Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (19, N'ReferralSource', N'Self-referral', N'Self-referral', N'A referral source', @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.KeyValue (Id, Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (20, N'ReferralSource', N'Other', N'Other', N'A referral source (please state)', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Id, Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (21, N'ReferralSource', N'Previously enrolled on CFO3', N'Previously enrolled on CFO3', N'A referral source', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Id, Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (22, N'ReferralSource', N'Previously enrolled on CFO Activity Hubs', N'Previously enrolled on CFO Activity Hubs', N'A referral source', @Created, @CreatedUserId, null, null);
 
     SET IDENTITY_INSERT [Configuration].[KeyValue] OFF;
 
     SET IDENTITY_INSERT [Configuration].[Location] ON;
 
+    INSERT INTO Configuration.Location (Id, Name, ContractId, LifetimeStart, LifetimeEnd, ParentLocationId, GenderProvisionId, LocationTypeId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (0, N'Unmapped Location', null, @Created, N'2029-03-31 23:59:59.0000000', null, 2, 6, @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.Location (Id, Name, ContractId, LifetimeStart, LifetimeEnd, ParentLocationId, GenderProvisionId, LocationTypeId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (1, N'HMP Risley', N'con_24036', @Created, N'2029-03-31 23:59:59.0000000', null, 0, 0, @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.Location (Id, Name, ContractId, LifetimeStart, LifetimeEnd, ParentLocationId, GenderProvisionId, LocationTypeId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (2, N'HMP Lancaster Farms', N'con_24036', @Created, N'2029-03-31 23:59:59.0000000', null, 0, 0, @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.Location (Id, Name, ContractId, LifetimeStart, LifetimeEnd, ParentLocationId, GenderProvisionId, LocationTypeId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (3, N'HMP Forest Bank', N'con_24036', @Created, N'2029-03-31 23:59:59.0000000', null, 0, 1, @Created, @CreatedUserId, null, null);

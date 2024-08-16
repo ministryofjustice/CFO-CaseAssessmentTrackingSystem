@@ -1,4 +1,4 @@
-﻿.mud-input {
+.mud-input {
     font-size: var(--mud-typography-default-size);
 }
 
@@ -101,6 +101,11 @@
 .description-pair dd {
     margin: 0;
     flex: 1;
+}
+
+.word-wrap {    
+    word-wrap: break-word;
+    white-space: normal;
 }
 
 .mud-tooltip-root {

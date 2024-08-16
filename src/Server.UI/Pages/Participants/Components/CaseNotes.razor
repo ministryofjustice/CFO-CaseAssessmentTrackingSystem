@@ -24,6 +24,7 @@
                             </CardHeaderAvatar>
                             <CardHeaderContent>
                                 <MudText Typo="Typo.body1">
+
                                     @note.CreatedBy
                                 </MudText>
                                 <MudText Typo="Typo.body2">@note.CreatedByEmail</MudText>
@@ -34,8 +35,11 @@
                         </MudCardHeader>
                         <MudCardContent>
                             <MudText Typo="Typo.body1">
-                                @note.Message
+                                <div class="word-wrap">
+                                    @note.Message                                
+                                </div>
                             </MudText>
+                            
                         </MudCardContent>
                         <MudCardActions>
                             @note.Created.Humanize()

@@ -21,57 +21,69 @@
         
         <CascadingValue Value="_participant">
             <MudPaper Class="pa-2 ma-2" Elevation="1" Outlined="true">
-                <MudGrid Spacing="1" Justify="Justify.SpaceBetween" Class="pa-3">
-                      <MudItem>
+                <MudGrid Spacing="1" Class="pa-3">
+                      <MudItem md="3">
                         <MudText Typo="Typo.h6" Color="Color.Primary">
                             <b>
                                 Case Ref
                             </b>
                         </MudText>
                     </MudItem>
-                    <MudItem>
+                    <MudItem md="3">
                         <MudText Typo="Typo.h6">
                             @_participant.Id
                         </MudText>
                     </MudItem>
                     <MudSpacer/>
-                     <MudItem>
+                     <MudItem md="3">
                         <MudText Typo="Typo.h6" Color="Color.Primary">
                             <b>
                                 Participant
                             </b>
                         </MudText>
                     </MudItem>
-                    <MudItem>
+                    <MudItem md="3">
                         <MudText Typo="Typo.h6">
                             @_participant.ParticipantName (@_participant.DateOfBirth)
                         </MudText>
                     </MudItem>
                     <MudSpacer/>
                     
-                    <MudItem>
+                    <MudItem md="3">
                         <MudText Typo="Typo.h6" Color="Color.Primary">
                             <b>
                                 Location
                             </b>
                         </MudText>
                     </MudItem>
-                    <MudItem>
+                    <MudItem md="3">
                         <MudText Typo="Typo.h6">
                             @_participant.Location
                         </MudText>
                     </MudItem>
                     <MudSpacer/>
-                    <MudItem>
+                    <MudItem md="3">
                         <MudText Typo="Typo.h6" Color="Color.Primary">
                             <b>
                                 Status
                             </b>
                         </MudText>
                     </MudItem>
-                    <MudItem>
+                    <MudItem md="3">
                         <MudText Typo="Typo.h6">
                             @_participant.EnrolmentStatus!.Name.Humanize()
+                        </MudText>
+                    </MudItem>
+                    <MudItem md="3">
+                        <MudText Typo="Typo.h6" Color="Color.Primary">
+                            <b>
+                                Enrolment Location
+                            </b>
+                        </MudText>
+                    </MudItem>
+                    <MudItem md="3">
+                        <MudText Typo="Typo.h6">
+                            @_participant.EnrolmentLocation
                         </MudText>
                     </MudItem>
                 </MudGrid>
@@ -89,6 +101,9 @@
                     </MudTabPanel>
                     <MudTabPanel Text="Risk">
                         <CaseRisk ParticipantId="@Id" />
+                    </MudTabPanel>
+                    <MudTabPanel Text="Bio">
+                        <CaseBio ParticipantId="@Id" />
                     </MudTabPanel>
                     <MudTabPanel Text="Pathway Plan">
                         <CasePathwayPlan ParticipantId="@Id" OnUpdate="Refresh" />

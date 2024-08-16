@@ -4,6 +4,7 @@ using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Entities.Participants;
+using Cfo.Cats.Domain.Entities.Bios;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Persistence.Configurations.Enrolments;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
@@ -39,7 +40,8 @@ public class ApplicationDbContext
     public DbSet<PathwayPlan> PathwayPlans => Set<PathwayPlan>();
     public DbSet<Risk> Risks => Set<Risk>();
     public DbSet<ParticipantAssessment> ParticipantAssessments => Set<ParticipantAssessment>();
-    
+
+    public DbSet<ParticipantBio> ParticipantBios => Set<ParticipantBio>();
     public DbSet<KeyValue> KeyValues => Set<KeyValue>();
     
     
@@ -56,6 +58,8 @@ public class ApplicationDbContext
     public DbSet<PasswordHistory> PasswordHistories => Set<PasswordHistory>();
 
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
+
+    public DbSet<LocationMapping> LocationMappings => Set<LocationMapping>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
