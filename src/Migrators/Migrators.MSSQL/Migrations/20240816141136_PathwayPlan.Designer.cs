@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240815090249_Objectives_v7")]
-    partial class Objectives_v7
+    [Migration("20240816141136_PathwayPlan")]
+    partial class PathwayPlan
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -276,6 +276,45 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("AuditTrail", "Audit");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Bios.ParticipantBio", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BioJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("ParticipantId")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.ToTable("Bio", "Participant");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Documents.Document", b =>
@@ -598,51 +637,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.ToTable("Qa2Queue", "Enrolment");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Objective", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("Completed")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CompletedStatus")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("Justification")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.ToTable("Objective", "Participant");
-                });
-
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Participant", b =>
                 {
                     b.Property<string>("Id")
@@ -762,6 +756,38 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.HasIndex("ParticipantId");
 
                     b.ToTable("EnrolmentHistory", "Participant");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.PathwayPlan", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("ParticipantId")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .HasColumnType("nvarchar(9)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.ToTable("PathwayPlan", "Participant");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Risk", b =>
@@ -1487,6 +1513,15 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Bios.ParticipantBio", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
+                        .WithMany()
+                        .HasForeignKey("ParticipantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Documents.Document", b =>
                 {
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
@@ -1898,72 +1933,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("Tenant");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Objective", b =>
-                {
-                    b.OwnsMany("Cfo.Cats.Domain.Entities.Participants.ObjectiveTask", "Tasks", b1 =>
-                        {
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<DateTime?>("Completed")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("CompletedBy")
-                                .HasMaxLength(36)
-                                .HasColumnType("nvarchar(36)");
-
-                            b1.Property<int?>("CompletedStatus")
-                                .HasColumnType("int");
-
-                            b1.Property<DateTime?>("Created")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("CreatedBy")
-                                .HasMaxLength(36)
-                                .HasColumnType("nvarchar(36)");
-
-                            b1.Property<DateTime>("Due")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("Justification")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<DateTime?>("LastModified")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("LastModifiedBy")
-                                .HasMaxLength(36)
-                                .HasColumnType("nvarchar(36)");
-
-                            b1.Property<Guid>("ObjectiveId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Title")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("CompletedBy");
-
-                            b1.HasIndex("ObjectiveId");
-
-                            b1.ToTable("ObjectiveTask", "Participant");
-
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CompletedByUser")
-                                .WithMany()
-                                .HasForeignKey("CompletedBy");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ObjectiveId");
-
-                            b1.Navigation("CompletedByUser");
-                        });
-
-                    b.Navigation("Tasks");
-                });
-
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Participant", b =>
                 {
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
@@ -2210,6 +2179,161 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("Owner");
 
                     b.Navigation("RightToWorks");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.PathwayPlan", b =>
+                {
+                    b.OwnsMany("Cfo.Cats.Domain.Entities.Participants.Objective", "Objectives", b1 =>
+                        {
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTime?>("Completed")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<int?>("CompletedStatus")
+                                .HasColumnType("int");
+
+                            b1.Property<DateTime?>("Created")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("CreatedBy")
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
+
+                            b1.Property<int>("Index")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Justification")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<DateTime?>("LastModified")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("LastModifiedBy")
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
+
+                            b1.Property<Guid>("PathwayPlanId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("PathwayPlanId");
+
+                            b1.ToTable("Objective", "Participant");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PathwayPlanId");
+
+                            b1.OwnsMany("Cfo.Cats.Domain.Entities.Participants.ObjectiveTask", "Tasks", b2 =>
+                                {
+                                    b2.Property<Guid>("Id")
+                                        .ValueGeneratedOnAdd()
+                                        .HasColumnType("uniqueidentifier");
+
+                                    b2.Property<DateTime?>("Completed")
+                                        .HasColumnType("datetime2");
+
+                                    b2.Property<string>("CompletedBy")
+                                        .HasMaxLength(36)
+                                        .HasColumnType("nvarchar(36)");
+
+                                    b2.Property<int?>("CompletedStatus")
+                                        .HasColumnType("int");
+
+                                    b2.Property<DateTime?>("Created")
+                                        .HasColumnType("datetime2");
+
+                                    b2.Property<string>("CreatedBy")
+                                        .HasMaxLength(36)
+                                        .HasColumnType("nvarchar(36)");
+
+                                    b2.Property<DateTime>("Due")
+                                        .HasColumnType("datetime2");
+
+                                    b2.Property<int>("Index")
+                                        .HasColumnType("int");
+
+                                    b2.Property<string>("Justification")
+                                        .HasColumnType("nvarchar(max)");
+
+                                    b2.Property<DateTime?>("LastModified")
+                                        .HasColumnType("datetime2");
+
+                                    b2.Property<string>("LastModifiedBy")
+                                        .HasMaxLength(36)
+                                        .HasColumnType("nvarchar(36)");
+
+                                    b2.Property<Guid>("ObjectiveId")
+                                        .HasColumnType("uniqueidentifier");
+
+                                    b2.Property<string>("Title")
+                                        .IsRequired()
+                                        .HasColumnType("nvarchar(max)");
+
+                                    b2.HasKey("Id");
+
+                                    b2.HasIndex("CompletedBy");
+
+                                    b2.HasIndex("ObjectiveId");
+
+                                    b2.ToTable("ObjectiveTask", "Participant");
+
+                                    b2.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CompletedByUser")
+                                        .WithMany()
+                                        .HasForeignKey("CompletedBy");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("ObjectiveId");
+
+                                    b2.Navigation("CompletedByUser");
+                                });
+
+                            b1.Navigation("Tasks");
+                        });
+
+                    b.OwnsMany("Cfo.Cats.Domain.Entities.Participants.PathwayPlanReviewHistory", "ReviewHistories", b1 =>
+                        {
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTime?>("Created")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("CreatedBy")
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
+
+                            b1.Property<DateTime?>("LastModified")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("LastModifiedBy")
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
+
+                            b1.Property<Guid>("PathwayPlanId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("PathwayPlanId");
+
+                            b1.ToTable("PathwayPlanReviewHistory", "Participant");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PathwayPlanId");
+                        });
+
+                    b.Navigation("Objectives");
+
+                    b.Navigation("ReviewHistories");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Risk", b =>
