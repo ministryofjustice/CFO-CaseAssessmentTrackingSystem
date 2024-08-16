@@ -8,5 +8,5 @@ public class B14() : SingleChoiceQuestion("Had a close friend you could confide 
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

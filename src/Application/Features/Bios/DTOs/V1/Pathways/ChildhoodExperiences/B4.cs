@@ -8,5 +8,5 @@ public class B4() : SingleChoiceQuestion("Had a difficult childhood",
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

@@ -8,5 +8,5 @@ public class B15() : SingleChoiceQuestion("Had someone you looked up to",
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

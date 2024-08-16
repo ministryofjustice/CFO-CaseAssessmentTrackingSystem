@@ -8,5 +8,5 @@ public class B6() : SingleChoiceQuestion("At least one parent or guardian was mo
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

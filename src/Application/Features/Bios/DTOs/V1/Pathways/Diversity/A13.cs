@@ -9,5 +9,5 @@ public class A13() : SingleChoiceQuestion("Feel you are being taken advantage of
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

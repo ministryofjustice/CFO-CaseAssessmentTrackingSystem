@@ -9,5 +9,5 @@ public class A6() : SingleChoiceQuestion("A member of the Roma community",
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

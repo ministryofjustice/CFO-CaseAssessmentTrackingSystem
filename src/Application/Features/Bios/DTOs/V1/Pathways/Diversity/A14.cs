@@ -9,5 +9,5 @@ public class A14() : SingleChoiceQuestion("Feel you are part of a community ",
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

@@ -9,5 +9,5 @@ public class A8() : SingleChoiceQuestion("Undertook an operational tour with the
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

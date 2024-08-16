@@ -8,5 +8,5 @@ public class B3() : SingleChoiceQuestion("Suffered abuse or neglect as a child",
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

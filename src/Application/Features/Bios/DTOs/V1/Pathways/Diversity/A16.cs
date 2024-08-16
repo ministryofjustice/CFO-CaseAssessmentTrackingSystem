@@ -8,5 +8,5 @@ public class A16() : SingleChoiceQuestion("Feel you generally share the same vie
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

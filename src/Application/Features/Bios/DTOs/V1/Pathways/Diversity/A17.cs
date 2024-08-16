@@ -9,5 +9,5 @@ public class A17() : SingleChoiceQuestion("Feel you are always getting into trou
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };
