@@ -8,5 +8,5 @@ public class C1() : SingleChoiceQuestion("Had a loved one become seriously ill o
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

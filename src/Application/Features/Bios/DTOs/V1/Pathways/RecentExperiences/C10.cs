@@ -8,5 +8,5 @@ public class C10() : SingleChoiceQuestion("Found a new hobby or interest",
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

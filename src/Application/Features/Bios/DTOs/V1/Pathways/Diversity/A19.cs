@@ -9,5 +9,5 @@ public class A19() : SingleChoiceQuestion("Feel your current situation is not yo
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

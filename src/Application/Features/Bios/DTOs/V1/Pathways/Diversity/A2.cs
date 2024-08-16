@@ -9,5 +9,5 @@ public class A2() : SingleChoiceQuestion("Practise your faith regularly",
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

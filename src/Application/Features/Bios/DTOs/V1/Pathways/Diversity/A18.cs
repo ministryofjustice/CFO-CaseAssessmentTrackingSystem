@@ -9,5 +9,5 @@ public class A18() : SingleChoiceQuestion("Regret the offence(s) you committed",
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };
