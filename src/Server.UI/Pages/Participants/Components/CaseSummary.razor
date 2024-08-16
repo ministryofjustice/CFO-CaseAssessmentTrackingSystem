@@ -199,14 +199,6 @@
                     <MudText Typo="Typo.body2">No pathway plan found.</MudText>
                 }
             </MudCardContent>
-            <MudCardActions>
-                @if (HasPathwayPlan)
-                {
-                    <MudTooltip Text="Review Information">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="ReviewPathwayPlan" />
-                    </MudTooltip>
-                }
-            </MudCardActions>
         </MudCard>
     </MudItem>
 </MudGrid>

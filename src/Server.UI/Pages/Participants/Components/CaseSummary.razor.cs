@@ -154,9 +154,4 @@ public partial class CaseSummary
     private bool HasPathwayPlan => ParticipantSummaryDto.PathwayPlan is not null;
     private bool HasPathwayBeenReviewed => HasPathwayPlan && ParticipantSummaryDto.PathwayPlan?.LastReviewed is not null;
 
-    public async Task ReviewPathwayPlan()
-    {
-        await Task.CompletedTask;
-    }
-
 }
