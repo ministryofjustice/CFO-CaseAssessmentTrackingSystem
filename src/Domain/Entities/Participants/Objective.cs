@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Events;
 
@@ -14,8 +14,8 @@ public class Objective : BaseAuditableEntity<Guid>
 
     private List<ObjectiveTask> _tasks = new();
 
-    public DateTime? Completed { get; set; }
-    public CompletionStatus? CompletedStatus { get; set; }
+    public DateTime? Completed { get; private set; }
+    public CompletionStatus? CompletedStatus { get; private set; }
 
     public Guid PathwayPlanId { get; private set; }
 
