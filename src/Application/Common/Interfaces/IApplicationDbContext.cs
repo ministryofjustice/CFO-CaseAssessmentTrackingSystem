@@ -30,8 +30,6 @@ public interface IApplicationDbContext
 
     DbSet<Risk> Risks { get; }
 
-    DbSet<Risk> Risks { get; }
-
     DbSet<KeyValue> KeyValues { get; }
 
     DbSet<ParticipantAssessment> ParticipantAssessments { get; }
