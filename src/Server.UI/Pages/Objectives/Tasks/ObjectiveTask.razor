@@ -85,6 +85,9 @@
                         <MudMenuItem>New PSF</MudMenuItem>
                     </MudMenu>
                 </MudTooltip>
+                <MudTooltip Text="Expand">
+                    <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="Expand" Variant="Variant.Filled" Size="Size.Small" />
+                </MudTooltip>
                 <MudTooltip>
                     <TooltipContent>
                         Added @Model.Created.Humanize()
@@ -137,6 +140,22 @@
             }
 
         }
+    }
+
+    public async Task Expand()
+    {
+        await DialogService.ShowAsync<ExpandTaskDialog>(
+            Model.Title,
+            new DialogParameters<ExpandTaskDialog>()
+            {
+                { x => x.Model, Model }
+            },
+            new DialogOptions
+            {
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true,
+                CloseButton = true
+            });
     }
 
     public async Task ExtendDate()

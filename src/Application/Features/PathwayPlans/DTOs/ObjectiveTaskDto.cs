@@ -9,9 +9,11 @@ public class ObjectiveTaskDto
     public required Guid ObjectiveId { get; set; }
     public required DateTime Due { get; set; }
     public required DateTime Created { get; set; }
+    public required string CreatedBy { get; set; }
     public DateTime? Completed { get; set; }
     public CompletionStatus? CompletedStatus { get; set; }
     public required int Index { get; set; }
+    public string? Justification { get; set; }
     public string DisplayName => $"{Index}. {Title}";
     public bool IsCompleted => Completed.HasValue;
     public bool IsOverdue => IsCompleted is false

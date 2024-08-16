@@ -1,0 +1,38 @@
+﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Application.Features.PathwayPlans.DTOs
+
+@inherits CatsComponentBase
+
+@inject IUserService UserService
+
+<MudDialog>
+    <DialogContent>
+        <MudText Class="mb-4">Added on @Model.Created.ToLocalTime() by @UserService.GetDisplayName(Model.CreatedBy)</MudText>
+
+        @if (Model.IsCompleted)
+        {
+            <MudText>Marked as <b>@Model.CompletedStatus!.Name</b> on @Model.Completed!.Value.ToLocalTime()</MudText>
+            <MudTextField Value="Model.Justification"
+                          Label="@Model.GetMemberDescription(x => x.Justification)"
+                          For="@(() => Model.Justification)"
+                          Lines="5"
+                          Class="mt-4"
+                          Disabled />
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public required ObjectiveDto Model { get; set; }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

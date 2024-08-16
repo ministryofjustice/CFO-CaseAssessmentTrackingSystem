@@ -55,6 +55,9 @@
             <MudTooltip Text="Rename">
                 <MudIconButton OnClick="Rename" Icon="@Icons.Material.Filled.EditNote" Disabled="Model.IsCompleted" />
             </MudTooltip>
+            <MudTooltip Text="Expand">
+                <MudIconButton OnClick="Expand" Icon="@Icons.Material.Filled.OpenInNew" />
+            </MudTooltip>
             <MudTooltip Text="New Task">
                 <MudIconButton OnClick="AddTask" Icon="@Icons.Material.Filled.Add" Disabled="Model.IsCompleted" />
             </MudTooltip>
@@ -130,6 +133,22 @@
             }
 
         }
+    }
+
+    public async Task Expand()
+    {
+        await DialogService.ShowAsync<ExpandObjectiveDialog>(
+            Model.Title,
+            new DialogParameters<ExpandObjectiveDialog>()
+            {
+                { x => x.Model, Model }
+            },
+            new DialogOptions
+            {
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true,
+                CloseButton = true
+            });
     }
 
     public async Task Rename()
