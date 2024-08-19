@@ -77,7 +77,9 @@ public static class SetEnrolmentLocation
             When(x => x.EnrolFromAlternativeLocation, () => {
                 RuleFor(x => x.AlternativeLocation)
                     .NotNull()
-                    .WithMessage("You must provide an alternative location")
+                    .WithMessage("You must provide an alternative location");
+
+                RuleFor(x => x.AlternativeLocation)
                     .Must((x, alternativeLocation) => x.CurrentLocation.Id != alternativeLocation!.Id)
                     .When(x => x.AlternativeLocation is not null)
                     .WithMessage("You must provide a different alternative location to the current location");
