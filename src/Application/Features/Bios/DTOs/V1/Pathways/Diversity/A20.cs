@@ -9,5 +9,5 @@ public class A20() : SingleChoiceQuestion("Feel you are a better person than you
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

@@ -9,5 +9,5 @@ public class A12() : SingleChoiceQuestion("Have undertaken prostitution or sex w
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

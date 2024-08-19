@@ -8,5 +8,5 @@ public class C9() : SingleChoiceQuestion("Started a new job",
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

@@ -8,5 +8,5 @@ public class B10() : SingleChoiceQuestion("Felt safe at home",
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

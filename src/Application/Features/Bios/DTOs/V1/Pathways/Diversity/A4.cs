@@ -9,5 +9,5 @@ public class A4() : SingleChoiceQuestion("Gender you identify with is different 
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

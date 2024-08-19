@@ -8,5 +8,5 @@ public class B7() : SingleChoiceQuestion("A parent or guardian was in trouble wi
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };

@@ -9,5 +9,5 @@ public class A15() : SingleChoiceQuestion("Feel you have been discriminated agai
 {
     public const string Yes = "Yes";
     public const string No = "No";
-    public const string NA = "N/A";
+    public const string NA = "PNTS";
 };
