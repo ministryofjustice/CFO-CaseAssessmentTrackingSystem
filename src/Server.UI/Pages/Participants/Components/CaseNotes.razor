@@ -9,9 +9,12 @@
 {
     <MudTimeline TimelinePosition="TimelinePosition.Start" Modifiers="true">
         <MudTimelineItem TimelineAlign="TimelineAlign.Start">
-            <MudTooltip Text="New">
-                <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="OnAddNote" Class="rounded-circle"></MudIconButton>
-            </MudTooltip>
+            <div class="d-flex gap-4 align-center mud-list-subheader">
+                <MudTooltip Text="New">
+                    <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="OnAddNote" Class="rounded-circle"></MudIconButton>
+                </MudTooltip>
+                <MudText>New note</MudText>
+            </div>
         </MudTimelineItem>
         @foreach(var note in _notes.OrderByDescending(x => x.Created))
         {
@@ -50,18 +53,6 @@
             </MudTimelineItem>
         }
     </MudTimeline>
-
-    <MudContainer Class="d-flex justify-center mt-2">
-        @if(_notes.Length is 0)
-        {
-            <MudText Typo="Typo.caption">Nothing to see here. Why not add a note yourself?</MudText>
-        }
-        else
-        {
-            <MudText Typo="Typo.caption">You're all caught up!</MudText>
-        }
-    </MudContainer>
-
 }
 
 @code {
