@@ -178,6 +178,10 @@
                             {
                                 <MudMenuItem Disabled="@(!context.Item.IsActive)" OnClick="@(() => OnResetPassword(context.Item))">@L["Reset Password"]</MudMenuItem>
                             }
+                            @if (context.Item.LockoutEnd is not null)
+                            {
+                                <MudMenuItem OnClick="@(() => OnUnlock(context.Item))">@L["Unlock"]</MudMenuItem>
+                            }
                         </MudMenu>
                     }
                     else
@@ -249,25 +253,19 @@
                     <div>
                         @if (context.Item.IsActive)
                         {
-                        <MudChip Color="Color.Success" Size="Size.Small" Icon="@Icons.Material.Filled.CheckCircleOutline">@L["Active"]</MudChip>
-                        @if (context.Item.LockoutEnd is not null)
-                        {
-                        <div class="d-flex">
-                            <p>@L["Lockout End"]: </p>
-                            <ToLocal DateTime="@context.Item.LockoutEnd.Value.UtcDateTime.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
-                        </div>
-                        }
+                        <MudChip Color="Color.Success" Size="Size.Small" Icon="@Icons.Material.Filled.CheckCircleOutline">@L["Active"]</MudChip>                        
                         }
                         else
                         {
                         <MudChip Class="flex-grow-0" Color="Color.Surface" Size="Size.Small" Icon="@Icons.Material.Filled.HighlightOff">@L["Inactive"]</MudChip>
+             
+                        }
                         @if (context.Item.LockoutEnd is not null)
                         {
-                        <div class="d-flex">
-                            <p>@L["Lockout End"]: </p>
-                            <ToLocal DateTime="@context.Item.LockoutEnd.Value.UtcDateTime.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
-                        </div>
-                        }
+                            <div class="d-flex">
+                                <p>@L["Lockout End"]: </p>
+                                <ToLocal DateTime="@context.Item.LockoutEnd.Value.UtcDateTime.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
+                            </div>
                         }
                     </div>
                 </CellTemplate>
@@ -653,6 +651,24 @@
         }
         await ShowArchiveConfirmationDialog(dto);
 
+    }
+
+    private async Task OnUnlock(ApplicationUserDto item)
+    {
+        var user = await UserManager.FindByIdAsync(item.Id!) ?? throw new NotFoundException($"Application user not found {item.Id}.");
+
+        user.LockoutEnd = null;
+        var identityResult = await UserManager.UpdateAsync(user);
+
+        if (identityResult.Succeeded)
+        {
+            item.LockoutEnd = null;
+            Snackbar.Add($"{L["The user has been unlocked."]}", Severity.Info);
+        }
+        else
+        {
+            Snackbar.Add($"{string.Join(",", identityResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
+        }
     }
 
     private async Task OnSetActive(ApplicationUserDto item)
