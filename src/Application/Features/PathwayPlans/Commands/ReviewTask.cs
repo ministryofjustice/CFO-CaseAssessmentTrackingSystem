@@ -25,7 +25,9 @@ public class ReviewTask
         public string Justification { get; set; } = string.Empty;
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(
+        IUnitOfWork unitOfWork, 
+        ICurrentUserService currentUserService) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -38,7 +40,7 @@ public class ReviewTask
             var task = objective.Tasks.FirstOrDefault(x => x.Id == request.TaskId)
                 ?? throw new NotFoundException("Cannot find task", request.TaskId);
 
-            task.Review(request.Reason, request.Justification);
+            task.Review(request.Reason, currentUserService.UserId!, request.Justification);
 
             return Result.Success();
         }
