@@ -11,7 +11,7 @@
 
         @if (Model.IsCompleted)
         {
-            <MudText>Marked as <b>@Model.CompletedStatus!.Name</b> on @Model.Completed!.Value.ToLocalTime()</MudText>
+            <MudText>Marked as <b>@Model.CompletedStatus!.Name</b> on @Model.Completed!.Value.ToLocalTime() by @UserService.GetDisplayName(Model.CompletedBy!)</MudText>
             <MudTextField Value="Model.Justification"
                           Label="@Model.GetMemberDescription(x => x.Justification)"
                           For="@(() => Model.Justification)"

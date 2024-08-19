@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -68,6 +68,13 @@ public class PathwayPlanEntityTypeConfiguration
 
             objective.Property(objective => objective.LastModifiedBy)
                 .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
+            objective.Property(objective => objective.CompletedBy)
+                .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
+            objective.HasOne(task => task.CompletedByUser)
+                .WithMany()
+                .HasForeignKey(task => task.CompletedBy);
 
             objective.Property(objective => objective.CompletedStatus)
                 .HasConversion(

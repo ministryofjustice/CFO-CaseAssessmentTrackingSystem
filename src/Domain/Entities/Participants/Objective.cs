@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Events;
+using Cfo.Cats.Domain.Identity;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
 
@@ -15,6 +16,7 @@ public class Objective : BaseAuditableEntity<Guid>
     private List<ObjectiveTask> _tasks = new();
 
     public DateTime? Completed { get; private set; }
+    public string? CompletedBy { get; private set; }
     public CompletionStatus? CompletedStatus { get; private set; }
 
     public int Index { get; private set; }
@@ -45,15 +47,16 @@ public class Objective : BaseAuditableEntity<Guid>
         Title = title;
     }
 
-    public void Review(CompletionStatus status, string? justification)
+    public void Review(CompletionStatus status, string completedBy, string? justification)
     {
         foreach (var task in _tasks.Where(task => task.Completed is null))
         {
-            task.Review(status, justification);
+            task.Review(status, completedBy, justification);
         }
 
         CompletedStatus = status;
         Completed = DateTime.UtcNow;
+        CompletedBy = completedBy;
         Justification = justification;
         // AddDomainEvent
     }
@@ -69,5 +72,7 @@ public class Objective : BaseAuditableEntity<Guid>
         objective.AddDomainEvent(new ObjectiveCreatedDomainEvent(objective));
         return objective;
     }
+
+    public virtual ApplicationUser? CompletedByUser { get; set; }
 
 }

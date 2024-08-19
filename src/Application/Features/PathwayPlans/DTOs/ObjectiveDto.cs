@@ -8,6 +8,7 @@ public class ObjectiveDto
     public required Guid PathwayPlanId { get; set; }
     public required string Title { get; set; }
     public DateTime? Completed { get; set; }
+    public string? CompletedBy { get; set; }
     public CompletionStatus? CompletedStatus { get; set; }
     public required DateTime Created { get; set; }
     public required string CreatedBy { get; set; }

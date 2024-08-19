@@ -11,6 +11,7 @@ public class ObjectiveTaskDto
     public required DateTime Created { get; set; }
     public required string CreatedBy { get; set; }
     public DateTime? Completed { get; set; }
+    public string? CompletedBy { get; set; }
     public CompletionStatus? CompletedStatus { get; set; }
     public required int Index { get; set; }
     public string? Justification { get; set; }

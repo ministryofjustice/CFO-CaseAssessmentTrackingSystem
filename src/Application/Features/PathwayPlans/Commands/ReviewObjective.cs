@@ -19,7 +19,9 @@ public static class ReviewObjective
         public string? Justification { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    public class Handler(
+        IUnitOfWork unitOfWork, 
+        ICurrentUserService currentUserService) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -29,7 +31,7 @@ public static class ReviewObjective
             var objective = pathwayPlan.Objectives.FirstOrDefault(o => o.Id == request.ObjectiveId)
                 ?? throw new NotFoundException("Cannot find objective", request.ObjectiveId);
 
-            objective.Review(request.Reason, request.Justification);
+            objective.Review(request.Reason, currentUserService.UserId!, request.Justification);
 
             return Result.Success();
         }
