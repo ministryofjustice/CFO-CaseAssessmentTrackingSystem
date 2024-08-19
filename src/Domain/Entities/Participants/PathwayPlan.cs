@@ -37,6 +37,8 @@ public class PathwayPlan : BaseAuditableEntity<Guid>
             ParticipantId = participantId
         };
 
+        pathwayPlan.AddDomainEvent(new PathwayPlanCreatedDomainEvent(pathwayPlan));
+
         return pathwayPlan;
     }
 

@@ -2,6 +2,11 @@
 
 namespace Cfo.Cats.Domain.Events;
 
+public sealed class PathwayPlanCreatedDomainEvent(PathwayPlan pathwayPlan) : DomainEvent
+{
+    public PathwayPlan Item { get; set; } = pathwayPlan;
+}
+
 public sealed class ObjectiveCreatedDomainEvent(Objective objective) : DomainEvent
 {
     public Objective Item { get; set; } = objective;
