@@ -87,7 +87,7 @@
             {
                 <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
                     <MudItem xs="12">
-                        <MudRadioGroup T="bool?" @bind-Value="Command.Accept" Required="true">
+                        <MudRadioGroup T="bool?" @bind-Value="Command.Accept" For="@(() => Command.Accept)" Required="true">
                             <MudRadio T="bool?" Value="true" Color="Color.Primary">
                                 Accept
                             </MudRadio>
@@ -97,7 +97,7 @@
                         </MudRadioGroup>    
                     </MudItem>
                     
-                    <MudTextField T="string" Label="Message" For="(() => Command.Message)" />
+                    <MudTextField @bind-Value="Command.Message" Label="Message" For="(() => Command.Message)" />
                 </MudForm>
                 <MudContainer Class="d-flex px-0 pt-8">
                     <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
