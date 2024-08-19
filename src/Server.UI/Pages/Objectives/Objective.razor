@@ -49,18 +49,26 @@
             <ObjectiveTask Model="task" OnChange="async() => await OnChange.InvokeAsync()" PathwayPlanId="Model.PathwayPlanId" />
         }
         <div class="d-flex align-center ml-2 mt-4 mb-2">
-            <MudTooltip Text="Review">
-                <MudIconButton OnClick="Review" Icon="@Icons.Material.Filled.Lock" Disabled="Model.IsCompleted" />
-            </MudTooltip>
-            <MudTooltip Text="Rename">
-                <MudIconButton OnClick="Rename" Icon="@Icons.Material.Filled.EditNote" Disabled="Model.IsCompleted" />
-            </MudTooltip>
+            @if(Model.IsCompleted is false)
+            {
+                <MudTooltip Text="Review">
+                    <MudIconButton OnClick="Review" Icon="@Icons.Material.Filled.Lock" Disabled="Model.IsCompleted" />
+                </MudTooltip>
+                <MudTooltip Text="Rename">
+                    <MudIconButton OnClick="Rename" Icon="@Icons.Material.Filled.EditNote" Disabled="Model.IsCompleted" />
+                </MudTooltip>
+            }
+
             <MudTooltip Text="Expand">
                 <MudIconButton OnClick="Expand" Icon="@Icons.Material.Filled.OpenInNew" />
             </MudTooltip>
-            <MudTooltip Text="New Task">
-                <MudIconButton OnClick="AddTask" Icon="@Icons.Material.Filled.Add" Disabled="Model.IsCompleted" />
-            </MudTooltip>
+
+            @if(Model.IsCompleted is false)
+            {
+                <MudTooltip Text="New Task">
+                    <MudIconButton OnClick="AddTask" Icon="@Icons.Material.Filled.Add" Disabled="Model.IsCompleted" />
+                </MudTooltip>
+            }
         </div>
     </NestedList>
 </MudListItem>
