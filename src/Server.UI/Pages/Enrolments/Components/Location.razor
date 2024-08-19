@@ -24,19 +24,18 @@
                         You must select a different enrolment location
                     </MudAlert>
                 }
-                <MudCheckBox T="bool" @bind-Value="Model.EnrolFromOtherLocation"
+                <MudCheckBox T="bool" @bind-Value="Model.EnrolFromAlternativeLocation"
                              Disabled="_mustEnrolInOtherLocation"
-                             Label="@L[Model.GetMemberDescription(x => x.EnrolFromOtherLocation)]">
+                             Label="@L[Model.GetMemberDescription(x => x.EnrolFromAlternativeLocation)]">
                 </MudCheckBox>
             </MudItem>
-            @if (Model.EnrolFromOtherLocation)
+            @if (Model.EnrolFromAlternativeLocation)
             {
                 <MudItem xs="12">
                     <MudSelect T="LocationDto"
-                               Label="@L["Alternative Location"]"
-                               Required="true"
-                               @bind-Value="@Model.EnrolmentLocation"
-                               For="@(()=>Model.EnrolmentLocation!)">
+                               Label="@Model.GetMemberDescription(x => x.AlternativeLocation)"
+                               @bind-Value="@Model.AlternativeLocation"
+                               For="@(()=>Model.AlternativeLocation!)">
                         @foreach (var item in Locations!)
                         {
                             <MudSelectItem T="LocationDto" Value="@item">
@@ -78,7 +77,7 @@
     {
         if (Model is not null && Locations is not null && Locations.Any(l => l.Id == Model!.CurrentLocation.Id) == false)
         {
-            Model!.EnrolFromOtherLocation = true;
+            Model!.EnrolFromAlternativeLocation = true;
             _mustEnrolInOtherLocation = true;
         }
     }
