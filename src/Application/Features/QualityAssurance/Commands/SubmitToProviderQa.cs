@@ -111,7 +111,7 @@ public static class SubmitToProviderQa
             var latest = assessments.MaxBy(a => a.Created);
 
             return latest is not null
-                && latest.Scores.Count(s => s.Score is > 0 and < 10) > 1;
+                && latest.Scores.Count(s => s.Score is >= 0 and < 10) > 1;
         }
     }
 
