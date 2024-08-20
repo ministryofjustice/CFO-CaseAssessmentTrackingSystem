@@ -12,6 +12,11 @@ public sealed class ObjectiveCreatedDomainEvent(Objective objective) : DomainEve
     public Objective Item { get; set; } = objective;
 }
 
+public sealed class ObjectiveCompletedDomainEvent(Objective objective) : DomainEvent
+{
+    public Objective Item { get; set; } = objective;
+}
+
 public sealed class ObjectiveTaskAddedToObjectiveDomainEvent(Objective objective, ObjectiveTask task) : DomainEvent
 {
     public Objective Item { get; set; } = objective;

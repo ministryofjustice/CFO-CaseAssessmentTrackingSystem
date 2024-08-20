@@ -59,5 +59,7 @@ public class ObjectiveTask : BaseAuditableEntity<Guid>
     public Guid ObjectiveId { get; private set; }
     public string Title { get; private set; }
 
+    public bool IsCompleted => Completed is not null;
+
     public virtual ApplicationUser? CompletedByUser { get; set; }
 }

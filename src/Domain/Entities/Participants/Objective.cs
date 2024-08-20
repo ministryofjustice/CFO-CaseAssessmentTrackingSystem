@@ -29,6 +29,8 @@ public class Objective : BaseAuditableEntity<Guid>
 
     public IReadOnlyCollection<ObjectiveTask> Tasks => _tasks.AsReadOnly();
 
+    public bool IsCompleted => Completed is not null;
+
     public Objective AddTask(ObjectiveTask task)
     {
         _tasks.Add(task.AtIndex(_tasks.Count + 1));
@@ -49,7 +51,7 @@ public class Objective : BaseAuditableEntity<Guid>
 
     public void Review(CompletionStatus status, string completedBy, string? justification)
     {
-        foreach (var task in _tasks.Where(task => task.Completed is null))
+        foreach (var task in _tasks.Where(task => task.IsCompleted is false))
         {
             task.Review(status, completedBy, justification);
         }
@@ -58,7 +60,7 @@ public class Objective : BaseAuditableEntity<Guid>
         Completed = DateTime.UtcNow;
         CompletedBy = completedBy;
         Justification = justification;
-        // AddDomainEvent
+        AddDomainEvent(new ObjectiveCompletedDomainEvent(this));
     }
 
     public static Objective Create(string title, Guid pathwayPlanId)
