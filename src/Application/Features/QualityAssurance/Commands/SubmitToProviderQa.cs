@@ -10,7 +10,6 @@ public static class SubmitToProviderQa
     public class Command : IRequest<Result>
     {
         public required string ParticipantId { get; set; }
-
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
@@ -36,9 +35,9 @@ public static class SubmitToProviderQa
                 .MinimumLength(9)
                 .MaximumLength(9)
                 .WithMessage("Invalid Participant Id")
+                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
                 .MustAsync(MustExist)
-                .WithMessage("Participant does not exist")
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+                .WithMessage("Participant does not exist");                
         }
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
                 => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
@@ -81,8 +80,7 @@ public static class SubmitToProviderQa
             var assessments = await  _unitOfWork.DbContext.ParticipantAssessments
                 .Include(pa => pa.Scores)
                 .Where(pa => pa.ParticipantId == identifier)
-                .ToArrayAsync(cancellationToken)
-                ;
+                .ToArrayAsync(cancellationToken);
 
             var latest = assessments.MaxBy(a => a.Created);
 
@@ -117,5 +115,4 @@ public static class SubmitToProviderQa
                 && latest.Scores.Count(s => s.Score is >= 0 and < 10) > 1;
         }
     }
-
 }
