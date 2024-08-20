@@ -78,6 +78,7 @@ public class ApplicationUserDto
                 .ForMember(x => x.SuperiorName, s => s.MapFrom(y => y.Superior!.UserName))
                 .ForMember(x => x.TenantName, s => s.MapFrom(y => y.Tenant!.Name))
                 .ForMember(x => x.AssignedRoles, s => s.MapFrom(y => y.UserRoles.Select(r => r.Role.Name)))
+                .ForMember(x => x.PhoneNumber, s => s.MapFrom(x => x.PhoneNumber))
             .ReverseMap()
                 .ForMember(x => x.UserName, s => s.MapFrom(y => y.Email))
                 .ForMember(x => x.Notes, s => s.Ignore())
