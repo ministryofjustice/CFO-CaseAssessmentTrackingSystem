@@ -80,7 +80,9 @@ public static class SubmitToProviderQa
         {
             var assessments = await  _unitOfWork.DbContext.ParticipantAssessments
                 .Include(pa => pa.Scores)
-                .ToArrayAsync(cancellationToken);
+                .Where(pa => pa.ParticipantId == identifier)
+                .ToArrayAsync(cancellationToken)
+                ;
 
             var latest = assessments.MaxBy(a => a.Created);
 
@@ -106,6 +108,7 @@ public static class SubmitToProviderQa
         {
             var assessments = await  _unitOfWork.DbContext.ParticipantAssessments
                                     .Include(pa => pa.Scores)
+                                    .Where(pa=>pa.ParticipantId == identifier)
                                     .ToArrayAsync(cancellationToken);
 
             var latest = assessments.MaxBy(a => a.Created);
