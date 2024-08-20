@@ -44,10 +44,8 @@ public static class SubmitQa1Response
                 .NotNull()
                 .WithMessage("You must accept or return the request");
 
-            When(x => x.Accept == false, () => {
+            When(x => x.Accept is false, () => {
                 RuleFor(x => x.Message)
-                    .NotNull()
-                    .WithMessage("A message is required when returning")
                     .NotEmpty()
                     .WithMessage("A message is required when returning")
                     .Matches(ValidationConstants.Notes)

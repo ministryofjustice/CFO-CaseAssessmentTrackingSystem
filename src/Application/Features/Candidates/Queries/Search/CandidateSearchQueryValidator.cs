@@ -28,10 +28,11 @@ public class CandidateSearchQueryValidator : AbstractValidator<CandidateSearchQu
 
         RuleFor(q => q.ExternalIdentifier)
             .NotEmpty()
-            .NotNull()
             .WithMessage("External identifier is required")
             .Matches(ValidationConstants.AlphaNumeric)
-            .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "External Identifier"));
+            .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "External Identifier"))
+            .Length(7) // CRN and NOMIS Number (both 7 chars)
+            .WithMessage("Unrecognised format for External Identifier");
 
     }
 }
