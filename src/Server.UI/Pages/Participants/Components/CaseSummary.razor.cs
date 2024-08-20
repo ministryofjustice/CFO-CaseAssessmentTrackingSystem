@@ -35,11 +35,16 @@ public partial class CaseSummary
         {
             ParticipantId = ParticipantSummaryDto.Id
         };
+
         var result = await GetNewMediator().Send(command);
 
         if (result.Succeeded)
         {
             Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessment/{result.Data}");
+        }
+        else
+        {
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
         }
     }
     

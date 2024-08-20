@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Assessments.Caching;
 using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Education;
@@ -78,12 +79,30 @@ public static class BeginAssessment
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+
             RuleFor(c => c.ParticipantId)
                 .MinimumLength(9)
-                .MaximumLength(9);
+                .MaximumLength(9)
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+
+            RuleFor(c => c.ParticipantId)
+                .MustAsync(Exist)
+                .WithMessage("Participant not found")
+                .MustAsync(HaveEnrolmentLocation)
+                .WithMessage("Participant must have an enrolment location");
         }
+
+        private async Task<bool> Exist(string participantId, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId, cancellationToken);
+
+        private async Task<bool> HaveEnrolmentLocation(string participantId, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentLocation != null, cancellationToken);
     }
 
 }
