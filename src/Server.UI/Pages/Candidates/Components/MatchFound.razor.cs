@@ -11,6 +11,8 @@ public partial class MatchFound
     [Inject]
     private IPicklistService PicklistService { get; set; } = default!;
 
+    private bool loading;
+
     private MudForm? _form;
 
     private CreateParticipant.Command? Model;
@@ -65,14 +67,25 @@ public partial class MatchFound
 
     private async Task EnrolCandidate()
     {
-        await _form!.Validate().ConfigureAwait(false);
-        if (_form!.IsValid)
+        try
         {
-            var result = await GetNewMediator().Send(Model!);
-            if (result.Succeeded)
+            loading = true;
+
+            await _form!.Validate().ConfigureAwait(false);
+
+            if (_form!.IsValid)
             {
-                await OnParticipantEnrolled.InvokeAsync();
+                var result = await GetNewMediator().Send(Model!);
+                if (result.Succeeded)
+                {
+                    await OnParticipantEnrolled.InvokeAsync();
+                }
             }
+
+        }
+        finally
+        {
+            loading = false;
         }
     }
 
