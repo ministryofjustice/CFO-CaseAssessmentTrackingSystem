@@ -389,8 +389,8 @@
         policies ??= new()
         {
             { SecurityPolicies.SystemFunctionsWrite, (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded },
-            { SecurityPolicies.Import, (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Import)).Succeeded },
-            { SecurityPolicies.Export, (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Export)).Succeeded }
+            { SecurityPolicies.Import, false /*(await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Import)).Succeeded */ },
+            { SecurityPolicies.Export, false /* (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Export)).Succeeded */ }
         };
 
         _canCreate = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
@@ -533,6 +533,8 @@
         var applicationUser = Mapper.Map<ApplicationUser>(model);
         applicationUser.EmailConfirmed = true;
         applicationUser.IsActive = true;
+        applicationUser.TwoFactorEnabled = true;
+        applicationUser.PhoneNumberConfirmed = string.IsNullOrWhiteSpace(applicationUser.PhoneNumber) == false;
 
         var identityResult = await UserManager.CreateAsync(applicationUser);
         if (!identityResult.Succeeded)
@@ -555,6 +557,8 @@
         var state = await AuthState;
 
         Mapper.Map(model, user);
+
+        user.PhoneNumberConfirmed = string.IsNullOrWhiteSpace(user.PhoneNumber) == false;
 
         var identityResult = await UserManager.UpdateAsync(user);
         if (identityResult.Succeeded)
