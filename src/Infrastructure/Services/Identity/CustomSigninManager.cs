@@ -20,6 +20,11 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
         
         var passwordCheckResult = await CheckPasswordSignInAsync(user, password, lockoutOnFailure);
 
+        if(passwordCheckResult.Succeeded is false)
+        {
+            return passwordCheckResult;
+        }
+
         if (PasswordChecksOutAndRequiresPasswordReset(passwordCheckResult, user))
         {
             return CustomSignInResult.PasswordResetRequired;
