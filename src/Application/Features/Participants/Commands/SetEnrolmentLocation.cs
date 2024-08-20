@@ -27,7 +27,8 @@ public static class SetEnrolmentLocation
         /// <summary>
         /// The location to assign the enrolment to
         /// </summary>
-        public LocationDto? EnrolmentLocation { get; set; } = enrolmentLocation;
+        [Description("Alternative Location")]
+        public LocationDto? AlternativeLocation { get; set; } = enrolmentLocation;
 
         /// <summary>
         /// A justification for enrolling a participant in a location
@@ -37,7 +38,7 @@ public static class SetEnrolmentLocation
         public string? JustificationReason { get; set; } = justificationReason;
 
         [Description("Enrol at an alternative location enrolment")]
-        public bool EnrolFromOtherLocation { get; set; } 
+        public bool EnrolFromAlternativeLocation { get; set; } 
         
         public string[] CacheKeys => [ParticipantCacheKey.GetCacheKey($"Id:{this.Identifier}")];
         public CancellationTokenSource? SharedExpiryTokenSource 
@@ -60,7 +61,7 @@ public static class SetEnrolmentLocation
                 throw new ConflictException($"Participant {request.Identifier} is already enrolled");
             }
 
-            participant.SetEnrolmentLocation(request.EnrolmentLocation?.Id ?? request.CurrentLocation.Id, request.JustificationReason);
+            participant.SetEnrolmentLocation(request.AlternativeLocation?.Id ?? request.CurrentLocation.Id, request.JustificationReason);
             return participant.Id;
         }
     }
@@ -70,21 +71,20 @@ public static class SetEnrolmentLocation
         public Validator()
         {
             RuleFor(x => x.CurrentLocation)
-                .NotNull();
+                .NotNull()
+                .WithMessage("Current location is unknown or missing");
 
-            RuleFor(x => x.EnrolmentLocation)
-                .NotNull();
-
-            When(x => x.EnrolFromOtherLocation, () => {
-                RuleFor(x => x.EnrolmentLocation)
-                    .Must((model, enrolmentLocation) => model.CurrentLocation != enrolmentLocation)
-                    .WithMessage("Enrolment location must be different when Enrol from another location is selected");
-            });
-            
-            When(x => x.CurrentLocation != x.EnrolmentLocation, () => {
-                RuleFor(x => x.JustificationReason)
+            When(x => x.EnrolFromAlternativeLocation, () => {
+                RuleFor(x => x.AlternativeLocation)
                     .NotNull()
-                    .WithMessage("Justification reason is mandatory when enrolling in a different location")
+                    .WithMessage("You must provide an alternative location");
+
+                RuleFor(x => x.AlternativeLocation)
+                    .Must((x, alternativeLocation) => x.CurrentLocation.Id != alternativeLocation!.Id)
+                    .When(x => x.AlternativeLocation is not null)
+                    .WithMessage("You must provide a different alternative location to the current location");
+
+                RuleFor(x => x.JustificationReason)
                     .NotEmpty()
                     .WithMessage("Justification reason is mandatory when enrolling in a different location");
             });
