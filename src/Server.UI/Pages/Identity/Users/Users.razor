@@ -411,9 +411,9 @@
         _initialised = true;
     }
 
-    private bool CanResetPassword(string[] roles)
+    private bool CanResetPassword(string[] affectedUserRoles)
     {
-        var userRole = _roles.Where(role => roles.Contains(role.Name)).MinBy(role => role.RoleRank);
+        var userRole = _roles.Where(role => affectedUserRoles.Contains(role.Name)).MinBy(role => role.RoleRank);
         var currentUserRole = _roles.Where(role => CurrentRoles.Contains(role.Name)).MinBy(role => role.RoleRank);
         return _canResetPassword && currentUserRole?.RoleRank <= userRole?.RoleRank;
     }
