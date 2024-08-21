@@ -10,27 +10,27 @@
     if (RightToWorkDtos is not null && RightToWorkDtos.Length > 0)
     {
         <MudText Typo="Typo.body2">
-            Right To Work supporting documentation already updated 
+            Right To Work supporting documentation already updated
         </MudText>
-        
+
         <MudList T="string">
             @foreach (var c in RightToWorkDtos)
             {
                 <MudListItem T="string">
                     <MudText Typo="Typo.body2">
-                        @c.FileName 
+                        @c.FileName
                     </MudText>
                 </MudListItem>
-            }    
+            }
         </MudList>
-        
+
         <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" @onclick="() => RightToWorkDtos = null">
             Add New
         </MudButton>
     }
     else
     {
-        <MudForm @ref="Form">   
+        <MudForm @ref="Form">
             <MudText Typo="Typo.caption">
                 For anyone recorded on PNomis / NDelius as non-British / non-Irish, documentation is required to support their Right to Work. More information on this requirement can be found in the CFO Enrolment Guidance.
             </MudText>
@@ -38,21 +38,24 @@
                 To your knowledge, is any Right to Work (RTW) documentation required for the enrolment of this person?
             </MudText>
             <MudButtonGroup OverrideStyles="false" Class="my-4">
-                <MudButton Color="Color.Primary" Variant="@(_isRequired ? Variant.Filled : Variant.Outlined)" OnClick="() => _isRequired = true">Yes, Right to Work is required</MudButton>
-                <MudButton Color="Color.Primary" Variant="@(_isRequired ? Variant.Outlined : Variant.Filled)" OnClick="() => _isRequired = false">No, Right to Work is not required</MudButton>
+                <MudButton Color="Color.Primary" Variant="@(_isRequired ? Variant.Filled : Variant.Outlined)" OnClick="RightToWorkRequiredOnClick">Yes, Right to Work is required</MudButton>
+                <MudButton Color="Color.Primary" Variant="@(_isRequired ? Variant.Outlined : Variant.Filled)" OnClick="NoRightToWorkRequiredOnClick">No, Right to Work is not required</MudButton>
             </MudButtonGroup>
-            
+
             @if (_isRequired)
             {
+                <MudCheckBox T="bool" Label="Indefinite Right To Work" Value="_isIndefiniteRtwChecked" ValueChanged="IndefiniteRtwOnValueChanged"/>
                 <MudDatePicker Label="Valid From" Editable="true"
                                MaxDate="DateTime.Now.Date"
                                MinDate="DateTime.Now.AddYears(-5).Date"
-                               @bind-Date="Model.ValidFrom" Required/>
-
-                <MudDatePicker Label="Valid To" Editable="true"
-                               MaxDate="DateTime.MaxValue.Date"
-                               MinDate="DateTime.Now.Date"
-                               @bind-Date="Model.ValidTo" Required/>
+                               @bind-Date="Model.ValidFrom" Required />
+                @if (_isIndefiniteRtwChecked == false)
+                {
+                    <MudDatePicker Label="Valid To" Editable="true"
+                                   MaxDate="DateTime.MaxValue.Date"
+                                   MinDate="DateTime.Now.Date"
+                                   @bind-Date="Model.ValidTo" Required />
+                }
 
                 <div class="mb-4 mt-8">
                     <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1" Accept=".pdf">
@@ -62,7 +65,7 @@
                                        StartIcon="@Icons.Material.Filled.Upload">
                                 @if (_uploading)
                                 {
-                                    <MudProgressCircular Size="Size.Small" Indeterminate="true"/>
+                                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
                                     @ConstantString.Uploading
                                 }
                                 else
@@ -83,14 +86,15 @@
 
     private bool _isRequired = true;
     private bool _uploading = false;
-    
+    private bool _isIndefiniteRtwChecked { get; set; } = false;
+
     [EditorRequired]
     [Parameter]
-    public AddRightToWork.Command? Model { get; set; } 
+    public AddRightToWork.Command? Model { get; set; }
 
     [Parameter]
     public RightToWorkDto[]? RightToWorkDtos { get; set; }
-    
+
     private MudForm? Form { get; set; }
 
     public async Task<bool> Validate()
@@ -99,7 +103,7 @@
         {
             return true;
         }
-        
+
         await Form!.Validate();
 
         if (Form.IsValid)
@@ -132,11 +136,35 @@
                 await using var stream = file.OpenReadStream(maxFileSize);
                 using var memoryStream = new MemoryStream();
                 await stream.CopyToAsync(memoryStream);
-        
+
                 Model!.UploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
                 _uploading = false;
             }
         }
     }
 
+    private void RightToWorkRequiredOnClick()
+    {
+        _isRequired = true;
+
+        IndefiniteRtwOnValueChanged(_isIndefiniteRtwChecked);
+    }
+    private void NoRightToWorkRequiredOnClick()
+    {
+        _isRequired = false;
+
+        IndefiniteRtwOnValueChanged(_isIndefiniteRtwChecked);
+    }
+    private void IndefiniteRtwOnValueChanged(bool isIndefiniteRtwChecked)
+    {
+        _isIndefiniteRtwChecked = isIndefiniteRtwChecked;
+        if (_isIndefiniteRtwChecked)
+        {
+            Model!.ValidTo = new DateTime(9999, 12, 31);
+        }
+        else
+        {
+            Model!.ValidTo = null;
+        }
+    }
 }
