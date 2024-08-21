@@ -150,7 +150,7 @@
             <HierarchyColumn T="ApplicationUserDto" ButtonDisabledFunc="@(x => x.Notes.Count() is 0)" />
             <TemplateColumn CellStyle="width:60px" Title="@ConstantString.Actions" Sortable="false">
                 <CellTemplate>
-                    @if (_canEdit || _canArchive || _canManageRoles || _canResetPassword || _canToggleActiveStatus || _canManagePermissions)
+                    @if (_canEdit || _canArchive || _canManageRoles || _canResetPassword || _canToggleActiveStatus || _canManagePermissions || _canToggleLock)
                     {
                         <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                                  Dense="true"
@@ -178,9 +178,16 @@
                             {
                                 <MudMenuItem Disabled="@(!context.Item.IsActive)" OnClick="@(() => OnResetPassword(context.Item))">@L["Reset Password"]</MudMenuItem>
                             }
-                            @if (context.Item.LockoutEnd is not null)
+                            @if (_canToggleLock)
                             {
-                                <MudMenuItem OnClick="@(() => OnUnlock(context.Item))">@L["Unlock"]</MudMenuItem>
+                                @if (context.Item.LockoutEnd is not null)
+                                {
+                                    <MudMenuItem OnClick="@(() => OnUnlock(context.Item))">@L["Unlock"]</MudMenuItem>
+                                }
+                                else
+                                {
+                                    <MudMenuItem OnClick="@(() => OnLock(context.Item))">@L["Lock"]</MudMenuItem>
+                                }
                             }
                         </MudMenu>
                     }
@@ -249,8 +256,8 @@
                 </CellTemplate>
             </PropertyColumn>
             <PropertyColumn Property="x => x.IsActive" Title="@L[_currentDto.GetMemberDescription(x => x.IsActive)]">
-                <CellTemplate>
-                    <div>
+                <CellTemplate>                    
+                        <div>
                         @if (context.Item.IsActive)
                         {
                         <MudChip Color="Color.Success" Size="Size.Small" Icon="@Icons.Material.Filled.CheckCircleOutline">@L["Active"]</MudChip>                        
@@ -260,14 +267,19 @@
                         <MudChip Class="flex-grow-0" Color="Color.Surface" Size="Size.Small" Icon="@Icons.Material.Filled.HighlightOff">@L["Inactive"]</MudChip>
              
                         }
+                        </div>
+                        
                         @if (context.Item.LockoutEnd is not null)
                         {
-                            <div class="d-flex">
-                                <p>@L["Lockout End"]: </p>
-                                <ToLocal DateTime="@context.Item.LockoutEnd.Value.UtcDateTime.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
+                            <div>
+                                <div style="font-size:12px">
+                                    <p>@L["Lockout End"]: </p>
+                                </div>                                
+                                <div style="font-size:12px">   
+                                    <ToLocal DateTime="@context.Item.LockoutEnd.Value.UtcDateTime.ToLocalTime()" Format="dd/mm/yyyy"  ></ToLocal>
+                                </div>
                             </div>
                         }
-                    </div>
                 </CellTemplate>
             </PropertyColumn>
         </Columns>
@@ -322,7 +334,6 @@
 
 <PermissionsDrawer OnAssignAllChanged="OnAssignAllChangedHandler" Waiting="@_processing" OnOpenChanged="OnOpenChangedHandler" Open="_showPermissionsDrawer" Permissions="_permissions" OnAssignChanged="OnAssignChangedHandler"></PermissionsDrawer>
 
-
 <style>
     .mud-table-toolbar {
         height: 120px !important;
@@ -352,7 +363,6 @@
 
     private TimeSpan RefreshInterval => TimeSpan.FromHours(2);
 
-
     private MudDataGrid<ApplicationUserDto> _table = null!;
     private bool _initialised;
     private bool _processing;
@@ -362,6 +372,7 @@
     private bool _canEdit;
     private bool _canArchive;
     private bool _canToggleActiveStatus;
+    private bool _canToggleLock;    
     private bool _canManageRoles;
     private bool _canResetPassword;
     private bool _canManagePermissions;
@@ -398,6 +409,7 @@
         _canEdit = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canArchive = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canToggleActiveStatus = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
+        _canToggleLock = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canManageRoles = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canResetPassword = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canManagePermissions = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
@@ -680,6 +692,24 @@
         }
     }
 
+    private async Task OnLock(ApplicationUserDto item)
+    {
+        var user = await UserManager.FindByIdAsync(item.Id!) ?? throw new NotFoundException($"Application user not found {item.Id}.");
+
+        user.LockoutEnd = DateTimeOffset.MaxValue;
+        var identityResult = await UserManager.UpdateAsync(user);
+
+        if (identityResult.Succeeded)
+        {
+            item.LockoutEnd = DateTimeOffset.MaxValue;
+            Snackbar.Add($"{L["The user has been locked."]}", Severity.Info);
+        }
+        else
+        {
+            Snackbar.Add($"{string.Join(",", identityResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
+        }
+    }
+
     private async Task OnSetActive(ApplicationUserDto item)
     {
         var user = await UserManager.FindByIdAsync(item.Id!) ?? throw new NotFoundException($"Application user not found {item.Id}.");
@@ -922,7 +952,6 @@
         {
             _uploading = false;
         }
-
     }
 
     private async Task<IResult<IEnumerable<ApplicationUser>>> ImportUsers(MemoryStream stream)
@@ -951,6 +980,4 @@
             }
         }
     }
-
-
 }
