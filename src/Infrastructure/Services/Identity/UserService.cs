@@ -30,6 +30,11 @@ public class UserService : IUserService
 
     public event Action? OnChange;
 
+    public string? GetDisplayName(string userId)
+    {
+        return DataSource.FirstOrDefault(u => u.Id == userId)?.DisplayName;
+    }
+
     public void Initialize()
     {
         DataSource =

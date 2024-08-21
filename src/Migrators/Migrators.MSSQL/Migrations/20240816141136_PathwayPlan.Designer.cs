@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240816141136_PathwayPlan")]
+    partial class PathwayPlan
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -2189,10 +2192,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                             b1.Property<DateTime?>("Completed")
                                 .HasColumnType("datetime2");
 
-                            b1.Property<string>("CompletedBy")
-                                .HasMaxLength(36)
-                                .HasColumnType("nvarchar(36)");
-
                             b1.Property<int?>("CompletedStatus")
                                 .HasColumnType("int");
 
@@ -2225,15 +2224,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.HasKey("Id");
 
-                            b1.HasIndex("CompletedBy");
-
                             b1.HasIndex("PathwayPlanId");
 
                             b1.ToTable("Objective", "Participant");
-
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CompletedByUser")
-                                .WithMany()
-                                .HasForeignKey("CompletedBy");
 
                             b1.WithOwner()
                                 .HasForeignKey("PathwayPlanId");
@@ -2301,8 +2294,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                                     b2.Navigation("CompletedByUser");
                                 });
-
-                            b1.Navigation("CompletedByUser");
 
                             b1.Navigation("Tasks");
                         });

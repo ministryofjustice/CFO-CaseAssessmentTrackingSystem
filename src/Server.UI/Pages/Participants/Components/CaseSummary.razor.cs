@@ -3,6 +3,7 @@ using Cfo.Cats.Application.Features.Assessments.Commands;
 using Cfo.Cats.Application.Features.Bios.Commands;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
+using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Pages.Risk;
 
@@ -223,4 +224,6 @@ public partial class CaseSummary
         return _bio is null || _bio!.BioStatus == BioStatus.NotStarted;
     }
     
+    private bool HasPathwayPlan => ParticipantSummaryDto.PathwayPlan is not null;
+    private bool HasPathwayBeenReviewed => HasPathwayPlan && ParticipantSummaryDto.PathwayPlan?.LastReviewed is not null;
 }

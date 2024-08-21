@@ -1,0 +1,192 @@
+﻿@using Cfo.Cats.Application.Features.PathwayPlans.Commands
+@using Cfo.Cats.Application.Features.PathwayPlans.DTOs
+@using Cfo.Cats.Application.Features.PathwayPlans.Queries
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Objectives
+@using Cfo.Cats.Server.UI.Pages.Objectives.Tasks
+@using Humanizer
+
+@inherits CatsComponentBase
+
+<MudListItem T="ObjectiveDto" Ripple="false" Expanded>
+    <ChildContent>
+        <div class="d-flex gap-2 align-center">
+            @if(Model.IsCompleted)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Small" />
+            }
+            <MudText Typo="Typo.subtitle2">@Model.DisplayName</MudText>
+            <MudText>(@Model.Tasks.Count(x => x.IsCompleted)/@Model.Tasks.Count())</MudText>
+            @if(Model.IsCompleted)
+            {
+                @if (Model.CompletedStatus == CompletionStatus.Done)
+                {
+                    <MudChip T="string" Text="@Model.CompletedStatus.Name" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
+                }
+                else if (Model.CompletedStatus == CompletionStatus.NotRequired)
+                {
+                    <MudChip T="string" Text="@Model.CompletedStatus.Name" Size="Size.Small" Color="Color.Dark" Icon="@Icons.Material.Filled.Close" />
+                }
+            }
+            else
+            {
+                if(Model.Tasks.Any(task => task.IsOverdue))
+                {
+                    <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.AccessTime" />
+                }
+                else if(Model.Tasks.Any(task => task.IsDueSoon))
+                {
+                    <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
+                }
+            }
+        </div>
+    </ChildContent>
+    <NestedList>
+        @foreach (var task in Model.Tasks
+        .Where(task => task.IsCompleted is false || HideCompletedTasks is false)
+        .OrderBy(task => task.Created))
+        {
+            <ObjectiveTask Model="task" OnChange="async() => await OnChange.InvokeAsync()" PathwayPlanId="Model.PathwayPlanId" />
+        }
+        <div class="d-flex align-center ml-2 mt-4 mb-2">
+            @if(Model.IsCompleted is false)
+            {
+                <MudTooltip Text="Review">
+                    <MudIconButton OnClick="Review" Icon="@Icons.Material.Filled.Lock" Disabled="Model.IsCompleted" />
+                </MudTooltip>
+                <MudTooltip Text="Rename">
+                    <MudIconButton OnClick="Rename" Icon="@Icons.Material.Filled.EditNote" Disabled="Model.IsCompleted" />
+                </MudTooltip>
+            }
+
+            <MudTooltip Text="Expand">
+                <MudIconButton OnClick="Expand" Icon="@Icons.Material.Filled.OpenInNew" />
+            </MudTooltip>
+
+            @if(Model.IsCompleted is false)
+            {
+                <MudTooltip Text="New Task">
+                    <MudIconButton OnClick="AddTask" Icon="@Icons.Material.Filled.Add" Disabled="Model.IsCompleted" />
+                </MudTooltip>
+            }
+        </div>
+    </NestedList>
+</MudListItem>
+
+@code {
+    [Parameter, EditorRequired]
+    public required ObjectiveDto Model { get; set; }
+
+    [Parameter, EditorRequired]
+    public required bool HideCompletedTasks { get; set; }
+
+    [Parameter]
+    public EventCallback OnChange { get; set; }
+
+    public async Task Review()
+    {
+        var command = new ReviewObjective.Command()
+        {
+            PathwayPlanId = Model.PathwayPlanId,
+            ObjectiveId = Model.Id
+        };
+
+        var parameters = new DialogParameters<ReviewObjectiveDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+        var dialog = DialogService.Show<ReviewObjectiveDialog>("Review objective", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                await OnChange.InvokeAsync();
+            }
+
+        }
+    }
+
+    public async Task AddTask()
+    {
+        var command = new AddTask.Command()
+        {
+            PathwayPlanId = Model.PathwayPlanId,
+            ObjectiveId = Model.Id
+        };
+
+        var parameters = new DialogParameters<AddTaskDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+        var dialog = DialogService.Show<AddTaskDialog>("Add task to objective", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                await OnChange.InvokeAsync();
+            }
+
+        }
+    }
+
+    public async Task Expand()
+    {
+        await DialogService.ShowAsync<ExpandObjectiveDialog>(
+            Model.Title,
+            new DialogParameters<ExpandObjectiveDialog>()
+            {
+                { x => x.Model, Model }
+            },
+            new DialogOptions
+            {
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true,
+                CloseButton = true
+            });
+    }
+
+    public async Task Rename()
+    {
+        var command = new EditObjective.Command()
+        {
+            PathwayPlanId = Model.PathwayPlanId,
+            ObjectiveId = Model.Id,
+            Title = Model.Title
+        };
+
+        var parameters = new DialogParameters<RenameObjectiveDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+        var dialog = DialogService.Show<RenameObjectiveDialog>("Rename objective", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                await OnChange.InvokeAsync();
+            }
+
+        }
+    }
+}

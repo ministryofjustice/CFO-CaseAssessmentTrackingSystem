@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Entities.Participants;
@@ -25,6 +25,8 @@ public interface IApplicationDbContext
     DbSet<Document> Documents { get; }
 
     DbSet<Participant> Participants { get; }
+    
+    DbSet<PathwayPlan> PathwayPlans { get; }
 
     DbSet<Risk> Risks { get; }
 

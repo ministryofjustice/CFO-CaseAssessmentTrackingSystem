@@ -30,6 +30,11 @@ internal static class DatabaseConstants
         public const string EnrolmentHistory = nameof(EnrolmentHistory);
         public const string RightToWork = nameof(RightToWork);
         public const string Risk = nameof(Risk);
+        public const string Objective = nameof(Objective);
+        public const string ObjectiveTask = nameof(ObjectiveTask);
+        public const string PathwayPlan = nameof(PathwayPlan);
+        public const string PathwayPlanReviewHistory = nameof(PathwayPlanReviewHistory);
+
 
         public const string AssessmentPathwayScore = nameof(AssessmentPathwayScore);
 

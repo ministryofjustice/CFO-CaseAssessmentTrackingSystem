@@ -1,0 +1,227 @@
+﻿@using Cfo.Cats.Application.Features.PathwayPlans.Commands
+@using Cfo.Cats.Application.Features.PathwayPlans.DTOs
+@using Cfo.Cats.Domain.Common.Enums
+@using Humanizer
+
+@inherits CatsComponentBase
+
+<MudListItem Value="@Model" Class="cursor-default mud-list-item-child" Ripple="false" OnClickPreventDefault>
+    <AvatarContent>
+        @if (Model.IsCompleted)
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.CheckBox" Disabled />
+        }
+        else
+        {
+            <MudIconButton OnClick="Review" Icon="@Icons.Material.Filled.CheckBoxOutlineBlank" />
+        }
+    </AvatarContent>
+    <ChildContent>
+        <div class="d-flex justify-space-between align-center">
+            <div>
+                <div class="d-flex gap-2 align-center">
+                    <MudText>
+                        @Model.DisplayName
+                    </MudText>
+                    @if (Model.IsCompleted)
+                    {
+                        <MudTooltip Text="Completed">
+                            @if (Model.CompletedStatus == CompletionStatus.Done)
+                            {
+                                <MudChip T="string" Text="@Model.CompletedStatus.Name" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.Done" />
+                            }
+                            else if (Model.CompletedStatus == CompletionStatus.NotRequired)
+                            {
+                                <MudChip T="string" Text="@Model.CompletedStatus.Name" Size="Size.Small" Color="Color.Dark" Icon="@Icons.Material.Filled.Close" />
+                            }
+                        </MudTooltip>
+                    }
+                    else
+                    {
+                        if (Model.IsOverdue)
+                        {
+                            <MudTooltip>
+                                <TooltipContent>
+                                    Due @Model.Due.ToString("MMM, yyyy")
+                                </TooltipContent>
+                                <ChildContent>
+                                    <MudChip T="string" Text="Overdue" Size="Size.Small" Color="Color.Error" Icon="@Icons.Material.Filled.AccessTime" />
+                                </ChildContent>
+                            </MudTooltip>
+                        }
+                        else if (Model.IsDueSoon)
+                        {
+                            <MudTooltip>
+                                <TooltipContent>
+                                    Due @Model.Due.ToString("MMM, yyyy")
+                                </TooltipContent>
+                                <ChildContent>
+                                    <MudChip T="string" Text="Due soon" Size="Size.Small" Color="Color.Warning" Icon="@Icons.Material.Filled.AccessTime" />
+                                </ChildContent>
+                            </MudTooltip>
+                        }
+                    }
+                </div>
+                @if (Model.IsCompleted)
+                {
+                    <MudText Typo="Typo.body2">Completed @Model.Completed.Humanize()</MudText>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body2">Due @Model.Due.ToString("MMM, yyyy")</MudText>
+                }
+            </div>
+            <div class="d-flex gap-2 align-center mr-4">
+                <MudTooltip Text="Actions">
+                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Disabled="Model.IsCompleted" Size="Size.Small" Dense>
+                        <MudMenuItem OnClick="AdjustDate">Adjust date</MudMenuItem>
+                        <MudMenuItem OnClick="Rename">Rename</MudMenuItem>
+                    </MudMenu>
+                </MudTooltip>
+                <MudTooltip Text="Record">
+                    <MudMenu Icon="@Icons.Material.Filled.LibraryAdd" Variant="Variant.Filled" Size="Size.Small" Dense>
+                        <MudMenuItem Disabled>New Activity (Coming Soon)</MudMenuItem>
+                        <MudMenuItem Disabled>New ETE (Coming Soon)</MudMenuItem>
+                        <MudMenuItem Disabled>New PSF (Coming Soon)</MudMenuItem>
+                    </MudMenu>
+                </MudTooltip>
+                <MudTooltip Text="Expand">
+                    <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="Expand" Variant="Variant.Filled" Size="Size.Small" />
+                </MudTooltip>
+                <MudTooltip>
+                    <TooltipContent>
+                        Added @Model.Created.Humanize()
+                    </TooltipContent>
+                    <ChildContent>
+                        <MudIcon Icon="@Icons.Material.Filled.Info" />
+                    </ChildContent>
+                </MudTooltip>
+            </div>
+        </div>
+    </ChildContent>
+</MudListItem>
+
+@code {
+    [Parameter, EditorRequired]
+    public required ObjectiveTaskDto Model { get; set; }
+
+    [Parameter, EditorRequired]
+    public required Guid PathwayPlanId { get; set; }
+
+    [Parameter]
+    public EventCallback OnChange { get; set; }
+
+    public async Task Review()
+    {
+        var command = new ReviewTask.Command()
+        {
+            TaskId = Model.Id,
+            ObjectiveId = Model.ObjectiveId,
+            PathwayPlanId = PathwayPlanId
+        };
+
+        var parameters = new DialogParameters<ReviewTaskDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+        var dialog = DialogService.Show<ReviewTaskDialog>("Complete task", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                await OnChange.InvokeAsync();
+            }
+
+        }
+    }
+
+    public async Task Expand()
+    {
+        await DialogService.ShowAsync<ExpandTaskDialog>(
+            Model.Title,
+            new DialogParameters<ExpandTaskDialog>()
+            {
+                { x => x.Model, Model }
+            },
+            new DialogOptions
+            {
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true,
+                CloseButton = true
+            });
+    }
+
+    public async Task AdjustDate()
+    {
+        var command = new EditTask.Command()
+        {
+            TaskId = Model.Id,
+            ObjectiveId = Model.ObjectiveId,
+            Title = Model.Title,
+            Due = Model.Due,
+            PathwayPlanId = PathwayPlanId
+        };
+
+        var parameters = new DialogParameters<AdjustDateTaskDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+        var dialog = DialogService.Show<AdjustDateTaskDialog>("Adjust date", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                await OnChange.InvokeAsync();
+            }
+
+        }
+    }
+
+    public async Task Rename()
+    {
+        var command = new EditTask.Command()
+        {
+            TaskId = Model.Id,
+            ObjectiveId = Model.ObjectiveId,
+            Title = Model.Title,
+            Due = Model.Due,
+            PathwayPlanId = PathwayPlanId
+        };
+
+        var parameters = new DialogParameters<RenameTaskDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+        var dialog = DialogService.Show<RenameTaskDialog>("Rename task", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                await OnChange.InvokeAsync();
+            }
+
+        }
+    }
+
+}
