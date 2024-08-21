@@ -74,7 +74,7 @@
             <div class="d-flex gap-2 align-center mr-4">
                 <MudTooltip Text="Actions">
                     <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Disabled="Model.IsCompleted" Size="Size.Small" Dense>
-                        <MudMenuItem OnClick="ExtendDate">Extend date</MudMenuItem>
+                        <MudMenuItem OnClick="AdjustDate">Adjust date</MudMenuItem>
                         <MudMenuItem OnClick="Rename">Rename</MudMenuItem>
                     </MudMenu>
                 </MudTooltip>
@@ -158,7 +158,7 @@
             });
     }
 
-    public async Task ExtendDate()
+    public async Task AdjustDate()
     {
         var command = new EditTask.Command()
         {
@@ -169,13 +169,13 @@
             PathwayPlanId = PathwayPlanId
         };
 
-        var parameters = new DialogParameters<ExtendDateTaskDialog>()
+        var parameters = new DialogParameters<AdjustDateTaskDialog>()
         {
             { x => x.Model, command }
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
-        var dialog = DialogService.Show<ExtendDateTaskDialog>("Extend date", parameters, options);
+        var dialog = DialogService.Show<AdjustDateTaskDialog>("Adjust date", parameters, options);
 
         var state = await dialog.Result;
 
