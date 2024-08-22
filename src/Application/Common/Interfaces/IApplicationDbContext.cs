@@ -53,5 +53,7 @@ public interface IApplicationDbContext
 
     DbSet<PasswordHistory> PasswordHistories { get; }
 
+    DbSet<IdentityAuditTrail> IdentityAuditTrails { get; }
+
 }
 
