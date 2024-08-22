@@ -50,8 +50,8 @@ public static class EditObjective
             RuleFor(x => x.Title)
                 .NotEmpty()
                 .WithMessage("You must provide a title")
-                .Matches(ValidationConstants.AlphabetsDigitsSpaceSlashHyphenDot)
-                .WithMessage(string.Format(ValidationConstants.AlphabetsDigitsSpaceSlashHyphenDotMessage, "Title"));
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Title"));
         }
 
     }
