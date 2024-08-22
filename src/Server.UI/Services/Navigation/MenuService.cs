@@ -22,7 +22,7 @@ public class MenuService : IMenuService
                     new()
                     {
                         Title = "Participants",
-                        Icon = Icons.Material.Filled.Cases,
+                        Icon = Icons.Material.Filled.EmojiPeople,
                         PageStatus = PageStatus.Completed,
                         IsParent = true,
                         MenuItems = new List<MenuSectionSubItemModel>
