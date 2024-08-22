@@ -12,9 +12,9 @@
     </ActivatorContent>
     <ChildContent>
         
-        @if (Participant.EnrolmentStatus != EnrolmentStatus.AbandonedStatus && Participant.EnrolmentStatus.IsQaStage() == false)
+        @if (Participant.EnrolmentStatus != EnrolmentStatus.ArchivedStatus && Participant.EnrolmentStatus.IsQaStage() == false)
         {
-            <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error" OnClick="Abandon">Abandon</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error" OnClick="Archive">Archive</MudMenuItem>
         }
         
         @if (Participant.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
@@ -52,9 +52,9 @@
 
     }
 
-    protected async Task Abandon()
+    protected async Task Archive()
     {
-        var command = new AbandonCase.Command()
+        var command = new ArchiveCase.Command()
         {
             ParticipantId = Participant.Id
         };
@@ -62,11 +62,11 @@
         var result = await GetNewMediator().Send(command);
         if (result.Succeeded)
         {
-            Snackbar.Add($"Participant {Participant.Id} abandoned", Severity.Success);
+            Snackbar.Add($"Participant {Participant.Id} Archived", Severity.Success);
         }
         else
         {
-            ShowActionFailure("Failed to abandon", result);
+            ShowActionFailure("Failed to archive", result);
         }
 
     }
@@ -85,7 +85,7 @@
         }
         else
         {
-            ShowActionFailure("Failed to abandon", result);
+            ShowActionFailure("Failed to archive", result);
         }
 
     }

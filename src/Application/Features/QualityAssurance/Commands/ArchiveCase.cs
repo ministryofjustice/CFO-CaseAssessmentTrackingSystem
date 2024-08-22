@@ -3,7 +3,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
 
-public static class AbandonCase
+public static class ArchiveCase
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
@@ -17,7 +17,7 @@ public static class AbandonCase
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
-            participant!.TransitionTo(EnrolmentStatus.AbandonedStatus);
+            participant!.TransitionTo(EnrolmentStatus.ArchivedStatus);
             // ReSharper disable once MethodHasAsyncOverload
             return Result.Success();
         }
