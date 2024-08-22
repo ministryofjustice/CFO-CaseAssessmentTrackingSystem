@@ -150,7 +150,7 @@
             <HierarchyColumn T="ApplicationUserDto" ButtonDisabledFunc="@(x => x.Notes.Count() is 0)" />
             <TemplateColumn CellStyle="width:60px" Title="@ConstantString.Actions" Sortable="false">
                 <CellTemplate>
-                    @if (_canEdit || _canArchive || _canManageRoles || _canResetPassword || _canToggleActiveStatus || _canManagePermissions || _canToggleLock)
+                    @if (_canEdit || _canArchive || _canManageRoles || _canResetPassword || _canToggleActiveStatus || _canManagePermissions || _canUnlock)
                     {
                         <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                                  Dense="true"
@@ -178,16 +178,12 @@
                             {
                                 <MudMenuItem Disabled="@(!context.Item.IsActive)" OnClick="@(() => OnResetPassword(context.Item))">@L["Reset Password"]</MudMenuItem>
                             }
-                            @if (_canToggleLock)
+                            @if (_canUnlock)
                             {
                                 @if (context.Item.LockoutEnd is not null)
                                 {
                                     <MudMenuItem OnClick="@(() => OnUnlock(context.Item))">@L["Unlock"]</MudMenuItem>
-                                }
-                                else
-                                {
-                                    <MudMenuItem OnClick="@(() => OnLock(context.Item))">@L["Lock"]</MudMenuItem>
-                                }
+                                }                          
                             }
                         </MudMenu>
                     }
@@ -272,12 +268,7 @@
                         @if (context.Item.LockoutEnd is not null)
                         {
                             <div>
-                                <div style="font-size:12px">
-                                    <p>@L["Lockout End"]: </p>
-                                </div>                                
-                                <div style="font-size:12px">   
-                                    <ToLocal DateTime="@context.Item.LockoutEnd.Value.UtcDateTime.ToLocalTime()" Format="dd/mm/yyyy"  ></ToLocal>
-                                </div>
+                                <MudChip OnClick="@(() => OnUnlock(context.Item))" Class="flex-grow-0" Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.HighlightOff">@L["Locked"]</MudChip>
                             </div>
                         }
                 </CellTemplate>
@@ -372,7 +363,7 @@
     private bool _canEdit;
     private bool _canArchive;
     private bool _canToggleActiveStatus;
-    private bool _canToggleLock;    
+    private bool _canUnlock;
     private bool _canManageRoles;
     private bool _canResetPassword;
     private bool _canManagePermissions;
@@ -409,7 +400,7 @@
         _canEdit = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canArchive = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canToggleActiveStatus = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
-        _canToggleLock = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
+        _canUnlock = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canManageRoles = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canResetPassword = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canManagePermissions = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
