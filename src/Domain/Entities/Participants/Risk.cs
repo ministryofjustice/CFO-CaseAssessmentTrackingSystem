@@ -19,11 +19,17 @@ public class Risk : BaseAuditableEntity<Guid>
         ReviewReason = reviewReason;
     }
 
-    public static Risk CreateFrom(Guid id, string participantId) 
+    public static Risk Create(Guid id, string participantId) 
     {
         Risk risk = new(id, participantId, RiskReviewReason.InitialReview);
         risk.AddDomainEvent(new RiskInformationAddedDomainEvent(risk));
         return risk;
+    }
+
+    public void Complete(string completedBy)
+    {
+        Completed = DateTime.UtcNow;
+        CompletedBy = completedBy;
     }
 
     public static Risk Review(Risk from, RiskReviewReason reason, string? justification)
@@ -31,6 +37,8 @@ public class Risk : BaseAuditableEntity<Guid>
         from.Id = Guid.NewGuid();
         from.ReviewReason = reason;
         from.ReviewJustification = justification;
+        from.Completed = null;
+        from.CompletedBy = null;
         from.AddDomainEvent(new RiskInformationReviewedDomainEvent(from));
         return from;
     }
@@ -40,6 +48,8 @@ public class Risk : BaseAuditableEntity<Guid>
     public string? ActivityRestrictions { get; private set; }
     public DateTime? ActivityRestrictionsReceived { get; private set; }
     public string? AdditionalInformation { get; private set; }
+    public DateTime? Completed { get; private set; }
+    public string? CompletedBy { get; private set; }
     public bool DeclarationSigned { get; private set; }
     public string? LicenseConditions { get; private set; }
     public DateTime? LicenseEnd { get; private set; }

@@ -41,6 +41,7 @@
     public bool Processing { get; set; } = false;
     public bool SubmissionSuccess { get; set; } = false;
 
+
     [Parameter]
     public required string Upci { get; set; }
 
@@ -107,6 +108,12 @@
             Processing = true;
             var result = await GetNewMediator().Send(command);
             isSuccess = result.Succeeded;
+
+            if(isSuccess is false)
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+
         }
         finally
         {
