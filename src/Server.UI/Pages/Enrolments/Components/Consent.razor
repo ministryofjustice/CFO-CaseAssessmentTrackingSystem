@@ -67,15 +67,15 @@
 }
 
 @code {
-    
+
     private bool _uploading = false;
-    
+
     MudCheckBox<bool> Certify { get; set; } = default!;
 
     [EditorRequired]
     [Parameter]
     public AddConsent.Command? Model { get; set; }
-    
+
     [Parameter]
     public ConsentDto[]? ConsentDto { get; set; }
 
@@ -96,20 +96,22 @@
             {
                 Snackbar.Add($"File {file.Name} exceeds the maximum allowed size of {maxFileSize.Bytes().Humanize()}", Severity.Error);
             }
-            else
+            else if (await IsPdfFile(file))            
             {
                 _uploading = true;
                 await using var stream = file.OpenReadStream(maxFileSize);
                 using var memoryStream = new MemoryStream();
                 await stream.CopyToAsync(memoryStream);
-                
+
                 Model!.UploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
                 fileCount = 1;
                 _uploading = false;
             }
-            
+            else
+            {
+                Snackbar.Add($"File {file.Name} is not a PDF", Severity.Error);
+            }
         }
-
     }
 
     private MudForm? Form { get; set; }
@@ -137,5 +139,25 @@
         }
 
         return Form.IsValid;
+    }
+
+    private async Task<bool> IsPdfFile(IBrowserFile file)
+    {
+        // Check file extension
+        if (!Path.GetExtension(file.Name).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        // Check MIME type
+        if (file.ContentType != "application/pdf")
+            return false;
+
+        // Check file signature (magic numbers)
+        using (var stream = file.OpenReadStream())
+        {
+            byte[] buffer = new byte[4];
+            await stream.ReadAsync(buffer, 0, 4);
+            string header = System.Text.Encoding.ASCII.GetString(buffer);
+            return header == "%PDF";
+        }
     }
 }

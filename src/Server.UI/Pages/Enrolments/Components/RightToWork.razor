@@ -81,9 +81,7 @@
     }
 }
 
-
 @code {
-
     private bool _isRequired = true;
     private bool _uploading = false;
     private bool _isIndefiniteRtwChecked { get; set; } = false;
@@ -130,7 +128,7 @@
             {
                 Snackbar.Add($"File {file.Name} exceeds the maximum allowed size of {maxFileSize.Bytes().Humanize()}", Severity.Error);
             }
-            else
+            else if (await IsPdfFile(file))
             {
                 _uploading = true;
                 await using var stream = file.OpenReadStream(maxFileSize);
@@ -139,6 +137,10 @@
 
                 Model!.UploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
                 _uploading = false;
+            }
+            else
+            {
+                Snackbar.Add($"File {file.Name} is not a PDF", Severity.Error);
             }
         }
     }
@@ -149,12 +151,14 @@
 
         IndefiniteRtwOnValueChanged(_isIndefiniteRtwChecked);
     }
+
     private void NoRightToWorkRequiredOnClick()
     {
         _isRequired = false;
 
         IndefiniteRtwOnValueChanged(_isIndefiniteRtwChecked);
     }
+
     private void IndefiniteRtwOnValueChanged(bool isIndefiniteRtwChecked)
     {
         _isIndefiniteRtwChecked = isIndefiniteRtwChecked;
@@ -165,6 +169,26 @@
         else
         {
             Model!.ValidTo = null;
+        }
+    }
+
+    private async Task<bool> IsPdfFile(IBrowserFile file)
+    {
+        // Check file extension
+        if (!Path.GetExtension(file.Name).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        // Check MIME type
+        if (file.ContentType != "application/pdf")
+            return false;
+
+        // Check file signature (magic numbers)
+        using (var stream = file.OpenReadStream())
+        {
+            byte[] buffer = new byte[4];
+            await stream.ReadAsync(buffer, 0, 4);
+            string header = System.Text.Encoding.ASCII.GetString(buffer);
+            return header == "%PDF";
         }
     }
 }
