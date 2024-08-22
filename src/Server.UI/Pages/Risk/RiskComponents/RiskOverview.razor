@@ -32,13 +32,13 @@
                 <MudExpansionPanels MultiExpansion Elevation="@(ReadOnly ? 0 : 1)" Outlined="ReadOnly is false">
                     @if (Model.IsRelevantToCustody)
                     {
-                        <MudExpansionPanel Text="Risks in Custody" Expanded HideIcon="ReadOnly" Disabled="ReadOnly">
+                        <MudExpansionPanel Text="Risks in Custody" Expanded HideIcon="ReadOnly">
                             <RiskDetail Model="Model.CustodyRiskDetail" />
                         </MudExpansionPanel>
                     }
                     @if (Model.IsRelevantToCommunity)
                     {
-                        <MudExpansionPanel Text="Risks in Community" Expanded HideIcon="ReadOnly" Disabled="ReadOnly">
+                        <MudExpansionPanel Text="Risks in Community" Expanded HideIcon="ReadOnly">
                             <RiskDetail Model="Model.CommunityRiskDetail" />
                         </MudExpansionPanel>
                     }
