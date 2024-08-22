@@ -17,6 +17,8 @@ namespace Cfo.Cats.Domain.Entities.Bios
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public string ParticipantId { get; private set; }
+        public DateTime? Completed { get; private set; }
+        public string? CompletedBy { get; private set; }
         public string BioJson { get; private set; }
         public BioStatus Status { get; private set; } = BioStatus.NotStarted;
         private ParticipantBio(Guid id, string participantId, string bioJson, BioStatus status)
@@ -34,16 +36,22 @@ namespace Cfo.Cats.Domain.Entities.Bios
             return this;
         }
 
-        public ParticipantBio Submit()
+        public ParticipantBio Submit(string completedBy)
         {
-            // this does nothing except raise the event.
+            Completed = DateTime.Now;
+            CompletedBy = completedBy;
             AddDomainEvent(new BioSubmittedDomainEvent(this));
             return this;
         }
 
-        public static ParticipantBio Create(Guid id, string participantId, string bioJson, BioStatus status)
+        public static ParticipantBio Create(Guid id, string participantId, string bioJson)
         {
-            return new ParticipantBio(id, participantId, bioJson, status);
+            return new ParticipantBio(id, participantId, bioJson, BioStatus.InProgress);
+        }
+
+        public static ParticipantBio Skip(Guid id, string participantId, string bioJson)
+        {
+            return new ParticipantBio(id, participantId, bioJson, BioStatus.SkippedForNow);
         }
 
         public ParticipantBio UpdateStatus(BioStatus status)

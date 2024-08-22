@@ -7,7 +7,7 @@ public sealed partial class RecentExperiencesPathway
 {
 
     [JsonIgnore]
-    public override string Title => "RecentExperiences";
+    public override string Title => "Recent Experiences";
 
 
 

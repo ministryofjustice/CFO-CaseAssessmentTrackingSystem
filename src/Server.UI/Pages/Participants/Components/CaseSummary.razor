@@ -178,13 +178,11 @@
                 }
             </MudCardContent>
             <MudCardActions>
-
                 @if (CanBeginBio())
                 {
                     <MudTooltip Text="Create Bio">
                         <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginBio" />
                     </MudTooltip>
-
                 }
                 @if (CanContinueBio())
                 {
@@ -196,6 +194,12 @@
                 {
                     <MudTooltip Text="Skip Bio For Now">
                         <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.NoMeetingRoom" Variant="Variant.Outlined" OnClick="SkipBioForNow" />
+                    </MudTooltip>
+                }
+                @if(CanRestartBio())
+                {
+                    <MudTooltip Text="Restart Bio">
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginBio" />
                     </MudTooltip>
                 }
             </MudCardActions>

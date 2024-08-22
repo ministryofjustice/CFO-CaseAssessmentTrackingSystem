@@ -25,8 +25,12 @@ public static class SkipBioForNow
         {
             ParticipantBio? bio = await unitOfWork.DbContext.ParticipantBios.FirstOrDefaultAsync(r => r.ParticipantId == request.ParticipantId);
 
-            if (bio == null)
+            if (bio is not null)
             {
+                bio.UpdateStatus(BioStatus.SkippedForNow);
+            }
+            else
+            { 
                 Bio newBio = new Bio()
                 {
                     Id = Guid.NewGuid(),
@@ -44,11 +48,11 @@ public static class SkipBioForNow
                     TypeNameHandling = TypeNameHandling.Auto
                 });
 
-                bio = ParticipantBio.Create(newBio.Id, request.ParticipantId!, json, BioStatus.NotStarted);
+                bio = ParticipantBio.Skip(newBio.Id, request.ParticipantId!, json);
+
                 unitOfWork.DbContext.ParticipantBios.Add(bio);
             }
 
-            bio.UpdateStatus(BioStatus.SkippedForNow);
             return Result.Success();
         }
     }
