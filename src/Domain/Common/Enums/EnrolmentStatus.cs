@@ -9,7 +9,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
     public static readonly EnrolmentStatus SubmittedToProviderStatus = new SubmittedToProvider();
     public static readonly EnrolmentStatus SubmittedToAuthorityStatus = new SubmittedToAuthority();
     public static readonly EnrolmentStatus ApprovedStatus = new Approved();
-    public static readonly EnrolmentStatus AbandonedStatus = new Abandoned();
+    public static readonly EnrolmentStatus ArchivedStatus = new Archived();
     public static readonly EnrolmentStatus DormantStatus = new Dormant();
 
 
@@ -43,7 +43,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
             : base(nameof(Pending), 0) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions() 
-            => [ AbandonedStatus, SubmittedToProviderStatus];
+            => [ ArchivedStatus, SubmittedToProviderStatus];
     }
 
     private sealed class SubmittedToProvider : EnrolmentStatus
@@ -52,7 +52,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
             : base(nameof(SubmittedToProvider), 1) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions()
-            => [AbandonedStatus, PendingStatus, SubmittedToAuthorityStatus];
+            => [ArchivedStatus, PendingStatus, SubmittedToAuthorityStatus];
         
         public override bool StatusSupportsReassessment() => false;
 
@@ -78,13 +78,13 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
         { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions() =>
-            [AbandonedStatus, DormantStatus];
+            [ArchivedStatus, DormantStatus];
 
     }
 
-    private sealed class Abandoned : EnrolmentStatus
+    private sealed class Archived : EnrolmentStatus
     { 
-        public Abandoned() : base(nameof(Abandoned), 4) { }
+        public Archived() : base(nameof(Archived), 4) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions() =>
             [PendingStatus];
@@ -96,7 +96,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
         public Dormant() : base(nameof(Dormant), 5) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions() =>
-            [ AbandonedStatus, ApprovedStatus ];
+            [ ArchivedStatus, ApprovedStatus ];
     }
 
     /// <summary>
