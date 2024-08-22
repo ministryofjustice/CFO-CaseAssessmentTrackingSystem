@@ -40,7 +40,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
     {
 
         public Pending()
-            : base(nameof(Pending), 0) { }
+            : base("Pending", 0) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions() 
             => [ ArchivedStatus, SubmittedToProviderStatus];
@@ -49,7 +49,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
     private sealed class SubmittedToProvider : EnrolmentStatus
     {
         public SubmittedToProvider()
-            : base(nameof(SubmittedToProvider), 1) { }
+            : base("Submitted to Provider", 1) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions()
             => [ArchivedStatus, PendingStatus, SubmittedToAuthorityStatus];
@@ -62,7 +62,8 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
 
     private sealed class SubmittedToAuthority : EnrolmentStatus
     { 
-        public SubmittedToAuthority(): base(nameof(SubmittedToAuthority), 2) { }
+        public SubmittedToAuthority()
+            : base("Submitted to Authority", 2) { }
 
         public override bool StatusSupportsReassessment() => false;
 
@@ -74,8 +75,8 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
 
     private sealed class Approved : EnrolmentStatus
     { 
-        public Approved() :base(nameof(Approved), 3)
-        { }
+        public Approved() 
+            : base("Approved", 3) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions() =>
             [ArchivedStatus, DormantStatus];
@@ -84,7 +85,8 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
 
     private sealed class Archived : EnrolmentStatus
     { 
-        public Archived() : base(nameof(Archived), 4) { }
+        public Archived() 
+            : base("Archived", 4) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions() =>
             [PendingStatus];
@@ -93,7 +95,8 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
 
     private sealed class Dormant : EnrolmentStatus 
     {
-        public Dormant() : base(nameof(Dormant), 5) { }
+        public Dormant() 
+            : base("Dormant", 5) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions() =>
             [ ArchivedStatus, ApprovedStatus ];
