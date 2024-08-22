@@ -36,5 +36,11 @@ public class IdentityAuditNotification : INotification
     public static IdentityAuditNotification PasswordReset(string userName, string? performedBy = null)
         => new(IdentityActionType.PasswordReset, userName, performedBy);
 
+    public static IdentityAuditNotification ActivateAccount(string userName, string performedBy)
+        => new(IdentityActionType.AccountActivated, userName, performedBy);
+
+    public static IdentityAuditNotification DeactivateAccount(string userName, string performedBy)
+        => new(IdentityActionType.AccountDeactivated, userName, performedBy);
+
 }
 

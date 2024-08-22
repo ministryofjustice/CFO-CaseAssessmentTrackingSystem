@@ -156,14 +156,13 @@
                         <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                                  Dense="true"
                                  EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                            
+                            <MudMenuItem OnClick="@(() => ShowIdentityAuditDialog(context.Item, "History"))">Audit</MudMenuItem>
                             @if (_canEdit)
                             {
                                 <MudMenuItem OnClick="@(() => OnEdit(context.Item))">@ConstantString.Edit</MudMenuItem>
                             }
-                            @if (_canArchive)
-                            {
-                                <MudMenuItem OnClick="@(() => OnArchive(context.Item))">@ConstantString.Archive</MudMenuItem>
-                            }
+                            
                             @if (_canToggleActiveStatus)
                             {
                                 @if (context.Item.IsActive)
@@ -186,7 +185,7 @@
                                     <MudMenuItem OnClick="@(() => OnUnlock(context.Item))">@L["Unlock"]</MudMenuItem>
                                 }                          
                             }
-                            <MudMenuItem OnClick="@(() => ShowIdentityAuditDialog(context.Item, "History"))">Audit</MudMenuItem>
+                            
                         </MudMenu>
                     }
                     else
@@ -638,44 +637,6 @@
         await ShowEditUserDialog(item, L["Edit the user"]);
     }
 
-    private async Task ShowArchiveConfirmationDialog(ApplicationUserDto dto)
-    {
-        var contentText = string.Format(ConstantString.ArchiveConfirmation, dto.UserName);
-        await DialogServiceHelper.ShowConfirmationDialog(ConstantString.ArchiveConfirmationTitle, contentText, async () =>
-        {
-            await ProcessUserArchive(dto);
-        });
-    }
-
-    private async Task ProcessUserArchive(ApplicationUserDto dto)
-    {
-        var user = await UserManager.FindByIdAsync(dto.Id) ?? throw new NotFoundException($"The application user [{dto.Id}] was not found.");
-        var identityResult = await UserManager.DeleteAsync(user);
-        if (identityResult.Succeeded)
-        {
-            Logger.LogInformation("Archiving of the user succeeded. Username: {@UserName:l}, UserId: {@UserId}", user.UserName, user.Id);
-            Snackbar.Add($"{ConstantString.ArchiveSuccess}", Severity.Info);
-            await OnRefresh();
-            UserService.Refresh();
-        }
-        else
-        {
-            Snackbar.Add($"{string.Join(",", identityResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
-        }
-    }
-
-    private async Task OnArchive(ApplicationUserDto dto)
-    {
-        var state = await AuthState;
-        if (dto.Id == state.User.GetUserId())
-        {
-            Snackbar.Add("You cannot archive your own account!", Severity.Error);
-            return;
-        }
-        await ShowArchiveConfirmationDialog(dto);
-
-    }
-
     private async Task OnUnlock(ApplicationUserDto item)
     {
         var user = await UserManager.FindByIdAsync(item.Id!) ?? throw new NotFoundException($"Application user not found {item.Id}.");
@@ -720,13 +681,16 @@
 
     private async Task ToggleUserActiveState(ApplicationUser user, ApplicationUserDto item)
     {
+        var mediator = GetNewMediator();
         if (user.IsActive)
         {
             await DeactivateUser(user, item);
+            await mediator.Publish(IdentityAuditNotification.DeactivateAccount(item.UserName, CurrentUser!.UserName!));
         }
         else
         {
             await ActivateUser(user, item);
+            await mediator.Publish(IdentityAuditNotification.ActivateAccount(item.UserName, CurrentUser!.UserName!));
         }
     }
 

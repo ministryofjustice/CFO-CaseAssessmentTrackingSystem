@@ -64,6 +64,9 @@ namespace Cfo.Cats.Domain.Entities
         LoginPasswordOnly,
         LoginWithTwoFactorCode,
         UserAccountLockedOut,
-        PasswordReset
+        PasswordReset,
+
+        AccountActivated,
+        AccountDeactivated
     }
 }
