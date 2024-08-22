@@ -61,6 +61,8 @@ public class ApplicationDbContext
 
     public DbSet<LocationMapping> LocationMappings => Set<LocationMapping>();
 
+    public DbSet<IdentityAuditTrail> IdentityAuditTrails => Set<IdentityAuditTrail>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

@@ -1,4 +1,5 @@
 ﻿@page "/user/profile"
+@using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents
 @using Cfo.Cats.Server.UI.Services.JsInterop
 @using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Domain.Identity
@@ -217,10 +218,9 @@
                 var result = await userManager.ChangePasswordAsync(user!, changePassword.CurrentPassword, changePassword.NewPassword);
                 if (result.Succeeded)
                 {
+                    await GetNewMediator().Publish(IdentityAuditNotification.PasswordReset(user!.UserName!));
                     Snackbar.Add($"{L["Password changed successfully... Logging out"]}", Severity.Info);
-
                     Navigation.NavigateTo(@IdentityComponentsEndpointRouteBuilderExtensions.Logout, true);
-
                 }
                 else
                 {
@@ -233,4 +233,4 @@
             submitting = false;
         }
     }
-}
+}    

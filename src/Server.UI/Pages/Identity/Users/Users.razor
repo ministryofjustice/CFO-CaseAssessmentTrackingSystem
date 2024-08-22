@@ -1,6 +1,7 @@
 ﻿@page "/identity/users"
 
 @using Cfo.Cats.Application.Features.Identity.DTOs
+@using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents
 @using Cfo.Cats.Domain.Identity
 @using Cfo.Cats.Server.UI.Pages.Identity.Roles.Components
 @using Cfo.Cats.Server.UI.Pages.Identity.Users.Components
@@ -185,6 +186,7 @@
                                     <MudMenuItem OnClick="@(() => OnUnlock(context.Item))">@L["Unlock"]</MudMenuItem>
                                 }                          
                             }
+                            <MudMenuItem OnClick="@(() => ShowIdentityAuditDialog(context.Item, "History"))">Audit</MudMenuItem>
                         </MudMenu>
                     }
                     else
@@ -513,7 +515,16 @@
         {
             await OnRefresh();
         }
+    }
 
+    private async Task ShowIdentityAuditDialog(ApplicationUserDto model, string title)
+    {
+        var parameters = new DialogParameters<UserAuditDialog>
+        {
+            { x => x.UserName, model.UserName }
+        };
+        var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+        await DialogService.ShowAsync<UserAuditDialog>(title, parameters, options);
     }
 
     private async Task ShowEditUserDialog(ApplicationUserDto model, string title)
@@ -772,6 +783,7 @@
 
         if (!result!.Canceled)
         {
+            await GetNewMediator().Publish(IdentityAuditNotification.PasswordReset(item.UserName, UserProfile.Email));
             Snackbar.Add($"{L["Reset password successfully"]}", Severity.Info);
         }
     }
