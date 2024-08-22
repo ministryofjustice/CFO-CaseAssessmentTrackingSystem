@@ -29,7 +29,8 @@
                        Label="@Model.GetMemberDescription(x => x.ReferredOn)"
                        For="@(() => Model.ReferredOn)"
                        MaxDate="DateTime.UtcNow.Date"
-                       Class="mt-4" />
+                       Class="mt-4"
+                       Editable="true" />
     </CatsMudStep>
 }
 
