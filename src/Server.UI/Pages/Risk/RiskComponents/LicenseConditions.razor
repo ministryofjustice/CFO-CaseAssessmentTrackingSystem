@@ -18,7 +18,8 @@
                        Label="@Model.GetMemberDescription(x => x.LicenseEnd)"
                        For="@(() => Model.LicenseEnd)"
                        MinDate="DateTime.UtcNow.Date" 
-                       Class="mt-4" />
+                       Class="mt-4"
+                       Editable="true" />
     </CatsMudStep>
 }
 
