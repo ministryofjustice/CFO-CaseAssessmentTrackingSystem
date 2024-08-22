@@ -37,7 +37,7 @@ namespace Cfo.Cats.Domain.Entities.Bios
         public ParticipantBio Submit()
         {
             // this does nothing except raise the event.
-            AddDomainEvent(new BioCreatedDomainEvent(this));
+            AddDomainEvent(new BioSubmittedDomainEvent(this));
             return this;
         }
 
