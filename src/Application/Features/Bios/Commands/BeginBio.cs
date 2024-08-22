@@ -48,8 +48,10 @@ public static class BeginBio
                 TypeNameHandling = TypeNameHandling.Auto
             });
             
-            ParticipantBio bioSurvey = ParticipantBio.Create(bio.Id, request.ParticipantId, bioJson: json, BioStatus.NotStarted);
+            ParticipantBio bioSurvey = ParticipantBio.Create(bio.Id, request.ParticipantId, bioJson: json);
+
             await _unitOfWork.DbContext.ParticipantBios.AddAsync(bioSurvey);
+
             return Result<Guid>.Success(bio.Id);
         }
     }

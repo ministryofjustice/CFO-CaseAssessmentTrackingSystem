@@ -165,6 +165,7 @@ public partial class CaseSummary
         {
             ParticipantId = ParticipantSummaryDto.Id
         };
+
         var result = await GetNewMediator().Send(command);
 
         if (result.Succeeded)
@@ -209,12 +210,14 @@ public partial class CaseSummary
     /// </summary>
     private bool CanBeginBio() => _bio == null;
 
+    private bool CanRestartBio() => _bio?.BioStatus == BioStatus.Complete;
+
     /// <summary>
     /// If true indicates we have a Bio that is continuable
     /// (i.e. Id is not null or do we need a status (Complete or Incomplete etc.))
     /// </summary>
     /// <returns></returns>
-    private bool CanContinueBio() => _bio != null;
+    private bool CanContinueBio() => _bio?.BioStatus == BioStatus.InProgress;
 
     /// <summary>
     /// If true, indicates that either the bio doesn't exist OR No step is completed yet  

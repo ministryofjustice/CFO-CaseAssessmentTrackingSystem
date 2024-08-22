@@ -30,6 +30,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Bios
 
             builder.Property(x => x.CreatedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
             builder.Property(x => x.LastModifiedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+            builder.Property(x => x.CompletedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
         }
     }
 }
