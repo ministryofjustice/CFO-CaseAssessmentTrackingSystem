@@ -81,6 +81,9 @@
                 Assessment = _model!
             });
 
+            // Do not show the previous step on the first or last steps.
+            _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
+
             if(result.Succeeded)
             {
                 await topOfPageElement.FocusAsync();
