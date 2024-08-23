@@ -380,7 +380,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Version")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
 
                     b.HasKey("Id");
 

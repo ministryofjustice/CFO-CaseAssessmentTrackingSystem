@@ -14,7 +14,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 name: "Version",
                 schema: "Document",
                 table: "Document",
-                type: "nvarchar(max)",
+                type: "nvarchar(5)",
+                maxLength: 5,
                 nullable: true);
         }
 
