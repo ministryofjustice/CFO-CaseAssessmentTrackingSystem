@@ -5,6 +5,7 @@
 @using Cfo.Cats.Domain.Common.Enums
 
 @inherits CatsComponentBase
+@inject NavigationManager NavigationManager
 
 <MudMenu ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft">
     <ActivatorContent>
@@ -66,7 +67,7 @@
         {
             var command = new ArchiveCase.Command()
             {
-                ParticipantId = Participant.Id
+                ParticipantId = Participant.Id                
             };
 
             var result = await GetNewMediator().Send(command);
@@ -117,30 +118,41 @@
 
     protected async Task SubmitToPqa()
     {
-        var parameters = new DialogParameters<ConfirmationDialog>()
+        var parameters = new DialogParameters<ConfirmationWithNotesDialog>()
         {
-            { x => x.ContentText, "Are you sure you would like to submit this case to Provider QA?" }
+            { x => x.ContentText, "Are you sure you would like to submit this case to Provider QA?" },
+            { x => x.NoteLabel, "Justification Reason" }
         };
 
-        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Submit to Provider QA", parameters);
+        DialogOptions options = new DialogOptions()
+            {
+                BackdropClick = false,
+                CloseOnEscapeKey = true,
+                MaxWidth = MaxWidth.Medium
+            };
+
+        var dialog = await DialogService.ShowAsync<ConfirmationWithNotesDialog>("Submit to Provider QA", parameters, options);
         var dialogResult = await dialog.Result;
 
-        if (dialogResult?.Canceled is not true)
+        if (dialogResult?.Canceled is false)
         {
-
             var command = new SubmitToProviderQa.Command()
             {
-                ParticipantId = Participant.Id
+                ParticipantId = Participant.Id,
+                JustificationReason = dialogResult.Data?.ToString()
             };
 
             var result = await GetNewMediator().Send(command);
             if (result.Succeeded)
             {
                 Snackbar.Add($"Participant {Participant.Id} submitted to Provider QA", Severity.Success);
+                // this is poor, we need to raise an event so the screen can be refreshed directly
+                NavigationManager.Refresh(true);
             }
             else
             {
                 ShowActionFailure("Failed to submit to Provider QA", result);
+                await SubmitToPqa();
             }
         }
 

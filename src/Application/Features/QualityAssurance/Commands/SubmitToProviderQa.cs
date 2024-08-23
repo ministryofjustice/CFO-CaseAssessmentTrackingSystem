@@ -10,6 +10,7 @@ public static class SubmitToProviderQa
     public class Command : IRequest<Result>
     {
         public required string ParticipantId { get; set; }
+        public string? JustificationReason { get;set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
@@ -17,8 +18,8 @@ public static class SubmitToProviderQa
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
-            participant!.TransitionTo(EnrolmentStatus.SubmittedToProviderStatus);
-            // ReSharper disable once MethodHasAsyncOverload
+            participant!.TransitionTo(EnrolmentStatus.SubmittedToProviderStatus)
+                .SetAssessmentJustification(request.JustificationReason);
             return Result.Success();
         }
     }
@@ -38,6 +39,11 @@ public static class SubmitToProviderQa
                 .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
                 .MustAsync(MustExist)
                 .WithMessage("Participant does not exist");                
+
+            RuleFor(c => c.JustificationReason)
+                .Matches(x => ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification Reason"));
+
         }
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
                 => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
@@ -89,30 +95,54 @@ public static class SubmitToProviderQa
         }
     }
 
-    public class D_ParticipantShouldHaveAtLeastTwoReds : AbstractValidator<Command>
+    public class D_AssessmentMustHaveJustification : AbstractValidator<Command>
     {
         private IUnitOfWork _unitOfWork;
 
-        public D_ParticipantShouldHaveAtLeastTwoReds(IUnitOfWork unitOfWork)
+        public D_AssessmentMustHaveJustification(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.ParticipantId)
-                .MustAsync(MustHaveTwoReds)
-                .WithMessage("Assessment does not have two reds. Justification must be provided");
+            RuleFor(c => c)
+                .MustAsync(MustBeJustified)
+                .WithMessage("Eligibility for the programme requires the assessment to have a minimum of one red and one amber. Participants with at least 2 reds do not require justification");
         }
 
-        private async Task<bool> MustHaveTwoReds(string identifier, CancellationToken cancellationToken)
+        private async Task<bool> MustBeJustified(Command command, CancellationToken cancellationToken)
         {
-            var assessments = await  _unitOfWork.DbContext.ParticipantAssessments
-                                    .Include(pa => pa.Scores)
-                                    .Where(pa=>pa.ParticipantId == identifier)
-                                    .ToArrayAsync(cancellationToken);
+            var latest = await _unitOfWork.DbContext.ParticipantAssessments
+                .Include(pa => pa.Scores)
+                .Where(pa => pa.ParticipantId == command.ParticipantId)
+                .OrderByDescending(a => a.Created)
+                .FirstOrDefaultAsync(cancellationToken);
 
-            var latest = assessments.MaxBy(a => a.Created);
 
-            return latest is not null
-                && latest.Scores.Count(s => s.Score is >= 0 and < 10) > 1;
+            if (latest is null)
+            {
+                return false;
+            }
+            
+            // we have zero reds
+            if (latest.Scores.Count(s => s.Score is >= 0 and < 10) == 0)
+            {
+                return false;
+            }
+            
+            // we have two or more reds
+            if (latest.Scores.Count(s => s.Score is >= 0 and < 10) >= 2)
+            {
+                return true;
+            }
+            
+            // ok if we get here, we have at LEAST 1 red. So we just need an amber AND a justification
+            if (latest.Scores.Count(s => s.Score is < 25) >= 2 
+                && string.IsNullOrEmpty(command.JustificationReason) == false)
+            {
+                return true;
+            }
+
+            // we do not have enough to pass.
+            return false;
         }
     }
 }
