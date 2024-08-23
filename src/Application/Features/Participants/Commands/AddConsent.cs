@@ -1,6 +1,7 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
+using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
 
@@ -72,7 +73,9 @@ public static class AddConsent
 
             RuleFor(v => v.DocumentVersion)
                 .NotEmpty()
-                .WithMessage("You must select a document version");
+                .WithMessage("You must select a document version")
+                .Must(version => Infrastructure.Constants.Documents.RightToWork.Versions.Contains(version))
+                .WithMessage("Unrecognised document version");
             
             RuleFor(v => v.UploadRequest)
                 .NotNull();

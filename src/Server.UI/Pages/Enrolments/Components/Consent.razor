@@ -56,7 +56,7 @@
                            For="@(() => Model.DocumentVersion)"
                            AnchorOrigin="Origin.BottomCenter" 
                            Required>
-                    @foreach (var version in documentVersions)
+                    @foreach (var version in Documents.RightToWork.Versions)
                     {
                         <MudSelectItem Value="@version">Version @version</MudSelectItem>
                     }
@@ -78,11 +78,6 @@
 
     [Parameter]
     public ConsentDto[]? ConsentDto { get; set; }
-
-    List<string> documentVersions = new()
-    {
-        "1.0"
-    };
 
     int fileCount = 0;
 
