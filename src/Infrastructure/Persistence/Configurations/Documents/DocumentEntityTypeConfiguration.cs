@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Entities.Documents;
+using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,6 +12,9 @@ public class DocumentEntityTypeConfiguration : IEntityTypeConfiguration<Document
                         DatabaseConstants.Schemas.Document);
         builder.Property(t => t.DocumentType).HasConversion<string>();
         builder.Property(x => x.Content).HasMaxLength(4000);
+
+        // In format 1.1, 1.11, 10.11
+        builder.Property(x => x.Version).HasMaxLength(5);
         
         builder.HasOne(x => x.Owner)
             .WithMany()
