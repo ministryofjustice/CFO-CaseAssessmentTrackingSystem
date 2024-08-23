@@ -65,6 +65,8 @@ public class Participant : OwnerPropertyEntity<string>
     /// </summary>
     public string? EnrolmentLocationJustification { get; private set; }
 
+    public string? AssessmentJustification { get; private set; }
+
     public IReadOnlyCollection<Consent> Consents => _consents.AsReadOnly();
 
     public IReadOnlyCollection<RightToWork> RightToWorks => _rightToWorks.AsReadOnly();
@@ -95,6 +97,12 @@ public class Participant : OwnerPropertyEntity<string>
             _enrolmentLocationId = locationId;
             EnrolmentLocationJustification = justificationReason;
         }
+        return this;
+    }
+
+    public Participant SetAssessmentJustification(string? justification)
+    {
+        AssessmentJustification = justification;
         return this;
     }
 

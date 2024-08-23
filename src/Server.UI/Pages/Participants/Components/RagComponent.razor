@@ -22,7 +22,7 @@ else
         ragScore switch
         {
             > 25 => Color.Success,
-            >10 => Color.Warning,
+            >= 10 => Color.Warning,
             _ => Color.Error,
         };
 }
