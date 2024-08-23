@@ -30,47 +30,57 @@
     }
     else
     {
-        <MudForm @ref="Form" Model="@Model" Validation="@(Validator.ValidateAsync(Model))">
-            <MudDatePicker Label="Date of Consent" Editable="true" MaxDate="DateTime.Now.Date" @bind-Date="Model.ConsentDate" Required/>
+        <MudForm @ref="form" Model="@Model" Validation="@(Validator.ValidateValue(Model))">
+
+            <MudDatePicker @bind-Date="Model.ConsentDate" 
+                           For="() => Model.ConsentDate"
+                           Label="@Model.GetMemberDescription(x => x.ConsentDate)"
+                           MaxDate="DateTime.Now.Date"
+                           Editable="true" />
+
             <div class="mb-4 mt-8">
-                <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1" Accept=".pdf">
+                <MudFileUpload @bind-Files="Model.Document" 
+                               For="() => Model.Document"
+                               MaximumFileCount="1" 
+                               Accept=".pdf">
                     <ActivatorContent>
-                        <MudButton Variant="Variant.Outlined"
-                                   Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.Upload">
+                        <MudLoadingButton Loading="_uploading"
+                                          Variant="Variant.Outlined"
+                                          Color="Color.Primary"
+                                          StartIcon="@Icons.Material.Filled.Upload">
                             @if (_uploading)
                             {
-                                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
                                 @ConstantString.Uploading
                             }
                             else
                             {
                                 @ConstantString.Upload
                             }
-                        </MudButton>
+                        </MudLoadingButton>
                     </ActivatorContent>
                 </MudFileUpload>
 
                 <MudSelect @bind-Value="Model.DocumentVersion" 
                            Label="@Model.GetMemberDescription(x => x.DocumentVersion)" 
-                           For="@(() => Model.DocumentVersion)"
-                           AnchorOrigin="Origin.BottomCenter" 
-                           Required>
-                    @foreach (var version in Documents.RightToWork.Versions)
+                           For="() => Model.DocumentVersion"
+                           AnchorOrigin="Origin.BottomCenter">
+                    @foreach (var version in Documents.Consent.Versions)
                     {
                         <MudSelectItem Value="@version">Version @version</MudSelectItem>
                     }
                 </MudSelect>
             </div>
 
-            <MudCheckBox Disabled="fileCount == 0" T="bool" Required="true" RequiredError="You must upload a document and certify" Label="I certify that any documents uploaded are the original or true copies of the original documents, and will not be used to claim payments / results against any other Government contract"/>
+            <MudCheckBox @bind-Value="Model.Certify"
+                         Label="@Model.GetMemberDescription(x => x.Certify)"
+                         For="() => Model.Certify"
+                         Disabled="Model.Document is null" />
         </MudForm>
     }
    
 }
 
 @code {
-
     private bool _uploading = false;
 
     [Parameter, EditorRequired]
@@ -79,36 +89,7 @@
     [Parameter]
     public ConsentDto[]? ConsentDto { get; set; }
 
-    int fileCount = 0;
-
-    private async Task UploadFiles(IBrowserFile? file)
-    {
-        if (file is not null)
-        {
-            const int maxFileSize = 5242880; // 5MB
-            if (file.Size > maxFileSize)
-            {
-                Snackbar.Add($"File {file.Name} exceeds the maximum allowed size of {maxFileSize.Bytes().Humanize()}", Severity.Error);
-            }
-            else if (await IsPdfFile(file))            
-            {
-                _uploading = true;
-                await using var stream = file.OpenReadStream(maxFileSize);
-                using var memoryStream = new MemoryStream();
-                await stream.CopyToAsync(memoryStream);
-
-                Model!.UploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
-                fileCount = 1;
-                _uploading = false;
-            }
-            else
-            {
-                Snackbar.Add($"File {file.Name} is not a PDF", Severity.Error);
-            }
-        }
-    }
-
-    private MudForm? Form { get; set; }
+    private MudForm? form { get; set; }
 
     public async Task<bool> Validate()
     {
@@ -117,9 +98,9 @@
             return true;
         }
 
-        await Form!.Validate();
+        await form!.Validate();
 
-        if (Form.IsValid)
+        if (form.IsValid)
         {
            var result = await GetNewMediator().Send(Model);
 
@@ -133,26 +114,7 @@
            }
         }
 
-        return Form.IsValid;
+        return form.IsValid;
     }
 
-    private async Task<bool> IsPdfFile(IBrowserFile file)
-    {
-        // Check file extension
-        if (!Path.GetExtension(file.Name).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
-            return false;
-
-        // Check MIME type
-        if (file.ContentType != "application/pdf")
-            return false;
-
-        // Check file signature (magic numbers)
-        using (var stream = file.OpenReadStream())
-        {
-            byte[] buffer = new byte[4];
-            await stream.ReadAsync(buffer, 0, 4);
-            string header = System.Text.Encoding.ASCII.GetString(buffer);
-            return header == "%PDF";
-        }
-    }
 }
