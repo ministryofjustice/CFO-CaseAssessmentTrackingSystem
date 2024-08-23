@@ -182,29 +182,16 @@
         {
             var result = await GetNewMediator().Send(Command);
 
-            if (Command.Accept == false)
+            string message = Command.Accept ? "Participant submitted to QA" : "Participant returned to Support Worker";
+            
+            if (result.Succeeded)
             {
-                if (result.Succeeded)
-                {
-                    Snackbar.Add("Participant returned to Support Worker", Severity.Info);
-                    Navigation.NavigateTo("/pages/qa/enrolments/pqa");                    
-                }
-                else
-                {
-                    ShowActionFailure("Failed to return to support worker", result);
-                }
+                Snackbar.Add(message, Severity.Info);
+                Navigation.NavigateTo("/pages/qa/enrolments/pqa");                    
             }
             else
             {
-                if (result.Succeeded)
-                {
-                    Snackbar.Add("Participant submitted to QA", Severity.Info);
-                    Navigation.NavigateTo("/pages/qa/enrolments/pqa");
-                }
-                else
-                {
-                    ShowActionFailure("Failed to submit", result);
-                }
+                ShowActionFailure("Failed to return to support worker", result);
             }
         }       
     }
