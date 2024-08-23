@@ -74,7 +74,7 @@ public static class AddConsent
             RuleFor(v => v.DocumentVersion)
                 .NotEmpty()
                 .WithMessage("You must select a document version")
-                .Must(version => Infrastructure.Constants.Documents.RightToWork.Versions.Contains(version))
+                .Must(version => Infrastructure.Constants.Documents.Consent.Versions.Contains(version))
                 .WithMessage("Unrecognised document version");
             
             RuleFor(v => v.UploadRequest)
