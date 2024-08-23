@@ -182,7 +182,7 @@
         {
             var result = await GetNewMediator().Send(Command);
 
-            string message = Command.Accept ? "Participant submitted to QA" : "Participant returned to Support Worker";
+            string message = Command.Accept.GetValueOrDefault() ? "Participant submitted to QA" : "Participant returned to Support Worker";
             
             if (result.Succeeded)
             {
