@@ -2,6 +2,10 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
+using FluentValidation;
+using Humanizer.Bytes;
+using Microsoft.AspNetCore.Components.Forms;
+using System.IO;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
 
@@ -23,8 +27,9 @@ public static class AddRightToWork
         
         [Description("Valid To")]
         public DateTime? ValidTo { get; set; }
-        
-        public UploadRequest? UploadRequest { get; set; }
+
+        [Description("Right to Work document")]
+        public IBrowserFile? Document { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork, IUploadService uploadService)
@@ -40,12 +45,17 @@ public static class AddRightToWork
                 throw new NotFoundException("Cannot find participant", request.ParticipantId);
             }
 
-            var document = Document.Create(request.UploadRequest!.FileName,
+            var document = Document.Create(request.Document!.Name,
                 $"Right to work evidence for {request.ParticipantId}",
                 DocumentType.PDF);
-            
-            
-            var result = await uploadService.UploadAsync($"{request.ParticipantId}/rtw", request.UploadRequest!);
+
+            await using var stream = request.Document.OpenReadStream();
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream, cancellationToken);
+
+            var uploadRequest = new UploadRequest(request.Document.Name, UploadType.Document, memoryStream.ToArray());
+
+            var result = await uploadService.UploadAsync($"{request.ParticipantId}/rtw", uploadRequest);
 
             document.SetURL(result);
 
@@ -79,9 +89,15 @@ public static class AddRightToWork
 
             When(v => v.RightToWorkRequired, () =>
             {
-                RuleFor(v => v.UploadRequest)
+                double maxSizeMb = 5;
+
+                RuleFor(v => v.Document)
                     .NotNull()
-                    .WithMessage("You must upload a Right to Work document");
+                    .WithMessage("You must upload a Right to Work document")
+                    .Must(file => NotExceedMaximumFileSize(file, maxSizeMb))
+                    .WithMessage($"File size exceeds the maxmimum allowed size of {maxSizeMb} megabytes")
+                    .MustAsync(BePdfFile)
+                    .WithMessage("File is not a PDF");
 
                 RuleFor(v => v.ValidFrom)
                     .NotNull()
@@ -102,6 +118,32 @@ public static class AddRightToWork
 
         private async Task<bool> Exist(string identifier, CancellationToken cancellationToken) 
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
-        
+
+        private static bool NotExceedMaximumFileSize(IBrowserFile? file, double maxSizeMB)
+            => file?.Size < ByteSize.FromMegabytes(maxSizeMB).Bytes;
+
+        private async Task<bool> BePdfFile(IBrowserFile? file, CancellationToken cancellationToken)
+        {
+            if (file is null)
+                return false;
+
+            // Check file extension
+            if (!Path.GetExtension(file.Name).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            // Check MIME type
+            if (file.ContentType != "application/pdf")
+                return false;
+
+            // Check file signature (magic numbers)
+            using (var stream = file.OpenReadStream())
+            {
+                byte[] buffer = new byte[4];
+                await stream.ReadAsync(buffer, 0, 4, cancellationToken);
+                string header = System.Text.Encoding.ASCII.GetString(buffer);
+                return header == "%PDF";
+            }
+        }
+
     }    
 }

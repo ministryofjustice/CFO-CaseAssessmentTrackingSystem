@@ -69,7 +69,10 @@
                 }
 
                 <div class="mb-4 mt-8">
-                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1" Accept=".pdf">
+                    <MudFileUpload @bind-Files="Model.Document" 
+                                   For="() => Model.Document"
+                                   MaximumFileCount="1" 
+                                   Accept=".pdf">
                         <ActivatorContent>
                             <MudLoadingButton Loading="_uploading"
                                               Variant="Variant.Outlined"
@@ -86,7 +89,6 @@
                             </MudLoadingButton>
                         </ActivatorContent>
                     </MudFileUpload>
-                    <MudTextField ReadOnly Underline="false" For="() => Model.UploadRequest" hidden />
                 </div>
             }
         </MudForm>
@@ -130,50 +132,4 @@
         return form.IsValid;
     }
 
-    private async Task UploadFiles(IBrowserFile? file)
-    {
-        if (file is not null)
-        {
-            const int maxFileSize = 5242880; // 5MB
-
-            if (file.Size > maxFileSize)
-            {
-                Snackbar.Add($"File {file.Name} exceeds the maximum allowed size of {maxFileSize.Bytes().Humanize()}", Severity.Error);
-            }
-            else if (await IsPdfFile(file))
-            {
-                _uploading = true;
-                await using var stream = file.OpenReadStream(maxFileSize);
-                using var memoryStream = new MemoryStream();
-                await stream.CopyToAsync(memoryStream);
-
-                Model.UploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
-                _uploading = false;
-            }
-            else
-            {
-                Snackbar.Add($"File {file.Name} is not a PDF", Severity.Error);
-            }
-        }
-    }
-
-    private async Task<bool> IsPdfFile(IBrowserFile file)
-    {
-        // Check file extension
-        if (!Path.GetExtension(file.Name).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
-            return false;
-
-        // Check MIME type
-        if (file.ContentType != "application/pdf")
-            return false;
-
-        // Check file signature (magic numbers)
-        using (var stream = file.OpenReadStream())
-        {
-            byte[] buffer = new byte[4];
-            await stream.ReadAsync(buffer, 0, 4);
-            string header = System.Text.Encoding.ASCII.GetString(buffer);
-            return header == "%PDF";
-        }
-    }
 }
