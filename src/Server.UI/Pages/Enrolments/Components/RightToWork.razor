@@ -108,28 +108,35 @@
 
     public async Task<bool> Validate()
     {
-        if (RightToWorkDtos is { Length: > 0 } || Model.RightToWorkRequired == false)
+        try
         {
-            return true;
+            if (RightToWorkDtos is { Length: > 0 } || Model.RightToWorkRequired == false)
+            {
+                return true;
+            }
+
+            await form!.Validate();
+
+            if (form.IsValid)
+            {
+                var result = await GetNewMediator().Send(Model);
+
+                if (result.Succeeded)
+                {
+                    Snackbar.Add("Right to work evidence uploaded", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add($"Error uploading Right to work evidence: {result.ErrorMessage}", Severity.Error);
+                }
+            }
+
+            return form.IsValid;
         }
-
-        await form!.Validate();
-
-        if (form.IsValid)
+        catch
         {
-            var result = await GetNewMediator().Send(Model);
-
-            if (result.Succeeded)
-            {
-                Snackbar.Add("Right to work evidence uploaded", Severity.Success);
-            }
-            else
-            {
-                Snackbar.Add($"Error uploading Right to work evidence: {result.ErrorMessage}", Severity.Error);
-            }
+            return false;
         }
-
-        return form.IsValid;
     }
 
 }
