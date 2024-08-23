@@ -93,28 +93,35 @@
 
     public async Task<bool> Validate()
     {
-        if (ConsentDto is not null && ConsentDto.Length > 0)
+        try
         {
-            return true;
+            if (ConsentDto is not null && ConsentDto.Length > 0)
+            {
+                return true;
+            }
+
+            await form!.Validate();
+
+            if (form.IsValid)
+            {
+                var result = await GetNewMediator().Send(Model);
+
+                if (result.Succeeded)
+                {
+                    Snackbar.Add("Consent form uploaded", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add($"Error uploading consent {result.ErrorMessage}", Severity.Error);
+                }
+            }
+
+            return form.IsValid;
         }
-
-        await form!.Validate();
-
-        if (form.IsValid)
+        catch
         {
-           var result = await GetNewMediator().Send(Model);
-
-           if (result.Succeeded)
-           {
-               Snackbar.Add("Consent form uploaded", Severity.Success);
-           }
-           else
-           {
-               Snackbar.Add($"Error uploading consent {result.ErrorMessage}", Severity.Error);
-           }
+            return false;
         }
-
-        return form.IsValid;
     }
 
 }
