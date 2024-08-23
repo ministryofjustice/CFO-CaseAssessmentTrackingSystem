@@ -14,7 +14,10 @@ public static class AddConsent
         
         [Description("Consent Date")]
         public DateTime? ConsentDate { get; set; }
-        
+
+        [Description("Document Version")]
+        public string? DocumentVersion { get; set; }
+
         public UploadRequest? UploadRequest { get; set; }
     }
 
@@ -37,6 +40,7 @@ public static class AddConsent
             var result = await uploadService.UploadAsync($"{request.ParticipantId}/consent", request.UploadRequest!);
 
             document.SetURL(result);
+            document.SetVersion(request.DocumentVersion!);
 
             participant.AddConsent(request.ConsentDate!.Value, document.Id);
             
@@ -65,6 +69,10 @@ public static class AddConsent
                 .NotNull()
                 .LessThanOrEqualTo(DateTime.Today)
                 .WithMessage("Consent Date must be less than or equal to today");
+
+            RuleFor(v => v.DocumentVersion)
+                .NotEmpty()
+                .WithMessage("You must select a document version");
             
             RuleFor(v => v.UploadRequest)
                 .NotNull();
