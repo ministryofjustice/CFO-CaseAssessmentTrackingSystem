@@ -30,51 +30,63 @@
     }
     else
     {
-        <MudForm @ref="Form">
+        <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
             <MudText Typo="Typo.caption">
                 For anyone recorded on PNomis / NDelius as non-British / non-Irish, documentation is required to support their Right to Work. More information on this requirement can be found in the CFO Enrolment Guidance.
             </MudText>
+
             <MudText Typo="Typo.caption">
                 To your knowledge, is any Right to Work (RTW) documentation required for the enrolment of this person?
             </MudText>
-            <MudButtonGroup OverrideStyles="false" Class="my-4">
-                <MudButton Color="Color.Primary" Variant="@(_isRequired ? Variant.Filled : Variant.Outlined)" OnClick="RightToWorkRequiredOnClick">Yes, Right to Work is required</MudButton>
-                <MudButton Color="Color.Primary" Variant="@(_isRequired ? Variant.Outlined : Variant.Filled)" OnClick="NoRightToWorkRequiredOnClick">No, Right to Work is not required</MudButton>
-            </MudButtonGroup>
 
-            @if (_isRequired)
+            <MudToggleGroup @bind-Value="Model.RightToWorkRequired">
+                <MudToggleItem Value="true">Yes, Right to Work is required</MudToggleItem>
+                <MudToggleItem Value="false">No, Right to Work is not required</MudToggleItem>
+            </MudToggleGroup>
+            <MudTextField ReadOnly Underline="false" For="@(() => Model.RightToWorkRequired)" hidden />
+
+            @if (Model.RightToWorkRequired)
             {
-                <MudCheckBox T="bool" Label="Indefinite Right To Work" Value="_isIndefiniteRtwChecked" ValueChanged="IndefiniteRtwOnValueChanged"/>
-                <MudDatePicker Label="Valid From" Editable="true"
+                <MudCheckBox @bind-Value="Model.IndefiniteRightToWork"
+                             Label="@Model.GetMemberDescription(x => x.IndefiniteRightToWork)"
+                             For="() => Model.IndefiniteRightToWork" />
+
+                <MudDatePicker @bind-Date="Model.ValidFrom"
+                               For="() => Model.ValidFrom"
+                               Label="@Model.GetMemberDescription(x => x.ValidFrom)"
                                MaxDate="DateTime.Now.Date"
                                MinDate="DateTime.Now.AddYears(-5).Date"
-                               @bind-Date="Model.ValidFrom" Required />
-                @if (_isIndefiniteRtwChecked == false)
+                               Editable="true" />
+
+                @if (Model.IndefiniteRightToWork is false)
                 {
-                    <MudDatePicker Label="Valid To" Editable="true"
+                    <MudDatePicker @bind-Date="Model.ValidTo"
+                                   For="() => Model.ValidTo"
+                                   Label="@Model.GetMemberDescription(x => x.ValidTo)"
                                    MaxDate="DateTime.MaxValue.Date"
                                    MinDate="DateTime.Now.Date"
-                                   @bind-Date="Model.ValidTo" Required />
+                                   Editable="true" />
                 }
 
                 <div class="mb-4 mt-8">
                     <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" MaximumFileCount="1" Accept=".pdf">
                         <ActivatorContent>
-                            <MudButton Variant="Variant.Outlined"
-                                       Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Upload">
+                            <MudLoadingButton Loading="_uploading"
+                                              Variant="Variant.Outlined"
+                                              Color="Color.Primary"
+                                              StartIcon="@Icons.Material.Filled.Upload">
                                 @if (_uploading)
                                 {
-                                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
                                     @ConstantString.Uploading
                                 }
                                 else
                                 {
                                     @ConstantString.Upload
                                 }
-                            </MudButton>
+                            </MudLoadingButton>
                         </ActivatorContent>
                     </MudFileUpload>
+                    <MudTextField ReadOnly Underline="false" For="() => Model.UploadRequest" hidden />
                 </div>
             }
         </MudForm>
@@ -82,31 +94,29 @@
 }
 
 @code {
-    private bool _isRequired = true;
     private bool _uploading = false;
-    private bool _isIndefiniteRtwChecked { get; set; } = false;
 
-    [EditorRequired]
-    [Parameter]
-    public AddRightToWork.Command? Model { get; set; }
+    [Parameter, EditorRequired]
+    public required AddRightToWork.Command Model { get; set; }
 
     [Parameter]
     public RightToWorkDto[]? RightToWorkDtos { get; set; }
 
-    private MudForm? Form { get; set; }
+    private MudForm? form { get; set; }
 
     public async Task<bool> Validate()
     {
-        if (RightToWorkDtos is { Length: > 0 } || _isRequired == false)
+        if (RightToWorkDtos is { Length: > 0 } || Model.RightToWorkRequired == false)
         {
             return true;
         }
 
-        await Form!.Validate();
+        await form!.Validate();
 
-        if (Form.IsValid)
+        if (form.IsValid)
         {
-            var result = await GetNewMediator().Send(Model!);
+            var result = await GetNewMediator().Send(Model);
+
             if (result.Succeeded)
             {
                 Snackbar.Add("Right to work evidence uploaded", Severity.Success);
@@ -116,7 +126,8 @@
                 Snackbar.Add($"Error uploading Right to work evidence: {result.ErrorMessage}", Severity.Error);
             }
         }
-        return Form.IsValid;
+
+        return form.IsValid;
     }
 
     private async Task UploadFiles(IBrowserFile? file)
@@ -124,6 +135,7 @@
         if (file is not null)
         {
             const int maxFileSize = 5242880; // 5MB
+
             if (file.Size > maxFileSize)
             {
                 Snackbar.Add($"File {file.Name} exceeds the maximum allowed size of {maxFileSize.Bytes().Humanize()}", Severity.Error);
@@ -135,40 +147,13 @@
                 using var memoryStream = new MemoryStream();
                 await stream.CopyToAsync(memoryStream);
 
-                Model!.UploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
+                Model.UploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
                 _uploading = false;
             }
             else
             {
                 Snackbar.Add($"File {file.Name} is not a PDF", Severity.Error);
             }
-        }
-    }
-
-    private void RightToWorkRequiredOnClick()
-    {
-        _isRequired = true;
-
-        IndefiniteRtwOnValueChanged(_isIndefiniteRtwChecked);
-    }
-
-    private void NoRightToWorkRequiredOnClick()
-    {
-        _isRequired = false;
-
-        IndefiniteRtwOnValueChanged(_isIndefiniteRtwChecked);
-    }
-
-    private void IndefiniteRtwOnValueChanged(bool isIndefiniteRtwChecked)
-    {
-        _isIndefiniteRtwChecked = isIndefiniteRtwChecked;
-        if (_isIndefiniteRtwChecked)
-        {
-            Model!.ValidTo = new DateTime(9999, 12, 31);
-        }
-        else
-        {
-            Model!.ValidTo = null;
         }
     }
 

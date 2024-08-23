@@ -12,6 +12,11 @@ public static class AddRightToWork
     {
         [Description("Participant Id")]
         public required string ParticipantId { get; set; }
+
+        public bool RightToWorkRequired { get; set; } = true;
+
+        [Description("Indefinite Right to Work")]
+        public bool IndefiniteRightToWork { get; set; }
         
         [Description("Valid From")]
         public DateTime? ValidFrom { get; set; }
@@ -41,7 +46,13 @@ public static class AddRightToWork
             
             
             var result = await uploadService.UploadAsync($"{request.ParticipantId}/rtw", request.UploadRequest!);
+
             document.SetURL(result);
+
+            if(request.IndefiniteRightToWork)
+            {
+                request.ValidTo = DateTime.MaxValue;
+            }
 
             participant.AddRightToWork(request.ValidFrom!.Value, request.ValidTo!.Value, document.Id);
 
@@ -60,19 +71,36 @@ public static class AddRightToWork
             
             RuleFor(c => c.ParticipantId)
                 .NotNull()
-                .MinimumLength(9)
-                .MaximumLength(9)
+                .Length(9)
                 .WithMessage("Invalid Participant Id")
-                .MustAsync(MustExist)
+                .MustAsync(Exist)
                 .WithMessage("Participant does not exist")
                 .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
-            
-            RuleFor(v => v.UploadRequest)
-                .NotNull();
-            
+
+            When(v => v.RightToWorkRequired, () =>
+            {
+                RuleFor(v => v.UploadRequest)
+                    .NotNull()
+                    .WithMessage("You must upload a Right to Work document");
+
+                RuleFor(v => v.ValidFrom)
+                    .NotNull()
+                    .WithMessage("You must provide the Valid From date")
+                    .LessThanOrEqualTo(DateTime.UtcNow.Date)
+                    .WithMessage(ValidationConstants.DateMustBeInPast);
+
+                When(v => v.IndefiniteRightToWork is false, () =>
+                {
+                    RuleFor(v => v.ValidTo)
+                        .NotNull()
+                        .WithMessage("You must provide the Valid To date")
+                        .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
+                        .WithMessage(ValidationConstants.DateMustBeInFuture);
+                });
+            });
         }
-        
-        private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken) 
+
+        private async Task<bool> Exist(string identifier, CancellationToken cancellationToken) 
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
         
     }    
