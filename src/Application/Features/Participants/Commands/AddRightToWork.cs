@@ -89,13 +89,11 @@ public static class AddRightToWork
 
             When(v => v.RightToWorkRequired, () =>
             {
-                double maxSizeMb = 5;
-
                 RuleFor(v => v.Document)
                     .NotNull()
                     .WithMessage("You must upload a Right to Work document")
-                    .Must(file => NotExceedMaximumFileSize(file, maxSizeMb))
-                    .WithMessage($"File size exceeds the maxmimum allowed size of {maxSizeMb} megabytes")
+                    .Must(file => NotExceedMaximumFileSize(file, Infrastructure.Constants.Documents.RightToWork.MaximumSizeInMegabytes))
+                    .WithMessage($"File size exceeds the maxmimum allowed size of {Infrastructure.Constants.Documents.RightToWork.MaximumSizeInMegabytes} megabytes")
                     .MustAsync(BePdfFile)
                     .WithMessage("File is not a PDF");
 
