@@ -41,18 +41,18 @@
     [Parameter]
     public Cfo.Cats.Application.Features.Bios.DTOs.Bio? Model { get; set; }
 
-	private Cfo.Cats.Application.Features.Bios.DTOs.Bio? _model;
+    private Cfo.Cats.Application.Features.Bios.DTOs.Bio? _model;
 
-	private CatsMudStepper Stepper { get; set; } = new();
+    private CatsMudStepper Stepper { get; set; } = new();
 
-	private int TabsLength => Stepper.Steps.Count();
+    private int TabsLength => Stepper.Steps.Count();
 
-	//These should be local to result step component in future.
-	private bool Processing { get; set; }
-	private bool SubmissionSuccess { get; set; } = false;
+    //These should be local to result step component in future.
+    private bool Processing { get; set; }
+    private bool SubmissionSuccess { get; set; } = false;
 
-	protected override async Task OnInitializedAsync()
-	{
+    protected override async Task OnInitializedAsync()
+    {
         _model ??= Model;
 
         if (_model is null)
@@ -70,25 +70,40 @@
         }
     }
 
-	private async Task OnStepChange(int step)
-	{
-        Processing = true;
-        await GetNewMediator().Send(new SaveBio.Command()
+    private async Task OnStepChange(int step)
+    {
+        try
         {
-            Bio = _model!
-        });
+            Processing = true;
 
-        // Do not show the previous step on the first or last steps.
-        _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
-        await topOfPageElement.FocusAsync();
-        if (step == Stepper.Steps.Count())
+            var result = await GetNewMediator().Send(new SaveBio.Command()
+            {
+                Bio = _model!
+            });
+
+            // Do not show the previous step on the first or last steps.
+            _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
+
+            if(result.Succeeded)
+            {
+                await topOfPageElement.FocusAsync();
+
+                if (step == Stepper.Steps.Count())
+                {
+                    await SubmitBio();
+                }
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+
+        }
+        finally
         {
-			await SubmitBio();
+            Processing = false;
         }
         
-        Processing = false;
-
- 
     }
 
 	private async Task SubmitBio()

@@ -30,8 +30,9 @@ public static class SubmitPqaResponse
             }
             
             entry.Complete(request.Accept.GetValueOrDefault(), request.Message);
-            entry.Participant!.TransitionTo(EnrolmentStatus.SubmittedToAuthorityStatus);
-            
+            EnrolmentStatus transitionTo = request.Accept.GetValueOrDefault() ? EnrolmentStatus.SubmittedToAuthorityStatus : EnrolmentStatus.PendingStatus;
+            entry.Participant!.TransitionTo(transitionTo);
+                        
             return Result.Success();
         }
     }
@@ -54,7 +55,6 @@ public static class SubmitPqaResponse
             });
         }
     }
-
 
     public class B_EntryMustExist : AbstractValidator<Command> 
     {
@@ -90,7 +90,6 @@ public static class SubmitPqaResponse
                 .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
 
             return entry is { IsCompleted: false };
-
         }
     }
     
@@ -113,8 +112,6 @@ public static class SubmitPqaResponse
                 .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
 
             return entry != null && entry.Participant!.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus;
-
         }
-    }
-    
+    }    
 }

@@ -12,9 +12,9 @@
     </ActivatorContent>
     <ChildContent>
         
-        @if (Participant.EnrolmentStatus != EnrolmentStatus.AbandonedStatus && Participant.EnrolmentStatus.IsQaStage() == false)
+        @if (Participant.EnrolmentStatus != EnrolmentStatus.ArchivedStatus && Participant.EnrolmentStatus.IsQaStage() == false)
         {
-            <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error" OnClick="Abandon">Abandon</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error" OnClick="Archive">Archive</MudMenuItem>
         }
         
         @if (Participant.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
@@ -36,77 +36,114 @@
 @code {
 
     private bool _canSubmitToQA;
-    
+
     [CascadingParameter]
     protected ParticipantSummaryDto Participant { get; set; } = default!;
-    
+
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
-        
+
         // only provider QA can submit to QA
         _canSubmitToQA = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Pqa)).Succeeded;
 
 
     }
 
-    protected async Task Abandon()
+    protected async Task Archive()
     {
-        var command = new AbandonCase.Command()
+        var parameters = new DialogParameters<ConfirmationDialog>()
         {
-            ParticipantId = Participant.Id
+            { x => x.ContentText, "Are you sure you would like to archive this case?" }
         };
-        
-        var result = await GetNewMediator().Send(command);
-        if (result.Succeeded)
+
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Archive", parameters);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult?.Canceled is not true)
         {
-            Snackbar.Add($"Participant {Participant.Id} abandoned", Severity.Success);
-        }
-        else
-        {
-            ShowActionFailure("Failed to abandon", result);
+            var command = new ArchiveCase.Command()
+            {
+                ParticipantId = Participant.Id
+            };
+
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"Participant {Participant.Id} Archived", Severity.Success);
+            }
+            else
+            {
+                ShowActionFailure("Failed to archive", result);
+            }
+
         }
 
     }
-    
+
     protected async Task Suspend()
     {
-        var command = new SuspendCase.Command()
+        var parameters = new DialogParameters<ConfirmationDialog>()
         {
-            ParticipantId = Participant.Id
+            { x => x.ContentText, "Are you sure you would like to suspend this case?" }
         };
-        
-        var result = await GetNewMediator().Send(command);
-        if (result.Succeeded)
+
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Suspend", parameters);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult?.Canceled is not true)
         {
-            Snackbar.Add($"Participant {Participant.Id} suspended", Severity.Success);
-        }
-        else
-        {
-            ShowActionFailure("Failed to abandon", result);
+            var command = new SuspendCase.Command()
+            {
+                ParticipantId = Participant.Id
+            };
+
+            var result = await GetNewMediator().Send(command);
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"Participant {Participant.Id} suspended", Severity.Success);
+            }
+            else
+            {
+                ShowActionFailure("Failed to suspend", result);
+            }
+
         }
 
     }
 
     protected async Task SubmitToPqa()
     {
-        var command = new SubmitToProviderQa.Command()
+        var parameters = new DialogParameters<ConfirmationDialog>()
         {
-            ParticipantId = Participant.Id
+            { x => x.ContentText, "Are you sure you would like to submit this case to Provider QA?" }
         };
 
-        var result = await GetNewMediator().Send(command);
-        if (result.Succeeded)
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Submit to Provider QA", parameters);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult?.Canceled is not true)
         {
-            Snackbar.Add($"Participant {Participant.Id} submitted to Provider QA", Severity.Success);
+
+            var command = new SubmitToProviderQa.Command()
+            {
+                ParticipantId = Participant.Id
+            };
+
+            var result = await GetNewMediator().Send(command);
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"Participant {Participant.Id} submitted to Provider QA", Severity.Success);
+            }
+            else
+            {
+                ShowActionFailure("Failed to submit to Provider QA", result);
+            }
         }
-        else
-        {
-            ShowActionFailure("Failed to submit to Provider QA", result);
-        }
-        
+
     }
     
     

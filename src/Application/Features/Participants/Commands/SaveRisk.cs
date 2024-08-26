@@ -14,7 +14,7 @@ public static class SaveRisk
         public required RiskDto Risk { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result<Guid>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService) : IRequestHandler<Command, Result<Guid>>
     {
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -27,10 +27,31 @@ public static class SaveRisk
 
             risk = mapper.Map(request.Risk, risk);
 
+            risk.Complete(currentUserService.UserId!);
+
+            // Explicitly update the risk as entity tracking has been lost due to automapping
             unitOfWork.DbContext.Risks.Update(risk);
 
             return Result<Guid>.Success(risk.Id);
         }
+    }
+
+    public class Validator : AbstractValidator<Command>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(r => r.RiskId)
+                .NotNull()
+                .MustAsync(NotBeCompleted)
+                .WithMessage("Risk already completed");
+        }
+
+        private async Task<bool> NotBeCompleted(Guid riskId, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.Risks.AnyAsync(r => r.Id == riskId && r.Completed == null, cancellationToken);
     }
 
 }

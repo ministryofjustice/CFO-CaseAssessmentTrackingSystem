@@ -23,25 +23,16 @@ public static class SaveAssessment
         
     }
 
-    public class Handler : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : IRequestHandler<Command, Result>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        
-        public Handler(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-
-        }
-
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            ParticipantAssessment pa = _unitOfWork.DbContext.ParticipantAssessments.FirstOrDefault(r => r.Id == request.Assessment.Id && r.ParticipantId == request.Assessment.ParticipantId)
+            ParticipantAssessment pa = unitOfWork.DbContext.ParticipantAssessments.FirstOrDefault(r => r.Id == request.Assessment.Id && r.ParticipantId == request.Assessment.ParticipantId)
                                        ?? throw new NotFoundException(nameof(Assessment), new
                                        {
                                            request.Assessment.Id,
                                            request.Assessment.ParticipantId
                                        });
-         
             
             pa.UpdateJson(JsonConvert.SerializeObject(request.Assessment, new JsonSerializerSettings
             {
@@ -50,7 +41,7 @@ public static class SaveAssessment
 
             if (request.Submit)
             {
-                var details = await _unitOfWork.DbContext.Participants
+                var details = await unitOfWork.DbContext.Participants
                     .Where(p => p.Id == request.Assessment.ParticipantId)
                     .Select(p =>
                         new
@@ -69,7 +60,8 @@ public static class SaveAssessment
                 {
                     pa.SetPathwayScore(pathway.Title, pathway.GetRagScore(age, location, sex));
                 }
-                pa.Submit();
+
+                pa.Submit(currentUserService.UserId!);
             }
 
             return Result.Success();
@@ -88,6 +80,10 @@ public static class SaveAssessment
                 .MustAsync(Exist)
                 .WithMessage("Assessment not found");
 
+            RuleFor(c => c.Assessment.Id)
+                .MustAsync(NotBeCompleted)
+                .WithMessage("Assessment already complete");
+
             RuleFor(c => c.Assessment.ParticipantId)
                 .MustAsync(Exist)
                 .WithMessage("Participant not found")
@@ -104,5 +100,7 @@ public static class SaveAssessment
         private async Task<bool> HaveEnrolmentLocation(string participantId, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentLocation != null, cancellationToken);
 
+        private async Task<bool> NotBeCompleted(Guid assessmentId, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.ParticipantAssessments.AnyAsync(pa => pa.Id == assessmentId && pa.Completed == null, cancellationToken);
     }
 }

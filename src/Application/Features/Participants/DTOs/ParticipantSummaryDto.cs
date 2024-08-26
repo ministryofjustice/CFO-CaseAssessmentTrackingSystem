@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 using Cfo.Cats.Application.Features.Bios.DTOs;
 using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.Participants;
@@ -44,6 +45,8 @@ public class ParticipantSummaryDto
     public RiskSummaryDto? LatestRisk { get; set; }
 
     public BioSummaryDto? BioSummary { get; set; }
+    
+    public PathwayPlanSummaryDto? PathwayPlan { get; set; }
 
     private class Mapping : Profile
     {

@@ -17,21 +17,12 @@ public static class SaveBio
         public required Bio Bio { get; set; } 
     }
 
-    public class Handler : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : IRequestHandler<Command, Result>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        
-        public Handler(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-
-        }
-
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            
-            ParticipantBio? bio = await _unitOfWork.DbContext.ParticipantBios
-                    .FirstOrDefaultAsync(r => r.Id == request.Bio.Id && r.ParticipantId == request.Bio.ParticipantId, cancellationToken);
+            ParticipantBio? bio = await unitOfWork.DbContext.ParticipantBios
+                    .FirstOrDefaultAsync(r => r.Id == request.Bio.Id, cancellationToken);
                                       
             if(bio == null)
             {
@@ -42,11 +33,13 @@ public static class SaveBio
             {
                 TypeNameHandling = TypeNameHandling.Auto
             }));
+
             bio.UpdateStatus(BioStatus.InProgress);
+
             if (request.Submit)
             {
                 bio.UpdateStatus(BioStatus.Complete);
-                bio.Submit();
+                bio.Submit(currentUserService.UserId!);
             }
 
             return Result.Success();
@@ -55,8 +48,12 @@ public static class SaveBio
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+
             RuleFor(x => x.Bio)
                 .NotNull();
 
@@ -67,9 +64,13 @@ public static class SaveBio
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, nameof(Command.Bio.ParticipantId)));
             
             RuleFor(x => x.Bio.Id)
-                .NotEmpty();
-
+                .NotEmpty()
+                .MustAsync(NotBeCompleted)
+                .WithMessage("Bio already complete");
         }
+
+        private async Task<bool> NotBeCompleted(Guid bioId, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.ParticipantBios.AnyAsync(b => b.Id == bioId && b.Completed == null, cancellationToken);
     }
 
 }

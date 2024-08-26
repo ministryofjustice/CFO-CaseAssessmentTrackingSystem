@@ -7,7 +7,7 @@ public sealed class ParticipantAdvancedSpecification : Specification<Participant
     public ParticipantAdvancedSpecification(ParticipantAdvancedFilter filter)
     {
         
-        Query.Where( p => p.EnrolmentStatus != EnrolmentStatus.AbandonedStatus.Value 
+        Query.Where( p => p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value 
                           && p.EnrolmentStatus != EnrolmentStatus.DormantStatus.Value, 
                             filter.ListView == ParticipantListView.Default);
         
@@ -18,7 +18,7 @@ public sealed class ParticipantAdvancedSpecification : Specification<Participant
         Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus.Value || p.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus.Value, filter.ListView == ParticipantListView.SubmittedToAny);
         Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value, filter.ListView == ParticipantListView.Approved);
         Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.DormantStatus.Value, filter.ListView == ParticipantListView.Dormant);
-        Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.AbandonedStatus.Value, filter.ListView == ParticipantListView.Abandoned);
+        Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.ArchivedStatus.Value, filter.ListView == ParticipantListView.Archived);
         
        
         Query.Where(

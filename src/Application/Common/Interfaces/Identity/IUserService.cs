@@ -8,4 +8,5 @@ public interface IUserService
     event Action? OnChange;
     void Initialize();
     void Refresh();
+    string? GetDisplayName(string userId);
 }

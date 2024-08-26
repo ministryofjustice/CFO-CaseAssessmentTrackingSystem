@@ -127,6 +127,9 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
 
         builder.Property(x => x.LastModifiedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
+        builder.Property(x => x.CompletedBy)
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
     }
 
 }
