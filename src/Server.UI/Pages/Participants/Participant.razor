@@ -88,7 +88,7 @@
                     </MudItem>
                 </MudGrid>
                 <RagBar ParticipantId="@Id" />
-                <ParticipantActionMenu />
+                <ParticipantActionMenu OnUpdate="Refresh" />
                 <MudTabs Class="primary-tabs mt-2" Outlined="true" Color="Color.Info" Border="true">
                     <MudTabPanel Text="Case Summary">
                         <CaseSummary />
