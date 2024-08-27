@@ -146,8 +146,7 @@
             if (result.Succeeded)
             {
                 Snackbar.Add($"Participant {Participant.Id} submitted to Provider QA", Severity.Success);
-                // this is poor, we need to raise an event so the screen can be refreshed directly
-                NavigationManager.Refresh(true);
+                await OnUpdate.InvokeAsync();
             }
             else
             {
