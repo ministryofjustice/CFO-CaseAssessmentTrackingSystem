@@ -168,7 +168,8 @@
 
                 Command = new SubmitPqaResponse.Command()
                 {
-                    QueueEntryId = Id
+                    QueueEntryId = Id,
+                    CurrentUser = UserProfile
                 };
             }
             StateHasChanged();    
