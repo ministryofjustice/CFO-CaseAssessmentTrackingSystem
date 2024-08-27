@@ -174,7 +174,8 @@
 
                 Command = new SubmitQa1Response.Command()
                 {
-                    QueueEntryId = Id
+                    QueueEntryId = Id,
+                    CurrentUser = UserProfile
                 };
             }
             StateHasChanged();    

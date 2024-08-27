@@ -14,6 +14,7 @@ public static class SubmitPqaResponse
         public bool? Accept { get; set; }
 
         public string Message { get; set; } = default!;
+        public UserProfile? CurrentUser { get; set; }
     }
     
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
@@ -92,7 +93,7 @@ public static class SubmitPqaResponse
             return entry is { IsCompleted: false };
         }
     }
-    
+
     public class D_ShouldNotBeAtPqaStatus : AbstractValidator<Command>
     {
         private IUnitOfWork _unitOfWork;
@@ -113,5 +114,25 @@ public static class SubmitPqaResponse
 
             return entry != null && entry.Participant!.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus;
         }
-    }    
+    }
+    public class E_OwnerShouldNotBeApprover : AbstractValidator<Command>
+    {
+        private IUnitOfWork _unitOfWork;
+        public E_OwnerShouldNotBeApprover(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c)
+                .MustAsync(OwnerMustNotBeApprover)
+                .WithMessage("This assessment is created by you hence must not be processed at PQA stage by you");
+        }
+
+        private async Task<bool> OwnerMustNotBeApprover(Command c, CancellationToken cancellationToken)
+        {
+            var entry = await _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
+                .FirstOrDefaultAsync(a => a.Id == c.QueueEntryId, cancellationToken: cancellationToken);
+
+            return entry != null && entry.Participant!.OwnerId!.Equals(c.CurrentUser!.UserId) == false;
+        }
+    }
 }
