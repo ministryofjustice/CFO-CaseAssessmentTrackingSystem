@@ -1,5 +1,4 @@
-﻿
-@page "/pages/qa/enrolments/qa1"
+﻿@page "/pages/qa/enrolments/qa1"
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 @using Cfo.Cats.Application.Features.QualityAssurance.Queries
 @using Cfo.Cats.Application.SecurityConstants
@@ -77,6 +76,13 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
+        <PropertyColumn Property="x => x.SupportWorker" Title="@L["Support Worker"]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.SupportWorker</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
         <PropertyColumn Property="x => x.TenantId" Title="@L["Tenant"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
@@ -84,11 +90,14 @@
                     <MudText Typo="Typo.body2">@context.Item.TenantId</MudText>
                 </div>
             </CellTemplate>
-        </PropertyColumn>
+        </PropertyColumn>         
         <PropertyColumn Property="x => x.Created" Title="@L["Submitted"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">
+                        @context.Item.Created.Date.ToString("d")                        
+                    </MudText>
+                    <MudText Typo="Typo.body2">                        
                         @context.Item.Created.Humanize()
                     </MudText>
                 </div>
@@ -98,7 +107,6 @@
 </MudDataGrid>
 
 @code {
-
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
     
@@ -149,5 +157,4 @@
         Query.Keyword = string.Empty;
         await _table.ReloadServerData();
     }
-
 }

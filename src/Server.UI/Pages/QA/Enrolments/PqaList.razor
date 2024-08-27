@@ -77,6 +77,13 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
+        <PropertyColumn Property="x => x.SupportWorker" Title="@L["Support Worker"]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.SupportWorker</MudText>                    
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
         <PropertyColumn Property="x => x.TenantId" Title="@L["Tenant"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
@@ -89,6 +96,9 @@
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">
+                        @context.Item.Created.Date.ToString("d")                        
+                    </MudText>
+                    <MudText Typo="Typo.body2">                        
                         @context.Item.Created.Humanize()
                     </MudText>
                 </div>
@@ -149,5 +159,4 @@
         Query.Keyword = string.Empty;
         await _table.ReloadServerData();
     }
-
 }
