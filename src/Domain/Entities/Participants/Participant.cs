@@ -21,7 +21,7 @@ public class Participant : OwnerPropertyEntity<string>
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public static Participant CreateFrom(string id, string firstName, string lastName, DateTime dateOfBirth, string referralSource, string? referralComments, int locationId)
+    public static Participant CreateFrom(string id, string firstName, string? middleName, string lastName, string? gender, DateTime dateOfBirth, string referralSource, string? referralComments, int locationId)
     {
         Participant p = new Participant
         {
@@ -30,7 +30,9 @@ public class Participant : OwnerPropertyEntity<string>
             Id = id,
             DateOfBirth = DateOnly.FromDateTime(dateOfBirth),
             FirstName = firstName,
+            MiddleName = middleName,
             LastName = lastName,
+            Gender = gender,
             ReferralSource = referralSource,
             ReferralComments = referralComments,
             _currentLocationId = locationId
@@ -43,6 +45,7 @@ public class Participant : OwnerPropertyEntity<string>
     public string? FirstName { get; private set; }
     public string? MiddleName { get; private set; }
     public string? LastName { get; private set; }
+    public string? Gender { get; private set; }
     public DateOnly? DateOfBirth { get; private set; }
     
     public string ReferralSource { get; private set; }

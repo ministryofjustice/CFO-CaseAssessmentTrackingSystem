@@ -1,5 +1,4 @@
-﻿
-using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Candidates.DTOs;
 using Cfo.Cats.Application.Features.Candidates.Queries.Search;
 using Cfo.Cats.Application.Features.Participants.Commands;
@@ -19,7 +18,6 @@ public partial class MatchFound
 
     private CandidateDto? candidate;
 
-    private bool _confirmation = false;
     private List<ComparisonRow>? _comparisons;
 
     [Parameter]
@@ -41,8 +39,7 @@ public partial class MatchFound
     [Inject]
     public ICandidateService CandidateService { get; set; } = default!;
 
-
-    protected override async Task OnParametersSetAsync()
+    protected async override Task OnInitializedAsync()
     {
         candidate = await CandidateService.GetByUpciAsync(CandidateId)
             ?? throw new ApplicationException("We found a candidate, but then could not get it");
@@ -58,6 +55,8 @@ public partial class MatchFound
             Candidate = candidate,
             CurrentUser = UserProfile!
         };
+
+        await base.OnInitializedAsync();
     }
 
     private Task BackToSearch()
@@ -76,9 +75,14 @@ public partial class MatchFound
             if (_form!.IsValid)
             {
                 var result = await GetNewMediator().Send(Model!);
+
                 if (result.Succeeded)
                 {
                     await OnParticipantEnrolled.InvokeAsync();
+                }
+                else
+                {
+                    Snackbar.Add(result.ErrorMessage, Severity.Error);
                 }
             }
 

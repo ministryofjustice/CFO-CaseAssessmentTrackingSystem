@@ -47,8 +47,8 @@ public static class SaveAssessment
                         new
                         {
                             p.DateOfBirth,
-                            LotNumber = p.EnrolmentLocation!.Contract!.LotNumber,
-                            Gender = "Male"
+                            p.EnrolmentLocation!.Contract!.LotNumber,
+                            p.Gender
                         }
                     ).FirstAsync(cancellationToken);
 
