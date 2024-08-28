@@ -157,7 +157,7 @@ public static class DependencyInjection
             
         }
         
-        if(configuration["UseDummyCandidateService"] == "True")
+        if(configuration.GetValue<bool>("UseDummyCandidateService"))
         {
             services.AddSingleton<ICandidateService, DummyCandidateService>();
         }

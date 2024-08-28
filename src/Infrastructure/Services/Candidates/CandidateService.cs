@@ -4,7 +4,9 @@ using Cfo.Cats.Application.Features.Candidates.Queries.Search;
 
 namespace Cfo.Cats.Infrastructure.Services.Candidates;
 
-public class CandidateService(HttpClient client) : ICandidateService
+public class CandidateService(
+    HttpClient client, 
+    IUnitOfWork unitOfWork) : ICandidateService
 {
     public async Task<IEnumerable<SearchResult>?> SearchAsync(CandidateSearchQuery searchQuery)
     {
@@ -20,6 +22,45 @@ public class CandidateService(HttpClient client) : ICandidateService
 
     public async Task<CandidateDto?> GetByUpciAsync(string upci)
     {
-        return await client.GetFromJsonAsync<CandidateDto>($"clustering/{upci}/Aggregate");
+        var candidate = await client.GetFromJsonAsync<CandidateDto>($"clustering/{upci}/Aggregate");
+
+        if(candidate is not null)
+        {
+            var locationMapping = candidate.Primary switch
+            {
+                "NOMIS" => (candidate.EstCode, "Prison"),
+                "DELIUS" => (candidate.OrgCode, "Probation"),
+                _ => (null, null)
+            };
+
+            var query = from dl in unitOfWork.DbContext.LocationMappings.AsNoTracking()
+                        where dl.Code == locationMapping.Item1 && dl.CodeType == locationMapping.Item2
+                        select new
+                        {
+                            dl.Code,
+                            dl.CodeType,
+                            dl.Description,
+                            dl.DeliveryRegion,
+                            dl.Location
+                        };
+
+            var location = await query.FirstOrDefaultAsync();
+
+            candidate.LocationDescription = location switch
+            {
+                { Location: not null } => location.Location.Name,
+                _ => "Unmapped Location",
+            };
+
+            candidate.MappedLocationId = location switch
+            {
+                { Location: not null } => location.Location.Id,
+                _ => 0
+            };
+
+        }
+
+        return candidate;
+
     }
 }

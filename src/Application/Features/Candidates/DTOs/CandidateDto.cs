@@ -47,7 +47,7 @@ public class CandidateDto
     /// <summary>
     /// The candidates gender (Male/Female).
     /// </summary>
-    public required string Gender { get; set; }
+    public string? Gender { get; set; }
 
     /// <summary>
     /// The candidates nationality
@@ -64,16 +64,14 @@ public class CandidateDto
     /// </summary>
     public required string Primary { get; set; }
 
-    [JsonIgnore]
-    /// <summary>
-    /// The location CATS thinks the user is registered at
-    /// </summary>
-    public string CurrentLocation { get; set; } = string.Empty;
-
     public string? EstCode { get; set; }
     public string? OrgCode { get; set; }
 
     public EnrolmentStatus? EnrolmentStatus { get; set; }
     
     public string? ReferralSource { get; set; }
+
+    public string? LocationDescription { get; set; }
+
+    public int MappedLocationId { get; set; } = 0;
 }
