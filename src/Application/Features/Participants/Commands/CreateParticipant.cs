@@ -94,8 +94,6 @@ public static class CreateParticipant
                     .WithMessage("Invalid establishment code")
                     .Matches(ValidationConstants.AlphaNumeric)
                     .WithMessage("Invalid establishment code");
-                    //.MustAsync((string estCode, CancellationToken cancellationToken) => MappedLocation(estCode, "Prison", cancellationToken))
-                    //.WithMessage("Unknown establishment location");
             });
 
             // Organisation Code is otherwise required for Probation (DELIUS) records.
@@ -107,8 +105,6 @@ public static class CreateParticipant
                     .WithMessage("Invalid organisation code")
                     .Matches(ValidationConstants.AlphaNumeric)
                     .WithMessage("Invalid organisation code");
-                    //.MustAsync((string estCode, CancellationToken cancellationToken) => MappedLocation(estCode, "Probation", cancellationToken))
-                    //.WithMessage("Unknown organisation location");
             });
 
             RuleFor(x => x.ReferralSource)
@@ -126,9 +122,6 @@ public static class CreateParticipant
  
         }
 
-        //private async Task<bool> MappedLocation(string code, string type,  CancellationToken cancellationToken)
-        //    => await _unitOfWork.DbContext.LocationMappings.AnyAsync(l => l.Code == code && l.CodeType == type, cancellationToken);
-       
         private async Task<bool> NotAlreadyExist(string identifier, CancellationToken cancellationToken) 
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken) == false;
     }
