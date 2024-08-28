@@ -49,6 +49,7 @@ public class CandidateService(
             candidate.LocationDescription = location switch
             {
                 { Location: not null } => location.Location.Name,
+                { Code: not null } => $"Unmapped Location ({location.Code} - {location.DeliveryRegion} - {location.Description})",
                 _ => "Unmapped Location",
             };
 
