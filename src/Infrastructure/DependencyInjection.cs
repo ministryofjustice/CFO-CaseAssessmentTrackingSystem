@@ -159,7 +159,7 @@ public static class DependencyInjection
         
         if(configuration.GetValue<bool>("UseDummyCandidateService"))
         {
-            services.AddSingleton<ICandidateService, DummyCandidateService>();
+            services.AddScoped<ICandidateService, DummyCandidateService>();
         }
         else
         {
