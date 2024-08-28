@@ -35,6 +35,9 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
         builder.Property(p => p.DateOfBirth)
             .IsRequired();
 
+        builder.Property(p => p.Gender)
+            .HasMaxLength(6);
+
         builder.Property(p => p.ReferralSource)
             .IsRequired()
             .HasMaxLength(100);
