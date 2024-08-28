@@ -32,6 +32,8 @@
         <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.8" />
         <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.8" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Quartz" Version="3.13.0" />
+        <PackageReference Include="Quartz.AspNetCore" Version="3.13.0" />
         <PackageReference Include="QuestPDF" Version="2024.7.2" />
         <PackageReference Include="Sentry.Serilog" Version="4.10.2" />
         <PackageReference Include="Serilog" Version="4.0.1" />
