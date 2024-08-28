@@ -6,3 +6,8 @@ namespace Cfo.Cats.Domain.Events;
 public sealed class BioCreatedDomainEvent(ParticipantBio entity)
     : CreatedDomainEvent<ParticipantBio>(entity);
 
+public sealed class BioSubmittedDomainEvent(ParticipantBio entity)
+    : DomainEvent
+{
+    public ParticipantBio Item { get; set; } = entity;
+}

@@ -18,7 +18,7 @@ public enum ParticipantListView
     [Description("Any QA")] SubmittedToAny,
     [Description("Approved")] Approved,
     [Description("Dormant")] Dormant,
-    [Description("Abandoned")] Abandoned,
+    [Description("Archived")] Archived,
     [Description("All")] All
 }
 

@@ -1,0 +1,92 @@
+@using Cfo.Cats.Application.Common.Validators
+@inject IStringLocalizer<SharedResource> L
+
+<MudDialog>
+    <DialogContent>
+        <MudText>@ContentText</MudText>
+        <MudForm Model="@Model" @ref="@_form" Validation="@(_modelValidator.ValidateValue)">
+            <MudTextField @bind-Value="Model.Note"
+                          Label="@NoteLabel"
+                          For="@(() => Model.Note)"
+                          Lines="5"
+                          Class="mt-4"
+                          />
+
+        </MudForm>
+        
+    </DialogContent>
+    <DialogActions>
+        <MudButton StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">@ConstantString.Confirm</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code
+{
+
+    private MudForm? _form;
+
+    private NotesModel Model { get; } = new();
+
+    NotesModelValidator _modelValidator = new(true);
+
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public string? ContentText { get; set; }
+
+    [Parameter] public bool MandatoryNote { get; set; }
+
+    [Parameter] public string? NoteLabel { get; set; } = "Note";
+
+    protected override void OnParametersSet()
+    {
+        _modelValidator = new(MandatoryNote);
+    }
+
+    public async Task Submit()
+    {
+        await _form!.Validate();
+        if (_form.IsValid)
+        {
+            MudDialog.Close(DialogResult.Ok(Model.Note));
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private class NotesModel
+    {
+        public string? Note { get; set; } 
+    }
+
+    private class NotesModelValidator : AbstractValidator<NotesModel>
+    {
+        public NotesModelValidator(bool isMandatory)
+        {
+            if (isMandatory)
+            {
+                RuleFor(x => x.Note)
+                    .NotEmpty()
+                    .WithMessage("Additional details required");
+            }
+
+            RuleFor(x => x.Note)
+                .MaximumLength(250)
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Note"));
+        }
+
+        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+        {
+            var result = await ValidateAsync(ValidationContext<NotesModel>.CreateWithOptions((NotesModel)model, x => x.IncludeProperties(propertyName)));
+            if (result.IsValid)
+                return Array.Empty<string>();
+            return result.Errors.Select(e => e.ErrorMessage);
+        };
+
+    }
+}

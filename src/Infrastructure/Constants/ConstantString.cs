@@ -44,6 +44,7 @@ public static class ConstantString
     public static string Ok => Localize("OK");
     public static string Confirm => Localize("Confirm");
     public static string Continue => Localize("Continue");
+    public static string Complete => Localize("Complete");
     public static string Yes => Localize("Yes");
     public static string No => Localize("No");
     public static string Next => Localize("Next");

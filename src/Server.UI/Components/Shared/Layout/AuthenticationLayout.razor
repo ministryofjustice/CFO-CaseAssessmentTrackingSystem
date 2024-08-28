@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject IStringLocalizer<SharedResource> L
+@inject IWebHostEnvironment Env
+
 <MudRTLProvider>
     <MudThemeProvider Theme="Constants.Theme.ApplicationTheme(PrimaryColour)"/>
     <MudLayout>
@@ -14,6 +16,23 @@
                     </MudText>
                 </MudAppBar>
                 <div class="mud-main-content">
+                    @if(Env.EnvironmentName is not "Production")
+                    {
+                        <MudAlert Severity="Severity.Warning" 
+                                  Variant="Variant.Filled" Square="true" 
+                                  ContentAlignment="HorizontalAlignment.Center"
+                                  Icon="@Icons.Material.Filled.Construction">
+                                  @Env.EnvironmentName
+                        </MudAlert>
+                    }
+                    @if(string.IsNullOrEmpty(Configuration["PreLoginMessage"]) == false)
+                    {
+                        <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Square="true" 
+                            ContentAlignment="HorizontalAlignment.Center"
+                            Icon="@Icons.Material.Filled.EventNote">
+                            @Configuration["PreLoginMessage"]
+                        </MudAlert>
+                    }
                     <MudContainer Class="mt-16" MaxWidth="MaxWidth.Medium">
                         @Body
                     </MudContainer>

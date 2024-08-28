@@ -19,6 +19,8 @@ namespace Cfo.Cats.Domain.Entities.Assessments
 
         public string ParticipantId {get; private set;}
         public string AssessmentJson {get; private set;}
+        public DateTime? Completed { get; private set; }
+        public string? CompletedBy { get; private set; }
 
         public IReadOnlyCollection<PathwayScore> Scores => _scores.AsReadOnly();
 
@@ -52,9 +54,10 @@ namespace Cfo.Cats.Domain.Entities.Assessments
             return this;
         }
 
-        public ParticipantAssessment Submit()
+        public ParticipantAssessment Submit(string completedBy)
         {
-            // this does nothing except raise the event.
+            Completed = DateTime.UtcNow;
+            CompletedBy = completedBy;
             AddDomainEvent(new AssessmentScoredDomainEvent(this));
             return this;
         }
@@ -66,6 +69,8 @@ namespace Cfo.Cats.Domain.Entities.Assessments
         }
 
         public string? TenantId {get; set;}
+
+        public bool IsCompleted => Completed is not null;
         
     }
 }

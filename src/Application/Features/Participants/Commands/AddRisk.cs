@@ -26,7 +26,7 @@ public static class AddRisk
 
             if (risk is null)
             {
-                risk = Risk.CreateFrom(Guid.NewGuid(), request.ParticipantId);
+                risk = Risk.Create(Guid.NewGuid(), request.ParticipantId);
             }
             else
             {

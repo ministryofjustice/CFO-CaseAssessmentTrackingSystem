@@ -15,6 +15,8 @@ internal static class DatabaseConstants
         public const string UserToken = nameof(UserToken);
         public const string UserRole = nameof(UserRole);
         public const string AuditTrail = nameof(AuditTrail);
+
+        public const string IdentityAuditTrail = nameof(IdentityAuditTrail);
         public const string Consent = nameof(Consent);
         public const string Contract = nameof(Contract);
         public const string Document = nameof(Document);
@@ -30,6 +32,11 @@ internal static class DatabaseConstants
         public const string EnrolmentHistory = nameof(EnrolmentHistory);
         public const string RightToWork = nameof(RightToWork);
         public const string Risk = nameof(Risk);
+        public const string Objective = nameof(Objective);
+        public const string ObjectiveTask = nameof(ObjectiveTask);
+        public const string PathwayPlan = nameof(PathwayPlan);
+        public const string PathwayPlanReviewHistory = nameof(PathwayPlanReviewHistory);
+
 
         public const string AssessmentPathwayScore = nameof(AssessmentPathwayScore);
 

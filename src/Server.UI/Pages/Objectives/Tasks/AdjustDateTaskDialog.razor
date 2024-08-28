@@ -1,0 +1,65 @@
+﻿@using Cfo.Cats.Application.Features.PathwayPlans.Commands
+
+@inherits CatsComponentBase
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+            <MudDatePicker @bind-Date="Model.Due"
+                           FixDay="1"
+                           DateFormat="MMM, yyyy"
+                           TitleDateFormat="MMM, yyyy"
+                           MinDate="new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1)"
+                           Label="@Model.GetMemberDescription(x => x.Due)"
+                           For="@(() => Model.Due)" 
+                           Editable="true" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    MudForm? form;
+    bool saving;
+
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public required EditTask.Command Model { get; set; }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            saving = true;
+
+            if (form is null)
+            {
+                saving = false;
+                return;
+            }
+
+            await form.Validate();
+
+            if (form.IsValid)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+
+}

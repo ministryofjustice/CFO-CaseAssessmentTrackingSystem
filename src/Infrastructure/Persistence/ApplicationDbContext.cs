@@ -37,9 +37,8 @@ public class ApplicationDbContext
 
     public DbSet<Document> Documents => Set<Document>();
     public DbSet<Participant> Participants => Set<Participant>();
-
+    public DbSet<PathwayPlan> PathwayPlans => Set<PathwayPlan>();
     public DbSet<Risk> Risks => Set<Risk>();
-
     public DbSet<ParticipantAssessment> ParticipantAssessments => Set<ParticipantAssessment>();
 
     public DbSet<ParticipantBio> ParticipantBios => Set<ParticipantBio>();
@@ -61,6 +60,8 @@ public class ApplicationDbContext
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
     public DbSet<LocationMapping> LocationMappings => Set<LocationMapping>();
+
+    public DbSet<IdentityAuditTrail> IdentityAuditTrails => Set<IdentityAuditTrail>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

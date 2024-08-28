@@ -2,6 +2,8 @@
 @inherits LayoutComponentBase
 
 @inject LayoutService LayoutService
+@inject IWebHostEnvironment Env
+
 <MudLayout>
     <AuthorizeView>
         <NotAuthorized>
@@ -26,6 +28,15 @@
                 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mb-4 mt-4">
                     <ErrorBoundary @ref="ErrorBoundary">
                         <ChildContent>
+                            @if(Env.EnvironmentName is not "Production")
+                            {
+                                <MudAlert Severity="Severity.Warning" 
+                                        Variant="Variant.Filled" Square="true" 
+                                        ContentAlignment="HorizontalAlignment.Center"
+                                        Icon="@Icons.Material.Filled.Construction">
+                                        @Env.EnvironmentName
+                                </MudAlert>
+                            }
                             <CascadingValue Value="@_userProfile">
                                 @Body
                             </CascadingValue>

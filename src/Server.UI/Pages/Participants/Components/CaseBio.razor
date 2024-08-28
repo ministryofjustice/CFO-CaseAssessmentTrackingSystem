@@ -7,6 +7,7 @@
 <style>
     .readonly-toggle {
         pointer-events: none;
+        filter: grayscale(100%);
     }
 
     .two-columns {
@@ -25,7 +26,7 @@
 @if (_notFound)
 {
     <MudAlert>
-        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No assessment found.</MudAlert>
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No bio found.</MudAlert>
     </MudAlert>
 }
 

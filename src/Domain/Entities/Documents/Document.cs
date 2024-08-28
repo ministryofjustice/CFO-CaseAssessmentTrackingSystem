@@ -36,6 +36,12 @@ public class Document : OwnerPropertyEntity<Guid>, IMayHaveTenant, IAuditTrial
         return this;
     }
 
+    public Document SetVersion(string version)
+    {
+        Version = version;
+        return this;
+    }
+
     public string? Title { get; private set; }
     public string? Description { get; private set; }
     
@@ -44,6 +50,7 @@ public class Document : OwnerPropertyEntity<Guid>, IMayHaveTenant, IAuditTrial
     public bool IsPublic { get; private set; }
     public string? URL { get; private set; }
     public DocumentType DocumentType { get; private set; } = default!;
+    public string? Version {  get; private set; }
     public virtual Tenant? Tenant { get; set; }
 
     public string? TenantId {get; set;}

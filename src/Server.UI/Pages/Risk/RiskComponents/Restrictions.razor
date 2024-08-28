@@ -18,7 +18,8 @@
                        Label="@Model.GetMemberDescription(x => x.ActivityRestrictionsReceived)"
                        For="@(() => Model.ActivityRestrictionsReceived)"
                        MaxDate="DateTime.UtcNow.Date"
-                       Class="mt-4" />
+                       Class="mt-4"
+                       Editable="true" />
 
         <MudDivider Class="mt-8 mb-8"/>
 
@@ -32,7 +33,8 @@
                        Label="@Model.GetMemberDescription(x => x.PSFRestrictionsReceived)"
                        For="@(() => Model.PSFRestrictionsReceived)"
                        MaxDate="DateTime.UtcNow.Date"
-                       Class="mt-4" />
+                       Class="mt-4"
+                       Editable="true" />
     </CatsMudStep>
 }
 

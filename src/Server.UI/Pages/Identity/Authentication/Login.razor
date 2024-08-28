@@ -1,6 +1,7 @@
 ﻿@page "/pages/authentication/login"
 
 
+@using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents
 @using Microsoft.AspNetCore.Authentication
 @using Cfo.Cats.Domain.Identity
 @using Cfo.Cats.Application.Common.Interfaces.Identity
@@ -140,8 +141,11 @@
     {
         var user = await UserManager.FindByNameAsync(Input.UserName);
 
+        
+
         if(user is null)
         {
+            await Sender.Publish( IdentityAuditNotification.UnknownUserNameNotification(Input.UserName));
             errorMessage = L["Error: Invalid login attempt."];
             return;
         }
@@ -152,7 +156,7 @@
 
         if (result.Succeeded)
         {
-            Logger.LogInformation($"{Input.UserName} logged in.");
+            await Sender.Publish(IdentityAuditNotification.LoginSucceededNoTwoFactorRequired(Input.UserName));
             RedirectManager.RedirectTo(ReturnUrl);
         }
         else if(result is CustomSignInResult customSignInResult && customSignInResult.RequiresPasswordReset)
@@ -171,11 +175,13 @@
         }
         else if (result.IsLockedOut)
         {
+            await Sender.Publish(IdentityAuditNotification.UserLockedOut(Input.UserName));   
             Logger.LogWarning($"{Input.UserName} account locked out.");
             RedirectManager.RedirectTo(Lockout.PageUrl);
         }
         else
         {
+            await Sender.Publish( IdentityAuditNotification.LoginFailedPassword(Input.UserName) );
             errorMessage = L["Error: Invalid login attempt."];
         }
     }

@@ -1,7 +1,9 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
-using Cfo.Cats.Domain.Entities.Participants;
+using Humanizer.Bytes;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
 
@@ -13,10 +15,17 @@ public static class AddConsent
         [Description("Participant Id")]
         public required string ParticipantId { get; set; }
         
-        [Description("Consent Date")]
+        [Description("Date of Consent")]
         public DateTime? ConsentDate { get; set; }
-        
-        public UploadRequest? UploadRequest { get; set; }
+
+        [Description("Document Version")]
+        public string? DocumentVersion { get; set; }
+
+        [Description("Consent Document")]
+        public IBrowserFile? Document { get; set; }
+
+        [Description("I certify that any documents uploaded are the original or true copies of the original documents, and will not be used to claim payments / results against any other Government contract")]
+        public bool Certify { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork, IUploadService uploadService) : IRequestHandler<Command, Result<string>>
@@ -31,13 +40,21 @@ public static class AddConsent
                 throw new NotFoundException("Cannot find participant", request.ParticipantId);
             }
 
-            var document = Document.Create(request.UploadRequest!.FileName,
+            var document = Document.Create(request.Document!.Name,
                 $"Consent form for {request.ParticipantId}",
                 DocumentType.PDF);
-            
-            var result = await uploadService.UploadAsync($"{request.ParticipantId}/consent", request.UploadRequest!);
+
+
+            await using var stream = request.Document.OpenReadStream();
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream, cancellationToken);
+
+            var uploadRequest = new UploadRequest(request.Document.Name, UploadType.Document, memoryStream.ToArray());
+
+            var result = await uploadService.UploadAsync($"{request.ParticipantId}/consent", uploadRequest);
 
             document.SetURL(result);
+            document.SetVersion(request.DocumentVersion!);
 
             participant.AddConsent(request.ConsentDate!.Value, document.Id);
             
@@ -56,24 +73,64 @@ public static class AddConsent
 
             RuleFor(c => c.ParticipantId)
                 .NotNull()
-                .MinimumLength(9)
-                .MaximumLength(9)
+                .Length(9)
                 .WithMessage("Invalid Participant Id")
-                .MustAsync(MustExist)
-                .WithMessage("Participant does not exist");
+                .MustAsync(Exist)
+                .WithMessage("Participant does not exist")
+                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
             RuleFor(v => v.ConsentDate)
                 .NotNull()
-                .LessThanOrEqualTo(DateTime.Today)
-                .WithMessage("Consent Date must be less than or equal to today");
-            
-            RuleFor(v => v.UploadRequest)
-                .NotNull();
-            
+                .WithMessage("You must provide the Date of Consent")
+                .LessThanOrEqualTo(DateTime.UtcNow.Date)
+                .WithMessage(ValidationConstants.DateMustBeInPast);
+
+            RuleFor(v => v.Document)
+                .NotNull()
+                .WithMessage("You must upload a Right to Work document")
+                .Must(file => NotExceedMaximumFileSize(file, Infrastructure.Constants.Documents.Consent.MaximumSizeInMegabytes))
+                .WithMessage($"File size exceeds the maxmimum allowed size of {Infrastructure.Constants.Documents.Consent.MaximumSizeInMegabytes} megabytes")
+                .MustAsync(BePdfFile)
+                .WithMessage("File is not a PDF");
+
+            RuleFor(v => v.DocumentVersion)
+                .NotEmpty()
+                .WithMessage("You must select a document version")
+                .Must(version => Infrastructure.Constants.Documents.Consent.Versions.Contains(version))
+                .WithMessage("Unrecognised document version");
+
+            RuleFor(v => v.Certify)
+                .Equal(true)
+                .WithMessage("You must upload a document and certify");
         }
         
-        private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken) 
+        private async Task<bool> Exist(string identifier, CancellationToken cancellationToken) 
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
-        
+
+        private static bool NotExceedMaximumFileSize(IBrowserFile? file, double maxSizeMB)
+            => file?.Size < ByteSize.FromMegabytes(maxSizeMB).Bytes;
+
+        private async Task<bool> BePdfFile(IBrowserFile? file, CancellationToken cancellationToken)
+        {
+            if (file is null)
+                return false;
+
+            // Check file extension
+            if (!Path.GetExtension(file.Name).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            // Check MIME type
+            if (file.ContentType != "application/pdf")
+                return false;
+
+            // Check file signature (magic numbers)
+            using (var stream = file.OpenReadStream())
+            {
+                byte[] buffer = new byte[4];
+                await stream.ReadAsync(buffer, 0, 4, cancellationToken);
+                string header = System.Text.Encoding.ASCII.GetString(buffer);
+                return header == "%PDF";
+            }
+        }
     }
 }
