@@ -1,15 +1,18 @@
 ﻿@using System.Text
+@using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Participants.Components
 
 @inherits CatsComponentBase
+@inject IDialogService DialogService
 @inject NavigationManager NavigationManager
 
 <MudMenu ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft">
     <ActivatorContent>
-        <MudChip T="string" Icon="@Icons.Material.Filled.CallToAction">Actions</MudChip>
+        <MudChip T="string" Icon="@Icons.Material.Filled.CallToAction">@ConstantString.Actions</MudChip>
     </ActivatorContent>
     <ChildContent>
         
@@ -28,9 +31,13 @@
             <MudMenuItem Icon="@Icons.Material.Filled.Send" IconColor="Color.Primary" OnClick="SubmitToPqa">Submit to Provider QA</MudMenuItem>
         }
 
-       
-        
-        
+        @if (Participant.EnrolmentStatus == EnrolmentStatus.PendingStatus)
+        {
+            <MudMenuItem Icon="@Icons.Material.Filled.Send" IconColor="Color.Primary" OnClick="OpenRightToWorkDialog">@ConstantString.AddRightToWork</MudMenuItem>
+        }
+
+
+
     </ChildContent>
 </MudMenu>
 
@@ -43,14 +50,13 @@
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
 
+
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
 
         // only provider QA can submit to QA
         _canSubmitToQA = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Pqa)).Succeeded;
-
-
     }
 
     protected async Task Archive()
@@ -157,7 +163,27 @@
 
     }
     
-    
+    protected async Task OpenRightToWorkDialog()
+    {
+        // Show Dialog
+        var parameters = new DialogParameters<RightToWorkDialog>
+        {
+            { x => x.Model, new AddRightToWork.Command() { ParticipantId = Participant.Id } }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+        var dialog = DialogService.Show<RightToWorkDialog>
+        (ConstantString.RightToWork, parameters, options);
+
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            dialog.Close();
+        }
+
+    }
 
     private void ShowActionFailure(string title, IResult result)
     {
