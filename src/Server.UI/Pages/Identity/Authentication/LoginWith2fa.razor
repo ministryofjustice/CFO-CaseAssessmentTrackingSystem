@@ -4,6 +4,7 @@
 @using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents
 @using Cfo.Cats.Application.Features.Identity.Notifications.SendTwoFactorCode
 @using Cfo.Cats.Domain.Identity
+@using Cfo.Cats.Infrastructure.Services
 @using Microsoft.AspNetCore.Identity
 
 @inject IStringLocalizer<LoginWith2fa> L
@@ -12,6 +13,7 @@
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<LoginWith2fa> Logger
 @inject IMediator Sender
+@inject INetworkIpProvider NetworkIpProvider
 
 <PageTitle>@L["Two-factor authentication"]</PageTitle>
 <MudText Typo="Typo.h4" GutterBottom="true">@L["Two-factor authentication"]</MudText>
@@ -92,10 +94,10 @@
             if (isCodeValid == false)
             {
                 await UserManager.AccessFailedAsync(user);
-                await Sender.Publish(IdentityAuditNotification.LoginFailedTwoFactor(user.UserName!));
+                await Sender.Publish(IdentityAuditNotification.LoginFailedTwoFactor(user.UserName!, NetworkIpProvider.IpAddress));
                 if (await UserManager.IsLockedOutAsync(user))
                 {
-                    await Sender.Publish(IdentityAuditNotification.UserLockedOut(user.UserName!));
+                    await Sender.Publish(IdentityAuditNotification.UserLockedOut(user.UserName!, NetworkIpProvider.IpAddress));
                     Logger.LogWarning("User with ID '{UserId}' account locked out.", user.Id);
                     RedirectManager.RedirectTo(Lockout.PageUrl);
                 }
@@ -109,17 +111,17 @@
             var userId = await UserManager.GetUserIdAsync(user);
             if (result.Succeeded)
             {
-                await Sender.Publish(IdentityAuditNotification.LoginSucceededTwoFactorRequired(user.UserName!));
+                await Sender.Publish(IdentityAuditNotification.LoginSucceededTwoFactorRequired(user.UserName!, NetworkIpProvider.IpAddress));
                 RedirectManager.RedirectTo("/");
             }
             else if (result.IsLockedOut)
             {
-                await Sender.Publish(IdentityAuditNotification.UserLockedOut(user.UserName!));
+                await Sender.Publish(IdentityAuditNotification.UserLockedOut(user.UserName!, NetworkIpProvider.IpAddress));
                 RedirectManager.RedirectTo(Lockout.PageUrl);
             }
             else
             {
-                await Sender.Publish(IdentityAuditNotification.LoginFailedTwoFactor(user.UserName!));
+                await Sender.Publish(IdentityAuditNotification.LoginFailedTwoFactor(user.UserName!, NetworkIpProvider.IpAddress));
                 message = L["Error: Invalid authenticator code."];
             }
         }

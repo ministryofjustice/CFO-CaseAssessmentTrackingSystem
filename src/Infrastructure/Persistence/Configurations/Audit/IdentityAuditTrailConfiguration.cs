@@ -23,6 +23,9 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Audit
             builder.Property(x => x.DateTime)
                 .IsRequired();
 
+            builder.Property(x => x.IpAddress)
+                .HasMaxLength(30);
+
             builder.HasIndex(x => new
                 {
                     x.UserName,

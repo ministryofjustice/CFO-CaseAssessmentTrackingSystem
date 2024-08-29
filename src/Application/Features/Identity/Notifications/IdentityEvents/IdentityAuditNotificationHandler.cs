@@ -9,7 +9,7 @@ public class IdentityAuditNotificationHandler(IUnitOfWork unitOfWork) : INotific
 {
     public async Task Handle(IdentityAuditNotification notification, CancellationToken cancellationToken)
     {
-        IdentityAuditTrail audit = IdentityAuditTrail.Create(notification.UserName, notification.PerformedBy, notification.ActionType);
+        IdentityAuditTrail audit = IdentityAuditTrail.Create(notification.UserName, notification.PerformedBy, notification.ActionType, notification.IpAddress);
         unitOfWork.DbContext.IdentityAuditTrails.Add(audit);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
