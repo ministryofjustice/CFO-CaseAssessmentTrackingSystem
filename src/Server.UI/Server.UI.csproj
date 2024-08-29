@@ -66,6 +66,10 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Pages\QA\Enrolments\Components\QA2List.razor" />
+    </ItemGroup>
     
 
 

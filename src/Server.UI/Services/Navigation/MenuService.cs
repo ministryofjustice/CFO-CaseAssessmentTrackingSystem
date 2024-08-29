@@ -67,18 +67,26 @@ public class MenuService : IMenuService
                             },
                             new()
                             {
-                                Title = "QA1",
+                                Title = "Queue Management",
                                 PageStatus = PageStatus.Completed,
-                                Href="/pages/qa/enrolments/qa1",
+                                Href="/pages/qa/servicedesk/enrolments",
+                                Roles = [ RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            },
+                            new()
+                            {
+                                Title="QA First Pass",
+                                PageStatus = PageStatus.Completed,
+                                Href = "/pages/qa/enrolments/qa1/",
                                 Roles = [ RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
                             },
                             new()
                             {
-                                Title = "QA2",
+                                Title="QA Second Pass",
                                 PageStatus = PageStatus.Completed,
-                                Href="/pages/qa/enrolments/qa2",
-                                Roles = [  RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
-                            }      
+                                Href = "/pages/qa/enrolments/qa2/",
+                                Roles = [ RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            }
+
                         }
                     }
                 }
