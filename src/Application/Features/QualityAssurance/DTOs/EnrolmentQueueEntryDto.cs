@@ -13,6 +13,8 @@ public class EnrolmentQueueEntryDto
 
     public string SupportWorker { get; set; } = default!;
 
+    public string? AssignedTo { get; set; } 
+
     public bool IsCompleted { get; set; }
     public bool IsAccepted { get; set; }
     
@@ -56,7 +58,10 @@ public class EnrolmentQueueEntryDto
                 .ForMember(target => target.SupportWorker, options => options.MapFrom(
                 source => source.Participant!.Owner!.DisplayName
                 ))
-                .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes));
+                .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
+ #pragma warning disable CS8602 // Dereference of a possibly null reference.
+                .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner.DisplayName));
+ #pragma warning restore CS8602 // Dereference of a possibly null reference.
             
             CreateMap<EnrolmentQa2QueueEntry, EnrolmentQueueEntryDto>()
                 .ForMember(target => target.ParticipantId,

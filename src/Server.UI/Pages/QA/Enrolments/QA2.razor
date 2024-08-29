@@ -1,11 +1,10 @@
-@page "/pages/qa/enrolments/qa2/{id:guid}"
+@page "/pages/qa/enrolments/qa2/"
 
 @using Cfo.Cats.Application.Features.Documents.Queries
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
-@using Cfo.Cats.Application.Features.QualityAssurance.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 
@@ -33,12 +32,23 @@
     }
     
 </style>
+<MudContainer Style="width: 100%; min-width: 480px;" >
+    <MudText Typo="Typo.h5" Class="mb-5">
+        CFO Enrolment Queue Second Pass
+    </MudText>
 
+    @if (_participantDto is null)
+    {
+        <MudButton OnClick="GetQueueItem" ButtonType="ButtonType.Button"
+                   StartIcon="@Icons.Material.Filled.QueuePlayNext"
+                   Variant="Variant.Outlined" Color="Color.Primary">
+            Get Next
+        </MudButton>
+    }
 
+    @if (_participantDto is not null && _participantDto.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus)
+    {
 
-@if (_participantDto is not null && _participantDto.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus)
-{
-    
     @if (_queueEntry!.IsAccepted)
     {
         <MudAlert Severity="Severity.Warning">
@@ -87,7 +97,7 @@
             {
                 <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
                     <MudItem xs="12">
-                        <MudRadioGroup T="bool?" @bind-Value="Command.Accept" Required="true">
+                    <MudRadioGroup T="bool?" @bind-Value="Command.Accept" For="@(() => Command.Accept)" Required="true">
                             <MudRadio T="bool?" Value="true" Color="Color.Primary">
                                 Accept
                             </MudRadio>
@@ -133,6 +143,9 @@
 }
 
 
+</MudContainer>
+
+
 @code {
 
     private MudForm? _form;
@@ -141,9 +154,6 @@
 
     private bool IsFileRejected {get; set;}
     
-    [Parameter]
-    public Guid Id { get; set; }
-
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; } = null!;
 
@@ -154,33 +164,34 @@
 
     private SubmitQa2Response.Command Command { get; set; } = default!;
 
-    protected override async Task OnInitializedAsync()
+	private async Task GetQueueItem()
     {
-        if (_participantDto is null)
+        GrabQa2Entry.Command command = new GrabQa2Entry.Command()
         {
-            var result = await GetNewMediator().Send(new GetQa2EntryById.Query()
+            CurrentUser = UserProfile!
+        };
+
+        var result = await GetNewMediator().Send(command);
+        if (result.Succeeded)
+        {
+            _queueEntry = result.Data!;
+            _participantDto = await GetNewMediator().Send(new GetParticipantById.Query()
             {
-                Id = Id,
-                CurrentUser = UserProfile
+                Id = _queueEntry.ParticipantId
             });
-
-            if (result.Succeeded)
+            Command = new SubmitQa2Response.Command()
             {
-                _queueEntry = result.Data!;
-                _participantDto = await GetNewMediator().Send(new GetParticipantById.Query()
-                {
-                    Id = _queueEntry.ParticipantId
-                });
-
-                Command = new SubmitQa2Response.Command()
-                {
-                    QueueEntryId = Id,
-                    CurrentUser = UserProfile
-                };
-            }
-            StateHasChanged();    
+                QueueEntryId = _queueEntry.Id,
+                CurrentUser = UserProfile
+            };
         }
+        else
+        {
+            Snackbar.Add(result.ErrorMessage, Severity.Info);
+        }
+
     }
+    
 
     protected async Task SubmitToQa()
     {
@@ -192,7 +203,7 @@
             if (result.Succeeded)
             {
                 Snackbar.Add("Participant submitted", Severity.Info);
-                Navigation.NavigateTo("/pages/qa/enrolments/qa2");
+                Navigation.NavigateTo("/pages/qa/enrolments/qa2", true);
             }
             else
             {

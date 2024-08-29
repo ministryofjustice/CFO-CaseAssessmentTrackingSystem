@@ -13,5 +13,21 @@ public class EnrolmentQueueEntryCompletedDomainEventHandler(IUnitOfWork unitOfWo
             entry.TenantId = notification.Entry!.Participant!.Owner!.TenantId!;
             await unitOfWork.DbContext.EnrolmentQa2Queue.AddAsync(entry, cancellationToken);
         }
+        
+        if (notification.Entry is EnrolmentQa2QueueEntry)
+        {
+            if (notification.Entry.IsAccepted)
+            {
+                notification.Entry.Participant!.TransitionTo(EnrolmentStatus.ApprovedStatus);
+            }
+            else
+            {
+                notification.Entry.Participant!.TransitionTo(EnrolmentStatus.SubmittedToProviderStatus);
+            }
+        }
+        
+        
+        
+        
     }
 }

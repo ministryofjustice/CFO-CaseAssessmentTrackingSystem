@@ -16,11 +16,25 @@ public class DomainEventDispatcher(IMediator mediator) : IDomainEventDispatcher
             .SelectMany(x => x.Entity.DomainEvents)
             .ToList();
 
-        domainEntities.ForEach(entity => entity.Entity.ClearDomainEvents());
-
-        foreach (var domainEvent in domainEvents)
+        while (domainEvents.Any())
         {
-            await mediator.Publish(domainEvent, cancellationToken);
+            domainEntities.ForEach(entity => entity.Entity.ClearDomainEvents());
+
+            foreach (var domainEvent in domainEvents)
+            {
+                await mediator.Publish(domainEvent, cancellationToken);
+            }
+
+            domainEntities = context.ChangeTracker
+                      .Entries<IEntity>()
+                      .Where(x => x.Entity.DomainEvents.Any())
+                      .ToList();
+
+            domainEvents = domainEntities
+                .SelectMany(x => x.Entity.DomainEvents)
+                .ToList();
         }
+
+
     }
 }

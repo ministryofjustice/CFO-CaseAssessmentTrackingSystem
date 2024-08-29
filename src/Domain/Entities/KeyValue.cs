@@ -21,7 +21,10 @@ namespace Cfo.Cats.Domain.Entities
     public enum Picklist
     {
         [Description("Referral Source")]
-        ReferralSource = 0
+        ReferralSource = 0,
+
+        [Description("QA Return Reason")]
+        QaReturnReason = 1
 
     }
     
