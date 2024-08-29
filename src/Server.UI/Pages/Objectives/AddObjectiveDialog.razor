@@ -8,7 +8,8 @@
             <MudTextField 
                 @bind-Value="Model.Description" 
                 Label="@Model.GetMemberDescription(x => x.Description)"
-                For="@(() => Model.Description)" />
+                For="@(() => Model.Description)"
+                Lines="4" />
         </MudForm>
     </DialogContent>
     <DialogActions>

@@ -7,7 +7,8 @@
         <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
             <MudTextField @bind-Value="Model.Description"
                           Label="@Model.GetMemberDescription(x => x.Description)"
-                          For="@(() => Model.Description)" />
+                          For="@(() => Model.Description)"
+                          Lines="4" />
 
             <MudDatePicker @bind-Date="Model.Due"
                           FixDay="1"
