@@ -23,7 +23,7 @@ public class Objective : BaseAuditableEntity<Guid>
 
     public Guid PathwayPlanId { get; private set; }
 
-    public string Title { get; private set; }
+    public string Description { get; private set; }
     
     public string? Justification { get; private set; }
 
@@ -44,9 +44,9 @@ public class Objective : BaseAuditableEntity<Guid>
         return this;
     }
 
-    public void Rename(string title)
+    public void Rename(string description)
     {
-        Title = title;
+        Description = description;
     }
 
     public void Review(CompletionStatus status, string completedBy, string? justification)
@@ -63,11 +63,11 @@ public class Objective : BaseAuditableEntity<Guid>
         AddDomainEvent(new ObjectiveCompletedDomainEvent(this));
     }
 
-    public static Objective Create(string title, Guid pathwayPlanId)
+    public static Objective Create(string description, Guid pathwayPlanId)
     {
         Objective objective = new()
         {
-            Title = title,
+            Description = description,
             PathwayPlanId = pathwayPlanId
         };
 

@@ -13,14 +13,15 @@ public static class AddObjective
         [Description("Pathway Plan Id")]
         public required Guid PathwayPlanId { get; set; }
 
-        public string? Title { get; set; }
+        [Description("Description")]
+        public string? Description { get; set; }
 
         public class Mapping : Profile
         {
             public Mapping()
             {
                 CreateMap<Command, Objective>(MemberList.None)
-                    .ConstructUsing(dto => Objective.Create(dto.Title!, dto.PathwayPlanId));
+                    .ConstructUsing(dto => Objective.Create(dto.Description!, dto.PathwayPlanId));
             }
         }
     }
@@ -50,11 +51,11 @@ public static class AddObjective
             RuleFor(x => x.PathwayPlanId)
                 .NotNull();
 
-            RuleFor(x => x.Title)
+            RuleFor(x => x.Description)
                 .NotEmpty()
-                .WithMessage("You must provide a title")
+                .WithMessage("You must provide a description")
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Title"));
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
         }
 
     }

@@ -83,7 +83,7 @@ else
     private Dictionary<string, Func<ObjectiveDto, dynamic>> selectors = new()
     {
         { "Created", (objective) => objective.Created },
-        { "Title", (objective) => objective.Title },
+        { "Title", (objective) => objective.Description },
         { "Outstanding", (objective) => objective.Tasks.Where(task => task.IsCompleted is false).Count() },
     };
 
