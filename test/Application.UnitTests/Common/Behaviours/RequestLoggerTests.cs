@@ -50,7 +50,7 @@ public class RequestLoggerTests
             Nationality = "",
             Ethnicity = "",
             Primary = "",
-            CurrentLocation = "",
+            LocationDescription = "",
 
         };
     }
