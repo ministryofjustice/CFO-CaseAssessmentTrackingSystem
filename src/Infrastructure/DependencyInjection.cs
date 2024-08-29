@@ -37,6 +37,7 @@ public static class DependencyInjection
             .AddFusionCacheService();
 
         services.AddSingleton<IUsersStateContainer, UsersStateContainer>();
+        services.AddScoped<INetworkIpProvider, NetworkIpProvider>();
 
         return services;
     }
@@ -70,7 +71,7 @@ public static class DependencyInjection
     )
     {
         services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
-
+        
 
         if (configuration.GetValue<bool>("UseInMemoryDatabase"))
         {
@@ -346,19 +347,17 @@ public static class DependencyInjection
 
         services.AddQuartz(quartz =>
         {
-            quartz.AddJob<SyncParticipantsJob>(opts => opts.WithIdentity(SyncParticipantsJob.Key));
-
-            var jobOptions = options.GetRequiredSection<JobOptions>(SyncParticipantsJob.Key.Name);
-
-            if(jobOptions.Enabled)
+            if (options.GetSection(SyncParticipantsJob.Key.Name).Get<JobOptions>() is 
+                { Enabled: true } syncParticipantsJobOptions)
             {
+                quartz.AddJob<SyncParticipantsJob>(opts => opts.WithIdentity(SyncParticipantsJob.Key));
+
                 quartz.AddTrigger(opts => opts
                     .ForJob(SyncParticipantsJob.Key)
                     .WithIdentity($"{SyncParticipantsJob.Key}-trigger")
                     .WithDescription(SyncParticipantsJob.Description)
-                    .WithCronSchedule(jobOptions.CronSchedule));
+                    .WithCronSchedule(syncParticipantsJobOptions.CronSchedule));
             }
-
         });
 
         services.AddQuartzServer(options =>

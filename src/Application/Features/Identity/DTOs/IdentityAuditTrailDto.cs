@@ -13,6 +13,9 @@ namespace Cfo.Cats.Application.Features.Identity.DTOs
 
         [Description("Performed By")]
         public string? PerformedBy { get; set; }
+        
+        [Description("Remote IP Address")]
+        public string? IpAddress { get; set; }
 
         [Description("Date Time")]
         public DateTime DateTime { get; set; }

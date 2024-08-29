@@ -1,0 +1,148 @@
+﻿@using Cfo.Cats.Application.Features.Participants.Commands
+@inherits CatsComponentBase
+
+@inject IValidationService Validator
+
+<MudDialog>
+    <DialogContent>
+        @if (Model is not null)
+        {
+            <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                <MudText Typo="Typo.caption">
+                    For anyone recorded on PNomis / NDelius as non-British / non-Irish, documentation is required to support their Right to Work. More information on this requirement can be found in the CFO Enrolment Guidance.
+                </MudText>
+
+                <MudText Typo="Typo.caption">
+                    To your knowledge, is any Right to Work (RTW) documentation required for the enrolment of this person?
+                </MudText>
+
+                <MudToggleGroup @bind-Value="Model.RightToWorkRequired">
+                    <MudToggleItem Value="true">Yes, Right to Work is required</MudToggleItem>
+                    <MudToggleItem Value="false">No, Right to Work is not required</MudToggleItem>
+                </MudToggleGroup>
+                <MudTextField ReadOnly Underline="false" For="@(() => Model.RightToWorkRequired)" hidden />
+
+                @if (Model.RightToWorkRequired)
+                {
+                    <MudCheckBox @bind-Value="Model.IndefiniteRightToWork"
+                                    Label="@Model.GetMemberDescription(x => x.IndefiniteRightToWork)"
+                                    For="() => Model.IndefiniteRightToWork" />
+
+                    <MudDatePicker @bind-Date="Model.ValidFrom"
+                                    For="() => Model.ValidFrom"
+                                    Label="@Model.GetMemberDescription(x => x.ValidFrom)"
+                                    MaxDate="DateTime.Now.Date"
+                                    MinDate="DateTime.Now.AddYears(-5).Date"
+                                    Editable="true" />
+
+                    @if (Model.IndefiniteRightToWork is false)
+                    {
+                        <MudDatePicker @bind-Date="Model.ValidTo"
+                                        For="() => Model.ValidTo"
+                                        Label="@Model.GetMemberDescription(x => x.ValidTo)"
+                                        MaxDate="DateTime.MaxValue.Date"
+                                        MinDate="DateTime.Now.Date"
+                                        Editable="true" />
+                    }
+
+                    <div class="mb-4 mt-8">
+                        <MudFileUpload @bind-Files="Model.Document"
+                                        For="() => Model.Document"
+                                        MaximumFileCount="1"
+                                        Accept=".pdf">
+                            <ActivatorContent>
+                                <MudLoadingButton Loading="_uploading"
+                                                    Variant="Variant.Outlined"
+                                                    Color="Color.Primary"
+                                                    StartIcon="@Icons.Material.Filled.Upload">
+                                    @if (_uploading)
+                                    {
+                                        @ConstantString.Uploading
+                                    }
+                                    else
+                                    {
+                                        @ConstantString.Upload
+                                    }
+                                </MudLoadingButton>
+                            </ActivatorContent>
+                        </MudFileUpload>
+                    </div>
+                }
+            </MudForm>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@_saving" Color="Color.Primary" OnClick="Submit">
+            @if (_saving)
+            {
+                @ConstantString.Saving
+            }
+            else
+            {
+                @ConstantString.Save
+            }
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code
+{
+    private bool _saving=false;
+    private bool _uploading=false;
+
+    private MudForm? form;
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [EditorRequired]
+    [Parameter]
+    public AddRightToWork.Command? Model { get; set; }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            _saving = true;
+
+            if (Model!.RightToWorkRequired == false)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+                return;
+            }
+
+            await form!.Validate();
+
+            if (!form!.IsValid)
+            {
+                return;
+            }
+
+            var result = await GetNewMediator().Send(Model!);
+
+            if (result.Succeeded)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add($"Error uploading Right to work evidence: {result.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Error uploading Right to work evidence: {e.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

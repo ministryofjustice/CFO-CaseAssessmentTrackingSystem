@@ -36,6 +36,7 @@ public static class ConstantString
     public static string Save => Localize("Save");
     public static string SaveAndNew => Localize("Save & New");
     public static string SaveChanges => Localize("Save Changes");
+    public static string Saving => Localize("Saving");
     public static string Cancel => Localize("Cancel");
     public static string Close => Localize("Close");
     public static string Search => Localize("Search");
@@ -117,4 +118,8 @@ public static class ConstantString
     
     public static string LogoutConfirmation =>
         Localize("You are attempting to log out of application. Do you really want to log out?");
+    public static string AddRightToWork =>
+    Localize("Add RTW");
+    public static string RightToWork =>
+Localize("Right To Work");
 }
