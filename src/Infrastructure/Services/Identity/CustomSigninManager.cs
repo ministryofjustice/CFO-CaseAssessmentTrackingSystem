@@ -6,9 +6,10 @@ using NetTools;
 
 namespace Cfo.Cats.Infrastructure.Services.Identity;
 
-public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory, IOptions<IdentityOptions> optionsAccessor, ILogger<SignInManager<ApplicationUser>> logger, IAuthenticationSchemeProvider schemes, IUserConfirmation<ApplicationUser> confirmation, IHttpContextAccessor httpContextAccessor, IOptions<AllowlistOptions> allowlistOptions)
+public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory, IOptions<IdentityOptions> optionsAccessor, ILogger<SignInManager<ApplicationUser>> logger, IAuthenticationSchemeProvider schemes, IUserConfirmation<ApplicationUser> confirmation, IOptions<AllowlistOptions> allowlistOptions, INetworkIpProvider networkIpAccessor)
     : SignInManager<ApplicationUser>(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation)
 {
+    
     public override async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure)
     {
         var user = await UserManager.FindByNameAsync(userName);
@@ -18,7 +19,7 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
             return SignInResult.Failed;
         }
 
-        var ipAddress = httpContextAccessor.HttpContext!.Connection.RemoteIpAddress?.ToString();
+        
         
         var passwordCheckResult = await CheckPasswordSignInAsync(user, password, lockoutOnFailure);
 
@@ -31,6 +32,8 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
         {
             return CustomSignInResult.PasswordResetRequired;
         }
+
+        var ipAddress = networkIpAccessor.IpAddress;
         
         if (PasswordCheckSucceededAndTwoFactorDisabledForIpRange(passwordCheckResult, ipAddress))
         {

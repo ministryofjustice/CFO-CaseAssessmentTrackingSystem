@@ -13,6 +13,7 @@
 @using System.Linq.Expressions
 @using ActualLab.Fusion.Extensions
 @using AutoMapper.QueryableExtensions;
+@using Cfo.Cats.Infrastructure.Services
 @using Cfo.Cats.Infrastructure.Services.MultiTenant
 @using Cfo.Cats.Server.UI.Services.Fusion
 @using ZiggyCreatures.Caching.Fusion
@@ -28,6 +29,7 @@
 @inject ITenantService TenantsService
 @inject IFusionCache FusionCache;
 @inject IExcelService ExcelService
+@inject INetworkIpProvider NetworkIpProvider
 
 @inject IStringLocalizer<Users> L
 @inject ILogger<Users> Logger
@@ -685,12 +687,12 @@
         if (user.IsActive)
         {
             await DeactivateUser(user, item);
-            await mediator.Publish(IdentityAuditNotification.DeactivateAccount(item.UserName, CurrentUser!.UserName!));
+            await mediator.Publish(IdentityAuditNotification.DeactivateAccount(item.UserName, NetworkIpProvider.IpAddress, CurrentUser!.UserName!));
         }
         else
         {
             await ActivateUser(user, item);
-            await mediator.Publish(IdentityAuditNotification.ActivateAccount(item.UserName, CurrentUser!.UserName!));
+            await mediator.Publish(IdentityAuditNotification.ActivateAccount(item.UserName, NetworkIpProvider.IpAddress , CurrentUser!.UserName!));
         }
     }
 
@@ -747,7 +749,7 @@
 
         if (!result!.Canceled)
         {
-            await GetNewMediator().Publish(IdentityAuditNotification.PasswordReset(item.UserName, UserProfile.Email));
+            await GetNewMediator().Publish(IdentityAuditNotification.PasswordReset(item.UserName, NetworkIpProvider.IpAddress, UserProfile.Email));
             Snackbar.Add($"{L["Reset password successfully"]}", Severity.Info);
         }
     }

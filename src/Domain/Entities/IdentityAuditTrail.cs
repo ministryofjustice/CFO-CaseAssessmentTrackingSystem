@@ -28,19 +28,22 @@ namespace Cfo.Cats.Domain.Entities
 
         public IdentityActionType ActionType { get; private set; }
         
+        public string? IpAddress { get; private set; }
+        
         [NotMapped]
         public IReadOnlyCollection<DomainEvent> DomainEvents => new List<DomainEvent>().AsReadOnly();
 
         public void ClearDomainEvents() { }
 
-        public static IdentityAuditTrail Create(string? userName, string? performedBy, IdentityActionType actionType )
+        public static IdentityAuditTrail Create(string? userName, string? performedBy, IdentityActionType actionType, string ipAddress )
         {
             return new IdentityAuditTrail()
             {
                 UserName = userName,
                 PerformedBy = performedBy,                
                 DateTime = DateTime.Now,
-                ActionType = actionType
+                ActionType = actionType,
+                IpAddress = ipAddress
             };
         }
     }

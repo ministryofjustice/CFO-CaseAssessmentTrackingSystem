@@ -37,6 +37,7 @@ public static class DependencyInjection
             .AddFusionCacheService();
 
         services.AddSingleton<IUsersStateContainer, UsersStateContainer>();
+        services.AddScoped<INetworkIpProvider, NetworkIpProvider>();
 
         return services;
     }
@@ -70,7 +71,7 @@ public static class DependencyInjection
     )
     {
         services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
-
+        
 
         if (configuration.GetValue<bool>("UseInMemoryDatabase"))
         {

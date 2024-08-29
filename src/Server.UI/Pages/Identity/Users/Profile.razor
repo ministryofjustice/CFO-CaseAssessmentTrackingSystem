@@ -3,6 +3,7 @@
 @using Cfo.Cats.Server.UI.Services.JsInterop
 @using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Domain.Identity
+@using Cfo.Cats.Infrastructure.Services
 @using Cfo.Cats.Domain.Common.Enums
 @inherits CatsComponentBase
 
@@ -11,6 +12,7 @@
 @inject IJSRuntime Js
 @inject IUploadService UploadService
 @inject IIdentityService IdentityService
+@inject INetworkIpProvider NetworkIpProvider
 
 
 <PageTitle>@Title</PageTitle>
@@ -218,7 +220,7 @@
                 var result = await userManager.ChangePasswordAsync(user!, changePassword.CurrentPassword, changePassword.NewPassword);
                 if (result.Succeeded)
                 {
-                    await GetNewMediator().Publish(IdentityAuditNotification.PasswordReset(user!.UserName!));
+                    await GetNewMediator().Publish(IdentityAuditNotification.PasswordReset(user!.UserName!, NetworkIpProvider.IpAddress));
                     Snackbar.Add($"{L["Password changed successfully... Logging out"]}", Severity.Info);
                     Navigation.NavigateTo(@IdentityComponentsEndpointRouteBuilderExtensions.Logout, true);
                 }

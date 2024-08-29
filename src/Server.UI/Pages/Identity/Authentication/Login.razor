@@ -9,6 +9,7 @@
 @using Microsoft.AspNetCore.WebUtilities
 @using System.Text
 @using Cfo.Cats.Application.Features.Identity.Notifications.SendTwoFactorCode
+@using Cfo.Cats.Infrastructure.Services
 @using static Cfo.Cats.Infrastructure.Services.Identity.CustomSigninManager
 
 @inject ILogger<Login> Logger
@@ -18,6 +19,7 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityRedirectManager RedirectManager
 @inject IMediator Sender
+@inject INetworkIpProvider NetworkIpProvider
 
 <PageTitle>@title</PageTitle>
 
@@ -145,7 +147,7 @@
 
         if(user is null)
         {
-            await Sender.Publish( IdentityAuditNotification.UnknownUserNameNotification(Input.UserName));
+            await Sender.Publish( IdentityAuditNotification.UnknownUserNameNotification(Input.UserName, NetworkIpProvider.IpAddress));
             errorMessage = L["Error: Invalid login attempt."];
             return;
         }
@@ -156,7 +158,7 @@
 
         if (result.Succeeded)
         {
-            await Sender.Publish(IdentityAuditNotification.LoginSucceededNoTwoFactorRequired(Input.UserName));
+            await Sender.Publish(IdentityAuditNotification.LoginSucceededNoTwoFactorRequired(Input.UserName, NetworkIpProvider.IpAddress));
             RedirectManager.RedirectTo(ReturnUrl);
         }
         else if(result is CustomSignInResult customSignInResult && customSignInResult.RequiresPasswordReset)
@@ -175,13 +177,13 @@
         }
         else if (result.IsLockedOut)
         {
-            await Sender.Publish(IdentityAuditNotification.UserLockedOut(Input.UserName));   
+            await Sender.Publish(IdentityAuditNotification.UserLockedOut(Input.UserName,NetworkIpProvider.IpAddress));   
             Logger.LogWarning($"{Input.UserName} account locked out.");
             RedirectManager.RedirectTo(Lockout.PageUrl);
         }
         else
         {
-            await Sender.Publish( IdentityAuditNotification.LoginFailedPassword(Input.UserName) );
+            await Sender.Publish( IdentityAuditNotification.LoginFailedPassword(Input.UserName,NetworkIpProvider.IpAddress) );
             errorMessage = L["Error: Invalid login attempt."];
         }
     }
