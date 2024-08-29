@@ -26,6 +26,7 @@ internal static class DatabaseConstants
         public const string Assessment = nameof(Assessment);
         public const string Bio = nameof(Bio);
         public const string Note = nameof(Note);
+        public const string ExternalIdentifier = nameof(ExternalIdentifier);
         public const string Tenant = nameof(Tenant);
         public const string TenantDomain = nameof(TenantDomain);
         public const string KeyValue = nameof(KeyValue);

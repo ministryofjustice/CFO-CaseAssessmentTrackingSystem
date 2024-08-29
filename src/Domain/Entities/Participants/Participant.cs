@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Common.Exceptions;
 using Cfo.Cats.Domain.Entities.Administration;
@@ -14,7 +14,9 @@ public class Participant : OwnerPropertyEntity<string>
     private List<Consent> _consents = new();
     private List<RightToWork> _rightToWorks = new();
     private List<Note> _notes = new();
-    
+    private List<ExternalIdentifier> _externalIdentifiers = new();
+
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private Participant()
     {
@@ -70,11 +72,15 @@ public class Participant : OwnerPropertyEntity<string>
 
     public string? AssessmentJustification { get; private set; }
 
+    public string? FullName => string.Join(' ', [FirstName, MiddleName, LastName]);
+
     public IReadOnlyCollection<Consent> Consents => _consents.AsReadOnly();
 
     public IReadOnlyCollection<RightToWork> RightToWorks => _rightToWorks.AsReadOnly();
 
     public IReadOnlyCollection<Note> Notes => _notes.AsReadOnly();
+
+    public IReadOnlyCollection<ExternalIdentifier> ExternalIdentifiers => _externalIdentifiers.AsReadOnly();
 
     /// <summary>
     /// Transitions this participant to the new enrolment status, if valid
@@ -153,6 +159,29 @@ public class Participant : OwnerPropertyEntity<string>
         {
             _notes.Add(note);
         }
+
+        return this;
+    }
+
+    public Participant AddOrUpdateExternalIdentifier(ExternalIdentifier newIdentifier)
+    {
+        if(_externalIdentifiers.Contains(newIdentifier))
+        {
+            return this;
+        }
+
+        var identifier = _externalIdentifiers.Find(x => x.Type == newIdentifier.Type);
+
+        if(identifier is not null && identifier.Type.IsExclusive)
+        {
+            _externalIdentifiers.Remove(identifier);
+
+            // Identifier changed from X to Y
+
+            // AddDomainEvent()
+        }
+
+        _externalIdentifiers.Add(newIdentifier);
 
         return this;
     }

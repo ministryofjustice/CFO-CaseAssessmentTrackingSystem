@@ -137,6 +137,33 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             
         });
 
+        builder.OwnsMany(p => p.ExternalIdentifiers, externalIdentifier =>
+        {
+            externalIdentifier.WithOwner();
+
+            externalIdentifier.ToTable(
+                DatabaseConstants.Tables.ExternalIdentifier,
+                DatabaseConstants.Schemas.Participant
+            );
+
+            externalIdentifier.HasKey(
+                "Value", 
+                "Type", 
+                "ParticipantId"
+            );
+
+            externalIdentifier.Property(x => x.Value)
+                .IsRequired()
+                .HasMaxLength(16);
+
+            externalIdentifier.Property(e => e.Type)
+                .IsRequired()
+                .HasConversion(
+                    id => id!.Value,
+                    id => ExternalIdentifierType.FromValue(id)
+                );
+        });
+
         builder.OwnsMany(p => p.Notes, note =>
         {
             note.WithOwner();
