@@ -1,4 +1,10 @@
-﻿@if(Model is not null)
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Domain.Common.Enums
+
+@inherits CatsComponentBase
+
+@if(Model is not null)
 {
     <MudForm Model="Model" ReadOnly>
         <MudGrid Class="pa-3" Spacing="4">
@@ -6,13 +12,8 @@
                 <MudCard Style="Height: 100%">
                     <MudCardHeader>
                         <CardHeaderContent>
-                            <MudText Typo="Typo.h6">Custody</MudText>
+                            <MudText Typo="Typo.h6">Record</MudText>
                         </CardHeaderContent>
-                        <CardHeaderActions>
-                            <MudTooltip Text="Expand">
-                                <MudIconButton OnClick="Expand" Icon="@Icons.Material.Filled.OpenInNew" />
-                            </MudTooltip>
-                        </CardHeaderActions>
                         <CardHeaderAvatar>
                             <MudAvatar Color="Color.Primary">
                                 <MudIcon Icon="@Icons.Material.Filled.Person" />
@@ -20,84 +21,19 @@
                         </CardHeaderAvatar>
                     </MudCardHeader>
                     <MudCardContent>
-                        <MudTextField Value="Model.NomisNumber" Label="NOMIS ID" />
-                        <MudTextField Value="Model.PncNumber" Label="PNC No" />
-                        <MudTextField Value="Model.BookNumber" Label="Book No" />
-                    </MudCardContent>
-                </MudCard>
-            </MudItem>
-            <MudItem sm="12" md="8">
-                <MudCard Style="Height: 100%">
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h6">Sentence</MudText>
-                        </CardHeaderContent>
-                        <CardHeaderActions>
-                            <MudTooltip Text="Expand">
-                                <MudIconButton OnClick="Expand" Icon="@Icons.Material.Filled.OpenInNew" />
-                            </MudTooltip>
-                        </CardHeaderActions>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <MudGrid>
-                            <MudItem xs="12">
-                                <MudTextField Value="Model.MainOffenceDescription" Label="Offence" Lines="4" />
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudDatePicker Date="Model.StartDate" Label="Start Date" Editable="true" />
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudDatePicker Date="Model.EndDate" Label="End Date" Editable="true" />
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudDatePicker Date="Model.EarliestEndDate" Label="Earliest End Date" Editable="true" />
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudDatePicker Date="Model.HdceDate" Label="HDCE Date" Editable="true" />
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudDatePicker Date="Model.ReleaseDate" Label="Date of Release" Editable="true" />
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudTextField Value="Model.UnitWing" Label="Unit Wing" />
-                            </MudItem>
-                            <MudItem xs="8">
-                                <MudTextField Value="Model.SentenceType" Label="Sentence Type" />
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudTextField Value="Model.SentenceLength" Label="Length" />
-                            </MudItem>
-                            <MudItem xs="12">
-                                <MudTextField Value="Model.SupervisingService" Label="Supervising Service" Lines="3" />
-                            </MudItem>
-                        </MudGrid>
-                    </MudCardContent>
-                </MudCard>
-            </MudItem>
-            <MudItem sm="12" md="4">
-                <MudCard Style="Height: 100%">
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h6">Community</MudText>
-                        </CardHeaderContent>
-                        <CardHeaderActions>
-                            <MudTooltip Text="Expand">
-                                <MudIconButton OnClick="Expand" Icon="@Icons.Material.Filled.OpenInNew" />
-                            </MudTooltip>
-                        </CardHeaderActions>
-                        <CardHeaderAvatar>
-                            <MudAvatar Color="Color.Primary">
-                                <MudIcon Icon="@Icons.Material.Filled.Person" />
-                            </MudAvatar>
-                        </CardHeaderAvatar>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <MudTextField Value="Model.Crn" Label="NDelius ID" />
-                        <MudCheckBox Value="Model.OnCOLicense" Label="Currently on C.O / License" />
-                        <MudCheckBox Value="Model.OnCommunityPayback" Label="On Community Payback" />
-                        <MudTextField Value="Model.PncNumber" Label="PNC No" />
-                        <MudTextField Value="Model.OmResponsibility" Label="Off. Man. Responsibility" />
-                        <MudDatePicker Date="Model.CFO3EndDate" Label="CFO3 - (90 Day) End Date" />
+                        @if (Model.Identifiers.Any())
+                        {
+                            foreach (var identifier in Model.Identifiers
+                               .OrderBy(id => id.Type.DisplayOrderPriority)
+                               .ThenBy(id => id.Value))
+                            {
+                                <MudTextField Class="mb-2" Value="identifier.Value" Label="@identifier.Type.Name" />
+                            }
+                        }
+                        else
+                        {
+                            <MudText>No information found.</MudText>
+                        }
                     </MudCardContent>
                 </MudCard>
             </MudItem>
@@ -108,17 +44,32 @@
                             <MudText Typo="Typo.h6">Supervising Officer / Offender Manager</MudText>
                         </CardHeaderContent>
                         <CardHeaderActions>
-                            <MudTooltip Text="Expand">
-                                <MudIconButton OnClick="Expand" Icon="@Icons.Material.Filled.OpenInNew" />
+                            <MudTooltip Text="Edit">
+                                <MudIconButton OnClick="Edit" Icon="@Icons.Material.Filled.Edit" />
                             </MudTooltip>
                         </CardHeaderActions>
                     </MudCardHeader>
                     <MudCardContent>
-                        <MudTextField Value="Model.OffenderManager.Name" Label="Name" />
-                        <MudTextField Value="Model.OffenderManager.TelephoneNumber" Label="Telephone Number" />
-                        <MudTextField Value="Model.OffenderManager.MobileNumber" Label="Mobile Number" />
-                        <MudTextField Value="Model.OffenderManager.EmailAddress" Label="Email Address" />
-                        <MudTextField Value="Model.OffenderManager.Address" Label="Address" Lines="4" />
+                        <MudTextField Value="Model.OffenderManager.Name" 
+                                      Label="Name" 
+                                      Class="mb-2" />
+
+                        <MudTextField Value="Model.OffenderManager.TelephoneNumber" 
+                                      Label="Telephone Number"  
+                                      Class="mb-2" />
+
+                        <MudTextField Value="Model.OffenderManager.MobileNumber" 
+                                      Label="Mobile Number"  
+                                      Class="mb-2" />
+
+                        <MudTextField Value="Model.OffenderManager.EmailAddress" 
+                                      Label="Email Address"  
+                                      Class="mb-2" />
+
+                        <MudTextField Value="Model.OffenderManager.Address" 
+                                      Label="Address" 
+                                      Lines="4"  
+                                      Class="mb-2" />
                     </MudCardContent>
                 </MudCard>
             </MudItem>
@@ -133,24 +84,7 @@
     public SentenceDetail? Model { get; private set; }
 
     public record SentenceDetail(
-        string NomisNumber,
-        string PncNumber,
-        string BookNumber,
-        string MainOffenceDescription,
-        DateTime StartDate,
-        DateTime EndDate,
-        DateTime EarliestEndDate,
-        DateTime? HdceDate,
-        DateTime? ReleaseDate,
-        string UnitWing,
-        string SentenceType,
-        string SentenceLength,
-        string SupervisingService,
-        string Crn,
-        bool OnCOLicense,
-        bool OnCommunityPayback,
-        string OmResponsibility,
-        DateTime CFO3EndDate,
+        ParticipantIdentifierDto[] Identifiers,
         OffenderManager OffenderManager);
 
     public record OffenderManager(
@@ -160,42 +94,35 @@
         string EmailAddress,
         string Address);
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        Model = new(
-            NomisNumber: "A0001AA",
-            PncNumber: "01/234567890",
-            BookNumber: string.Empty,
-            MainOffenceDescription: "Burglary (dwelling) with intent to commit, or the commission of an offence triable only on indictment - 02801",
-            StartDate: DateTime.Parse("01-02-2024"),
-            EndDate: DateTime.Parse("01-02-2026"),
-            EarliestEndDate: DateTime.Parse("01-02-2025"),
-            HdceDate: null,
-            ReleaseDate: null,
-            UnitWing: "Wing A",
-            SentenceType: "ORA Adult Custody (inc PSS)",
-            SentenceLength: "24 Months",
-            SupervisingService: string.Empty,
-            Crn: "A012345",
-            OnCOLicense: false,
-            OnCommunityPayback: true,
-            OmResponsibility: string.Empty,
-            CFO3EndDate: DateTime.Parse("05-02-2024"),
-            OffenderManager: new(
-                Name: "Jane Doe",
-                TelephoneNumber: "+4401234567890",
-                MobileNumber: "+4401234567890",
-                EmailAddress: "Jane.Doe@justice.gov.uk",
-                Address: "102, Petty France, London, SW1H 9EA"
-            )
-        );
+        try
+        {
+            var identifiers = await GetNewMediator().Send(new GetParticipantIdentifiers.Query()
+            {
+                ParticipantId = ParticipantId
+            });
 
-        base.OnInitialized();
+            Model = new(
+                Identifiers: identifiers,
+                OffenderManager: new(
+                    Name: "Jane Doe",
+                    TelephoneNumber: "+4401234567890",
+                    MobileNumber: "+4401234567890",
+                    EmailAddress: "Jane.Doe@justice.gov.uk",
+                    Address: "102, Petty France, London, SW1H 9EA"
+                )
+            );
+        }
+        finally
+        {
+            await base.OnInitializedAsync();
+        }
     }
 
-    private async Task Expand()
+    public async Task Edit()
     {
-        await DialogService.ShowMessageBox("Expanded Information", "More information...");
+        await Task.CompletedTask;
     }
 
 }

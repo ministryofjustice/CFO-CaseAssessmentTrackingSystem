@@ -4,13 +4,28 @@ namespace Cfo.Cats.Domain.Common.Enums;
 
 public class ExternalIdentifierType : SmartEnum<ExternalIdentifierType>
 {
-    public static readonly ExternalIdentifierType NomisNumber = new("NOMIS Number", 0, true);
-    public static readonly ExternalIdentifierType Crn = new("Crn", 1, true);
-    public static readonly ExternalIdentifierType PncNumber = new("PNC Number", 2, true);
+    public static readonly ExternalIdentifierType NomisNumber = new(
+        name: "NOMIS Number", 
+        value: 0, 
+        displayOrderPriority: 0, 
+        isExclusive: true);
 
-    private ExternalIdentifierType(string name, int value, bool isExclusive = false) : base(name, value) 
+    public static readonly ExternalIdentifierType Crn = new(
+        name: "CRN (Delius)", 
+        value: 1, 
+        displayOrderPriority: 1, 
+        isExclusive: true);
+
+    public static readonly ExternalIdentifierType PncNumber = new(
+        name: "PNC Number", 
+        value: 2, 
+        displayOrderPriority: 2, 
+        isExclusive: true);
+
+    private ExternalIdentifierType(string name, int value, short displayOrderPriority, bool isExclusive = false) : base(name, value) 
     {
         IsExclusive = isExclusive;
+        DisplayOrderPriority = displayOrderPriority;
     }
 
     /// <summary>
@@ -18,4 +33,8 @@ public class ExternalIdentifierType : SmartEnum<ExternalIdentifierType>
     /// </summary>
     public bool IsExclusive { get; private set; }
 
+    /// <summary>
+    /// Determines the order in which identifiers are shown (lower is higher priority, appearing first).
+    /// </summary>
+    public short DisplayOrderPriority { get; private set; }
 }
