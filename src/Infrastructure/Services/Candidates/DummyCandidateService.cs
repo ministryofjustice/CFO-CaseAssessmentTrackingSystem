@@ -4,7 +4,7 @@ using Matching.Core.Search;
 
 namespace Cfo.Cats.Infrastructure.Services.Candidates;
 
-public class DummyCandidateService : ICandidateService
+public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
 {
     public IReadOnlyList<CandidateDto> Candidates =>
     [
@@ -17,9 +17,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B008622",
             NomisNumber = "A7022BA",
-            Primary = "Nomis",
-            EstCode = "LNS",
-            CurrentLocation = "Lincolnshire",
+            Primary = "DELIUS",
+            OrgCode = "LNS",
             Nationality = "",
             Ethnicity = ""
         },
@@ -32,9 +31,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B004786",
             NomisNumber = "A7373XA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "HBI",
-            CurrentLocation = "Hollesley Bay",
             Nationality = "",
             Ethnicity = ""
         },
@@ -47,9 +45,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B006754",
             NomisNumber = "A1118OA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "N22",
-            CurrentLocation = "External - NPS Midlands",
             Nationality = "",
             Ethnicity = ""
         },
@@ -62,9 +59,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B008866",
             NomisNumber = "A6972XA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "GNI",
-            CurrentLocation = "Grendon",
             Nationality = "",
             Ethnicity = ""
         },
@@ -77,9 +73,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B004529",
             NomisNumber = "A3749HA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "SKI",
-            CurrentLocation = "Stocken",
             Nationality = "",
             Ethnicity = ""
         },
@@ -92,9 +87,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B007498",
             NomisNumber = "A6102NA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "N07",
-            CurrentLocation = "London",
             Nationality = "",
             Ethnicity = ""
         },
@@ -107,9 +101,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B003913",
             NomisNumber = "A2817BA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "FYI",
-            CurrentLocation = "Feltham",
             Nationality = "",
             Ethnicity = ""
         },
@@ -122,9 +115,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B004044",
             NomisNumber = "A8654XA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "YSN",
-            CurrentLocation = "York and North Yorkshire",
             Nationality = "",
             Ethnicity = ""
         },
@@ -137,9 +129,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B003506",
             NomisNumber = "A3576SA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "OUT",
-            CurrentLocation = "Outside Prison",
             Nationality = "",
             Ethnicity = ""
         },
@@ -152,9 +143,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B001407",
             NomisNumber = "A8065EA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "CWI",
-            CurrentLocation = "Channings Wood",
             Nationality = "",
             Ethnicity = ""
         },
@@ -167,9 +157,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B003237",
             NomisNumber = "A6587YA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "N31",
-            CurrentLocation = "Ext - East Midlands Region",
             Nationality = "",
             Ethnicity = ""
         },
@@ -182,9 +171,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B003171",
             NomisNumber = "A6952ZA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "N26",
-            CurrentLocation = "External - NPS South West & SC",
             Nationality = "",
             Ethnicity = ""
         },
@@ -197,9 +185,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B007887",
             NomisNumber = "A3402IA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "GMI",
-            CurrentLocation = "Guys Marsh",
             Nationality = "",
             Ethnicity = ""
         },
@@ -212,9 +199,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B009234",
             NomisNumber = "A7364GA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "PBI",
-            CurrentLocation = "Peterborough",
             Nationality = "",
             Ethnicity = ""
         },
@@ -227,9 +213,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B004752",
             NomisNumber = "A6222SA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "N07",
-            CurrentLocation = "London",
             Nationality = "",
             Ethnicity = ""
         },
@@ -242,9 +227,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B005270",
             NomisNumber = "A9293CA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "IWI",
-            CurrentLocation = "Isle Of Wight",
             Nationality = "",
             Ethnicity = ""
         },
@@ -257,9 +241,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B005459",
             NomisNumber = "A5884JA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "DTV",
-            CurrentLocation = "Durham and Tees Valley",
             Nationality = "",
             Ethnicity = ""
         },
@@ -272,9 +255,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B006933",
             NomisNumber = "A9162QA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "C19",
-            CurrentLocation = "CPA Dorset Devon and Cornwall",
             Nationality = "",
             Ethnicity = ""
         },
@@ -287,9 +269,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B005260",
             NomisNumber = "A6150IA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "EHI",
-            CurrentLocation = "Standford Hill",
             Nationality = "",
             Ethnicity = ""
         },
@@ -302,9 +283,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B002552",
             NomisNumber = "A2257FA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "BXI",
-            CurrentLocation = "Brixton",
             Nationality = "",
             Ethnicity = ""
         },
@@ -317,9 +297,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B004442",
             NomisNumber = "A6948JA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "LTS",
-            CurrentLocation = "Leicestershire & Rutland",
             Nationality = "",
             Ethnicity = ""
         },
@@ -332,9 +311,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B004219",
             NomisNumber = "A9649AA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "ESX",
-            CurrentLocation = "Essex",
             Nationality = "",
             Ethnicity = ""
         },
@@ -347,9 +325,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B008576",
             NomisNumber = "A9860RA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "C20",
-            CurrentLocation = "CPA Hampshire and Isle of Wight",
             Nationality = "",
             Ethnicity = ""
         },
@@ -362,9 +339,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B008340",
             NomisNumber = "A1567LA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "CWI",
-            CurrentLocation = "Channings Wood",
             Nationality = "",
             Ethnicity = ""
         },
@@ -377,9 +353,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B009885",
             NomisNumber = "A9937FA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "RCI",
-            CurrentLocation = "Rochester",
             Nationality = "",
             Ethnicity = ""
         },
@@ -392,9 +367,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B001257",
             NomisNumber = "A4692DA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "WCI",
-            CurrentLocation = "Winchester",
             Nationality = "",
             Ethnicity = ""
         },
@@ -407,9 +381,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B009194",
             NomisNumber = "A1411YA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "WMI",
-            CurrentLocation = "Wymott",
             Nationality = "",
             Ethnicity = ""
         },
@@ -422,9 +395,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B009268",
             NomisNumber = "A7907DA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "ESX",
-            CurrentLocation = "Essex",
             Nationality = "",
             Ethnicity = ""
         },
@@ -437,9 +409,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B009761",
             NomisNumber = "A7400NA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "SDI",
-            CurrentLocation = "Send",
             Nationality = "",
             Ethnicity = ""
         },
@@ -452,9 +423,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B007256",
             NomisNumber = "A8430TA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "AYI",
-            CurrentLocation = "Aylesbury",
             Nationality = "",
             Ethnicity = ""
         },
@@ -467,9 +437,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B008155",
             NomisNumber = "A1067SA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "N06",
-            CurrentLocation = "NPS South East and Eastern",
             Nationality = "",
             Ethnicity = ""
         },
@@ -482,9 +451,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B009597",
             NomisNumber = "A7483AA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "WWI",
-            CurrentLocation = "Wandsworth",
             Nationality = "",
             Ethnicity = ""
         },
@@ -497,9 +465,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B005305",
             NomisNumber = "A1056JA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "NWI",
-            CurrentLocation = "Norwich",
             Nationality = "",
             Ethnicity = ""
         },
@@ -512,9 +479,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B006480",
             NomisNumber = "A3064CA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "DTV",
-            CurrentLocation = "Durham and Tees Valley",
             Nationality = "",
             Ethnicity = ""
         },
@@ -527,9 +493,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B005528",
             NomisNumber = "A7236EA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "FHI",
-            CurrentLocation = "Foston Hall",
             Nationality = "",
             Ethnicity = ""
         },
@@ -542,9 +507,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B008719",
             NomisNumber = "A4570WA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "C08",
-            CurrentLocation = "CPA Derby Leics Notts Rutland",
             Nationality = "",
             Ethnicity = ""
         },
@@ -557,9 +521,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B002584",
             NomisNumber = "A6440GA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "SLI",
-            CurrentLocation = "Swaleside",
             Nationality = "",
             Ethnicity = ""
         },
@@ -572,9 +535,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B004852",
             NomisNumber = "A7126QA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "BWI",
-            CurrentLocation = "Berwyn",
             Nationality = "",
             Ethnicity = ""
         },
@@ -587,9 +549,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B008270",
             NomisNumber = "A6249NA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "MDI",
-            CurrentLocation = "Moorland",
             Nationality = "",
             Ethnicity = ""
         },
@@ -602,9 +563,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B008561",
             NomisNumber = "A9186BA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "DRS",
-            CurrentLocation = "Dorset",
             Nationality = "",
             Ethnicity = ""
         },
@@ -617,9 +577,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B005033",
             NomisNumber = "A2699ZA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "WTI",
-            CurrentLocation = "Whatton",
             Nationality = "",
             Ethnicity = ""
         },
@@ -632,9 +591,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B001022",
             NomisNumber = "A2865UA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "EXI",
-            CurrentLocation = "Exeter",
             Nationality = "",
             Ethnicity = ""
         },
@@ -647,9 +605,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B002433",
             NomisNumber = "A4973LA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "N52",
-            CurrentLocation = "West Midlands Region",
             Nationality = "",
             Ethnicity = ""
         },
@@ -662,9 +619,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B006501",
             NomisNumber = "A3961UA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "SPI",
-            CurrentLocation = "Spring Hill",
             Nationality = "",
             Ethnicity = ""
         },
@@ -677,9 +633,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B009689",
             NomisNumber = "A8052RA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "DWI",
-            CurrentLocation = "Downview",
             Nationality = "",
             Ethnicity = ""
         },
@@ -692,9 +647,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B005370",
             NomisNumber = "A5295TA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "PFI",
-            CurrentLocation = "Peterborough",
             Nationality = "",
             Ethnicity = ""
         },
@@ -707,9 +661,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B001879",
             NomisNumber = "A4162OA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "PDI",
-            CurrentLocation = "Portland",
             Nationality = "",
             Ethnicity = ""
         },
@@ -722,9 +675,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B007141",
             NomisNumber = "A3667GA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "CHS",
-            CurrentLocation = "Cheshire",
             Nationality = "",
             Ethnicity = ""
         },
@@ -737,9 +689,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B009820",
             NomisNumber = "A1011FA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "BMI",
-            CurrentLocation = "Birmingham",
             Nationality = "",
             Ethnicity = ""
         },
@@ -752,9 +703,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B005022",
             NomisNumber = "A2364MA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "TRN",
-            CurrentLocation = "In Transfer",
             Nationality = "",
             Ethnicity = ""
         },
@@ -767,9 +717,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B008390",
             NomisNumber = "A9321HA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "FEI",
-            CurrentLocation = "Fosse Way",
             Nationality = "",
             Ethnicity = ""
         },
@@ -782,9 +731,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B006153",
             NomisNumber = "A2303FA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "MTI",
-            CurrentLocation = "The Mount",
             Nationality = "",
             Ethnicity = ""
         },
@@ -797,9 +745,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B005799",
             NomisNumber = "A8614GA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "HRI",
-            CurrentLocation = "Haslar",
             Nationality = "",
             Ethnicity = ""
         },
@@ -812,9 +759,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B002156",
             NomisNumber = "A7019IA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "FSI",
-            CurrentLocation = "Featherstone",
             Nationality = "",
             Ethnicity = ""
         },
@@ -827,9 +773,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B009460",
             NomisNumber = "A2301TA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "GHI",
-            CurrentLocation = "Garth",
             Nationality = "",
             Ethnicity = ""
         },
@@ -842,9 +787,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B007272",
             NomisNumber = "A7368NA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "STI",
-            CurrentLocation = "Styal",
             Nationality = "",
             Ethnicity = ""
         },
@@ -857,9 +801,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B004903",
             NomisNumber = "A9368JA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "WNI",
-            CurrentLocation = "Werrington",
             Nationality = "",
             Ethnicity = ""
         },
@@ -872,9 +815,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B009542",
             NomisNumber = "A4368JA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "STI",
-            CurrentLocation = "Styal",
             Nationality = "",
             Ethnicity = ""
         },
@@ -887,9 +829,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B009809",
             NomisNumber = "A1436VA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "CDI",
-            CurrentLocation = "Chelmsford",
             Nationality = "",
             Ethnicity = ""
         },
@@ -902,9 +843,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B009199",
             NomisNumber = "A6247XA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "C04",
-            CurrentLocation = "CPA Humber Lincs & N Yorks",
             Nationality = "",
             Ethnicity = ""
         },
@@ -917,9 +857,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B003456",
             NomisNumber = "A5176NA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "GCS",
-            CurrentLocation = "Gloucestershire",
             Nationality = "",
             Ethnicity = ""
         },
@@ -932,9 +871,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B003215",
             NomisNumber = "A4206SA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "TCI",
-            CurrentLocation = "Thorn Cross",
             Nationality = "",
             Ethnicity = ""
         },
@@ -947,9 +885,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B002668",
             NomisNumber = "A5319AA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "C20",
-            CurrentLocation = "CPA Hampshire and Isle of Wight",
             Nationality = "",
             Ethnicity = ""
         },
@@ -962,9 +899,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B006078",
             NomisNumber = "A8725WA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "PVI",
-            CurrentLocation = "Pentonville",
             Nationality = "",
             Ethnicity = ""
         },
@@ -977,9 +913,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B005846",
             NomisNumber = "A7652NA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "N23",
-            CurrentLocation = "External - NPS North East",
             Nationality = "",
             Ethnicity = ""
         },
@@ -992,9 +927,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B001005",
             NomisNumber = "A6250UA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "OUT",
-            CurrentLocation = "Outside Prison",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1007,9 +941,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B008641",
             NomisNumber = "A3877TA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "ESI",
-            CurrentLocation = "East Sutton Park",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1022,9 +955,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B007677",
             NomisNumber = "A1403DA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "WSI",
-            CurrentLocation = "Wormwood Scrubs",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1037,9 +969,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B007012",
             NomisNumber = "A6308NA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "EXI",
-            CurrentLocation = "Exeter",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1052,9 +983,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B001642",
             NomisNumber = "A6119BA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "C07",
-            CurrentLocation = "CPA Cheshire and Gtr Manchester",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1067,9 +997,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B002835",
             NomisNumber = "A5610CA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "TCI",
-            CurrentLocation = "Thorn Cross",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1082,9 +1011,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B007895",
             NomisNumber = "A9218RA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "EXI",
-            CurrentLocation = "Exeter",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1097,9 +1025,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B004099",
             NomisNumber = "A5852KA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "WII",
-            CurrentLocation = "Warren Hill",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1112,9 +1039,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B007065",
             NomisNumber = "A6399OA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "FYI",
-            CurrentLocation = "Feltham",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1127,9 +1053,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B004062",
             NomisNumber = "A7138MA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "TSI",
-            CurrentLocation = "Thameside",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1142,9 +1067,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B009564",
             NomisNumber = "A3824OA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "N01",
-            CurrentLocation = "NPS North West",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1157,9 +1081,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B002061",
             NomisNumber = "A4383XA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "RHI",
-            CurrentLocation = "Rye Hill",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1172,9 +1095,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B003240",
             NomisNumber = "A4101QA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "LDN",
-            CurrentLocation = "London",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1187,9 +1109,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B004658",
             NomisNumber = "A6701WA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "HLI",
-            CurrentLocation = "Hull",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1202,9 +1123,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B005676",
             NomisNumber = "A8257OA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "EYI",
-            CurrentLocation = "Elmley",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1217,9 +1137,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B002248",
             NomisNumber = "A8067PA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "TSI",
-            CurrentLocation = "Thameside",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1232,9 +1151,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B005014",
             NomisNumber = "A7056PA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "MRS",
-            CurrentLocation = "Merseyside",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1247,9 +1165,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B003336",
             NomisNumber = "A8225DA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "PRI",
-            CurrentLocation = "Parc",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1262,9 +1179,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B006762",
             NomisNumber = "A3361EA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "ISI",
-            CurrentLocation = "Isis",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1277,9 +1193,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B001484",
             NomisNumber = "A6272WA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "N03",
-            CurrentLocation = "Wales",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1292,9 +1207,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B005605",
             NomisNumber = "A3591SA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "BNI",
-            CurrentLocation = "Bullingdon",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1307,9 +1221,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B007158",
             NomisNumber = "A4526NA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "SWM",
-            CurrentLocation = "Staffordshire and West Midlands",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1322,9 +1235,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B009462",
             NomisNumber = "A3837UA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "CFI",
-            CurrentLocation = "Cardiff",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1337,9 +1249,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B005300",
             NomisNumber = "A5265WA",
-            Primary = "Nomis",
-            EstCode = "SFI",
-            CurrentLocation = "Stafford",
+            Primary = "NOMIS",
+            EstCode = "ASI",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1352,9 +1263,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B002298",
             NomisNumber = "A9419JA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "LNS",
-            CurrentLocation = "Lincolnshire",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1367,9 +1277,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B004351",
             NomisNumber = "A7217CA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "BCI",
-            CurrentLocation = "Buckley Hall",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1382,9 +1291,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B004107",
             NomisNumber = "A3664KA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "FBI",
-            CurrentLocation = "Forest Bank",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1397,9 +1305,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B005811",
             NomisNumber = "A8953AA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "N24",
-            CurrentLocation = "External - NPS North West",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1412,9 +1319,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B009365",
             NomisNumber = "A4773VA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "WRI",
-            CurrentLocation = "Whitemoor",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1427,9 +1333,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B009001",
             NomisNumber = "A2146ZA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "PFI",
-            CurrentLocation = "Peterborough",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1442,9 +1347,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B009645",
             NomisNumber = "A9574HA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "N58",
-            CurrentLocation = "South West",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1457,9 +1361,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Male",
             Crn = "B009738",
             NomisNumber = "A6760EA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "N51",
-            CurrentLocation = "North West Region",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1472,9 +1375,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B005227",
             NomisNumber = "A8764JA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "DHI",
-            CurrentLocation = "Drake Hall",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1487,9 +1389,8 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B003704",
             NomisNumber = "A3850ZA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "T01",
-            CurrentLocation = "Migration artifact - do not use",
             Nationality = "",
             Ethnicity = ""
         },
@@ -1502,19 +1403,54 @@ public class DummyCandidateService : ICandidateService
             Gender = "Female",
             Crn = "B008239",
             NomisNumber = "A6307BA",
-            Primary = "Nomis",
+            Primary = "NOMIS",
             EstCode = "HPS",
-            CurrentLocation = "Hampshire",
             Nationality = "",
             Ethnicity = ""
         }
     ];
 
-
-
     public async Task<CandidateDto?> GetByUpciAsync(string upci)
     {
         var candidate = Candidates.SingleOrDefault(c => c.Identifier.Equals(upci, StringComparison.CurrentCultureIgnoreCase));
+
+        if (candidate is not null)
+        {
+            var locationMapping = candidate.Primary switch
+            {
+                "NOMIS" => (Code: candidate.EstCode, Type: "Prison"),
+                "DELIUS" => (Code: candidate.OrgCode, Type: "Probation"),
+                _ => (null, null)
+            };
+
+            var query = from dl in unitOfWork.DbContext.LocationMappings.AsNoTracking()
+                        where dl.Code == locationMapping.Code  // && dl.CodeType == locationMapping.Type
+                        select new
+                        {
+                            dl.Code,
+                            dl.CodeType,
+                            dl.Description,
+                            dl.DeliveryRegion,
+                            dl.Location
+                        };
+
+            var location = await query.FirstOrDefaultAsync();
+
+            candidate.LocationDescription = location switch
+            {
+                { Location: not null } => location.Location.Name,
+                { Code: not null } => $"Unmapped Location ({location.Code} - {location.DeliveryRegion} - {location.Description})",
+                _ => "Unmapped Location",
+            };
+
+            candidate.MappedLocationId = location switch
+            {
+                { Location: not null } => location.Location.Id,
+                _ => 0
+            };
+
+        }
+
         return await Task.FromResult(candidate);
     }
 

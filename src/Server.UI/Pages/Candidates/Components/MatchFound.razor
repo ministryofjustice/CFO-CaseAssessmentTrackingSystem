@@ -4,8 +4,8 @@
 {
     <MudContainer Class="d-flex flex-column align-center justify-center">
     <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
-        We have found a match: @candidate.FirstName @candidate.LastName (@candidate.Identifier)
-        We have them located at @(candidate.CurrentLocation ?? "Unknown Location")
+        We have found a match: @(string.Join(' ', new [] { candidate.FirstName, candidate.SecondName, candidate.LastName})) (@candidate.Identifier)
+        We have them located at @(candidate.LocationDescription ?? "Unmapped Location")
     </MudAlert>
     <MudForm Model="@Model" @ref="@_form" Validation="@(Validator.ValidateValue(Model))">
         <MudGrid>
@@ -13,23 +13,29 @@
                 <CandidateComparisonComponent Comparisons="_comparisons" />
             </MudItem>
             <MudItem xs="12">
-                <MudSelect Required="true" RequiredError="Select a referral source" T="string" Label="Referral Source" @bind-Value="Model.ReferralSource">
-                    @foreach (var item in PicklistService.DataSource
+                <MudSelect @bind-Value="Model.ReferralSource"
+                           For="() => Model.ReferralSource"
+                           Label="@Model.GetMemberDescription(x => x.ReferralSource)">
+                    @foreach (var referralSource in PicklistService.DataSource
                                     .Where(c => c.Name == Picklist.ReferralSource)
                                     .OrderBy(c => c.Text))
                     {
-                        <MudSelectItem Value="@item.Value">@item.Text</MudSelectItem>
+                        <MudSelectItem Value="@referralSource.Value">@referralSource.Text</MudSelectItem>
                     }
                 </MudSelect>
             </MudItem>
 
                 <MudItem xs="12">
-                    <MudTextField Label="Referral Comments" @bind-Value="Model.ReferralComments" For="(() => Model.ReferralComments)"
-                                    RequiredError="Comments must be entered for this referral type"/>
+                    <MudTextField @bind-Value="Model.ReferralComments" 
+                                  For="(() => Model.ReferralComments)"
+                                  Label="@Model.ReferralComments" />
                 </MudItem>
 
             <MudItem xs="12">
-                <MudCheckBox Class="mt-4" @bind-Value="_confirmation" T="bool" Label="I confirm the details above reflect the CFO Consent form."/>
+                <MudCheckBox @bind-Value="Model.Confirmation"
+                             For="() => Model.Confirmation"
+                             Label="@Model.GetMemberDescription(x => x.Confirmation)"
+                             Class="mt-4" />
             </MudItem>
         </MudGrid>
     </MudForm>
@@ -41,7 +47,7 @@
                     Color="Color.Success" 
                     Variant="Variant.Filled"
                     OnClick="EnrolCandidate"
-                    Disabled="@(_confirmation == false)">
+                    Disabled="@(Model.Confirmation is false)">
             Enrol Candidate
         </MudLoadingButton>
     </MudContainer>

@@ -7,6 +7,7 @@ using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Configurations;
 using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
 using Cfo.Cats.Infrastructure.Constants.Database;
+using Cfo.Cats.Infrastructure.Jobs;
 using Cfo.Cats.Infrastructure.Persistence.Interceptors;
 using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.MultiTenant;
@@ -15,6 +16,8 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using Quartz;
+using Quartz.AspNetCore;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure;
@@ -157,9 +160,9 @@ public static class DependencyInjection
             
         }
         
-        if(configuration["UseDummyCandidateService"] == "True")
+        if(configuration.GetValue<bool>("UseDummyCandidateService"))
         {
-            services.AddSingleton<ICandidateService, DummyCandidateService>();
+            services.AddScoped<ICandidateService, DummyCandidateService>();
         }
         else
         {
@@ -169,6 +172,8 @@ public static class DependencyInjection
                 client.BaseAddress = new Uri(configuration.GetRequiredValue("DMS:ApplicationUrl"));
             });
         }
+
+        services.AddQuartzJobsAndTriggers(configuration);
         
         return services
             .AddSingleton<ISerializer, SystemTextJsonSerializer>()
@@ -332,6 +337,40 @@ public static class DependencyInjection
 
         return services;
     }
+
+    private static IServiceCollection AddQuartzJobsAndTriggers(this IServiceCollection services, IConfiguration configuration)
+    {
+        var options = configuration.GetRequiredSection("Quartz");
+
+        services.Configure<QuartzOptions>(options);
+
+        services.AddQuartz(quartz =>
+        {
+            quartz.AddJob<SyncParticipantsJob>(opts => opts.WithIdentity(SyncParticipantsJob.Key));
+
+            var jobOptions = options.GetRequiredSection<JobOptions>(SyncParticipantsJob.Key.Name);
+
+            if(jobOptions.Enabled)
+            {
+                quartz.AddTrigger(opts => opts
+                    .ForJob(SyncParticipantsJob.Key)
+                    .WithIdentity($"{SyncParticipantsJob.Key}-trigger")
+                    .WithDescription(SyncParticipantsJob.Description)
+                    .WithCronSchedule(jobOptions.CronSchedule));
+            }
+
+        });
+
+        services.AddQuartzServer(options =>
+        {
+            options.WaitForJobsToComplete = true;
+        });
+
+        return services;
+    }
+
+    public static T GetRequiredSection<T>(this IConfiguration configuration, string name) =>
+        configuration.GetSection(name).Get<T>() ?? throw new InvalidOperationException($"Configuration missing section for: {(configuration is IConfigurationSection s ? s.Path + ":" + name : name)}");
 
     public static string GetRequiredValue(this IConfiguration configuration, string name) =>
         configuration[name] ?? throw new InvalidOperationException($"Configuration missing value for: {(configuration is IConfigurationSection s ? s.Path + ":" + name : name)}");
