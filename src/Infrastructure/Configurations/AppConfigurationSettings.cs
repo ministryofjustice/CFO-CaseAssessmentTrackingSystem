@@ -26,5 +26,5 @@ public class AppConfigurationSettings : IApplicationSettings
 
     public string App { get; set; } = "Blazor";
 
-    public string AppName { get; set; } = "CATS+";
+    public string AppName { get; set; } = "CATS";
 }

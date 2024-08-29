@@ -9,7 +9,7 @@ HMPPS Creating Future Opportunities (CFO) utilise the Case Assessment and Tracki
 
 # Mechanism (How does it communicate with other systems? Frequency of data pull/push, reporting, events etc) 
 
-Interactions with other systems are currently performed using a manual file transfer process between networks, however in the next 12 months it is planned that CATS+ will interact with ministryofjustice/cfo-dms2 
+Interactions with other systems are currently performed using a manual file transfer process between networks, however in the next 12 months it is planned that CATS will interact with ministryofjustice/cfo-dms2 
 
 # Technology (What's the technology that drives the product? i.e. Azure, java script etc) 
 
