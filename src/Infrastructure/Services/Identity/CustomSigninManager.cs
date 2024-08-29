@@ -1,6 +1,8 @@
+using System.Net;
 using Cfo.Cats.Domain.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using NetTools;
 
 namespace Cfo.Cats.Infrastructure.Services.Identity;
 
@@ -39,7 +41,30 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
         
         return await base.PasswordSignInAsync(userName, password, isPersistent, lockoutOnFailure);
     }
-    private bool PasswordCheckSucceededAndTwoFactorDisabledForIpRange(SignInResult passwordCheckResult, string? ipAddress) => passwordCheckResult.Succeeded && string.IsNullOrWhiteSpace(ipAddress) == false && allowlistOptions.Value.AllowedIPs.Contains(ipAddress);
+    private bool PasswordCheckSucceededAndTwoFactorDisabledForIpRange(SignInResult passwordCheckResult, string? ipAddress)
+    {
+        if (passwordCheckResult.Succeeded == false || string.IsNullOrWhiteSpace(ipAddress))
+        {
+            return false;
+        }
+        
+        IPAddress? userIp;
+        if (IPAddress.TryParse(ipAddress, out userIp) == false)
+        {
+            return false;
+        }
+
+        foreach (var allowedRange in allowlistOptions.Value.AllowedIPs)
+        {
+            var ipRange = IPAddressRange.Parse(allowedRange);
+            if (ipRange.Contains(userIp))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
     private static bool PasswordChecksOutAndRequiresPasswordReset(SignInResult passwordCheckResult, ApplicationUser user) => passwordCheckResult.Succeeded && user.RequiresPasswordReset;
 
     public class CustomSignInResult : SignInResult
