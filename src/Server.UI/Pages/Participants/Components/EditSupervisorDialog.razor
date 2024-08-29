@@ -1,0 +1,98 @@
+﻿@using Cfo.Cats.Application.Features.Participants.Commands
+
+@inherits CatsComponentBase
+
+@inject IValidationService Validator
+
+<MudDialog>
+    <DialogContent>
+        @if (Model is not null)
+        {
+            <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="Model.Supervisor.Name"
+                                      For="() => Model.Supervisor.Name"
+                                      Label="@Model.Supervisor.GetMemberDescription(x => x.Name)"
+                                      Class="mb-2" />
+
+                        <MudTextField @bind-Value="Model.Supervisor.TelephoneNumber"
+                                      For="() => Model.Supervisor.TelephoneNumber"
+                                      Label="@Model.Supervisor.GetMemberDescription(x => x.TelephoneNumber)"
+                                      Class="mb-2" />
+
+                        <MudTextField @bind-Value="Model.Supervisor.MobileNumber"
+                                      For="() => Model.Supervisor.MobileNumber"
+                                      Label="@Model.Supervisor.GetMemberDescription(x => x.MobileNumber)"
+                                      Class="mb-2" />
+
+                        <MudTextField @bind-Value="Model.Supervisor.EmailAddress"
+                                      For="() => Model.Supervisor.EmailAddress"
+                                      Label="@Model.Supervisor.GetMemberDescription(x => x.EmailAddress)"
+                                      Class="mb-2" />
+
+                        <MudTextField @bind-Value="Model.Supervisor.Address"
+                                      For="() => Model.Supervisor.Address"
+                                      Label="@Model.Supervisor.GetMemberDescription(x => x.Address)"
+                                      Lines="4"
+                                      Class="mb-2" />
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code
+{
+    private MudForm? form;
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public required AddOrUpdateSupervisor.Command Model { get; set; }
+
+    private bool saving;
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            saving = true;
+
+            await form!.Validate().ConfigureAwait(false);
+
+            if (!form!.IsValid)
+            {
+                return;
+            }
+
+            var result = await GetNewMediator().Send(Model);
+
+            if (result.Succeeded)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+}

@@ -193,6 +193,32 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             
         });
 
+        builder.OwnsOne(p => p.Supervisor, supervisor =>
+        {
+            supervisor.WithOwner();
+            supervisor.ToTable(
+                DatabaseConstants.Tables.Supervisor,
+                DatabaseConstants.Schemas.Participant
+            );
+
+            supervisor.HasKey(s => s.Id);
+
+            supervisor.Property(s => s.Name)
+                .HasMaxLength(128);
+
+            supervisor.Property(s => s.EmailAddress)
+                .HasMaxLength(100);
+
+            supervisor.Property(s => s.TelephoneNumber)
+                .HasMaxLength(16);
+
+            supervisor.Property(s => s.MobileNumber)
+                .HasMaxLength(16);
+
+            supervisor.Property(s => s.Address)
+                .HasMaxLength(256);
+        });
+
         builder.Navigation(p => p.Consents)
             .AutoInclude();
 
@@ -204,7 +230,7 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
 
         builder.Navigation(p => p.Owner)
             .AutoInclude();
-        
+
         builder.HasOne(x => x.Owner)
             .WithMany()
             .HasForeignKey(x => x.OwnerId);

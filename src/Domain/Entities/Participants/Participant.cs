@@ -39,7 +39,7 @@ public class Participant : OwnerPropertyEntity<string>
             ReferralComments = referralComments,
             _currentLocationId = locationId
         };
-        
+
         p.AddDomainEvent(new ParticipantCreatedDomainEvent(p));
         return p;
     }
@@ -73,6 +73,8 @@ public class Participant : OwnerPropertyEntity<string>
     public string? AssessmentJustification { get; private set; }
 
     public string? FullName => string.Join(' ', [FirstName, MiddleName, LastName]);
+
+    public Supervisor? Supervisor { get; private set; }
 
     public IReadOnlyCollection<Consent> Consents => _consents.AsReadOnly();
 
@@ -183,6 +185,12 @@ public class Participant : OwnerPropertyEntity<string>
 
         _externalIdentifiers.Add(newIdentifier);
 
+        return this;
+    }
+
+    public Participant AddOrUpdateSupervisor(Supervisor? newSupervisor)
+    {
+        Supervisor = newSupervisor;
         return this;
     }
 

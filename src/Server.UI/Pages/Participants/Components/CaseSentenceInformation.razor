@@ -1,4 +1,5 @@
-﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+﻿@using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Domain.Common.Enums
 
@@ -50,24 +51,24 @@
                         </CardHeaderActions>
                     </MudCardHeader>
                     <MudCardContent>
-                        <MudTextField Value="Model.OffenderManager.Name" 
-                                      Label="Name" 
+                        <MudTextField Value="Model.Supervisor.Name"
+                                      Label="@Model.Supervisor.GetMemberDescription(x => x.Name)"
                                       Class="mb-2" />
 
-                        <MudTextField Value="Model.OffenderManager.TelephoneNumber" 
-                                      Label="Telephone Number"  
+                        <MudTextField Value="Model.Supervisor.TelephoneNumber"
+                                      Label="@Model.Supervisor.GetMemberDescription(x => x.TelephoneNumber)"
                                       Class="mb-2" />
 
-                        <MudTextField Value="Model.OffenderManager.MobileNumber" 
-                                      Label="Mobile Number"  
+                        <MudTextField Value="Model.Supervisor.MobileNumber"
+                                      Label="@Model.Supervisor.GetMemberDescription(x => x.MobileNumber)"
                                       Class="mb-2" />
 
-                        <MudTextField Value="Model.OffenderManager.EmailAddress" 
-                                      Label="Email Address"  
+                        <MudTextField Value="Model.Supervisor.EmailAddress"
+                                      Label="@Model.Supervisor.GetMemberDescription(x => x.EmailAddress)"
                                       Class="mb-2" />
 
-                        <MudTextField Value="Model.OffenderManager.Address" 
-                                      Label="Address" 
+                        <MudTextField Value="Model.Supervisor.Address"
+                                      Label="@Model.Supervisor.GetMemberDescription(x => x.Address)"
                                       Lines="4"  
                                       Class="mb-2" />
                     </MudCardContent>
@@ -85,34 +86,33 @@
 
     public record SentenceDetail(
         ParticipantIdentifierDto[] Identifiers,
-        OffenderManager OffenderManager);
-
-    public record OffenderManager(
-        string Name,
-        string TelephoneNumber,
-        string MobileNumber,
-        string EmailAddress,
-        string Address);
+        ParticipantSupervisorDto Supervisor);
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var identifiers = await GetNewMediator().Send(new GetParticipantIdentifiers.Query()
+            var mediator = GetNewMediator();
+
+            var identifiers = await mediator.Send(new GetParticipantIdentifiers.Query()
             {
                 ParticipantId = ParticipantId
             });
 
+            var supervisor = await mediator.Send(new GetParticipantSupervisor.Query()
+            {
+                ParticipantId = ParticipantId
+            });
+
+
             Model = new(
                 Identifiers: identifiers,
-                OffenderManager: new(
-                    Name: "Jane Doe",
-                    TelephoneNumber: "+4401234567890",
-                    MobileNumber: "+4401234567890",
-                    EmailAddress: "Jane.Doe@justice.gov.uk",
-                    Address: "102, Petty France, London, SW1H 9EA"
-                )
+                Supervisor: 
+                    supervisor is null ? 
+                    new ParticipantSupervisorDto() : 
+                    supervisor
             );
+
         }
         finally
         {
@@ -122,7 +122,24 @@
 
     public async Task Edit()
     {
-        await Task.CompletedTask;
+        // Show Dialog
+        var parameters = new DialogParameters<EditSupervisorDialog>
+        {
+            { x => x.Model, new AddOrUpdateSupervisor.Command() { ParticipantId = ParticipantId, Supervisor = Model!.Supervisor } }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = DialogService.Show<EditSupervisorDialog>
+            ("Edit Supervisor", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            // Refresh?
+        }
+
     }
 
 }
