@@ -5,7 +5,7 @@ namespace Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 public class ObjectiveTaskDto
 {
     public required Guid Id { get; set; }
-    public required string Title { get; set; }
+    public required string Description { get; set; }
     public required Guid ObjectiveId { get; set; }
     public required DateTime Due { get; set; }
     public required DateTime Created { get; set; }
@@ -15,7 +15,7 @@ public class ObjectiveTaskDto
     public CompletionStatus? CompletedStatus { get; set; }
     public required int Index { get; set; }
     public string? Justification { get; set; }
-    public string DisplayName => $"{Index}. {Title}";
+    public string DisplayName => $"{Index}. {Description}";
     public bool IsCompleted => Completed.HasValue;
     public bool IsOverdue => IsCompleted is false
         && (ToFirstDayOfMonth(DateTime.UtcNow) > ToFirstDayOfMonth(Due));

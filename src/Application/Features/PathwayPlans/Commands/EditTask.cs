@@ -18,8 +18,8 @@ public static class EditTask
         [Description("Pathway Plan Id")]
         public required Guid PathwayPlanId { get; set; }
 
-        [Description("Title")]
-        public string? Title { get; set; }
+        [Description("Description")]
+        public string? Description { get; set; }
 
         [Description("Due")]
         public DateTime? Due { get; set; }
@@ -38,9 +38,9 @@ public static class EditTask
             var task = objective.Tasks.FirstOrDefault(x => x.Id == request.TaskId)
                 ?? throw new NotFoundException("Cannot find task", request.TaskId);
 
-            if(request.Title is not null)
+            if(request.Description is not null)
             {
-                task.Rename(request.Title);
+                task.Rename(request.Description);
             }
 
             if(request.Due.HasValue)
@@ -67,11 +67,11 @@ public static class EditTask
             RuleFor(x => x.PathwayPlanId)
                 .NotNull();
 
-            RuleFor(x => x.Title)
+            RuleFor(x => x.Description)
                 .NotEmpty()
-                .WithMessage("You must provide a title")
+                .WithMessage("You must provide a description")
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Title"));
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
 
             RuleFor(x => x.Due)
                 .Must(x => x.HasValue)

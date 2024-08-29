@@ -145,7 +145,7 @@
     public async Task Expand()
     {
         await DialogService.ShowAsync<ExpandTaskDialog>(
-            Model.Title,
+            Model.Description,
             new DialogParameters<ExpandTaskDialog>()
             {
                 { x => x.Model, Model }
@@ -164,7 +164,7 @@
         {
             TaskId = Model.Id,
             ObjectiveId = Model.ObjectiveId,
-            Title = Model.Title,
+            Description = Model.Description,
             Due = Model.Due,
             PathwayPlanId = PathwayPlanId
         };
@@ -197,7 +197,7 @@
         {
             TaskId = Model.Id,
             ObjectiveId = Model.ObjectiveId,
-            Title = Model.Title,
+            Description = Model.Description,
             Due = Model.Due,
             PathwayPlanId = PathwayPlanId
         };

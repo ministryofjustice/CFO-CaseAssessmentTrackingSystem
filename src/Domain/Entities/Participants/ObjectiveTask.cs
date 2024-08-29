@@ -22,11 +22,11 @@ public class ObjectiveTask : BaseAuditableEntity<Guid>
         AddDomainEvent(new ObjectiveTaskCompletedDomainEvent(this));
     }
 
-    public static ObjectiveTask Create(string title, DateTime due)
+    public static ObjectiveTask Create(string description, DateTime due)
     {
         ObjectiveTask task = new()
         {
-            Title = title,
+            Description = description,
             Due = due
         };
 
@@ -39,9 +39,9 @@ public class ObjectiveTask : BaseAuditableEntity<Guid>
         Due = due;
     }
 
-    public void Rename(string title)
+    public void Rename(string description)
     {
-        Title = title;
+        Description = description;
     }
 
     public ObjectiveTask AtIndex(int index)
@@ -57,7 +57,7 @@ public class ObjectiveTask : BaseAuditableEntity<Guid>
     public int Index { get; private set; }
     public string? Justification { get; private set; }
     public Guid ObjectiveId { get; private set; }
-    public string Title { get; private set; }
+    public string Description { get; private set; }
 
     public bool IsCompleted => Completed is not null;
 

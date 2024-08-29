@@ -83,7 +83,7 @@ else
     private Dictionary<string, Func<ObjectiveDto, dynamic>> selectors = new()
     {
         { "Created", (objective) => objective.Created },
-        { "Title", (objective) => objective.Title },
+        { "Title", (objective) => objective.Description },
         { "Outstanding", (objective) => objective.Tasks.Where(task => task.IsCompleted is false).Count() },
     };
 
@@ -150,7 +150,7 @@ else
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
-        var dialog = DialogService.Show<AddObjectiveDialog>("Add objective", parameters, options);
+        var dialog = DialogService.Show<AddObjectiveDialog>("Add thematic objective", parameters, options);
 
         var state = await dialog.Result;
 

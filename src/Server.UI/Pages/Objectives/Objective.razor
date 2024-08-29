@@ -146,7 +146,7 @@
     public async Task Expand()
     {
         await DialogService.ShowAsync<ExpandObjectiveDialog>(
-            Model.Title,
+            Model.Description,
             new DialogParameters<ExpandObjectiveDialog>()
             {
                 { x => x.Model, Model }
@@ -165,7 +165,7 @@
         {
             PathwayPlanId = Model.PathwayPlanId,
             ObjectiveId = Model.Id,
-            Title = Model.Title
+            Description = Model.Description
         };
 
         var parameters = new DialogParameters<RenameObjectiveDialog>()

@@ -15,8 +15,8 @@ public static class EditObjective
         [Description("Pathway Plan Id")]
         public required Guid PathwayPlanId { get; set; }
 
-        [Description("Title")]
-        public required string Title { get; set; }
+        [Description("Description")]
+        public required string Description { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
@@ -29,7 +29,7 @@ public static class EditObjective
             var objective = pathwayPlan.Objectives.FirstOrDefault(o => o.Id == request.ObjectiveId)
                 ?? throw new NotFoundException("Cannot find objective", request.ObjectiveId);
 
-            objective.Rename(request.Title);
+            objective.Rename(request.Description);
 
             return Result.Success();
         }
@@ -47,11 +47,11 @@ public static class EditObjective
             RuleFor(x => x.PathwayPlanId)
                 .NotNull();
 
-            RuleFor(x => x.Title)
+            RuleFor(x => x.Description)
                 .NotEmpty()
-                .WithMessage("You must provide a title")
+                .WithMessage("You must provide a description")
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Title"));
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
         }
 
     }
