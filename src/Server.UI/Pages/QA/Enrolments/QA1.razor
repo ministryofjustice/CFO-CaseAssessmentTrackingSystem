@@ -7,6 +7,7 @@
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components
 
 @inherits CatsComponentBase
 
@@ -134,6 +135,8 @@
 
                     @if (_queueEntry.IsCompleted == false)
                     {
+                    <QaNotes ParticipantId="@_participantDto.Id" />
+                        
                         <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
                             <MudItem xs="12">
                                 <MudRadioGroup T="bool?" @bind-Value="Command.Accept" For="@(() => Command.Accept)"
