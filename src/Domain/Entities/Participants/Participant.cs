@@ -175,8 +175,8 @@ public class Participant : OwnerPropertyEntity<string>
     {
         if(DateOfBirth != dateOfBirth)
         {
-            DateOfBirth = dateOfBirth;
             AddDomainEvent(new ParticipantDateOfBirthChangedDomainEvent(this, DateOfBirth, dateOfBirth));
+            DateOfBirth = dateOfBirth;
         }
 
         return this;
@@ -193,8 +193,8 @@ public class Participant : OwnerPropertyEntity<string>
 
         if(identifier is { Type.IsExclusive: true } )
         {
-            _externalIdentifiers.Remove(identifier);
             AddDomainEvent(new ParticipantIdentifierChangedDomainEvent(this, identifier, newIdentifier));
+            _externalIdentifiers.Remove(identifier);
         }
 
         _externalIdentifiers.Add(newIdentifier);
@@ -206,8 +206,8 @@ public class Participant : OwnerPropertyEntity<string>
     {
         if (string.Equals(Gender, gender, StringComparison.OrdinalIgnoreCase) is false)
         {
-            Gender = gender;
             AddDomainEvent(new ParticipantGenderChangedDomainEvent(this, Gender, gender));
+            Gender = gender;
         }
 
         return this;
@@ -264,8 +264,8 @@ public class Participant : OwnerPropertyEntity<string>
     {
         if(ActiveInFeed != activeInFeed)
         {
-            ActiveInFeed = activeInFeed;
             AddDomainEvent(new ParticipantActiveStatusChangedDomainEvent(this, ActiveInFeed, activeInFeed));
+            ActiveInFeed = activeInFeed;
         }
 
         return this;
