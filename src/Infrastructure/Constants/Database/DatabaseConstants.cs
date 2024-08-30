@@ -26,6 +26,7 @@ internal static class DatabaseConstants
         public const string Assessment = nameof(Assessment);
         public const string Bio = nameof(Bio);
         public const string Note = nameof(Note);
+        public const string ExternalIdentifier = nameof(ExternalIdentifier);
         public const string Tenant = nameof(Tenant);
         public const string TenantDomain = nameof(TenantDomain);
         public const string KeyValue = nameof(KeyValue);
@@ -36,6 +37,7 @@ internal static class DatabaseConstants
         public const string ObjectiveTask = nameof(ObjectiveTask);
         public const string PathwayPlan = nameof(PathwayPlan);
         public const string PathwayPlanReviewHistory = nameof(PathwayPlanReviewHistory);
+        public const string Supervisor = nameof(Supervisor);
 
 
         public const string AssessmentPathwayScore = nameof(AssessmentPathwayScore);

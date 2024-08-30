@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240829095831_Participant_ExternalIdentifiers")]
+    partial class Participant_ExternalIdentifiers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -409,10 +412,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("IpAddress")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("PerformedBy")
                         .HasMaxLength(100)
@@ -2253,59 +2252,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .IsRequired();
                         });
 
-                    b.OwnsOne("Cfo.Cats.Domain.Entities.Participants.Supervisor", "Supervisor", b1 =>
-                        {
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Address")
-                                .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
-
-                            b1.Property<DateTime?>("Created")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("CreatedBy")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("EmailAddress")
-                                .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)");
-
-                            b1.Property<DateTime?>("LastModified")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("LastModifiedBy")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("MobileNumber")
-                                .HasMaxLength(16)
-                                .HasColumnType("nvarchar(16)");
-
-                            b1.Property<string>("Name")
-                                .HasMaxLength(128)
-                                .HasColumnType("nvarchar(128)");
-
-                            b1.Property<string>("ParticipantId")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(9)");
-
-                            b1.Property<string>("TelephoneNumber")
-                                .HasMaxLength(16)
-                                .HasColumnType("nvarchar(16)");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("ParticipantId")
-                                .IsUnique();
-
-                            b1.ToTable("Supervisor", "Participant");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ParticipantId");
-                        });
-
                     b.Navigation("Consents");
 
                     b.Navigation("CurrentLocation");
@@ -2321,8 +2267,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("Owner");
 
                     b.Navigation("RightToWorks");
-
-                    b.Navigation("Supervisor");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.PathwayPlan", b =>
@@ -2350,10 +2294,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .HasMaxLength(36)
                                 .HasColumnType("nvarchar(36)");
 
-                            b1.Property<string>("Description")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
                             b1.Property<int>("Index")
                                 .HasColumnType("int");
 
@@ -2369,6 +2309,10 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.Property<Guid>("PathwayPlanId")
                                 .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
                             b1.HasKey("Id");
 
@@ -2408,10 +2352,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                         .HasMaxLength(36)
                                         .HasColumnType("nvarchar(36)");
 
-                                    b2.Property<string>("Description")
-                                        .IsRequired()
-                                        .HasColumnType("nvarchar(max)");
-
                                     b2.Property<DateTime>("Due")
                                         .HasColumnType("datetime2");
 
@@ -2430,6 +2370,10 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                                     b2.Property<Guid>("ObjectiveId")
                                         .HasColumnType("uniqueidentifier");
+
+                                    b2.Property<string>("Title")
+                                        .IsRequired()
+                                        .HasColumnType("nvarchar(max)");
 
                                     b2.HasKey("Id");
 

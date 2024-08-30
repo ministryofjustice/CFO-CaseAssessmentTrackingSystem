@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240829145902_Participant_Supervisor")]
+    partial class Participant_Supervisor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -409,10 +412,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("IpAddress")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("PerformedBy")
                         .HasMaxLength(100)
@@ -2350,10 +2349,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                 .HasMaxLength(36)
                                 .HasColumnType("nvarchar(36)");
 
-                            b1.Property<string>("Description")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
                             b1.Property<int>("Index")
                                 .HasColumnType("int");
 
@@ -2369,6 +2364,10 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.Property<Guid>("PathwayPlanId")
                                 .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
                             b1.HasKey("Id");
 
@@ -2408,10 +2407,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                                         .HasMaxLength(36)
                                         .HasColumnType("nvarchar(36)");
 
-                                    b2.Property<string>("Description")
-                                        .IsRequired()
-                                        .HasColumnType("nvarchar(max)");
-
                                     b2.Property<DateTime>("Due")
                                         .HasColumnType("datetime2");
 
@@ -2430,6 +2425,10 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                                     b2.Property<Guid>("ObjectiveId")
                                         .HasColumnType("uniqueidentifier");
+
+                                    b2.Property<string>("Title")
+                                        .IsRequired()
+                                        .HasColumnType("nvarchar(max)");
 
                                     b2.HasKey("Id");
 

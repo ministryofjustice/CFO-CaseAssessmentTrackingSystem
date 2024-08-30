@@ -40,6 +40,11 @@ public class CandidateDto
     public string? Crn { get; set; }
 
     /// <summary>
+    /// The candidates PNC Number (if applicable).
+    /// </summary>
+    public string? PncNumber { get; set; }
+
+    /// <summary>
     /// Indicates whether the primary record is marked as active in the data source(s).
     /// </summary>
     public bool IsActive { get; set; }

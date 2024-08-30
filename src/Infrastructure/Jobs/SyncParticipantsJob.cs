@@ -1,4 +1,6 @@
-﻿using Quartz;
+using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Entities.Participants;
+using Quartz;
 using System.Threading;
 
 namespace Cfo.Cats.Infrastructure.Jobs;
@@ -49,10 +51,21 @@ public class SyncParticipantsJob(
                     var location = locations.Single(x => x.Id == candidate.MappedLocationId);
                     participant.MoveToLocation(location);
 
-                    // Update other information
-                    // ...
-                    // ...
-                    // ...
+                    // Update external identifiers (Crn, Nomis Number, Pnc Number)
+                    if (candidate.Crn is not null)
+                    {
+                        participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.Crn, ExternalIdentifierType.Crn));
+                    }
+
+                    if (candidate.NomisNumber is not null)
+                    {
+                        participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.NomisNumber, ExternalIdentifierType.NomisNumber));
+                    }
+
+                    if (candidate.PncNumber is not null)
+                    {
+                        participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.PncNumber, ExternalIdentifierType.PncNumber));
+                    }
 
                     // Dispatch events and commit transaction
                     await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, CancellationToken.None);
