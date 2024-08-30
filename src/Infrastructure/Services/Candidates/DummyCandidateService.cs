@@ -20,7 +20,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "DELIUS",
             OrgCode = "LNS",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -34,7 +35,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "HBI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -48,7 +50,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "N22",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -62,7 +65,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "GNI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -76,7 +80,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "SKI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -90,7 +95,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "N07",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -104,7 +110,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "FYI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -118,7 +125,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "YSN",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -132,7 +140,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "OUT",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -146,7 +155,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "CWI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -160,7 +170,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "N31",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -174,7 +185,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "N26",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -188,7 +200,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "GMI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -202,7 +215,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "PBI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -216,7 +230,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "N07",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -230,7 +245,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "IWI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -244,7 +260,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "DTV",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -258,7 +275,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "C19",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -272,7 +290,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "EHI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -286,7 +305,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "BXI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -300,7 +320,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "LTS",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -314,7 +335,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "ESX",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -328,7 +350,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "C20",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -342,7 +365,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "CWI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -356,7 +380,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "RCI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -370,7 +395,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "WCI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -384,7 +410,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "WMI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -398,7 +425,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "ESX",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -412,7 +440,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "SDI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -426,7 +455,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "AYI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -440,7 +470,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "N06",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -454,7 +485,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "WWI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -468,7 +500,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "NWI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -482,7 +515,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "DTV",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -496,7 +530,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "FHI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -510,7 +545,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "C08",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -524,7 +560,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "SLI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -538,7 +575,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "BWI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -552,7 +590,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "MDI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -566,7 +605,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "DRS",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -580,7 +620,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "WTI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -594,7 +635,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "EXI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -608,7 +650,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "N52",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -622,7 +665,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "SPI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -636,7 +680,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "DWI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -650,7 +695,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "PFI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -664,7 +710,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "PDI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -678,7 +725,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "CHS",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -692,7 +740,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "BMI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -706,7 +755,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "TRN",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -720,7 +770,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "FEI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -734,7 +785,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "MTI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -748,7 +800,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "HRI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -762,7 +815,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "FSI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -776,7 +830,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "GHI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -790,7 +845,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "STI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -804,7 +860,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "WNI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -818,7 +875,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "STI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -832,7 +890,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "CDI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -846,7 +905,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "C04",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -860,7 +920,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "GCS",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -874,7 +935,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "TCI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -888,7 +950,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "C20",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -902,7 +965,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "PVI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -916,7 +980,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "N23",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -930,7 +995,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "OUT",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -944,7 +1010,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "ESI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -958,7 +1025,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "WSI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -972,7 +1040,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "EXI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -986,7 +1055,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "C07",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1000,7 +1070,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "TCI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1014,7 +1085,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "EXI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1028,7 +1100,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "WII",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1042,7 +1115,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "FYI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1056,7 +1130,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "TSI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1070,7 +1145,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "N01",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1084,7 +1160,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "RHI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1098,7 +1175,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "LDN",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1112,7 +1190,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "HLI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1126,7 +1205,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "EYI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1140,7 +1220,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "TSI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1154,7 +1235,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "MRS",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1168,7 +1250,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "PRI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1182,7 +1265,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "ISI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1196,7 +1280,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "N03",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1210,7 +1295,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "BNI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1224,7 +1310,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "SWM",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1238,7 +1325,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "CFI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1252,7 +1340,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "ASI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1266,7 +1355,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "LNS",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1280,7 +1370,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "BCI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1294,7 +1385,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "FBI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1308,7 +1400,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "N24",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1322,7 +1415,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "WRI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1336,7 +1430,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "PFI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1350,7 +1445,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "N58",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1364,7 +1460,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "N51",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1378,7 +1475,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "DHI",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1392,7 +1490,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "T01",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         },
         new CandidateDto
         {
@@ -1406,7 +1505,8 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             Primary = "NOMIS",
             EstCode = "HPS",
             Nationality = "",
-            Ethnicity = ""
+            Ethnicity = "",
+            IsActive = true
         }
     ];
 

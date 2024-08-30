@@ -82,6 +82,9 @@ public class SyncParticipantsJob(
                         participant.AddOrUpdateGender(candidate.Gender);
                     }
 
+                    // Update active in feed status
+                    participant.UpdateActiveStatus(candidate.IsActive);
+
                     // Dispatch events and commit transaction
                     await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, CancellationToken.None);
                     await unitOfWork.CommitTransactionAsync();

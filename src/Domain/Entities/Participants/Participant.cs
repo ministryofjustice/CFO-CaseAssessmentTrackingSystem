@@ -23,7 +23,7 @@ public class Participant : OwnerPropertyEntity<string>
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public static Participant CreateFrom(string id, string firstName, string? middleName, string lastName, string? gender, DateTime dateOfBirth, string referralSource, string? referralComments, int locationId)
+    public static Participant CreateFrom(string id, string firstName, string? middleName, string lastName, string? gender, DateTime dateOfBirth, bool activeInFeed, string referralSource, string? referralComments, int locationId)
     {
         Participant p = new Participant
         {
@@ -35,6 +35,7 @@ public class Participant : OwnerPropertyEntity<string>
             MiddleName = middleName,
             LastName = lastName,
             Gender = gender,
+            ActiveInFeed = activeInFeed,
             ReferralSource = referralSource,
             ReferralComments = referralComments,
             _currentLocationId = locationId
@@ -49,6 +50,11 @@ public class Participant : OwnerPropertyEntity<string>
     public string LastName { get; private set; }
     public string? Gender { get; private set; }
     public DateOnly DateOfBirth { get; private set; }
+
+    /// <summary>
+    /// Whether the participant is active in the DMS feed.
+    /// </summary>
+    public bool ActiveInFeed { get; private set; }
 
     public string ReferralSource { get; private set; }
 
@@ -251,6 +257,17 @@ public class Participant : OwnerPropertyEntity<string>
         {
             ConsentStatus = ConsentStatus.GrantedStatus;
         }
+        return this;
+    }
+
+    public Participant UpdateActiveStatus(bool activeInFeed)
+    {
+        if(ActiveInFeed != activeInFeed)
+        {
+            ActiveInFeed = activeInFeed;
+            AddDomainEvent(new ParticipantActiveStatusChangedDomainEvent(this, ActiveInFeed, activeInFeed));
+        }
+
         return this;
     }
 

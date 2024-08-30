@@ -57,6 +57,7 @@ public static class CreateParticipant
                 lastName: candidate.LastName,
                 gender: candidate.Gender,
                 dateOfBirth: candidate.DateOfBirth,
+                activeInFeed: candidate.IsActive,
                 referralSource: request.ReferralSource!,
                 referralComments: request.ReferralComments,
                 locationId: candidate.MappedLocationId);
