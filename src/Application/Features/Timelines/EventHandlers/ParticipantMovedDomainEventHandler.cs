@@ -6,7 +6,7 @@ public class ParticipantMovedDomainEventHandler(
     ICurrentUserService currentUserService, 
     IUnitOfWork unitOfWork) : TimelineNotificationHandler<ParticipantMovedDomainEvent>(currentUserService, unitOfWork)
 {
-    protected override TimelineEventType GetEventType() => TimelineEventType.PathwayPlan;
+    protected override TimelineEventType GetEventType() => TimelineEventType.Dms;
 
     protected override string GetLine1(ParticipantMovedDomainEvent notification) => "Participant moved locations";
 

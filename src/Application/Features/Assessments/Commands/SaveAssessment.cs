@@ -54,7 +54,7 @@ public static class SaveAssessment
 
                 Sex sex = Sex.FromName(details.Gender);
                 AssessmentLocation location = AssessmentLocation.FromValue(details.LotNumber);
-                var age = details.DateOfBirth!.Value.CalculateAge();
+                var age = details.DateOfBirth.CalculateAge();
                 
                 foreach(var pathway in request.Assessment.Pathways)
                 {

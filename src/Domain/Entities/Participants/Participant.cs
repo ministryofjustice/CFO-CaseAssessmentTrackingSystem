@@ -44,12 +44,12 @@ public class Participant : OwnerPropertyEntity<string>
         return p;
     }
 
-    public string? FirstName { get; private set; }
+    public string FirstName { get; private set; }
     public string? MiddleName { get; private set; }
-    public string? LastName { get; private set; }
+    public string LastName { get; private set; }
     public string? Gender { get; private set; }
-    public DateOnly? DateOfBirth { get; private set; }
-    
+    public DateOnly DateOfBirth { get; private set; }
+
     public string ReferralSource { get; private set; }
 
     public string? ReferralComments { get; private set; }
@@ -165,6 +165,17 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
+    public Participant AddOrUpdateDateOfBirth(DateOnly dateOfBirth)
+    {
+        if(DateOfBirth != dateOfBirth)
+        {
+            DateOfBirth = dateOfBirth;
+            AddDomainEvent(new ParticipantDateOfBirthChangedDomainEvent(this, DateOfBirth, dateOfBirth));
+        }
+
+        return this;
+    }
+
     public Participant AddOrUpdateExternalIdentifier(ExternalIdentifier newIdentifier)
     {
         if(_externalIdentifiers.Contains(newIdentifier))
@@ -174,16 +185,56 @@ public class Participant : OwnerPropertyEntity<string>
 
         var identifier = _externalIdentifiers.Find(x => x.Type == newIdentifier.Type);
 
-        if(identifier is not null && identifier.Type.IsExclusive)
+        if(identifier is { Type.IsExclusive: true } )
         {
             _externalIdentifiers.Remove(identifier);
-
-            // Identifier changed from X to Y
-
-            // AddDomainEvent()
+            AddDomainEvent(new ParticipantIdentifierChangedDomainEvent(this, identifier, newIdentifier));
         }
 
         _externalIdentifiers.Add(newIdentifier);
+
+        return this;
+    }
+
+    public Participant AddOrUpdateGender(string? gender)
+    {
+        if (string.Equals(Gender, gender, StringComparison.OrdinalIgnoreCase) is false)
+        {
+            Gender = gender;
+            AddDomainEvent(new ParticipantGenderChangedDomainEvent(this, Gender, gender));
+        }
+
+        return this;
+    }
+
+    public Participant AddOrUpdateNameInformation(string firstName, string? middleName, string lastName)
+    {
+        bool nameHasChanged = false;
+
+        string? currentName = FullName;
+
+        if(string.Equals(FirstName, firstName, StringComparison.OrdinalIgnoreCase) is false)
+        {
+            FirstName = firstName;
+            nameHasChanged = true;
+        }
+
+        if (string.Equals(MiddleName, middleName, StringComparison.OrdinalIgnoreCase) is false)
+        {
+            MiddleName = middleName;
+            nameHasChanged = true;
+        }
+
+        if (string.Equals(LastName, lastName, StringComparison.OrdinalIgnoreCase) is false)
+        {
+            LastName = lastName;
+            nameHasChanged = true;
+        }
+
+        if (nameHasChanged)
+        {
+            AddDomainEvent(new ParticipantNameChangedDomainEvent(this, currentName, FullName));
+        }
 
         return this;
     }
