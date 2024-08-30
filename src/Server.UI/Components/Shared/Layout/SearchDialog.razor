@@ -1,4 +1,5 @@
 @using Cfo.Cats.Application.SecurityConstants
+@using MudBlazor.Extensions
 @using Toolbelt.Blazor.HotKeys2
 @inject IStringLocalizer<SharedResource> L
 @inject HotKeys HotKeys
@@ -34,6 +35,9 @@
 {
 
     [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter]
+    public UserProfile? UserProfile { get; set; } = default!;
     
     private readonly Dictionary<string, string> pages = new();
     private HotKeysContext? hotKeysContext;
@@ -73,13 +77,52 @@
         pages.Add("Home", "/");
         pages.Add("Participants", "/pages/participants");
         pages.Add("New Enrolment", "/pages/candidates/search");
-        
-        pages.Add("Provider QA", "/pages/qa/enrolments/pqa");
-        pages.Add("QA1", "/pages/qa/enrolments/qa1");
-        pages.Add("QA2", "/pages/qa/enrolments/qa2");
 
-        pages.Add("Tenants", "/administration/tenants");
-        pages.Add("Users", "/administration/users");
+        if (UserProfile is not null)
+        {
+
+            string[] allowed = [RoleNames.QAFinance, RoleNames.SMT, RoleNames.SystemSupport];
+            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+            {
+                pages.Add("Provider QA", "/pages/qa/enrolments/pqa");
+            }
+
+            allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
+            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+            {
+                pages.Add("First Pass", "/pages/qa/enrolments/qa1");    
+            }
+
+            allowed = [RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
+            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+            {
+                pages.Add("Second Pass", "/pages/qa/enrolments/qa2");    
+            }
+
+            allowed = [RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
+            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+            {
+                pages.Add("Queue Management", "/pages/qa/servicedesk/enrolments");    
+            }
+
+            allowed = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT];
+            
+            
+            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+            {
+                pages.Add("Tenants", "/administration/tenants");
+                pages.Add("Users", "/identity/users");
+                pages.Add("Lookup Values", "/system/picklist");
+                pages.Add("Audit Trails", "/system/audittrails");
+            }
+            
+           
+
+            
+        }
+        
+        
+        
         
         
         pagesFiltered = pages;
