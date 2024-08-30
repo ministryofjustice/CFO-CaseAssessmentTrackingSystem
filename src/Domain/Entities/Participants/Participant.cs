@@ -245,4 +245,13 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
+    public Participant ApproveConsent()
+    {
+        if(ConsentStatus == ConsentStatus.PendingStatus)
+        {
+            ConsentStatus = ConsentStatus.GrantedStatus;
+        }
+        return this;
+    }
+
 }

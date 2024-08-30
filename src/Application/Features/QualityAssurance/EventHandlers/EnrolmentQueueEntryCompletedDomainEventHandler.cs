@@ -18,7 +18,8 @@ public class EnrolmentQueueEntryCompletedDomainEventHandler(IUnitOfWork unitOfWo
         {
             if (notification.Entry.IsAccepted)
             {
-                notification.Entry.Participant!.TransitionTo(EnrolmentStatus.ApprovedStatus);
+                notification.Entry.Participant!.TransitionTo(EnrolmentStatus.ApprovedStatus)
+                    .ApproveConsent();
             }
             else
             {
