@@ -61,6 +61,21 @@ public static class CreateParticipant
                 referralComments: request.ReferralComments,
                 locationId: candidate.MappedLocationId);
 
+            if(candidate.Crn is not null)
+            {
+                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.Crn, ExternalIdentifierType.Crn));
+            }
+
+            if(candidate.NomisNumber is not null)
+            {
+                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.NomisNumber, ExternalIdentifierType.NomisNumber));
+            }
+
+            if (candidate.PncNumber is not null)
+            {
+                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.PncNumber, ExternalIdentifierType.PncNumber));
+            }
+
             participant.AssignTo(currentUserService.UserId);
         
             await unitOfWork.DbContext.Participants.AddAsync(participant, cancellationToken);
@@ -94,6 +109,10 @@ public static class CreateParticipant
                     .WithMessage("Invalid establishment code")
                     .Matches(ValidationConstants.AlphaNumeric)
                     .WithMessage("Invalid establishment code");
+
+                RuleFor(x => x.Candidate.NomisNumber)
+                    .NotNull()
+                    .WithMessage("Nomis Number is required");
             });
 
             // Organisation Code is otherwise required for Probation (DELIUS) records.
@@ -105,6 +124,10 @@ public static class CreateParticipant
                     .WithMessage("Invalid organisation code")
                     .Matches(ValidationConstants.AlphaNumeric)
                     .WithMessage("Invalid organisation code");
+
+                RuleFor(x => x.Candidate.Crn)
+                    .NotNull()
+                    .WithMessage("Crn is required");
             });
 
             RuleFor(x => x.ReferralSource)
