@@ -28,6 +28,9 @@ public class ParticipantDto
     [Description("Enrolment Justification Reason")]
     public string? EnrolmentLocationJustification { get; set; }
 
+    [Description("Assessment Justification Reason")]
+    public string? AssessmentJustification { get; set; }
+
     public ConsentDto[] Consents { get; set; } = [];
 
     public RightToWorkDto[] RightToWorks { get; set; } = [];
