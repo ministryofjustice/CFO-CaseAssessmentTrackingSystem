@@ -47,7 +47,7 @@ public class MenuService : IMenuService
             },
             new MenuSectionModel
             {
-                Title = "QA",
+                Title = "Quality Control",
                 Roles = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.QAFinance],
                 SectionItems = new List<MenuSectionItemModel>
                 {
@@ -58,7 +58,7 @@ public class MenuService : IMenuService
                         Icon = Icons.Material.Filled.Approval,
                         MenuItems = new List<MenuSectionSubItemModel>
                         {
-                             new()
+                            new()
                             {
                                 Title = "PQA",
                                 Href="/pages/qa/enrolments/pqa",
