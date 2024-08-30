@@ -1,4 +1,4 @@
-using Cfo.Cats.Domain.Common.Enums;
+﻿using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Participants;
 using Quartz;
 using System.Threading;
@@ -43,8 +43,7 @@ public class SyncParticipantsJob(
 
                     if (candidate is null)
                     {
-                        // Something is seriously wrong here...
-                        return;
+                        continue;
                     }
 
                     // Update and move locations
@@ -65,6 +64,22 @@ public class SyncParticipantsJob(
                     if (candidate.PncNumber is not null)
                     {
                         participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.PncNumber, ExternalIdentifierType.PncNumber));
+                    }
+
+                    // Update first, middle, and last names
+                    participant.AddOrUpdateNameInformation(
+                        candidate.FirstName, 
+                        candidate.SecondName, 
+                        candidate.LastName);
+
+                    // Update date of birth
+                    participant.AddOrUpdateDateOfBirth(
+                        DateOnly.FromDateTime(candidate.DateOfBirth));
+
+                    // Update gender
+                    if (candidate.Gender is not null)
+                    {
+                        participant.AddOrUpdateGender(candidate.Gender);
                     }
 
                     // Dispatch events and commit transaction

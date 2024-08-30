@@ -31,3 +31,35 @@ public sealed class ParticipantMovedDomainEvent(Participant participant, Locatio
     public Location From { get; } = from;
     public Location To { get; } = to;
 }
+
+public sealed class ParticipantDateOfBirthChangedDomainEvent(Participant participant, DateOnly from, DateOnly to)
+    : DomainEvent
+{
+    public Participant Item { get; } = participant;
+    public DateOnly From { get; } = from;
+    public DateOnly To { get; } = to;
+}
+
+public sealed class ParticipantGenderChangedDomainEvent(Participant participant, string? from, string? to)
+    : DomainEvent
+{
+    public Participant Item { get; } = participant;
+    public string? From { get; } = from;
+    public string? To { get; } = to;
+}
+
+public sealed class ParticipantIdentifierChangedDomainEvent(Participant participant, ExternalIdentifier from, ExternalIdentifier to)
+    : DomainEvent
+{
+    public Participant Item { get; } = participant;
+    public ExternalIdentifier From { get; } = from;
+    public ExternalIdentifier To { get; } = to;
+}
+
+public sealed class ParticipantNameChangedDomainEvent(Participant participant, string? from, string? to)
+    : DomainEvent
+{
+    public Participant Item { get; } = participant;
+    public string? From { get; } = from;
+    public string? To { get; } = to;
+}
