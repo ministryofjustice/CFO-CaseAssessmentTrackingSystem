@@ -1,0 +1,18 @@
+﻿<MudContainer Class="d-flex flex-column align-center justify-center">
+
+    <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">
+        The candidate found does not meet the eligiblity criteria.
+    </MudAlert>
+
+    <MudContainer Class="d-flex px-0 mt-8 justify-space-between">
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="BackToSearch">Back to Search</MudButton>
+    </MudContainer>
+
+</MudContainer>
+
+@code
+{
+    [Parameter]
+    public EventCallback OnCanceled { get; set; }
+    private Task BackToSearch() => OnCanceled.InvokeAsync();
+}
