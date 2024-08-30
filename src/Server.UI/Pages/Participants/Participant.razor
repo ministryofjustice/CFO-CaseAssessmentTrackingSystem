@@ -93,14 +93,14 @@
                     <MudTabPanel Text="Case Summary">
                         <CaseSummary />
                     </MudTabPanel>
-                    <MudTabPanel Text="Assessments">
-                        <CaseAssessment ParticipantId="@Id" />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Notes">
-                        <CaseNotes ParticipantId="@Id"/>
+                    <MudTabPanel Text="Sentence Information">
+                        <CaseSentenceInformation ParticipantId="@Id" />
                     </MudTabPanel>
                     <MudTabPanel Text="Risk">
                         <CaseRisk ParticipantId="@Id" />
+                    </MudTabPanel>
+                    <MudTabPanel Text="Assessments">
+                        <CaseAssessment ParticipantId="@Id" />
                     </MudTabPanel>
                     <MudTabPanel Text="Bio">
                         <CaseBio ParticipantId="@Id" />
@@ -108,24 +108,18 @@
                     <MudTabPanel Text="Pathway Plan">
                         <CasePathwayPlan ParticipantId="@Id" OnUpdate="Refresh" />
                     </MudTabPanel>
-                    <MudTabPanel Text="Contact Log" Disabled>
-
+                    <MudTabPanel Text="Notes">
+                        <CaseNotes ParticipantId="@Id"/>
                     </MudTabPanel>
-                    <MudTabPanel Text="PSF" Disabled>
-
+                    <MudTabPanel Text="Timeline">
+                        <CaseTimeline />
                     </MudTabPanel>
-                    <MudTabPanel Text="TimeLine">
-                        <CaseTimeline/>
-                    </MudTabPanel>
-                    <MudTabPanel Text="Distance Travelled" Disabled>
-
-                    </MudTabPanel>
-                    <MudTabPanel Text="Case Discussions" Disabled>
-
-                    </MudTabPanel>
-                    <MudTabPanel Text="Sentence Information">
-                        <CaseSentenceInformation ParticipantId="@Id" />
-                    </MudTabPanel>
+                    @*
+                    <MudTabPanel Text="Contact Log" Disabled></MudTabPanel>
+                    <MudTabPanel Text="PSF" Disabled></MudTabPanel>
+                    <MudTabPanel Text="Distance Travelled" Disabled></MudTabPanel>
+                    <MudTabPanel Text="Case Discussions" Disabled></MudTabPanel>
+                    *@
                 </MudTabs>
             </MudPaper>
         </CascadingValue>
