@@ -107,10 +107,8 @@
 
             Model = new(
                 Identifiers: identifiers,
-                Supervisor: 
-                    supervisor is null ? 
-                    new ParticipantSupervisorDto() : 
-                    supervisor
+                Supervisor: supervisor?.Data 
+                    ?? new ParticipantSupervisorDto()
             );
 
         }
