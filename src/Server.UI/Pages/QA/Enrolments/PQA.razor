@@ -49,36 +49,77 @@
                 Participant
             </MudText>
 
-            <MudList T="string">
-                <MudListItem T="string" Text="@_participantDto.Id"></MudListItem>
-                <MudListItem T="string" Text="@_participantDto.FirstName"></MudListItem>
-                <MudListItem T="string" Text="@_participantDto.LastName"></MudListItem>
-                <MudListItem T="string" Text="@_participantDto.DateOfBirth.ToString()"></MudListItem>
-                <MudListItem T="string" Text="@_participantDto.CurrentLocation.Name"></MudListItem>
-            </MudList>
+             <MudForm>
+                    <MudTextField Label="Identifier" @bind-Value="_participantDto.Id" ReadOnly="true" />
+                    <MudTextField Label="First Name" @bind-Value="_participantDto.FirstName" ReadOnly="true" />
+                    <MudTextField Label="Last Name" @bind-Value="_participantDto.LastName" ReadOnly="true" />
+                    <MudTextField Label="Date Of Birth" @bind-Value="_participantDto.DateOfBirth" ReadOnly="true" />
+                    <MudTextField Label="Current Location" @bind-Value="_participantDto.CurrentLocation.Name"
+                        ReadOnly="true" />
+                    @if (_participantDto.EnrolmentLocation is not null)
+                    {
+                        <MudTextField Label="Enrolment Location" @bind-Value="_participantDto.EnrolmentLocation.Name"
+                            ReadOnly="true" />
+                    }
+                    @if (_participantDto.EnrolmentLocationJustification is not null)
+                    {
+                        <MudTextField Label="Enrolment Justification" @bind-Value="_participantDto.EnrolmentLocationJustification"
+                            ReadOnly="true" />
+                    }
 
-            <MudRadioGroup T="Guid" Class="mud-radio" ValueChanged="OnSelectedDocumentChanged">
-                @foreach (var consent in _participantDto.Consents)
-                {
-                    <MudRadio T="Guid" Color="Color.Primary" Value="@consent.DocumentId!.Value">
-                        @consent.FileName
-                    </MudRadio>
-                }
+                    @if (_participantDto.AssessmentJustification is not null)
+                    {
+                        <MudTextField Label="Assessment Justification" @bind-Value="_participantDto.AssessmentJustification"
+                            ReadOnly="true" />
+                    }
 
-                @if (_participantDto.RightToWorks is [])
-                {
-                    <MudRadio T="Guid" Color="Color.Primary" Disabled="true">
-                        No right to work provided
-                    </MudRadio>
-                }
+                    @if (_participantDto.Consents.Length > 0)
+                    {
+                        <MudTextField Label="Consent Date" @bind-Value="_participantDto.Consents[0].ConsentDate"
+                            ReadOnly="true" />
 
-                @foreach (var rtw in _participantDto.RightToWorks)
-                {
-                    <MudRadio T="Guid" Color="Color.Primary" Value="@rtw.DocumentId!.Value">
-                        @rtw.FileName
-                    </MudRadio>
-                }
-            </MudRadioGroup>
+                    }
+
+
+                    @if (_participantDto.RightToWorks.Length > 0)
+                    {
+                        <MudTextField Label="RTW Valid From" @bind-Value="_participantDto.RightToWorks[0].ValidFrom"
+                            ReadOnly="true" />
+
+                        @if (_participantDto.RightToWorks[0].ValidTo.Date == new DateTime(9999, 12, 31))
+                        {
+                            <MudChip T="string" Color="Color.Primary">Indefinite</MudChip>
+                        }
+                        else
+                        {
+                            <MudTextField Label="RTW Valid To" @bind-Value="_participantDto.RightToWorks[0].ValidTo"
+                                ReadOnly="true" />
+                        }
+
+                    }
+
+                    <MudRadioGroup T="Guid" Class="mud-radio" ValueChanged="OnSelectedDocumentChanged">
+                        @foreach (var consent in _participantDto.Consents)
+                        {
+                            <MudRadio T="Guid" Color="Color.Primary" Value="@consent.DocumentId!.Value">
+                                @consent.FileName
+                            </MudRadio>
+                        }
+
+                        @if (_participantDto.RightToWorks is [])
+                        {
+                            <MudRadio T="Guid" Color="Color.Primary" Disabled="true">
+                                No right to work provided
+                            </MudRadio>
+                        }
+
+                        @foreach (var rtw in _participantDto.RightToWorks)
+                        {
+                            <MudRadio T="Guid" Color="Color.Primary" Value="@rtw.DocumentId!.Value">
+                                @rtw.FileName
+                            </MudRadio>
+                        }
+                    </MudRadioGroup>
 
             @if (_queueEntry.IsCompleted == false)
             {
@@ -100,7 +141,8 @@
                     <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
                 </MudContainer>   
             }
-            
+                            </MudForm>
+
         </MudItem>
 
         <MudItem xs="8" Style="height: 100%; width: 100%;">
