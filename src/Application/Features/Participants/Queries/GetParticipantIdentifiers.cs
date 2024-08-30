@@ -40,9 +40,10 @@ public static class GetParticipantIdentifiers
                 .NotNull()
                 .Length(9)
                 .WithMessage("Invalid Participant Id")
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
                 .MustAsync(Exist)
-                .WithMessage("Participant does not exist")
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+                .WithMessage("Participant does not exist");
         }
 
         private async Task<bool> Exist(string identifier, CancellationToken cancellationToken)
