@@ -1,0 +1,60 @@
+@inherits CatsComponentBase
+
+@using System.Globalization
+@using ActualLab.Fusion.Extensions
+@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
+@using Cfo.Cats.Application.Features.QualityAssurance.Queries
+@using Humanizer
+
+
+@if (_notes is { Length: > 0 })
+{
+    <MudTable Items="_notes" Hover="true">
+        <HeaderContent>
+            <MudTh>Created By</MudTh>
+            <MudTh>Created Date</MudTh>
+            <MudTh>Message</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Cb">@context.CreatedBy</MudTd>
+            <MudTd DataLabel="Cd">
+                <MudTooltip Text="@context.Created.ToString(CultureInfo.InvariantCulture)">
+                    @context.Created.Humanize()    
+                </MudTooltip>
+            </MudTd>
+            <MudTd>
+                @context.Message
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
+
+@code{
+
+    private EnrolmentQaNoteDto[]? _notes = null;
+
+    [CascadingParameter]
+    public UserProfile UserProfile { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string ParticipantId { get;set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_notes is null)
+        {
+            var result = await GetNewMediator().Send(new GetEnrolmentQaNotes.Query()
+            {
+                ParticipantId = ParticipantId,
+                CurentUser = UserProfile
+            });
+
+            if (result.Succeeded)
+            {
+                _notes = result.Data!.OrderBy(n => n.Created).ToArray();
+            }
+        }
+    }
+
+}

@@ -1,47 +1,85 @@
 ﻿@page "/"
+@using Cfo.Cats.Application.Features.Dashboard.Queries
 @using Cfo.Cats.Application.SecurityConstants
+
+@inherits CatsComponentBase
 
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 <PageTitle>@Title</PageTitle>
 
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+    <MudText Typo="Typo.h3">
+        Dashboard
+    </MudText>
     <MudGrid>
-        <MudItem xs="12" sm="12">
-            
+        <MudItem xs="3">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">
+                            Pending Cases
+                        </MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Your cases that are awaiting submission to PQA</MudText>
+                    <MudText Typo="Typo.h1" Align="Align.Center">
+                        @_dashboardDto?.PendingCases
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
         </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
-
-            </MudPaper>
+        <MudItem xs="3">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">
+                            Provider QA
+                        </MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Your cases that are sat with Provider QA</MudText>
+                    <MudText Typo="Typo.h1" Align="Align.Center">
+                        @_dashboardDto?.CasesAtPqa
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
         </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+        <MudItem xs="3">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">
+                            CFO QA
+                        </MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Your cases that are sat with CFO QA</MudText>
+                    <MudText Typo="Typo.h1" Align="Align.Center">
+                        @_dashboardDto?.CasesAtCfo
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
         </MudItem>
-        <MudItem xs="12" sm="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudGrid>
-                <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-                </MudItem>
-            </MudGrid>
-        </MudItem>
-
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
-
-            </MudPaper>
+        <MudItem xs="3">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">
+                            Approved Cases
+                        </MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Your cases that have been approved</MudText>
+                    <MudText Typo="Typo.h1" Align="Align.Center">
+                        @_dashboardDto?.ApprovedCases
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
         </MudItem>
     </MudGrid>
 </MudContainer>
@@ -51,5 +89,26 @@
 @code {
 
     public string Title { get; } = "Dashboard";
+
+    private DashboardDto? _dashboardDto = null; 
+    
+    [CascadingParameter]
+    public UserProfile? UserProfile { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var query = new GetDashboard.Query()
+        {
+            CurrentUser = UserProfile!
+        };
+
+        var result = await GetNewMediator().Send(query);
+
+        if (result.Succeeded)
+        {
+            _dashboardDto = result.Data;
+        }
+        
+    }
 
 }

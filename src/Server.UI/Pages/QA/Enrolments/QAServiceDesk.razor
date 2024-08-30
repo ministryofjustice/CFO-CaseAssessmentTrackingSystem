@@ -1,0 +1,18 @@
+@using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components
+@page "/pages/qa/servicedesk/enrolments"
+
+<MudContainer Style="width: 100%; min-width: 480px;" >
+        <MudText Typo="Typo.h5">
+            CFO Enrolment Queues
+        </MudText>
+        <MudTabs Elevation="1" Border="false" ApplyEffectsToContainer="true" PanelClass="pa-6">
+            <MudTabPanel Text="First Pass">
+                <QA1List/>
+            </MudTabPanel>
+            <MudTabPanel Text="Second Pass">
+                <QA2List/>
+            </MudTabPanel>
+        </MudTabs>
+</MudContainer>
+
+

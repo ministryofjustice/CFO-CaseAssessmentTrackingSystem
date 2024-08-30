@@ -1,4 +1,4 @@
-﻿@page "/pages/qa/enrolments/qa2"
+﻿
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 @using Cfo.Cats.Application.Features.QualityAssurance.Queries
 @using Cfo.Cats.Application.SecurityConstants
@@ -7,8 +7,7 @@
 
 @inject IStringLocalizer<PQA> L
 
-@attribute [Authorize(Policy = SecurityPolicies.Qa2)]
-
+@attribute [Authorize(Policy = SecurityPolicies.Qa1)]
 <style>
     .mud-table-toolbar {
         height: 120px !important;
@@ -31,6 +30,7 @@
         <div class="d-flex align-start flex-grow-1">
             <div class="d-flex gap-4">
                 <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large"/>
+                QA1
             </div>
             <div class="flex-grow-1"></div>
             <div class="d-flex flex-column justify-end">
@@ -81,6 +81,7 @@
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">@context.Item.SupportWorker</MudText>
+                   
                 </div>
             </CellTemplate>
         </PropertyColumn>
@@ -91,7 +92,14 @@
                     <MudText Typo="Typo.body2">@context.Item.TenantId</MudText>
                 </div>
             </CellTemplate>
-        </PropertyColumn>                      
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.AssignedTo" Title="@L["AssignedTo"]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.AssignedTo</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>         
         <PropertyColumn Property="x => x.Created" Title="@L["Submitted"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
@@ -108,7 +116,6 @@
 </MudDataGrid>
 
 @code {
-
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
     
@@ -116,13 +123,13 @@
     private int _defaultPageSize = 15;
     private MudDataGrid<EnrolmentQueueEntryDto> _table = default!;
 
-    private Qa2WithPagination.Query Query { get; set; } = new();
+    private Qa1WithPagination.Query Query { get; set; } = new();
     private EnrolmentQueueEntryDto _currentDto = new();
     private HashSet<EnrolmentQueueEntryDto> _selectedItems = new();
     
     private void OnEdit(EnrolmentQueueEntryDto dto)
     {
-        Navigation.NavigateTo($"/pages/qa/enrolments/qa2/{dto.Id}");
+        Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
     }
    
     private async Task<GridData<EnrolmentQueueEntryDto>> ServerReload(GridState<EnrolmentQueueEntryDto> state)

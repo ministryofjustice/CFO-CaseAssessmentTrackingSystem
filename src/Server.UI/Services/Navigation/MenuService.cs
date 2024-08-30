@@ -47,7 +47,7 @@ public class MenuService : IMenuService
             },
             new MenuSectionModel
             {
-                Title = "QA",
+                Title = "Quality Control",
                 Roles = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.QAFinance],
                 SectionItems = new List<MenuSectionItemModel>
                 {
@@ -58,27 +58,35 @@ public class MenuService : IMenuService
                         Icon = Icons.Material.Filled.Approval,
                         MenuItems = new List<MenuSectionSubItemModel>
                         {
-                             new()
+                            new()
                             {
                                 Title = "PQA",
                                 Href="/pages/qa/enrolments/pqa",
                                 PageStatus = PageStatus.Completed,
-                                Roles = [ RoleNames.QAFinance, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                                Roles = [ RoleNames.QAFinance, RoleNames.SMT, RoleNames.SystemSupport ]
                             },
                             new()
                             {
-                                Title = "QA1",
+                                Title = "Queue Management",
                                 PageStatus = PageStatus.Completed,
-                                Href="/pages/qa/enrolments/qa1",
+                                Href="/pages/qa/servicedesk/enrolments",
+                                Roles = [ RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            },
+                            new()
+                            {
+                                Title="First Pass",
+                                PageStatus = PageStatus.Completed,
+                                Href = "/pages/qa/enrolments/qa1/",
                                 Roles = [ RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
                             },
                             new()
                             {
-                                Title = "QA2",
+                                Title="Second Pass",
                                 PageStatus = PageStatus.Completed,
-                                Href="/pages/qa/enrolments/qa2",
-                                Roles = [  RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
-                            }      
+                                Href = "/pages/qa/enrolments/qa2/",
+                                Roles = [ RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            }
+
                         }
                     }
                 }
@@ -110,12 +118,6 @@ public class MenuService : IMenuService
                             },
                             new()
                             {
-                                Title = "Roles",
-                                Href = "/identity/roles",
-                                PageStatus = PageStatus.Completed
-                            },
-                            new()
-                            {
                                 Title = "Profile",
                                 Href = "/user/profile",
                                 PageStatus = PageStatus.Completed
@@ -131,7 +133,7 @@ public class MenuService : IMenuService
                         {
                             new()
                             {
-                                Title = "Picklist",
+                                Title = "Lookup Values",
                                 Href = "/system/picklist",
                                 PageStatus = PageStatus.Completed
                             },

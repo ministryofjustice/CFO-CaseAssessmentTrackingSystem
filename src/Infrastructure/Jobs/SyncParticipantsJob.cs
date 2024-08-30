@@ -1,4 +1,6 @@
-﻿using Quartz;
+﻿using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Entities.Participants;
+using Quartz;
 using System.Threading;
 
 namespace Cfo.Cats.Infrastructure.Jobs;
@@ -41,18 +43,44 @@ public class SyncParticipantsJob(
 
                     if (candidate is null)
                     {
-                        // Something is seriously wrong here...
-                        return;
+                        continue;
                     }
 
                     // Update and move locations
                     var location = locations.Single(x => x.Id == candidate.MappedLocationId);
                     participant.MoveToLocation(location);
 
-                    // Update other information
-                    // ...
-                    // ...
-                    // ...
+                    // Update external identifiers (Crn, Nomis Number, Pnc Number)
+                    if (candidate.Crn is not null)
+                    {
+                        participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.Crn, ExternalIdentifierType.Crn));
+                    }
+
+                    if (candidate.NomisNumber is not null)
+                    {
+                        participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.NomisNumber, ExternalIdentifierType.NomisNumber));
+                    }
+
+                    if (candidate.PncNumber is not null)
+                    {
+                        participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.PncNumber, ExternalIdentifierType.PncNumber));
+                    }
+
+                    // Update first, middle, and last names
+                    participant.AddOrUpdateNameInformation(
+                        candidate.FirstName, 
+                        candidate.SecondName, 
+                        candidate.LastName);
+
+                    // Update date of birth
+                    participant.AddOrUpdateDateOfBirth(
+                        DateOnly.FromDateTime(candidate.DateOfBirth));
+
+                    // Update gender
+                    if (candidate.Gender is not null)
+                    {
+                        participant.AddOrUpdateGender(candidate.Gender);
+                    }
 
                     // Dispatch events and commit transaction
                     await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, CancellationToken.None);

@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Common.Exceptions;
 using Cfo.Cats.Domain.Entities.Administration;
@@ -14,7 +14,9 @@ public class Participant : OwnerPropertyEntity<string>
     private List<Consent> _consents = new();
     private List<RightToWork> _rightToWorks = new();
     private List<Note> _notes = new();
-    
+    private List<ExternalIdentifier> _externalIdentifiers = new();
+
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private Participant()
     {
@@ -37,17 +39,17 @@ public class Participant : OwnerPropertyEntity<string>
             ReferralComments = referralComments,
             _currentLocationId = locationId
         };
-        
+
         p.AddDomainEvent(new ParticipantCreatedDomainEvent(p));
         return p;
     }
 
-    public string? FirstName { get; private set; }
+    public string FirstName { get; private set; }
     public string? MiddleName { get; private set; }
-    public string? LastName { get; private set; }
+    public string LastName { get; private set; }
     public string? Gender { get; private set; }
-    public DateOnly? DateOfBirth { get; private set; }
-    
+    public DateOnly DateOfBirth { get; private set; }
+
     public string ReferralSource { get; private set; }
 
     public string? ReferralComments { get; private set; }
@@ -70,11 +72,17 @@ public class Participant : OwnerPropertyEntity<string>
 
     public string? AssessmentJustification { get; private set; }
 
+    public string? FullName => string.Join(' ', [FirstName, MiddleName, LastName]);
+
+    public Supervisor? Supervisor { get; private set; }
+
     public IReadOnlyCollection<Consent> Consents => _consents.AsReadOnly();
 
     public IReadOnlyCollection<RightToWork> RightToWorks => _rightToWorks.AsReadOnly();
 
     public IReadOnlyCollection<Note> Notes => _notes.AsReadOnly();
+
+    public IReadOnlyCollection<ExternalIdentifier> ExternalIdentifiers => _externalIdentifiers.AsReadOnly();
 
     /// <summary>
     /// Transitions this participant to the new enrolment status, if valid
@@ -154,6 +162,86 @@ public class Participant : OwnerPropertyEntity<string>
             _notes.Add(note);
         }
 
+        return this;
+    }
+
+    public Participant AddOrUpdateDateOfBirth(DateOnly dateOfBirth)
+    {
+        if(DateOfBirth != dateOfBirth)
+        {
+            DateOfBirth = dateOfBirth;
+            AddDomainEvent(new ParticipantDateOfBirthChangedDomainEvent(this, DateOfBirth, dateOfBirth));
+        }
+
+        return this;
+    }
+
+    public Participant AddOrUpdateExternalIdentifier(ExternalIdentifier newIdentifier)
+    {
+        if(_externalIdentifiers.Contains(newIdentifier))
+        {
+            return this;
+        }
+
+        var identifier = _externalIdentifiers.Find(x => x.Type == newIdentifier.Type);
+
+        if(identifier is { Type.IsExclusive: true } )
+        {
+            _externalIdentifiers.Remove(identifier);
+            AddDomainEvent(new ParticipantIdentifierChangedDomainEvent(this, identifier, newIdentifier));
+        }
+
+        _externalIdentifiers.Add(newIdentifier);
+
+        return this;
+    }
+
+    public Participant AddOrUpdateGender(string? gender)
+    {
+        if (string.Equals(Gender, gender, StringComparison.OrdinalIgnoreCase) is false)
+        {
+            Gender = gender;
+            AddDomainEvent(new ParticipantGenderChangedDomainEvent(this, Gender, gender));
+        }
+
+        return this;
+    }
+
+    public Participant AddOrUpdateNameInformation(string firstName, string? middleName, string lastName)
+    {
+        bool nameHasChanged = false;
+
+        string? currentName = FullName;
+
+        if(string.Equals(FirstName, firstName, StringComparison.OrdinalIgnoreCase) is false)
+        {
+            FirstName = firstName;
+            nameHasChanged = true;
+        }
+
+        if (string.Equals(MiddleName, middleName, StringComparison.OrdinalIgnoreCase) is false)
+        {
+            MiddleName = middleName;
+            nameHasChanged = true;
+        }
+
+        if (string.Equals(LastName, lastName, StringComparison.OrdinalIgnoreCase) is false)
+        {
+            LastName = lastName;
+            nameHasChanged = true;
+        }
+
+        if (nameHasChanged)
+        {
+            AddDomainEvent(new ParticipantNameChangedDomainEvent(this, currentName, FullName));
+        }
+
+        return this;
+    }
+
+    public Participant AddOrUpdateSupervisor(Supervisor? newSupervisor)
+    {
+        Supervisor = newSupervisor;
         return this;
     }
 
