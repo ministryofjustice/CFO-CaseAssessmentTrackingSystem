@@ -63,7 +63,7 @@ public class MenuService : IMenuService
                                 Title = "PQA",
                                 Href="/pages/qa/enrolments/pqa",
                                 PageStatus = PageStatus.Completed,
-                                Roles = [ RoleNames.QAFinance, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                                Roles = [ RoleNames.QAFinance, RoleNames.SMT, RoleNames.SystemSupport ]
                             },
                             new()
                             {
@@ -74,14 +74,14 @@ public class MenuService : IMenuService
                             },
                             new()
                             {
-                                Title="QA First Pass",
+                                Title="First Pass",
                                 PageStatus = PageStatus.Completed,
                                 Href = "/pages/qa/enrolments/qa1/",
                                 Roles = [ RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
                             },
                             new()
                             {
-                                Title="QA Second Pass",
+                                Title="Second Pass",
                                 PageStatus = PageStatus.Completed,
                                 Href = "/pages/qa/enrolments/qa2/",
                                 Roles = [ RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
@@ -118,12 +118,6 @@ public class MenuService : IMenuService
                             },
                             new()
                             {
-                                Title = "Roles",
-                                Href = "/identity/roles",
-                                PageStatus = PageStatus.Completed
-                            },
-                            new()
-                            {
                                 Title = "Profile",
                                 Href = "/user/profile",
                                 PageStatus = PageStatus.Completed
@@ -139,7 +133,7 @@ public class MenuService : IMenuService
                         {
                             new()
                             {
-                                Title = "Picklist",
+                                Title = "Lookup Values",
                                 Href = "/system/picklist",
                                 PageStatus = PageStatus.Completed
                             },

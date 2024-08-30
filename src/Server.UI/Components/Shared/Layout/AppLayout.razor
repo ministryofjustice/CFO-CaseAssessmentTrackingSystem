@@ -112,8 +112,13 @@
                 MaxWidth = MaxWidth.Medium,
                 FullWidth = true
             };
+            
+            var parameters = new DialogParameters<SearchDialog>
+            {
+                { x => x.UserProfile, this._userProfile }
+            };
 
-            var commandPalette = await DialogService.ShowAsync<SearchDialog>("", options);
+            var commandPalette = await DialogService.ShowAsync<SearchDialog>("", parameters ,options);
             _commandPaletteOpen = true;
 
             await commandPalette.Result;
