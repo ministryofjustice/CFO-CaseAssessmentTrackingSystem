@@ -260,6 +260,7 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
+
     public Participant UpdateActiveStatus(bool activeInFeed)
     {
         if(ActiveInFeed != activeInFeed)
@@ -270,5 +271,6 @@ public class Participant : OwnerPropertyEntity<string>
 
         return this;
     }
+
 
 }
