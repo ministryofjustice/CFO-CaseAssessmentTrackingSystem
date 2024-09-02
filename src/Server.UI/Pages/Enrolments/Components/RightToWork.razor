@@ -88,6 +88,20 @@
                                 }
                             </MudLoadingButton>
                         </ActivatorContent>
+                        <SelectedTemplate>
+                            <br />
+                            @if (context != null)
+                            {
+                                <MudText>
+                                    Right To Work supporting documentation uploaded:  @context.Name
+                                </MudText>
+                            }
+                            else
+                            {
+                                <MudText>No Files</MudText>
+                            }
+                            <br />
+                        </SelectedTemplate>
                     </MudFileUpload>
                 </div>
             }
@@ -138,5 +152,4 @@
             return false;
         }
     }
-
 }
