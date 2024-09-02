@@ -10,7 +10,7 @@
     if (ConsentDto is not null && ConsentDto.Length > 0)
     {
         <MudText Typo="Typo.body2">
-            Consent documentation already uploaded
+            Consent documentation already uploaded:
         </MudText>
         
         <MudList T="string">
@@ -56,10 +56,25 @@
                             {
                                 @ConstantString.Upload
                             }
+                            
                         </MudLoadingButton>
                     </ActivatorContent>
-                </MudFileUpload>
-
+                    <SelectedTemplate>
+                        <br />
+                         @if (context != null)
+                        {
+                            <MudText>
+                                Consent documentation uploaded:  @context.Name
+                            </MudText>                                
+                        }
+                        else
+                        {
+                            <MudText>No Files</MudText>
+                        }
+                        <br />
+                    </SelectedTemplate>
+                </MudFileUpload>               
+      
                 <MudSelect @bind-Value="Model.DocumentVersion" 
                            Label="@Model.GetMemberDescription(x => x.DocumentVersion)" 
                            For="() => Model.DocumentVersion"
@@ -76,8 +91,7 @@
                          For="() => Model.Certify"
                          Disabled="Model.Document is null" />
         </MudForm>
-    }
-   
+    }   
 }
 
 @code {
@@ -123,5 +137,4 @@
             return false;
         }
     }
-
 }
