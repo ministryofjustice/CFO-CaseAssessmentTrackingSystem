@@ -66,7 +66,7 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             EstCode = "GNI",
             Nationality = "",
             Ethnicity = "",
-            IsActive = true
+            IsActive = false
         },
         new CandidateDto
         {
@@ -81,7 +81,7 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             EstCode = "SKI",
             Nationality = "",
             Ethnicity = "",
-            IsActive = true
+            IsActive = false
         },
         new CandidateDto
         {
@@ -96,7 +96,7 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             EstCode = "N07",
             Nationality = "",
             Ethnicity = "",
-            IsActive = true
+            IsActive = false
         },
         new CandidateDto
         {
@@ -111,7 +111,7 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
             EstCode = "FYI",
             Nationality = "",
             Ethnicity = "",
-            IsActive = true
+            IsActive = false
         },
         new CandidateDto
         {
