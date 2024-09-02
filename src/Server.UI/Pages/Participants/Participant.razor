@@ -18,7 +18,6 @@
 <MudContainer Style="width: 100%; min-width: 480px">
     @if (_participant is not null)
     {
-        
         <CascadingValue Value="_participant">
             <MudPaper Class="pa-2 ma-2" Elevation="1" Outlined="true">
                 <MudGrid Spacing="1" Class="pa-3">
@@ -87,43 +86,46 @@
                         </MudText>
                     </MudItem>
                 </MudGrid>
-                <RagBar ParticipantId="@Id" />
-                <ParticipantActionMenu OnUpdate="Refresh" />
-                <MudTabs Class="primary-tabs mt-2" Outlined="true" Color="Color.Info" Border="true">
-                    <MudTabPanel Text="Case Summary">
-                        <CaseSummary />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Sentence Information">
-                        <CaseSentenceInformation ParticipantId="@Id" />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Risk">
-                        <CaseRisk ParticipantId="@Id" />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Assessments">
-                        <CaseAssessment ParticipantId="@Id" />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Bio">
-                        <CaseBio ParticipantId="@Id" />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Pathway Plan">
-                        <CasePathwayPlan ParticipantId="@Id" OnUpdate="Refresh" />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Notes">
-                        <CaseNotes ParticipantId="@Id"/>
-                    </MudTabPanel>
-                    <MudTabPanel Text="Timeline">
-                        <CaseTimeline />
-                    </MudTabPanel>
-                    @*
-                    <MudTabPanel Text="Contact Log" Disabled></MudTabPanel>
-                    <MudTabPanel Text="PSF" Disabled></MudTabPanel>
-                    <MudTabPanel Text="Distance Travelled" Disabled></MudTabPanel>
-                    <MudTabPanel Text="Case Discussions" Disabled></MudTabPanel>
-                    *@
-                </MudTabs>
+
+                @if(_participant.EnrolmentStatus != EnrolmentStatus.PendingStatus)
+                {
+                    <RagBar ParticipantId="@Id" />
+                    <ParticipantActionMenu OnUpdate="Refresh" />
+                    <MudTabs Class="primary-tabs mt-2" Outlined="true" Color="Color.Info" Border="true">
+                        <MudTabPanel Text="Case Summary">
+                            <CaseSummary />
+                        </MudTabPanel>
+                        <MudTabPanel Text="Sentence Information">
+                            <CaseSentenceInformation ParticipantId="@Id" />
+                        </MudTabPanel>
+                        <MudTabPanel Text="Risk">
+                            <CaseRisk ParticipantId="@Id" />
+                        </MudTabPanel>
+                        <MudTabPanel Text="Assessments">
+                            <CaseAssessment ParticipantId="@Id" />
+                        </MudTabPanel>
+                        <MudTabPanel Text="Bio">
+                            <CaseBio ParticipantId="@Id" />
+                        </MudTabPanel>
+                        <MudTabPanel Text="Pathway Plan">
+                            <CasePathwayPlan ParticipantId="@Id" OnUpdate="Refresh" />
+                        </MudTabPanel>
+                        <MudTabPanel Text="Notes">
+                            <CaseNotes ParticipantId="@Id" />
+                        </MudTabPanel>
+                        <MudTabPanel Text="Timeline">
+                            <CaseTimeline />
+                        </MudTabPanel>
+                        @*
+                        <MudTabPanel Text="Contact Log" Disabled></MudTabPanel>
+                        <MudTabPanel Text="PSF" Disabled></MudTabPanel>
+                        <MudTabPanel Text="Distance Travelled" Disabled></MudTabPanel>
+                        <MudTabPanel Text="Case Discussions" Disabled></MudTabPanel>
+                        *@
+                    </MudTabs>
+                }
             </MudPaper>
         </CascadingValue>
-        
     }
 </MudContainer>
 

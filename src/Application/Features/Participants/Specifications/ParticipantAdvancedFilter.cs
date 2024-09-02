@@ -13,6 +13,7 @@ public enum ParticipantListView
 {
     [Description("Default")] Default,
     [Description("Pending")] Pending,
+    [Description("Enrolment Confirmed")] EnrolmentConfirmed,
     [Description("Submitted To Provider")] SubmittedToProvider,
     [Description("Submitted To QA")] SubmittedToQa,
     [Description("Any QA")] SubmittedToAny,

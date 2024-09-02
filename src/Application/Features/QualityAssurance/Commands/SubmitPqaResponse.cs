@@ -31,7 +31,7 @@ public static class SubmitPqaResponse
             }
             
             entry.Complete(request.Accept.GetValueOrDefault(), request.Message);
-            EnrolmentStatus transitionTo = request.Accept.GetValueOrDefault() ? EnrolmentStatus.SubmittedToAuthorityStatus : EnrolmentStatus.PendingStatus;
+            EnrolmentStatus transitionTo = request.Accept.GetValueOrDefault() ? EnrolmentStatus.SubmittedToAuthorityStatus : EnrolmentStatus.EnrolmentConfirmedStatus;
             entry.Participant!.TransitionTo(transitionTo);
                         
             return Result.Success();

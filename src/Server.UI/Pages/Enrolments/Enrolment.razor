@@ -93,10 +93,10 @@
 @code {
 
     private ParticipantDto? _participant;
-    
+
     [Parameter]
     public required string ParticipantId { get; set; }
-    
+
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; }
 
@@ -111,7 +111,7 @@
     private SetEnrolmentLocation.Command SetEnrolmentCommand { get; set; } = null!;
     private AddConsent.Command AddConsentCommand { get; set; } = null!;
     private AddRightToWork.Command AddRightToWorkCommand { get; set; } = null!;
-    
+
     private LocationDto[] Locations { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
@@ -151,10 +151,33 @@
         }
     }
 
-    private void StepChanged(int index)
+    private async void StepChanged(int index)
     {
-        hideHeading = Stepper?.IsResultStep ?? false;
-        StateHasChanged();
+        if(Stepper is not { IsResultStep: true })
+        {
+            return;
+        }
+
+        Result? result = null;
+
+        try
+        {
+            hideHeading = true;
+
+            result = await GetNewMediator().Send(new ConfirmEnrolment.Command
+            {
+                ParticipantId = ParticipantId
+            });
+        }
+        finally
+        {
+            if(result is not { Succeeded: true })
+            {
+                Snackbar.Add(result?.ErrorMessage ?? "An unknown issue occurred when confirming this enrolment", Severity.Error);
+            }
+
+            StateHasChanged();            
+        }
     }
 
     private async Task SaveAndExit()
