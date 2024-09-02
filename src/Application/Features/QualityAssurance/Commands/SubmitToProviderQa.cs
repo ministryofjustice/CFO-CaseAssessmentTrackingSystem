@@ -145,4 +145,24 @@ public static class SubmitToProviderQa
             return false;
         }
     }
+
+    public class E_ParticipantStatusShouldBeConfirmed : AbstractValidator<Command>
+    {
+        private IUnitOfWork _unitOfWork;
+
+        public E_ParticipantStatusShouldBeConfirmed(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c.ParticipantId)
+                .MustAsync(MustBeConfirmed)
+                .WithMessage("Enrolment status must be confirmed");
+        }
+
+        private async Task<bool> MustBeConfirmed(string participantId, CancellationToken cancellationToken)
+        {
+            var result = await _unitOfWork.DbContext.Participants.SingleOrDefaultAsync(p => p.Id == participantId);
+            return result?.EnrolmentStatus == EnrolmentStatus.EnrolmentConfirmedStatus;
+        }
+    }
 }

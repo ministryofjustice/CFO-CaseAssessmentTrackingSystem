@@ -92,10 +92,12 @@
                             @ConstantString.ResumeEnrolment
                         </MudMenuItem>
                     }
-                    <MudMenuItem OnClick="@(()=> Edit(context.Item))">
-                        @ConstantString.Edit
-                    </MudMenuItem>
-
+                    else
+                    {
+                        <MudMenuItem OnClick="@(()=> Edit(context.Item))">
+                            @ConstantString.Edit
+                        </MudMenuItem>
+                    }
                 </MudMenu>
             </CellTemplate>
         </TemplateColumn>

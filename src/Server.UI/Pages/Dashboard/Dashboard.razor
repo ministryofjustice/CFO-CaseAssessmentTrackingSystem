@@ -23,9 +23,26 @@
                     </CardHeaderContent>
                 </MudCardHeader>
                 <MudCardContent>
-                    <MudText>Your cases that are awaiting submission to PQA</MudText>
+                    <MudText>Your cases that are awaiting enrolment confirmation</MudText>
                     <MudText Typo="Typo.h1" Align="Align.Center">
                         @_dashboardDto?.PendingCases
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="3">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">
+                            Pending Cases
+                        </MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Your cases that are awaiting submission to PQA</MudText>
+                    <MudText Typo="Typo.h1" Align="Align.Center">
+                        @_dashboardDto?.ConfirmedCases
                     </MudText>
                 </MudCardContent>
             </MudCard>
