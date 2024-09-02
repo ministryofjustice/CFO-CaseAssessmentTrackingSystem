@@ -6,6 +6,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
 {
 
     public static readonly EnrolmentStatus PendingStatus = new Pending();
+    public static readonly EnrolmentStatus EnrolmentConfirmedStatus = new EnrolmentConfirmed();
     public static readonly EnrolmentStatus SubmittedToProviderStatus = new SubmittedToProvider();
     public static readonly EnrolmentStatus SubmittedToAuthorityStatus = new SubmittedToAuthority();
     public static readonly EnrolmentStatus ApprovedStatus = new Approved();
@@ -43,7 +44,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
             : base("Pending", 0) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions() 
-            => [ ArchivedStatus, SubmittedToProviderStatus];
+            => [ ArchivedStatus, EnrolmentConfirmedStatus];
     }
 
     private sealed class SubmittedToProvider : EnrolmentStatus
@@ -100,6 +101,15 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
 
         protected override EnrolmentStatus[] GetAllowedTransitions() =>
             [ ArchivedStatus, ApprovedStatus ];
+    }
+
+    private sealed class EnrolmentConfirmed : EnrolmentStatus
+    {
+        public EnrolmentConfirmed()
+            : base("Enrolment Confirmed", 6) { }
+
+        protected override EnrolmentStatus[] GetAllowedTransitions()
+            => [ArchivedStatus, SubmittedToProviderStatus];
     }
 
     /// <summary>

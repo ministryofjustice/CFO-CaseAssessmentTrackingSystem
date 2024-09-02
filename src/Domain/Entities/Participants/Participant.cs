@@ -23,7 +23,7 @@ public class Participant : OwnerPropertyEntity<string>
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public static Participant CreateFrom(string id, string firstName, string? middleName, string lastName, string? gender, DateTime dateOfBirth, string referralSource, string? referralComments, int locationId)
+    public static Participant CreateFrom(string id, string firstName, string? middleName, string lastName, string? gender, DateTime dateOfBirth, bool activeInFeed, string referralSource, string? referralComments, int locationId)
     {
         Participant p = new Participant
         {
@@ -35,6 +35,7 @@ public class Participant : OwnerPropertyEntity<string>
             MiddleName = middleName,
             LastName = lastName,
             Gender = gender,
+            ActiveInFeed = activeInFeed,
             ReferralSource = referralSource,
             ReferralComments = referralComments,
             _currentLocationId = locationId
@@ -49,6 +50,11 @@ public class Participant : OwnerPropertyEntity<string>
     public string LastName { get; private set; }
     public string? Gender { get; private set; }
     public DateOnly DateOfBirth { get; private set; }
+
+    /// <summary>
+    /// Whether the participant is active in the DMS feed.
+    /// </summary>
+    public bool ActiveInFeed { get; private set; }
 
     public string ReferralSource { get; private set; }
 
@@ -169,8 +175,8 @@ public class Participant : OwnerPropertyEntity<string>
     {
         if(DateOfBirth != dateOfBirth)
         {
-            DateOfBirth = dateOfBirth;
             AddDomainEvent(new ParticipantDateOfBirthChangedDomainEvent(this, DateOfBirth, dateOfBirth));
+            DateOfBirth = dateOfBirth;
         }
 
         return this;
@@ -187,8 +193,8 @@ public class Participant : OwnerPropertyEntity<string>
 
         if(identifier is { Type.IsExclusive: true } )
         {
-            _externalIdentifiers.Remove(identifier);
             AddDomainEvent(new ParticipantIdentifierChangedDomainEvent(this, identifier, newIdentifier));
+            _externalIdentifiers.Remove(identifier);
         }
 
         _externalIdentifiers.Add(newIdentifier);
@@ -200,8 +206,8 @@ public class Participant : OwnerPropertyEntity<string>
     {
         if (string.Equals(Gender, gender, StringComparison.OrdinalIgnoreCase) is false)
         {
-            Gender = gender;
             AddDomainEvent(new ParticipantGenderChangedDomainEvent(this, Gender, gender));
+            Gender = gender;
         }
 
         return this;
@@ -253,5 +259,18 @@ public class Participant : OwnerPropertyEntity<string>
         }
         return this;
     }
+
+
+    public Participant UpdateActiveStatus(bool activeInFeed)
+    {
+        if(ActiveInFeed != activeInFeed)
+        {
+            AddDomainEvent(new ParticipantActiveStatusChangedDomainEvent(this, ActiveInFeed, activeInFeed));
+            ActiveInFeed = activeInFeed;
+        }
+
+        return this;
+    }
+
 
 }

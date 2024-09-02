@@ -16,13 +16,10 @@ public partial class MatchFound
 
     private CreateParticipant.Command? Model;
 
-    private CandidateDto? candidate;
-
     private List<ComparisonRow>? _comparisons;
 
-    [Parameter]
-    [EditorRequired]
-    public string CandidateId { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public required CandidateDto Candidate { get; set; }
 
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; }
@@ -36,23 +33,18 @@ public partial class MatchFound
     [Parameter]
     public EventCallback OnParticipantEnrolled { get; set; }
 
-    [Inject]
-    public ICandidateService CandidateService { get; set; } = default!;
 
     protected async override Task OnInitializedAsync()
     {
-        candidate = await CandidateService.GetByUpciAsync(CandidateId)
-            ?? throw new ApplicationException("We found a candidate, but then could not get it");
-
         _comparisons = [
-            new("First Name", Query.FirstName.ToUpper(), candidate.FirstName.ToUpper()),
-            new("Last Name", Query.LastName.ToUpper(), candidate.LastName.ToUpper()),
-            new("Date Of Birth", Query.DateOfBirth.GetValueOrDefault().ToShortDateString(), candidate.DateOfBirth.ToShortDateString())
+            new("First Name", Query.FirstName.ToUpper(), Candidate.FirstName.ToUpper()),
+            new("Last Name", Query.LastName.ToUpper(), Candidate.LastName.ToUpper()),
+            new("Date Of Birth", Query.DateOfBirth.GetValueOrDefault().ToShortDateString(), Candidate.DateOfBirth.ToShortDateString())
         ];
 
         Model = new CreateParticipant.Command
         {
-            Candidate = candidate,
+            Candidate = Candidate,
             CurrentUser = UserProfile!
         };
 

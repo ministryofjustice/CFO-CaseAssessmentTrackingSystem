@@ -1,11 +1,11 @@
 @inherits CatsComponentBase
 
-@if(candidate is not null && Model is not null)
+@if(Model is not null)
 {
     <MudContainer Class="d-flex flex-column align-center justify-center">
     <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
-        We have found a match: @(string.Join(' ', new [] { candidate.FirstName, candidate.SecondName, candidate.LastName})) (@candidate.Identifier)
-        We have them located at @(candidate.LocationDescription ?? "Unmapped Location")
+        We have found a match: @(string.Join(' ', new [] { Candidate.FirstName, Candidate.SecondName, Candidate.LastName})) (@Candidate.Identifier)
+        We have them located at @(Candidate.LocationDescription ?? "Unmapped Location")
     </MudAlert>
     <MudForm Model="@Model" @ref="@_form" Validation="@(Validator.ValidateValue(Model))">
         <MudGrid>

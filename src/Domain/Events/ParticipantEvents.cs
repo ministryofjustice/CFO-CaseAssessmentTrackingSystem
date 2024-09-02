@@ -63,3 +63,11 @@ public sealed class ParticipantNameChangedDomainEvent(Participant participant, s
     public string? From { get; } = from;
     public string? To { get; } = to;
 }
+
+public sealed class ParticipantActiveStatusChangedDomainEvent(Participant item, bool from, bool to) 
+    : DomainEvent
+{
+    public Participant Item { get; } = item;
+    public bool From { get; } = from;
+    public bool To { get; } = to;
+}
