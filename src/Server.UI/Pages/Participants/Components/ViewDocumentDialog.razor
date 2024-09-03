@@ -16,12 +16,18 @@
     }
 </style>
 
-<MudDialog Style="height: 100%">
-    <DialogContent>
-        @if (Model is not null)
-        {
-            @if (fileBase64 != null && extension!.Equals("pdf", StringComparison.CurrentCultureIgnoreCase))
-            {
+@if (Model is not null)
+{
+    <MudDialog Style="height: 100%">
+        <TitleContent>
+            <MudText Typo="Typo.h6">
+                <MudIcon Icon="@Icons.Material.Filled.DocumentScanner" Class="mr-3" />
+                @Model.Title
+            </MudText>
+        </TitleContent>
+        <DialogContent>
+                @if (fileBase64 != null && extension!.Equals("pdf", StringComparison.CurrentCultureIgnoreCase))
+                {
                 <object data="data:application/pdf;base64,@fileBase64" type="application/pdf" class="full-size-object">
                     <p>PDF cannot be displayed.</p>
                 </object>
@@ -36,12 +42,14 @@
             {
                 <MudLoading Loading="true" />
             }
-        }
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="Cancel">@ConstantString.Close</MudButton>
-    </DialogActions>
-</MudDialog>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="Cancel">@ConstantString.Close</MudButton>
+        </DialogActions>
+    </MudDialog>
+}
+
+
 
 @code {
     [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;

@@ -6,6 +6,7 @@
 @using Cfo.Cats.Application.Features.Documents.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using System.Net.Http.Json
+@using Humanizer
 
 @inherits CatsComponentBase
 
@@ -20,16 +21,7 @@
         height: 120px !important;
     }
 </style>
-<MudLoading Loading="_loading" />
-@if (_notFound)
-{
-    <MudAlert>
-        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No documents yet.</MudAlert>
-    </MudAlert>
-}
-else
-{
-    <MudDataGrid T="DocumentDto" FixedHeader="true"
+    <MudDataGrid T="DocumentDto" FixedHeader="true" Loading="_loading"
                  FixedFooter="true"
                  Virtualize="true"
                  Height="calc(100vh - 330px)"
@@ -37,22 +29,44 @@ else
                  Hover="true">
 
         <Columns>
-            <PropertyColumn Property="x => x.Title" Title="@L[_currentDto.GetMemberDescription(x => x.Title)]" />
-            <PropertyColumn Property="x => x.Description" Title="@L[_currentDto.GetMemberDescription(x => x.Description)]" />
-            <PropertyColumn Property="x => x.Created" Title="@L[_currentDto.GetMemberDescription(x => x.Created)]" />
-            <PropertyColumn Property="x => UserService.DataSource.First(u => u.Id == x.CreatedBy).DisplayName" Title="@L[_currentDto.GetMemberDescription(x => x.CreatedBy)]" />
-            <TemplateColumn>
+            <TemplateColumn CellStyle="width:60px" Title="@ConstantString.Actions" Sortable="false">
                 <CellTemplate>
-                    <MudButton Size="@Size.Small" StartIcon="@Icons.Material.Outlined.ViewColumn" OnClick="@(() => OpenDocumentDialog(context.Item))">Open</MudButton>
+                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                         Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                    <MudMenuItem OnClick="@(() => OpenDocumentDialog(context.Item))">@ConstantString.View</MudMenuItem>
+                </MudMenu>
                 </CellTemplate>
             </TemplateColumn>
+            <PropertyColumn Property="x => x.Title" Title="@L[_currentDto.GetMemberDescription(x => x.Title)]" />
+            <PropertyColumn Property="x => x.Description" Title="@L[_currentDto.GetMemberDescription(x => x.Description)]" />
+            <PropertyColumn Property="x => x.CreatedBy" Title="@L[_currentDto.GetMemberDescription(x => x.CreatedBy)]">
+                <CellTemplate>
+                    <div>
+                        <MudText Typo="Typo.body2">@context.Item.CreatedByName</MudText>
+                        <MudText Typo="Typo.body2">@context.Item.Created.Humanize()</MudText>
+                    </div>
+                </CellTemplate>
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.TenantId" Title="@L[_currentDto.GetMemberDescription(x => x.TenantName)]">
+            <CellTemplate>
+                <div>
+                    <MudText Typo="Typo.body2">@context.Item.TenantName</MudText>
+                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.Item.TenantId</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
         </Columns>
+        <NoRecordsContent>
+            <MudText>@ConstantString.NoRecords</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>@ConstantString.Loading</MudText>
+        </LoadingContent>
     </MudDataGrid>
-}
+
 
 @code {
     bool _loading = true;
-    bool _notFound = false;
     private DocumentDto[] _documents = [];
     private DocumentDto _currentDto = new() { Id = Guid.Empty };
 
@@ -76,7 +90,6 @@ else
                     {
                         ParticipantId = ParticipantId
                     });
-                _notFound = _documents.Count() == 0;
             }
         }finally{
             _loading = false;
@@ -86,7 +99,7 @@ else
     public async Task OpenDocumentDialog(DocumentDto item)
     {
         await DialogService.ShowAsync<ViewDocumentDialog>(
-            "View Document Dialog",
+            "Document",
             new DialogParameters<ViewDocumentDialog>()
                 {
                 { x => x.Model, item }
@@ -96,7 +109,8 @@ else
                     MaxWidth = MaxWidth.ExtraExtraLarge,
                     Position=DialogPosition.Center,
                     FullWidth = true,
-                    CloseButton = true
+                    CloseButton = true,
+                    CloseOnEscapeKey = true,
                 });
     }
 }
