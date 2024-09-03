@@ -20,7 +20,7 @@ public static class GetPqaEntryById
         public async Task<Result<EnrolmentQueueEntryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var entry = await unitOfWork.DbContext.EnrolmentPqaQueue
-                .Where(a => a.Id == request.Id && request.CurrentUser!.TenantId!.StartsWith(a.TenantId))
+                .Where(a => a.Id == request.Id && a.TenantId.StartsWith(request.CurrentUser!.TenantId!))
                 .ProjectTo<EnrolmentQueueEntryDto>(mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(cancellationToken);
 
