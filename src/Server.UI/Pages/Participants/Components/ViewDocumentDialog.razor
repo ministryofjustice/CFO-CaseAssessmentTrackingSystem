@@ -1,0 +1,86 @@
+﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Server.UI.Pages.Participants.Components
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Documents.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Application.Features.Documents.Queries
+@using Cfo.Cats.Application.SecurityConstants
+@inherits CatsComponentBase
+
+@inject IValidationService Validator
+
+<style>
+    .full-size-object {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<MudDialog Style="height: 100%">
+    <DialogContent>
+        @if (Model is not null)
+        {
+            @if (fileBase64 != null && extension!.Equals("pdf", StringComparison.CurrentCultureIgnoreCase))
+            {
+                <object data="data:application/pdf;base64,@fileBase64" type="application/pdf" class="full-size-object">
+                    <p>PDF cannot be displayed.</p>
+                </object>
+            }
+            else if (IsFileRejected)
+            {
+                <MudText Typo="Typo.caption">
+                    File cannot be displayed. Please contact support.
+                </MudText>
+            }
+            else
+            {
+                <MudLoading Loading="true" />
+            }
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public required DocumentDto Model { get; set; }
+    private bool IsFileRejected { get; set; }
+    private string? fileBase64;
+    private string? extension;
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        Guid documentId = Model.Id!.Value;
+        if (documentId != Guid.Empty)
+        {
+            var query = new GetDocumentById.Query()
+                {
+                    Id = documentId
+                };
+
+            var result = await GetNewMediator().Send(query);
+            if (result.Succeeded)
+            {
+                IsFileRejected = false;
+                using (var memoryStream = new MemoryStream())
+                {
+                    await result.Data!.FileStream.CopyToAsync(memoryStream);
+                    var bytes = memoryStream.ToArray();
+                    fileBase64 = Convert.ToBase64String(bytes);
+                }
+                extension = result.Data!.FileExtension;
+            }
+            else
+            {
+                IsFileRejected = true;
+            }
+        }
+    }
+}
