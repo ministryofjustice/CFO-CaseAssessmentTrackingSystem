@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Documents.DTOs;
 [Description("Documents")]
 public class DocumentDto
 {
-    [Description("Id")] public int Id { get; set; }
+    [Description("Id")] public Guid? Id { get; set; }
 
     [Description("Title")] public string? Title { get; set; }
 
@@ -23,6 +23,8 @@ public class DocumentDto
     [Description("Tenant Name")] public string? TenantName { get; set; }
 
     [Description("Content")] public string? Content { get; set; }
+    [Description("Created By")] public string CreatedBy { get; set; } = string.Empty;
+    [Description("Created Date")] public DateTime Created { get; set; }
 
     [Description("Owner")] public ApplicationUserDto? Owner { get; set; }
 
