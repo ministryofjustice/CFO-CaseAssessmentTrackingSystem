@@ -8,7 +8,7 @@ public class DocumentDto
 {
     [Description("Id")] public Guid? Id { get; set; }
 
-    [Description("Title")] public string? Title { get; set; }
+    [Description("File Name")] public string? Title { get; set; }
 
     [Description("Description")] public string? Description { get; set; }
 
@@ -24,6 +24,7 @@ public class DocumentDto
 
     [Description("Content")] public string? Content { get; set; }
     [Description("Created By")] public string CreatedBy { get; set; } = string.Empty;
+    [Description("Created By Name")] public string CreatedByName { get; set; } = string.Empty;
     [Description("Created Date")] public DateTime Created { get; set; }
 
     [Description("Owner")] public ApplicationUserDto? Owner { get; set; }
@@ -33,7 +34,8 @@ public class DocumentDto
         public Mapping()
         {
             CreateMap<Document, DocumentDto>(MemberList.None)
-                .ForMember(x => x.TenantName, s => s.MapFrom(y => y.Tenant!.Name));
+                .ForMember(x => x.TenantName, s => s.MapFrom(y => y.Tenant!.Name))
+                .ForMember(x => x.CreatedByName, s => s.MapFrom(y => y.Owner!.DisplayName));
             CreateMap<DocumentDto, Document>(MemberList.None)
                 .ForMember(x => x.Tenant, s => s.Ignore())
                 .ForMember(x => x.Owner, s => s.Ignore());
