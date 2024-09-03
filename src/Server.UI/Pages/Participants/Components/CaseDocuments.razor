@@ -1,0 +1,102 @@
+﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Server.UI.Pages.Participants.Components
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Documents.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Application.Features.Documents.Queries
+@using Cfo.Cats.Application.SecurityConstants
+@using System.Net.Http.Json
+
+@inherits CatsComponentBase
+
+@inject IUserService UserService
+@inject IStringLocalizer<CaseDocuments> L
+
+
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+<style>
+    .mud-table-toolbar {
+        height: 120px !important;
+    }
+</style>
+<MudLoading Loading="_loading" />
+@if (_notFound)
+{
+    <MudAlert>
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No documents yet.</MudAlert>
+    </MudAlert>
+}
+else
+{
+    <MudDataGrid T="DocumentDto" FixedHeader="true"
+                 FixedFooter="true"
+                 Virtualize="true"
+                 Height="calc(100vh - 330px)"
+                 Items="@_documents"
+                 Hover="true">
+
+        <Columns>
+            <PropertyColumn Property="x => x.Title" Title="@L[_currentDto.GetMemberDescription(x => x.Title)]" />
+            <PropertyColumn Property="x => x.Description" Title="@L[_currentDto.GetMemberDescription(x => x.Description)]" />
+            <PropertyColumn Property="x => x.Created" Title="@L[_currentDto.GetMemberDescription(x => x.Created)]" />
+            <PropertyColumn Property="x => UserService.DataSource.First(u => u.Id == x.CreatedBy).DisplayName" Title="@L[_currentDto.GetMemberDescription(x => x.CreatedBy)]" />
+            <TemplateColumn>
+                <CellTemplate>
+                    <MudButton Size="@Size.Small" StartIcon="@Icons.Material.Outlined.ViewColumn" OnClick="@(() => OpenDocumentDialog(context.Item))">Open</MudButton>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+}
+
+@code {
+    bool _loading = true;
+    bool _notFound = false;
+    private DocumentDto[] _documents = [];
+    private DocumentDto _currentDto = new() { Id = Guid.Empty };
+
+    [Parameter]
+    [EditorRequired]
+    public string ParticipantId { get; set; } = default!;
+
+    [CascadingParameter]
+    public UserProfile? UserProfile { get; set; } = null!;
+
+    protected Guid SelectedDocument { get; set; } = Guid.Empty;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (String.IsNullOrWhiteSpace(ParticipantId) == false)
+            {
+                _documents = await GetNewMediator().Send(new GetByParticipantId.Query()
+                    {
+                        ParticipantId = ParticipantId
+                    });
+                _notFound = _documents.Count() == 0;
+            }
+        }finally{
+            _loading = false;
+        }
+    }
+
+    public async Task OpenDocumentDialog(DocumentDto item)
+    {
+        await DialogService.ShowAsync<ViewDocumentDialog>(
+            "View Document Dialog",
+            new DialogParameters<ViewDocumentDialog>()
+                {
+                { x => x.Model, item }
+                },
+            new DialogOptions
+                {
+                    MaxWidth = MaxWidth.ExtraExtraLarge,
+                    Position=DialogPosition.Center,
+                    FullWidth = true,
+                    CloseButton = true
+                });
+    }
+}
