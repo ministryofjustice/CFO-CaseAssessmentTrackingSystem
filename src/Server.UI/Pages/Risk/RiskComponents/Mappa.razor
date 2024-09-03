@@ -7,6 +7,13 @@
 @inherits CatsComponentBase
 @implements IValidatorStrategy<RiskDto>
 
+<style>
+    .always-readonly-toggle {
+        pointer-events: none;
+        filter: grayscale(100%);
+    }
+</style>
+
 @if (Model is not null)
 {
     <CatsMudStep Title="MAPPA">
@@ -16,7 +23,7 @@
                 Category
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.MappaCategory" CheckMark>
+                <MudToggleGroup Class="always-readonly-toggle" Value="@Model.MappaCategory" CheckMark>
                     <MudToggleItem Value="@MappaCategory.NotApplicable">@MappaCategory.NotApplicable.Name</MudToggleItem>
                     <MudToggleItem Value="@MappaCategory.Unknown">@MappaCategory.Unknown.Name</MudToggleItem>
                     <MudToggleItem Value="@MappaCategory.Category1">@MappaCategory.Category1.Name</MudToggleItem>
@@ -31,7 +38,7 @@
                 Level
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.MappaLevel" CheckMark>
+                <MudToggleGroup Class="always-readonly-toggle" Value="@Model.MappaLevel" CheckMark>
                     <MudToggleItem Value="@MappaLevel.NotApplicable">@MappaLevel.NotApplicable.Name</MudToggleItem>
                     <MudToggleItem Value="@MappaLevel.Unknown">@MappaLevel.Unknown.Name</MudToggleItem>
                     <MudToggleItem Value="@MappaLevel.Level1">@MappaLevel.Level1.Name</MudToggleItem>

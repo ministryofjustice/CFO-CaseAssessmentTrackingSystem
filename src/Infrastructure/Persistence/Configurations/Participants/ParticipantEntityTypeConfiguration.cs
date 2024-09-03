@@ -61,6 +61,20 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             cs => cs!.Value,
             cs => ConsentStatus.FromValue(cs));
 
+        builder.Property(e => e.MappaCategory)
+            .IsRequired()
+            .HasConversion(
+                c => c.Value,
+                c => MappaCategory.FromValue(c)
+            ).HasDefaultValue(MappaCategory.Unknown);
+
+        builder.Property(e => e.MappaLevel)
+            .IsRequired()
+            .HasConversion(
+                l => l.Value,
+                l => MappaLevel.FromValue(l)
+            ).HasDefaultValue(MappaLevel.Unknown);
+
         builder.HasOne(e => e.CurrentLocation)
             .WithMany()
             .HasForeignKey("_currentLocationId")

@@ -71,6 +71,8 @@ public class RiskDto
         public Mapping()
         {
             CreateMap<Risk, RiskDto>(MemberList.None)
+                .ForMember(dest => dest.MappaLevel, opt => opt.MapFrom(src => src.Participant!.MappaLevel))
+                .ForMember(dest => dest.MappaCategory, opt => opt.MapFrom(src => src.Participant!.MappaCategory))
                 .ForMember(dest => dest.CommunityRiskDetail, opt => opt.MapFrom(src => new RiskDetail
                 {
                     RiskToChildren = src.RiskToChildrenInCommunity,

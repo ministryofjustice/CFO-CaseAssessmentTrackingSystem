@@ -58,6 +58,8 @@ public static class CreateParticipant
                 gender: candidate.Gender,
                 dateOfBirth: candidate.DateOfBirth,
                 activeInFeed: candidate.IsActive,
+                mappaCategory: candidate.Mappa?.Category,
+                mappaLevel: candidate.Mappa?.Level,
                 referralSource: request.ReferralSource!,
                 referralComments: request.ReferralComments,
                 locationId: candidate.MappedLocationId);

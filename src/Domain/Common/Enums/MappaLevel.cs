@@ -17,4 +17,17 @@ public class MappaLevel : SmartEnum<MappaLevel>
     }
 
     public string Description { get; private set; }
+
+    public static MappaLevel FromValue(int? value)
+    {
+        if (value is null || TryFromValue(value.Value, out MappaLevel level) is false)
+        {
+            level = Unknown;
+        }
+
+        return level;
+    }
+
+    public new static MappaLevel FromValue(int value)
+        => FromValue((int?)value);
 }

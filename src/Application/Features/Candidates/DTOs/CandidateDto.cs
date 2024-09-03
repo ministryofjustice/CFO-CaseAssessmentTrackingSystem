@@ -72,6 +72,8 @@ public class CandidateDto
     public string? EstCode { get; set; }
     public string? OrgCode { get; set; }
 
+    public MappaDto? Mappa { get; set; }
+
     public EnrolmentStatus? EnrolmentStatus { get; set; }
     
     public string? ReferralSource { get; set; }

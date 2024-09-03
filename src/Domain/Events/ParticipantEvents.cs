@@ -48,6 +48,21 @@ public sealed class ParticipantGenderChangedDomainEvent(Participant participant,
     public string? To { get; } = to;
 }
 
+public sealed class ParticipantMappaChangedDomainEvent(
+    Participant participant, 
+    MappaCategory fromCategory, 
+    MappaCategory toCategory,
+    MappaLevel fromLevel,
+    MappaLevel toLevel)
+    : DomainEvent
+{
+    public Participant Item { get; } = participant;
+    public MappaCategory FromCategory { get; } = fromCategory;
+    public MappaCategory ToCategory { get; } = toCategory;
+    public MappaLevel FromLevel { get; } = fromLevel;
+    public MappaLevel ToLevel { get; } = toLevel;
+}
+
 public sealed class ParticipantIdentifierChangedDomainEvent(Participant participant, ExternalIdentifier from, ExternalIdentifier to)
     : DomainEvent
 {

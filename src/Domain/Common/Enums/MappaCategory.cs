@@ -18,4 +18,17 @@ public class MappaCategory : SmartEnum<MappaCategory>
     }
 
     public string Description { get; private set; }
+
+    public static MappaCategory FromValue(int? value)
+    {
+        if (value is null || TryFromValue(value.Value, out MappaCategory category) is false)
+        {
+            category = Unknown;
+        }
+
+        return category;
+    }
+
+    public new static MappaCategory FromValue(int value)
+        => FromValue((int?)value);
 }
