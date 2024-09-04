@@ -69,6 +69,8 @@ public class CandidateDto
     /// </summary>
     public required string Primary { get; set; }
 
+    public string[] RegistrationDetails { get; set; } = [];
+
     public string? EstCode { get; set; }
     public string? OrgCode { get; set; }
 
@@ -77,6 +79,8 @@ public class CandidateDto
     public string? ReferralSource { get; set; }
 
     public string? LocationDescription { get; set; }
+
+    public string? RegistrationDetailsJson { get; set; }
 
     public int MappedLocationId { get; set; } = 0;
 }

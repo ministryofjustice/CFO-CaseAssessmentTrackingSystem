@@ -23,9 +23,20 @@ public class Participant : OwnerPropertyEntity<string>
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public static Participant CreateFrom(string id, string firstName, string? middleName, string lastName, string? gender, DateTime dateOfBirth, bool activeInFeed, string referralSource, string? referralComments, int locationId)
+    public static Participant CreateFrom(
+        string id, 
+        string firstName, 
+        string? middleName, 
+        string lastName, 
+        string? gender, 
+        DateTime dateOfBirth, 
+        bool activeInFeed, 
+        string? registrationDetailsJson, 
+        string referralSource, 
+        string? referralComments, 
+        int locationId)
     {
-        Participant p = new Participant
+        Participant p = new()
         {
             ConsentStatus = ConsentStatus.PendingStatus,
             EnrolmentStatus = EnrolmentStatus.PendingStatus,
@@ -36,6 +47,7 @@ public class Participant : OwnerPropertyEntity<string>
             LastName = lastName,
             Gender = gender,
             ActiveInFeed = activeInFeed,
+            RegistrationDetailsJson = registrationDetailsJson,
             ReferralSource = referralSource,
             ReferralComments = referralComments,
             _currentLocationId = locationId
@@ -77,6 +89,8 @@ public class Participant : OwnerPropertyEntity<string>
     public string? EnrolmentLocationJustification { get; private set; }
 
     public string? AssessmentJustification { get; private set; }
+
+    public string? RegistrationDetailsJson { get; private set; }
 
     public string? FullName => string.Join(' ', [FirstName, MiddleName, LastName]);
 
@@ -171,7 +185,7 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
-    public Participant AddOrUpdateDateOfBirth(DateOnly dateOfBirth)
+    public Participant UpdateDateOfBirth(DateOnly dateOfBirth)
     {
         if(DateOfBirth != dateOfBirth)
         {
@@ -202,7 +216,7 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
-    public Participant AddOrUpdateGender(string? gender)
+    public Participant UpdateGender(string? gender)
     {
         if (string.Equals(Gender, gender, StringComparison.OrdinalIgnoreCase) is false)
         {
@@ -213,7 +227,7 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
-    public Participant AddOrUpdateNameInformation(string firstName, string? middleName, string lastName)
+    public Participant UpdateNameInformation(string firstName, string? middleName, string lastName)
     {
         bool nameHasChanged = false;
 
@@ -245,7 +259,7 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
-    public Participant AddOrUpdateSupervisor(Supervisor? newSupervisor)
+    public Participant UpdateSupervisor(Supervisor? newSupervisor)
     {
         Supervisor = newSupervisor;
         return this;
@@ -272,5 +286,10 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
+    public Participant UpdateRegistrationDetailsJson(string? json)
+    {
+        RegistrationDetailsJson = json;
+        return this;
+    }
 
 }
