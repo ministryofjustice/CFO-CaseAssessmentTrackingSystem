@@ -1,5 +1,7 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Entities.Participants;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Cfo.Cats.Application.Features.Participants.DTOs;
 
@@ -66,11 +68,18 @@ public class RiskDto
     [Description("Declaration")]
     public bool DeclarationSigned { get; set; } = false;
 
+    public string[] RegistrationDetails { get; set; } = [];
+
     private class Mapping : Profile
     {
         public Mapping()
         {
             CreateMap<Risk, RiskDto>(MemberList.None)
+                .ForMember(dest => dest.RegistrationDetails, opt => opt.MapFrom((src, dest) =>
+                {
+                    string json = src.Participant?.RegistrationDetailsJson ?? JsonConvert.Null;
+                    return JsonConvert.DeserializeObject<string[]>(json) ?? [];
+                }))
                 .ForMember(dest => dest.CommunityRiskDetail, opt => opt.MapFrom(src => new RiskDetail
                 {
                     RiskToChildren = src.RiskToChildrenInCommunity,

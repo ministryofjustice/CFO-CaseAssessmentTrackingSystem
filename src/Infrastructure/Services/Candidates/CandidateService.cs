@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using Cfo.Cats.Application.Features.Candidates.DTOs;
 using Cfo.Cats.Application.Features.Candidates.Queries.Search;
+using Newtonsoft.Json;
 
 namespace Cfo.Cats.Infrastructure.Services.Candidates;
 
@@ -59,9 +60,9 @@ public class CandidateService(
                 _ => 0
             };
 
+            candidate.RegistrationDetailsJson = JsonConvert.SerializeObject(candidate.RegistrationDetails);
         }
 
         return candidate;
-
     }
 }
