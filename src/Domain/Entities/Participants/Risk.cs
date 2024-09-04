@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Events;
 
@@ -80,4 +80,6 @@ public class Risk : BaseAuditableEntity<Guid>
     public RiskLevel? RiskToOtherPrisonersInCommunity { get; private set; }
     public RiskLevel? RiskToSelfInCommunity { get; private set; }
     public string? SpecificRisk { get; private set; }
+
+    public virtual Participant? Participant { get; private set; }
 }

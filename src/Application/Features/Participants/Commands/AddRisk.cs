@@ -21,6 +21,7 @@ public static class AddRisk
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
         {
             Risk? risk = await unitOfWork.DbContext.Risks
+                .Include(x => x.Participant)
                 .OrderByDescending(r => r.Created)
                 .FirstOrDefaultAsync(r => r.ParticipantId == request.ParticipantId);
 

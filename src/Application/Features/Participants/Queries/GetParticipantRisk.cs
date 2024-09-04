@@ -19,6 +19,8 @@ public class GetParticipantRisk
         public async Task<Result<RiskDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var query = unitOfWork.DbContext.Risks
+                .Include(x => x.Participant)
+                .IgnoreAutoIncludes()
                 .Where(x => x.ParticipantId == request.ParticipantId);
 
             if(request.RiskId is not null)

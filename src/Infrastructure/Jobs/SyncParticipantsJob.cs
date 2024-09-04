@@ -1,7 +1,6 @@
 ﻿using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Participants;
 using Quartz;
-using System.Threading;
 
 namespace Cfo.Cats.Infrastructure.Jobs;
 
@@ -25,7 +24,7 @@ public class SyncParticipantsJob(
         try
         {
             var participants = await unitOfWork.DbContext.Participants
-                .IgnoreAutoIncludes() // This doesn't work lol
+                .IgnoreAutoIncludes()
                 .Include(x => x.CurrentLocation)
                 .ToListAsync();
 
@@ -36,21 +35,27 @@ public class SyncParticipantsJob(
                 // Begin transaction
                 await unitOfWork.BeginTransactionAsync();
 
+                using var scope = logger.BeginScope("Sync for Participant: {Id}", [participant.Id]);
+
                 try
                 {
                     // Retrieve up-to-date details from candidate service
+                    logger.LogTrace($"Retrieving candidate information");
                     var candidate = await candidateService.GetByUpciAsync(participant.Id);
 
                     if (candidate is null)
                     {
+                        logger.LogWarning("No information found");
                         continue;
                     }
 
                     // Update and move locations
+                    logger.LogTrace("Update location");
                     var location = locations.Single(x => x.Id == candidate.MappedLocationId);
                     participant.MoveToLocation(location);
 
                     // Update external identifiers (Crn, Nomis Number, Pnc Number)
+                    logger.LogTrace("Update external identifier(s)");
                     if (candidate.Crn is not null)
                     {
                         participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.Crn, ExternalIdentifierType.Crn));
@@ -67,30 +72,35 @@ public class SyncParticipantsJob(
                     }
 
                     // Update first, middle, and last names
-                    participant.AddOrUpdateNameInformation(
+                    logger.LogTrace("Update name(s)");
+                    participant.UpdateNameInformation(
                         candidate.FirstName, 
                         candidate.SecondName, 
                         candidate.LastName);
 
                     // Update date of birth
-                    participant.AddOrUpdateDateOfBirth(
-                        DateOnly.FromDateTime(candidate.DateOfBirth));
+                    logger.LogTrace("Update date of birth");
+                    participant.UpdateDateOfBirth(DateOnly.FromDateTime(candidate.DateOfBirth));
 
                     // Update gender
-                    if (candidate.Gender is not null)
-                    {
-                        participant.AddOrUpdateGender(candidate.Gender);
-                    }
+                    logger.LogTrace("Update gender");
+                    participant.UpdateGender(candidate.Gender);
 
                     // Update active in feed status
+                    logger.LogTrace("Update active status");
                     participant.UpdateActiveStatus(candidate.IsActive);
+
+                    // Update registration details json
+                    logger.LogTrace("Update registration details");
+                    participant.UpdateRegistrationDetailsJson(candidate.RegistrationDetailsJson);
 
                     // Dispatch events and commit transaction
                     await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, CancellationToken.None);
                     await unitOfWork.CommitTransactionAsync();
                 }
-                catch
+                catch(Exception e)
                 {
+                    logger.LogError(e, e.Message);
                     await unitOfWork.RollbackTransactionAsync();
                     throw;
                 }
