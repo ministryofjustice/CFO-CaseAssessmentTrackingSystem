@@ -23,75 +23,75 @@
                 </MudListItem>
             }    
         </MudList>
-
-        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" @onclick="() => ConsentDto = null">
-            Add New
-        </MudButton>
     }
     else
     {
         <MudForm @ref="form" Model="@Model" Validation="@(Validator.ValidateValue(Model))">
 
-            <MudDatePicker @bind-Date="Model.ConsentDate" 
-                           For="() => Model.ConsentDate"
-                           Label="@Model.GetMemberDescription(x => x.ConsentDate)"
-                           MaxDate="DateTime.Now.Date"
-                           Editable="true" />
+        <MudDatePicker @bind-Date="Model.ConsentDate" 
+                        For="() => Model.ConsentDate"
+                        Label="@Model.GetMemberDescription(x => x.ConsentDate)"
+                        MaxDate="DateTime.Now.Date"
+                        Editable="true" />
 
-            <div class="mb-4 mt-8">
-                <MudFileUpload @bind-Files="Model.Document" 
-                               For="() => Model.Document"
-                               MaximumFileCount="1" 
-                               Accept=".pdf">
-                    <ActivatorContent>
-                        <MudLoadingButton Loading="_uploading"
-                                          Variant="Variant.Outlined"
-                                          Color="Color.Primary"
-                                          StartIcon="@Icons.Material.Filled.Upload">
-                            @if (_uploading)
-                            {
-                                @ConstantString.Uploading
-                            }
-                            else
-                            {
-                                @ConstantString.Upload
-                            }
-                            
-                        </MudLoadingButton>
-                    </ActivatorContent>
-                    <SelectedTemplate>
-                        <br />
-                         @if (context != null)
+        <div class="mb-4 mt-8">
+            <MudFileUpload @bind-Files="Model.Document" 
+                            For="() => Model.Document"
+                            MaximumFileCount="1" 
+                            Accept=".pdf">
+                <ActivatorContent>
+                        @if (Model.Document == null || consentUploaded)
+                    {
+                    <MudLoadingButton Loading="_uploading"
+                                        Variant="Variant.Outlined"
+                                        Color="Color.Primary"
+                                        StartIcon="@Icons.Material.Filled.Upload"
+                                        Disabled="Model.Document!=null">
+                        @if (_uploading)
                         {
-                            <MudText>
-                                Consent documentation uploaded:  @context.Name
-                            </MudText>                                
+                            @ConstantString.Uploading
                         }
                         else
                         {
-                            <MudText>No Files</MudText>
-                        }
-                        <br />
-                    </SelectedTemplate>
-                </MudFileUpload>               
-      
-                <MudSelect @bind-Value="Model.DocumentVersion" 
-                           Label="@Model.GetMemberDescription(x => x.DocumentVersion)" 
-                           For="() => Model.DocumentVersion"
-                           AnchorOrigin="Origin.BottomCenter">
-                    @foreach (var version in Documents.Consent.Versions)
-                    {
-                        <MudSelectItem Value="@version">Version @version</MudSelectItem>
+                            @ConstantString.Upload
+                        }                      
+                    </MudLoadingButton>
                     }
-                </MudSelect>
-            </div>
+                </ActivatorContent>
+                <SelectedTemplate>
+                    <br />
+                        @if (@Model.Document==null)
+                    {
+                            <MudText>No Files</MudText>
+                        
+                    }
+                    else
+                    {
+                            <MudText>
+                                Consent documentation uploaded:  @Model.Document.Name
+                            </MudText>
+                        }
+                    <br />
+                </SelectedTemplate>
+            </MudFileUpload>               
+      
+            <MudSelect @bind-Value="Model.DocumentVersion" 
+                        Label="@Model.GetMemberDescription(x => x.DocumentVersion)" 
+                        For="() => Model.DocumentVersion"
+                        AnchorOrigin="Origin.BottomCenter">
+                @foreach (var version in Documents.Consent.Versions)
+                {
+                    <MudSelectItem Value="@version">Version @version</MudSelectItem>
+                }
+            </MudSelect>
+        </div>
 
-            <MudCheckBox @bind-Value="Model.Certify"
-                         Label="@Model.GetMemberDescription(x => x.Certify)"
-                         For="() => Model.Certify"
-                         Disabled="Model.Document is null" />
-        </MudForm>
-    }   
+        <MudCheckBox @bind-Value="Model.Certify"
+                        Label="@Model.GetMemberDescription(x => x.Certify)"
+                        For="() => Model.Certify"
+                        Disabled="Model.Document is null" />
+    </MudForm>
+    }  
 }
 
 @code {
@@ -105,11 +105,13 @@
 
     private MudForm? form { get; set; }
 
+    private bool consentUploaded;
+
     public async Task<bool> Validate()
     {
         try
         {
-            if (ConsentDto is not null && ConsentDto.Length > 0)
+            if (ConsentDto is not null && ConsentDto.Length > 0 || consentUploaded)
             {
                 return true;
             }
@@ -123,6 +125,7 @@
                 if (result.Succeeded)
                 {
                     Snackbar.Add("Consent form uploaded", Severity.Success);
+                    consentUploaded = true;
                 }
                 else
                 {
