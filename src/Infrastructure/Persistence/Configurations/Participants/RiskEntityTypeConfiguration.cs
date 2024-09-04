@@ -16,7 +16,7 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
 
         builder.HasKey(x => x.Id);
 
-        builder.HasOne<Participant>()
+        builder.HasOne(x => x.Participant)
             .WithMany()
             .HasForeignKey(x => x.ParticipantId);
 
