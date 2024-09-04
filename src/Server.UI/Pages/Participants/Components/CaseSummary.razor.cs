@@ -6,7 +6,7 @@ using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Pages.Risk;
-
+using Humanizer;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
@@ -20,6 +20,11 @@ public partial class CaseSummary
     [CascadingParameter]
     public ParticipantSummaryDto ParticipantSummaryDto { get; set; } = default!;
 
+    private string _riskInfo = String.Empty;
+    private string _riskTooltipText = String.Empty;
+    private string _riskIcon = String.Empty;
+    private Color _riskIconColor = Color.Transparent;
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -28,6 +33,25 @@ public partial class CaseSummary
             : ParticipantSummaryDto.Assessments.OrderByDescending(a => a.AssessmentDate)
                 .First();
         _bio = ParticipantSummaryDto.BioSummary;
+        SetRiskDueWarning();
+    }
+
+    void SetRiskDueWarning()
+    {
+        _riskInfo = String.Format("Due {0}",DateOnly.FromDateTime(ParticipantSummaryDto.LatestRisk!.DueOn).Humanize());
+        _riskTooltipText = String.Format("Due {0}", DateOnly.FromDateTime(ParticipantSummaryDto.LatestRisk!.DueOn));
+        int _dueInDays = ParticipantSummaryDto.LatestRisk!.DueInDays;
+        switch (_dueInDays)
+        {
+            case var _ when _dueInDays <= 0:
+                _riskIcon = Icons.Material.Filled.Error;
+                _riskIconColor = Color.Error;
+                break;
+            case var _ when _dueInDays >= 0 && _dueInDays <= 14:
+                _riskIcon = Icons.Material.Filled.Warning;
+                _riskIconColor = Color.Warning;
+                break;
+        }
     }
 
     public async Task BeginAssessment()

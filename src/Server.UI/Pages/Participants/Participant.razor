@@ -98,7 +98,7 @@
                         <MudTabPanel Text="Sentence Information">
                             <CaseSentenceInformation ParticipantId="@Id" />
                         </MudTabPanel>
-                        <MudTabPanel Text="Risk">
+                        <MudTabPanel Text="Risk" ID="@Id" Icon="@_riskIcon" IconColor="@_riskIconColor" ToolTip="@_riskInfo">
                             <CaseRisk ParticipantId="@Id" />
                         </MudTabPanel>
                         <MudTabPanel Text="Assessments">
@@ -140,12 +140,33 @@
 
     private ParticipantSummaryDto? _participant = null;
 
+    private string _riskInfo = String.Empty;
+    private string _riskIcon = String.Empty;
+    private Color _riskIconColor = Color.Transparent;
+
     protected override async Task OnInitializedAsync()
     {
         await Refresh();
         await base.OnInitializedAsync();
+        SetRiskDueWarning();
     }
 
+    void SetRiskDueWarning()
+    {
+        _riskInfo = String.Format("Due {0}", DateOnly.FromDateTime(_participant!.LatestRisk!.DueOn).Humanize());
+        int _dueInDays = _participant!.LatestRisk!.DueInDays;
+        switch (_dueInDays)
+        {
+            case var _ when _dueInDays <= 0:
+                _riskIcon = Icons.Material.Filled.Error;
+                _riskIconColor = Color.Error;
+                break;
+            case var _ when _dueInDays >= 0 && _dueInDays <= 14:
+                _riskIcon = Icons.Material.Filled.Warning;
+                _riskIconColor = Color.Warning;
+                break;
+        }
+    }
     private async Task Refresh()
     {
         _participant = await GetNewMediator().Send(new GetParticipantSummary.Query()
@@ -154,4 +175,5 @@
             CurrentUser = UserProfile
         });
     }
+
 }

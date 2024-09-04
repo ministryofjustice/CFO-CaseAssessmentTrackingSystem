@@ -1,5 +1,6 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Entities.Participants;
+using Humanizer;
 using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Participants.DTOs;
@@ -103,6 +104,7 @@ public class RiskDto
                     RiskToSelf = src.RiskToSelfInCustody,
                     RiskToOtherPrisoners = src.RiskToOtherPrisonersInCustody,
                 }))
+                .ForMember(dest => dest.DueInDays, opt => opt.MapFrom(src => src.DueInDays()))
                 .ReverseMap()
                 .ForMember(src => src.RegistrationDetailsJson, opt => opt.MapFrom((dest, src) => 
                 {
