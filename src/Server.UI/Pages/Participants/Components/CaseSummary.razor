@@ -105,6 +105,19 @@
                                     <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.LatestRisk!.CreatedBy).DisplayName</MudText>
                                 </dd>
                             </div>
+                            <div class="description-pair">
+                                <dt>
+                                    <MudText Typo="Typo.subtitle2">Due</MudText>
+                                </dt>
+                                <dd>
+                                    <MudTooltip Text="@_riskTooltipText">
+                                        <MudIcon Icon="@_riskIcon" Size="@Size.Small" Color="@_riskIconColor" />
+                                        <MudText Typo="Typo.body2">
+                                            @DateOnly.FromDateTime(@ParticipantSummaryDto.LatestRisk!.DueOn).Humanize()
+                                        </MudText>
+                                    </MudTooltip>
+                                </dd>
+                            </div>
                         </dl>
                     </div>
                 }
