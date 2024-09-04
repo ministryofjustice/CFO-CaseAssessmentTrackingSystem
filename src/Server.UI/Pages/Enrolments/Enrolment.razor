@@ -6,6 +6,7 @@
 @using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Domain.Common.Enums
 
 @attribute [Authorize]
 
@@ -22,76 +23,85 @@
     </style>
 }
 
-<EnrolmentContainer>
-    <TitleContent>
-        <MudContainer Class="d-flex px-0 gap-2 align-center">
-            <MudText Typo="Typo.h6">Enrolling @_participant?.FirstName @_participant?.LastName</MudText>
-            <MudText Typo="Typo.subtitle1">(DOB @_participant?.DateOfBirth)</MudText>
-            <MudText Typo="Typo.h6">at @_participant?.CurrentLocation.Name</MudText>
-        </MudContainer>
-    </TitleContent>
-    <ChildContent>
-        <CatsMudStepper HeaderTextView="HeaderTextView.All"
-                        HeaderBadgeView="HeaderBadgeView.GreyOutIncomplete"
-                        Color="Color.Primary" @ref="Stepper"
-                        Variant="Variant.Filled"
-                        OnChangeAsync="OnChangeAsync"
-                        ActiveStepChanged="StepChanged"
-                        ContentClass="mb-8"
-                        Ripple="true"
-                        ShowPreviousButton="!Stepper?.IsResultStep ?? true"
-                        MobileView="false"
-                        HeaderSize="Size.Large"
-                        Class="enrolment-view gap-12">
+@if(_participant is not null)
+{
+    <EnrolmentContainer>
+        <TitleContent>
+            <MudContainer Class="d-flex px-0 gap-2 align-center">
+                <MudText Typo="Typo.h6">Enrolling @_participant.FirstName @_participant.LastName</MudText>
+                <MudText Typo="Typo.subtitle1">(DOB @_participant.DateOfBirth)</MudText>
+                <MudText Typo="Typo.h6">at @_participant.CurrentLocation.Name</MudText>
+            </MudContainer>
+        </TitleContent>
+        <ChildContent>
+            @if(_participant.EnrolmentStatus == EnrolmentStatus.PendingStatus)
+            {
+                <CatsMudStepper HeaderTextView="HeaderTextView.All"
+                                HeaderBadgeView="HeaderBadgeView.GreyOutIncomplete"
+                                Color="Color.Primary" @ref="Stepper"
+                                Variant="Variant.Filled"
+                                OnChangeAsync="OnChangeAsync"
+                                ActiveStepChanged="StepChanged"
+                                ContentClass="mb-8"
+                                Ripple="true"
+                                ShowPreviousButton="!Stepper?.IsResultStep ?? true"
+                                MobileView="false"
+                                HeaderSize="Size.Large"
+                                Class="enrolment-view gap-12">
 
-            <StaticContent>
-                @* You can render content here, and it will always be displayed. *@
-            </StaticContent>
+                    <StaticContent>
+                        @* You can render content here, and it will always be displayed. *@
+                    </StaticContent>
 
-            <ChildContent>
-                <CatsMudStep Condition="() => Location!.Validate()" Title="Location" Icon="@Icons.Material.Filled.Map" Optional="false">
-                    <Location @ref="Location" Model="@SetEnrolmentCommand" Locations="@Locations" />
-                </CatsMudStep>
-                <CatsMudStep Condition="() => Consent!.Validate()" Title="Consent"  Icon="@Icons.Material.Filled.Approval" Optional="false">
-					<Consent @ref="Consent" Model="@AddConsentCommand" ConsentDto="_participant?.Consents" />
-                </CatsMudStep>
-                <CatsMudStep Condition="() => RightToWork!.Validate()" Title="Right to Work" Icon="@Icons.Material.Filled.HomeWork" Optional="false">
-                    <RightToWork @ref="RightToWork" Model="AddRightToWorkCommand" RightToWorkDtos="_participant?.RightToWorks" />
-                </CatsMudStep>
-                <MudStepExtended IsResultStep="true">
-                    <MudContainer Class="d-flex flex-column align-center justify-center mb-8">
-                        <MudIconButton Icon="@Icons.Material.Filled.Done" Color="@Color.Success" Size="Size.Large" />
-                        <MudText Typo="Typo.h6">Enrolment Started!</MudText>
-                    </MudContainer>
-                    <MudText Typo="Typo.caption">
-                        Further information is required to finalise this enrolment. 
-                        Would you like to continue now?
-                    </MudText>
-                    <MudText Typo="Typo.caption">
-                        You can finalise the enrolment at a later time by visiting the cases screen.
-                    </MudText>
-                </MudStepExtended>
-            </ChildContent>
+                    <ChildContent>
+                        <CatsMudStep Condition="() => Location!.Validate()" Title="Location" Icon="@Icons.Material.Filled.Map" Optional="false">
+                            <Location @ref="Location" Model="@SetEnrolmentCommand" Locations="@Locations" />
+                        </CatsMudStep>
+                        <CatsMudStep Condition="() => Consent!.Validate()" Title="Consent" Icon="@Icons.Material.Filled.Approval" Optional="false">
+                            <Consent @ref="Consent" Model="@AddConsentCommand" OnUpdate="ConsentAdded" ConsentDto="_participant.Consents" />
+                        </CatsMudStep>
+                        <CatsMudStep Condition="() => RightToWork!.Validate()" Title="Right to Work" Icon="@Icons.Material.Filled.HomeWork" Optional="false">
+                            <RightToWork @ref="RightToWork" Model="AddRightToWorkCommand" RightToWorkDtos="_participant.RightToWorks" />
+                        </CatsMudStep>
+                        <MudStepExtended IsResultStep="true">
+                            <MudContainer Class="d-flex flex-column align-center justify-center mb-8">
+                                <MudIconButton Icon="@Icons.Material.Filled.Done" Color="@Color.Success" Size="Size.Large" />
+                                <MudText Typo="Typo.h6">Enrolment Started!</MudText>
+                            </MudContainer>
+                            <MudText Typo="Typo.caption">
+                                Further information is required to finalise this enrolment.
+                                Would you like to continue now?
+                            </MudText>
+                            <MudText Typo="Typo.caption">
+                                You can finalise the enrolment at a later time by visiting the cases screen.
+                            </MudText>
+                        </MudStepExtended>
+                    </ChildContent>
 
-            <ActionContent>
-                @if (Stepper?.IsResultStep is false)
-                {
-                    <MudButton hidden="@(showSaveAndExit is false)" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Small" OnClick="SaveAndExit">Save & exit</MudButton>
-                    <MudSpacer />
-                }
-                else
-                {
-                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small" OnClick="ReturnToSearch">Return to Search</MudButton>
-                    <MudSpacer />
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="BeginAssessment">Continue</MudButton>
-                }
-            </ActionContent>
-        </CatsMudStepper>
-    </ChildContent>
-</EnrolmentContainer>
+                    <ActionContent>
+                        @if (Stepper?.IsResultStep is false)
+                        {
+                            <MudButton hidden="@(showSaveAndExit is false)" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Small" OnClick="SaveAndExit">Save & exit</MudButton>
+                            <MudSpacer />
+                        }
+                        else
+                        {
+                            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small" OnClick="ReturnToSearch">Return to Search</MudButton>
+                            <MudSpacer />
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="BeginAssessment">Continue</MudButton>
+                        }
+                    </ActionContent>
+                </CatsMudStepper>
+            }
+            else
+            {
+                <MudText>Enrolment already found.</MudText>
+            }
+        </ChildContent>
+    </EnrolmentContainer>
+}
 
 @code {
-
     private ParticipantDto? _participant;
 
     [Parameter]
@@ -151,6 +161,11 @@
         }
     }
 
+    private async Task ConsentAdded()
+    {
+        await Task.CompletedTask;
+    }
+
     private async void StepChanged(int index)
     {
         if(Stepper is not { IsResultStep: true })
@@ -207,5 +222,4 @@
     {
         return await Task.FromResult(true);
     }
-
 }
