@@ -30,7 +30,7 @@ public class AddOrUpdateSupervisor
 
             var supervisor = mapper.Map(request.Supervisor, participant.Supervisor);
 
-            participant.AddOrUpdateSupervisor(supervisor);
+            participant.UpdateSupervisor(supervisor);
 
             return Result.Success();
         }
