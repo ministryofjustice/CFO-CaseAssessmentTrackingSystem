@@ -1,7 +1,6 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Entities.Participants;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Cfo.Cats.Application.Features.Participants.DTOs;
 
@@ -72,9 +71,21 @@ public class RiskDto
         public Mapping()
         {
             CreateMap<Risk, RiskDto>(MemberList.None)
-                .ForMember(dest => dest.RegistrationDetails, opt => opt.MapFrom((src, dest) =>
+                .ForMember(dest => dest.RegistrationDetails, opt => opt.MapFrom((dest, src) =>
                 {
-                    string json = src.Participant?.RegistrationDetailsJson ?? JsonConvert.Null;
+                    string? json;
+
+                    if(dest.Completed.HasValue)
+                    {
+                        json = dest.RegistrationDetailsJson;
+                    }
+                    else
+                    {
+                        json = dest.Participant?.RegistrationDetailsJson;
+                    }
+                    
+                    json ??= JsonConvert.Null;
+
                     return JsonConvert.DeserializeObject<string[]>(json) ?? [];
                 }))
                 .ForMember(dest => dest.CommunityRiskDetail, opt => opt.MapFrom(src => new RiskDetail
@@ -96,6 +107,10 @@ public class RiskDto
                     RiskToOtherPrisoners = src.RiskToOtherPrisonersInCustody,
                 }))
                 .ReverseMap()
+                .ForMember(src => src.RegistrationDetailsJson, opt => opt.MapFrom((dest, src) => 
+                {
+                    return src.Participant?.RegistrationDetailsJson;
+                }))
                 .ForPath(src => src.RiskToChildrenInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToChildren))
                 .ForPath(src => src.RiskToPublicInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToPublic))
                 .ForPath(src => src.RiskToKnownAdultInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToKnownAdult))
