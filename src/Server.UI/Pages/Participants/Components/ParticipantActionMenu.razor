@@ -35,6 +35,10 @@
         {
             <MudMenuItem Icon="@Icons.Material.Filled.Send" IconColor="Color.Primary" OnClick="OpenRightToWorkDialog">@ConstantString.AddRightToWork</MudMenuItem>
         }
+        @if (Participant.EnrolmentStatus == EnrolmentStatus.EnrolmentConfirmedStatus)
+        {
+            <MudMenuItem Icon="@Icons.Material.Filled.Send" IconColor="Color.Primary" OnClick="OpenConsentDialog">@ConstantString.AddConsent</MudMenuItem>
+        }
 
 
 
@@ -184,7 +188,26 @@
         }
 
     }
+    protected async Task OpenConsentDialog()
+    {
+        // Show Dialog
+        var parameters = new DialogParameters<ConsentDialog>
+            {
+            { x => x.Model, new AddConsent.Command() { ParticipantId = Participant.Id } }
+            };
 
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+        var dialog = DialogService.Show<ConsentDialog>("Consent", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            dialog.Close();
+        }
+
+    }
     private void ShowActionFailure(string title, IResult result)
     {
         Snackbar.Add(
