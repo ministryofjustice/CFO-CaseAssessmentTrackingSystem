@@ -37,8 +37,12 @@ public class ParticipantDto
 
     public ParticipantNoteDto[] Notes { get; set; } = [];
 
+    public ExternalIdentifierDto[] ExternalIdentifiers {get;set;} = [];
+
     public string TenantId { get; set; } = default!;
-    
+
+    public string SupportWorker { get;set; } = default!;
+
     private class Mapping : Profile
     {
         public Mapping()
@@ -52,7 +56,10 @@ public class ParticipantDto
                     options => options.MapFrom(source => source.RightToWorks.ToArray()))
                 .ForMember(target => target.Notes,
                     options => options.MapFrom(source => source.Notes.ToArray()))
-                .ForMember(target => target.TenantId, options => options.MapFrom(s => s.Owner!.TenantId));
+                .ForMember(target => target.TenantId, options => options.MapFrom(s => s.Owner!.TenantId))
+                .ForMember(target => target.ExternalIdentifiers, options => options.MapFrom(s => s.ExternalIdentifiers.ToArray()))
+#nullable disable
+                .ForMember(target => target.SupportWorker, options => options.MapFrom(source => source.Owner.DisplayName));
         }
     }
 }

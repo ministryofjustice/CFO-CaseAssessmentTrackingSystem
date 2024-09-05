@@ -53,7 +53,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
             : base("Submitted to Provider", 1) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions()
-            => [ArchivedStatus, PendingStatus, SubmittedToAuthorityStatus];
+            => [ArchivedStatus, EnrolmentConfirmedStatus, SubmittedToAuthorityStatus];
         
         public override bool StatusSupportsReassessment() => false;
 

@@ -1,0 +1,28 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Server.UI.Pages.Participants.Components
+<MudGrid>
+    <MudItem xs="12">
+        <RagBar ParticipantId="@ParticipantDto.Id"/>
+    </MudItem>
+
+    @if (ParticipantDto.AssessmentJustification is not null)
+    {
+        <MudItem xs="12">
+            <MudText Typo="Typo.body1">Justification</MudText>
+            <MudText Typo="Typo.body2">
+                @ParticipantDto.AssessmentJustification
+            </MudText>
+        </MudItem>
+    }
+    <MudItem xs="12">
+        <CaseAssessment ParticipantId="@ParticipantDto.Id"/>
+    </MudItem>
+</MudGrid>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public ParticipantDto ParticipantDto { get; set; } = default!;
+
+
+}

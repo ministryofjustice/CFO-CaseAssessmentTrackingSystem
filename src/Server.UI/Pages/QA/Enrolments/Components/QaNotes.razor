@@ -1,4 +1,4 @@
-@inherits CatsComponentBase
+    @inherits CatsComponentBase
 
 @using System.Globalization
 @using ActualLab.Fusion.Extensions
@@ -9,24 +9,25 @@
 
 @if (_notes is { Length: > 0 })
 {
-    <MudTable Items="_notes" Hover="true">
-        <HeaderContent>
-            <MudTh>Created By</MudTh>
-            <MudTh>Created Date</MudTh>
-            <MudTh>Message</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Cb">@context.CreatedBy</MudTd>
-            <MudTd DataLabel="Cd">
-                <MudTooltip Text="@context.Created.ToString(CultureInfo.InvariantCulture)">
-                    @context.Created.Humanize()    
+    <MudTimeline TimelineOrientation="TimelineOrientation.Vertical" TimelinePosition="TimelinePosition.Start">
+        @foreach (var note in _notes.OrderByDescending(n => n.Created))
+        {   
+            <MudTimelineItem Size="Size.Medium" Color="Color.Success" Elevation="25">
+                <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
+                    <MudCard Outlined="false" Elevation="25">
+                        <MudCardContent>
+                            <MudText Typo="Typo.body1">
+                                @note.Message
+                            </MudText>
+                            <MudText Typo="Typo.caption">
+                                @note.CreatedBy (@note.TenantName)  @note.Created.Humanize()    
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
                 </MudTooltip>
-            </MudTd>
-            <MudTd>
-                @context.Message
-            </MudTd>
-        </RowTemplate>
-    </MudTable>
+            </MudTimelineItem>
+        }
+    </MudTimeline>
 }
 
 
