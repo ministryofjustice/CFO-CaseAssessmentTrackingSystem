@@ -9,11 +9,22 @@
 
 @if (Model is not null)
 {
-    <CatsMudStep Title="MAPPA">
-        @foreach(var item in Model.RegistrationDetails)
-        {
-            <MudText>@item</MudText>
-        }
+    <CatsMudStep Title="Registration Details / MAPPA">
+        <MudAlert Severity="Severity.Info" Class="mb-4">
+            The information shown is inferred from multiple sources (including Prison and Probation), and may contain partial and/or missing details. 
+            These details are shown in no particular order, in the format "Data Source, Type, Description, Registration Date, Status".
+        </MudAlert>
+        <MudDataGrid Items="Model.RegistrationDetails" Class="mb-4">
+            <Columns>
+                <PropertyColumn Property="detail => detail" Title="Details" />
+            </Columns>
+            <NoRecordsContent>
+                <MudText>No information found.</MudText>
+            </NoRecordsContent>
+        </MudDataGrid>
+        <MudAlert Severity="Severity.Warning" Class="mb-4">
+            Risk information should be reviewed frequently, as these details are only refreshed when a new review takes place.
+        </MudAlert>
     </CatsMudStep>
 }
 
@@ -23,7 +34,6 @@
 
     public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
     {
-        //options.IncludeProperties(x => x.MappaCategory);
-        //options.IncludeProperties(x => x.MappaLevel);
+        options.IncludeProperties(x => x.RegistrationDetails);
     };
 }

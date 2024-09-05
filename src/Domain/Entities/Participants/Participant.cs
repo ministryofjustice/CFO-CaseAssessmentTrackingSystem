@@ -288,7 +288,12 @@ public class Participant : OwnerPropertyEntity<string>
 
     public Participant UpdateRegistrationDetailsJson(string? json)
     {
-        RegistrationDetailsJson = json;
+        if(string.Equals(RegistrationDetailsJson, json) is false)
+        {
+            AddDomainEvent(new ParticipantRegistrationDetailsChangedDomainEvent(this));
+            RegistrationDetailsJson = json;
+        }
+
         return this;
     }
 
