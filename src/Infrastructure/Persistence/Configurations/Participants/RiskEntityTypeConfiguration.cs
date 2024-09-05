@@ -92,18 +92,6 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
                 x => RiskLevel.FromValue(x)
             );
 
-        builder.Property(x => x.MappaCategory)
-            .HasConversion(
-                x => x!.Value,
-                x => MappaCategory.FromValue(x)
-            );
-
-        builder.Property(x => x.MappaLevel)
-            .HasConversion(
-                x => x!.Value,
-                x => MappaLevel.FromValue(x)
-            );
-
         builder.Property(x => x.ReviewReason)
             .HasConversion(
                 x => x!.Value,
