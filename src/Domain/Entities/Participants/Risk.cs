@@ -56,8 +56,6 @@ public class Risk : BaseAuditableEntity<Guid>
     public bool? IsRelevantToCustody { get; private set; }
     public bool? IsRelevantToCommunity { get; private set; }
     public ConfirmationStatus? IsSubjectToSHPO { get; private set; }
-    public MappaCategory? MappaCategory { get; private set; }
-    public MappaLevel? MappaLevel { get; private set; }
     public ConfirmationStatus? NSDCase { get; private set; }
     public string ParticipantId { get; private set; }
     public string? PSFRestrictions { get; private set; }
