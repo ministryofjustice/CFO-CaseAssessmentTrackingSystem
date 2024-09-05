@@ -18,7 +18,9 @@ public static class SaveRisk
     {
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var risk = await unitOfWork.DbContext.Risks.FindAsync(request.RiskId);
+            var risk = await unitOfWork.DbContext.Risks
+                .Include(x => x.Participant)
+                .FirstOrDefaultAsync(x => x.Id == request.RiskId);
 
             if(risk is null)
             {
