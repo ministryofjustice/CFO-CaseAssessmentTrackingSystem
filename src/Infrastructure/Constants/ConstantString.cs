@@ -123,5 +123,5 @@ public static class ConstantString
     public static string RightToWork =>
     Localize("Right To Work");
     public static string AddConsent =>
-    Localize("Ad Consent");
+    Localize("Add Consent");
 }
