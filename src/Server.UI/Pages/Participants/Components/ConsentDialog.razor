@@ -1,0 +1,124 @@
+﻿@using Cfo.Cats.Application.Features.Participants.Commands
+@inherits CatsComponentBase
+
+@inject IValidationService Validator
+
+<MudDialog>
+    <DialogContent>
+        @if (Model is not null)
+        {
+            <MudForm @ref="form" Model="@Model" Validation="@(Validator.ValidateValue(Model))">
+
+                <MudDatePicker @bind-Date="Model.ConsentDate"
+                               For="() => Model.ConsentDate"
+                               Label="@Model.GetMemberDescription(x => x.ConsentDate)"
+                               MaxDate="DateTime.Now.Date"
+                               Editable="true" />
+
+                <div class="mb-4 mt-8">
+                    <MudFileUpload @bind-Files="Model.Document"
+                                   For="() => Model.Document"
+                                   MaximumFileCount="1"
+                                   Accept=".pdf">
+                        <ActivatorContent>
+                            <MudLoadingButton Loading="_uploading"
+                                              Variant="Variant.Outlined"
+                                              Color="Color.Primary"
+                                              StartIcon="@Icons.Material.Filled.Upload">
+                                @if (_uploading)
+                                {
+                                    @ConstantString.Uploading
+                                }
+                                else
+                                {
+                                    @ConstantString.Upload
+                                }
+                            </MudLoadingButton>
+                        </ActivatorContent>
+                    </MudFileUpload>
+
+                    <MudSelect @bind-Value="Model.DocumentVersion"
+                               Label="@Model.GetMemberDescription(x => x.DocumentVersion)"
+                               For="() => Model.DocumentVersion"
+                               AnchorOrigin="Origin.BottomCenter">
+                        @foreach (var version in Documents.Consent.Versions)
+                        {
+                            <MudSelectItem Value="@version">Version @version</MudSelectItem>
+                        }
+                    </MudSelect>
+                </div>
+
+                <MudCheckBox @bind-Value="Model.Certify"
+                             Label="@Model.GetMemberDescription(x => x.Certify)"
+                             For="() => Model.Certify"
+                             Disabled="Model.Document is null" />
+            </MudForm>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@_saving" Color="Color.Primary" OnClick="Submit">
+            @if (_saving)
+            {
+                @ConstantString.Saving
+            }
+            else
+            {
+                @ConstantString.Save
+            }
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code 
+{
+    private bool _saving = false;
+    private bool _uploading = false;
+
+    private MudForm? form { get; set; }
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public required AddConsent.Command Model { get; set; }
+    
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    public async Task Submit()
+    {
+        try
+        {
+            _saving = true;
+            await form!.Validate();
+
+            if (form.IsValid)
+            {
+                var result = await GetNewMediator().Send(Model!);
+
+                if (result.Succeeded)
+                {
+                    Snackbar.Add("Consent form uploaded", Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                }
+                else
+                {
+                    Snackbar.Add($"Error uploading consent {result.ErrorMessage}", Severity.Error);
+                }
+            }
+
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Error uploading Consent evidence: {e.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+}
