@@ -39,6 +39,7 @@ public class Risk : BaseAuditableEntity<Guid>
         from.ReviewJustification = justification;
         from.Completed = null;
         from.CompletedBy = null;
+        from.RegistrationDetailsJson = null;
         from.AddDomainEvent(new RiskInformationReviewedDomainEvent(from));
         return from;
     }
@@ -63,6 +64,7 @@ public class Risk : BaseAuditableEntity<Guid>
     public string? ReferrerName { get; private set; }
     public string? ReferrerEmail { get; private set; }
     public DateTime? ReferredOn { get; private set; }
+    public string? RegistrationDetailsJson { get; private set; }
     public RiskReviewReason ReviewReason { get; private set; }
     public string? ReviewJustification { get; private set; }
     public RiskLevel? RiskToChildrenInCustody { get; private set; }
