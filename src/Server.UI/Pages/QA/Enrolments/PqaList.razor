@@ -14,9 +14,15 @@
     .mud-table-toolbar {
         height: 120px !important;
     }
+    
+    .pointer-cursor {
+        cursor: pointer;
+    }
+    
 </style>
 
 <MudDataGrid ServerData="@(ServerReload)"
+             T="EnrolmentQueueEntryDto"
              FixedHeader="true"
              FixedFooter="true"
              Virtualize="true"
@@ -26,11 +32,16 @@
              MultiSelection="true"
              @bind-SelectedItem="_currentDto"
              Hover="true"
+             RowClick="@RowClicked"
+             RowClass="pointer-cursor"
              @ref="_table">
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
             <div class="d-flex gap-4">
                 <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large"/>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.caption">Provider QA</MudText>
+                </div>
             </div>
             <div class="flex-grow-1"></div>
             <div class="d-flex flex-column justify-end">
@@ -56,19 +67,7 @@
         </div>
     </ToolBarContent>
     <Columns>
-        <TemplateColumn CellClass="width:60px;" Title="@ConstantString.Actions" Sortable="false">
-            <CellTemplate>
-                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
-                         Dense="true"
-                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
-
-                    <MudMenuItem OnClick="@(() => OnEdit(context.Item))">
-                        @ConstantString.View
-                    </MudMenuItem>
-
-                </MudMenu>
-            </CellTemplate>
-        </TemplateColumn>
+       
         <PropertyColumn Property="x => x.ParticipantId" Title="@L["Participant"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
@@ -104,6 +103,14 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
+        @*<TemplateColumn CellClass="width:60px;" Title="@ConstantString.Actions" Sortable="false">
+            <CellTemplate>
+                <MudLink OnClick="@(() => OnEdit(context.Item))" Color="Color.Primary">
+                    @ConstantString.View
+                </MudLink>
+              
+            </CellTemplate>
+        </TemplateColumn>*@
     </Columns>
 </MudDataGrid>
 
@@ -125,6 +132,11 @@
         Navigation.NavigateTo($"/pages/qa/enrolments/pqa/{dto.Id}");
     }
    
+    private void RowClicked(DataGridRowClickEventArgs<EnrolmentQueueEntryDto> args)
+    {
+        Navigation.NavigateTo($"/pages/qa/enrolments/pqa/{args.Item.Id}");
+    }
+    
     private async Task<GridData<EnrolmentQueueEntryDto>> ServerReload(GridState<EnrolmentQueueEntryDto> state)
     {
         try
