@@ -1,0 +1,44 @@
+﻿@using Cfo.Cats.Application.Features.Documents.Queries
+@using Cfo.Cats.Application.Features.Participants.DTOs
+
+
+    <MudRadioGroup T="Guid" @bind-Value="_selectedDocument">
+        
+    @foreach (var consent in ParticipantDto.Consents.OrderByDescending(c => c.ConsentDate))
+    {
+        <MudRadio T="Guid" Color="Color.Primary" Value="@consent.DocumentId!.Value">
+            @consent.FileName (@consent.ConsentDate.ToShortDateString())
+        </MudRadio>
+    }
+    </MudRadioGroup>
+    
+    @if (_selectedDocument != Guid.Empty)
+    {
+        <DocumentDisplay DocumentId="_selectedDocument" />
+
+    }
+
+
+
+
+@code {
+
+    private Guid _selectedDocument = Guid.Empty;
+    
+    [Parameter] [EditorRequired]
+    public ParticipantDto ParticipantDto { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        if (_selectedDocument == Guid.Empty)
+        {
+            var latest = ParticipantDto.Consents.MaxBy(c => c.ConsentDate);
+            if (latest is not null)
+            {
+                _selectedDocument = latest.DocumentId.GetValueOrDefault();
+            }
+        }
+    }
+
+
+}

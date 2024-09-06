@@ -19,7 +19,6 @@ public class ConsentDto
                 .ForMember(c => c.DocumentId, options => options.MapFrom(source => source.Document!.Id))
                 .ForMember(c => c.FileName, options => options.MapFrom(source => source.Document!.Title))
                 .ForMember(c => c.ConsentDate, options => options.MapFrom(source => source.Lifetime.StartDate));
-            
         }
     }
 }
