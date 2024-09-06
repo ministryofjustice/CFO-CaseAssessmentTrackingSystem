@@ -52,17 +52,14 @@ public class RiskDto
     [Description("Specific Risk(s)")]
     public string? SpecificRisk { get; set; }
 
-    [Description("Referrer Name")]
+    [Description("Full Name")]
     public string? ReferrerName { get; set; }
 
-    [Description("Referrer Email")]
+    [Description("Email Address")]
     public string? ReferrerEmail { get; set; }
 
-    [Description("Referred on")]
+    [Description("Date Completed")]
     public DateTime? ReferredOn { get; set; }
-
-    [Description("Declaration")]
-    public bool DeclarationSigned { get; set; } = false;
 
     public string[] RegistrationDetails { get; set; } = [];
 
@@ -266,31 +263,23 @@ public class RiskDto
                 .NotNull()
                 .WithMessage("You must answer");
 
-            RuleFor(x => x.DeclarationSigned)
-                .Equal(true)
-                .WithMessage("You must confirm");
+            RuleFor(x => x.ReferrerName)
+                .NotEmpty()
+                .WithMessage("You must provide the name")
+                .Matches(ValidationConstants.NameCompliantWithDMS)
+                .WithMessage(string.Format(ValidationConstants.NameCompliantWithDMSMessage, "Name"));
 
-            When(x => x.DeclarationSigned, () =>
-            {
-                RuleFor(x => x.ReferrerName)
-                    .NotEmpty()
-                    .WithMessage("You must provide the referrers name")
-                    .Matches(ValidationConstants.NameCompliantWithDMS)
-                    .WithMessage(string.Format(ValidationConstants.NameCompliantWithDMSMessage, "Referrer Name"));
+            RuleFor(x => x.ReferrerEmail)
+                .NotEmpty()
+                .WithMessage("You must provide the email")
+                .EmailAddress()
+                .WithMessage("Must be a valid email address");
 
-                RuleFor(x => x.ReferrerEmail)
-                    .NotEmpty()
-                    .WithMessage("You must provide the referrers email")
-                    .EmailAddress()
-                    .WithMessage("Must be a valid email address");
-
-                RuleFor(x => x.ReferredOn)
-                    .NotEmpty()
-                    .WithMessage("You must provide the referral date")
-                    .LessThanOrEqualTo(DateTime.UtcNow.Date)
-                    .WithMessage(ValidationConstants.DateMustBeInPast);
-            });
-
+            RuleFor(x => x.ReferredOn)
+                .NotEmpty()
+                .WithMessage("You must provide the date")
+                .LessThanOrEqualTo(DateTime.UtcNow.Date)
+                .WithMessage(ValidationConstants.DateMustBeInPast);
         }
     }
 
