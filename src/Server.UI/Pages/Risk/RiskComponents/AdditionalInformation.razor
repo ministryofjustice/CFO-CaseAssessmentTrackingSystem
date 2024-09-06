@@ -14,6 +14,25 @@
                       Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
                       Placeholder="Use this area to provide any additional information (i.e. information that might support the Risk Overview rating, or relevant information that has not already been documented in this template).">
         </MudTextField>
+
+        <MudText Class="my-6">Please provide the details of the individual who completed the risk template</MudText>
+
+        <MudTextField @bind-Value="Model.ReferrerName"
+                      For="@(() => Model.ReferrerName)"
+                      Label="@Model.GetMemberDescription(x => x.ReferrerName)"
+                      Class="mt-4" />
+
+        <MudTextField @bind-Value="Model.ReferrerEmail"
+                      For="@(() => Model.ReferrerEmail)"
+                      Label="@Model.GetMemberDescription(x => x.ReferrerEmail)"
+                      Class="mt-4" />
+
+        <MudDatePicker @bind-Date="Model.ReferredOn"
+                       Label="@Model.GetMemberDescription(x => x.ReferredOn)"
+                       For="@(() => Model.ReferredOn)"
+                       MaxDate="DateTime.UtcNow.Date"
+                       Editable="true"
+                       Class="mt-4"/>
     </CatsMudStep>
 }
 
@@ -24,6 +43,9 @@
     public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
     {
         options.IncludeProperties(x => x.AdditionalInformation);
+        options.IncludeProperties(x => x.ReferrerName);
+        options.IncludeProperties(x => x.ReferrerEmail);
+        options.IncludeProperties(x => x.ReferredOn);
     };
 }
 
