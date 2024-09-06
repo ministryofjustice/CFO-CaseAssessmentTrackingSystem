@@ -24,7 +24,9 @@ public class CandidateSearchQueryValidator : AbstractValidator<CandidateSearchQu
 
         RuleFor(q => q.DateOfBirth)
             .NotNull()
-            .WithMessage("Date of birth is required");
+            .WithMessage("Date of birth is required")
+            .LessThanOrEqualTo(DateTime.Today.AddYears(-18))
+            .WithMessage("Must be at least 18 years");
 
         RuleFor(q => q.ExternalIdentifier)
             .NotEmpty()
