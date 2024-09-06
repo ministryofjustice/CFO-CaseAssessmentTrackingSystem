@@ -51,7 +51,6 @@ public class Risk : BaseAuditableEntity<Guid>
     public string? AdditionalInformation { get; private set; }
     public DateTime? Completed { get; private set; }
     public string? CompletedBy { get; private set; }
-    public bool DeclarationSigned { get; private set; }
     public string? LicenseConditions { get; private set; }
     public DateTime? LicenseEnd { get; private set; }
     public bool? IsRelevantToCustody { get; private set; }
