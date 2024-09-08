@@ -1,6 +1,10 @@
 ﻿@page "/"
+@using Cfo.Cats.Application.Features.Dashboard.DTOs
 @using Cfo.Cats.Application.Features.Dashboard.Queries
 @using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@using Humanizer
 
 @inherits CatsComponentBase
 
@@ -13,90 +17,97 @@
         Dashboard
     </MudText>
     <MudGrid>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            Pending Cases
+        
+        @if (UserProfile?.AssignedRoles is [])
+        {
+            <MudItem xs="3">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">
+                                Pending Cases
+                            </MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText>Your cases that are awaiting enrolment confirmation</MudText>
+                        <MudText Typo="Typo.h1" Align="Align.Center">
+                            @_dashboardDto?.PendingCases
                         </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>Your cases that are awaiting enrolment confirmation</MudText>
-                    <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.PendingCases
-                    </MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            Enrolling Cases
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="3">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">
+                                Enrolling Cases
+                            </MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText>Your cases that are awaiting submission to PQA</MudText>
+                        <MudText Typo="Typo.h1" Align="Align.Center">
+                            @_dashboardDto?.ConfirmedCases
                         </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>Your cases that are awaiting submission to PQA</MudText>
-                    <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.ConfirmedCases
-                    </MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            Provider QA
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="3">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">
+                                Provider QA
+                            </MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText>Your cases that are sat with Provider QA</MudText>
+                        <MudText Typo="Typo.h1" Align="Align.Center">
+                            @_dashboardDto?.CasesAtPqa
                         </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>Your cases that are sat with Provider QA</MudText>
-                    <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.CasesAtPqa
-                    </MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            CFO QA
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="3">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">
+                                CFO QA
+                            </MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText>Your cases that are sat with CFO QA</MudText>
+                        <MudText Typo="Typo.h1" Align="Align.Center">
+                            @_dashboardDto?.CasesAtCfo
                         </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>Your cases that are sat with CFO QA</MudText>
-                    <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.CasesAtCfo
-                    </MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            Approved Cases
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="3">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">
+                                Approved Cases
+                            </MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText>Your cases that have been approved</MudText>
+                        <MudText Typo="Typo.h1" Align="Align.Center">
+                            @_dashboardDto?.ApprovedCases
                         </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>Your cases that have been approved</MudText>
-                    <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.ApprovedCases
-                    </MudText>
-                </MudCardContent>
-            </MudCard>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+        <MudItem xs="12">
+            <ActivityLog/>
         </MudItem>
     </MudGrid>
 </MudContainer>
@@ -107,17 +118,19 @@
 
     public string Title { get; } = "Dashboard";
 
-    private DashboardDto? _dashboardDto = null; 
-    
+    private DashboardDto? _dashboardDto = null;
+
+
+
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         var query = new GetDashboard.Query()
-        {
-            CurrentUser = UserProfile!
-        };
+            {
+                CurrentUser = UserProfile!
+            };
 
         var result = await GetNewMediator().Send(query);
 
@@ -125,7 +138,11 @@
         {
             _dashboardDto = result.Data;
         }
-        
+
+      
+
     }
+
+    
 
 }

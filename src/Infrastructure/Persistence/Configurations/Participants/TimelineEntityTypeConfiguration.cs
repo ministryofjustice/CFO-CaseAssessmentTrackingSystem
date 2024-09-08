@@ -16,7 +16,7 @@ public class TimelineEntityTypeConfiguration : IEntityTypeConfiguration<Timeline
 
         builder.HasKey(t => t.Id);
 
-        builder.HasOne<Domain.Entities.Participants.Participant>()
+        builder.HasOne(t => t.Participant)
             .WithMany()
             .HasForeignKey("ParticipantId");
 

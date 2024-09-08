@@ -37,5 +37,7 @@ public class Timeline : BaseAuditableEntity<int>
     }
 
     public virtual ApplicationUser? CreatedByUser { get; private set; }
+
+    public virtual Participant? Participant { get; private set; }
 }
 

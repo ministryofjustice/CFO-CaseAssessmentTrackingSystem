@@ -1,0 +1,147 @@
+@using Cfo.Cats.Application.Features.Dashboard.DTOs
+@using Cfo.Cats.Application.Features.Dashboard.Specifications
+@using Cfo.Cats.Application.Features.Dashboard.Queries
+@using Humanizer
+
+<style>
+    .mud-table-toolbar {
+        height: 120px !important;
+    }
+
+    .pointer-cursor {
+        cursor: pointer;
+    }
+
+</style>
+@inherits CatsComponentBase
+
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Activity Log</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudDataGrid ServerData="@(ServerReload)" T="ActivityLogDto" FixedHeader="true" FixedFooter="true"
+                     Virtualize="true" @bind-RowsPerPage="defaultPageSize" Height="500px" Loading="@loading" Hover="true" RowClick="@RowClicked"
+                     RowClass="pointer-cursor" @ref="table">
+            <ToolBarContent>
+               <div class="d-flex align-start flex-grow-1">
+                <div class="d-flex gap-4">
+                    <MudIcon Icon="@Icons.Material.Filled.PendingActions" Size="Size.Large"/>
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.caption" Class="mb-2">Activity Log</MudText>
+                        <MudEnumSelect Style="min-width:160px" TEnum="ActivityLogListView" ValueChanged="OnChangedListView" Value="Query.ListView" Dense="true" Label="List View">
+                        </MudEnumSelect>
+                    </div>
+                </div>
+                <div class="flex-grow-1"/>
+
+                <div class="d-flex flex-column justify-end">
+                    <div class="d-flex">
+                        <MudButton Variant="Variant.Outlined"
+                                Size="Size.Small"
+                                OnClick="@(() => OnRefresh())"
+                                StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
+                                Style="margin-right: 4px; margin-bottom:4px">
+                            @ConstantString.Refresh
+                        </MudButton>
+                    </div>
+                </div>
+            </div>
+            </ToolBarContent>
+            <Columns>
+                <PropertyColumn Property="x => x.ParticipantId" Title="Participant Id"></PropertyColumn>
+                <PropertyColumn Property="x => x.ParticipantName" Title="Participant" Sortable="false"></PropertyColumn>
+                <PropertyColumn Property="x => x.EventType" Sortable="true"> </PropertyColumn>
+                <PropertyColumn Property="x => x.Line1" Title="Details" Sortable="false">
+                    <CellTemplate>
+                        <div class="d-flex flex-column">
+                            <MudText Typo="Typo.body2">@context.Item.Line1</MudText>
+                            @if (context.Item.Line2 is not null)
+                            {
+                                <MudText Typo="Typo.body2">@context.Item.Line2</MudText>
+                            }
+                            @if (context.Item.Line3 is not null)
+                            {
+                                <MudText Typo="Typo.body2">@context.Item.Line3</MudText>
+                            }
+                        </div>
+                    </CellTemplate>
+                </PropertyColumn>
+                <PropertyColumn Property="x => x.CreatedBy" Title="Created" Sortable="true" SortBy="x => x.Created">
+                    <CellTemplate>
+                        <div class="d-flex flex-column">
+                            <MudText Typo="Typo.body2">@context.Item.CreatedBy</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.Item.Created.Humanize()
+                            </MudText>
+                        </div>
+                    </CellTemplate>
+                </PropertyColumn>
+            </Columns>
+            <NoRecordsContent>
+                <MudText>@ConstantString.NoRecords</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>@ConstantString.Loading</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })" />
+            </PagerContent>
+        </MudDataGrid>
+    </MudCardContent>
+</MudCard>
+
+@code
+{
+    [CascadingParameter]
+    public UserProfile? UserProfile { get; set; }
+
+    private GetActivityLog.Query Query { get; } = new();
+
+    private MudDataGrid<ActivityLogDto> table = null!;
+
+    private bool loading;
+
+    private int defaultPageSize = 15;
+
+    private readonly ActivityLogDto currentDto = new();
+
+    private async Task<GridData<ActivityLogDto>> ServerReload(GridState<ActivityLogDto> state)
+    {
+        try
+        {
+            loading = true;
+            Query.CurrentUser = UserProfile;
+            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Created";
+            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() :
+            SortDirection.Ascending.ToString();
+            Query.PageNumber = state.Page + 1;
+            Query.PageSize = state.PageSize;
+
+            var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
+            return new GridData<ActivityLogDto> { TotalItems = result.TotalItems, Items = result.Items };
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task OnRefresh()
+    {
+        await table.ReloadServerData();
+    }
+    
+    private async Task OnChangedListView(ActivityLogListView listview)
+    {
+        Query.ListView = listview;
+        await table.ReloadServerData();
+    }
+    
+    private void RowClicked(DataGridRowClickEventArgs<ActivityLogDto> args)
+    {
+        Navigation.NavigateTo($"/pages/participants/{args.Item.ParticipantId}");
+    }
+
+} 
