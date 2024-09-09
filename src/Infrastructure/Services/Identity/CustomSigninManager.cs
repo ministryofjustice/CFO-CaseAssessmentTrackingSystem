@@ -39,9 +39,17 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
             return passwordCheckResult;
         }
         
-        
-        return await base.PasswordSignInAsync(userName, password, isPersistent, lockoutOnFailure);
+        var signInResult = await base.PasswordSignInAsync(userName, password, isPersistent, lockoutOnFailure);
+
+        if(signInResult.Succeeded)
+        {
+            user.LastLogin = DateTime.UtcNow;
+            await UserManager.UpdateAsync(user);
+        }
+
+        return signInResult;
     }
+
     private bool PasswordCheckSucceededAndTwoFactorDisabledForIpRange(SignInResult passwordCheckResult, string? ipAddress)
     {
         if (passwordCheckResult.Succeeded == false || string.IsNullOrWhiteSpace(ipAddress))

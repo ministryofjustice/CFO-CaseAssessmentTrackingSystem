@@ -44,6 +44,7 @@ public class ApplicationUser : IdentityUser, IAuditable
     public string? CreatedBy { get; set; }
     public DateTime? LastModified { get; set; }
     public string? LastModifiedBy { get; set; }
+    public DateTime? LastLogin { get; set; }
 
     public ApplicationUser AddNote(Note note)
     {
