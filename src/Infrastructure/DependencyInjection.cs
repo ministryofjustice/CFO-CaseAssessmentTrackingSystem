@@ -359,6 +359,18 @@ public static class DependencyInjection
                     .WithDescription(SyncParticipantsJob.Description)
                     .WithCronSchedule(syncParticipantsJobOptions.CronSchedule));
             }
+
+            if (options.GetSection(DisableDormantAccountsJob.Key.Name).Get<JobOptions>() is
+                { Enabled: true } disableDormantAccountsJobOptions)
+            {
+                quartz.AddJob<DisableDormantAccountsJob>(opts => opts.WithIdentity(DisableDormantAccountsJob.Key));
+
+                quartz.AddTrigger(opts => opts
+                    .ForJob(DisableDormantAccountsJob.Key)
+                    .WithIdentity($"{DisableDormantAccountsJob.Key}-trigger")
+                    .WithDescription(DisableDormantAccountsJob.Description)
+                    .WithCronSchedule(disableDormantAccountsJobOptions.CronSchedule));
+            }
         });
 
         services.AddQuartzServer(options =>
