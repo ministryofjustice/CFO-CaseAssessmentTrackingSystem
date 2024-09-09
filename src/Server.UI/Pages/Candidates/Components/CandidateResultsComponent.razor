@@ -27,7 +27,7 @@
     [Parameter, EditorRequired] public SearchResult[] SearchResults { get; set; } = default!;
     [Parameter, EditorRequired] public CandidateSearchQuery Query { get; set; } = default!;
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
         _selectedParameters = new Dictionary<string, object>()
         {
