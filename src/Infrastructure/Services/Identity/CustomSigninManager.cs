@@ -14,12 +14,10 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
     {
         var user = await UserManager.FindByNameAsync(userName);
 
-        if (user == null)
+        if (user is not { IsActive: true })
         {
             return SignInResult.Failed;
         }
-
-        
         
         var passwordCheckResult = await CheckPasswordSignInAsync(user, password, lockoutOnFailure);
 
