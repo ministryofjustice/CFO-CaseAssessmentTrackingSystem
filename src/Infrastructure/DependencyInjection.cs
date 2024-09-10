@@ -230,6 +230,7 @@ public static class DependencyInjection
 
             // User settings
             options.User.RequireUniqueEmail = true;
+            options.User.AllowedUserNameCharacters = identitySettings.AllowedUserNameCharacters;
             //options.Tokens.EmailConfirmationTokenProvider = "Email";
         });
 
