@@ -42,7 +42,7 @@
                     {
                         <div class="description-pair">
                             <dt>
-                                <MudText Typo="Typo.subtitle2">Referral Date</MudText>
+                                <MudText Typo="Typo.subtitle2">@Model.GetMemberDescription(x => x.ReferredOn)</MudText>
                             </dt>
                             <dd>
                                 <MudText Typo="Typo.body2">@Model.ReferredOn.Value.ToString("dd/MM/yyyy")</MudText>

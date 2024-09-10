@@ -11,6 +11,8 @@ public class RiskSummaryDto
     public required RiskReviewReason ReviewReason { get; set; }
     public required DateTime Created { get; set; }
     public required string CreatedBy { get; set; }
+
+    [Description("Date Risk form completed")]
     public DateTime? ReferredOn { get; set; }
 
     private class Mapping : Profile
