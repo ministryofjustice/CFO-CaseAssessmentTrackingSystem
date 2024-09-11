@@ -51,4 +51,6 @@ public class IdentitySettings : IIdentitySettings
     /// </summary>
     public int MaxFailedAccessAttempts { get; set; } = 5;
 
+    public string AllowedUserNameCharacters { get; set; } = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+'";
+
 }
