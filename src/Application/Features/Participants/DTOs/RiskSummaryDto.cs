@@ -14,14 +14,11 @@ public class RiskSummaryDto
 
     [Description("Date Risk form completed")]
     public DateTime? ReferredOn { get; set; }
-    public DateTime DueOn { get; set; }
-    public int DueInDays { get; set; }
     private class Mapping : Profile
     {
         public Mapping()
         {
-            CreateMap<Risk, RiskSummaryDto>(MemberList.None)
-                .ForMember(dest => dest.DueInDays, opt => opt.MapFrom(src => src.DueInDays()));
+            CreateMap<Risk, RiskSummaryDto>(MemberList.None);
         }
     }
 

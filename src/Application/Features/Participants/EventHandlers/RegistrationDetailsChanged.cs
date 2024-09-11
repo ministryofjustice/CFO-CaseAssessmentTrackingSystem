@@ -6,14 +6,22 @@ public class RegistrationDetailsChanged(IUnitOfWork unitOfWork) : INotificationH
 {
     public async Task Handle(ParticipantRegistrationDetailsChangedDomainEvent notification, CancellationToken cancellationToken)
     {
+        var participant = await unitOfWork.DbContext.Participants
+            .Where(p => p.Id == notification.Item.Id)
+            .FirstOrDefaultAsync(cancellationToken);
         var risk = await unitOfWork.DbContext.Risks
-            .Where(risk => risk.ParticipantId == notification.Item.Id)
-            .OrderBy(risk => risk.Created)
+            .Where(r =>  r.ParticipantId == notification.Item.Id) 
             .FirstOrDefaultAsync(cancellationToken);
 
-        if(risk is not null)
+        if (participant is not null && 
+            risk is not null &&
+            participant.RiskDue!.HasValue && 
+            participant.RiskDue!.Value > DateTime.Today)
         {
-            //risk.SetDue(DateTime.UtcNow);
+            //Only applicable if Risk information exists
+            //Set Risk Due date to today, only if it is later than today
+            participant.SetRiskDue(DateTime.UtcNow);
+            unitOfWork.DbContext.Participants.Update(participant);
         }
 
     }

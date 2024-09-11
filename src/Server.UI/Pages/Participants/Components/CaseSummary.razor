@@ -73,7 +73,9 @@
             <MudCardHeader>
                 <CardHeaderContent>
                     <div class="d-flex justify-space-between align-center">
-                        <MudText Typo="Typo.h6">Risk Information</MudText>
+                        <MudText Typo="Typo.h6">
+                            Risk Information
+                        </MudText>
                         <MudTooltip Text="Expand">
                             <MudIconButton OnClick="ExpandRiskInformation" Icon="@Icons.Material.Outlined.OpenInNew" />
                         </MudTooltip>
@@ -113,7 +115,7 @@
                                     <MudTooltip Text="@_riskTooltipText">
                                         <MudIcon Icon="@_riskIcon" Size="@Size.Small" Color="@_riskIconColor" />
                                         <MudText Typo="Typo.body2">
-                                            @DateOnly.FromDateTime(@ParticipantSummaryDto.LatestRisk!.DueOn).Humanize()
+                                            @_riskInfo
                                         </MudText>
                                     </MudTooltip>
                                 </dd>
@@ -124,6 +126,14 @@
                 else
                 {
                     <MudText Typo="Typo.body2">No risk information provided.</MudText>
+
+                    <MudTooltip Text="@_riskTooltipText">
+                        <MudIcon Icon="@_riskIcon" Size="@Size.Small" Color="@_riskIconColor" />
+                        <MudText Typo="Typo.body2">
+                            @String.Format("Due {0}",_riskInfo)
+                        </MudText>
+                    </MudTooltip>
+
                 }
             </MudCardContent>
             <MudCardActions>

@@ -26,7 +26,7 @@ public class Consent : BaseAuditableEntity<int>, ILifetime
         // we do not currently require consent to be renewed, so make it the end date.
         Lifetime = new Lifetime(consentDate, DateTime.MaxValue.Date);
         
-        AddDomainEvent(new ConsentCreatedDomainEvent(this));
+        AddDomainEvent(new ConsentCreatedDomainEvent(this, _participantId, consentDate));
     }
     
     public Document? Document { get; private set; }

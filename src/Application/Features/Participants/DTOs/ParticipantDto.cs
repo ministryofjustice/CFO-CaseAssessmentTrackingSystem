@@ -12,6 +12,8 @@ public class ParticipantDto
     public string? MiddleName { get; set; }
     public string? LastName { get; set; }
     public DateOnly? DateOfBirth { get; set; }
+    public DateTime? Due { get; set; }
+    public int? DueInDays { get; set; }
 
     [Description("Enrolment Status")]
     public EnrolmentStatus? EnrolmentStatus { get; set; }
@@ -59,7 +61,9 @@ public class ParticipantDto
                 .ForMember(target => target.TenantId, options => options.MapFrom(s => s.Owner!.TenantId))
                 .ForMember(target => target.ExternalIdentifiers, options => options.MapFrom(s => s.ExternalIdentifiers.ToArray()))
 #nullable disable
-                .ForMember(target => target.SupportWorker, options => options.MapFrom(source => source.Owner.DisplayName));
+                .ForMember(target => target.SupportWorker, options => options.MapFrom(source => source.Owner.DisplayName))
+                .ForMember(dest => dest.Due, opt => opt.MapFrom(src => src.RiskDue))
+                .ForMember(dest => dest.DueInDays, opt => opt.MapFrom(src => src.RiskDueInDays()));
         }
     }
 }
