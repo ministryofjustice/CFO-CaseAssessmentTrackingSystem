@@ -44,8 +44,8 @@ public static class AddConsent
                 $"Consent form for {request.ParticipantId}",
                 DocumentType.PDF);
 
-
-            await using var stream = request.Document.OpenReadStream();
+            long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.Consent.MaximumSizeInMegabytes).Bytes);
+            await using var stream = request.Document.OpenReadStream(maxSizeBytes);
             using var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream, cancellationToken);
 
