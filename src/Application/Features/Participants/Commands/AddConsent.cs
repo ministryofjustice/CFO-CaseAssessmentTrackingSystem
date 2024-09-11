@@ -87,7 +87,7 @@ public static class AddConsent
 
             RuleFor(v => v.Document)
                 .NotNull()
-                .WithMessage("You must upload a Right to Work document")
+                .WithMessage("You must upload a Consent document")
                 .Must(file => NotExceedMaximumFileSize(file, Infrastructure.Constants.Documents.Consent.MaximumSizeInMegabytes))
                 .WithMessage($"File size exceeds the maxmimum allowed size of {Infrastructure.Constants.Documents.Consent.MaximumSizeInMegabytes} megabytes")
                 .MustAsync(BePdfFile)
