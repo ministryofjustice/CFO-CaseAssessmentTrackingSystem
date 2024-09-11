@@ -153,18 +153,21 @@
 
     void SetRiskDueWarning()
     {
-        _riskInfo = String.Format("Due {0}", DateOnly.FromDateTime(_participant!.LatestRisk!.DueOn).Humanize());
-        int _dueInDays = _participant!.LatestRisk!.DueInDays;
-        switch (_dueInDays)
+        if (_participant!.RiskDue.HasValue)
         {
-            case var _ when _dueInDays <= 0:
-                _riskIcon = Icons.Material.Filled.Error;
-                _riskIconColor = Color.Error;
-                break;
-            case var _ when _dueInDays >= 0 && _dueInDays <= 14:
-                _riskIcon = Icons.Material.Filled.Warning;
-                _riskIconColor = Color.Warning;
-                break;
+            _riskInfo = String.Format("Due {0}", DateOnly.FromDateTime(_participant!.RiskDue!.Value).Humanize());
+            int _dueInDays = _participant!.RiskDueInDays!.Value;
+            switch (_dueInDays)
+            {
+                case var _ when _dueInDays <= 0:
+                    _riskIcon = Icons.Material.Filled.Error;
+                    _riskIconColor = Color.Error;
+                    break;
+                case var _ when _dueInDays >= 0 && _dueInDays <= 14:
+                    _riskIcon = Icons.Material.Filled.Warning;
+                    _riskIconColor = Color.Warning;
+                    break;
+            }
         }
     }
     private async Task Refresh()

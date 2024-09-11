@@ -23,7 +23,6 @@ public class Risk : BaseAuditableEntity<Guid>
     {
         Risk risk = new(id, participantId, RiskReviewReason.InitialReview);
         risk.AddDomainEvent(new RiskInformationAddedDomainEvent(risk));
-        risk.DueOn = DateTime.UtcNow.AddDays(70);
         return risk;
     }
 
@@ -31,6 +30,7 @@ public class Risk : BaseAuditableEntity<Guid>
     {
         Completed = DateTime.UtcNow;
         CompletedBy = completedBy;
+        this.AddDomainEvent(new RiskInformationCompletedDomainEvent(this));
     }
 
     public static Risk Review(Risk from, RiskReviewReason reason, string? justification)
@@ -40,7 +40,6 @@ public class Risk : BaseAuditableEntity<Guid>
         from.ReviewJustification = justification;
         from.Completed = null;
         from.CompletedBy = null;
-        from.DueOn = DateTime.UtcNow.AddDays(70);
         from.RegistrationDetailsJson = null;
         from.AddDomainEvent(new RiskInformationReviewedDomainEvent(from));
         return from;
@@ -81,8 +80,5 @@ public class Risk : BaseAuditableEntity<Guid>
     public RiskLevel? RiskToOtherPrisonersInCommunity { get; private set; }
     public RiskLevel? RiskToSelfInCommunity { get; private set; }
     public string? SpecificRisk { get; private set; }
-    public DateTime DueOn { get; private set; }
-    public int DueInDays() => (DueOn.Date - DateTime.UtcNow.Date).Days;
-
     public virtual Participant? Participant { get; private set; }
 }

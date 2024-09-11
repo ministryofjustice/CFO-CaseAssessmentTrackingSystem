@@ -29,7 +29,8 @@ public class ParticipantSummaryDto
     /// The participant's date of birth
     /// </summary>
     public required DateOnly DateOfBirth { get; set; }
-
+    public DateTime? RiskDue { get; set; }
+    public int? RiskDueInDays { get; set; }
     /// <summary>
     ///  The current enrolment status of the participant
     /// </summary>
@@ -59,7 +60,9 @@ public class ParticipantSummaryDto
                 .ForMember(target => target.EnrolmentLocation, options => options.MapFrom(source => source.EnrolmentLocation.Name))
  #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 .ForMember(target => target.OwnerName, options => options.MapFrom(source => source.Owner!.DisplayName))
-                .ForMember(target => target.ParticipantName, options => options.MapFrom(source => source.FirstName + ' ' + source.LastName));
+                .ForMember(target => target.ParticipantName, options => options.MapFrom(source => source.FirstName + ' ' + source.LastName))
+                .ForMember(dest => dest.RiskDue, opt => opt.MapFrom(src => src.RiskDue))
+                .ForMember(dest => dest.RiskDueInDays, opt => opt.MapFrom(src => src.RiskDueInDays()));
 
             CreateMap<ParticipantAssessment, AssessmentSummaryDto>()
                 .ForMember(target => target.AssessmentId, options => options.MapFrom(source => source.Id))

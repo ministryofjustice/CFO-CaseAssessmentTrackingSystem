@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240903110608_AddedDueOnToRisk")]
-    partial class AddedDueOnToRisk
+    [Migration("20240910064309_AddedRiskDueToParticipant")]
+    partial class AddedRiskDueToParticipant
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -763,6 +763,12 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("RegistrationDetailsJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RiskDue")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("_currentLocationId")
                         .HasColumnType("int")
                         .HasColumnName("CurrentLocationId");
@@ -891,9 +897,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<bool>("DeclarationSigned")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("DueOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool?>("IsRelevantToCommunity")
                         .HasColumnType("bit");
 
@@ -916,12 +919,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<DateTime?>("LicenseEnd")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("MappaCategory")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MappaLevel")
-                        .HasColumnType("int");
-
                     b.Property<int?>("NSDCase")
                         .HasColumnType("int");
 
@@ -942,6 +939,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReferrerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RegistrationDetailsJson")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReviewJustification")
@@ -2502,11 +2502,13 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Risk", b =>
                 {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
+                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", "Participant")
                         .WithMany()
                         .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Participant");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Timeline", b =>
