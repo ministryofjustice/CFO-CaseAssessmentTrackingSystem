@@ -143,7 +143,7 @@
     {
         var user = await UserManager.FindByNameAsync(Input.UserName);
 
-        
+
 
         if(user is null)
         {
@@ -161,11 +161,19 @@
             await Sender.Publish(IdentityAuditNotification.LoginSucceededNoTwoFactorRequired(Input.UserName, NetworkIpProvider.IpAddress));
             RedirectManager.RedirectTo(ReturnUrl);
         }
-        else if(result is CustomSignInResult customSignInResult && customSignInResult.RequiresPasswordReset)
+        else if(result is CustomSignInResult customSignInResult)
         {
-            string token = await UserManager.GeneratePasswordResetTokenAsync(user);
-            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
-            RedirectManager.RedirectTo(ResetPassword.PageUrl, new() { ["token"] = encodedToken, ["userid"] = user.Id });
+            if(customSignInResult.RequiresPasswordReset)
+            {
+                string token = await UserManager.GeneratePasswordResetTokenAsync(user);
+                var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+                RedirectManager.RedirectTo(ResetPassword.PageUrl, new() { ["token"] = encodedToken, ["userid"] = user.Id });
+            }
+            else if(customSignInResult.IsInactive)
+            {
+                await Sender.Publish(IdentityAuditNotification.UserInactive(Input.UserName, NetworkIpProvider.IpAddress));
+                errorMessage = L["Account is inactive. Please contact CFO Service Desk"];
+            }
         }
         else if (result.RequiresTwoFactor)
         {
