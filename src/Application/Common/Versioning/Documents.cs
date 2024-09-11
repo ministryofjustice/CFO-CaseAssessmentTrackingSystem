@@ -4,7 +4,7 @@ public static class Documents
 {
     public static class Consent
     {
-        public const double MaximumSizeInMegabytes = 5;
+        public const double MaximumSizeInMegabytes = 1;
 
         public static IReadOnlyList<string> Versions { get; set; } =
         [
@@ -14,7 +14,7 @@ public static class Documents
 
     public static class RightToWork
     {
-        public const double MaximumSizeInMegabytes = 5;
+        public const double MaximumSizeInMegabytes = 1;
     }
 
 }
