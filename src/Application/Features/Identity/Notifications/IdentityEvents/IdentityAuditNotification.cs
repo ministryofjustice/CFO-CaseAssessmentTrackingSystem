@@ -36,6 +36,9 @@ public class IdentityAuditNotification : INotification
     public static IdentityAuditNotification UserLockedOut(string  userName, string ipAddress)
         => new(IdentityActionType.UserAccountLockedOut, ipAddress,userName);
 
+    public static IdentityAuditNotification UserInactive(string userName, string ipAddress)
+    => new(IdentityActionType.UserInactive, ipAddress, userName);
+
     public static IdentityAuditNotification PasswordReset(string userName, string ipAddress, string? performedBy = null)
         => new(IdentityActionType.PasswordReset,ipAddress , userName, performedBy);
 

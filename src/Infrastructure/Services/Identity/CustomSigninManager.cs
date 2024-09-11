@@ -14,7 +14,7 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
     {
         var user = await UserManager.FindByNameAsync(userName);
 
-        if (user is not { IsActive: true })
+        if(user is null)
         {
             return SignInResult.Failed;
         }
@@ -24,6 +24,11 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
         if(passwordCheckResult.Succeeded is false)
         {
             return passwordCheckResult;
+        }
+
+        if (user.IsActive is false)
+        {
+            return CustomSignInResult.Inactive;
         }
 
         if (PasswordChecksOutAndRequiresPasswordReset(passwordCheckResult, user))
@@ -79,7 +84,10 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
     public class CustomSignInResult : SignInResult
     {
         public bool RequiresPasswordReset { get; private set; }
+        public bool IsInactive { get; private set; }
+
         public static CustomSignInResult PasswordResetRequired => new CustomSignInResult { RequiresPasswordReset = true };
+        public static CustomSignInResult Inactive => new CustomSignInResult { IsInactive = true };
     }
     
 }
