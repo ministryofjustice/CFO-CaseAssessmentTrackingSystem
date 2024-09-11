@@ -62,6 +62,8 @@ public class Participant : OwnerPropertyEntity<string>
     public string LastName { get; private set; }
     public string? Gender { get; private set; }
     public DateOnly DateOfBirth { get; private set; }
+    public DateTime? RiskDue { get; private set; }
+    public int? RiskDueInDays() => (RiskDue.HasValue ? (RiskDue!.Value.Date - DateTime.UtcNow.Date).Days:null);
 
     /// <summary>
     /// Whether the participant is active in the DMS feed.
@@ -295,6 +297,12 @@ public class Participant : OwnerPropertyEntity<string>
         }
 
         return this;
+    }
+
+    public Participant SetRiskDue(DateTime riskDueDate)
+    {
+        RiskDue = riskDueDate;
+        return this;   
     }
 
 }

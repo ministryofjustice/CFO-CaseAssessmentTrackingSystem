@@ -763,6 +763,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<string>("RegistrationDetailsJson")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("RiskDue")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("_currentLocationId")
                         .HasColumnType("int")
                         .HasColumnName("CurrentLocationId");
@@ -887,7 +890,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(36)
                         .HasColumnType("nvarchar(36)");
-
                     b.Property<bool?>("IsRelevantToCommunity")
                         .HasColumnType("bit");
 

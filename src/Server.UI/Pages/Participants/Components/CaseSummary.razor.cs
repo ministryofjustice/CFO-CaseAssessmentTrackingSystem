@@ -38,19 +38,22 @@ public partial class CaseSummary
 
     void SetRiskDueWarning()
     {
-        _riskInfo = String.Format("Due {0}",DateOnly.FromDateTime(ParticipantSummaryDto.LatestRisk!.DueOn).Humanize());
-        _riskTooltipText = String.Format("Due {0}", DateOnly.FromDateTime(ParticipantSummaryDto.LatestRisk!.DueOn));
-        int _dueInDays = ParticipantSummaryDto.LatestRisk!.DueInDays;
-        switch (_dueInDays)
+        if (ParticipantSummaryDto.RiskDue.HasValue)
         {
-            case var _ when _dueInDays <= 0:
-                _riskIcon = Icons.Material.Filled.Error;
-                _riskIconColor = Color.Error;
-                break;
-            case var _ when _dueInDays >= 0 && _dueInDays <= 14:
-                _riskIcon = Icons.Material.Filled.Warning;
-                _riskIconColor = Color.Warning;
-                break;
+            _riskInfo = DateOnly.FromDateTime(ParticipantSummaryDto.RiskDue!.Value!).Humanize();
+            _riskTooltipText = String.Format("Due {0}", DateOnly.FromDateTime(ParticipantSummaryDto.RiskDue!.Value!));
+            int _dueInDays = ParticipantSummaryDto.RiskDueInDays!.Value!;
+            switch (_dueInDays)
+            {
+                case var _ when _dueInDays <= 0:
+                    _riskIcon = Icons.Material.Filled.Error;
+                    _riskIconColor = Color.Error;
+                    break;
+                case var _ when _dueInDays >= 0 && _dueInDays <= 14:
+                    _riskIcon = Icons.Material.Filled.Warning;
+                    _riskIconColor = Color.Warning;
+                    break;
+            }
         }
     }
 
@@ -114,6 +117,7 @@ public partial class CaseSummary
     private bool HasRiskInformation() => ParticipantSummaryDto.LatestRisk is not null;
     private bool CanAddRiskInformation() => HasRiskInformation() is false;
     private bool CanReviewRiskInformation() => HasRiskInformation();
+
 
     public async Task ReviewRiskInformation()
     {

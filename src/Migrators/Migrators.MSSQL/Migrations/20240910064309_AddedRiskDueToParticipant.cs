@@ -6,27 +6,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedDueOnToRisk : Migration
+    public partial class AddedRiskDueToParticipant : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<DateTime>(
-                name: "DueOn",
+                name: "RiskDue",
                 schema: "Participant",
-                table: "Risk",
+                table: "Participant",
                 type: "datetime2",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+                nullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "DueOn",
+                name: "RiskDue",
                 schema: "Participant",
-                table: "Risk");
+                table: "Participant");
         }
     }
 }
