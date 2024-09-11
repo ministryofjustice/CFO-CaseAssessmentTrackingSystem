@@ -133,8 +133,10 @@ public static class AddRightToWork
             if (file.ContentType != "application/pdf")
                 return false;
 
+            long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.Consent.MaximumSizeInMegabytes).Bytes);
+
             // Check file signature (magic numbers)
-            using (var stream = file.OpenReadStream())
+            using (var stream = file.OpenReadStream(maxSizeBytes))
             {
                 byte[] buffer = new byte[4];
                 await stream.ReadAsync(buffer, 0, 4, cancellationToken);
