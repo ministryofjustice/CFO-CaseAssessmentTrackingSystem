@@ -1,4 +1,4 @@
-﻿using Amazon.Runtime;
+using Amazon.Runtime;
 using Amazon.S3;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
@@ -370,6 +370,18 @@ public static class DependencyInjection
                     .WithIdentity($"{DisableDormantAccountsJob.Key}-trigger")
                     .WithDescription(DisableDormantAccountsJob.Description)
                     .WithCronSchedule(disableDormantAccountsJobOptions.CronSchedule));
+            }
+
+            if (options.GetSection(NotifyAccountDeactivationJob.Key.Name).Get<JobOptions>() is
+                { Enabled: true } notifyAccountDeactivationJobOptions)
+            {
+                quartz.AddJob<NotifyAccountDeactivationJob>(opts => opts.WithIdentity(NotifyAccountDeactivationJob.Key));
+
+                quartz.AddTrigger(opts => opts
+                    .ForJob(NotifyAccountDeactivationJob.Key)
+                    .WithIdentity($"{NotifyAccountDeactivationJob.Key}-trigger")
+                    .WithDescription(NotifyAccountDeactivationJob.Description)
+                    .WithCronSchedule(notifyAccountDeactivationJobOptions.CronSchedule));
             }
         });
 
