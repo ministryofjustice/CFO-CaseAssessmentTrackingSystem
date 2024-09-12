@@ -4,7 +4,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.PathwayPlans.Commands;
 
-public class ReviewTask
+public class CompleteTask
 {
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command : IRequest<Result>
@@ -40,7 +40,7 @@ public class ReviewTask
             var task = objective.Tasks.FirstOrDefault(x => x.Id == request.TaskId)
                 ?? throw new NotFoundException("Cannot find task", request.TaskId);
 
-            task.Review(request.Reason, currentUserService.UserId!, request.Justification);
+            task.Complete(request.Reason, currentUserService.UserId!, request.Justification);
 
             return Result.Success();
         }

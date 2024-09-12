@@ -13,7 +13,7 @@
         }
         else
         {
-            <MudIconButton OnClick="Review" Icon="@Icons.Material.Filled.CheckBoxOutlineBlank" />
+            <MudIconButton OnClick="Complete" Icon="@Icons.Material.Filled.CheckBoxOutlineBlank" />
         }
     </AvatarContent>
     <ChildContent>
@@ -111,22 +111,22 @@
     [Parameter]
     public EventCallback OnChange { get; set; }
 
-    public async Task Review()
+    public async Task Complete()
     {
-        var command = new ReviewTask.Command()
+        var command = new CompleteTask.Command()
         {
             TaskId = Model.Id,
             ObjectiveId = Model.ObjectiveId,
             PathwayPlanId = PathwayPlanId
         };
 
-        var parameters = new DialogParameters<ReviewTaskDialog>()
+        var parameters = new DialogParameters<CompleteTaskDialog>()
         {
             { x => x.Model, command }
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
-        var dialog = DialogService.Show<ReviewTaskDialog>("Complete task", parameters, options);
+        var dialog = DialogService.Show<CompleteTaskDialog>("Complete task", parameters, options);
 
         var state = await dialog.Result;
 

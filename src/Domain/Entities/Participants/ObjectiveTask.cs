@@ -13,7 +13,7 @@ public class ObjectiveTask : BaseAuditableEntity<Guid>
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public void Review(CompletionStatus status, string completedBy, string? justification = null)
+    public void Complete(CompletionStatus status, string completedBy, string? justification = null)
     {
         Completed = DateTime.UtcNow;
         Justification = justification;
