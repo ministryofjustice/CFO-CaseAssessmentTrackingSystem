@@ -162,7 +162,7 @@ public static class SubmitToProviderQa
         private async Task<bool> MustBeConfirmed(string participantId, CancellationToken cancellationToken)
         {
             var result = await _unitOfWork.DbContext.Participants.SingleOrDefaultAsync(p => p.Id == participantId);
-            return result?.EnrolmentStatus == EnrolmentStatus.EnrolmentConfirmedStatus;
+            return result?.EnrolmentStatus == EnrolmentStatus.EnrollingStatus;
         }
     }
 }

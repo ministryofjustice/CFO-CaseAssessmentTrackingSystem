@@ -5,8 +5,8 @@ namespace Cfo.Cats.Domain.Common.Enums;
 public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
 {
 
-    public static readonly EnrolmentStatus PendingStatus = new Pending();
-    public static readonly EnrolmentStatus EnrolmentConfirmedStatus = new EnrolmentConfirmed();
+    public static readonly EnrolmentStatus IdentifiedStatus = new Identified();
+    public static readonly EnrolmentStatus EnrollingStatus = new Enrolling();
     public static readonly EnrolmentStatus SubmittedToProviderStatus = new SubmittedToProvider();
     public static readonly EnrolmentStatus SubmittedToAuthorityStatus = new SubmittedToAuthority();
     public static readonly EnrolmentStatus ApprovedStatus = new Approved();
@@ -37,14 +37,14 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
             .Any(e => next == e);
     }
 
-    private sealed class Pending : EnrolmentStatus
+    private sealed class Identified : EnrolmentStatus
     {
 
-        public Pending()
-            : base("Pending", 0) { }
+        public Identified()
+            : base("Identified", 0) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions() 
-            => [ ArchivedStatus, EnrolmentConfirmedStatus];
+            => [ ArchivedStatus, EnrollingStatus];
     }
 
     private sealed class SubmittedToProvider : EnrolmentStatus
@@ -53,7 +53,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
             : base("Submitted to Provider", 1) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions()
-            => [ArchivedStatus, EnrolmentConfirmedStatus, SubmittedToAuthorityStatus];
+            => [ArchivedStatus, EnrollingStatus, SubmittedToAuthorityStatus];
         
         public override bool StatusSupportsReassessment() => false;
 
@@ -90,7 +90,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
             : base("Archived", 4) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions() =>
-            [PendingStatus];
+            [IdentifiedStatus];
 
     }
 
@@ -103,10 +103,10 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
             [ ArchivedStatus, ApprovedStatus ];
     }
 
-    private sealed class EnrolmentConfirmed : EnrolmentStatus
+    private sealed class Enrolling : EnrolmentStatus
     {
-        public EnrolmentConfirmed()
-            : base("Enrolment Confirmed", 6) { }
+        public Enrolling()
+            : base("Enrolling", 6) { }
 
         protected override EnrolmentStatus[] GetAllowedTransitions()
             => [ArchivedStatus, SubmittedToProviderStatus];

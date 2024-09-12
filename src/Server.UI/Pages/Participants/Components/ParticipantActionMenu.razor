@@ -26,16 +26,16 @@
             <MudMenuItem Icon="@Icons.Material.Filled.HideSource" IconColor="Color.Error" OnClick="Suspend">Suspend</MudMenuItem>
         }
 
-        @if (Participant.EnrolmentStatus == EnrolmentStatus.EnrolmentConfirmedStatus)
+        @if (Participant.EnrolmentStatus == EnrolmentStatus.EnrollingStatus)
         {
             <MudMenuItem Icon="@Icons.Material.Filled.Send" IconColor="Color.Primary" OnClick="SubmitToPqa">Submit to Provider QA</MudMenuItem>
         }
 
-        @if (Participant.EnrolmentStatus == EnrolmentStatus.EnrolmentConfirmedStatus)
+        @if (Participant.EnrolmentStatus == EnrolmentStatus.EnrollingStatus)
         {
             <MudMenuItem Icon="@Icons.Material.Filled.HomeWork" IconColor="Color.Primary" OnClick="OpenRightToWorkDialog">@ConstantString.AddRightToWork</MudMenuItem>
         }
-        @if (Participant.EnrolmentStatus == EnrolmentStatus.EnrolmentConfirmedStatus)
+        @if (Participant.EnrolmentStatus == EnrolmentStatus.EnrollingStatus)
         {
             <MudMenuItem Icon="@Icons.Material.Filled.Approval" IconColor="Color.Primary" OnClick="OpenConsentDialog">@ConstantString.AddConsent</MudMenuItem>
         }

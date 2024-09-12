@@ -7,7 +7,7 @@ public class ParticipantCreated(IUnitOfWork unitOfWork) : INotificationHandler<P
 {
     public async Task Handle(ParticipantCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var history = ParticipantEnrolmentHistory.Create(notification.Item.Id, EnrolmentStatus.PendingStatus);
+        var history = ParticipantEnrolmentHistory.Create(notification.Item.Id, EnrolmentStatus.IdentifiedStatus);
         await unitOfWork.DbContext.ParticipantEnrolmentHistories.AddAsync(history, cancellationToken);
     }
 }

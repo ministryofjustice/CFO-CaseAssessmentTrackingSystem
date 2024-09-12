@@ -37,12 +37,12 @@ public static class GetDashboard
                     dto.ApprovedCases = result.Count;
                     continue;
                 }
-                if (result.Status == EnrolmentStatus.PendingStatus)
+                if (result.Status == EnrolmentStatus.IdentifiedStatus)
                 {
                     dto.PendingCases = result.Count;
                     continue;
                 }
-                if(result.Status == EnrolmentStatus.EnrolmentConfirmedStatus)
+                if(result.Status == EnrolmentStatus.EnrollingStatus)
                 {
                     dto.ConfirmedCases = result.Count;
                     continue;
