@@ -3,7 +3,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.PathwayPlans.Commands;
 
-public static class ReviewObjective
+public static class CompleteObjective
 {
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command : IRequest<Result>
@@ -31,7 +31,7 @@ public static class ReviewObjective
             var objective = pathwayPlan.Objectives.FirstOrDefault(o => o.Id == request.ObjectiveId)
                 ?? throw new NotFoundException("Cannot find objective", request.ObjectiveId);
 
-            objective.Review(request.Reason, currentUserService.UserId!, request.Justification);
+            objective.Complete(request.Reason, currentUserService.UserId!, request.Justification);
 
             return Result.Success();
         }

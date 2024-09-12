@@ -49,11 +49,11 @@ public class Objective : BaseAuditableEntity<Guid>
         Description = description;
     }
 
-    public void Review(CompletionStatus status, string completedBy, string? justification)
+    public void Complete(CompletionStatus status, string completedBy, string? justification)
     {
         foreach (var task in _tasks.Where(task => task.IsCompleted is false))
         {
-            task.Review(status, completedBy, justification);
+            task.Complete(status, completedBy, justification);
         }
 
         CompletedStatus = status;
