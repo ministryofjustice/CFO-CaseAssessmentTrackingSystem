@@ -21,10 +21,12 @@
         return status switch
         {
             _ when status == EnrolmentStatus.IdentifiedStatus  => Icons.Material.Filled.Autorenew,
-            _ when status == EnrolmentStatus.IdentifiedStatus => Icons.Material.Filled.Description,
-            _ when status == EnrolmentStatus.IdentifiedStatus => Icons.Material.Filled.AssignmentTurnedIn,
-            _ when status == EnrolmentStatus.IdentifiedStatus => Icons.Material.Filled.CheckCircle,
-            _ when status == EnrolmentStatus.IdentifiedStatus => Icons.Material.Filled.Block,
+            _ when status == EnrolmentStatus.EnrollingStatus => Icons.Material.Filled.Description,
+            _ when status == EnrolmentStatus.SubmittedToProviderStatus => Icons.Material.Filled.AssignmentTurnedIn,
+            _ when status == EnrolmentStatus.SubmittedToAuthorityStatus => Icons.Material.Filled.AssignmentTurnedIn,
+            _ when status == EnrolmentStatus.ApprovedStatus => Icons.Material.Filled.Check,
+            _ when status == EnrolmentStatus.ArchivedStatus => Icons.Material.Filled.Block,
+            _ when status == EnrolmentStatus.DormantStatus => Icons.Material.Filled.Cancel,
             _ => Icons.Material.Filled.HelpOutline
         };
     }
