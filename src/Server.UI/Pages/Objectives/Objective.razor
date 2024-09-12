@@ -51,8 +51,8 @@
         <div class="d-flex align-center ml-2 mt-4 mb-2">
             @if(Model.IsCompleted is false)
             {
-                <MudTooltip Text="Review">
-                    <MudIconButton OnClick="Review" Icon="@Icons.Material.Filled.Lock" Disabled="Model.IsCompleted" />
+                <MudTooltip Text="Complete">
+                    <MudIconButton OnClick="Complete" Icon="@Icons.Material.Filled.Lock" Disabled="Model.IsCompleted" />
                 </MudTooltip>
                 <MudTooltip Text="Rename">
                     <MudIconButton OnClick="Rename" Icon="@Icons.Material.Filled.EditNote" Disabled="Model.IsCompleted" />
@@ -83,21 +83,21 @@
     [Parameter]
     public EventCallback OnChange { get; set; }
 
-    public async Task Review()
+    public async Task Complete()
     {
-        var command = new ReviewObjective.Command()
+        var command = new CompleteObjective.Command()
         {
             PathwayPlanId = Model.PathwayPlanId,
             ObjectiveId = Model.Id
         };
 
-        var parameters = new DialogParameters<ReviewObjectiveDialog>()
+        var parameters = new DialogParameters<CompleteObjectiveDialog>()
         {
             { x => x.Model, command }
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
-        var dialog = DialogService.Show<ReviewObjectiveDialog>("Review objective", parameters, options);
+        var dialog = DialogService.Show<CompleteObjectiveDialog>("Complete objective", parameters, options);
 
         var state = await dialog.Result;
 

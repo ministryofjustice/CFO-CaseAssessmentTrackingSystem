@@ -36,7 +36,7 @@
     [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter, EditorRequired]
-    public required ReviewTask.Command Model { get; set; }
+    public required CompleteTask.Command Model { get; set; }
 
     private void Cancel()
     {
