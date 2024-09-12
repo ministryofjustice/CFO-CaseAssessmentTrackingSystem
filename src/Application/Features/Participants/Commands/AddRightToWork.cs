@@ -49,7 +49,7 @@ public static class AddRightToWork
                 $"Right to work evidence for {request.ParticipantId}",
                 DocumentType.PDF);
 
-            long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.Consent.MaximumSizeInMegabytes).Bytes);
+            long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.RightToWork.MaximumSizeInMegabytes).Bytes);
             await using var stream = request.Document.OpenReadStream(maxSizeBytes);
             using var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream, cancellationToken);
@@ -134,7 +134,7 @@ public static class AddRightToWork
             if (file.ContentType != "application/pdf")
                 return false;
 
-            long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.Consent.MaximumSizeInMegabytes).Bytes);
+            long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.RightToWork.MaximumSizeInMegabytes).Bytes);
 
             // Check file signature (magic numbers)
             using (var stream = file.OpenReadStream(maxSizeBytes))
