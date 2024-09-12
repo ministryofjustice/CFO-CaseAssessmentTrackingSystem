@@ -85,7 +85,7 @@
                          Dense="true"
                          EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                     
-                    @if (context.Item.EnrolmentStatus == EnrolmentStatus.PendingStatus)
+                    @if (context.Item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus)
                     {
                         // we are pending. Allow a continuation of the enrolment process.
                         <MudMenuItem OnClick="@(()=> OnResumeEnrolment(context.Item))">
