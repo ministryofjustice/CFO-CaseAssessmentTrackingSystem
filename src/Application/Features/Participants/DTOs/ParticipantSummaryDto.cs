@@ -33,7 +33,7 @@ public class ParticipantSummaryDto
     /// <summary>
     ///  The current enrolment status of the participant
     /// </summary>
-    public EnrolmentStatus EnrolmentStatus { get; set; } = EnrolmentStatus.PendingStatus;
+    public EnrolmentStatus EnrolmentStatus { get; set; } = EnrolmentStatus.IdentifiedStatus;
     
     /// <summary>
     /// The person who "owns" this participant's case. Usually the support worker.

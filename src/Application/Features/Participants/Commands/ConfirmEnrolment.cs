@@ -23,7 +23,7 @@ public static class ConfirmEnrolment
                 return Result.Failure("Participant not found");
             }
 
-            participant.TransitionTo(EnrolmentStatus.EnrolmentConfirmedStatus);
+            participant.TransitionTo(EnrolmentStatus.EnrollingStatus);
 
             return Result.Success();
         }

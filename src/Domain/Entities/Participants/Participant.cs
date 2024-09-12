@@ -39,7 +39,7 @@ public class Participant : OwnerPropertyEntity<string>
         Participant p = new()
         {
             ConsentStatus = ConsentStatus.PendingStatus,
-            EnrolmentStatus = EnrolmentStatus.PendingStatus,
+            EnrolmentStatus = EnrolmentStatus.IdentifiedStatus,
             Id = id,
             DateOfBirth = DateOnly.FromDateTime(dateOfBirth),
             FirstName = firstName,

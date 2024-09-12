@@ -87,7 +87,7 @@
                     </MudItem>
                 </MudGrid>
 
-                @if(_participant.EnrolmentStatus != EnrolmentStatus.PendingStatus)
+                @if(_participant.EnrolmentStatus != EnrolmentStatus.IdentifiedStatus)
                 {
                     <RagBar ParticipantId="@Id" />
                     <ParticipantActionMenu OnUpdate="Refresh" />
