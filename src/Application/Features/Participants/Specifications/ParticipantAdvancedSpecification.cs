@@ -11,8 +11,8 @@ public sealed class ParticipantAdvancedSpecification : Specification<Participant
                           && p.EnrolmentStatus != EnrolmentStatus.DormantStatus.Value, 
                             filter.ListView == ParticipantListView.Default);
         
-        Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus.Value, filter.ListView == ParticipantListView.Pending);
-        Query.Where(p => p.EnrolmentStatus == EnrolmentStatus.EnrollingStatus.Value, filter.ListView == ParticipantListView.EnrolmentConfirmed);
+        Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus.Value, filter.ListView == ParticipantListView.Identified);
+        Query.Where(p => p.EnrolmentStatus == EnrolmentStatus.EnrollingStatus.Value, filter.ListView == ParticipantListView.Enrolling);
         Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus.Value, filter.ListView == ParticipantListView.SubmittedToProvider);
         Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus.Value, filter.ListView == ParticipantListView.SubmittedToQa);
         Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus.Value || p.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus.Value, filter.ListView == ParticipantListView.SubmittedToAny);
