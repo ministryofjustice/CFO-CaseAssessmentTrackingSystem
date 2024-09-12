@@ -146,20 +146,20 @@ public static class SubmitToProviderQa
         }
     }
 
-    public class E_ParticipantStatusShouldBeConfirmed : AbstractValidator<Command>
+    public class E_ParticipantStatusShouldBeEnrollingStatus : AbstractValidator<Command>
     {
         private IUnitOfWork _unitOfWork;
 
-        public E_ParticipantStatusShouldBeConfirmed(IUnitOfWork unitOfWork)
+        public E_ParticipantStatusShouldBeEnrollingStatus(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
             RuleFor(c => c.ParticipantId)
-                .MustAsync(MustBeConfirmed)
-                .WithMessage("Enrolment status must be confirmed");
+                .MustAsync(MustBeInEnrollingStatus)
+                .WithMessage("Participant must be in Enrolling status");
         }
 
-        private async Task<bool> MustBeConfirmed(string participantId, CancellationToken cancellationToken)
+        private async Task<bool> MustBeInEnrollingStatus(string participantId, CancellationToken cancellationToken)
         {
             var result = await _unitOfWork.DbContext.Participants.SingleOrDefaultAsync(p => p.Id == participantId);
             return result?.EnrolmentStatus == EnrolmentStatus.EnrollingStatus;

@@ -12,8 +12,8 @@ public class ParticipantAdvancedFilter
 public enum ParticipantListView
 {
     [Description("Default")] Default,
-    [Description("Pending")] Pending,
-    [Description("Enrolment Confirmed")] EnrolmentConfirmed,
+    [Description("Identified")] Identified,
+    [Description("Enrolling")] Enrolling,
     [Description("Submitted To Provider")] SubmittedToProvider,
     [Description("Submitted To QA")] SubmittedToQa,
     [Description("Any QA")] SubmittedToAny,

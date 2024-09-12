@@ -87,7 +87,7 @@
                     
                     @if (context.Item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus)
                     {
-                        // we are pending. Allow a continuation of the enrolment process.
+                        // Candidate has been identified. Allow a continuation of the enrolment process.
                         <MudMenuItem OnClick="@(()=> OnResumeEnrolment(context.Item))">
                             @ConstantString.ResumeEnrolment
                         </MudMenuItem>

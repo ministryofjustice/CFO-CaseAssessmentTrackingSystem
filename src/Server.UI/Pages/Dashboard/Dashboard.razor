@@ -18,14 +18,14 @@
                 <MudCardHeader>
                     <CardHeaderContent>
                         <MudText Typo="Typo.h6">
-                            Pending Cases
+                            Identified Cases
                         </MudText>
                     </CardHeaderContent>
                 </MudCardHeader>
                 <MudCardContent>
                     <MudText>Your cases that are awaiting enrolment confirmation</MudText>
                     <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.PendingCases
+                        @_dashboardDto?.IdentifiedCases
                     </MudText>
                 </MudCardContent>
             </MudCard>
@@ -42,7 +42,7 @@
                 <MudCardContent>
                     <MudText>Your cases that are awaiting submission to PQA</MudText>
                     <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.ConfirmedCases
+                        @_dashboardDto?.EnrollingCases
                     </MudText>
                 </MudCardContent>
             </MudCard>

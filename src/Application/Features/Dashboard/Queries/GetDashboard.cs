@@ -39,12 +39,12 @@ public static class GetDashboard
                 }
                 if (result.Status == EnrolmentStatus.IdentifiedStatus)
                 {
-                    dto.PendingCases = result.Count;
+                    dto.IdentifiedCases = result.Count;
                     continue;
                 }
                 if(result.Status == EnrolmentStatus.EnrollingStatus)
                 {
-                    dto.ConfirmedCases = result.Count;
+                    dto.EnrollingCases = result.Count;
                     continue;
                 }
                 if (result.Status == EnrolmentStatus.SubmittedToProviderStatus)
@@ -76,8 +76,8 @@ public static class GetDashboard
 
 public class DashboardDto
 {
-    public int PendingCases { get; set; }
-    public int ConfirmedCases { get; set; }
+    public int IdentifiedCases { get; set; }
+    public int EnrollingCases { get; set; }
     public int CasesAtPqa { get; set; }
     public int CasesAtCfo { get; set; }
     public int ApprovedCases { get; set; }
