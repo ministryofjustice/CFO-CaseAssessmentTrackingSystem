@@ -10,7 +10,7 @@ public class ConsentCreated(IUnitOfWork unitOfWork):INotificationHandler<Consent
             .Where(p => p.Id == notification.ParticipantId)
             .FirstOrDefaultAsync(cancellationToken);
 
-        if (participant is not null && participant.Consents.Count == 1)
+        if (participant is { Consents.Count: 1 })
         {
             //Only on first Consent submit
             participant.SetRiskDue(notification.ConsentDate.AddDays(14));
