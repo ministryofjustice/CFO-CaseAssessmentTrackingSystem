@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Cfo.Cats.Infrastructure.Constants.Database;
 
@@ -51,17 +51,13 @@ internal static class DatabaseConstants
 
         public const string PasswordHistory = nameof(PasswordHistory);
 
-<<<<<<< HEAD
         public const string AccessAuditTrail = nameof(AccessAuditTrail);
 
         public const string HubInduction = nameof(HubInduction);
         public const string WingInduction = nameof(WingInduction);
         public const string WingInductionPhase = nameof(WingInductionPhase);
 
-=======
         public const string Notification = nameof(Notification);
->>>>>>> 8170736 (start of notifications)
-
     }
     public static class Schemas
     {
