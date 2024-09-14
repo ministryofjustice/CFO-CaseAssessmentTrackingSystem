@@ -8,7 +8,11 @@ using Cfo.Cats.Domain.ValueObjects;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+<<<<<<< HEAD
 using Cfo.Cats.Domain.Entities.Inductions;
+=======
+using Cfo.Cats.Domain.Entities.Notifications;
+>>>>>>> 8170736 (start of notifications)
 
 namespace Cfo.Cats.Application.Common.Interfaces;
 
@@ -56,11 +60,15 @@ public interface IApplicationDbContext
 
     DbSet<IdentityAuditTrail> IdentityAuditTrails { get; }
 
+<<<<<<< HEAD
     DbSet<ParticipantAccessAuditTrail> AccessAuditTrails { get; }
 
     DbSet<HubInduction> HubInductions { get; }
 
     DbSet<WingInduction> WingInductions { get; }
+=======
+    DbSet<Notification> Notifications { get; }
+>>>>>>> 8170736 (start of notifications)
 
 }
 

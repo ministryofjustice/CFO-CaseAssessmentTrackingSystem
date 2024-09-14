@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240914140018_Notifications")]
+    partial class Notifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -430,120 +433,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.ToTable("IdentityAuditTrail", "Audit");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Inductions.HubInduction", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("Created")
-                        .IsRequired()
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("EditorId")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<DateTime>("InductionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
-
-                    b.HasKey("Id");
-
-                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
-
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("EditorId");
-
-                    b.HasIndex("LocationId");
-
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("ParticipantId", "Created");
-
-                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("ParticipantId", "Created"));
-
-                    b.ToTable("HubInduction", "Induction");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Inductions.WingInduction", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("Created")
-                        .IsRequired()
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("EditorId")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<DateTime>("InductionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
-
-                    b.HasKey("Id");
-
-                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
-
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("EditorId");
-
-                    b.HasIndex("LocationId");
-
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("ParticipantId", "Created");
-
-                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("ParticipantId", "Created"));
-
-                    b.ToTable("WingInduction", "Induction");
-                });
-
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.KeyValue", b =>
                 {
                     b.Property<int>("Id")
@@ -590,30 +479,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.ToTable("KeyValue", "Configuration");
                 });
 
-<<<<<<< HEAD
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.ParticipantAccessAuditTrail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("AccessDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("RequestType")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<string>("UserId")
-=======
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Notifications.Notification", b =>
                 {
                     b.Property<string>("Id")
@@ -625,18 +490,10 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
->>>>>>> 8170736 (start of notifications)
                         .IsRequired()
                         .HasMaxLength(36)
                         .HasColumnType("nvarchar(36)");
 
-<<<<<<< HEAD
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.ToTable("AccessAuditTrail", "Audit");
-=======
                     b.Property<string>("Details")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -674,7 +531,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Notification", "Identity");
->>>>>>> 8170736 (start of notifications)
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.EnrolmentEscalationQueueEntry", b =>
@@ -857,9 +713,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsEscalated")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
@@ -922,8 +775,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("EnrolmentLocationJustification")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EnrolmentStatus")
                         .HasColumnType("int");
@@ -953,28 +805,17 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Nationality")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<string>("OwnerId")
                         .HasMaxLength(36)
                         .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("ReferralComments")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReferralSource")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("RegistrationDetailsJson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("RiskDue")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("_currentLocationId")
                         .HasColumnType("int")
@@ -1101,6 +942,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("nvarchar(36)");
 
+                    b.Property<bool>("DeclarationSigned")
+                        .HasColumnType("bit");
+
                     b.Property<bool?>("IsRelevantToCommunity")
                         .HasColumnType("bit");
 
@@ -1122,6 +966,12 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.Property<DateTime?>("LicenseEnd")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("MappaCategory")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MappaLevel")
+                        .HasColumnType("int");
 
                     b.Property<int?>("NSDCase")
                         .HasColumnType("int");
@@ -1145,9 +995,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<string>("ReferrerName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RegistrationDetailsJson")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ReviewJustification")
                         .HasColumnType("nvarchar(max)");
 
@@ -1164,6 +1011,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("RiskToKnownAdultInCustody")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RiskToOtherPrisonersInCommunity")
                         .HasColumnType("int");
 
                     b.Property<int?>("RiskToOtherPrisonersInCustody")
@@ -1362,9 +1212,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.Property<bool>("IsLive")
                         .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastLogin")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -1822,118 +1669,12 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("Tenant");
                 });
 
-<<<<<<< HEAD
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Inductions.HubInduction", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-=======
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Notifications.Notification", b =>
                 {
->>>>>>> 8170736 (start of notifications)
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
                         .WithMany()
                         .HasForeignKey("EditorId");
 
-<<<<<<< HEAD
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Editor");
-
-                    b.Navigation("Location");
-
-                    b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Inductions.WingInduction", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
-                        .WithMany()
-                        .HasForeignKey("EditorId");
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.OwnsMany("Cfo.Cats.Domain.Entities.Inductions.InductionPhase", "Phases", b1 =>
-                        {
-                            b1.Property<Guid>("WingInductionId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("Number")
-                                .HasColumnType("int");
-
-                            b1.Property<DateTime?>("CompletedDate")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<DateTime>("StartDate")
-                                .HasColumnType("datetime2");
-
-                            b1.HasKey("WingInductionId", "Number");
-
-                            b1.ToTable("WingInductionPhase", "Induction");
-
-                            b1.WithOwner()
-                                .HasForeignKey("WingInductionId");
-                        });
-
-                    b.Navigation("Editor");
-
-                    b.Navigation("Location");
-
-                    b.Navigation("Owner");
-
-                    b.Navigation("Phases");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.ParticipantAccessAuditTrail", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-=======
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
@@ -1943,7 +1684,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("Editor");
 
                     b.Navigation("Owner");
->>>>>>> 8170736 (start of notifications)
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.EnrolmentEscalationQueueEntry", b =>
@@ -1999,8 +1739,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.Property<string>("Message")
                                 .IsRequired()
-                                .HasMaxLength(1000)
-                                .HasColumnType("nvarchar(1000)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<string>("TenantId")
                                 .IsRequired()
@@ -2096,8 +1836,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.Property<string>("Message")
                                 .IsRequired()
-                                .HasMaxLength(1000)
-                                .HasColumnType("nvarchar(1000)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<string>("TenantId")
                                 .IsRequired()
@@ -2193,8 +1933,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.Property<string>("Message")
                                 .IsRequired()
-                                .HasMaxLength(1000)
-                                .HasColumnType("nvarchar(1000)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<string>("TenantId")
                                 .IsRequired()
@@ -2290,8 +2030,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.Property<string>("Message")
                                 .IsRequired()
-                                .HasMaxLength(1000)
-                                .HasColumnType("nvarchar(1000)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<string>("TenantId")
                                 .IsRequired()
@@ -2480,8 +2220,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                             b1.Property<string>("Message")
                                 .IsRequired()
-                                .HasMaxLength(1000)
-                                .HasColumnType("nvarchar(1000)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<string>("ParticipantId")
                                 .IsRequired()
@@ -2830,13 +2570,11 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Risk", b =>
                 {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", "Participant")
+                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
                         .WithMany()
                         .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Participant");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Timeline", b =>
