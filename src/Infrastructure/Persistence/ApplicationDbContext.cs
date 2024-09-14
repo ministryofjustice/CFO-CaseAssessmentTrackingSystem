@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Assessments;
@@ -8,11 +8,8 @@ using Cfo.Cats.Domain.Entities.Bios;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Persistence.Configurations.Enrolments;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
-<<<<<<< HEAD
 using Cfo.Cats.Domain.Entities.Inductions;
-=======
 using Cfo.Cats.Domain.Entities.Notifications;
->>>>>>> 8170736 (start of notifications)
 
 namespace Cfo.Cats.Infrastructure.Persistence;
 
@@ -68,17 +65,13 @@ public class ApplicationDbContext
 
     public DbSet<IdentityAuditTrail> IdentityAuditTrails => Set<IdentityAuditTrail>();
 
-<<<<<<< HEAD
     public DbSet<HubInduction> HubInductions => Set<HubInduction>();
 
     public DbSet<WingInduction> WingInductions => Set<WingInduction>();
 
     public DbSet<ParticipantAccessAuditTrail> AccessAuditTrails => Set<ParticipantAccessAuditTrail>();
     
-=======
     public DbSet<Notification> Notifications => Set<Notification>();
-
->>>>>>> 8170736 (start of notifications)
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
