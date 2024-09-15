@@ -1,5 +1,8 @@
-﻿@using Cfo.Cats.Server.UI.Services.Notifications
-@inherits MudComponentBase
+﻿@using Cfo.Cats.Application.Features.Notifications.DTOs
+@using Cfo.Cats.Application.Features.Notifications.Queries
+@using Cfo.Cats.Server.UI.Services.Notifications
+@using Humanizer
+@inherits CatsComponentBase
 
 @inject INotificationService NotificationService
 @inject IStringLocalizer<HeaderMenu> L
@@ -15,9 +18,9 @@
             {
                 @foreach (var (message, isRead) in _messages.Take(5))
                 {
-                    <MudMenuItem Class="px-2 py-0 rounded" Href="@($"/public/index/{message.Id}")">
-                        <MudText Typo="Typo.subtitle2">@message.Title</MudText>
-                        <MudText Typo="Typo.body2">@($"{message.Authors.FirstOrDefault()?.DisplayName} • {message.PublishDate:MM/dd/yyyy}")</MudText>
+                    <MudMenuItem Class="px-2 py-0 rounded" Href="/">
+                        <MudText Typo="Typo.subtitle2">@message.Heading</MudText>
+                        <MudText Typo="Typo.body2">@($"{message.NotificationDate.Humanize()}")</MudText>
                     </MudMenuItem>
                     <MudDivider Class="my-2"/>
                 }
@@ -34,21 +37,45 @@
 
 @code
 {
+    private UserProfile? UserProfile { get; set; }
+    
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+    
     private bool _newNotificationsAvailable = false;
-    private IDictionary<NotificationMessage, bool>? _messages = null;
+    private IDictionary<NotificationDto, bool>? _messages = null;
 
     private async Task MarkNotificationAsRead()
     {
         await NotificationService.MarkNotificationsAsRead();
         _newNotificationsAvailable = false;
     }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        if (UserProfile is null)
+        {
+            var state = await AuthState;
+            this.UserProfile = state.User.GetUserProfileFromClaim();
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            _newNotificationsAvailable = await NotificationService.AreNewNotificationsAvailable();
-            _messages = await NotificationService.GetNotifications();
+            var mediator = GetNewMediator();
+            var query = new NotificationsWithPaginationQuery.Query()
+            {
+                CurrentUser = UserProfile,
+                PageSize = 5,
+                IncludeUnreadNotifications = false
+            };
+
+            var results = await mediator.Send(query);
+
+            _newNotificationsAvailable = results.TotalItems > 0;
+            _messages = results.Items.ToDictionary((i) => i, (i) => true);
+            
             StateHasChanged();
         }
 
