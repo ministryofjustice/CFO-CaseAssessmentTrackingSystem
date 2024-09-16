@@ -61,8 +61,10 @@
             </MudToggleGroup>
             <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToStaff)" hidden />
         </MudItem>
-        @* Risk to Other Prisoners *@
-        <MudDivider Class="mt-6" />
+        @if (Community == false)
+        {
+            @* Risk to Other Prisoners *@
+            <MudDivider Class="mt-6" />
         <MudItem xs="4">
             @Model.GetMemberDescription(x => x.RiskToOtherPrisoners)
         </MudItem>
@@ -76,6 +78,7 @@
             </MudToggleGroup>
             <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToOtherPrisoners)" hidden />
         </MudItem>
+        }
         @* Risk to Self *@
         <MudDivider Class="mt-6" />
         <MudItem xs="4">
@@ -97,4 +100,7 @@
 @code {
     [Parameter, EditorRequired]
     public required RiskDto.RiskDetail Model { get; set; }
+    [Parameter]
+    public bool Community { get; set; } = false;
+
 }
