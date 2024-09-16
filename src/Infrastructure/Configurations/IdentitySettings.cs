@@ -23,7 +23,7 @@ public class IdentitySettings : IIdentitySettings
     /// <summary>
     ///     Gets or sets a value indicating what the maximum required length of a password should be.
     /// </summary>
-    public int MaxLength { get; set; } = 16;
+    public int MaxLength { get; set; } = 128;
 
     /// <summary>
     ///     Gets or sets a value indicating whether the password should require a non-alphanumeric(not: 0-9, A-Z) character.
