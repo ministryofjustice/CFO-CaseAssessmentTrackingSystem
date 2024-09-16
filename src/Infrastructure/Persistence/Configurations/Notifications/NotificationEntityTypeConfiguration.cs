@@ -13,7 +13,19 @@ public class NotificationEntityTypeConfiguration : IEntityTypeConfiguration<Noti
             DatabaseConstants.Schemas.Identity
         );
 
-        builder.HasKey(x => x.Id);
+        builder.HasKey(x => x.Id).IsClustered(false);
+
+        //make the clustered index based on the created date
+        builder.HasIndex(x => new { 
+            x.Created
+        }, "clst_notification")
+        .IsClustered(true);
+
+        builder.HasIndex(x => new {
+            x.OwnerId,
+            x.Created,
+            x.ReadDate
+        });
 
         builder.Property(x => x.Id)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);

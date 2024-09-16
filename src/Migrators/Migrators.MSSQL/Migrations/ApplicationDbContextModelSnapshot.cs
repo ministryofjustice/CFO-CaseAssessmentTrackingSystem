@@ -616,9 +616,10 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 =======
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Notifications.Notification", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("Created")
                         .IsRequired()
@@ -669,9 +670,15 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasKey("Id");
 
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
+
                     b.HasIndex("EditorId");
 
-                    b.HasIndex("OwnerId");
+                    b.HasIndex("OwnerId", "Created", "ReadDate");
+
+                    b.HasIndex(new[] { "Created" }, "clst_notification");
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex(new[] { "Created" }, "clst_notification"));
 
                     b.ToTable("Notification", "Identity");
 >>>>>>> 8170736 (start of notifications)

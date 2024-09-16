@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     /// <inheritdoc />
-    public partial class Notifications : Migration
+    public partial class notifications : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +16,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 schema: "Identity",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", maxLength: 36, nullable: false),
                     Heading = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Details = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Link = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
@@ -30,7 +30,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Notification", x => x.Id);
+                    table.PrimaryKey("PK_Notification", x => x.Id)
+                        .Annotation("SqlServer:Clustered", false);
                     table.ForeignKey(
                         name: "FK_Notification_User_EditorId",
                         column: x => x.EditorId,
@@ -47,16 +48,23 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "clst_notification",
+                schema: "Identity",
+                table: "Notification",
+                column: "Created")
+                .Annotation("SqlServer:Clustered", true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Notification_EditorId",
                 schema: "Identity",
                 table: "Notification",
                 column: "EditorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notification_OwnerId",
+                name: "IX_Notification_OwnerId_Created_ReadDate",
                 schema: "Identity",
                 table: "Notification",
-                column: "OwnerId");
+                columns: new[] { "OwnerId", "Created", "ReadDate" });
         }
 
         /// <inheritdoc />

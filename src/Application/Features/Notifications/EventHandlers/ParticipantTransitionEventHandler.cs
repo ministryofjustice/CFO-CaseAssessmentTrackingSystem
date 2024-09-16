@@ -12,6 +12,7 @@ public class ParticipantTransitionEventHandler(IUnitOfWork unitOfWork) : INotifi
             string heading = "Enrolment Approved";
             string details = $"Enrolment for {notification.Item.FirstName} {notification.Item.LastName} has been approved.";
             var n = Notification.Create(heading, details, notification.Item.OwnerId!);
+            n.SetLink($"/pages/participants/{notification.Item.Id}");
             await unitOfWork.DbContext.Notifications.AddAsync(n);
         }
     }

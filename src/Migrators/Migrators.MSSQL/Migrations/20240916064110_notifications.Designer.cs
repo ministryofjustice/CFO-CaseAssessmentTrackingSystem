@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240914140018_Notifications")]
-    partial class Notifications
+    [Migration("20240916064110_notifications")]
+    partial class notifications
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -481,9 +481,10 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Notifications.Notification", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("Created")
                         .IsRequired()
@@ -526,9 +527,15 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasKey("Id");
 
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
+
                     b.HasIndex("EditorId");
 
-                    b.HasIndex("OwnerId");
+                    b.HasIndex("OwnerId", "Created", "ReadDate");
+
+                    b.HasIndex(new[] { "Created" }, "clst_notification");
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex(new[] { "Created" }, "clst_notification"));
 
                     b.ToTable("Notification", "Identity");
                 });

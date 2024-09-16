@@ -18,7 +18,7 @@
             {
                 @foreach (var (message, isRead) in _messages.Take(5))
                 {
-                    <MudMenuItem Class="px-2 py-0 rounded" Href="/">
+                    <MudMenuItem Class="px-2 py-0 rounded" Href="@( message.Link ?? "/pages/notifications" )">
                         <MudText Typo="Typo.subtitle2">@message.Heading</MudText>
                         <MudText Typo="Typo.body2">@($"{message.NotificationDate.Humanize()}")</MudText>
                     </MudMenuItem>
@@ -68,7 +68,9 @@
             {
                 CurrentUser = UserProfile,
                 PageSize = 5,
-                IncludeUnreadNotifications = false
+                IncludeUnreadNotifications = false,
+                SortDirection = "desc",
+                OrderBy = "Created"
             };
 
             var results = await mediator.Send(query);
