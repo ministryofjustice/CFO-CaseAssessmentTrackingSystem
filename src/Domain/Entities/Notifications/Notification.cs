@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Notifications;
 
-public class Notification : OwnerPropertyEntity<string>
+public class Notification : OwnerPropertyEntity<Guid>
 {
     #pragma warning disable CS8618
     private Notification()
@@ -13,6 +13,7 @@ public class Notification : OwnerPropertyEntity<string>
     
     private Notification(string heading, string details, string userId)
     {
+        this.Id = Guid.NewGuid();
         this.Heading = heading;
         this.Details = details;
         this.OwnerId = userId;
