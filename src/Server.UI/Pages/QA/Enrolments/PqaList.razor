@@ -103,15 +103,16 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        @*<TemplateColumn CellClass="width:60px;" Title="@ConstantString.Actions" Sortable="false">
-            <CellTemplate>
-                <MudLink OnClick="@(() => OnEdit(context.Item))" Color="Color.Primary">
-                    @ConstantString.View
-                </MudLink>
-              
-            </CellTemplate>
-        </TemplateColumn>*@
     </Columns>
+     <NoRecordsContent>
+        <MudText>@ConstantString.NoRecords</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>@ConstantString.Loading</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })"/>
+    </PagerContent>
 </MudDataGrid>
 
 @code {

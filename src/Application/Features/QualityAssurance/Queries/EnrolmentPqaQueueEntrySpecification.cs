@@ -19,6 +19,8 @@ public class EnrolmentQa1QueueEntrySpecification : Specification<EnrolmentQa1Que
         Query.Where(e => e.TenantId
                 .StartsWith(filter.CurrentUser!.TenantId!))
             .Where(e => e.IsCompleted == false);
+
+        Query.Where(e => e.ParticipantId.Contains(filter.Keyword!), string.IsNullOrWhiteSpace(filter.Keyword) == false);
     }
 }
 
