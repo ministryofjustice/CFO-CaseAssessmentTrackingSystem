@@ -77,7 +77,6 @@ public class Risk : BaseAuditableEntity<Guid>
     public RiskLevel? RiskToPublicInCommunity { get; private set; }
     public RiskLevel? RiskToKnownAdultInCommunity { get; private set; }
     public RiskLevel? RiskToStaffInCommunity { get; private set; }
-    public RiskLevel? RiskToOtherPrisonersInCommunity { get; private set; }
     public RiskLevel? RiskToSelfInCommunity { get; private set; }
     public string? SpecificRisk { get; private set; }
     public virtual Participant? Participant { get; private set; }

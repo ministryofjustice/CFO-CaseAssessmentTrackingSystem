@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240916105809_Risk_RemoveRiskToOtherPrisonersInCommunity")]
+    partial class Risk_RemoveRiskToOtherPrisonersInCommunity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -474,39 +477,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("KeyValue", "Configuration");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.ParticipantAccessAuditTrail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("AccessDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("RequestType")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.ToTable("AccessAuditTrail", "Audit");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.EnrolmentEscalationQueueEntry", b =>
@@ -1643,15 +1613,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("Owner");
 
                     b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.ParticipantAccessAuditTrail", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.EnrolmentEscalationQueueEntry", b =>
