@@ -176,6 +176,15 @@
             </CellTemplate>
         </PropertyColumn>
     </Columns>
+    <NoRecordsContent>
+        <MudText>@ConstantString.NoRecords</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>@ConstantString.Loading</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
+    </PagerContent>
 </MudDataGrid>
 
 @code {
