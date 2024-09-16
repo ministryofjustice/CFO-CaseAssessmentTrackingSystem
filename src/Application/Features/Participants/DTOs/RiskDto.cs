@@ -1,5 +1,6 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Entities.Participants;
+using Microsoft.AspNetCore.Components;
 using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Participants.DTOs;
@@ -91,7 +92,6 @@ public class RiskDto
                     RiskToKnownAdult = src.RiskToKnownAdultInCommunity,
                     RiskToStaff = src.RiskToStaffInCommunity,
                     RiskToSelf = src.RiskToSelfInCommunity,
-                    RiskToOtherPrisoners = src.RiskToOtherPrisonersInCommunity,
                 }))
                 .ForMember(dest => dest.CustodyRiskDetail, opt => opt.MapFrom(src => new RiskDetail
                 {
@@ -112,7 +112,6 @@ public class RiskDto
                 .ForPath(src => src.RiskToKnownAdultInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToKnownAdult))
                 .ForPath(src => src.RiskToStaffInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToStaff))
                 .ForPath(src => src.RiskToSelfInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToSelf))
-                .ForPath(src => src.RiskToOtherPrisonersInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToOtherPrisoners))
                 .ForPath(src => src.RiskToChildrenInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToChildren))
                 .ForPath(src => src.RiskToPublicInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToPublic))
                 .ForPath(src => src.RiskToKnownAdultInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToKnownAdult))

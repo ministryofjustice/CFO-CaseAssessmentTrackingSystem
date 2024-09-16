@@ -68,12 +68,6 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
                 x => RiskLevel.FromValue(x)
             );
 
-        builder.Property(x => x.RiskToOtherPrisonersInCommunity)
-            .HasConversion(
-                x => x!.Value,
-                x => RiskLevel.FromValue(x)
-            );
-
         builder.Property(x => x.RiskToPublicInCommunity)
             .HasConversion(
                 x => x!.Value,

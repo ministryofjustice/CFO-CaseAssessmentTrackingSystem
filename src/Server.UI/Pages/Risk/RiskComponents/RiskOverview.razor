@@ -39,7 +39,7 @@
                     @if (Model.IsRelevantToCommunity)
                     {
                         <MudExpansionPanel Text="Risks in Community" Expanded HideIcon="ReadOnly">
-                            <RiskDetail Model="Model.CommunityRiskDetail" />
+                            <RiskDetail Model="Model.CommunityRiskDetail" Community="true" />
                         </MudExpansionPanel>
                     }
                 </MudExpansionPanels>
@@ -73,7 +73,6 @@
         options.IncludeProperties(x => x.CommunityRiskDetail.RiskToPublic);
         options.IncludeProperties(x => x.CommunityRiskDetail.RiskToKnownAdult);
         options.IncludeProperties(x => x.CommunityRiskDetail.RiskToStaff);
-        options.IncludeProperties(x => x.CommunityRiskDetail.RiskToOtherPrisoners);
         options.IncludeProperties(x => x.CommunityRiskDetail.RiskToSelf);
 
         options.IncludeProperties(x => x.CustodyRiskDetail.RiskToChildren);
