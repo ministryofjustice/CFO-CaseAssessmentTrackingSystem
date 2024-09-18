@@ -85,12 +85,31 @@
                             @_participant.EnrolmentLocation
                         </MudText>
                     </MudItem>
+                    @if (_participant.ConsentStatus == ConsentStatus.GrantedStatus)
+                    {
+                        <MudItem md="3">
+                            <MudText Typo="Typo.h6" Color="Color.Primary">
+                            <b>
+                                Nationality
+                            </b>
+                        </MudText>
+                    </MudItem>
+                    <MudItem md="3">
+                        <MudText Typo="Typo.h6">
+                            @_participant.Nationality
+                        </MudText>
+                    </MudItem>
+                    }
                 </MudGrid>
 
                 @if(_participant.EnrolmentStatus != EnrolmentStatus.IdentifiedStatus)
                 {
                     <RagBar ParticipantId="@Id" />
                     <ParticipantActionMenu OnUpdate="Refresh" />
+                    @if (_showRightToWorkAlert)
+                    {
+                        <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Square="true" Class="my-2">@_rightToWorkAlertMessage</MudAlert>
+                    }                    
                     <MudTabs Class="primary-tabs mt-2" Outlined="true" Color="Color.Info" Border="true">
                         <MudTabPanel Text="Case Summary">
                             <CaseSummary />
@@ -146,12 +165,36 @@
     private string _riskInfo = String.Empty;
     private string _riskIcon = String.Empty;
     private Color _riskIconColor = Color.Transparent;
+    private bool _showRightToWorkAlert = false;
+    private string _rightToWorkAlertMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         await Refresh();
         await base.OnInitializedAsync();
         SetRiskDueWarning();
+        ShowRTW();
+    }
+
+    void ShowRTW()
+    {
+        //Check if the participant->EnrilmentStatus == Approved
+        if (_participant!.ConsentStatus == ConsentStatus.GrantedStatus)
+        {
+            if (string.Equals(_participant!.Nationality!, "British", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(_participant!.Nationality!, "Irish", StringComparison.OrdinalIgnoreCase))
+            {
+                _showRightToWorkAlert = false;
+            }
+            else
+            {
+                if (_participant.HasActiveRightToWork == false)
+                {
+                    _rightToWorkAlertMessage = "No active Right To Work documentation found for the participant, it is a requirement for non-British/Irish participants.";
+                    _showRightToWorkAlert = true;
+                }
+            }
+        }
     }
 
     void SetRiskDueWarning()
