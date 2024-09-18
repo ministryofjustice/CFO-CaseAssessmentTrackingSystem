@@ -2,10 +2,8 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
-using FluentValidation;
 using Humanizer.Bytes;
 using Microsoft.AspNetCore.Components.Forms;
-using System.IO;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
 
@@ -35,7 +33,6 @@ public static class AddRightToWork
     public class Handler(IUnitOfWork unitOfWork, IUploadService uploadService)
         : IRequestHandler<Command, Result<string>>
     {
-
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
             var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
@@ -57,17 +54,19 @@ public static class AddRightToWork
             var uploadRequest = new UploadRequest(request.Document.Name, UploadType.Document, memoryStream.ToArray());
 
             var result = await uploadService.UploadAsync($"{request.ParticipantId}/rtw", uploadRequest);
-
-            document.SetURL(result);
-
-            if(request.IndefiniteRightToWork)
+            if (result.Succeeded)
             {
-                request.ValidTo = DateTime.MaxValue;
+                document.SetURL(result);
+
+                if (request.IndefiniteRightToWork)
+                {
+                    request.ValidTo = DateTime.MaxValue;
+                }
+
+                participant.AddRightToWork(request.ValidFrom!.Value, request.ValidTo!.Value, document.Id);
+
+                unitOfWork.DbContext.Documents.Add(document);
             }
-
-            participant.AddRightToWork(request.ValidFrom!.Value, request.ValidTo!.Value, document.Id);
-
-            unitOfWork.DbContext.Documents.Add(document);
             return result;
         }
     }
@@ -145,6 +144,5 @@ public static class AddRightToWork
                 return header == "%PDF";
             }
         }
-
     }    
 }

@@ -142,6 +142,7 @@
                 else
                 {
                     Snackbar.Add($"Error uploading Right to work evidence: {result.ErrorMessage}", Severity.Error);
+                    return false;
                 }
             }
 
