@@ -14,6 +14,7 @@ public class ParticipantDto
     public DateOnly? DateOfBirth { get; set; }
     public DateTime? RiskDue { get; set; }
     public int? RiskDueInDays { get; set; }
+    public string? Nationality { get; set; }
 
     [Description("Enrolment Status")]
     public EnrolmentStatus? EnrolmentStatus { get; set; }
@@ -63,7 +64,8 @@ public class ParticipantDto
 #nullable disable
                 .ForMember(target => target.SupportWorker, options => options.MapFrom(source => source.Owner.DisplayName))
                 .ForMember(dest => dest.RiskDue, opt => opt.MapFrom(src => src.RiskDue))
-                .ForMember(dest => dest.RiskDueInDays, opt => opt.MapFrom(src => src.RiskDueInDays()));
+                .ForMember(dest => dest.RiskDueInDays, opt => opt.MapFrom(src => src.RiskDueInDays()))
+                .ForMember(dest => dest.Nationality, opt => opt.MapFrom(src => src.Nationality));
         }
     }
 }

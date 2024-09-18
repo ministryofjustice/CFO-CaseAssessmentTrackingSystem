@@ -34,7 +34,8 @@ public class Participant : OwnerPropertyEntity<string>
         string? registrationDetailsJson, 
         string referralSource, 
         string? referralComments, 
-        int locationId)
+        int locationId,
+        string? nationality)
     {
         Participant p = new()
         {
@@ -50,8 +51,9 @@ public class Participant : OwnerPropertyEntity<string>
             RegistrationDetailsJson = registrationDetailsJson,
             ReferralSource = referralSource,
             ReferralComments = referralComments,
-            _currentLocationId = locationId
-        };
+            _currentLocationId = locationId,
+            Nationality = nationality
+};
 
         p.AddDomainEvent(new ParticipantCreatedDomainEvent(p));
         return p;
@@ -64,7 +66,7 @@ public class Participant : OwnerPropertyEntity<string>
     public DateOnly DateOfBirth { get; private set; }
     public DateTime? RiskDue { get; private set; }
     public int? RiskDueInDays() => (RiskDue.HasValue ? (RiskDue!.Value.Date - DateTime.UtcNow.Date).Days:null);
-
+    public string? Nationality { get; set; }
     /// <summary>
     /// Whether the participant is active in the DMS feed.
     /// </summary>
