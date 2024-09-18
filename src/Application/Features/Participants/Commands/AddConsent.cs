@@ -41,8 +41,8 @@ public static class AddConsent
             }
 
             var document = Document.Create(request.Document!.Name,
-                $"Consent form for {request.ParticipantId}",
-                DocumentType.PDF);
+            $"Consent form for {request.ParticipantId}",
+            DocumentType.PDF);
 
             long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.Consent.MaximumSizeInMegabytes).Bytes);
             await using var stream = request.Document.OpenReadStream(maxSizeBytes);
@@ -53,12 +53,16 @@ public static class AddConsent
 
             var result = await uploadService.UploadAsync($"{request.ParticipantId}/consent", uploadRequest);
 
-            document.SetURL(result);
-            document.SetVersion(request.DocumentVersion!);
+            if (result.Succeeded)
+            {
+                document.SetURL(result);
+                document.SetVersion(request.DocumentVersion!);
 
-            participant.AddConsent(request.ConsentDate!.Value, document.Id);
-            
-            unitOfWork.DbContext.Documents.Add(document);
+                participant.AddConsent(request.ConsentDate!.Value, document.Id);
+
+                await unitOfWork.DbContext.Documents.AddAsync(document);
+            }
+
             return result;
         }
     }
