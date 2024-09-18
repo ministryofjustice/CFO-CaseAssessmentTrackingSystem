@@ -31,11 +31,18 @@ public class ParticipantSummaryDto
     public required DateOnly DateOfBirth { get; set; }
     public DateTime? RiskDue { get; set; }
     public int? RiskDueInDays { get; set; }
+    public string? Nationality { get; set; }
     /// <summary>
     ///  The current enrolment status of the participant
     /// </summary>
     public EnrolmentStatus EnrolmentStatus { get; set; } = EnrolmentStatus.IdentifiedStatus;
-    
+
+    /// <summary>
+    ///  The current enrolment status of the participant
+    /// </summary>
+    public ConsentStatus ConsentStatus { get; set; } = ConsentStatus.PendingStatus;
+
+
     /// <summary>
     /// The person who "owns" this participant's case. Usually the support worker.
     /// </summary>
@@ -48,6 +55,8 @@ public class ParticipantSummaryDto
     public BioSummaryDto? BioSummary { get; set; }
     
     public PathwayPlanSummaryDto? PathwayPlan { get; set; }
+
+    public bool HasActiveRightToWork { get; set; }
 
     private class Mapping : Profile
     {
@@ -62,7 +71,8 @@ public class ParticipantSummaryDto
                 .ForMember(target => target.OwnerName, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.ParticipantName, options => options.MapFrom(source => source.FirstName + ' ' + source.LastName))
                 .ForMember(dest => dest.RiskDue, opt => opt.MapFrom(src => src.RiskDue))
-                .ForMember(dest => dest.RiskDueInDays, opt => opt.MapFrom(src => src.RiskDueInDays()));
+                .ForMember(dest => dest.RiskDueInDays, opt => opt.MapFrom(src => src.RiskDueInDays()))
+                .ForMember(dest => dest.Nationality, opt => opt.MapFrom(src => src.Nationality));
 
             CreateMap<ParticipantAssessment, AssessmentSummaryDto>()
                 .ForMember(target => target.AssessmentId, options => options.MapFrom(source => source.Id))

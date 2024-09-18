@@ -59,6 +59,12 @@ public static class GetParticipantSummary
 
             summary.BioSummary = mapper.Map<BioSummaryDto>(bio);
 
+            summary.HasActiveRightToWork = await unitOfWork.DbContext.Participants
+                .Where(x => x.Id == request.ParticipantId)
+                .SelectMany(p => p.RightToWorks)
+                .AnyAsync(x => DateOnly.FromDateTime(x.Lifetime.EndDate) >= DateOnly.FromDateTime(DateTime.UtcNow), cancellationToken);
+
+
             return Result<ParticipantSummaryDto>.Success(summary);
         }
     }

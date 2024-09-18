@@ -61,7 +61,8 @@ public static class CreateParticipant
                 activeInFeed: candidate.IsActive,
                 referralSource: request.ReferralSource!,
                 referralComments: request.ReferralComments,
-                locationId: candidate.MappedLocationId);
+                locationId: candidate.MappedLocationId,
+                nationality: candidate.Nationality);
 
             if(candidate.Crn is not null)
             {
