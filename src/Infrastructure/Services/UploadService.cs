@@ -46,17 +46,24 @@ public class UploadService : IUploadService
                 };
 
                 _logger.LogDebug("Uploading to S3 bucket");
-                var result =  await _client.PutObjectAsync(putRequest);
-                if (result.HttpStatusCode == HttpStatusCode.OK)
-                {
-                    return putRequest.Key;
-                }
-                return Result<string>.Failure(result.HttpStatusCode.ToString());
-            }
+              
+                    var result = await _client.PutObjectAsync(putRequest);
+                    if (result.HttpStatusCode == HttpStatusCode.OK)
+                    {
+                        return putRequest.Key;
+                    }
+                    return Result<string>.Failure(result.HttpStatusCode.ToString());             
+              
+            }            
             catch (AmazonS3Exception s3Ex)
             {
                 _logger.LogError(s3Ex, $"Error uploading file" );
                 return Result<string>.Failure(s3Ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, $"Error uploading file");
+                return Result<string>.Failure(ex.Message);
             }
         }
     }
@@ -83,9 +90,7 @@ public class UploadService : IUploadService
             {
                 BucketName = _bucketName,
                 Key = key
-            };
-
-            
+            };            
 
             using var response = await _client.GetObjectAsync(getRequest)
                 .ConfigureAwait(false);
@@ -95,9 +100,7 @@ public class UploadService : IUploadService
             return Result<Stream>.Success(stream);
         }
 
-
-        return Result<Stream>.Failure("Could not download file");
-       
+        return Result<Stream>.Failure("Could not download file");       
     }
 
     private static Dictionary<string, object> CreateScopeInformation(string folder, UploadRequest uploadRequest)
@@ -116,5 +119,4 @@ public class UploadService : IUploadService
         };
         return scopeInfo;
     }
-
 }

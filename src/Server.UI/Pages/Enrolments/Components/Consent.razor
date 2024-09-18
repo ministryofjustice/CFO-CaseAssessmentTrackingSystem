@@ -39,14 +39,14 @@
                             For="() => Model.Document"
                             MaximumFileCount="1" 
                             Accept=".pdf">
-                <ActivatorContent>
-                        @if (Model.Document == null || consentUploaded)
-                    {
+                <ActivatorContent>                         
+                         @if(!consentUploaded)
+                    { 
                     <MudLoadingButton Loading="_uploading"
                                         Variant="Variant.Outlined"
                                         Color="Color.Primary"
-                                        StartIcon="@Icons.Material.Filled.Upload"
-                                        Disabled="Model.Document!=null">
+                                        StartIcon="@Icons.Material.Filled.Upload">
+                            
                         @if (_uploading)
                         {
                             @ConstantString.Uploading
@@ -56,14 +56,13 @@
                             @ConstantString.Upload
                         }                      
                     </MudLoadingButton>
-                    }
+                     } 
                 </ActivatorContent>
                 <SelectedTemplate>
                     <br />
                         @if (@Model.Document==null)
                     {
-                            <MudText>No Files</MudText>
-                        
+                            <MudText>No Files</MudText>                        
                     }
                     else
                     {
@@ -107,11 +106,14 @@
 
     private bool consentUploaded;
 
+    //Guard for mulitple next clicks
+    private bool uploadingFile;
+
     public async Task<bool> Validate()
     {
         try
         {
-            if (ConsentDto is not null && ConsentDto.Length > 0 || consentUploaded)
+            if (ConsentDto is not null && ConsentDto.Length > 0 || consentUploaded || uploadingFile)
             {
                 return true;
             }
@@ -120,6 +122,7 @@
 
             if (form.IsValid)
             {
+                uploadingFile = true;
                 var result = await GetNewMediator().Send(Model);
 
                 if (result.Succeeded)
@@ -130,6 +133,8 @@
                 else
                 {
                     Snackbar.Add($"Error uploading consent {result.ErrorMessage}", Severity.Error);
+                    uploadingFile = false;
+                    return false;
                 }
             }
 
