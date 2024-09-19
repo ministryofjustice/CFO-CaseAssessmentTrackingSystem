@@ -23,10 +23,48 @@ public static class Qa2WithPagination
     {
         public async Task<PaginatedData<EnrolmentQueueEntryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var data = await unitOfWork.DbContext.EnrolmentQa2Queue.OrderBy($"{request.OrderBy} {request.SortDirection}")
+            var query = unitOfWork.DbContext
+                .EnrolmentQa2Queue
+                .AsNoTracking();
+                
+            var sortExpression = GetSortExpression(request);
+
+            var ordered = request.SortDirection.Equals("Descending", StringComparison.CurrentCultureIgnoreCase) 
+                ? query.OrderByDescending(sortExpression) 
+                : query.OrderBy(sortExpression);
+
+            var data = await ordered
                 .ProjectToPaginatedDataAsync<EnrolmentQa2QueueEntry, EnrolmentQueueEntryDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
 
             return data;
+        }
+        
+        private Expression<Func<EnrolmentQa2QueueEntry, object?>> GetSortExpression(Query request)
+        {
+            Expression<Func<EnrolmentQa2QueueEntry, object?>> sortExpression;
+            switch (request.OrderBy)
+            {
+                case "ParticipantId":
+                    sortExpression = (x => x.Participant!.FirstName + ' ' + x.Participant.LastName);
+                    break;
+                case "TenantId":
+                    sortExpression = (x => x.TenantId);
+                    break;
+                case "Created":
+                    sortExpression = (x => x.Created!);
+                    break;
+                case "SupportWorker":
+                    sortExpression = (x => x.Participant!.Owner!.DisplayName!);
+                    break;
+                case "AssignedTo":
+                    sortExpression = (x => x.OwnerId == null ? null : x.Owner!.DisplayName);
+                    break;
+                default:
+                    sortExpression = (x => x.Created!);
+                    break;
+            }
+
+            return sortExpression;
         }
     }
     public class Validator : AbstractValidator<Query>

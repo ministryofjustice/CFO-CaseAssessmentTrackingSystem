@@ -23,10 +23,47 @@ public static class PqaQueueWithPagination
     {
         public async Task<PaginatedData<EnrolmentQueueEntryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var data = await unitOfWork.DbContext.EnrolmentPqaQueue.OrderBy($"{request.OrderBy} {request.SortDirection}")
+            var query = unitOfWork.DbContext
+                .EnrolmentPqaQueue
+                .AsNoTracking();
+                
+            var sortExpression = GetSortExpression(request);
+
+            var ordered = request.SortDirection.Equals("Descending", StringComparison.CurrentCultureIgnoreCase) 
+                ? query.OrderByDescending(sortExpression) 
+                : query.OrderBy(sortExpression);
+
+            var data = await ordered
                 .ProjectToPaginatedDataAsync<EnrolmentPqaQueueEntry, EnrolmentQueueEntryDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
 
             return data;
+        }
+        private Expression<Func<EnrolmentPqaQueueEntry, object?>> GetSortExpression(Query request)
+        {
+            Expression<Func<EnrolmentPqaQueueEntry, object?>> sortExpression;
+            switch (request.OrderBy)
+            {
+                case "ParticipantId":
+                    sortExpression = (x => x.Participant!.FirstName + ' ' + x.Participant.LastName);
+                    break;
+                case "TenantId":
+                    sortExpression = (x => x.TenantId);
+                    break;
+                case "Created":
+                    sortExpression = (x => x.Created!);
+                    break;
+                case "SupportWorker":
+                    sortExpression = (x => x.Participant!.Owner!.DisplayName!);
+                    break;
+                case "AssignedTo":
+                    sortExpression = (x => x.OwnerId == null ? null : x.Owner!.DisplayName);
+                    break;
+                default:
+                    sortExpression = (x => x.Created!);
+                    break;
+            }
+
+            return sortExpression;
         }
     }
     public class Validator : AbstractValidator<Query>
