@@ -42,9 +42,7 @@ public class EnrolmentQueueEntryDto
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                 .ForMember(target => target.IsCompleted, options => options.MapFrom(source=> source.IsCompleted))
                 .ForMember(target => target.IsAccepted, options => options.MapFrom(source=> source.IsAccepted))
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-                .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner.DisplayName));
- #pragma warning restore CS8602 // Dereference of a possibly null reference.
+                .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName));
             
             CreateMap<EnrolmentQa1QueueEntry, EnrolmentQueueEntryDto>()
                 .ForMember(target => target.ParticipantId,
@@ -62,9 +60,7 @@ public class EnrolmentQueueEntryDto
                 source => source.Participant!.Owner!.DisplayName
                 ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
- #pragma warning disable CS8602 // Dereference of a possibly null reference.
-                .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner.DisplayName));
- #pragma warning restore CS8602 // Dereference of a possibly null reference.
+                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName));
             
             CreateMap<EnrolmentQa2QueueEntry, EnrolmentQueueEntryDto>()
                 .ForMember(target => target.ParticipantId,
@@ -82,9 +78,7 @@ public class EnrolmentQueueEntryDto
                 source => source.Participant!.Owner!.DisplayName
                 ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-                .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner.DisplayName));
- #pragma warning restore CS8602 // Dereference of a possibly null reference.;
+                .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName));
             
         }
     }
