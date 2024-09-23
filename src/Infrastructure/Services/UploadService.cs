@@ -55,14 +55,9 @@ public class UploadService : IUploadService
                     return Result<string>.Failure(result.HttpStatusCode.ToString());             
               
             }            
-            catch (AmazonS3Exception s3Ex)
-            {
-                _logger.LogError(s3Ex, $"Error uploading file" );
-                return Result<string>.Failure(s3Ex.Message);
-            }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, $"Error uploading file");
+                _logger.LogError(ex, $"Error uploading file");
                 return Result<string>.Failure(ex.Message);
             }
         }
