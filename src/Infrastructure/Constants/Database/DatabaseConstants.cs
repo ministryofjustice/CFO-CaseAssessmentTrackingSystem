@@ -52,6 +52,10 @@ internal static class DatabaseConstants
         public const string PasswordHistory = nameof(PasswordHistory);
 
 
+        public const string HubInduction = nameof(HubInduction);
+        public const string WingInduction = nameof(WingInduction);
+        public const string WingInductionPhase = nameof(WingInductionPhase);
+
 
     }
     public static class Schemas
@@ -63,6 +67,7 @@ internal static class DatabaseConstants
         public const string Configuration = nameof(Configuration);
         public const string Document = nameof(Document);
         public const string Enrolment = nameof(Enrolment);
+        public const string Induction = nameof(Induction);
     }
 
     public static class FieldLengths

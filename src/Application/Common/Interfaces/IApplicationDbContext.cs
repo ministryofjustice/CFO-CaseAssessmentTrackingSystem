@@ -8,6 +8,7 @@ using Cfo.Cats.Domain.ValueObjects;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Cfo.Cats.Domain.Entities.Inductions;
 
 namespace Cfo.Cats.Application.Common.Interfaces;
 
@@ -54,6 +55,10 @@ public interface IApplicationDbContext
     DbSet<PasswordHistory> PasswordHistories { get; }
 
     DbSet<IdentityAuditTrail> IdentityAuditTrails { get; }
+
+    DbSet<HubInduction> HubInductions { get; }
+
+    DbSet<WingInduction> WingInductions { get; }
 
 }
 
