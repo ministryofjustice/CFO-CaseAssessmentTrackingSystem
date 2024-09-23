@@ -55,5 +55,7 @@ public interface IApplicationDbContext
 
     DbSet<IdentityAuditTrail> IdentityAuditTrails { get; }
 
+    DbSet<ParticipantAccessAuditTrail> AccessAuditTrails { get; }
+
 }
 

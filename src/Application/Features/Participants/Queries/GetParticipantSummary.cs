@@ -10,14 +10,13 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetParticipantSummary
 {
     [RequestAuthorize(Policy = SecurityPolicies.CandidateSearch)]
-    public class Query : ICacheableRequest<Result<ParticipantSummaryDto>>
+    public class Query : IAuditableRequest<Result<ParticipantSummaryDto>>
     {
         public required string ParticipantId { get; set; } 
         public required UserProfile CurrentUser { get; set; }
-        
-        public string CacheKey => ParticipantCacheKey.GetCacheKey($"ParticipantSummary,{ParticipantId}");
-        public MemoryCacheEntryOptions? Options => ParticipantCacheKey.MemoryCacheEntryOptions;
-        
+
+        public string Identifier() => ParticipantId;
+
     }
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<ParticipantSummaryDto>>

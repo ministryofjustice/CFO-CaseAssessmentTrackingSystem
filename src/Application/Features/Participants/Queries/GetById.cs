@@ -1,20 +1,19 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
+
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetParticipantById
 {
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
-    public class Query : ICacheableRequest<ParticipantDto>
+    public class Query : IAuditableRequest<ParticipantDto>
     {
         public required string Id { get; set; }
-        public string CacheKey => ParticipantCacheKey.GetCacheKey($"{Id}");
-        public MemoryCacheEntryOptions? Options => ParticipantCacheKey.MemoryCacheEntryOptions;
+        public string Identifier() => Id;
     }
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, ParticipantDto>
