@@ -63,6 +63,8 @@ public class ApplicationDbContext
 
     public DbSet<IdentityAuditTrail> IdentityAuditTrails => Set<IdentityAuditTrail>();
 
+    public DbSet<ParticipantAccessAuditTrail> AccessAuditTrails => Set<ParticipantAccessAuditTrail>();
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

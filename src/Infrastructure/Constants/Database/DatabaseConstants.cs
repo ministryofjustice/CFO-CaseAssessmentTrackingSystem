@@ -51,6 +51,7 @@ internal static class DatabaseConstants
 
         public const string PasswordHistory = nameof(PasswordHistory);
 
+        public const string AccessAuditTrail = nameof(AccessAuditTrail);
 
 
     }
