@@ -8,6 +8,7 @@ using Cfo.Cats.Domain.Entities.Bios;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Persistence.Configurations.Enrolments;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
+using Cfo.Cats.Domain.Entities.Inductions;
 
 namespace Cfo.Cats.Infrastructure.Persistence;
 
@@ -62,6 +63,10 @@ public class ApplicationDbContext
     public DbSet<LocationMapping> LocationMappings => Set<LocationMapping>();
 
     public DbSet<IdentityAuditTrail> IdentityAuditTrails => Set<IdentityAuditTrail>();
+
+    public DbSet<HubInduction> HubInductions => Set<HubInduction>();
+
+    public DbSet<WingInduction> WingInductions => Set<WingInduction>();
 
     public DbSet<ParticipantAccessAuditTrail> AccessAuditTrails => Set<ParticipantAccessAuditTrail>();
     
