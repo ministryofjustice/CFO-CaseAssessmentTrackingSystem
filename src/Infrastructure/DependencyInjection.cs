@@ -1,5 +1,6 @@
 using Amazon.Runtime;
 using Amazon.S3;
+using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
 using Cfo.Cats.Application.SecurityConstants;
@@ -10,6 +11,7 @@ using Cfo.Cats.Infrastructure.Constants.Database;
 using Cfo.Cats.Infrastructure.Jobs;
 using Cfo.Cats.Infrastructure.Persistence.Interceptors;
 using Cfo.Cats.Infrastructure.Services.Candidates;
+using Cfo.Cats.Infrastructure.Services.Locations;
 using Cfo.Cats.Infrastructure.Services.MultiTenant;
 using Cfo.Cats.Infrastructure.Services.Serialization;
 using Microsoft.AspNetCore.DataProtection;
@@ -146,6 +148,12 @@ public static class DependencyInjection
             .AddSingleton<TenantService>()
             .AddSingleton<ITenantService>(sp => {
                 var service = sp.GetRequiredService<TenantService>();
+                service.Initialize();
+                return service;
+            })
+            .AddSingleton<LocationService>()
+            .AddSingleton<ILocationService>(sp => {
+                var service = sp.GetRequiredService<LocationService>();
                 service.Initialize();
                 return service;
             });

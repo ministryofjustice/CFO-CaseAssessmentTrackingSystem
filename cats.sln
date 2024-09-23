@@ -1,4 +1,5 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -23,10 +24,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_Solution
 		docker-compose.yml = docker-compose.yml
 		.config\dotnet-tools.json = .config\dotnet-tools.json
 		LICENSE = LICENSE
-		NuGet.config = NuGet.config
-		README.md = README.md
 		LocalPublish.ps1 = LocalPublish.ps1
 		ModifyDatabase.ps1 = ModifyDatabase.ps1
+		NuGet.config = NuGet.config
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{62ABFE2F-D4F3-4E44-AA07-20D679B04CF3}"
