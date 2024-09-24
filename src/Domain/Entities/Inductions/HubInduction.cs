@@ -20,7 +20,7 @@ public class HubInduction : OwnerPropertyEntity<Guid>
         InductionDate = inductionDate;
         OwnerId = ownerId;
         
-        AddDomainEvent(new HubInductionCreatedEvent(this));
+        AddDomainEvent(new HubInductionCreatedDomainEvent(this));
     }
 
     public static HubInduction Create(string participantId, int locationId, DateTime inductionDate, string ownerId) 
