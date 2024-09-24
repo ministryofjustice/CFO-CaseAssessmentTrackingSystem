@@ -36,9 +36,7 @@ v1.0-alpha
 
 # Building and Tool Restore
 
-The project supports MSSQL and (for development and demo sites) Sqlite and in-memory.
-
-By convention the appsettings.Development json is configured to use sqlite.
+The project supports MSSQL and (for development and demo sites) in-memory.
 
 To use an in memory database (only good for development) alter the appsettings for use In-Memory database to true. This will
 override any other database settings.
@@ -57,6 +55,15 @@ For MSSQL server you can use the following. If you are not running local db on w
     "DbProvider": "mssql",
     "ConnectionString": "Server=(LocalDB)\MSSQLLocalDB;Database=CatsDb;Integrated Security=True"
   },
+```
+
+## Cake scripts.
+
+To publish the code and generate an indempotent sql update script.
+
+```powershell
+dotnet tool restore
+dotnet cake --target Publish 
 ```
 
 ## Database Migrations
