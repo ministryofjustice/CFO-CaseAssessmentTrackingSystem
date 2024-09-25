@@ -57,7 +57,10 @@ Task("Publish")
 
         ZipCompress("./publish/workspace", "./publish/build-artifacts.zip");
         CleanDirectory("./publish/workspace");
-        DeleteDirectory("./publish/workspace");
+        DeleteDirectory("./publish/workspace", new DeleteDirectorySettings{
+            Force = true,
+            Recursive = true
+        });
     });
 
 RunTarget(target);
