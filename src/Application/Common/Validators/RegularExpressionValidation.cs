@@ -14,7 +14,7 @@
         public const string DateMustBeInPast = "Date must be in the past.";
         public const string DateMustBeInFuture = "Date must be in the future.";
 
-        public const string Notes = @"^[A-Za-z0-9 ?.,!""'\/$£&€\r\n\-\(\)@’;%]*$";
+        public const string Notes = @"^[A-Za-z0-9 ?.,!""'\/$£&€\r\n\-\(\)@’:;%]*$";
         public const string NotesMessage = "{0} must contain only letters, numbers, spaces and common punctuation";
         
         public const string GuidMessage = "{0} must contain a valid Guid";
