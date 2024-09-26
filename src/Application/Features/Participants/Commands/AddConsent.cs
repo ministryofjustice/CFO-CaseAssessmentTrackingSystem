@@ -87,7 +87,17 @@ public static class AddConsent
                 .NotNull()
                 .WithMessage("You must provide the Date of Consent")
                 .LessThanOrEqualTo(DateTime.UtcNow.Date)
-                .WithMessage(ValidationConstants.DateMustBeInPast);
+                .WithMessage(ValidationConstants.DateMustBeInPast)
+                        
+                             .MustAsync(async (v, validFrom, cancellationToken) =>
+                             {
+                                 var enrolmentDate = await EnrolmentDate(cancellationToken, v.ParticipantId);
+
+                                 return validFrom >= enrolmentDate;
+                             })
+                    .WithMessage("The Date of Consent must be within the last 3 months of the Enrolment Date");
+                            //.GreaterThanOrEqualTo(DateTime.UtcNow.Date.AddMonths(-3))
+                //.WithMessage("The Date of Consent must be within the last 3 months");
 
             RuleFor(v => v.Document)
                 .NotNull()
@@ -107,7 +117,23 @@ public static class AddConsent
                 .Equal(true)
                 .WithMessage("You must upload a document and certify");
         }
-        
+
+        private async Task<DateTime?> EnrolmentDate(CancellationToken cancellationToken, string identifier)
+        {
+            // Fetch enrolment histories for the specified participant
+            var enrolmentHistories = await _unitOfWork.DbContext.ParticipantEnrolmentHistories
+                .Where(e => e.ParticipantId == identifier)
+                .ToListAsync(cancellationToken); // Get all enrolment records
+
+            // Filter for the relevant enrolment status and select the creation date
+            var enrolmentDate = enrolmentHistories
+                .Where(e => e.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus)
+                .Select(e => e.Created)
+                .FirstOrDefault();
+
+            return enrolmentDate?.AddMonths(-3);
+        }
+
         private async Task<bool> Exist(string identifier, CancellationToken cancellationToken) 
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
 
