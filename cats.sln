@@ -24,7 +24,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_Solution
 		docker-compose.yml = docker-compose.yml
 		.config\dotnet-tools.json = .config\dotnet-tools.json
 		LICENSE = LICENSE
-		LocalPublish.ps1 = LocalPublish.ps1
 		ModifyDatabase.ps1 = ModifyDatabase.ps1
 		NuGet.config = NuGet.config
 		README.md = README.md
