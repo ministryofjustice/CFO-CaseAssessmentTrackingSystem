@@ -62,7 +62,7 @@ public static class GetParticipantSummary
             summary.HasActiveRightToWork = await unitOfWork.DbContext.Participants
                 .Where(x => x.Id == request.ParticipantId)
                 .SelectMany(p => p.RightToWorks)
-                .AnyAsync(x => DateOnly.FromDateTime(x.Lifetime.EndDate) >= DateOnly.FromDateTime(DateTime.UtcNow), cancellationToken);
+                .AnyAsync(x => x.Lifetime.EndDate >= DateTime.Now.Date, cancellationToken);
 
 
             return Result<ParticipantSummaryDto>.Success(summary);
