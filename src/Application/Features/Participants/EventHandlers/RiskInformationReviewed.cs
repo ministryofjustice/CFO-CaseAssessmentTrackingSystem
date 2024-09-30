@@ -13,7 +13,6 @@ public class RiskInformationReviewed(IUnitOfWork unitOfWork) : INotificationHand
         if (participant is not null)
         {
             participant.SetRiskDue(DateTime.UtcNow.AddDays(70));
-            unitOfWork.DbContext.Participants.Update(participant);
         }
 
     }
