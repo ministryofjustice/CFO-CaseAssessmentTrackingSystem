@@ -18,10 +18,9 @@ public static class GetParticipantSummary
         public string Identifier() => ParticipantId;
 
     }
-
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<ParticipantSummaryDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper, IRightToWorkSettings rtwSettings) : IRequestHandler<Query, Result<ParticipantSummaryDto>>
     {
-        
+
         public async Task<Result<ParticipantSummaryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var query = from c in unitOfWork.DbContext.Participants
@@ -64,6 +63,7 @@ public static class GetParticipantSummary
                 .SelectMany(p => p.RightToWorks)
                 .AnyAsync(x => x.Lifetime.EndDate >= DateTime.Now.Date, cancellationToken);
 
+            summary.IsRightToWorkRequired = rtwSettings.NationalitiesExempted.Any(s => s.Equals(summary.Nationality!, StringComparison.OrdinalIgnoreCase)) == false;
 
             return Result<ParticipantSummaryDto>.Success(summary);
         }
