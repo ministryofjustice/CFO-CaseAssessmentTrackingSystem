@@ -1,4 +1,6 @@
 @page "/pages/participants"
+@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Application.Features.Participants.Caching
@@ -39,6 +41,26 @@
                     <MudText Typo="Typo.caption" Class="mb-2">@L[_currentDto.GetClassDescription()]</MudText>
                     <MudEnumSelect Style="min-width:240px" TEnum="ParticipantListView" ValueChanged="OnChangedListView" Value="Query.ListView" Dense="false" Label="Enrolment Status">
                     </MudEnumSelect>
+                </div>
+                <div class="d-flex flex-column">
+                    <MudSelect T="LocationDto"
+                               Label="@Query.GetMemberDescription(x => x.Locations)" MultiSelection="true" Clearable="true"
+                               MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))"
+                               SelectedValuesChanged="LocationValuesChanged" AnchorOrigin="Origin.BottomCenter"
+                               FullWidth="true" Style="width: 350px;" Class="mt-9">
+                           
+                            @foreach (var item in Locations!)
+                            {
+
+                                <MudSelectItem T="LocationDto" Value="@item">
+                                    @item.Name
+                                </MudSelectItem>
+                            }
+                        
+                    </MudSelect>
+                </div>
+                <div class="d-flex flex-column">
+                    <MudSwitch T="bool" Class="mt-10" Value="@Query.JustMyCases" Label="Just My Participants" Color="Color.Primary" ValueChanged="OnShowEveryoneChanged"></MudSwitch>
                 </div>
             </div>
             <div class="flex-grow-1"></div>
@@ -189,16 +211,21 @@
 
 @code {
 
+    [Inject]
+    public ILocationService LocationService {get;set;} = default!;
+
     public string? Title { get; private set; }
     private int _defaultPageSize = 15;
-    
+
+    public LocationDto[] Locations { get; set; } = [];
+
     private HashSet<ParticipantPaginationDto> _selectedItems = new();
 
     private MudDataGrid<ParticipantPaginationDto> _table = default!;
     private bool _loading;
     private bool _canSearch;
     private bool _canEnrol;
-    
+
     private ParticipantPaginationDto _currentDto = new() { Id = "" };
 
     private ParticipantsWithPagination.Query Query { get; set; } = new();
@@ -207,7 +234,18 @@
     {
         Navigation.NavigateTo($"/pages/enrolments/{participant.Id}");
     }
-    
+
+    private string GetMultiSelectionText(List<string> selectedValues)
+    {
+        return $"{selectedValues.Count} location{(selectedValues.Count > 1 ? "s have":" has")} been selected";
+    }
+
+    private async Task LocationValuesChanged(IEnumerable<LocationDto> selectedValues)
+    {
+        Query.Locations = selectedValues.Select(l => l.Id).ToArray();
+        await _table.ReloadServerData();
+    }
+
     private void Edit(ParticipantPaginationDto participant)
     {
         Navigation.NavigateTo($"/pages/participants/{participant.Id}");
@@ -216,6 +254,11 @@
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
 
+    private async Task OnShowEveryoneChanged(bool value)
+    {
+        Query.JustMyCases = value;
+        await _table.ReloadServerData();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -223,6 +266,7 @@
         var state = await AuthState;
         _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.CandidateSearch)).Succeeded;
         _canEnrol = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Enrol)).Succeeded;
+        Locations = LocationService.GetVisibleLocations(UserProfile!.TenantId!).OrderByDescending(l => l.LocationType.IsCustody).ThenBy(l => l.Name).ToArray();
     }
 
     private async Task<GridData<ParticipantPaginationDto>> ServerReload(GridState<ParticipantPaginationDto> state)
@@ -260,7 +304,7 @@
         Query.ListView = listview;
         await _table.ReloadServerData();
     }
-    
+
     private async Task OnRefresh()
     {
         ParticipantCacheKey.Refresh();
