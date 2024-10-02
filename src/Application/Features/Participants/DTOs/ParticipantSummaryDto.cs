@@ -57,6 +57,7 @@ public class ParticipantSummaryDto
     public PathwayPlanSummaryDto? PathwayPlan { get; set; }
 
     public bool HasActiveRightToWork { get; set; }
+    public bool IsRightToWorkRequired{ get; set; }
 
     private class Mapping : Profile
     {

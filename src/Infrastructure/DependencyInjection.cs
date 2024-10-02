@@ -3,6 +3,7 @@ using Amazon.S3;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
+using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Configurations;
@@ -64,6 +65,11 @@ public static class DependencyInjection
             .Configure<DatabaseSettings>(configuration.GetSection(DatabaseSettings.Key))
             .AddSingleton(s => s.GetRequiredService<IOptions<DatabaseSettings>>().Value);
 
+        services.Configure<RightToWorkSettings>(configuration.GetSection(RightToWorkSettings.Key))
+            .AddSingleton(s => s.GetRequiredService<IOptions<RightToWorkSettings>>().Value)
+            .AddSingleton<IRightToWorkSettings>(s =>
+                s.GetRequiredService<RightToWorkSettings>()
+            );
         return services;
     }
 

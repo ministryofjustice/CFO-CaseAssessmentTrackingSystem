@@ -106,7 +106,7 @@
                 {
                     <RagBar ParticipantId="@Id" />
                     <ParticipantActionMenu OnUpdate="Refresh" />
-                    @if (_showRightToWorkAlert)
+                    @if (_showRightToWorkWarning)
                     {
                         <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Square="true" Class="my-2">@_rightToWorkAlertMessage</MudAlert>
                     }                    
@@ -165,36 +165,22 @@
     private string _riskInfo = String.Empty;
     private string _riskIcon = String.Empty;
     private Color _riskIconColor = Color.Transparent;
-    private bool _showRightToWorkAlert = false;
-    private string _rightToWorkAlertMessage = string.Empty;
+    private bool _showRightToWorkWarning = false;
+    private string _rightToWorkAlertMessage = "No active Right To Work documentation found for the participant, it is a requirement for non-British/Irish participants.";
 
     protected override async Task OnInitializedAsync()
     {
         await Refresh();
         await base.OnInitializedAsync();
         SetRiskDueWarning();
-        ShowRTW();
+        ShowRightToWorkWarning();
     }
 
-    void ShowRTW()
+    void ShowRightToWorkWarning()
     {
-        //Check if the participant->EnrilmentStatus == Approved
-        if (_participant!.ConsentStatus == ConsentStatus.GrantedStatus)
-        {
-            if (string.Equals(_participant!.Nationality!, "British", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(_participant!.Nationality!, "Irish", StringComparison.OrdinalIgnoreCase))
-            {
-                _showRightToWorkAlert = false;
-            }
-            else
-            {
-                if (_participant.HasActiveRightToWork == false)
-                {
-                    _rightToWorkAlertMessage = "No active Right To Work documentation found for the participant, it is a requirement for non-British/Irish participants.";
-                    _showRightToWorkAlert = true;
-                }
-            }
-        }
+        _showRightToWorkWarning = _participant!.IsRightToWorkRequired
+                                && _participant!.ConsentStatus == ConsentStatus.GrantedStatus
+                                && _participant.HasActiveRightToWork == false;
     }
 
     void SetRiskDueWarning()
