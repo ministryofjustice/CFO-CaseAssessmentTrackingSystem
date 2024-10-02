@@ -21,14 +21,15 @@ public sealed class ParticipantAdvancedSpecification : Specification<Participant
         Query.Where( p => p.EnrolmentStatus == EnrolmentStatus.ArchivedStatus.Value, filter.ListView == ParticipantListView.Archived);
         
        
-        Query.Where(
-                p => p.OwnerId == filter.CurrentUser!.UserId, 
-                filter.CurrentUser!.AssignedRoles is [])
+        Query.Where(p => p.OwnerId == filter.CurrentUser!.UserId, filter.JustMyCases)
              .Where(p => p.Owner!.TenantId!.StartsWith(filter.CurrentUser!.TenantId!))
+             .Where(p => filter.Locations.Contains(p.CurrentLocation.Id), filter.Locations is not [])
             .Where(
-                    // if we have passed a filter through, search the surname
-                    p => p.LastName!.Contains(filter.Keyword!) || p.CurrentLocation.Name.Contains(filter.Keyword!) || p.Id.Contains(filter.Keyword!)
-            , string.IsNullOrEmpty(filter.Keyword) == false);
+                    // if we have passed a filter through, search the surname and current location
+                    p => p.LastName!.Contains(filter.Keyword!) 
+                         || p.CurrentLocation.Name.Contains(filter.Keyword!) 
+                         || p.Id.Contains(filter.Keyword!), 
+                    string.IsNullOrEmpty(filter.Keyword) == false);
             
     }
 
