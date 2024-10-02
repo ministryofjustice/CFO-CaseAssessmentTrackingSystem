@@ -15,11 +15,11 @@
     }
 </style>
 
-<MudContainer Style="width: 100%; min-width: 480px">
+<MudContainer Style="width: 100%; min-width: 480px; height: calc(100vh - 300px)" MaxWidth="MaxWidth.ExtraExtraLarge">
     @if (_participant is not null)
     {
         <CascadingValue Value="_participant">
-            <MudPaper Class="pa-2 ma-2" Elevation="1" Outlined="true">
+            <MudPaper Class="pa-2 ma-2" Style="height: 100%" Elevation="3">
                 <MudGrid Spacing="1" Class="pa-3">
                       <MudItem md="3">
                         <MudText Typo="Typo.h6" Color="Color.Primary">
@@ -94,6 +94,9 @@
                     <MudTabs Class="primary-tabs mt-2" Outlined="true" Color="Color.Info" Border="true">
                         <MudTabPanel Text="Case Summary">
                             <CaseSummary />
+                        </MudTabPanel>
+                        <MudTabPanel Text="Inductions">
+                            <Inductions ParticipantId="@_participant.Id" />
                         </MudTabPanel>
                         <MudTabPanel Text="Sentence Information">
                             <CaseSentenceInformation ParticipantId="@Id" />

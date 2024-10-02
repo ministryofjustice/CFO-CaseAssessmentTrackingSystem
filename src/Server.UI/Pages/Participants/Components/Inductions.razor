@@ -1,0 +1,289 @@
+﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Features.Inductions.Commands
+@using Cfo.Cats.Application.Features.Inductions.DTOs
+@using Cfo.Cats.Application.Features.Inductions.Queries
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Domain.Entities.Inductions
+@using Humanizer
+
+@inherits CatsComponentBase
+
+
+<MudMenu Icon="@Icons.Material.Filled.Add" AriaLabel="Add Induction" AnchorOrigin="Origin.BottomLeft">
+    <MudMenuItem OnClick="AddHubInduction">
+        Hub Induction
+    </MudMenuItem>
+    <MudMenuItem OnClick="AddWingInduction">
+        Wing Induction
+    </MudMenuItem>
+</MudMenu>
+
+<MudExpansionPanels MultiExpansion="true">
+    <MudExpansionPanel Disabled="@(HubInductions is not { Length: > 0 })">
+        <TitleContent>
+            <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Color="Color.Primary" class="mr-3"/>
+                    <MudText>Hub Inductions</MudText>
+                    <MudBadge Content="@(HubInductions?.Length ?? 0)" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto" />
+            </div>
+        </TitleContent>
+        <ChildContent>
+
+            <MudList ReadOnly="true" T="string">
+                @foreach(var i in (HubInductions ?? Enumerable.Empty<HubInductionDto>()).OrderByDescending(h => h.InductionDate))
+                {
+                    <MudListItem>
+                        <ChildContent>
+                            <MudText Typo="Typo.body1">@i.HubName</MudText>
+                            <MudText Typo="Typo.body2">@i.InductedBy</MudText>
+                            <MudTooltip Text="@i.InductionDate.ToShortDateString()">
+                                @if(i.InductionDate.Date == DateTime.Today)
+                                {
+                                    <MudText Typo="Typo.caption">Today</MudText>
+                                }
+                                else
+                                {
+                                    <MudText Typo="Typo.caption">@i.InductionDate.Humanize()</MudText>
+                                }
+                                
+                            </MudTooltip>
+                        </ChildContent>
+                    </MudListItem>
+                    
+                }
+            </MudList>
+
+
+        </ChildContent>
+    </MudExpansionPanel>
+    <MudExpansionPanel Disabled="@(WingInductions is not { Length: > 0 })">
+        <TitleContent>
+            <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Color="Color.Primary" class="mr-3"/>
+                    <MudText>Wing Inductions</MudText>
+                    <MudBadge Content="@(WingInductions?.Length ?? 0)" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto" />
+            </div>
+        </TitleContent>
+        <ChildContent>
+                        
+            <MudGrid>
+                @foreach (var i in WingInductions.OrderByDescending(wi => wi.InductionDate))
+                {
+                    <MudItem xs="12" lg="6">
+
+                        <MudPaper Class="pa-4 ma-2">
+                            <MudText Typo="Typo.body1">@i.WingName</MudText>
+                            <MudTable Items="@i.Phases" Hover="true" Breakpoint="Breakpoint.SmAndDown" Class="ma-4 pa-4">
+                                <HeaderContent>
+                                    <MudTh>Phase</MudTh>
+                                    <MudTh>Commenced</MudTh>
+                                    <MudTh>Completed</MudTh>
+                                    <MudTh></MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="P">@context.Number</MudTd>
+                                    <MudTd DataLabel="S">@context.StartDate.ToShortDateString()</MudTd>
+                                    <MudTd DataLabel="E">@(context.CompletedDate.HasValue ? context.CompletedDate.Value.ToShortDateString() : string.Empty)</MudTd>
+                                    <MudTd>
+                                        <MudFab Color="Color.Info"
+                                                StartIcon="@Icons.Material.Filled.AssignmentTurnedIn"
+                                                Size="Size.Small"
+                                                Disabled="@(context.CompletedDate is not null)"
+                                                OnClick="() => CompletePhase(i)">
+                                        </MudFab>
+                                    </MudTd>
+                                </RowTemplate>
+                                <FooterContent>
+                                    <MudTd col-span="5">
+                                        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="() => AddPhase(i)" Size="Size.Small" Disabled="@(i.Phases.Any(c => c.CompletedDate is null))" />
+                                    </MudTd>
+                                </FooterContent>
+                            </MudTable>
+                            <MudText Typo="Typo.body2">@i.InductedBy</MudText>
+                            <MudTooltip Text="@i.InductionDate.ToShortDateString()">
+                                @if (i.InductionDate.Date == DateTime.Today)
+                                {
+                                    <MudText Typo="Typo.caption">Today</MudText>
+                                }
+                                else
+                                {
+                                    <MudText Typo="Typo.caption">@i.InductionDate.Humanize()</MudText>
+                                }
+                            </MudTooltip>
+                        </MudPaper>
+                   </MudItem>
+                }
+            </MudGrid>
+         </ChildContent>
+    </MudExpansionPanel>
+</MudExpansionPanels>
+
+
+
+@code {
+    [Inject]
+    private ILocationService LocationService { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public string ParticipantId { get; set; } = default!;
+
+    [CascadingParameter]
+    public UserProfile? CurrentUser { get; set; }
+
+    private HubInductionDto[]? HubInductions { get; set; }
+    private LocationDto[] HubLocations { get; set; } = [];
+
+    public WingInductionDto[] WingInductions { get; set; } = [];
+    private LocationDto[] WingLocations { get; set; } = [];
+
+    protected override async Task OnInitializedAsync() => await OnRefresh();
+
+    public async Task AddHubInduction()
+    {
+        var parameters = new DialogParameters<AddHubInductionDialog>
+        {
+            { x => x.Model, new AddHubInduction.Command()
+            {
+                ParticipantId = ParticipantId,
+                CurrentUser = CurrentUser
+            } },
+            { x => x.Locations, this.HubLocations }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = DialogService.Show<AddHubInductionDialog>
+            ("Add a hub induction", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            await OnRefresh();
+        }
+
+    }
+
+    public async Task AddWingInduction()
+    {
+        var parameters = new DialogParameters<AddWingInductionDialog>
+        {
+            { x => x.Model, new AddWingInduction.Command()
+            {
+                ParticipantId = ParticipantId,
+                CurrentUser = CurrentUser
+            } },
+            { x => x.Locations, this.WingLocations }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = DialogService.Show<AddWingInductionDialog>
+            ("Add a wing induction", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            await OnRefresh();
+        }
+
+    }
+
+    private async Task AddPhase(WingInductionDto induction)
+    {
+        var parameters = new DialogParameters<AddInductionPhaseDialog>()
+        {
+            {
+                x => x.Model, new AddInductionPhase.Command()
+                {
+                    WingInductionId = induction.Id,
+                    CurrentUser = CurrentUser,
+                }
+            },
+            {
+                x => x.EarliestStartDate, 
+                induction.InductionDate
+            }
+        };
+
+        var options = new DialogOptions()
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+        var dialog = DialogService.Show<AddInductionPhaseDialog>
+            ("Add an induction phase", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            await OnRefresh();
+        }
+
+    }
+    
+    private async Task CompletePhase(WingInductionDto induction)
+    {
+
+        DateTime earliestCompletionDate = induction.Phases.Max(x => x.StartDate);
+        
+        var parameters = new DialogParameters<CompletePhaseDialog>()
+        {
+            {
+                x => x.Model, new CompleteInductionPhase.Command()
+                {
+                    WingInductionId = induction.Id,
+                    CurrentUser = CurrentUser,
+                }
+            },
+            {
+                x => x.EarliestCompletionDate, 
+                earliestCompletionDate
+            }
+        };
+
+        var options = new DialogOptions()
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+        var dialog = DialogService.Show<CompletePhaseDialog>
+            ("Complete induction phase", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            await OnRefresh();
+        }
+
+    }
+
+    private async Task OnRefresh()
+    {
+        var mediator = GetNewMediator();
+        var hubQuery = new GetInductionsByParticipantId.Query()
+            {
+                ParticipantId = ParticipantId
+            };
+
+        var results = await mediator.Send(hubQuery);
+
+        if (results.Succeeded)
+        {
+            HubInductions = results.Data!.HubInductions;
+            WingInductions = results.Data!.WingInductions;
+        }
+        var locations = LocationService.GetVisibleLocations(CurrentUser?.TenantId ?? string.Empty)
+            .ToArray();
+        HubLocations = locations.Where(x => x.LocationType.IsHub).ToArray();
+        WingLocations = locations.Where(x => x.LocationType == LocationType.Wing).ToArray();
+    }
+
+}
+    

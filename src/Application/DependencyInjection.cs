@@ -25,6 +25,7 @@ public static class DependencyInjection
 
             // config.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>)); // issues with caching means we need to turn it off for now
             config.AddOpenBehavior(typeof(TransactionBehaviour<,>));
+            config.AddOpenBehavior(typeof(AccessAuditingBehaviour<,>));
         });
 
         // Register a factory for creating new instances of Mediator with a new scope

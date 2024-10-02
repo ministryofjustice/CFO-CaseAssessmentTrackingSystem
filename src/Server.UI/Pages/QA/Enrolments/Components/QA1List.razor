@@ -147,8 +147,11 @@
         {
             _loading = true;
             Query.CurrentUser = UserProfile;
-            Query.SortDirection = "Desc";
-            Query.OrderBy = "Created";
+            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Created";
+            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
+            Query.PageNumber = state.Page + 1;
+            Query.PageSize = state.PageSize;
+
             var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
             return new GridData<EnrolmentQueueEntryDto> { TotalItems = result.TotalItems, Items = result.Items };
         }
