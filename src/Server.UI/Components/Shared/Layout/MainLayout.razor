@@ -54,7 +54,7 @@
             _timer = new System.Timers.Timer(60000 * idleTimeOutMinutes); 
             _timer.Elapsed += UpdateTimer;
             _timer.AutoReset = false;
-
+            _timer.Start();
             await JS.InvokeVoidAsync("timeOutCall", DotNetObjectReference.Create(this));
         }
     }
