@@ -63,9 +63,9 @@
                     <div class="d-flex flex-column">
                         <MudSelect T="string" Style="min-width:650px" ValueChanged="OnChangedListView" Value="@_selectedAssigneeId" Dense="true">
                             <MudSelectItem T="string" Value="@(" ")">@L["Please Select Assignee"]</MudSelectItem>                            
-                            @foreach (var item in UserManager.Users.Where(x => x.TenantId!.StartsWith(UserProfile!.TenantId!)))
+                            @foreach (var item in UserManager.Users.Where(x => x.TenantId!.StartsWith(UserProfile!.TenantId!)).OrderBy((x => x.DisplayName)))
                             {
-                                <MudSelectItem T="string" Value="@item.Id">@item.NormalizedUserName</MudSelectItem>
+                                <MudSelectItem T="string" Value="@item.Id">@item.DisplayName</MudSelectItem>
                             }
                         </MudSelect>
                     </div>
