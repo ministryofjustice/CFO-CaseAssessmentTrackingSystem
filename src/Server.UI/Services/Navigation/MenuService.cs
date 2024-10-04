@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using Cfo.Cats.Application.SecurityConstants;
+﻿using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
 
 namespace Cfo.Cats.Server.UI.Services.Navigation;
@@ -33,6 +32,13 @@ public class MenuService : IMenuService
                                 Href = "/pages/participants",
                                 PageStatus = PageStatus.Completed
                             },
+                            new()
+                            {
+                                Title = "Reassign Participant",
+                                Href = "/pages/participants/Reassign",                                
+                                PageStatus = PageStatus.Completed,
+                                Roles = [RoleNames.QAFinance, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            },
                         }
                     },
                     new()
@@ -41,8 +47,7 @@ public class MenuService : IMenuService
                         Icon = Icons.Material.Filled.Analytics,
                         Href = "/reports",
                         PageStatus = PageStatus.ComingSoon
-                    },
-                  
+                    },                  
                 }
             },
             new MenuSectionModel
@@ -86,7 +91,6 @@ public class MenuService : IMenuService
                                 Href = "/pages/qa/enrolments/qa2/",
                                 Roles = [ RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
                             }
-
                         }
                     }
                 }

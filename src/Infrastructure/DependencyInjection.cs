@@ -78,8 +78,7 @@ public static class DependencyInjection
         IConfiguration configuration
     )
     {
-        services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
-        
+        services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();        
 
         if (configuration.GetValue<bool>("UseInMemoryDatabase"))
         {
@@ -89,15 +88,13 @@ public static class DependencyInjection
             });
         }
         else
-        {
-            
+        {            
             services.AddDbContext<ApplicationDbContext>(
             (p, m) => {
                 var databaseSettings = p.GetRequiredService<IOptions<DatabaseSettings>>().Value;
                 m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
                 m.UseDatabase(databaseSettings.DbProvider, databaseSettings.ConnectionString);
             });
-
         }
 
         services.AddDbContextFactory<ApplicationDbContext>((serviceProvider, optionsBuilder) =>
@@ -106,8 +103,7 @@ public static class DependencyInjection
             optionsBuilder.AddInterceptors(serviceProvider.GetServices<ISaveChangesInterceptor>());
             optionsBuilder.UseDatabase(databaseSettings.DbProvider, databaseSettings.ConnectionString);
         }, ServiceLifetime.Scoped);
-        
-        
+                
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
         services.AddScoped<ApplicationDbContextInitializer>();
@@ -171,8 +167,7 @@ public static class DependencyInjection
             var options = configuration.GetAWSOptions();
             options.Credentials = new BasicAWSCredentials(section.GetRequiredValue("AccessKey"), section.GetRequiredValue("SecretKey"));
             services.AddDefaultAWSOptions(options);
-            services.AddAWSService<IAmazonS3>();
-            
+            services.AddAWSService<IAmazonS3>();            
         }
         
         if(configuration.GetValue<bool>("UseDummyCandidateService"))
@@ -203,7 +198,6 @@ public static class DependencyInjection
 
     private static IServiceCollection AddAuthenticationService(this IServiceCollection services, IConfiguration configuration)
     {
-
         services.Configure<AllowlistOptions>(configuration.GetSection(nameof(AllowlistOptions)));
 
         services
@@ -218,7 +212,6 @@ public static class DependencyInjection
         services.AddScoped<UserManager<ApplicationUser>, ApplicationUserManager>();
         services.AddScoped<SignInManager<ApplicationUser>, CustomSigninManager>();
         services.AddScoped<ISecurityStampValidator, SecurityStampValidator<ApplicationUser>>();
-
 
         services.Configure<IdentityOptions>(options => {
             var identitySettings = configuration
@@ -255,8 +248,7 @@ public static class DependencyInjection
                 options.AddPolicy(SecurityPolicies.Export, policy => {
                     policy.RequireAuthenticatedUser();
                     policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager);
-                    
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager);                    
                 });
 
                 options.AddPolicy(SecurityPolicies.CandidateSearch, policy => {
@@ -308,7 +300,7 @@ public static class DependencyInjection
                 {
                     policy.RequireAuthenticatedUser();
                     policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.QAOfficer);
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer, RoleNames.QASupportManager);
                 });
                 
                 options.AddPolicy(SecurityPolicies.Qa2, policy =>
@@ -318,6 +310,12 @@ public static class DependencyInjection
                     policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QASupportManager);
                 });
 
+                options.AddPolicy(SecurityPolicies.UserHasAdditionalRoles, policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAFinance);
+                });
             })
             .AddAuthentication(options => {
                 options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -333,8 +331,7 @@ public static class DependencyInjection
         if(configuration["IdentitySettings:SecureCookies"] is not null && configuration["IdentitySettings:SecureCookies"]!.Equals("True", StringComparison.CurrentCultureIgnoreCase))
         {
             policy = CookieSecurePolicy.Always;
-        }
-        
+        }        
 
         services.ConfigureApplicationCookie(options => {
             options.LoginPath = "/pages/authentication/login";
@@ -348,8 +345,7 @@ public static class DependencyInjection
                 var service = sp.GetRequiredService<UserService>();
                 service.Initialize();
                 return service;
-            });
-        
+            });        
 
         return services;
     }

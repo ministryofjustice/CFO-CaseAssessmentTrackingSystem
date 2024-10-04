@@ -55,7 +55,7 @@
                         <MudText Typo="Typo.caption" Class="mb-2">@L[_currentDto.GetClassDescription()]</MudText>
                         <MudSelect T="string" Style="min-width:120px" ValueChanged="OnChangedListView" Value="@_selectedTenantId" Dense="true" Label="List View">
                             <MudSelectItem T="string" Value="@(" ")">@L["ALL"]</MudSelectItem>
-                            @foreach (var item in TenantsService.DataSource.OrderBy(t => t.Id))
+                            @foreach (var item in TenantsService.DataSource.Where(x => x.Id.StartsWith(CurrentUser!.TenantId!)).OrderBy(t => t.Id))
                             {
                                 <MudSelectItem T="string" Value="@item.Id">@item.Name</MudSelectItem>
                             }
@@ -186,8 +186,7 @@
                                 {
                                     <MudMenuItem OnClick="@(() => OnUnlock(context.Item))">@L["Unlock"]</MudMenuItem>
                                 }                          
-                            }
-                            
+                            }                            
                         </MudMenu>
                     }
                     else
@@ -442,7 +441,10 @@
              x.DisplayName!.Contains(_searchString) ||
              x.PhoneNumber!.Contains(_searchString) &&
             (_searchRole == null || (_searchRole != null && x.UserRoles.Any(x => x.Role.Name == _searchRole))) &&
-            (_selectedTenantId == " " || (_selectedTenantId != " " && x.TenantId == _selectedTenantId)));
+            (_selectedTenantId == " " 
+            || (_selectedTenantId != " " 
+            && x.TenantId == _selectedTenantId)            
+            ));
     }
 
     private async Task<GridData<ApplicationUserDto>> ServerReload(GridState<ApplicationUserDto> state)
@@ -451,12 +453,14 @@
         {
             _loading = true;
 
-            var query = UserManager.Users.Where(CreateSearchPredicate());
+            var query = UserManager.Users.Where(CreateSearchPredicate()) ;
             var items = await query
+                .Where(x => x.TenantId!.StartsWith(CurrentUser!.TenantId!))
                 .Include(x => x.UserRoles)
-                .Include(x => x.Superior)
+                .Include(x => x.Superior)                
                 .EfOrderBySortDefinitions(state)
-                .Skip(state.Page * state.PageSize).Take(state.PageSize).ProjectTo<ApplicationUserDto>(Mapper.ConfigurationProvider).ToListAsync();
+                .Skip(state.Page * state.PageSize).Take(state.PageSize)
+                .ProjectTo<ApplicationUserDto>(Mapper.ConfigurationProvider).ToListAsync();
             var total = await UserManager.Users.CountAsync(CreateSearchPredicate());
             return new GridData<ApplicationUserDto> { TotalItems = total, Items = items };
         }

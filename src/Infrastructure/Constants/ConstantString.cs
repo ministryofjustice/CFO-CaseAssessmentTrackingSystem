@@ -124,4 +124,7 @@ public static class ConstantString
     Localize("Right To Work");
     public static string AddConsent =>
     Localize("Add Consent");
+
+    public static string ReassignParticipant =>
+    Localize("Reassign Participant");
 }
