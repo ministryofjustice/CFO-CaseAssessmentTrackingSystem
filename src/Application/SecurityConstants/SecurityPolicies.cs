@@ -41,5 +41,9 @@ public static class SecurityPolicies
     public const string SystemFunctionsRead = nameof(SystemFunctionsRead);
     
     public const string SystemFunctionsWrite = nameof(SystemFunctionsWrite);
-    
+
+    /// <summary>
+    /// The used anywhere any user > support worker can do it
+    /// </summary>
+    public const string UserHasAdditionalRoles = nameof(UserHasAdditionalRoles);
 }

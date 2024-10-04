@@ -1,0 +1,330 @@
+﻿@page "/pages/participants/Reassign"
+
+@using Cfo.Cats.Application.Common.Interfaces.MultiTenant
+@using Cfo.Cats.Application.Features.Identity.DTOs
+@using Cfo.Cats.Application.Features.Participants.Commands 
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Domain.Identity
+@using Cfo.Cats.Server.UI.Pages.Participants.Components
+@using Cfo.Cats.Application.Features.Participants.Caching
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Application.Features.Participants.Specifications
+@using Cfo.Cats.Application.SecurityConstants
+@using System.Linq.Expressions
+ 
+@inject IStringLocalizer<ReassignParticipant> L
+@inject ITenantService TenantsService
+
+@inherits CatsComponentBase
+
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+@attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+
+<PageTitle>@Title</PageTitle>
+<style>
+    .mud-table-toolbar {
+        height: 120px !important;
+    }
+</style>
+
+<MudDataGrid ServerData="@(ServerReload)"
+             FixedHeader="true"
+             FixedFooter="true"
+             Virtualize="true"
+             @bind-RowsPerPage="_defaultPageSize"
+             Height="calc(100vh - 330px)"
+             Loading="@_loading"
+             MultiSelection="true"
+             @bind-SelectedItems="_selectedItems"
+             @bind-SelectedItem="_currentDto"
+             Hover="true"
+             @ref="_table">
+    <ToolBarContent>
+        <div class="d-flex align-start flex-grow-1">
+            <div class="d-flex gap-4">
+                <MudIcon Icon="@Icons.Material.Filled.MoveUp" Size="Size.Large" />
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.caption" Class="mb-2">@ConstantString.ReassignParticipant</MudText>
+                    <MudEnumSelect Style="min-width:240px" TEnum="ParticipantListView" ValueChanged="OnChangedListView"
+                    Value="Query.ListView" Dense="false" Label="Enrolment Status">
+                    </MudEnumSelect>
+                </div>
+            </div>
+            <div class="flex-grow-1"></div>
+            @if (_canReassignParticipant)
+            {
+                <div class="d-flex gap-4">
+                    <MudIcon Icon="@Icons.Material.Filled.SwitchAccount" Size="Size.Large" />
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.caption" Class="mb-2">Select New Assignee</MudText>
+                    </div>
+
+                    <div class="d-flex flex-column">
+                        <MudSelect T="string" Style="min-width:650px" ValueChanged="OnChangedListView" Value="@_selectedAssigneeId" Dense="true">
+                            <MudSelectItem T="string" Value="@(" ")">@L["Please Select Assignee"]</MudSelectItem>                            
+                            @foreach (var item in UserManager.Users.Where(x => x.TenantId!.StartsWith(UserProfile!.TenantId!)))
+                            {
+                                <MudSelectItem T="string" Value="@item.Id">@item.NormalizedUserName</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </div>
+  
+                    <div class="d-flex flex-column">
+                        <MudButton Variant="Variant.Outlined"
+                                    Size="Size.Small"
+                                   Disabled="@(ParticipantIdsToReassign.Count()==0 || _loading || _selectedAssigneeId == " ")"
+                                    OnClick="@(() => ReassignSelectedItems())"
+                                    StartIcon="@Icons.Material.Filled.MoveDown" IconColor="Color.Surface" Color="Color.Primary"
+                                    Style="margin-right: 4px; margin-bottom:4px">
+                            @ConstantString.ReassignParticipant
+                        </MudButton>                    
+                    </div>
+                </div>                
+            }
+            
+            <div class="flex-grow-1"></div>
+            <div class="d-flex flex-column justify-end">                
+                <div class="d-flex">
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                      
+                        <MudButton Variant="Variant.Outlined"
+                                   Size="Size.Small"
+                                   Disabled="@_loading"
+                                   OnClick="@(() => OnRefresh())"
+                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
+                                   Style="margin-right: 4px; margin-bottom:4px">
+                            @ConstantString.Refresh
+                        </MudButton>
+            
+                    </MudHidden>
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                    </MudHidden>
+                </div>
+                @if (_canSearch)
+                {
+                    <MudTextField T="string" ValueChanged="@(OnSearch)" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                    </MudTextField>
+                }
+            </div>
+        </div>
+    </ToolBarContent>
+    <Columns>        
+        <PropertyColumn Property="x => x.Id" Title="Select" Sortable="false">
+            <CellTemplate>
+                <MudCheckBox T="bool"
+                             @onclick="()=>OnCheckedChanged(context.Item.Id)"                             
+                             >
+                </MudCheckBox>                
+            </CellTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="x => x.ParticipantName" Title="@L["Participant"]" Sortable="false">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>
+                    <MudText Typo="Typo.body2">@context.Item.Id</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="x => x.EnrolmentStatus" Title="@L[_currentDto.GetMemberDescription(x => x.EnrolmentStatus)]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <div class="flex-grow-0">
+                        <EnrolmentStatusChip Status="@context.Item.EnrolmentStatus"></EnrolmentStatusChip>
+                    </div>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="x => x.ConsentStatus" Title="@L[_currentDto.GetMemberDescription(x => x.ConsentStatus)]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <div class="flex-grow-0">
+                        <ConsentStatusChip Status="@context.Item.ConsentStatus"></ConsentStatusChip>
+                    </div>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="x => x.CurrentLocation"
+                        Title="@L[_currentDto.GetMemberDescription(x => x.CurrentLocation)]"
+                        SortBy="x => x.CurrentLocation.Name">
+            <CellTemplate>
+                <div class="d-flex align-items-center">
+                    @if (context.Item.CurrentLocation.LocationType.IsCustody)
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Castle" Title="Custody" />
+                    }
+                    else
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.MapsHomeWork" Title="Community" />
+                    }
+                    <span class="ml-2">@context.Item.CurrentLocation.Name</span>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="x => x.EnrolmentLocation"
+                        Title="@L[_currentDto.GetMemberDescription(x => x.EnrolmentLocation)]"
+                        SortBy="x => x.EnrolmentLocation?.Name">
+            <CellTemplate>
+                <div class="d-flex align-items-center">
+                    @if (context.Item.EnrolmentLocation is not null)
+                    {
+                        @if (context.Item.EnrolmentLocation.LocationType.IsCustody)
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.Castle" Title="Custody" />
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.MapsHomeWork" Title="Community" />
+                        }
+                        <span class="ml-2">@context.Item.EnrolmentLocation?.Name</span>
+                    }
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="x => x.Owner"
+                        Title="@L[_currentDto.GetMemberDescription(x => x.Owner)]"
+                        SortBy="x => x.Owner">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.Owner</MudText>
+                    <MudText Typo="Typo.body2">@context.Item.Tenant</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+    </Columns>
+
+    <NoRecordsContent>
+        <MudText>@ConstantString.NoRecords</MudText>
+    </NoRecordsContent>
+
+    <LoadingContent>
+        <MudText>@ConstantString.Loading</MudText>
+    </LoadingContent>
+
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+    private UserManager<ApplicationUser> UserManager = null!;
+    
+
+    public string? Title { get; private set; }
+    private int _defaultPageSize = 15;
+
+    private HashSet<ParticipantPaginationDto> _selectedItems = new();
+
+    private MudDataGrid<ParticipantPaginationDto> _table = default!;
+    private bool _loading;
+    private bool _canSearch;
+    private bool _canReassignParticipant;
+    private string _selectedAssigneeId = " ";
+
+    private ParticipantPaginationDto _currentDto = new() { Id = "" };
+
+    private ParticipantsWithPagination.Query Query { get; set; } = new();
+
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+    [CascadingParameter] private UserProfile? UserProfile { get; set; }
+
+    private List<string> ParticipantIdsToReassign { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Title = L["Reassign Participant"];
+        var state = await AuthState;
+        _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.CandidateSearch)).Succeeded;
+        _canReassignParticipant = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.UserHasAdditionalRoles)).Succeeded;
+        UserManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();        
+    }
+
+    private async Task<GridData<ParticipantPaginationDto>> ServerReload(GridState<ParticipantPaginationDto> state)
+    {
+        try
+        {
+            _loading = true;            
+            Query.CurrentUser = UserProfile;
+            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Id";
+            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
+            Query.PageNumber = state.Page + 1;
+            Query.PageSize = state.PageSize;
+            var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
+            return new GridData<ParticipantPaginationDto> { TotalItems = result.TotalItems, Items = result.Items };
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task OnSearch(string text)
+    {
+        if (_loading)
+        {
+            return;
+        }
+        _selectedItems = new();
+        Query.Keyword = text;
+        await _table.ReloadServerData();
+    }
+
+    private async Task OnChangedListView(ParticipantListView listview)
+    {
+        Query.ListView = listview;
+        await _table.ReloadServerData();
+    }
+
+    private async Task OnRefresh()
+    {
+        ParticipantCacheKey.Refresh();
+        _selectedItems = [];
+        Query.Keyword = string.Empty;
+        ParticipantIdsToReassign.Clear();
+        await _table.ReloadServerData();
+    }
+        
+    private async Task ReassignSelectedItems()
+    {
+        var command = new ReassignParticipants.Command
+            {
+                ParticipantIdsToReassign = ParticipantIdsToReassign,
+                AssigneeId = _selectedAssigneeId,                
+                CurrentUser = UserProfile
+            };            
+
+        var result = await GetNewMediator().Send(command);
+
+        if (result.Succeeded is false)
+        {
+            Snackbar.Add("Error Reassigning Participants", Severity.Error);
+            return;
+        }
+
+        Snackbar.Add("Participants reassigned", Severity.Success);        
+        ParticipantIdsToReassign.Clear();
+        _selectedAssigneeId = " ";
+        await _table.ReloadServerData();
+    }    
+
+    private void OnCheckedChanged(string participantId)
+    {
+        if (!ParticipantIdsToReassign.Remove(participantId))
+        {
+            ParticipantIdsToReassign.Add(participantId);
+        }        
+    }
+
+    private async Task OnChangedListView(string assingeeId)
+    {
+        _selectedAssigneeId = assingeeId;
+        await Task.CompletedTask;
+    }
+}
