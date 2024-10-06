@@ -9,11 +9,11 @@ namespace Cfo.Cats.Application.Features.Participants.Commands
         [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
         public class Command : IRequest<Result<bool>>
         {
-            public List<string> ParticipantIdsToReassign { get; set; } = new();
+            public string[] ParticipantIdsToReassign { get; set; } = [];
 
             public UserProfile? CurrentUser { get; set; }
 
-            public required string AssigneeId { get; set; }
+            public string? AssigneeId { get; set; }
         }
 
         public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<bool>>
@@ -23,7 +23,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands
                 foreach (var participantId in request.ParticipantIdsToReassign)
                 {
                     var participant = await unitOfWork.DbContext.Participants
-                       .FirstOrDefaultAsync(x => x.Id == participantId);
+                        .FirstOrDefaultAsync(x => x.Id == participantId);
 
                     if (participant is not null)
                     {
@@ -36,6 +36,22 @@ namespace Cfo.Cats.Application.Features.Participants.Commands
                 }
 
                 return Result<bool>.Success(true);
+            }
+        }
+
+        public class A_ : AbstractValidator<Command>
+        {
+            public A_()
+            {
+                RuleFor(x => x.AssigneeId)
+                    .NotNull()
+                    .MinimumLength(36);
+
+                RuleFor(x => x.ParticipantIdsToReassign)
+                    .NotEmpty();
+
+                RuleFor(x => x.CurrentUser)
+                    .NotNull();
             }
         }
 

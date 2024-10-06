@@ -1,9 +1,7 @@
 ﻿@page "/pages/participants/Reassign"
 
 @using Cfo.Cats.Application.Common.Interfaces.MultiTenant
-@using Cfo.Cats.Application.Features.Identity.DTOs
-@using Cfo.Cats.Application.Features.Participants.Commands 
-@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Domain.Identity
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Application.Features.Participants.Caching
@@ -11,14 +9,12 @@
 @using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Application.Features.Participants.Specifications
 @using Cfo.Cats.Application.SecurityConstants
-@using System.Linq.Expressions
- 
+
 @inject IStringLocalizer<ReassignParticipant> L
 @inject ITenantService TenantsService
 
 @inherits CatsComponentBase
 
-@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 @attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
 
 <PageTitle>@Title</PageTitle>
@@ -45,49 +41,28 @@
             <div class="d-flex gap-4">
                 <MudIcon Icon="@Icons.Material.Filled.MoveUp" Size="Size.Large" />
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption" Class="mb-2">@ConstantString.ReassignParticipant</MudText>
+                    <MudText Typo="Typo.caption" Class="mb-2">@ConstantString.Reassign</MudText>
                     <MudEnumSelect Style="min-width:240px" TEnum="ParticipantListView" ValueChanged="OnChangedListView"
                     Value="Query.ListView" Dense="false" Label="Enrolment Status">
                     </MudEnumSelect>
                 </div>
             </div>
             <div class="flex-grow-1"></div>
-            @if (_canReassignParticipant)
-            {
-                <div class="d-flex gap-4">
-                    <MudIcon Icon="@Icons.Material.Filled.SwitchAccount" Size="Size.Large" />
-                    <div class="d-flex flex-column">
-                        <MudText Typo="Typo.caption" Class="mb-2">Select New Assignee</MudText>
-                    </div>
-
-                    <div class="d-flex flex-column">
-                        <MudSelect T="string" Style="min-width:650px" ValueChanged="OnChangedListView" Value="@_selectedAssigneeId" Dense="true">
-                            <MudSelectItem T="string" Value="@(" ")">@L["Please Select Assignee"]</MudSelectItem>                            
-                            @foreach (var item in UserManager.Users.Where(x => x.TenantId!.StartsWith(UserProfile!.TenantId!)).OrderBy((x => x.DisplayName)))
-                            {
-                                <MudSelectItem T="string" Value="@item.Id">@item.DisplayName</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </div>
-  
-                    <div class="d-flex flex-column">
-                        <MudButton Variant="Variant.Outlined"
-                                    Size="Size.Small"
-                                   Disabled="@(ParticipantIdsToReassign.Count()==0 || _loading || _selectedAssigneeId == " ")"
-                                    OnClick="@(() => ReassignSelectedItems())"
-                                    StartIcon="@Icons.Material.Filled.MoveDown" IconColor="Color.Surface" Color="Color.Primary"
-                                    Style="margin-right: 4px; margin-bottom:4px">
-                            @ConstantString.ReassignParticipant
-                        </MudButton>                    
-                    </div>
-                </div>                
-            }
             
             <div class="flex-grow-1"></div>
             <div class="d-flex flex-column justify-end">                
                 <div class="d-flex">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
                       
+                        <MudButton Variant="Variant.Outlined"
+                                   Size="Size.Small"
+                                   Disabled="@(ParticipantIdsToReassign.Any() == false || _loading)"
+                                   OnClick="@(() => ReassignSelectedItems())"
+                                   StartIcon="@Icons.Material.Filled.MoveDown" IconColor="Color.Surface" Color="Color.Primary"
+                                   Style="margin-right: 4px; margin-bottom:4px">
+                            @ConstantString.Reassign
+                        </MudButton>   
+
                         <MudButton Variant="Variant.Outlined"
                                    Size="Size.Small"
                                    Disabled="@_loading"
@@ -214,8 +189,7 @@
 </MudDataGrid>
 
 @code {
-    private UserManager<ApplicationUser> UserManager = null!;
-    
+
 
     public string? Title { get; private set; }
     private int _defaultPageSize = 15;
@@ -225,8 +199,7 @@
     private MudDataGrid<ParticipantPaginationDto> _table = default!;
     private bool _loading;
     private bool _canSearch;
-    private bool _canReassignParticipant;
-    private string _selectedAssigneeId = " ";
+
 
     private ParticipantPaginationDto _currentDto = new() { Id = "" };
 
@@ -242,8 +215,7 @@
         Title = L["Reassign Participant"];
         var state = await AuthState;
         _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.CandidateSearch)).Succeeded;
-        _canReassignParticipant = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.UserHasAdditionalRoles)).Succeeded;
-        UserManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();        
+        ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();        
     }
 
     private async Task<GridData<ParticipantPaginationDto>> ServerReload(GridState<ParticipantPaginationDto> state)
@@ -256,6 +228,7 @@
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
+            Query.JustMyCases = false;
             var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
             return new GridData<ParticipantPaginationDto> { TotalItems = result.TotalItems, Items = result.Items };
         }
@@ -293,25 +266,34 @@
         
     private async Task ReassignSelectedItems()
     {
-        var command = new ReassignParticipants.Command
-            {
-                ParticipantIdsToReassign = ParticipantIdsToReassign,
-                AssigneeId = _selectedAssigneeId,                
-                CurrentUser = UserProfile
-            };            
-
-        var result = await GetNewMediator().Send(command);
-
-        if (result.Succeeded is false)
+        var parameters = new DialogParameters<ReassignParticipantDialog>
         {
-            Snackbar.Add("Error Reassigning Participants", Severity.Error);
-            return;
+            {
+                x => x.Model, new ReassignParticipants.Command()
+                {
+                    CurrentUser = UserProfile,
+                    ParticipantIdsToReassign = ParticipantIdsToReassign.ToArray()
+                }
+            },
+            {
+                x => x.UserProfile,
+                UserProfile
+            }
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<ReassignParticipantDialog>("Reassign participants", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            
+            await _table.ReloadServerData();
         }
 
-        Snackbar.Add("Participants reassigned", Severity.Success);        
-        ParticipantIdsToReassign.Clear();
-        _selectedAssigneeId = " ";
-        await _table.ReloadServerData();
+
     }    
 
     private void OnCheckedChanged(string participantId)
@@ -322,9 +304,4 @@
         }        
     }
 
-    private async Task OnChangedListView(string assingeeId)
-    {
-        _selectedAssigneeId = assingeeId;
-        await Task.CompletedTask;
-    }
 }

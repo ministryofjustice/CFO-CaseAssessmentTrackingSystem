@@ -1,0 +1,88 @@
+﻿@using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Domain.Identity
+@inherits CatsComponentBase
+
+@inject IValidationService Validator
+
+@inject IStringLocalizer<ReassignParticipantDialog> L
+
+<MudDialog>
+    <DialogContent>
+        <MudForm Model="Model" @ref="_form" Validation="@(Validator.ValidateValue(Model))">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.caption">
+                        Reassign @Model!.ParticipantIdsToReassign.Length @(Model.ParticipantIdsToReassign.Length == 1 ? "participant" : "participants")
+                    </MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    @if (_userManager is not null)
+                    {
+                        <MudSelect T="string" Style="min-width:650px" @bind-Value="Model!.AssigneeId" Dense="true">
+                            @foreach (var item in _userManager.Users.Where(x => x.TenantId!.StartsWith(UserProfile!.TenantId!)).OrderBy((x => x.DisplayName)))
+                            {
+                                <MudSelectItem T="string" Value="@item.Id">@item.DisplayName</MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
+                </MudItem>
+            </MudGrid>
+            
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@_saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Submit</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code{
+
+    private UserManager<ApplicationUser>? _userManager;
+
+
+    private MudForm? _form;
+
+    [EditorRequired]
+    [Parameter]
+    public ReassignParticipants.Command? Model { get ; set; }
+
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public UserProfile? UserProfile { get; set; }
+
+
+    private bool _saving;
+
+    private void Cancel() => MudDialog.Close();
+
+    protected override void OnInitialized()
+    {
+        _userManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            await _form!.Validate().ConfigureAwait(false);
+            if (_form.IsValid)
+            {
+                var result = await GetNewMediator().Send(Model!);
+                if (result.Succeeded)
+                {
+                    MudDialog.Close(DialogResult.Ok(true));
+                    Snackbar.Add("Participants reassigned", Severity.Info);
+                }
+                else
+                {
+                    Snackbar.Add(result.ErrorMessage, Severity.Error);
+                }
+            }
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+}
