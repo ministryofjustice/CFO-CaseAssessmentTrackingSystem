@@ -125,6 +125,6 @@ public static class ConstantString
     public static string AddConsent =>
     Localize("Add Consent");
 
-    public static string ReassignParticipant =>
-    Localize("Reassign Participant");
+    public static string Reassign =>
+    Localize("Reassign");
 }
