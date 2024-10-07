@@ -2,6 +2,7 @@
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Cfo.Cats.Domain.Entities.Participants;
+using Cfo.Cats.Application.Common.Validators;
 
 namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Participants;
 
@@ -178,7 +179,7 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
                 DatabaseConstants.Schemas.Participant
             );
             note.HasKey("Id");
-            note.Property(x => x.Message).HasMaxLength(256);
+            note.Property(x => x.Message).HasMaxLength(ValidationConstants.NotesLength);
 
             note.Property(x => x.CallReference)
                 .HasMaxLength(DatabaseConstants.FieldLengths.CallReference);
