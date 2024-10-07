@@ -34,8 +34,8 @@ public class MenuService : IMenuService
                             },
                             new()
                             {
-                                Title = "Reassign Participant",
-                                Href = "/pages/participants/Reassign",                                
+                                Title = "Reassign",
+                                Href = "/pages/participants/reassign",                                
                                 PageStatus = PageStatus.Completed,
                                 Roles = [RoleNames.QAFinance, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
                             },

@@ -81,6 +81,12 @@
         if (UserProfile is not null)
         {
 
+            if (UserProfile.AssignedRoles.Any())
+            {
+                pages.Add("Reassign", "/pages/participants/reassign");
+            }
+
+
             string[] allowed = [RoleNames.QAFinance, RoleNames.SMT, RoleNames.SystemSupport];
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {

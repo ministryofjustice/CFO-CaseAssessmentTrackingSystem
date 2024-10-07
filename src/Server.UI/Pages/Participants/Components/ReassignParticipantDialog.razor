@@ -18,8 +18,12 @@
                 <MudItem xs="12">
                     @if (_userManager is not null)
                     {
-                        <MudSelect T="string" Style="min-width:650px" @bind-Value="Model!.AssigneeId" Dense="true">
-                            @foreach (var item in _userManager.Users.Where(x => x.TenantId!.StartsWith(UserProfile!.TenantId!)).OrderBy((x => x.DisplayName)))
+                        <MudSelect T="string" Style="min-width:650px" @bind-Value="Model!.AssigneeId" Dense="true" Required="true">
+                            @foreach (var item in _userManager.Users
+                                          .Where(x => x.TenantId!.StartsWith(UserProfile!.TenantId!))
+                                          .Where(x => x.IsActive)
+                                          .Where(x => x.LockoutEnd == null)
+                                          .OrderBy((x => x.DisplayName)))
                             {
                                 <MudSelectItem T="string" Value="@item.Id">@item.DisplayName</MudSelectItem>
                             }
