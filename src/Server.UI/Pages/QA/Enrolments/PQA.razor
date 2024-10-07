@@ -77,8 +77,9 @@
                                     </MudRadio>
                                 </MudRadioGroup>
                             </MudItem>
-
-                            <MudTextField @bind-Value="Command.Message" Label="Message" For="() => Command.Message"/>
+                            
+                            <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" Class="mt-4" For="() => Command.Message" MaxLength="256" Immediate="true" oninput="UpdateCharacterCount" />
+                            <MudText Class="ml-2">Characters: @characterCount / 256</MudText> 
                         </MudForm>
                         <MudContainer Class="d-flex px-0 pt-8">
                             <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
@@ -170,11 +171,16 @@
                 }
             </ul>
         </div>
-        , Severity.Error, options => {
-            options.RequireInteraction = true;
-            options.SnackbarVariant = Variant.Text;
-        });
+    , Severity.Error, options => {
+        options.RequireInteraction = true;
+        options.SnackbarVariant = Variant.Text;
+    });
     }
 
-  
+    private int characterCount => Command.Message?.Length ?? 0;
+
+    private void UpdateCharacterCount(ChangeEventArgs args)
+    {        
+        Command.Message = args?.Value?.ToString() ?? string.Empty;
+    }
 }
