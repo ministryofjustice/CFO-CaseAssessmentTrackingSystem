@@ -90,7 +90,9 @@
                                 </MudRadioGroup>
                             </MudItem>
 
-                            <MudTextField @bind-Value="Command.Message" Label="Message" For="() => Command.Message"/>
+                            <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" Class="mt-4" For="() => Command.Message" MaxLength="256" Immediate="true" oninput="UpdateCharacterCount" />
+                            <MudText Class="ml-2">Characters: @characterCount / 256</MudText>
+
                         </MudForm>
                         <MudContainer Class="d-flex px-0 pt-8">
                             <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
@@ -107,13 +109,9 @@
             </MudItem>
         </MudGrid>
     }
-
-
 </MudContainer>
 
-
 @code {
-
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry = null;
     private ParticipantDto? _participantDto = null;
@@ -126,9 +124,9 @@
     private async Task GetQueueItem()
     {
         GrabQa2Entry.Command command = new GrabQa2Entry.Command()
-                        {
-                            CurrentUser = UserProfile!
-                        };
+            {
+                CurrentUser = UserProfile!
+            };
 
         var result = await GetNewMediator().Send(command);
         if (result.Succeeded)
@@ -148,9 +146,7 @@
         {
             Snackbar.Add(result.ErrorMessage, Severity.Info);
         }
-
     }
-
 
     protected async Task SubmitToQa()
     {
@@ -169,7 +165,6 @@
                 ShowActionFailure("Failed to submit", result);
             }
         }
-
     }
 
     private void ShowActionFailure(string title, IResult result)
@@ -190,4 +185,10 @@
         });
     }
 
+    private int characterCount => Command.Message?.Length ?? 0;
+
+    private void UpdateCharacterCount(ChangeEventArgs args)
+    {
+        Command.Message = args?.Value?.ToString() ?? string.Empty;
+    }
 }
