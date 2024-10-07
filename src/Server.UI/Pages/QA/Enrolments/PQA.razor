@@ -2,6 +2,7 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.Pqa)]
 
+@using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
@@ -78,8 +79,8 @@
                                 </MudRadioGroup>
                             </MudItem>
                             
-                            <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" Class="mt-4" For="() => Command.Message" MaxLength="256" Immediate="true" oninput="UpdateCharacterCount" />
-                            <MudText Class="ml-2">Characters: @characterCount / 256</MudText> 
+                            <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" Class="mt-4" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
+                            <MudText Class="ml-2">Characters: @characterCount / 1000</MudText> 
                         </MudForm>
                         <MudContainer Class="d-flex px-0 pt-8">
                             <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
@@ -183,4 +184,4 @@
     {        
         Command.Message = args?.Value?.ToString() ?? string.Empty;
     }
-}
+} 

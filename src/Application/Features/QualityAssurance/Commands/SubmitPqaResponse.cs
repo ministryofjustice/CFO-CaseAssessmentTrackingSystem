@@ -46,6 +46,9 @@ public static class SubmitPqaResponse
                 .NotNull()
                 .WithMessage("You must accept or return the request");
 
+            RuleFor(x => x.Message)
+                .MaximumLength(ValidationConstants.NotesLength);
+
             When(x => x.Accept is false, () =>
             {
                 RuleFor(x => x.Message)

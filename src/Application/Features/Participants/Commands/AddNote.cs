@@ -63,7 +63,7 @@ public static class AddNote
 
             RuleFor(c => c.Message)
                 .NotEmpty()
-                .MaximumLength(255)
+                .MaximumLength(ValidationConstants.NotesLength)
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Message"));
         }
