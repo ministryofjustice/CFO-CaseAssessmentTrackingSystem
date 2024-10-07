@@ -16,6 +16,8 @@
 
         public const string Notes = @"^[A-Za-z0-9 ?.,!""'\/$£&€\r\n\-\(\)@’:;%]*$";
         public const string NotesMessage = "{0} must contain only letters, numbers, spaces and common punctuation";
+
+        public const int NotesLength = 1000;
         
         public const string GuidMessage = "{0} must contain a valid Guid";
 

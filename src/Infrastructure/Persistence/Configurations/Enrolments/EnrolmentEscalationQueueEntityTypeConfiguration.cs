@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Domain.Entities.Participants;
+﻿using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -26,7 +27,8 @@ public class EnrolmentEscalationQueueEntityTypeConfiguration : IEntityTypeConfig
             DatabaseConstants.Schemas.Enrolment
             );
             note.HasKey("Id");
-            note.Property(x => x.Message).HasMaxLength(256);
+            note.Property(x => x.Message)
+                .HasMaxLength(ValidationConstants.NotesLength);
 
             note.Property(x => x.CallReference)
                 .HasMaxLength(DatabaseConstants.FieldLengths.CallReference);
