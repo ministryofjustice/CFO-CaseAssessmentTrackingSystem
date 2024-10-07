@@ -44,30 +44,28 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHave
         return this;
     }
 
-    public EnrolmentQueueEntry Complete(bool accept, string? message = null)
+    public EnrolmentQueueEntry Complete(bool accept)
     {
-        if (!accept && string.IsNullOrWhiteSpace(message))
-        {
-            throw new ArgumentException("Cannot reject a queue entry without a reason");
-        }
-        
         IsCompleted = true;
         IsAccepted = accept;
-        if (string.IsNullOrEmpty(message) == false)
+        AddDomainEvent(new EnrolmentQueueEntryCompletedDomainEvent(this));
+        return this;
+    }
+
+    public EnrolmentQueueEntry AddNote(string? message)
+    {
+        if (string.IsNullOrWhiteSpace(message) == false)
         {
             _notes.Add(new Note()
             {
-                TenantId = Tenant!.Id,
+                TenantId = TenantId,
                 Message = message
             });
         }
-
-        AddDomainEvent(new EnrolmentQueueEntryCompletedDomainEvent(this));
-        
         return this;
     }
-    
-    
+
+
 
     public string TenantId { get; set; } = default!;
 }

@@ -11,12 +11,21 @@ public static class SubmitPqaResponse
     {
         public required Guid QueueEntryId { get; set; }
         
-        public bool? Accept { get; set; }
+        public PqaResponse? Response { get; set; }
 
         public string Message { get; set; } = default!;
         public UserProfile? CurrentUser { get; set; }
+
+      
     }
-    
+
+    public enum PqaResponse
+    {
+        Accept = 0,
+        Return = 1,
+        Comment = 2
+    }
+
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
@@ -29,10 +38,22 @@ public static class SubmitPqaResponse
             {
                 return Result.Failure("Cannot find queue item");
             }
+
+            if (string.IsNullOrWhiteSpace(request.Message) == false)
+            {
+                entry.AddNote(request.Message);
+            }
+
+            if (request.Response is PqaResponse.Accept or PqaResponse.Return)
+            {
+                bool accepted = request.Response == PqaResponse.Accept;
+
+                entry.Complete(accepted);
+                EnrolmentStatus transitionTo = accepted ? EnrolmentStatus.SubmittedToAuthorityStatus : EnrolmentStatus.EnrollingStatus;
+                entry.Participant!.TransitionTo(transitionTo);
+            }
             
-            entry.Complete(request.Accept.GetValueOrDefault(), request.Message);
-            EnrolmentStatus transitionTo = request.Accept.GetValueOrDefault() ? EnrolmentStatus.SubmittedToAuthorityStatus : EnrolmentStatus.EnrollingStatus;
-            entry.Participant!.TransitionTo(transitionTo);
+
                         
             return Result.Success();
         }
@@ -42,19 +63,19 @@ public static class SubmitPqaResponse
     {
         public A_IsValidRequest()
         {
-            RuleFor(x => x.Accept)
+            RuleFor(x => x.Response)
                 .NotNull()
-                .WithMessage("You must accept or return the request");
+                .WithMessage("You must select a response");
 
             RuleFor(x => x.Message)
                 .MaximumLength(ValidationConstants.NotesLength);
 
-            When(x => x.Accept is false, () =>
+            When(x => x.Response is PqaResponse.Return or PqaResponse.Comment, () =>
             {
                 RuleFor(x => x.Message)
                     .NotEmpty()
-                    .WithMessage("A message is required when returning")
-                    .Matches(ValidationConstants.Notes)
+                    .WithMessage("A message is required for this response.")
+                    .MaximumLength(ValidationConstants.NotesLength)
                     .WithMessage(string.Format(ValidationConstants.NotesMessage, "Message"));
             });
         }
