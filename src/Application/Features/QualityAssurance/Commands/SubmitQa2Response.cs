@@ -30,9 +30,10 @@ public static class SubmitQa2Response
             {
                 return Result.Failure("Cannot find queue item");
             }
+
+            entry.AddNote(request.Message)
+                .Complete(request.Accept.GetValueOrDefault());
             
-            entry.Complete(request.Accept.GetValueOrDefault(), request.Message);
- 
             return Result.Success();
         }
     }
