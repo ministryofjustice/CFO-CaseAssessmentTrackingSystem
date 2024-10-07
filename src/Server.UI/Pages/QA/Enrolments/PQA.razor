@@ -69,12 +69,15 @@
                     {
                         <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
                             <MudItem xs="12">
-                                <MudRadioGroup T="bool?" @bind-Value="Command.Accept" For="@(() => Command.Accept)" Required="true">
-                                    <MudRadio T="bool?" Value="true" Color="Color.Primary">
+                                <MudRadioGroup T="SubmitPqaResponse.PqaResponse?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
+                                    <MudRadio T="SubmitPqaResponse.PqaResponse?" Value="SubmitPqaResponse.PqaResponse.Accept" Color="Color.Primary">
                                         Accept
                                     </MudRadio>
-                                    <MudRadio T="bool?" Value="false" Color="Color.Secondary">
+                                    <MudRadio T="SubmitPqaResponse.PqaResponse?" Value="SubmitPqaResponse.PqaResponse.Return" Color="Color.Secondary">
                                         Return
+                                    </MudRadio>
+                                    <MudRadio T="SubmitPqaResponse.PqaResponse?" Value="SubmitPqaResponse.PqaResponse.Comment" Color="Color.Secondary">
+                                        Comment / Defer
                                     </MudRadio>
                                 </MudRadioGroup>
                             </MudItem>
@@ -146,7 +149,14 @@
         {
             var result = await GetNewMediator().Send(Command);
 
-            var message = Command.Accept.GetValueOrDefault() ? "Participant submitted to QA" : "Participant returned to Support Worker";
+            var message = Command.Response switch
+            {
+                SubmitPqaResponse.PqaResponse.Accept => "Participant submitted to QA",
+                SubmitPqaResponse.PqaResponse.Return => "Participant returned to Support Worker",
+                _ => "Comment added"
+            };
+                    
+
 
             if (result.Succeeded)
             {
@@ -155,7 +165,7 @@
             }
             else
             {
-                ShowActionFailure("Failed to return to support worker", result);
+                ShowActionFailure("Failed to return to submit", result);
             }
         }
     }
