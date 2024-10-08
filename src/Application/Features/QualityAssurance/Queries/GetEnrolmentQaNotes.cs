@@ -22,10 +22,24 @@ public static class GetEnrolmentQaNotes
             var pqa = await GetPqaNotes(request.ParticipantId!);
             var qa1 = await GetQa1Notes(request.ParticipantId!);
             var qa2 = await GetQa2Notes(request.ParticipantId!);
+            var es = await GetEscalationNotes(request.ParticipantId!);
 
 
-            return Result<EnrolmentQaNoteDto[]>.Success(pqa.Union(qa1).Union(qa2).ToArray());
+            return Result<EnrolmentQaNoteDto[]>.Success(pqa.Union(qa1).Union(qa2).Union(es).ToArray());
 
+        }
+
+        private async Task<EnrolmentQaNoteDto[]> GetEscalationNotes(string participantId)
+        {
+            var query1 = unitOfWork.DbContext.EnrolmentEscalationQueue
+                                    .AsNoTracking()
+                                    .Where(c => c.ParticipantId == participantId)
+                                    .SelectMany(c => c.Notes)
+                                    .ProjectTo<EnrolmentQaNoteDto>(mapper.ConfigurationProvider);
+
+
+             var results = await query1.ToArrayAsync()!;
+             return results;
         }
 
         private async Task<EnrolmentQaNoteDto[]> GetPqaNotes(string participantId)
