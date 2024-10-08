@@ -81,12 +81,15 @@
                         {
                         <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
                             <MudItem xs="12">
-                                <MudRadioGroup T="bool?" @bind-Value="Command.Accept" For="@(() => Command.Accept)" Required="true">
-                                    <MudRadio T="bool?" Value="true" Color="Color.Primary">
+                                <MudRadioGroup T="SubmitQa2Response.Qa2Response?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
+                                    <MudRadio T="SubmitQa2Response.Qa2Response?" Value="SubmitQa2Response.Qa2Response.Accept" Color="Color.Primary">
                                         Accept
                                     </MudRadio>
-                                    <MudRadio T="bool?" Value="false" Color="Color.Secondary">
+                                    <MudRadio T="SubmitQa2Response.Qa2Response?" Value="SubmitQa2Response.Qa2Response.Return" Color="Color.Secondary">
                                         Return
+                                    </MudRadio>
+                                    <MudRadio T="SubmitQa2Response.Qa2Response?" Value="SubmitQa2Response.Qa2Response.Escalate" Color="Color.Secondary">
+                                        Escalate
                                     </MudRadio>
                                 </MudRadioGroup>
                             </MudItem>

@@ -1,6 +1,7 @@
-@page "/pages/qa/enrolments/pqa/{id:guid}"
+@page "/pages/qa/enrolments/escalation/{id:guid}"
 
-@attribute [Authorize(Policy = SecurityPolicies.Pqa)]
+@attribute [Authorize(Policy = SecurityPolicies.SeniorInternal)]
+
 @using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
@@ -33,7 +34,7 @@
     
 </style>
 
-@if (_participantDto is not null && _participantDto.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus)
+@if (_participantDto is not null && _participantDto.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus)
 {
     @if (_queueEntry!.IsAccepted || _queueEntry.IsCompleted)
     {
@@ -67,14 +68,14 @@
                     {
                         <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
                             <MudItem xs="12">
-                                <MudRadioGroup T="SubmitPqaResponse.PqaResponse?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
-                                    <MudRadio T="SubmitPqaResponse.PqaResponse?" Value="SubmitPqaResponse.PqaResponse.Accept" Color="Color.Primary">
+                                <MudRadioGroup T="SubmitEscalationResponse.EscalationResponse?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
+                                    <MudRadio T="SubmitEscalationResponse.EscalationResponse?" Value="SubmitEscalationResponse.EscalationResponse.Accept" Color="Color.Primary">
                                         Accept
                                     </MudRadio>
-                                    <MudRadio T="SubmitPqaResponse.PqaResponse?" Value="SubmitPqaResponse.PqaResponse.Return" Color="Color.Secondary">
+                                    <MudRadio T="SubmitEscalationResponse.EscalationResponse?" Value="SubmitEscalationResponse.EscalationResponse.Return" Color="Color.Secondary">
                                         Return
                                     </MudRadio>
-                                    <MudRadio T="SubmitPqaResponse.PqaResponse?" Value="SubmitPqaResponse.PqaResponse.Comment" Color="Color.Secondary">
+                                    <MudRadio T="SubmitEscalationResponse.EscalationResponse?" Value="SubmitEscalationResponse.EscalationResponse.Comment" Color="Color.Secondary">
                                         Comment / Defer
                                     </MudRadio>
                                 </MudRadioGroup>
@@ -108,13 +109,13 @@
 
     [CascadingParameter] public UserProfile? UserProfile { get; set; }
 
-    private SubmitPqaResponse.Command Command { get; set; } = default!;
+    private SubmitEscalationResponse.Command Command { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
         if (_participantDto is null)
         {
-            var result = await GetNewMediator().Send(new GetPqaEntryById.Query
+            var result = await GetNewMediator().Send(new GetEscalationEntryById.Query
             {
                 Id = Id,
                 CurrentUser = UserProfile
@@ -128,7 +129,7 @@
                     Id = _queueEntry.ParticipantId
                 });
 
-                Command = new SubmitPqaResponse.Command
+                Command = new SubmitEscalationResponse.Command
                 {
                     QueueEntryId = Id,
                     CurrentUser = UserProfile
@@ -148,8 +149,8 @@
 
             var message = Command.Response switch
             {
-                SubmitPqaResponse.PqaResponse.Accept => "Participant submitted to QA",
-                SubmitPqaResponse.PqaResponse.Return => "Participant returned to Support Worker",
+                SubmitEscalationResponse.EscalationResponse.Accept => "Participant accepted",
+                SubmitEscalationResponse.EscalationResponse.Return => "Participant returned to PQA",
                 _ => "Comment added"
             };
 
@@ -157,7 +158,7 @@
             if (result.Succeeded)
             {
                 Snackbar.Add(message, Severity.Info);
-                Navigation.NavigateTo("/pages/qa/enrolments/pqa");
+                Navigation.NavigateTo("/pages/qa/servicedesk/enrolments");
             }
             else
             {

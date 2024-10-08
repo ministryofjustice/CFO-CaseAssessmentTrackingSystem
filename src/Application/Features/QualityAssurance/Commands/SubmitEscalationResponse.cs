@@ -4,21 +4,21 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
 
-public static class SubmitPqaResponse
+public static class SubmitEscalationResponse
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Pqa)]
+    [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
     public class Command : IRequest<Result>
     {
         public required Guid QueueEntryId { get; set; }
         
-        public PqaResponse? Response { get; set; }
+        public EscalationResponse? Response { get; set; }
 
         public string Message { get; set; } = default!;
         public UserProfile? CurrentUser { get; set; }
 
     }
 
-    public enum PqaResponse
+    public enum EscalationResponse
     {
         Accept = 0,
         Return = 1,
@@ -29,7 +29,7 @@ public static class SubmitPqaResponse
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            var entry = await unitOfWork.DbContext.EnrolmentPqaQueue
+            var entry = await unitOfWork.DbContext.EnrolmentEscalationQueue
                 .Include(pqa => pqa.Participant)
                 .FirstOrDefaultAsync(x => x.Id == request.QueueEntryId, cancellationToken: cancellationToken);
 
@@ -42,13 +42,13 @@ public static class SubmitPqaResponse
 
             switch (request.Response)
             {
-                case PqaResponse.Accept:
+                case EscalationResponse.Accept:
                     entry.Accept();
                     break;
-                case PqaResponse.Return:
+                case EscalationResponse.Return:
                     entry.Return();
                     break;
-                case PqaResponse.Comment:
+                case EscalationResponse.Comment:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -69,7 +69,7 @@ public static class SubmitPqaResponse
             RuleFor(x => x.Message)
                 .MaximumLength(ValidationConstants.NotesLength);
 
-            When(x => x.Response is PqaResponse.Return or PqaResponse.Comment, () =>
+            When(x => x.Response is EscalationResponse.Return or EscalationResponse.Comment, () =>
             {
                 RuleFor(x => x.Message)
                     .NotEmpty()
@@ -93,7 +93,7 @@ public static class SubmitPqaResponse
                 .WithMessage("Queue item does not exist");
         }
         private async Task<bool> MustExist(Guid identifier, CancellationToken cancellationToken)
-            => await _unitOfWork.DbContext.EnrolmentPqaQueue.AnyAsync(e => e.Id == identifier, cancellationToken);
+            => await _unitOfWork.DbContext.EnrolmentEscalationQueue.AnyAsync(e => e.Id == identifier, cancellationToken);
     }
 
     public class C_ShouldNotBeComplete : AbstractValidator<Command>
@@ -111,7 +111,7 @@ public static class SubmitPqaResponse
 
         private async Task<bool> MustBeOpen(Guid id, CancellationToken cancellationToken)
         {
-            var entry = await _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
+            var entry = await _unitOfWork.DbContext.EnrolmentEscalationQueue.Include(c => c.Participant)
                 .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
 
             return entry is { IsCompleted: false };
@@ -127,36 +127,17 @@ public static class SubmitPqaResponse
             _unitOfWork = unitOfWork;
 
             RuleFor(c => c.QueueEntryId)
-                .MustAsync(MustBeAtPqA)
-                .WithMessage("Queue item is not a PQA stage");
+                .MustAsync(MustBeAtSubmittedToAuthority)
+                .WithMessage("Queue item is not at Submitted to Authority stage");
         }
 
-        private async Task<bool> MustBeAtPqA(Guid id, CancellationToken cancellationToken)
+        private async Task<bool> MustBeAtSubmittedToAuthority(Guid id, CancellationToken cancellationToken)
         {
-            var entry = await _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
+            var entry = await _unitOfWork.DbContext.EnrolmentEscalationQueue.Include(c => c.Participant)
                 .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
 
-            return entry != null && entry.Participant!.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus;
+            return entry != null && entry.Participant!.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus;
         }
     }
-    public class E_OwnerShouldNotBeApprover : AbstractValidator<Command>
-    {
-        private readonly IUnitOfWork _unitOfWork;
-        public E_OwnerShouldNotBeApprover(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-
-            RuleFor(c => c)
-                .MustAsync(OwnerMustNotBeApprover)
-                .WithMessage("This assessment is created by you hence must not be processed at PQA stage by you");
-        }
-
-        private async Task<bool> OwnerMustNotBeApprover(Command c, CancellationToken cancellationToken)
-        {
-            var entry = await _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
-                .FirstOrDefaultAsync(a => a.Id == c.QueueEntryId, cancellationToken: cancellationToken);
-
-            return entry != null && entry.Participant!.OwnerId!.Equals(c.CurrentUser!.UserId) == false;
-        }
-    }
+    
 }
