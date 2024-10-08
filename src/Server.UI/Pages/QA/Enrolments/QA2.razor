@@ -93,7 +93,9 @@
                                     </MudRadio>
                                 </MudRadioGroup>
                             </MudItem>
-
+                                <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">
+                                    Comments are visible to PQA
+                                </MudAlert>
                             <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" Class="mt-4" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
                             <MudText Class="ml-2">Characters: @characterCount / 1000</MudText>
 
