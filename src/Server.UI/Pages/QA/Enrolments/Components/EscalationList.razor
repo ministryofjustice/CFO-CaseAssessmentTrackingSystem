@@ -1,24 +1,22 @@
-﻿@page "/pages/qa/enrolments/pqa"
-@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
-@using Cfo.Cats.Application.Features.QualityAssurance.Queries
-@using Cfo.Cats.Application.SecurityConstants
+﻿@using Cfo.Cats.Application.SecurityConstants
 @using Humanizer
 
+
+@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
+@using Cfo.Cats.Application.Features.QualityAssurance.Queries
 @inherits CatsComponentBase;
 
 @inject IStringLocalizer<PQA> L
 
-@attribute [Authorize(Policy = SecurityPolicies.Pqa)]
 
 <style>
     .mud-table-toolbar {
         height: 120px !important;
     }
-    
+
     .pointer-cursor {
         cursor: pointer;
     }
-    
 </style>
 
 <MudDataGrid ServerData="@(ServerReload)"
@@ -30,18 +28,15 @@
              Height="calc(100vh - 330px)"
              Loading="@_loading"
              MultiSelection="true"
+             @bind-SelectedItems="_selectedItems"
              @bind-SelectedItem="_currentDto"
              Hover="true"
-             RowClick="@RowClicked"
-             RowClass="pointer-cursor"
              @ref="_table">
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
             <div class="d-flex gap-4">
-                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large"/>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption">Provider QA</MudText>
-                </div>
+                <MudIcon Icon="@Icons.Material.Filled.Checklist" Size="Size.Medium" Color="Color.Primary" />
+                Escalation
             </div>
             <div class="flex-grow-1"></div>
             <div class="d-flex flex-column justify-end">
@@ -67,7 +62,22 @@
         </div>
     </ToolBarContent>
     <Columns>
-       
+        <TemplateColumn CellClass="width:60px;" Title="@ConstantString.Actions" Sortable="false">
+            <CellTemplate>
+                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                         Dense="true"
+                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                         
+                    <MudMenuItem OnClick="@(() => ViewEnrolment(context.Item))">
+                        @ConstantString.View Enrolment
+                    </MudMenuItem>
+                    <MudMenuItem OnClick="@(() => ViewParticipant(context.Item))">
+                        @ConstantString.View Participant
+                    </MudMenuItem>
+
+                </MudMenu>
+            </CellTemplate>
+        </TemplateColumn>
         <PropertyColumn Property="x => x.ParticipantId" Title="@L["Participant"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
@@ -79,7 +89,7 @@
         <PropertyColumn Property="x => x.SupportWorker" Title="@L["Support Worker"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.SupportWorker</MudText>                    
+                    <MudText Typo="Typo.body2">@context.Item.SupportWorker</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
@@ -91,13 +101,20 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
+        <PropertyColumn Property="x => x.AssignedTo" Title="@L["AssignedTo"]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.AssignedTo</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
         <PropertyColumn Property="x => x.Created" Title="@L["Submitted"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">
-                        @context.Item.Created.Date.ToString("d")                        
+                        @context.Item.Created.Date.ToString("d")
                     </MudText>
-                    <MudText Typo="Typo.body2">                        
+                    <MudText Typo="Typo.body2">
                         @context.Item.Created.Humanize()
                     </MudText>
                 </div>
@@ -111,12 +128,11 @@
         <MudText>@ConstantString.Loading</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })"/>
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
     </PagerContent>
 </MudDataGrid>
 
 @code {
-
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
     
@@ -124,15 +140,20 @@
     private int _defaultPageSize = 15;
     private MudDataGrid<EnrolmentQueueEntryDto> _table = default!;
 
-    private PqaQueueWithPagination.Query Query { get; set; } = new();
+    private QaEscalationWithPaginiation.Query Query { get; set; } = new();
     private EnrolmentQueueEntryDto _currentDto = new();
     private HashSet<EnrolmentQueueEntryDto> _selectedItems = new();
-
-    private void RowClicked(DataGridRowClickEventArgs<EnrolmentQueueEntryDto> args)
-    {
-        Navigation.NavigateTo($"/pages/qa/enrolments/pqa/{args.Item.Id}");
-    }
     
+    private void ViewEnrolment(EnrolmentQueueEntryDto dto)
+    {
+        Navigation.NavigateTo($"/pages/qa/enrolments/escalation/{dto.Id}");
+    }
+
+    private void ViewParticipant(EnrolmentQueueEntryDto dto)
+    {
+        Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
+    }
+
     private async Task<GridData<EnrolmentQueueEntryDto>> ServerReload(GridState<EnrolmentQueueEntryDto> state)
     {
         try

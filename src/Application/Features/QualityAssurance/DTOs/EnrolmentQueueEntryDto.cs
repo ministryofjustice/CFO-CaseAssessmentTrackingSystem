@@ -79,7 +79,25 @@ public class EnrolmentQueueEntryDto
                 ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName));
-            
+
+            CreateMap<EnrolmentEscalationQueueEntry, EnrolmentQueueEntryDto>()
+                .ForMember(target => target.ParticipantId,
+                    options => options.MapFrom(source => source.ParticipantId))
+                .ForMember(target => target.Created,
+                    options => options.MapFrom(source => source.Created))
+                .ForMember(target => target.TenantId,
+                    options => options.MapFrom(source => source.TenantId))
+                .ForMember(target => target.TenantName,
+                    options => options.MapFrom(source => source.Tenant!.Name))
+                .ForMember(target => target.ParticipantName, options => {
+                    options.MapFrom(target => target.Participant!.FirstName + " " + target.Participant.LastName);
+                })
+                .ForMember(target => target.SupportWorker, options => options.MapFrom(
+                    source => source.Participant!.Owner!.DisplayName
+                ))
+                .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
+                .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName));
+
         }
     }
 
