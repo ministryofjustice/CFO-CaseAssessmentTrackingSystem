@@ -12,8 +12,8 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHave
 {
     private readonly List<Note> _notes = [];
     
-    public bool IsAccepted { get; private set; }
-    public bool IsCompleted { get; private set; }
+    public bool IsAccepted { get; protected set; }
+    public bool IsCompleted { get; protected set; }
     public string ParticipantId { get; private set; }
     
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -33,24 +33,12 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHave
     public virtual Tenant? Tenant { get; private set; }
     
     public IReadOnlyCollection<Note> Notes => _notes.AsReadOnly();
+
+    public abstract EnrolmentQueueEntry Accept();
+
+
+    public abstract EnrolmentQueueEntry Return();
     
-    public EnrolmentQueueEntry AddNote(Note note)
-    {
-        if(_notes.Contains(note) is false)
-        {
-            _notes.Add(note);
-        }
-
-        return this;
-    }
-
-    public EnrolmentQueueEntry Complete(bool accept)
-    {
-        IsCompleted = true;
-        IsAccepted = accept;
-        AddDomainEvent(new EnrolmentQueueEntryCompletedDomainEvent(this));
-        return this;
-    }
 
     public EnrolmentQueueEntry AddNote(string? message)
     {
@@ -64,8 +52,6 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHave
         }
         return this;
     }
-
-
 
     public string TenantId { get; set; } = default!;
 }

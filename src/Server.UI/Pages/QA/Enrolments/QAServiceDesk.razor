@@ -1,5 +1,7 @@
+@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components
 @page "/pages/qa/servicedesk/enrolments"
+@attribute [Authorize(Policy = SecurityPolicies.SeniorInternal)]
 
 <MudContainer Style="width: 100%; min-width: 480px;" >
         <MudText Typo="Typo.h5">
@@ -12,7 +14,24 @@
             <MudTabPanel Text="Second Pass">
                 <QA2List/>
             </MudTabPanel>
+            <MudTabPanel Text="Escalation">
+                <EscalationList />
+            </MudTabPanel>
         </MudTabs>
 </MudContainer>
 
 
+    using Cfo.Cats.Application.SecurityConstants;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 3 "/Users/carlsixsmith/github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/src/Server.UI/Pages/QA/Enrolments/QAServiceDesk.razor"
+    using Cfo.Cats.Application.SecurityConstants;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 3 "/Users/carlsixsmith/github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/src/Server.UI/Pages/QA/Enrolments/QAServiceDesk.razor"

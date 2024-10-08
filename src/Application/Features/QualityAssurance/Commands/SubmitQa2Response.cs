@@ -2,6 +2,7 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
+using static Cfo.Cats.Application.Features.QualityAssurance.Commands.SubmitPqaResponse;
 
 namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
 
@@ -12,12 +13,19 @@ public static class SubmitQa2Response
     {
         public required Guid QueueEntryId { get; set; }
         
-        public bool? Accept { get; set; }
+        public Qa2Response? Response { get; set; }
 
         public string Message { get; set; } = default!;
         public UserProfile? CurrentUser { get; set; }
     }
-    
+
+    public enum Qa2Response
+    {
+        Accept = 0,
+        Return = 1,
+        Escalate = 2
+    }
+
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
@@ -31,9 +39,24 @@ public static class SubmitQa2Response
                 return Result.Failure("Cannot find queue item");
             }
 
-            entry.AddNote(request.Message)
-                .Complete(request.Accept.GetValueOrDefault());
-            
+            entry.AddNote(request.Message);
+
+
+            switch (request.Response)
+            {
+                case Qa2Response.Accept:
+                    entry.Accept();
+                    break;
+                case Qa2Response.Return:
+                    entry.Return();
+                    break;
+                case Qa2Response.Escalate:
+                    entry.Escalate();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
             return Result.Success();
         }
     }
@@ -42,17 +65,17 @@ public static class SubmitQa2Response
     {
         public A_IsValidRequest()
         {
-            RuleFor(x => x.Accept)
+            RuleFor(x => x.Response)
                 .NotNull()
-                .WithMessage("You must accept or return the request");
+                .WithMessage("You must select a response");
 
             RuleFor(x => x.Message)
                 .MaximumLength(ValidationConstants.NotesLength);
 
-            When(x => x.Accept is false, () => {
+            When(x => x.Response is Qa2Response.Return or Qa2Response.Escalate, () => {
                 RuleFor(x => x.Message)
                     .NotEmpty()
-                    .WithMessage("A message is required when returning")
+                    .WithMessage("A message is required for this response")
                     .Matches(ValidationConstants.Notes)
                     .WithMessage(string.Format(ValidationConstants.NotesMessage, "Message"));
             });

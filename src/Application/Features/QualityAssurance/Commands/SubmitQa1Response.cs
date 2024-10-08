@@ -31,8 +31,17 @@ public static class SubmitQa1Response
                 return Result.Failure("Cannot find queue item");
             }
 
-            entry.AddNote(request.Message)
-                .Complete(request.Accept.GetValueOrDefault());
+            entry.AddNote(request.Message);
+
+            if (request.Accept.GetValueOrDefault())
+            {
+                entry.Accept();
+            }
+            else
+            {
+                entry.Return();
+            }
+
  
             return Result.Success();
         }

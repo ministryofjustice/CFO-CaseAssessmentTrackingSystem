@@ -17,6 +17,8 @@ public static class SecurityPolicies
     public const string Qa1 = nameof(Qa1);
 
     public const string Qa2 = nameof(Qa2);
+
+    public const string SeniorInternal = nameof(SeniorInternal);
     
     /// <summary>
     /// The user is allowed to upload files.
