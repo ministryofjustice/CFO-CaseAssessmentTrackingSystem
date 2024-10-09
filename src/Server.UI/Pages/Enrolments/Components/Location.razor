@@ -16,6 +16,7 @@
                               Variant="Variant.Text">
                 </MudTextField>
             </MudItem>
+
             <MudItem xs="12">
                 @if (_mustEnrolInOtherLocation)
                 {
@@ -29,14 +30,18 @@
                              Label="@L[Model.GetMemberDescription(x => x.EnrolFromAlternativeLocation)]">
                 </MudCheckBox>
             </MudItem>
-            @if (Model.EnrolFromAlternativeLocation)
+
+            @if (Model.EnrolFromAlternativeLocation)         
             {
                 <MudItem xs="12">
                     <MudSelect T="LocationDto"
-                               Label="@Model.GetMemberDescription(x => x.AlternativeLocation)"
-                               @bind-Value="@Model.AlternativeLocation"
-                               For="@(()=>Model.AlternativeLocation!)">
-                        @foreach (var item in Locations!)
+                           Label="@Model.GetMemberDescription(x => x.AlternativeLocation)"
+                           @bind-Value="@Model.AlternativeLocation"
+                               For="@(()=>Model.AlternativeLocation!)">                        
+                        <MudSelectItem T="LocationDto" Value="null" Disabled="true">
+                            Please select a location
+                        </MudSelectItem>
+                    @foreach (var item in Locations!)
                         {
                             <MudSelectItem T="LocationDto" Value="@item">
                                 @item.Name
@@ -50,19 +55,16 @@
                                   For="@(()=>Model.JustificationReason)">
                     </MudTextField>
                 </MudItem>
-            }
-        </MudGrid>
-
-        
+             } 
+        </MudGrid>        
     </MudForm>
 }
 
 @code {
-
     MudForm? _form;
 
     private bool _mustEnrolInOtherLocation = false;
-    
+
     SetEnrolmentLocation.Validator _modelValidator = new();
 
     [EditorRequired]
@@ -75,10 +77,19 @@
 
     protected override void OnParametersSet()
     {
-        if (Model is not null && Locations is not null && Locations.Any(l => l.Id == Model!.CurrentLocation.Id) == false)
+        if (Model is not null && Locations is not null)
         {
-            Model!.EnrolFromAlternativeLocation = true;
-            _mustEnrolInOtherLocation = true;
+            if (Locations.Any(l => l.Id == Model!.CurrentLocation.Id) == false)
+            {
+                Model!.EnrolFromAlternativeLocation = true;
+                _mustEnrolInOtherLocation = true;
+            }
+            else
+            if (Model!.AlternativeLocation != null &&  Model!.AlternativeLocation!.Id != Model!.CurrentLocation.Id)
+            {
+                Model.EnrolFromAlternativeLocation = true;
+                Model.AlternativeLocation = Locations.FirstOrDefault(x => x.Id == Model.AlternativeLocation.Id);                
+            }
         }
     }
 
@@ -86,10 +97,17 @@
     {
         try
         {
+            //No Alternative location so clear it
+            if (!Model!.EnrolFromAlternativeLocation)
+            {
+                Model.AlternativeLocation = null;
+                Model.JustificationReason = null;
+            }
+
             await _form!.Validate().ConfigureAwait(false);
 
             if (_form.IsValid)
-            {
+            {                
                 var result = await GetNewMediator().Send(Model!);
                 if (result.Succeeded)
                 {
@@ -98,6 +116,7 @@
                 else
                 {
                     Snackbar.Add(result.ErrorMessage, Severity.Error);
+                    return false;
                 }
             }
 
