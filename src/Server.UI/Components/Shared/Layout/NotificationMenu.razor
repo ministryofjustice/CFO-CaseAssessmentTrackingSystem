@@ -31,6 +31,9 @@
                     <MudText Class="mud-text-secondary my-12">@L["Nothing new :("]</MudText>
                 </div>
             }
+            <div class="d-flex px-2">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" Class="ml-16 mr-n2" Href="/pages/notifications">@L["View All"]</MudButton>
+            </div>
         </MudMenu>
     </MudBadge>
 </MudTooltip>
@@ -68,7 +71,7 @@
             {
                 CurrentUser = UserProfile,
                 PageSize = 5,
-                IncludeUnreadNotifications = false,
+                IncludeReadNotifications = false,
                 SortDirection = "desc",
                 OrderBy = "Created"
             };
@@ -83,4 +86,5 @@
 
         await base.OnAfterRenderAsync(firstRender);
     }
+
 }
