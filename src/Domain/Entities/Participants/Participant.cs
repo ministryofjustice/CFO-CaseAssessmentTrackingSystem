@@ -16,7 +16,6 @@ public class Participant : OwnerPropertyEntity<string>
     private List<Note> _notes = new();
     private List<ExternalIdentifier> _externalIdentifiers = new();
 
-
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private Participant()
     {
@@ -53,7 +52,7 @@ public class Participant : OwnerPropertyEntity<string>
             ReferralComments = referralComments,
             _currentLocationId = locationId,
             Nationality = nationality
-};
+        };
 
         p.AddDomainEvent(new ParticipantCreatedDomainEvent(p));
         return p;
@@ -125,12 +124,23 @@ public class Participant : OwnerPropertyEntity<string>
         throw new InvalidEnrolmentTransition(EnrolmentStatus, to);
     }
 
+    /// <summary>
+    /// Assigns the participant to alternate Enrolment Location
+    /// </summary>
+    /// <param name="locationId"></param>
+    /// <param name="justificationReason"></param>
+    /// <returns></returns>
     public Participant SetEnrolmentLocation(int locationId, string? justificationReason)
     {
-        if (_enrolmentLocationId != locationId)
+        EnrolmentLocationJustification = justificationReason;
+        if (CurrentLocation.Id == locationId)
         {
-            _enrolmentLocationId = locationId;
-            EnrolmentLocationJustification = justificationReason;
+            EnrolmentLocation = null;
+            _enrolmentLocationId = null;
+        }
+        else      
+        {
+            _enrolmentLocationId = locationId;            
         }
         return this;
     }
@@ -278,7 +288,6 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
-
     public Participant UpdateActiveStatus(bool activeInFeed)
     {
         if(ActiveInFeed != activeInFeed)
@@ -306,5 +315,4 @@ public class Participant : OwnerPropertyEntity<string>
         RiskDue = riskDueDate;
         return this;   
     }
-
 }
