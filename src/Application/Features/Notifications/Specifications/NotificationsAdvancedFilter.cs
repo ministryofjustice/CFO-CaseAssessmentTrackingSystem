@@ -6,7 +6,7 @@ public class NotificationsAdvancedFilter : PaginationFilter
 {
     public UserProfile? CurrentUser { get; set; }
 
-    public bool IncludeUnreadNotifications { get; set; } = false;
+    public bool IncludeReadNotifications { get; set; } = false;
 
     public NotificationsListView ListView { get; set; } = NotificationsListView.Default;
 

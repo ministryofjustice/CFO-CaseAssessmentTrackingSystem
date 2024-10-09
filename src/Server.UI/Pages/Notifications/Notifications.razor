@@ -1,0 +1,127 @@
+@page "/pages/notifications"
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Notifications
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Application.Features.Notifications.DTOs
+@using Cfo.Cats.Application.Features.Notifications.Queries
+@using Cfo.Cats.Application.Features.Notifications.Specifications
+@using Cfo.Cats.Server.UI.Services.Notifications
+@using Humanizer
+
+@inject IStringLocalizer<Notifications> L
+@inject INotificationService NotificationService
+
+@inherits CatsComponentBase
+
+
+<PageTitle>@L["Notification"]</PageTitle>
+@* <PageTitle>Notifications</PageTitle> *@
+<style>
+    .invisible {
+    visibility: hidden;
+    }
+</style>
+
+<MudDataGrid ServerData="@(ServerReload)"
+             FixedHeader="true"
+             FixedFooter="true"
+             Virtualize="true"
+             @bind-RowsPerPage="_defaultPageSize"
+             Height="calc(100vh - 330px)"
+             Loading="@_loading"
+             MultiSelection="true"
+             @bind-SelectedItem="_currentDto"
+             Hover="true"
+             @ref="_table">
+    <ToolBarContent>
+        <div class="d-flex align-start flex-grow-1">
+            <div class="d-flex flex-column">
+                <MudSwitch T="bool" Class="mt-10" Value="@Query.IncludeReadNotifications" Label="Include Read Notifications" Color="Color.Primary" ValueChanged="OnIncludeReadNotificationsChanged"></MudSwitch>
+            </div>
+        </div>
+    </ToolBarContent>
+    <Columns>
+        <TemplateColumn CellClass="width:60px;" Title="@ConstantString.Actions" Sortable="false">
+            <CellTemplate>
+                <MudButton OnClick="OnMarkAsReadClicked" StartIcon="@Icons.Material.Filled.DoneAll" Variant="Variant.Text" Color="Color.Primary" Class="@_hideMe">@L["Mark as read"]</MudButton>
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.Heading" Title="Heading" Sortable="false">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">
+                        <MudLink Href="@context.Item.Link">
+                            @context.Item.Heading
+                        </MudLink>
+                    </MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Details" Title="Details" Sortable="false">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.Details</MudText>
+                    <MudText Typo="Typo.body2">@context.Item.NotificationDate.Humanize()</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+    </Columns>
+    <NoRecordsContent>
+        <MudText>@ConstantString.NoRecords</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>@ConstantString.Loading</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+
+    //[Inject]
+    //public string? Title { get; private set; }
+    private int _defaultPageSize = 15;
+
+    private MudDataGrid<NotificationDto> _table = default!;
+    private bool _loading;
+    private string _hideMe = "invisible"; 
+
+    private NotificationDto _currentDto = new() { Heading = "" };
+
+    private NotificationsWithPaginationQuery.Query Query { get; set; } = new();
+
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+    [CascadingParameter] private UserProfile? UserProfile { get; set; }
+
+
+    private async Task<GridData<NotificationDto>> ServerReload(GridState<NotificationDto> state)
+    {
+        try
+        {
+            _loading = true;
+            Query.CurrentUser = UserProfile;
+            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Created";
+            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
+            Query.PageNumber = state.Page + 1;
+            Query.PageSize = state.PageSize;
+            var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
+            return new GridData<NotificationDto> { TotalItems = result.TotalItems, Items = result.Items };
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+    
+    private async Task OnMarkAsReadClicked()
+    {
+        await NotificationService.MarkNotificationsAsRead();
+    }
+    private async Task OnIncludeReadNotificationsChanged(bool value)
+    {
+        Query.IncludeReadNotifications = value;
+        await _table.ReloadServerData();
+    }
+
+}
