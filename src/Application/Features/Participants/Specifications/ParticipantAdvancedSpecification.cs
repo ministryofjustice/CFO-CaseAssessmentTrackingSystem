@@ -23,7 +23,7 @@ public sealed class ParticipantAdvancedSpecification : Specification<Participant
        
         Query.Where(p => p.OwnerId == filter.CurrentUser!.UserId, filter.JustMyCases)
              .Where(p => p.Owner!.TenantId!.StartsWith(filter.CurrentUser!.TenantId!))
-             .Where(p => filter.Locations.Contains(p.CurrentLocation.Id), filter.Locations is not [])
+             .Where(p => filter.Locations.Contains(p.CurrentLocation.Id) ||  ( p.EnrolmentLocation != null && filter.Locations.Contains(p.EnrolmentLocation.Id)) , filter.Locations is not [])
             .Where(
                     // if we have passed a filter through, search the surname and current location
                     p => p.LastName!.Contains(filter.Keyword!) 
