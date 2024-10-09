@@ -21,6 +21,8 @@ public class SyncParticipantsJob(
             return;
         }
 
+        using var outScope = logger.BeginScope($"Starting job {Key}. Refire count {context.RefireCount}");
+
         try
         {
             var participants = await unitOfWork.DbContext.Participants
@@ -110,6 +112,8 @@ public class SyncParticipantsJob(
         {
             throw new JobExecutionException(msg: $"Quartz Job - {Key}: An unexpected error occurred executing job", refireImmediately: true, cause: ex);
         }
+
+        logger.LogInformation($"Job {Key} completed");
 
     }
 
