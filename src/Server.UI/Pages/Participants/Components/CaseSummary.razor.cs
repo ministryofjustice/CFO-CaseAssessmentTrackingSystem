@@ -110,7 +110,7 @@ public partial class CaseSummary
                {
                    AssessmentScored: true
                } &&
-               ParticipantSummaryDto.EnrolmentStatus.StatusSupportsReassessment();
+               ParticipantSummaryDto.EnrolmentStatus.SupportsReassessment();
 
     }
 
