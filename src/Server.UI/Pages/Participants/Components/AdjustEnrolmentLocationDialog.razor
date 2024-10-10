@@ -1,0 +1,127 @@
+﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Common.Validators
+@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Participants.Commands
+@inherits CatsComponentBase
+
+@inject IValidationService Validator
+
+
+<MudDialog>
+    <DialogContent>
+        <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
+            <MudItem xs="12">
+                <MudSelect T="int?"
+                           @bind-Value="Command.NewLocationId"
+                           Label="New Location"
+                           AnchorOrigin="Origin.BottomCenter"
+                           FullWidth="true" Style="width: 350px;" 
+                           Class="mt-9"
+                           Required="true">
+                    @foreach (var item in Locations!)
+                    {
+                        <MudSelectItem T="int?" Value="@item.Id">
+                            @item.Name
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField @bind-Value="Command.JustificationReason" Label="Justification Reason" 
+                              Lines="5" Class="mt-4" MaxLength="@ValidationConstants.NotesLength" 
+                              Immediate="true" oninput="UpdateCharacterCount" Required="true"/>
+                <MudText Class="ml-2">Characters: @characterCount / 1000</MudText>
+            </MudItem>
+        </MudForm>
+       
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@_saving" Color="Color.Primary" OnClick="Submit">
+            @if (_saving)
+            {
+                @ConstantString.Saving
+            }
+            else
+            {
+                @ConstantString.Save
+            }
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private MudForm? _form;
+    private bool _saving = false;
+
+    [Inject] public ILocationService LocationService { get; set; } = default!;
+
+    [CascadingParameter] 
+    private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public UserProfile UserProfile { get; set; } = default!;
+
+    [Parameter] public string? ParticipantId { get; set; }
+    [Parameter] public string? JustificationReason { get; set; }
+
+    public LocationDto[] Locations { get; set; } = [];
+
+    private ChangeEnrolmentLocation.Command Command { get; set; } = new(); 
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    protected override void OnInitialized()
+    {
+        Locations = LocationService.GetVisibleLocations(UserProfile!.TenantId!)
+            .OrderByDescending(l => l.LocationType.IsCustody)
+            .ThenBy(l => l.Name)
+            .ToArray();
+
+        Command.CurrentUser = UserProfile;
+        Command.ParticipantId = ParticipantId;
+        Command.JustificationReason = JustificationReason;
+
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            _saving = true;
+
+            await _form!.Validate().ConfigureAwait(false);
+
+            if (_form.IsValid == false)
+            {
+                return;
+            }
+
+            var result = await GetNewMediator().Send(Command!);
+
+            if (result.Succeeded)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private int characterCount => Command.JustificationReason?.Length ?? 0;
+
+    private void UpdateCharacterCount(ChangeEventArgs args)
+    {
+        Command.JustificationReason = args?.Value?.ToString() ?? string.Empty;
+    }
+
+}
