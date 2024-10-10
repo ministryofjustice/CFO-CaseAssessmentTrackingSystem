@@ -79,13 +79,12 @@
     {
         if (Model is not null && Locations is not null)
         {
-            if (Locations.Any(l => l.Id == Model!.CurrentLocation.Id) == false)
+            if (Locations.Any(l => l.Id == Model.CurrentLocation.Id) is false)
             {
-                Model!.EnrolFromAlternativeLocation = true;
+                Model.EnrolFromAlternativeLocation = true;
                 _mustEnrolInOtherLocation = true;
             }
-            else
-            if (Model!.AlternativeLocation != null &&  Model!.AlternativeLocation!.Id != Model!.CurrentLocation.Id)
+            else if (Model.AlternativeLocation is not null && Model.AlternativeLocation.Id != Model.CurrentLocation.Id)
             {
                 Model.EnrolFromAlternativeLocation = true;
                 Model.AlternativeLocation = Locations.FirstOrDefault(x => x.Id == Model.AlternativeLocation.Id);                
