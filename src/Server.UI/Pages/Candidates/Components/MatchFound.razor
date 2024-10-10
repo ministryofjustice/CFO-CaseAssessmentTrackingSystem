@@ -26,9 +26,15 @@
             </MudItem>
 
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="Model.ReferralComments" 
-                                  For="(() => Model.ReferralComments)"
-                                  Label="@Model.ReferralComments" />
+                    <MudTextField Value="Model.ReferralComments"
+                                  ValueChanged="@((string newValue) => UpdateCharacterCount(newValue))"
+                                  Label="@Model.GetMemberDescription(x => x.ReferralComments)"
+                                  MaxLength="1000"
+                                  Immediate="true"
+                                  Lines="8">
+                    </MudTextField>
+                    <MudText Class="ml-2">Characters: @characterCount / 1000</MudText> 
+
                 </MudItem>
 
             <MudItem xs="12">
@@ -53,4 +59,15 @@
     </MudContainer>
 
     </MudContainer>   
+}
+
+@code {
+    private int characterCount = 0;
+
+    // Method to update character count dynamically as user types
+    private void UpdateCharacterCount(string newValue)
+    {
+        Model!.ReferralComments = newValue;
+        characterCount = newValue?.Length ?? 0;
+    }
 }
