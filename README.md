@@ -1,3 +1,5 @@
+[![.NET Core Unit Tests](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/actions/workflows/unittest.yml/badge.svg?branch=develop)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/actions/workflows/unittest.yml)
+
 # Overview
 
 HMPPS Creating Future Opportunities (CFO) utilise the Case Assessment and Tracking System (CATS) to support delivery of https://www.CreatingFutureOpportunities.gov.uk (CFO Evolution). The programme utilises external funding to perform rehabilitative services with offenders in custody and the community. Approx. 600 users from non-government organisations use CATS to record work performed with offenders creating an evidence base that supports performance management, payments to providers, ongoing research and audits from external bodies.
