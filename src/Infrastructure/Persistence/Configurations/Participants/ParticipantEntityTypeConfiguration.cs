@@ -50,7 +50,8 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             .HasMaxLength(100);
 
         builder.Property(p => p.ReferralComments)
-            .IsRequired(false);
+            .IsRequired(false)
+            .HasMaxLength(1000); 
 
         builder.Property(e => e.EnrolmentStatus)
             .IsRequired()
