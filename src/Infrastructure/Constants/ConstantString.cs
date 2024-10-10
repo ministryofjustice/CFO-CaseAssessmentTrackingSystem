@@ -120,6 +120,10 @@ public static class ConstantString
         Localize("You are attempting to log out of application. Do you really want to log out?");
     public static string AddRightToWork =>
     Localize("Add Right To Work");
+
+    public static string ChangeEnrolmentLocation =>
+        Localize("Change enrolment location");
+
     public static string RightToWork =>
     Localize("Right To Work");
     public static string AddConsent =>

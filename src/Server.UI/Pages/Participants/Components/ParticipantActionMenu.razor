@@ -16,28 +16,32 @@
     </ActivatorContent>
     <ChildContent>
         
-        @if (Participant.EnrolmentStatus != EnrolmentStatus.ArchivedStatus && Participant.EnrolmentStatus.IsQaStage() == false)
+        @if (Participant.EnrolmentStatus.AllowArchive())
         {
             <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error" OnClick="Archive">Archive</MudMenuItem>
         }
         
-        @if (Participant.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
+        @if (Participant.EnrolmentStatus.AllowSuspend())
         {
             <MudMenuItem Icon="@Icons.Material.Filled.HideSource" IconColor="Color.Error" OnClick="Suspend">Suspend</MudMenuItem>
         }
 
-        @if (Participant.EnrolmentStatus == EnrolmentStatus.EnrollingStatus)
+        @if (Participant.EnrolmentStatus.AllowSubmitToPqa())
         {
             <MudMenuItem Icon="@Icons.Material.Filled.Send" IconColor="Color.Primary" OnClick="SubmitToPqa">Submit to Provider QA</MudMenuItem>
         }
 
-        @if (Participant.EnrolmentStatus == EnrolmentStatus.EnrollingStatus || Participant.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
+        @if (Participant.EnrolmentStatus.AllowRightToWorkAddition())
         {
             <MudMenuItem Icon="@Icons.Material.Filled.HomeWork" IconColor="Color.Primary" OnClick="OpenRightToWorkDialog">@ConstantString.AddRightToWork</MudMenuItem>
-        }
-        @if (Participant.EnrolmentStatus == EnrolmentStatus.EnrollingStatus || Participant.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
-        {
             <MudMenuItem Icon="@Icons.Material.Filled.Approval" IconColor="Color.Primary" OnClick="OpenConsentDialog">@ConstantString.AddConsent</MudMenuItem>
+        }
+        
+        @if (Participant.EnrolmentStatus.AllowEnrolmentLocationChange())
+        {
+            <MudMenuItem Icon="@Icons.Material.Filled.Map" IconColor="Color.Primary" OnClick="OpenAdjustLocationDialog">
+                @ConstantString.ChangeEnrolmentLocation
+            </MudMenuItem>            
         }
 
 
@@ -53,6 +57,8 @@
     protected ParticipantSummaryDto Participant { get; set; } = default!;
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+
+    [CascadingParameter] public UserProfile UserProfile { get; set; } = default!;
 
 
     protected override async Task OnInitializedAsync()
@@ -166,7 +172,7 @@
         }
 
     }
-    
+
     protected async Task OpenRightToWorkDialog()
     {
         // Show Dialog
@@ -188,6 +194,29 @@
         }
 
     }
+
+    protected async Task OpenAdjustLocationDialog()
+    {
+
+        var parameters = new DialogParameters<AdjustEnrolmentLocationDialog>()
+        {
+            { x => x.UserProfile, this.UserProfile },
+            { x => x.ParticipantId, this.Participant.Id },
+            { x => x.JustificationReason, this.Participant.EnrolmentLocationJustification}
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<AdjustEnrolmentLocationDialog>("Change Enrolment Location", parameters, options);
+        var state = await dialog.Result;
+
+        if (state!.Canceled == false)
+        {
+            dialog.Close();
+            await OnUpdate.InvokeAsync();
+        }
+    }
+
     protected async Task OpenConsentDialog()
     {
         // Show Dialog
