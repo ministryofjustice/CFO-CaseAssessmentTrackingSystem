@@ -32,6 +32,9 @@ public class ParticipantSummaryDto
     public DateTime? RiskDue { get; set; }
     public int? RiskDueInDays { get; set; }
     public string? Nationality { get; set; }
+
+    public string? EnrolmentLocationJustification { get; set; }
+
     /// <summary>
     ///  The current enrolment status of the participant
     /// </summary>
@@ -73,7 +76,8 @@ public class ParticipantSummaryDto
                 .ForMember(target => target.ParticipantName, options => options.MapFrom(source => source.FirstName + ' ' + source.LastName))
                 .ForMember(dest => dest.RiskDue, opt => opt.MapFrom(src => src.RiskDue))
                 .ForMember(dest => dest.RiskDueInDays, opt => opt.MapFrom(src => src.RiskDueInDays()))
-                .ForMember(dest => dest.Nationality, opt => opt.MapFrom(src => src.Nationality));
+                .ForMember(dest => dest.Nationality, opt => opt.MapFrom(src => src.Nationality))
+                .ForMember(dest => dest.EnrolmentLocationJustification, opt => opt.MapFrom(src => src.EnrolmentLocationJustification));
 
             CreateMap<ParticipantAssessment, AssessmentSummaryDto>()
                 .ForMember(target => target.AssessmentId, options => options.MapFrom(source => source.Id))
