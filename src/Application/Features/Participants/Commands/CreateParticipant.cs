@@ -145,7 +145,10 @@ public static class CreateParticipant
                     .WithMessage("Comments are mandatory with this referral source")
                     .Matches(ValidationConstants.Notes).WithMessage(string.Format(ValidationConstants.NotesMessage, "Referral source comments"));
             });
- 
+
+            RuleFor(x => x.ReferralComments)
+              .MaximumLength(1000)
+              .WithMessage("Referral Comments must be less than 1000 characters");                
         }
 
         private async Task<bool> NotAlreadyExist(string identifier, CancellationToken cancellationToken) 
