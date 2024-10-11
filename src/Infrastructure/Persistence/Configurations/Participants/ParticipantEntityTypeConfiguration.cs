@@ -82,6 +82,9 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
         builder.Property<int?>("_enrolmentLocationId")
             .HasColumnName("EnrolmentLocationId");
 
+        builder.Property(p => p.EnrolmentLocationJustification)
+            .HasMaxLength(1000);
+
         builder.OwnsMany(participant => participant.Consents, consent => {
             consent.WithOwner()
                 .HasForeignKey("ParticipantId");
@@ -95,8 +98,7 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
                     .HasColumnName("ValidFrom");
                 lt.Property(t => t.EndDate)
                     .IsRequired()
-                    .HasColumnName("ValidTo");
-                
+                    .HasColumnName("ValidTo");                
             });
                 
             consent.HasOne(c => c.Document)
@@ -124,8 +126,7 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             a.Property(x => x.CreatedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
             a.Property(x => x.LastModifiedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
-            a.OwnsOne(p => p.Lifetime, lt => {
-                
+            a.OwnsOne(p => p.Lifetime, lt => {                
                 lt.Property(t => t.StartDate)
                     .IsRequired()
                     .HasColumnName("ValidFrom");
@@ -139,10 +140,8 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
                     .HasForeignKey("_documentId");
 
                 a.Property("_documentId")
-                    .HasColumnName("DocumentId");
-                
-            });
-            
+                    .HasColumnName("DocumentId");                
+            });            
         });
 
         builder.OwnsMany(p => p.ExternalIdentifiers, externalIdentifier =>
@@ -197,8 +196,7 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
                 .HasForeignKey(x => x.LastModifiedBy);
             
             note.Property(n => n.LastModifiedBy)
-                .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
-            
+                .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);            
         });
 
         builder.OwnsOne(p => p.Supervisor, supervisor =>
@@ -258,6 +256,5 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
         
         builder.Property(x => x.LastModifiedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
-
     }
 }
