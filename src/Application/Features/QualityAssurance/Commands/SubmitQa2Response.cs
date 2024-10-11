@@ -16,6 +16,8 @@ public static class SubmitQa2Response
         public Qa2Response? Response { get; set; }
 
         public string Message { get; set; } = default!;
+
+        public bool IsMessageExternal { get; set; }
         public UserProfile? CurrentUser { get; set; }
     }
 
@@ -39,7 +41,7 @@ public static class SubmitQa2Response
                 return Result.Failure("Cannot find queue item");
             }
 
-            entry.AddNote(request.Message);
+            entry.AddNote(request.Message, request.IsMessageExternal);
 
 
             switch (request.Response)
