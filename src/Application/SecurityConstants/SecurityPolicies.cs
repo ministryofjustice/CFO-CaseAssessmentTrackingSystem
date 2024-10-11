@@ -18,6 +18,8 @@ public static class SecurityPolicies
 
     public const string Qa2 = nameof(Qa2);
 
+    public const string Internal = nameof(Internal);
+
     public const string SeniorInternal = nameof(SeniorInternal);
     
     /// <summary>
