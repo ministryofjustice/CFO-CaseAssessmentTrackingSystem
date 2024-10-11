@@ -1,4 +1,5 @@
-﻿@using Cfo.Cats.Application.Features.Locations.DTOs
+﻿@using Cfo.Cats.Application.Common.Validators
+@using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Participants.Commands
 @inject IStringLocalizer<Location> L
 
@@ -51,9 +52,12 @@
                 </MudItem>
                 <MudItem xs="12">
                     <MudTextField Label="@L[Model.GetMemberDescription(x => x.JustificationReason)]"
-                                  @bind-Value="Model.JustificationReason"
-                                  For="@(()=>Model.JustificationReason)">
+                                  @bind-Value="Model.JustificationReason" MaxLength="@ValidationConstants.NotesLength"
+                                  Lines="5" For="@(()=>Model.JustificationReason)"
+                                  Immediate="true" oninput="UpdateCharacterCount">
                     </MudTextField>
+
+                    <MudText Class="ml-2">Characters: @characterCount / 1000</MudText>
                 </MudItem>
              } 
         </MudGrid>        
@@ -125,5 +129,12 @@
         {
             return false;
         }
+    }
+
+    private int characterCount => Model!.JustificationReason?.Length ?? 0;
+
+    private void UpdateCharacterCount(ChangeEventArgs args)
+    {
+        Model!.JustificationReason = args?.Value?.ToString() ?? string.Empty;
     }
 }
