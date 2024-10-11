@@ -1,8 +1,8 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.SecurityConstants;
-using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
 
@@ -84,9 +84,13 @@ public static class SetEnrolmentLocation
                     .When(x => x.AlternativeLocation is not null)
                     .WithMessage("You must provide a different alternative location to the current location");
 
-                RuleFor(x => x.JustificationReason)
+                RuleFor(c => c.JustificationReason)
+                    .NotNull()
                     .NotEmpty()
-                    .WithMessage("Justification reason is mandatory when enrolling in a different location");
+                    .WithMessage("Justification reason is mandatory when enrolling in a different location")
+                    .MaximumLength(ValidationConstants.NotesLength)
+                    .Matches(ValidationConstants.Notes)
+                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification Reason"));
             });
         }
     }
