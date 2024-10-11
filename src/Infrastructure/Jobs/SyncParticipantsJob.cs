@@ -96,6 +96,9 @@ public class SyncParticipantsJob(
                     logger.LogTrace("Update registration details");
                     participant.UpdateRegistrationDetailsJson(candidate.RegistrationDetailsJson);
 
+                    logger.LogTrace("Update nationality");
+                    participant.UpdateNationality(candidate.Nationality);
+
                     // Dispatch events and commit transaction
                     await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, CancellationToken.None);
                     await unitOfWork.CommitTransactionAsync();

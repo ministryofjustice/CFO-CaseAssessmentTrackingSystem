@@ -290,6 +290,17 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
+    public Participant UpdateNationality(string? nationality)
+    {
+        if (string.Equals(Nationality, nationality, StringComparison.OrdinalIgnoreCase) is false)
+        {
+            AddDomainEvent(new ParticipantNationalityChangedDomainEvent(this, Nationality, nationality));
+            Nationality = nationality;
+        }
+
+        return this;
+    }
+
     public Participant UpdateRegistrationDetailsJson(string? json)
     {
         if(string.Equals(RegistrationDetailsJson, json) is false)

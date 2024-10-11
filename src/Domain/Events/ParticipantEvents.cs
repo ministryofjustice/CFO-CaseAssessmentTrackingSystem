@@ -48,6 +48,14 @@ public sealed class ParticipantGenderChangedDomainEvent(Participant participant,
     public string? To { get; } = to;
 }
 
+public sealed class ParticipantNationalityChangedDomainEvent(Participant participant, string? from, string? to)
+    : DomainEvent
+{
+    public Participant Item { get; } = participant;
+    public string? From { get; } = from;
+    public string? To { get; } = to;
+}
+
 public sealed class ParticipantIdentifierChangedDomainEvent(Participant participant, ExternalIdentifier from, ExternalIdentifier to)
     : DomainEvent
 {
