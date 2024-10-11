@@ -14,6 +14,8 @@ public static class SubmitEscalationResponse
         public EscalationResponse? Response { get; set; }
 
         public string Message { get; set; } = default!;
+
+        public bool IsMessageExternal { get; set; }
         public UserProfile? CurrentUser { get; set; }
 
     }
@@ -38,7 +40,7 @@ public static class SubmitEscalationResponse
                 return Result.Failure("Cannot find queue item");
             }
 
-            entry.AddNote(request.Message);
+            entry.AddNote(request.Message, request.IsMessageExternal);
 
             switch (request.Response)
             {
