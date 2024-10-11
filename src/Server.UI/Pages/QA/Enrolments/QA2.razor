@@ -34,6 +34,9 @@
         margin-bottom: 0.5rem;
     }
 </style>
+
+<QaExternalMessageWarning @ref="warningMessage" />
+
 <MudContainer Style="width: 100%; min-width: 480px;" MaxWidth="MaxWidth.ExtraLarge">
     <MudText Typo="Typo.h5" Class="mb-5">
         CFO Enrolment Queue Second Pass
@@ -79,36 +82,60 @@
                     <MudTabPanel Text="Submission">
                         @if (_queueEntry.IsCompleted == false)
                         {
-                        <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
-                            <MudItem xs="12">
-                                <MudRadioGroup T="SubmitQa2Response.Qa2Response?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
-                                    <MudRadio T="SubmitQa2Response.Qa2Response?" Value="SubmitQa2Response.Qa2Response.Accept" Color="Color.Primary">
-                                        Accept
-                                    </MudRadio>
-                                    <MudRadio T="SubmitQa2Response.Qa2Response?" Value="SubmitQa2Response.Qa2Response.Return" Color="Color.Secondary">
-                                        Return
-                                    </MudRadio>
-                                    <MudRadio T="SubmitQa2Response.Qa2Response?" Value="SubmitQa2Response.Qa2Response.Escalate" Color="Color.Secondary">
-                                        Escalate
-                                    </MudRadio>
-                                </MudRadioGroup>
-                            </MudItem>
-                                <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">
-                                    Comments are visible to PQA
-                                </MudAlert>
-                            <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" Class="mt-4" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
-                            <MudText Class="ml-2">Characters: @characterCount / 1000</MudText>
+                            <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
+                                <MudItem xs="12">
+                                    <MudRadioGroup T="SubmitQa2Response.Qa2Response?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
+                                        <MudRadio T="SubmitQa2Response.Qa2Response?" Value="SubmitQa2Response.Qa2Response.Accept" Color="Color.Primary">
+                                            Accept
+                                        </MudRadio>
+                                        <MudRadio T="SubmitQa2Response.Qa2Response?" Value="SubmitQa2Response.Qa2Response.Return" Color="Color.Secondary">
+                                            Return
+                                        </MudRadio>
+                                        <MudRadio T="SubmitQa2Response.Qa2Response?" Value="SubmitQa2Response.Qa2Response.Escalate" Color="Color.Secondary">
+                                            Escalate
+                                        </MudRadio>
+                                    </MudRadioGroup>
+                                </MudItem>
 
-                        </MudForm>
-                        <MudContainer Class="d-flex px-0 pt-8">
-                            <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
-                        </MudContainer>
+                                <MudDivider Class="py-4" />
+
+                                @if (Command.IsMessageExternal)
+                                {
+                                    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+                                        This comment will be visible to PQA (and internal members of CFO staff)
+                                    </MudAlert>
+                                }
+                                else
+                                {
+                                    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                                        This comment will only be visible to internal members of CFO staff
+                                    </MudAlert>
+                                }
+
+                                <MudGrid Class="py-4">
+                                    <MudItem Class="d-flex align-center" xs="12" md="3" xl="2">
+                                        <MudSwitch @bind-Value="Command.IsMessageExternal"
+                                                   For="() => Command.IsMessageExternal"
+                                                   Label="External"
+                                                   Color="Color.Primary" />
+                                    </MudItem>
+                                    <MudItem xs="12" md="9" xl="10">
+                                        <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
+                                        <MudText Class="ml-2">Characters: @characterCount / 1000</MudText>
+                                    </MudItem>
+                                </MudGrid>
+
+                            </MudForm>
+
+                            <MudContainer Class="d-flex px-0 pt-8">
+                                <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
+                            </MudContainer>
                         }
                         else
                         {
-                        <MudAlert Variant="Variant.Outlined" Severity="Severity.Info">
-                            This entry has already been processed
-                        </MudAlert>
+                            <MudAlert Variant="Variant.Outlined" Severity="Severity.Info">
+                                This entry has already been processed
+                            </MudAlert>
                         }
                     </MudTabPanel>
                 </MudTabs>
@@ -118,6 +145,7 @@
 </MudContainer>
 
 @code {
+    private MudMessageBox? warningMessage;
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry = null;
     private ParticipantDto? _participantDto = null;
@@ -130,23 +158,26 @@
     private async Task GetQueueItem()
     {
         GrabQa2Entry.Command command = new GrabQa2Entry.Command()
-            {
-                CurrentUser = UserProfile!
-            };
+        {
+            CurrentUser = UserProfile!
+        };
 
         var result = await GetNewMediator().Send(command);
+
         if (result.Succeeded)
         {
             _queueEntry = result.Data!;
+
             _participantDto = await GetNewMediator().Send(new GetParticipantById.Query()
-                            {
-                                Id = _queueEntry.ParticipantId
-                            });
+            {
+                Id = _queueEntry.ParticipantId
+            });
+
             Command = new SubmitQa2Response.Command()
-                            {
-                                QueueEntryId = _queueEntry.Id,
-                                CurrentUser = UserProfile
-                            };
+            {
+                QueueEntryId = _queueEntry.Id,
+                CurrentUser = UserProfile
+            };
         }
         else
         {
@@ -157,7 +188,20 @@
     protected async Task SubmitToQa()
     {
         await _form!.Validate().ConfigureAwait(false);
-        if (_form.IsValid)
+
+        if (_form.IsValid is false)
+        {
+            return;
+        }
+
+        bool submit = true;
+
+        if (Command is { IsMessageExternal: true, Message.Length: > 0 })
+        {
+            submit = await warningMessage!.ShowAsync() ?? false;
+        }
+
+        if (submit)
         {
             var result = await GetNewMediator().Send(Command);
 
