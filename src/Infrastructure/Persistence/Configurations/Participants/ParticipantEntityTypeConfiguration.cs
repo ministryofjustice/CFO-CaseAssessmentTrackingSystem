@@ -51,7 +51,7 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
 
         builder.Property(p => p.ReferralComments)
             .IsRequired(false)
-            .HasMaxLength(1000); 
+            .HasMaxLength(ValidationConstants.NotesLength); 
 
         builder.Property(e => e.EnrolmentStatus)
             .IsRequired()
@@ -83,7 +83,7 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             .HasColumnName("EnrolmentLocationId");
 
         builder.Property(p => p.EnrolmentLocationJustification)
-            .HasMaxLength(1000);
+            .HasMaxLength(ValidationConstants.NotesLength);
 
         builder.OwnsMany(participant => participant.Consents, consent => {
             consent.WithOwner()
