@@ -20,9 +20,18 @@ public static class NotificationsWithPaginationQuery
         public async Task<PaginatedData<NotificationDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var data = await unitOfWork.DbContext.Notifications
+            .Where(n => n.ReadDate.HasValue == false)
+            .OrderBy($"{request.OrderBy} {request.SortDirection}")
+            .ProjectToPaginatedDataAsync<Notification, NotificationDto>(request.Specification, request.PageNumber,
+                request.PageSize, mapper.ConfigurationProvider, cancellationToken);
+
+            if (request.IncludeReadNotifications)
+            {
+                data = await unitOfWork.DbContext.Notifications
                 .OrderBy($"{request.OrderBy} {request.SortDirection}")
                 .ProjectToPaginatedDataAsync<Notification, NotificationDto>(request.Specification, request.PageNumber,
                     request.PageSize, mapper.ConfigurationProvider, cancellationToken);
+            }
 
             return data;
         }

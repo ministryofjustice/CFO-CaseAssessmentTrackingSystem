@@ -6,6 +6,7 @@ namespace Cfo.Cats.Application.Features.Notifications.DTOs;
 
 public class NotificationDto
 {
+    public Guid Id { get; set; }
     public string Heading { get; set; } = default!;
     public string Details { get; set; } = default!;
     
@@ -18,6 +19,7 @@ public class NotificationDto
         public Mapper()
         {
             CreateMap<Notification, NotificationDto>(MemberList.Destination)
+                .ForMember(t => t.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(t => t.Heading, opt => opt.MapFrom(src => src.Heading))
                 .ForMember(t => t.Details, opt => opt.MapFrom(src => src.Details))
                 .ForMember(t => t.NotificationDate, opt => opt.MapFrom(src => src.Created))

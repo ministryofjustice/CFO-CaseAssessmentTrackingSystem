@@ -131,4 +131,8 @@ public static class ConstantString
 
     public static string Reassign =>
     Localize("Reassign");
+    public static string MarkAsRead =>
+    Localize("Mark As Read");
+    public static string MarkAsUnread =>
+    Localize("Mark As Unread");
 }

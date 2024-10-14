@@ -1,10 +1,8 @@
 @using Cfo.Cats.Application.Features.Notifications.DTOs
 @using Cfo.Cats.Application.Features.Notifications.Queries
-@using Cfo.Cats.Server.UI.Services.Notifications
 @using Humanizer
 @inherits CatsComponentBase
 
-@inject INotificationService NotificationService
 @inject IStringLocalizer<HeaderMenu> L
 
 <MudTooltip Arrow="true" Text="@L["Notification"]">
@@ -12,7 +10,6 @@
         <MudMenu Icon="@Icons.Material.Outlined.Notifications" Color="Color.Tertiary" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopCenter" PopoverClass="docs-layout-menu-shadow" ListClass="pa-2 docs-menu-list" LockScroll="true">
             <div class="d-flex justify-space-between align-center px-2">
                 <MudText Typo="Typo.subtitle2">@L["Notifications"]</MudText>
-                <MudButton Disabled="@(_newNotificationsAvailable == false)" OnClick="MarkNotificationAsRead" StartIcon="@Icons.Material.Filled.DoneAll" Variant="Variant.Text" Color="Color.Primary" Class="ml-16 mr-n2">@L["Mark as read"]</MudButton>
             </div>
             @if (_messages != null && _newNotificationsAvailable)
             {
@@ -47,12 +44,6 @@
     private bool _newNotificationsAvailable = false;
     private IDictionary<NotificationDto, bool>? _messages = null;
 
-    private async Task MarkNotificationAsRead()
-    {
-        await NotificationService.MarkNotificationsAsRead();
-        _newNotificationsAvailable = false;
-    }
-    
     protected override async Task OnInitializedAsync()
     {
         if (UserProfile is null)

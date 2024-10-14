@@ -611,7 +611,8 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("UserId");
+                });
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Notifications.Notification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1830,7 +1831,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
+                });
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Notifications.Notification", b =>
                 {
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
