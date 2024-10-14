@@ -17,11 +17,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Services\Notifications\InMemoryNotificationService.cs" />
-      <Compile Remove="Services\Notifications\INotificationService.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="ActualLab.Fusion" Version="9.1.8" />
         <PackageReference Include="ActualLab.Fusion.Blazor" Version="9.1.8" />
         <PackageReference Include="ActualLab.Fusion.Ext.Services" Version="9.1.8" />
@@ -70,10 +65,6 @@
         <None Include="web.config">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Services\Notifications\" />
     </ItemGroup>
 
     
