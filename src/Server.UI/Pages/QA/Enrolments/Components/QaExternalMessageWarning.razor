@@ -1,6 +1,4 @@
-﻿@inherits MudMessageBox
-
-<MudMessageBox CancelText="Cancel">
+﻿<MudMessageBox @ref="warningMessage" CancelText="Cancel">
     <TitleContent>
         Submit
     </TitleContent>
@@ -12,3 +10,14 @@
         <MudButton Class="ml-2" Color="Color.Warning">Submit</MudButton>
     </YesButton>
 </MudMessageBox>
+
+@code {
+    private MudMessageBox? warningMessage;
+
+    public async Task<bool> ShowAsync()
+    {
+        var result = await warningMessage!.ShowAsync();
+        return result ?? false;
+    }
+
+}

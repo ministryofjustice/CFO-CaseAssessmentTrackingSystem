@@ -12,29 +12,33 @@ public static class GetEnrolmentQaNotes
     {
         public string? ParticipantId { get;set; }
 
+        public bool IncludeInternalNotes { get; set; }
+
         public UserProfile? CurentUser {get;set;}
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<EnrolmentQaNoteDto[]>>
+    public class Handler(
+        IUnitOfWork unitOfWork, 
+        IMapper mapper) : IRequestHandler<Query, Result<EnrolmentQaNoteDto[]>>
     {
         public async Task<Result<EnrolmentQaNoteDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {
             var pqa = await GetPqaNotes(request.ParticipantId!);
-            var qa1 = await GetQa1Notes(request.ParticipantId!);
-            var qa2 = await GetQa2Notes(request.ParticipantId!);
-            var es = await GetEscalationNotes(request.ParticipantId!);
+            var qa1 = await GetQa1Notes(request.ParticipantId!, request.IncludeInternalNotes);
+            var qa2 = await GetQa2Notes(request.ParticipantId!, request.IncludeInternalNotes);
+            var es = await GetEscalationNotes(request.ParticipantId!, request.IncludeInternalNotes);
 
 
             return Result<EnrolmentQaNoteDto[]>.Success(pqa.Union(qa1).Union(qa2).Union(es).ToArray());
 
         }
 
-        private async Task<EnrolmentQaNoteDto[]> GetEscalationNotes(string participantId)
+        private async Task<EnrolmentQaNoteDto[]> GetEscalationNotes(string participantId, bool includeInternalNotes)
         {
             var query1 = unitOfWork.DbContext.EnrolmentEscalationQueue
                                     .AsNoTracking()
                                     .Where(c => c.ParticipantId == participantId)
-                                    .SelectMany(c => c.Notes)
+                                    .SelectMany(c => c.Notes.Where(n => n.IsExternal || includeInternalNotes))
                                     .ProjectTo<EnrolmentQaNoteDto>(mapper.ConfigurationProvider);
 
 
@@ -55,12 +59,12 @@ public static class GetEnrolmentQaNotes
              return results;
         }
 
-        private async Task<EnrolmentQaNoteDto[]> GetQa1Notes(string participantId)
+        private async Task<EnrolmentQaNoteDto[]> GetQa1Notes(string participantId, bool includeInternalNotes)
         {
             var query1 = unitOfWork.DbContext.EnrolmentQa1Queue
                                     .AsNoTracking()
                                     .Where(c => c.ParticipantId == participantId)
-                                    .SelectMany(c => c.Notes)
+                                    .SelectMany(c => c.Notes.Where(n => n.IsExternal || includeInternalNotes))
                                     .ProjectTo<EnrolmentQaNoteDto>(mapper.ConfigurationProvider);
 
 
@@ -68,12 +72,12 @@ public static class GetEnrolmentQaNotes
              return results;
         }
 
-          private async Task<EnrolmentQaNoteDto[]> GetQa2Notes(string participantId)
+          private async Task<EnrolmentQaNoteDto[]> GetQa2Notes(string participantId, bool includeInternalNotes)
         {
             var query1 = unitOfWork.DbContext.EnrolmentQa2Queue
                                     .AsNoTracking()
                                     .Where(c => c.ParticipantId == participantId)
-                                    .SelectMany(c => c.Notes)
+                                    .SelectMany(c => c.Notes.Where(n => n.IsExternal || includeInternalNotes))
                                     .ProjectTo<EnrolmentQaNoteDto>(mapper.ConfigurationProvider);
 
 

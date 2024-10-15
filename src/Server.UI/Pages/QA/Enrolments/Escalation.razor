@@ -128,7 +128,7 @@
 }
 
 @code {
-    private MudMessageBox? warningMessage;
+    private QaExternalMessageWarning? warningMessage;
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry;
     private ParticipantDto? _participantDto;
@@ -181,7 +181,7 @@
 
         if (Command is { IsMessageExternal: true, Message.Length: > 0 })
         {
-            submit = await warningMessage!.ShowAsync() ?? false;
+            submit = await warningMessage!.ShowAsync();
         }
 
         if (submit)
