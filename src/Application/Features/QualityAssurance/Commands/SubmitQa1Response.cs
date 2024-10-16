@@ -16,7 +16,6 @@ public static class SubmitQa1Response
 
         public string Message { get; set; } = default!;
 
-        public bool IsMessageExternal { get; set; }
         public UserProfile? CurrentUser { get; set; }
     }
     
@@ -33,7 +32,7 @@ public static class SubmitQa1Response
                 return Result.Failure("Cannot find queue item");
             }
 
-            entry.AddNote(request.Message, request.IsMessageExternal);
+            entry.AddNote(request.Message, isExternal: false);
 
             if (request.Accept.GetValueOrDefault())
             {

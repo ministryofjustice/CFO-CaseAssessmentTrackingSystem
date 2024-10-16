@@ -95,27 +95,12 @@
 
                                 <MudDivider Class="py-4" />
 
-                                @if (Command.IsMessageExternal)
-                                {
-                                    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
-                                        This comment will be visible to PQA (and internal members of CFO staff)
-                                    </MudAlert>
-                                }
-                                else
-                                {
-                                    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
-                                        This comment will only be visible to internal members of CFO staff
-                                    </MudAlert>
-                                }
+                                <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                                    This comment will only be visible to internal members of CFO staff
+                                </MudAlert>
 
                                 <MudGrid Class="py-4">
-                                    <MudItem Class="d-flex align-center" xs="12" md="3" xl="2">
-                                            <MudSwitch @bind-Value="Command.IsMessageExternal"
-                                                       For="() => Command.IsMessageExternal"
-                                                       Label="External"
-                                                       Color="Color.Primary" />
-                                    </MudItem>
-                                    <MudItem xs="12" md="9" xl="10">
+                                    <MudItem xs="12">
                                             <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
                                             <MudText Class="ml-2">Characters: @characterCount / 1000</MudText>
                                     </MudItem>
@@ -190,28 +175,18 @@
             return;
         }
 
-        bool submit = true;
+        var result = await GetNewMediator().Send(Command);
 
-        if (Command is { IsMessageExternal: true, Message.Length: > 0 })
+        if (result.Succeeded)
         {
-            submit = await warningMessage!.ShowAsync();
+            Snackbar.Add("Participant submitted to QA2", Severity.Info);
+            Navigation.NavigateTo("/pages/qa/enrolments/qa1", true);
+        }
+        else
+        {
+            ShowActionFailure("Failed to submit", result);
         }
 
-        if(submit)
-        {
-            var result = await GetNewMediator().Send(Command);
-
-            if (result.Succeeded)
-            {
-                Snackbar.Add("Participant submitted to QA2", Severity.Info);
-                Navigation.NavigateTo("/pages/qa/enrolments/qa1", true);
-            }
-            else
-            {
-                ShowActionFailure("Failed to submit", result);
-            }
-        }
-        
     }
 
     private void ShowActionFailure(string title, IResult result)
