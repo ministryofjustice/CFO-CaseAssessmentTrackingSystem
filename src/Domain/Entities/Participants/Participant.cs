@@ -133,15 +133,8 @@ public class Participant : OwnerPropertyEntity<string>
     public Participant SetEnrolmentLocation(int locationId, string? justificationReason)
     {
         EnrolmentLocationJustification = justificationReason;
-        if (CurrentLocation.Id == locationId)
-        {
-            EnrolmentLocation = null;
-            _enrolmentLocationId = null;
-        }
-        else      
-        {
-            _enrolmentLocationId = locationId;            
-        }
+        _enrolmentLocationId = locationId;        
+
         return this;
     }
 
