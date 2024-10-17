@@ -28,7 +28,7 @@ namespace Cfo.Cats.Application.Features.Notifications.Command
                     }
                     else if (notification.ReadDate.HasValue)
                     {
-                        notification.MarkAsUnread();
+                        notification.UpdateReadDate(null);
                     }
 
                 }

@@ -88,7 +88,7 @@
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">@context.Item.Details</MudText>
-                    <MudText Typo="Typo.body2">@context.Item.NotificationDate.Humanize()</MudText>
+                    <MudText Typo="Typo.body2">@(context.Item.ReadDate.HasValue ? string.Format("Read: {0}", context.Item.ReadDate.Humanize()) : string.Format("Notified: {0}", context.Item.NotificationDate.Humanize()))</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
@@ -112,7 +112,7 @@
 
     private MudDataGrid<NotificationDto> _table = default!;
     private bool _loading;
-    private string ShowNotificationButtonLabel = "Show Read Notifications";
+    private string ShowNotificationButtonLabel = ConstantString.ShowReadNotification;
 
     private NotificationDto _currentDto = new() { Heading = "" };
 
@@ -214,7 +214,7 @@
         SelectedUnreadNotifications.Clear();
         SelectedReadNotifications.Clear();
         
-        ShowNotificationButtonLabel = Query.ShowReadNotifications ? "Show Unread Notification" : "Show Read Notification";
+        ShowNotificationButtonLabel = Query.ShowReadNotifications ? ConstantString.ShowUnreadNotification : ConstantString.ShowReadNotification;
         await _table.ReloadServerData();
 
     }

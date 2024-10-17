@@ -31,16 +31,9 @@ public class Notification : OwnerPropertyEntity<Guid>
         this.Link = url;
         return this;
     }
-
-    public Notification MarkAsRead()
+    public Notification UpdateReadDate(DateTime? readDate)
     {
-        ReadDate = DateTime.UtcNow;
-        return this;
-    }
-
-    public Notification MarkAsUnread()
-    {
-        ReadDate = null;
+        ReadDate = readDate;
         return this;
     }
 
