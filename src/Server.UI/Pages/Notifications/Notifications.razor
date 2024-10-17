@@ -35,14 +35,20 @@
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
             <div class="d-flex flex-column">
-                <MudSwitch T="bool" Class="mt-10" Value="@Query.IncludeReadNotifications" Label="Include Read Notifications" Color="Color.Primary" ValueChanged="OnIncludeReadNotificationsChanged"></MudSwitch>
+                <MudButton Variant="Variant.Outlined"
+                           Size="Size.Small"
+                           OnClick="@(() => OnShowNotificationButtonClick(Query.ShowReadNotifications))"
+                           StartIcon="@Icons.Material.Filled.MoveDown" IconColor="Color.Surface" Color="Color.Primary"
+                           Style="margin-right: 4px; margin-bottom:4px">
+                    @ShowNotificationButtonLabel
+                </MudButton>
             </div>
         </div>
         <div class="d-flex flex-column justify-end">                
             <div class="d-flex">
                 <MudButton Variant="Variant.Outlined"
                             Size="Size.Small"
-                            Disabled="@(SelectedNotifications.Any() == false || _loading)"
+                            Disabled="@(SelectedReadNotifications.Any() == false || _loading)"
                            OnClick="@(() => MarkAsUnread())"
                             StartIcon="@Icons.Material.Filled.MoveDown" IconColor="Color.Surface" Color="Color.Primary"
                             Style="margin-right: 4px; margin-bottom:4px">
@@ -51,7 +57,7 @@
                 <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true"></MudHidden>
                 <MudButton Variant="Variant.Outlined"
                             Size="Size.Small"
-                            Disabled="@(SelectedNotifications.Any() == false || _loading)"
+                            Disabled="@(SelectedUnreadNotifications.Any() == false || _loading)"
                             OnClick="@(() => MarkAsRead())"
                             StartIcon="@Icons.Material.Filled.MoveDown" IconColor="Color.Surface" Color="Color.Primary"
                             Style="margin-right: 4px; margin-bottom:4px">
@@ -64,7 +70,7 @@
     <Columns>
         <PropertyColumn Property="x => x.Id" Title="Select" Sortable="false">
             <CellTemplate>
-                <MudCheckBox T="bool" @onclick="()=>OnNotificationCheckedChanged(context.Item.Id)"></MudCheckBox>                
+                <MudCheckBox T="bool" @onclick="()=>OnNotificationCheckedChanged(context.Item)"></MudCheckBox>                
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Property="x => x.Heading" Title="Heading" Sortable="false">
@@ -106,6 +112,7 @@
 
     private MudDataGrid<NotificationDto> _table = default!;
     private bool _loading;
+    private string ShowNotificationButtonLabel = "Show Read Notifications";
 
     private NotificationDto _currentDto = new() { Heading = "" };
 
@@ -114,7 +121,8 @@
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
 
-    private List<Guid> SelectedNotifications { get; set; } = new();
+    private List<Guid> SelectedReadNotifications { get; set; } = new();
+    private List<Guid> SelectedUnreadNotifications { get; set; } = new();
 
     private async Task<GridData<NotificationDto>> ServerReload(GridState<NotificationDto> state)
     {
@@ -139,11 +147,10 @@
         Result<bool>? result = false;
         try
         {
-
             result = await GetNewMediator().Send(new MarkAsRead.Command
             {
                 CurrentUser = UserProfile,
-                NotificationsToMarkAsRead = SelectedNotifications.ToArray()
+                    NotificationsToMarkAsRead = SelectedUnreadNotifications.ToArray()
             });
         }
         finally
@@ -152,22 +159,20 @@
             {
                 Snackbar.Add(result?.ErrorMessage ?? "An unknown issue occurred when marking noticiation(s) as read", Severity.Error);
             }
-            SelectedNotifications.Clear();
-            StateHasChanged();            
+            SelectedUnreadNotifications.Clear();
         }
-           
-        await _table.ReloadServerData();
-    }    
+
+        Navigation.NavigateTo($"/pages/notifications", true);
+    }
     private async Task MarkAsUnread()
     {
         Result<bool>? result = false;
         try
         {
-
             result = await GetNewMediator().Send(new MarkAsUnread.Command
             {
                 CurrentUser = UserProfile,
-                NotificationsToMarkAsUnread = SelectedNotifications.ToArray()
+                    NotificationsToMarkAsUnread = SelectedReadNotifications.ToArray()
             });
         }
         finally
@@ -176,25 +181,42 @@
             {
                 Snackbar.Add(result?.ErrorMessage ?? "An unknown issue occurred when marking noticiation(s) as unread", Severity.Error);
             }
-            SelectedNotifications.Clear();
-            StateHasChanged();
+            SelectedReadNotifications.Clear();
         }
 
-        await _table.ReloadServerData();
+        Navigation.NavigateTo($"/pages/notifications", true);
     }
 
-    private void OnNotificationCheckedChanged(Guid notificationId)
+    private void OnNotificationCheckedChanged(NotificationDto notification)
     {
-        if (!SelectedNotifications.Remove(notificationId))
+
+        if (notification.ReadDate.HasValue)
         {
-            SelectedNotifications.Add(notificationId);
-        }    
-        //await NotificationService.MarkNotificationsAsRead();
+            if (!SelectedReadNotifications.Remove(notification.Id))
+            {
+                SelectedReadNotifications.Add(notification.Id);
+            }
+        }
+        else
+        {
+            if (!SelectedUnreadNotifications.Remove(notification.Id))
+            {
+                SelectedUnreadNotifications.Add(notification.Id);
+            }
+        }
+
     }
-    private async Task OnIncludeReadNotificationsChanged(bool value)
+    private async Task OnShowNotificationButtonClick(bool value)
     {
-        Query.IncludeReadNotifications = value;
+        //toggle ShowReadNotifications
+        Query.ShowReadNotifications = !value;
+
+        SelectedUnreadNotifications.Clear();
+        SelectedReadNotifications.Clear();
+        
+        ShowNotificationButtonLabel = Query.ShowReadNotifications ? "Show Unread Notification" : "Show Read Notification";
         await _table.ReloadServerData();
+
     }
 
 }

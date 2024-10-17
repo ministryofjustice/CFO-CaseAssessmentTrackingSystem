@@ -6,7 +6,7 @@ public sealed class NotificationAdvancedSpecification : Specification<Notificati
 {
     public NotificationAdvancedSpecification(NotificationsAdvancedFilter filter)
     {
-        Query.Where(r => r.ReadDate == null, filter.IncludeReadNotifications == false)
+        Query.Where(r => r.ReadDate == null, filter.ShowReadNotifications == false)
             .Where(n => n.OwnerId == filter.CurrentUser!.UserId);
     }
 }

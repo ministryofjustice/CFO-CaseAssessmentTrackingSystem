@@ -11,7 +11,7 @@ public class NotificationDto
     public string Details { get; set; } = default!;
     
     public DateTime NotificationDate { get; set; }
-
+    public DateTime? ReadDate { get; set; }
     public string? Link { get;set; }
 
     private class Mapper : Profile
@@ -23,6 +23,7 @@ public class NotificationDto
                 .ForMember(t => t.Heading, opt => opt.MapFrom(src => src.Heading))
                 .ForMember(t => t.Details, opt => opt.MapFrom(src => src.Details))
                 .ForMember(t => t.NotificationDate, opt => opt.MapFrom(src => src.Created))
+                .ForMember(t => t.ReadDate, opt => opt.MapFrom(src => src.ReadDate))
                 .ForMember(t => t.Link, opt => opt.MapFrom(src => src.Link));
         }
     }
