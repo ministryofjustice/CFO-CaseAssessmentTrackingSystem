@@ -1,0 +1,14 @@
+{
+    "regular": {
+        "username": "qa.officer@justice.gov.uk",
+        "password": "Password123!"
+    },
+    "smt": {
+        "username": "smt@justice.gov.uk",
+        "password": "Password123!"
+    },
+    "support": {
+        "username": "system.support@justice.gov.uk",
+        "password": "Password123!"
+    }
+}
