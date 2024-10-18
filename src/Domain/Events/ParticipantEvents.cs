@@ -4,9 +4,10 @@ using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Domain.Events;
 
-public sealed class ParticipantCreatedDomainEvent(Participant participant) : DomainEvent
+public sealed class ParticipantCreatedDomainEvent(Participant participant, int locationId) : DomainEvent
 {
     public Participant Item { get; } = participant;
+    public int LocationId { get; } = locationId;
 }
 
 public sealed class ParticipantAssignedDomainEvent(Participant participant, string? from, string? to) : DomainEvent
