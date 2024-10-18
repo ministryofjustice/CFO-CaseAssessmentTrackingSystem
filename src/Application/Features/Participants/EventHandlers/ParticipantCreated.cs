@@ -7,7 +7,12 @@ public class ParticipantCreated(IUnitOfWork unitOfWork) : INotificationHandler<P
 {
     public async Task Handle(ParticipantCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var history = ParticipantEnrolmentHistory.Create(notification.Item.Id, EnrolmentStatus.IdentifiedStatus);
-        await unitOfWork.DbContext.ParticipantEnrolmentHistories.AddAsync(history, cancellationToken);
+        // Update enrolment history
+        var enrolmentHistory = ParticipantEnrolmentHistory.Create(notification.Item.Id, EnrolmentStatus.IdentifiedStatus);
+        await unitOfWork.DbContext.ParticipantEnrolmentHistories.AddAsync(enrolmentHistory, cancellationToken);
+
+        // Update location history
+        var locationHistory = ParticipantLocationHistory.Create(notification.Item.Id, notification.LocationId, DateTime.UtcNow);
+        await unitOfWork.DbContext.ParticipantLocationHistories.AddAsync(locationHistory, cancellationToken);
     }
 }

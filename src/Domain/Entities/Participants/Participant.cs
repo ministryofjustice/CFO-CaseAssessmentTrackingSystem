@@ -54,7 +54,7 @@ public class Participant : OwnerPropertyEntity<string>
             Nationality = nationality
         };
 
-        p.AddDomainEvent(new ParticipantCreatedDomainEvent(p));
+        p.AddDomainEvent(new ParticipantCreatedDomainEvent(p, locationId));
         return p;
     }
 
