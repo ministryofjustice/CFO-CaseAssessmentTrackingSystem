@@ -18,7 +18,7 @@
 
     <ItemGroup>
         <PackageReference Include="ActualLab.Fusion" Version="9.1.8" />
-        <PackageReference Include="ActualLab.Fusion.Blazor" Version="9.1.8" />
+        <PackageReference Include="ActualLab.Fusion.Blazor" Version="9.5.44" />
         <PackageReference Include="ActualLab.Fusion.Ext.Services" Version="9.1.8" />
         <PackageReference Include="ActualLab.Generators" Version="9.1.8">
             <PrivateAssets>all</PrivateAssets>
