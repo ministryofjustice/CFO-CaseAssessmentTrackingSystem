@@ -36,7 +36,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
         CanTransitionTo(DormantStatus);
 
     public bool AllowSubmitToPqa() =>
-        CanTransitionTo(SubmittedToProviderStatus);
+        this == EnrollingStatus;
 
     public virtual bool AllowEnrolmentLocationChange()
         => false;
