@@ -1,12 +1,8 @@
 @page "/pages/notifications"
-@using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Server.UI.Pages.Notifications
-@using Cfo.Cats.Application.SecurityConstants
+@using Humanizer
 @using Cfo.Cats.Application.Features.Notifications.DTOs
 @using Cfo.Cats.Application.Features.Notifications.Queries
-@using Cfo.Cats.Application.Features.Notifications.Specifications
 @using Cfo.Cats.Application.Features.Notifications.Command
-@using Humanizer
 
 @inject IStringLocalizer<Notifications> L
 
@@ -14,12 +10,16 @@
 
 
 <PageTitle>@L["Notification"]</PageTitle>
-@* <PageTitle>Notifications</PageTitle> *@
+
 <style>
     .invisible {
-    visibility: hidden;
+        visibility: hidden;
     }
 </style>
+
+
+
+
 
 <MudDataGrid ServerData="@(ServerReload)"
              FixedHeader="true"
@@ -28,7 +28,7 @@
              @bind-RowsPerPage="_defaultPageSize"
              Height="calc(100vh - 330px)"
              Loading="@_loading"
-             MultiSelection="true"
+             MultiSelection="false"
              @bind-SelectedItem="_currentDto"
              Hover="true"
              @ref="_table">
@@ -73,28 +73,18 @@
                 <MudCheckBox T="bool" @onclick="()=>OnNotificationCheckedChanged(context.Item)"></MudCheckBox>                
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.Heading" Title="Heading" Sortable="false">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">
-                        <MudLink Href="@context.Item.Link">
-                            @context.Item.Heading
-                        </MudLink>
-                    </MudText>
-                </div>
-            </CellTemplate>
-        </PropertyColumn>
         <PropertyColumn Property="x => x.Details" Title="Details" Sortable="false">
             <CellTemplate>
                 <div class="d-flex flex-column">
+                    <MudText Typo="Typo.caption">@context.Item.Heading</MudText>
                     <MudText Typo="Typo.body2">@context.Item.Details</MudText>
-                    <MudText Typo="Typo.body2">@(context.Item.ReadDate.HasValue ? string.Format("Read: {0}", context.Item.ReadDate.Humanize()) : string.Format("Notified: {0}", context.Item.NotificationDate.Humanize()))</MudText>
+                    <MudText Typo="Typo.body2">@context.Item.NotificationDate.Humanize()</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
     </Columns>
     <NoRecordsContent>
-        <MudText>@ConstantString.NoRecords</MudText>
+        <MudText>You have no new notifications</MudText>
     </NoRecordsContent>
     <LoadingContent>
         <MudText>@ConstantString.Loading</MudText>
@@ -157,7 +147,7 @@
         {
             if(result is not { Succeeded: true })
             {
-                Snackbar.Add(result?.ErrorMessage ?? "An unknown issue occurred when marking noticiation(s) as read", Severity.Error);
+                Snackbar.Add(result?.ErrorMessage ?? "An unknown issue occurred when marking notifications as read", Severity.Error);
             }
             SelectedUnreadNotifications.Clear();
         }
@@ -179,7 +169,7 @@
         {
             if(result is not { Succeeded: true })
             {
-                Snackbar.Add(result?.ErrorMessage ?? "An unknown issue occurred when marking noticiation(s) as unread", Severity.Error);
+                Snackbar.Add(result?.ErrorMessage ?? "An unknown issue occurred when marking notifications as unread", Severity.Error);
             }
             SelectedReadNotifications.Clear();
         }

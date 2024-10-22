@@ -28,21 +28,21 @@
         </MudTooltip>
         <ExternalLinksMenu />
         @*<LanguageSelector/>*@
-        <NotificationMenu />
+        <MudTooltip Arrow="true" Text="@L["Notifications"]">
+            <MudIconButton Color="Color.Tertiary"
+                           Edge="Edge.Start"
+                           Icon="@Icons.Material.Filled.Notifications"
+                           OnClick="GotoNotifications"/>
+        </MudTooltip>
     </MudHidden>
     <UserMenu OnSettingClick="OnSettingClick"/>
     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
-        <!-- These icons are shown if the screen is size SM or larger -->
-        @*<MudTooltip Arrow="true"
-                    Text="@L["Search (Cmd + K)"]">
+        <MudTooltip Arrow="true" Text="@L["Notifications"]">
             <MudIconButton Color="Color.Tertiary"
                            Edge="Edge.Start"
-                           Icon="@Icons.Material.Filled.Search"
-                           OnClick="OpenSearchDialog"/>
-        </MudTooltip>*@
-        
-        @*<MudSpacer/>*@
-        <NotificationMenu/>
+                           Icon="@Icons.Material.Filled.Notifications"
+                           OnClick="GotoNotifications"/>
+        </MudTooltip>
     </MudHidden>
     <MudDivider Class="mx-3 my-5" DividerType="DividerType.Middle" Vertical="true" FlexItem="true"></MudDivider>
     <MudTooltip Arrow="true" Text="@L["Toggle menu"]">
@@ -74,8 +74,10 @@
     {
         hotKeysContext = HotKeys.CreateContext()
             .Add(ModCode.Ctrl, Code.K, () => OpenSearchDialog.InvokeAsync());
-        //.Add(Key.Control, Code.K ,  () => OpenSearchDialog.InvokeAsync(), "Close command palette.");
     }
+
+
+    private void GotoNotifications() => Navigation.NavigateTo("/pages/notifications");
 
     public void Dispose()
     {
