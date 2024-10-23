@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Assessments;
@@ -9,6 +9,7 @@ using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Persistence.Configurations.Enrolments;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Cfo.Cats.Domain.Entities.Inductions;
+using Cfo.Cats.Domain.Entities.Notifications;
 
 namespace Cfo.Cats.Infrastructure.Persistence;
 
@@ -72,6 +73,7 @@ public class ApplicationDbContext
 
     public DbSet<ParticipantAccessAuditTrail> AccessAuditTrails => Set<ParticipantAccessAuditTrail>();
     
+    public DbSet<Notification> Notifications => Set<Notification>();
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

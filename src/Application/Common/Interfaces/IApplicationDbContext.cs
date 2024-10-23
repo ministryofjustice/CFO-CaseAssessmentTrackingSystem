@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Cfo.Cats.Domain.Entities.Inductions;
+using Cfo.Cats.Domain.Entities.Notifications;
 
 namespace Cfo.Cats.Application.Common.Interfaces;
 
@@ -63,6 +64,6 @@ public interface IApplicationDbContext
     DbSet<HubInduction> HubInductions { get; }
 
     DbSet<WingInduction> WingInductions { get; }
-
+    DbSet<Notification> Notifications { get; }
 }
 

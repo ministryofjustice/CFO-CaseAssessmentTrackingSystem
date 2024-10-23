@@ -8,7 +8,6 @@ using Cfo.Cats.Server.UI.Services.Fusion;
 using Cfo.Cats.Server.UI.Services.JsInterop;
 using Cfo.Cats.Server.UI.Services.Layout;
 using Cfo.Cats.Server.UI.Services.Navigation;
-using Cfo.Cats.Server.UI.Services.Notifications;
 using Cfo.Cats.Server.UI.Services.UserPreferences;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -110,14 +109,7 @@ public static class DependencyInjection
             .AddScoped<DialogServiceHelper>()
             .AddBlazorDownloadFile()
             .AddScoped<IUserPreferencesService, UserPreferencesService>()
-            .AddScoped<IMenuService, MenuService>()
-            .AddScoped<InMemoryNotificationService>()
-            .AddScoped<INotificationService>(sp =>
-            {
-                var service = sp.GetRequiredService<InMemoryNotificationService>();
-                service.Preload();
-                return service;
-            });
+            .AddScoped<IMenuService, MenuService>();
 
         
         services.Configure<ForwardedHeadersOptions>(options =>

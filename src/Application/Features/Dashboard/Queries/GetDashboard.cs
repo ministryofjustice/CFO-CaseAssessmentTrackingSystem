@@ -58,6 +58,10 @@ public static class GetDashboard
                 }
             }
 
+            dto.UnreadNotifications = await unitOfWork.DbContext.Notifications.AsNoTracking()
+                .Where(n => n.ReadDate == null && n.OwnerId == request.CurrentUser!.UserId)
+                .CountAsync(cancellationToken);
+
             return Result<DashboardDto>.Success(dto);
 
         }
