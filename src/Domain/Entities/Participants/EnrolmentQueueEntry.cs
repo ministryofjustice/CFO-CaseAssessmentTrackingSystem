@@ -10,7 +10,7 @@ namespace Cfo.Cats.Domain.Entities.Participants;
 
 public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHaveTenant
 {
-    private readonly List<Note> _notes = [];
+    private readonly List<EnrolmentQueueEntryNote> _notes = [];
     
     public bool IsAccepted { get; protected set; }
     public bool IsCompleted { get; protected set; }
@@ -32,7 +32,7 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHave
     public virtual Participant? Participant { get; private set; }
     public virtual Tenant? Tenant { get; private set; }
     
-    public IReadOnlyCollection<Note> Notes => _notes.AsReadOnly();
+    public IReadOnlyCollection<EnrolmentQueueEntryNote> Notes => _notes.AsReadOnly();
 
     public abstract EnrolmentQueueEntry Accept();
 
@@ -40,14 +40,15 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHave
     public abstract EnrolmentQueueEntry Return();
     
 
-    public EnrolmentQueueEntry AddNote(string? message)
+    public EnrolmentQueueEntry AddNote(string? message, bool isExternal = false)
     {
         if (string.IsNullOrWhiteSpace(message) == false)
         {
-            _notes.Add(new Note()
+            _notes.Add(new EnrolmentQueueEntryNote()
             {
                 TenantId = TenantId,
-                Message = message
+                Message = message,
+                IsExternal = isExternal
             });
         }
         return this;

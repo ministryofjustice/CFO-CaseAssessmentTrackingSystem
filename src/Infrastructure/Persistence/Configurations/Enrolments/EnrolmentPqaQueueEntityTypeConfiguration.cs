@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -45,9 +45,8 @@ public class EnrolmentPqaQueueEntityTypeConfiguration : IEntityTypeConfiguration
             
             note.Property(n => n.LastModifiedBy)
                 .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
-            
-            
-            
+
+            note.Ignore(x => x.IsExternal);
         });
 
         builder.HasOne(t => t.Tenant)

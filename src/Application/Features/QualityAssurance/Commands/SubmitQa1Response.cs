@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
@@ -15,6 +15,7 @@ public static class SubmitQa1Response
         public bool? Accept { get; set; }
 
         public string Message { get; set; } = default!;
+
         public UserProfile? CurrentUser { get; set; }
     }
     
@@ -31,7 +32,7 @@ public static class SubmitQa1Response
                 return Result.Failure("Cannot find queue item");
             }
 
-            entry.AddNote(request.Message);
+            entry.AddNote(request.Message, isExternal: false);
 
             if (request.Accept.GetValueOrDefault())
             {

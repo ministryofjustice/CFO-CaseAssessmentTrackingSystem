@@ -37,6 +37,8 @@ public interface IApplicationDbContext
     DbSet<ParticipantAssessment> ParticipantAssessments { get; }
     DbSet<ParticipantBio> ParticipantBios { get; }
     DbSet<ParticipantEnrolmentHistory> ParticipantEnrolmentHistories { get; }
+    DbSet<ParticipantLocationHistory> ParticipantLocationHistories { get; }
+    DbSet<ParticipantOwnershipHistory> ParticipantOwnershipHistories { get; }
 
     DbSet<Timeline> Timelines { get; }
 

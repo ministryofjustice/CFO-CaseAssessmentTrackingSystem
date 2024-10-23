@@ -38,6 +38,8 @@ internal static class DatabaseConstants
         public const string PathwayPlan = nameof(PathwayPlan);
         public const string PathwayPlanReviewHistory = nameof(PathwayPlanReviewHistory);
         public const string Supervisor = nameof(Supervisor);
+        public const string LocationHistory = nameof(LocationHistory);
+        public const string OwnershipHistory = nameof(OwnershipHistory);
 
 
         public const string AssessmentPathwayScore = nameof(AssessmentPathwayScore);
