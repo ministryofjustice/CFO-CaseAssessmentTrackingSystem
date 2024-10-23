@@ -8,98 +8,128 @@
 
 <PageTitle>@Title</PageTitle>
 
-<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
-    <MudText Typo="Typo.h3">
-        Dashboard
-    </MudText>
-    <MudGrid>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            Identified Cases
-                        </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>Your cases that are awaiting enrolment confirmation</MudText>
-                    <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.IdentifiedCases
-                    </MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            Enrolling Cases
-                        </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>Your cases that are awaiting submission to PQA</MudText>
-                    <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.EnrollingCases
-                    </MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            Provider QA
-                        </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>Your cases that are sat with Provider QA</MudText>
-                    <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.CasesAtPqa
-                    </MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            CFO QA
-                        </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>Your cases that are sat with CFO QA</MudText>
-                    <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.CasesAtCfo
-                    </MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            Approved Cases
-                        </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>Your cases that have been approved</MudText>
-                    <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.ApprovedCases
-                    </MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+@if (_dashboardDto is not null)
+{
+    <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+        <MudText Typo="Typo.h3">
+            Dashboard
+        </MudText>
+        <MudGrid Class="mt-2">
+            <MudItem xs="4">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderAvatar>
+                            <MudAvatar Color="Color.Info">P</MudAvatar>
+                        </CardHeaderAvatar>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">My Participants</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudIconButton Icon="@Icons.Material.Filled.People" Color="Color.Info" OnClick="GotoParticipants" />
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudList T="string">
+                            <MudListItem>
+                                <div class="d-flex justify-space-between align-center width-90">
+                                    <MudText>Identified</MudText>
+                                    <MudBadge Origin="Origin.CenterRight" Color="@(_dashboardDto.IdentifiedCases == 0 ? Color.Secondary : Color.Success)" Content="@_dashboardDto.IdentifiedCases" />
+                                </div>
+                            </MudListItem>
+                            <MudListItem>
+                                <div class="d-flex justify-space-between align-center width-100">
+                                    <MudText>Enrolling</MudText>
+                                    <MudBadge Origin="Origin.CenterRight" Color="@(_dashboardDto.EnrollingCases == 0 ? Color.Secondary : Color.Success)" Content="@_dashboardDto.EnrollingCases" />
+                                </div>
+                            </MudListItem>
+                            <MudListItem>
+                                <div class="d-flex justify-space-between align-center width-100">
+                                    <MudText>Submitted to PQA</MudText>
+                                    <MudBadge Origin="Origin.CenterRight" Color="@(_dashboardDto.CasesAtPqa == 0 ? Color.Secondary : Color.Success)" Content="@_dashboardDto!.CasesAtPqa" />
+                                </div>
+                            </MudListItem>
+                            <MudListItem>
+                                <div class="d-flex justify-space-between align-center width-100">
+                                    <MudText>Submitted to Authority</MudText>
+                                    <MudBadge Origin="Origin.CenterRight" Color="@(_dashboardDto.CasesAtCfo == 0 ? Color.Secondary : Color.Success)" Content="@_dashboardDto!.CasesAtCfo" />
+                                </div>
+                            </MudListItem>
+                            <MudListItem>
+                                <div class="d-flex justify-space-between align-center width-100">
+                                    <MudText>Approved</MudText>
+                                    <MudBadge Origin="Origin.CenterRight" Color="@(_dashboardDto.ApprovedCases == 0 ? Color.Secondary : Color.Success)" Content="@_dashboardDto!.ApprovedCases" />
+                                </div>
+
+                            </MudListItem>
+                        </MudList>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="GotoParticipants">View</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="4">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderAvatar>
+                            <MudAvatar Color="Color.Info">C</MudAvatar>
+                        </CardHeaderAvatar>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">My Participants Breakdown</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudIconButton Icon="@Icons.Material.Filled.AreaChart" Color="Color.Info" OnClick="GotoNotification" />
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudChart ChartType="ChartType.Donut" Width="300px" Height="300px" InputData="@_data" InputLabels="@_labels">
+
+                        </MudChart>
+                     
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="GotoNotification">View</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="4">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderAvatar>
+                            <MudAvatar Color="Color.Info">N</MudAvatar>
+                        </CardHeaderAvatar>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Notifications</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudIconButton Icon="@Icons.Material.Filled.NotificationImportant" Color="Color.Info" OnClick="GotoNotification" />
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        
+                        @if (_dashboardDto.UnreadNotifications > 0)
+                        {
+                            <MudText>
+                                You have @_dashboardDto.UnreadNotifications unread notification@(_dashboardDto.UnreadNotifications == 1 ? "": "s")
+                            </MudText>
+                        }
+                        else
+                        {
+                            <MudText>
+                                You have no new notifications
+                            </MudText>
+                        }
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="GotoNotification">View</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+
+}
+
 
 
 
@@ -107,8 +137,19 @@
 
     public string Title { get; } = "Dashboard";
 
+    private double[] _data = [];
+
+    private readonly string[] _labels =
+    [
+        "Identified",
+        "Enrolling",
+        "Submitted To PQA",
+        "Submitted To Authority",
+        "Approved"
+    ];
+
     private DashboardDto? _dashboardDto = null; 
-    
+
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; }
 
@@ -124,8 +165,19 @@
         if (result.Succeeded)
         {
             _dashboardDto = result.Data;
+            _data =
+            [
+                _dashboardDto!.IdentifiedCases,
+                _dashboardDto.EnrollingCases,
+                _dashboardDto.CasesAtPqa,
+                _dashboardDto.CasesAtCfo,
+                _dashboardDto.ApprovedCases
+            ];
         }
-        
+
     }
 
+    private void GotoNotification() => Navigation.NavigateTo("/pages/notifications/");
+
+    private void GotoParticipants() => Navigation.NavigateTo("/pages/participants");
 }
