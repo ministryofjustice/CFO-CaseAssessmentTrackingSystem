@@ -189,7 +189,7 @@
         {
             var datePart = _participant.RiskDue.Value.Date;
 
-            _riskInfo = datePart.Humanize();
+            _riskInfo = $"Due {datePart.Humanize()}";
 
             int _dueInDays = _participant!.RiskDueInDays!.Value;
             switch (_dueInDays)
