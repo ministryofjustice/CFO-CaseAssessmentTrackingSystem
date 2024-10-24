@@ -40,8 +40,11 @@ public partial class CaseSummary
     {
         if (ParticipantSummaryDto.RiskDue.HasValue)
         {
-            _riskInfo = DateOnly.FromDateTime(ParticipantSummaryDto.RiskDue!.Value!).Humanize();
-            _riskTooltipText = String.Format("Due {0}", DateOnly.FromDateTime(ParticipantSummaryDto.RiskDue!.Value!));
+            var datePart = ParticipantSummaryDto.RiskDue.Value.Date;
+
+            _riskInfo = datePart.Humanize();
+            _riskTooltipText = String.Format("Due {0}", DateOnly.FromDateTime(datePart));
+
             int _dueInDays = ParticipantSummaryDto.RiskDueInDays!.Value!;
             switch (_dueInDays)
             {
