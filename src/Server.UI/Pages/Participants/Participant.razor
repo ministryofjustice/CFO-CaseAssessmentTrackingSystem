@@ -187,7 +187,10 @@
     {
         if (_participant!.RiskDue.HasValue)
         {
-            _riskInfo = String.Format("Due {0}", DateOnly.FromDateTime(_participant!.RiskDue!.Value).Humanize());
+            var datePart = _participant.RiskDue.Value.Date;
+
+            _riskInfo = datePart.Humanize();
+
             int _dueInDays = _participant!.RiskDueInDays!.Value;
             switch (_dueInDays)
             {
