@@ -1,24 +1,27 @@
 using System.Reflection.Emit;
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Dashboard.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using DocumentFormat.OpenXml.Math;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 
-public static class GetDashboard 
+public static class GetMyTeamsParticipantsDashboard 
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<DashboardDto>>
+    public class Query : IRequest<Result<ParticipantCountSummaryDto>>
     {
         public UserProfile? CurrentUser { get; set; } 
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<DashboardDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<ParticipantCountSummaryDto>>
     {
-        public async Task<Result<DashboardDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<ParticipantCountSummaryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var query = from p in unitOfWork.DbContext.Participants.AsNoTracking()
-                where p.OwnerId == request.CurrentUser!.UserId
+            var query = from p in unitOfWork.DbContext
+                    .Participants.AsNoTracking()
+                where
+                   p.Owner!.TenantId!.StartsWith(request.CurrentUser!.TenantId!)
                 group p by p.EnrolmentStatus
                 into grp
                 select new
@@ -29,7 +32,7 @@ public static class GetDashboard
 
             var results = await query.ToArrayAsync(cancellationToken);
 
-            DashboardDto dto = new DashboardDto();
+            var dto = new ParticipantCountSummaryDto();
             foreach (var result in results)
             {
                 if (result.Status == EnrolmentStatus.ApprovedStatus)
@@ -58,11 +61,7 @@ public static class GetDashboard
                 }
             }
 
-            dto.UnreadNotifications = await unitOfWork.DbContext.Notifications.AsNoTracking()
-                .Where(n => n.ReadDate == null && n.OwnerId == request.CurrentUser!.UserId)
-                .CountAsync(cancellationToken);
-
-            return Result<DashboardDto>.Success(dto);
+            return Result<ParticipantCountSummaryDto>.Success(dto);
 
         }
     }
@@ -73,17 +72,11 @@ public static class GetDashboard
         {
             RuleFor(q => q.CurrentUser)
                 .NotNull();
+
+            RuleFor(q => q.CurrentUser!.AssignedRoles)
+                .NotEmpty();
+
         }
     }
 
-}
-
-public class DashboardDto
-{
-    public int IdentifiedCases { get; set; }
-    public int EnrollingCases { get; set; }
-    public int CasesAtPqa { get; set; }
-    public int CasesAtCfo { get; set; }
-    public int ApprovedCases { get; set; }
-    public int UnreadNotifications { get; set; }
 }
