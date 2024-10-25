@@ -7,9 +7,17 @@ public class ParticipantAssigned(IUnitOfWork unitOfWork) : INotificationHandler<
 {
     public async Task Handle(ParticipantAssignedDomainEvent notification, CancellationToken cancellationToken)
     {
+        var owner = await unitOfWork.DbContext.Users.FindAsync(notification.NewOwner);
+
+        if(owner is null)
+        {
+            return;
+        }
+
         var history = ParticipantOwnershipHistory.Create(
-            notification.Item.Id, 
-            notification.NewOwner!, 
+            notification.Item.Id,
+            owner.Id,
+            owner.TenantId!,
             DateTime.UtcNow);
 
         await unitOfWork.DbContext.ParticipantOwnershipHistories.AddAsync(history, cancellationToken);

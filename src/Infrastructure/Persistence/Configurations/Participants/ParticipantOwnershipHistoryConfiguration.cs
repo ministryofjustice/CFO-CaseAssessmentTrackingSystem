@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Domain.Entities.Participants;
+﻿using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -15,22 +16,28 @@ public class ParticipantOwnershipHistoryConfiguration
             DatabaseConstants.Schemas.Participant
         );
 
-        builder.HasKey(plh => plh.Id);
+        builder.HasKey(poh => poh.Id);
 
         builder.HasOne<Participant>()
             .WithMany()
-            .HasForeignKey(plh => plh.ParticipantId)
+            .HasForeignKey(poh => poh.ParticipantId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne<ApplicationUser>()
             .WithMany()
-            .HasForeignKey(plh => plh.OwnerId)
+            .HasForeignKey(poh => poh.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(plh => plh.CreatedBy)
+        builder.HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(poh => poh.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(poh => poh.CreatedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
-        builder.Property(plh => plh.LastModifiedBy)
+        builder.Property(poh
+            => poh.LastModifiedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
     }
 }
