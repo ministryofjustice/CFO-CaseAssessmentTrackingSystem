@@ -16,15 +16,36 @@
 </style>
 
 <MudItem xs="12" lg="6">
-
-    <MudCard>
+@if (Results is not null)
+{
+    <MudCard style="height:100%">
         <MudCardHeader>
             <CardHeaderContent>
                 <MudText Typo="Typo.h5">Notifications</MudText>
             </CardHeaderContent>
         </MudCardHeader>
         <MudCardContent>
-                <MudDataGrid ServerData="@(ServerReload)"
+            <MudList T="string">
+
+                    @foreach (var item in Results.Items)
+                    {
+                        <MudListItem Href="@item.Link">
+                            <div class="d-flex justify-space-between align-center width-90">
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Info">@item.Heading</MudText>
+                                    <MudText Typo="Typo.body1">@item.Details</MudText>
+                                    <MudText Typo="Typo.body2">@item.NotificationDate.Humanize()</MudText>
+                                </div>
+                                
+                                <MudIconButton Icon="@Icons.Material.Filled.Close"></MudIconButton>
+                                @*                             <MudText>Identified</MudText>
+                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.IdentifiedCases == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps.IdentifiedCases"/> *@
+                            </div>
+                        </MudListItem>
+                    }
+                
+            </MudList>
+            @*       <MudDataGrid ServerData="@(ServerReload)"
                     T="NotificationDto"
                     FixedHeader="true"
                     Elevation="0"
@@ -90,28 +111,35 @@
             <MudDataGridPager PageSizeOptions="@(new[] { 5, 10, 15, 20 })" />
         </PagerContent>
     </MudDataGrid>
-          
-          
+           *@
+
         </MudCardContent>
+        <MudCardActions>
+            <MudPagination Count="@Results.TotalPages" ShowFirstButton="true" ShowLastButton="true"></MudPagination>
+        </MudCardActions>
     </MudCard>
-   
+}
 </MudItem>
 
 @code {
 
-    private int _defaultPageSize = 5;
-    private bool _loading;
+    // private int _defaultPageSize = 5;
+    // private bool _loading;
     private NotificationDto _currentDto = new() { Heading = "" };
 
     private MudDataGrid<NotificationDto> _table = default!;
 
-    private List<Guid> SelectedReadNotifications { get; set; } = new();
-    private List<Guid> SelectedUnreadNotifications { get; set; } = new();
 
     [CascadingParameter]
     public UserProfile UserProfile { get; set; } = default!;
 
-    private NotificationsWithPaginationQuery.Query Query { get; set; } = new();
+    private NotificationsWithPaginationQuery.Query Query { get; set; } = new() { PageSize = 5 };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await OnRefresh();
+    }
+
 
     private async Task DismissNotification(NotificationDto notification)
     {
@@ -139,55 +167,37 @@
         await _table.ReloadServerData();
     }
 
-    private async Task<GridData<NotificationDto>> ServerReload(GridState<NotificationDto> state)
-    {
-        try
-        {
-            _loading = true;
-            Query.CurrentUser = UserProfile;
-            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Created";
-            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
-            Query.PageNumber = state.Page + 1;
-            Query.PageSize = state.PageSize;
-            var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
-            return new GridData<NotificationDto> { TotalItems = result.TotalItems, Items = result.Items };
-        }
-        finally
-        {
-            _loading = false;
-        }
-    }
+   
+    // private async Task MarkAsRead()
+    // {
+    //     Result<bool>? result = false;
+    //     try
+    //     {
+    //         result = await GetNewMediator().Send(new MarkAsRead.Command
+    //         {
+    //             CurrentUser = UserProfile,
+    //                 NotificationsToMarkAsRead = SelectedUnreadNotifications.ToArray()
+    //         });
+    //     }
+    //     finally
+    //     {
+    //         if(result is not { Succeeded: true })
+    //         {
+    //             Snackbar.Add(result?.ErrorMessage ?? "An unknown issue occurred when marking notifications as read", Severity.Error);
+    //         }
+    //         SelectedUnreadNotifications.Clear();
+    //     }
 
-    private async Task MarkAsRead()
-    {
-        Result<bool>? result = false;
-        try
-        {
-            result = await GetNewMediator().Send(new MarkAsRead.Command
-            {
-                CurrentUser = UserProfile,
-                    NotificationsToMarkAsRead = SelectedUnreadNotifications.ToArray()
-            });
-        }
-        finally
-        {
-            if(result is not { Succeeded: true })
-            {
-                Snackbar.Add(result?.ErrorMessage ?? "An unknown issue occurred when marking notifications as read", Severity.Error);
-            }
-            SelectedUnreadNotifications.Clear();
-        }
-
-        Navigation.NavigateTo($"/pages/notifications", true);
-    }
+    //     Navigation.NavigateTo($"/pages/notifications", true);
+    // }
     
     private async Task OnShowNotificationButtonClick(bool value)
     {
         //toggle ShowReadNotifications
         Query.ShowReadNotifications = !value;
 
-        SelectedUnreadNotifications.Clear();
-        SelectedReadNotifications.Clear();
+        // SelectedUnreadNotifications.Clear();
+        // SelectedReadNotifications.Clear();
         
         await _table.ReloadServerData();
 
@@ -195,9 +205,15 @@
 
     private async Task OnRefresh()
     {
-        Query.Keyword = string.Empty;
-        await _table.ReloadServerData();
+        Query.CurrentUser = UserProfile;
+        
+        // Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
+        // Query.PageNumber = state.Page + 1;
+        // Query.PageSize = state.PageSize;
+        Results = await GetNewMediator().Send(Query).ConfigureAwait(false);
     }
+
+    PaginatedData<NotificationDto>? Results { get; set; }
 
     private void RowClicked(DataGridRowClickEventArgs<NotificationDto> args)
     {

@@ -7,12 +7,9 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-<PageTitle>@Title</PageTitle>
-
-    <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
-        <MudText Typo="Typo.h3">
-            @UserProfile?.DisplayName
-        </MudText>
+    <MudText Typo="Typo.h3">
+        Dashboard
+    </MudText>
 
         <MudGrid Class="mt-2">
 
@@ -25,42 +22,7 @@
                 <MyTeamsParticipantsComponent />
             }
             <MyNotifications />
-
-           @*  <MudItem xs="4">
-                <MudCard>
-                    <MudCardHeader>
-                        <CardHeaderAvatar>
-                            <MudAvatar Color="Color.Info">N</MudAvatar>
-                        </CardHeaderAvatar>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h6">Notifications</MudText>
-                        </CardHeaderContent>
-                        <CardHeaderActions>
-                            <MudIconButton Icon="@Icons.Material.Filled.NotificationImportant" Color="Color.Info" OnClick="GotoNotification" />
-                        </CardHeaderActions>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        
-                        @if (_dashboardDto.UnreadNotifications > 0)
-                        {
-                            <MudText>
-                                You have @_dashboardDto.UnreadNotifications unread notification@(_dashboardDto.UnreadNotifications == 1 ? "": "s")
-                            </MudText>
-                        }
-                        else
-                        {
-                            <MudText>
-                                You have no new notifications
-                            </MudText>
-                        }
-                    </MudCardContent>
-                    <MudCardActions>
-                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="GotoNotification">View</MudButton>
-                    </MudCardActions>
-                </MudCard>
-            </MudItem> *@
         </MudGrid>
-    </MudContainer>
 
 
 

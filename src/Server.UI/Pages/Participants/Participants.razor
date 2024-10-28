@@ -1,4 +1,5 @@
 @page "/pages/participants"
+
 @using Cfo.Cats.Application.Common.Interfaces.Locations
 @using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Domain.Common.Enums
@@ -219,6 +220,9 @@
     [Inject]
     public ILocationService LocationService {get;set;} = default!;
 
+    [SupplyParameterFromQuery(Name="ListView")]
+    public string? ListView { get; set; }
+
     public string? Title { get; private set; }
     private int _defaultPageSize = 15;
 
@@ -271,11 +275,18 @@
         var state = await AuthState;
         _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.CandidateSearch)).Succeeded;
         _canEnrol = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Enrol)).Succeeded;
+
+        Enum.TryParse<ParticipantListView>(ListView, true, out var selectedListView);
+        
         Query = new ParticipantsWithPagination.Query()
             {
-                JustMyCases = UserProfile!.AssignedRoles.Length == 0
+                JustMyCases = UserProfile!.AssignedRoles.Length == 0,
+                ListView = selectedListView,
             };
-        Locations = LocationService.GetVisibleLocations(UserProfile!.TenantId!).OrderByDescending(l => l.LocationType.IsCustody).ThenBy(l => l.Name).ToArray();
+
+        Locations = LocationService.GetVisibleLocations(UserProfile!.TenantId!)
+            .OrderByDescending(l => l.LocationType.IsCustody)
+            .ThenBy(l => l.Name).ToArray();
     }
 
     private async Task<GridData<ParticipantPaginationDto>> ServerReload(GridState<ParticipantPaginationDto> state)

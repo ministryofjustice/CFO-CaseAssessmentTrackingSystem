@@ -12,6 +12,7 @@ public static class GetMyTeamsParticipantsDashboard
     public class Query : IRequest<Result<ParticipantCountSummaryDto>>
     {
         public UserProfile? CurrentUser { get; set; } 
+        public string? TenantId { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<ParticipantCountSummaryDto>>

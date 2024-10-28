@@ -1,11 +1,12 @@
 ﻿@using Cfo.Cats.Application.Features.Dashboard.Queries
 @using Cfo.Cats.Application.Features.Dashboard.DTOs
+@using Cfo.Cats.Application.Features.Participants.Specifications
 @inherits CatsComponentBase
 
 @if (_participantSteps is not null)
 {
     <MudItem xs="12" md="6" lg="3">
-        <MudCard>
+        <MudCard Style="height:100%">
             <MudCardHeader>
                 <CardHeaderContent>
                     <MudText Typo="Typo.h5">Participants</MudText>
@@ -13,36 +14,35 @@
             </MudCardHeader>
             <MudCardContent>
                 <MudList T="string">
-                    <MudListItem>
+                    <MudListItem Href="@GetParticipantsUrl(ParticipantListView.Enrolling)">
                         <div class="d-flex justify-space-between align-center width-90">
                             <MudText>Identified</MudText>
-                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.IdentifiedCases == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps.IdentifiedCases"/>
+                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.IdentifiedCases == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps.IdentifiedCases" />
                         </div>
                     </MudListItem>
-                    <MudListItem>
+                    <MudListItem Href="@GetParticipantsUrl(ParticipantListView.Enrolling)">
                         <div class="d-flex justify-space-between align-center width-100">
                             <MudText>Enrolling</MudText>
-                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.EnrollingCases == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps.EnrollingCases"/>
+                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.EnrollingCases == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps.EnrollingCases" />
                         </div>
                     </MudListItem>
-                    <MudListItem>
+                    <MudListItem Href="@GetParticipantsUrl(ParticipantListView.SubmittedToProvider)">
                         <div class="d-flex justify-space-between align-center width-100">
                             <MudText>Submitted to PQA</MudText>
-                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.CasesAtPqa == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps!.CasesAtPqa"/>
+                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.CasesAtPqa == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps!.CasesAtPqa" />
                         </div>
                     </MudListItem>
-                    <MudListItem>
+                    <MudListItem Href="@GetParticipantsUrl(ParticipantListView.SubmittedToQa)">
                         <div class="d-flex justify-space-between align-center width-100">
                             <MudText>Submitted to Authority</MudText>
-                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.CasesAtCfo == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps!.CasesAtCfo"/>
+                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.CasesAtCfo == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps!.CasesAtCfo" />
                         </div>
                     </MudListItem>
-                    <MudListItem>
+                    <MudListItem Href="@GetParticipantsUrl(ParticipantListView.Approved)">
                         <div class="d-flex justify-space-between align-center width-100">
                             <MudText>Approved</MudText>
-                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.ApprovedCases == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps!.ApprovedCases"/>
+                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.ApprovedCases == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps!.ApprovedCases" />
                         </div>
-
                     </MudListItem>
                 </MudList>
             </MudCardContent>
@@ -52,18 +52,18 @@
         </MudCard>
     </MudItem>
     <MudItem xs="12" md="6" lg="3">
-        <MudCard>
+        <MudCard Style="height:100%">
             <MudCardHeader>
                     <MudText Typo="Typo.h5">Participants Breakdown</MudText>
             </MudCardHeader>
             <MudCardContent>
-                <MudChart ChartType="ChartType.Donut" InputData="@_data" InputLabels="@_labels">
+                <MudChart ChartType="ChartType.Pie" InputData="@_data" InputLabels="@_labels">
 
                 </MudChart>
 
             </MudCardContent>
             <MudCardActions>
-                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="GotoParticipants">View</MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="GotoParticipants">View All</MudButton>
             </MudCardActions>
         </MudCard>
     </MudItem>
@@ -111,6 +111,9 @@
             ];
         }
     }
+
+
+    private string GetParticipantsUrl(ParticipantListView listView) => $"/pages/participants?listView={listView.ToString()}";
 
 
     private void GotoParticipants() => Navigation.NavigateTo("/pages/participants");
