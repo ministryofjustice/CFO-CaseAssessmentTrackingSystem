@@ -20,7 +20,7 @@ public class NotifyOwnerParticipantHasBeenApproved(IUnitOfWork unitOfWork) : INo
                 ) == false)
             {
                 var n = Notification.Create(heading, details, notification.Item.OwnerId!);
-                n.SetLink($"/pages/participants/");
+                n.SetLink($"/pages/participants/?listView=Approved");
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }
         }

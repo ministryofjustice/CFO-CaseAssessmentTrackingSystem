@@ -2,138 +2,80 @@
 @using Cfo.Cats.Application.Features.Notifications.DTOs
 @using Cfo.Cats.Application.Features.Notifications.Queries
 @using Humanizer
-
 @inherits CatsComponentBase
 
 
 <style>
-
-    
     .pointer-cursor {
         cursor: pointer;
     }
-    
 </style>
 
 <MudItem xs="12" lg="6">
-@if (Results is not null)
-{
-    <MudCard style="height:100%">
-        <MudCardHeader>
-            <CardHeaderContent>
-                <MudText Typo="Typo.h5">Notifications</MudText>
-            </CardHeaderContent>
-        </MudCardHeader>
-        <MudCardContent>
-            <MudList T="string">
+    
+    @if (Results is null)
+    {
+        <LoadingCard Title="Notifications" />
+    }
 
+    @if (Results is not null)
+    {
+        <MudCard style="height:100%">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">Notifications</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudList T="string">
+                    <MudListItem>
+                        <MudSwitch T="bool" Value="@Query.ShowReadNotifications" ValueChanged="OnShowUnreadChanged" Color="Color.Info">
+                            Show unread
+                        </MudSwitch>
+                    </MudListItem>
+                    @if (Results.Items.Any())
+                    {
+                        <MudDivider/>
+                    }
                     @foreach (var item in Results.Items)
                     {
-                        <MudListItem Href="@item.Link">
+                        <MudListItem T="string" OnClickPreventDefault="true" OnClick="(() => GotoNotification(item.Link))">
                             <div class="d-flex justify-space-between align-center width-90">
                                 <div>
                                     <MudText Typo="Typo.caption" Color="Color.Info">@item.Heading</MudText>
                                     <MudText Typo="Typo.body1">@item.Details</MudText>
                                     <MudText Typo="Typo.body2">@item.NotificationDate.Humanize()</MudText>
                                 </div>
-                                
-                                <MudIconButton Icon="@Icons.Material.Filled.Close"></MudIconButton>
-                                @*                             <MudText>Identified</MudText>
-                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.IdentifiedCases == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps.IdentifiedCases"/> *@
+                                @if (item.ReadDate is null)
+                                {
+                                    <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="(() => DismissNotification(item.Id))"/>
+                                }
+                                else
+                                {
+                                    <MudIconButton Icon="@Icons.Material.Filled.MarkAsUnread" OnClick="(() => UnreadNotification(item.Id))"/>
+                                }
+
                             </div>
                         </MudListItem>
                     }
-                
-            </MudList>
-            @*       <MudDataGrid ServerData="@(ServerReload)"
-                    T="NotificationDto"
-                    FixedHeader="true"
-                    Elevation="0"
-                    FixedFooter="true"
-                    Virtualize="true"
-                    @bind-RowsPerPage="_defaultPageSize"
-                    Loading="@_loading"
-                    MultiSelection="false"
-                    @bind-SelectedItem="_currentDto"
-                    Hover="true"
-                    RowClass="pointer-cursor"
-                    RowClick="@RowClicked"
-                    @ref="_table">
-                    <ToolBarContent>
-                        <MudSwitch T="bool" Label="Show read" Value="@Query.ShowReadNotifications" ValueChanged="OnShowClosedChanged"></MudSwitch>
-                        <MudSpacer />
-                        <MudButton Variant="Variant.Outlined" Size="Size.Small"
-                        StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface"
-                        Color="Color.Primary"
-                        OnClick="@(() => OnRefresh())">Refresh</MudButton>
-                    </ToolBarContent>
-            <Columns>
-            <PropertyColumn Property="x => x.Details" Title="Details" Sortable="false">
-                <CellTemplate>
-                    <div class="d-flex flex-column">
-                        <MudText Typo="Typo.caption">@context.Item.Heading</MudText>
-                        <MudText Typo="Typo.body2">@context.Item.Details</MudText>
-                    </div>
-                </CellTemplate>
-            </PropertyColumn>
-            <PropertyColumn CellStyle="max-width: 120px" Property="x => x.NotificationDate" Title="Date" Sortable="false" >
-                <CellTemplate>
-                    <div class="d-flex flex-column">
-                        <MudText Typo="Typo.caption">@context.Item.NotificationDate.Humanize()</MudText>
-                        <MudText Typo="Typo.body2">@context.Item.NotificationDate.Date.ToString("dd MMM yyyy")</MudText>
-                   </div>
-                </CellTemplate>
-            </PropertyColumn>
-             <TemplateColumn CellStyle="width:30px;" Sortable="false">
-                <CellTemplate>
-                    @if(context.Item.ReadDate is null)
-                    {
-                        <MudTooltip Text="Mark as read">
-                            <MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Small" OnClick="(() => DismissNotification(context.Item))" />
-                        </MudTooltip>
-                    }
-                    else 
-                    {
-                        <MudTooltip Text="Mark as unread">
-                            <MudIconButton Icon="@Icons.Material.Filled.MarkUnreadChatAlt" Size="Size.Small" OnClick="(() => UnreadNotification(context.Item))" />
-                        </MudTooltip>
-                    }
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
-        <NoRecordsContent>
-            <MudText>You have no new notifications</MudText>
-        </NoRecordsContent>
-        <LoadingContent>
-            <MudText>@ConstantString.Loading</MudText>
-        </LoadingContent>
-        <PagerContent>
-            <MudDataGridPager PageSizeOptions="@(new[] { 5, 10, 15, 20 })" />
-        </PagerContent>
-    </MudDataGrid>
-           *@
-
-        </MudCardContent>
-        <MudCardActions>
-            <MudPagination Count="@Results.TotalPages" ShowFirstButton="true" ShowLastButton="true"></MudPagination>
-        </MudCardActions>
-    </MudCard>
-}
+                </MudList>
+            </MudCardContent>
+            <MudCardActions>
+                <MudPagination Count="@Results.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged"/>
+            </MudCardActions>
+        </MudCard>
+    }
 </MudItem>
 
 @code {
 
-    // private int _defaultPageSize = 5;
-    // private bool _loading;
-    private NotificationDto _currentDto = new() { Heading = "" };
-
-    private MudDataGrid<NotificationDto> _table = default!;
-
-
-    [CascadingParameter]
+    [CascadingParameter] 
     public UserProfile UserProfile { get; set; } = default!;
 
-    private NotificationsWithPaginationQuery.Query Query { get; set; } = new() { PageSize = 5 };
+    private NotificationsWithPaginationQuery.Query Query { get; set; } = new()
+    {
+        PageSize = 5
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -141,85 +83,60 @@
     }
 
 
-    private async Task DismissNotification(NotificationDto notification)
+    private async Task DismissNotification(Guid id)
     {
         var result = await GetNewMediator().Send(new MarkAsRead.Command
-            {
-                CurrentUser = UserProfile,
-                    NotificationsToMarkAsRead = [ notification.Id ]
-            });
+        {
+            CurrentUser = UserProfile,
+            NotificationsToMarkAsRead = [id]
+        });
         await OnRefresh();
     }
 
-    private async Task UnreadNotification(NotificationDto notification)
+    private async Task UnreadNotification(Guid id)
     {
         var result = await GetNewMediator().Send(new MarkAsUnread.Command
-            {
-                CurrentUser = UserProfile,
-                    NotificationsToMarkAsUnread = [ notification.Id ]
-            });
+        {
+            CurrentUser = UserProfile,
+            NotificationsToMarkAsUnread = [id]
+        });
         await OnRefresh();
     }
 
     private async Task OnShowClosedChanged(bool value)
     {
         Query!.ShowReadNotifications = value;
-        await _table.ReloadServerData();
-    }
-
-   
-    // private async Task MarkAsRead()
-    // {
-    //     Result<bool>? result = false;
-    //     try
-    //     {
-    //         result = await GetNewMediator().Send(new MarkAsRead.Command
-    //         {
-    //             CurrentUser = UserProfile,
-    //                 NotificationsToMarkAsRead = SelectedUnreadNotifications.ToArray()
-    //         });
-    //     }
-    //     finally
-    //     {
-    //         if(result is not { Succeeded: true })
-    //         {
-    //             Snackbar.Add(result?.ErrorMessage ?? "An unknown issue occurred when marking notifications as read", Severity.Error);
-    //         }
-    //         SelectedUnreadNotifications.Clear();
-    //     }
-
-    //     Navigation.NavigateTo($"/pages/notifications", true);
-    // }
-    
-    private async Task OnShowNotificationButtonClick(bool value)
-    {
-        //toggle ShowReadNotifications
-        Query.ShowReadNotifications = !value;
-
-        // SelectedUnreadNotifications.Clear();
-        // SelectedReadNotifications.Clear();
-        
-        await _table.ReloadServerData();
-
+        await OnRefresh();
     }
 
     private async Task OnRefresh()
     {
         Query.CurrentUser = UserProfile;
-        
-        // Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
-        // Query.PageNumber = state.Page + 1;
-        // Query.PageSize = state.PageSize;
+        Query.OrderBy = "Created";
+        Query.SortDirection = SortDirection.Descending.ToString();
         Results = await GetNewMediator().Send(Query).ConfigureAwait(false);
     }
 
     PaginatedData<NotificationDto>? Results { get; set; }
 
-    private void RowClicked(DataGridRowClickEventArgs<NotificationDto> args)
+    private Task OnPaginationChanged(int arg)
     {
-        if(string.IsNullOrEmpty(args.Item.Link) == false)
+        Query.PageNumber = arg;
+        return OnRefresh();
+    }
+
+
+    private async Task OnShowUnreadChanged(bool value)
+    {
+        Query!.ShowReadNotifications = value;
+        await OnRefresh();
+    }
+
+    private void GotoNotification(string? itemLink)
+    {
+        if (itemLink is not null)
         {
-            Navigation.NavigateTo(args.Item.Link);
+            Navigation.NavigateTo(itemLink);
         }
     }
 

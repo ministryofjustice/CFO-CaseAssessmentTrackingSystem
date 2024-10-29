@@ -3,6 +3,17 @@
 @using Cfo.Cats.Application.Features.Participants.Specifications
 @inherits CatsComponentBase
 
+
+@if (_participantSteps is null)
+{
+    <MudItem xs="12" md="6" lg="3">
+        <LoadingCard Title="Participants" />
+    </MudItem>
+    <MudItem xs="12" md="6" lg="3">
+        <LoadingCard Title="Participants Breakdown" />
+    </MudItem>
+}
+
 @if (_participantSteps is not null)
 {
     <MudItem xs="12" md="6" lg="3">

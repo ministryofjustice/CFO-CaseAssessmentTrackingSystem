@@ -20,7 +20,7 @@ public class NotifyOwnerParticipantHasBeenReturnedEventHandler(IUnitOfWork unitO
                    ) == false)
             {
                 var n = Notification.Create(heading, details, notification.Item.OwnerId!);
-                n.SetLink($"/pages/participants/");
+                n.SetLink($"/pages/participants/?listView=Enrolling");
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }
         }
