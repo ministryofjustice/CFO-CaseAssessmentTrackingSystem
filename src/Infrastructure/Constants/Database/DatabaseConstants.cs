@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Cfo.Cats.Infrastructure.Constants.Database;
 
@@ -59,7 +59,7 @@ internal static class DatabaseConstants
         public const string WingInduction = nameof(WingInduction);
         public const string WingInductionPhase = nameof(WingInductionPhase);
 
-
+        public const string Notification = nameof(Notification);
     }
     public static class Schemas
     {

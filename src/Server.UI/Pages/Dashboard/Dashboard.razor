@@ -1,105 +1,30 @@
 ﻿@page "/"
 @using Cfo.Cats.Application.Features.Dashboard.Queries
 @using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 
 @inherits CatsComponentBase
 
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-<PageTitle>@Title</PageTitle>
-
-<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
     <MudText Typo="Typo.h3">
         Dashboard
     </MudText>
-    <MudGrid>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            Identified Cases
-                        </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>Your cases that are awaiting enrolment confirmation</MudText>
-                    <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.IdentifiedCases
-                    </MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            Enrolling Cases
-                        </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>Your cases that are awaiting submission to PQA</MudText>
-                    <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.EnrollingCases
-                    </MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            Provider QA
-                        </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>Your cases that are sat with Provider QA</MudText>
-                    <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.CasesAtPqa
-                    </MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            CFO QA
-                        </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>Your cases that are sat with CFO QA</MudText>
-                    <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.CasesAtCfo
-                    </MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">
-                            Approved Cases
-                        </MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText>Your cases that have been approved</MudText>
-                    <MudText Typo="Typo.h1" Align="Align.Center">
-                        @_dashboardDto?.ApprovedCases
-                    </MudText>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+
+        <MudGrid Class="mt-2">
+
+            @if(UserProfile?.AssignedRoles?.Length == 0)
+            {
+                <MyParticipantsComponent />
+            }
+            else
+            {
+                <MyTeamsParticipantsComponent />
+            }
+            <MyNotifications />
+        </MudGrid>
+
+
 
 
 
@@ -107,25 +32,12 @@
 
     public string Title { get; } = "Dashboard";
 
-    private DashboardDto? _dashboardDto = null; 
-    
+
+
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        var query = new GetDashboard.Query()
-        {
-            CurrentUser = UserProfile!
-        };
 
-        var result = await GetNewMediator().Send(query);
-
-        if (result.Succeeded)
-        {
-            _dashboardDto = result.Data;
-        }
-        
-    }
+    private void GotoNotification() => Navigation.NavigateTo("/pages/notifications/");
 
 }

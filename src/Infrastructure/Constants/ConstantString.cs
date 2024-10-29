@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Resources;
+using System.Threading;
 
 namespace Cfo.Cats.Infrastructure.Constants;
 
@@ -131,4 +132,12 @@ public static class ConstantString
 
     public static string Reassign =>
     Localize("Reassign");
+    public static string MarkAsRead =>
+    Localize("Mark As Read");
+    public static string MarkAsUnread =>
+    Localize("Mark As Unread");
+    public static string ShowReadNotification =>
+    Localize("Show Read Notification");
+    public static string ShowUnreadNotification =>
+    Localize("Show Unread Notification");
 }
