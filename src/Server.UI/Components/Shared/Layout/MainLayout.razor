@@ -24,9 +24,10 @@
 
 
 
-    private System.Timers.Timer? _timer; 
+    private System.Timers.Timer? _timer;
+    private DateTime _lastActivity = DateTime.Now;
 
-    
+
 
     [Inject]
     protected IConfiguration Configuration { get; set; } = default!;
@@ -49,7 +50,7 @@
             StateHasChanged();
 
             int idleTimeOutMinutes = int.Parse(Configuration["IdleTimeoutMinutes"] ?? "20");
-        
+
 
             _timer = new System.Timers.Timer(60000 * idleTimeOutMinutes); 
             _timer.Elapsed += UpdateTimer;
@@ -62,24 +63,39 @@
     [JSInvokable]  
     public void TimerInterval()  
     {  
-        // Resetting the Timer if the user in active state.  
+        int idleTimeOutMinutes = int.Parse(Configuration["IdleTimeoutMinutes"] ?? "20");
+        DateTime maximumAge = _lastActivity.AddMinutes(idleTimeOutMinutes);
+        if (maximumAge < DateTime.Now)
+        {
+            Logout();
+        }
+        else
+        {
+            _lastActivity = DateTime.Now;
+        }
+
+
         _timer!.Stop();  
-        // Call the TimeInterval to logout when the user is inactive.  
         _timer!.Start();  
     }  
 
     private void UpdateTimer(object? source, System.Timers.ElapsedEventArgs e)  
     {  
-         InvokeAsync(async() => {  
-             // Log out when the user is inactive.  
-             var authstate = await AuthenticationState;  
-             var user = authstate?.User;
-             if (user?.Identity is not null && user.Identity.IsAuthenticated)
-             {  
-                 NavigationManager.NavigateTo(IdentityComponentsEndpointRouteBuilderExtensions.Logout, true);  
-             }  
-         });  
-     }  
+         Logout();
+    }
+
+    private void Logout()
+    {
+        InvokeAsync(async() => {  
+            // Log out when the user is inactive.  
+            var authstate = await AuthenticationState;  
+            var user = authstate?.User;
+            if (user?.Identity is not null && user.Identity.IsAuthenticated)
+            {  
+                NavigationManager.NavigateTo(IdentityComponentsEndpointRouteBuilderExtensions.Logout, true);  
+            }  
+        });  
+    }
 
     private async Task ApplyUserPreferences()
     {
