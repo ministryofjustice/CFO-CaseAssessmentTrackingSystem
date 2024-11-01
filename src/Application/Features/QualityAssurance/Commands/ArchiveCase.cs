@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
@@ -9,7 +10,8 @@ public static class ArchiveCase
     public class Command : IRequest<Result>
     {
         public required string ParticipantId { get; set; }
-        
+        [Description("Reason for Archive")] public ArchiveReason ArchiveReason { get; set; } = ArchiveReason.CaseloadTooHigh;
+        [Description("Justification for Archive")] public string? Justification { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
@@ -17,13 +19,15 @@ public static class ArchiveCase
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
+            participant!.Archive(request.ArchiveReason,request.Justification);
             participant!.TransitionTo(EnrolmentStatus.ArchivedStatus);
+
             // ReSharper disable once MethodHasAsyncOverload
             return Result.Success();
         }
     }
 
-    public class A_ParticipantMustExistValidator : AbstractValidator<SubmitToProviderQa.Command> 
+    public class A_ParticipantMustExistValidator : AbstractValidator<SubmitToProviderQa.Command>
     {
         private readonly IUnitOfWork _unitOfWork;
         public A_ParticipantMustExistValidator(IUnitOfWork unitOfWork)
@@ -41,6 +45,17 @@ public static class ArchiveCase
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
     }
-    
-    
+
+    public class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {           
+            RuleFor(c => c.Justification)
+                .NotEmpty()
+                .When(c => c.ArchiveReason.RequiresJustification)
+                .WithMessage("You must provide a justification for the selected Archive reason")
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
+        }
+    }
 }

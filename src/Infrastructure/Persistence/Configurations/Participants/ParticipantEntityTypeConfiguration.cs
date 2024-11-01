@@ -66,6 +66,14 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             cs => cs!.Value,
             cs => ConsentStatus.FromValue(cs));
 
+        builder.Property(e => e.ArchiveReason)
+            .HasConversion(
+        ar => ar!.Value,
+        ar => ArchiveReason.FromValue(ar));
+
+        builder.Property(p => p.ArchiveJustification)
+        .HasMaxLength(ValidationConstants.NotesLength);
+
         builder.HasOne(e => e.CurrentLocation)
             .WithMany()
             .HasForeignKey("_currentLocationId")
