@@ -91,6 +91,13 @@ public class Participant : OwnerPropertyEntity<string>
     /// </summary>
     public string? EnrolmentLocationJustification { get; private set; }
 
+    /// <summary>
+    /// The justifcation for Archiving participant
+    /// </summary>
+    public string? ArchiveJustification { get; private set; }
+
+    public ArchiveReason? ArchiveReason{ get; private set; }
+
     public string? AssessmentJustification { get; private set; }
 
     public string? RegistrationDetailsJson { get; private set; }
@@ -318,5 +325,19 @@ public class Participant : OwnerPropertyEntity<string>
     {
         RiskDue = riskDueDate;
         return this;   
+    }
+
+    /// <summary>
+    /// Archives the participant 
+    /// </summary>
+    /// <param name="archiveReason"></param>
+    /// <param name="justificationReason"></param>
+    /// <returns></returns>
+    public Participant Archive(ArchiveReason archiveReason, string? justificationReason)
+    {
+        ArchiveJustification = justificationReason;
+        ArchiveReason = archiveReason;
+
+        return this;
     }
 }

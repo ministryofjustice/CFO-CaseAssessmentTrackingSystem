@@ -1,0 +1,76 @@
+﻿@using Cfo.Cats.Application.Features.QualityAssurance.Commands
+@using Cfo.Cats.Domain.Common.Enums
+
+@inject IValidationService Validator
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+            <MudSelect @bind-Value="Model.ArchiveReason" 
+                       Label="@Model.GetMemberDescription(x => x.ArchiveReason)"
+                       For="@(() => Model.ArchiveReason)">
+                <MudSelectItem Value="ArchiveReason.CaseloadTooHigh">@ArchiveReason.CaseloadTooHigh.Name</MudSelectItem>
+                <MudSelectItem Value="ArchiveReason.Deceased">@ArchiveReason.Deceased.Name</MudSelectItem>
+                <MudSelectItem Value="ArchiveReason.LicenceEnd">@ArchiveReason.LicenceEnd.Name</MudSelectItem>
+                <MudSelectItem Value="ArchiveReason.MovedOutsideProviderArea">@ArchiveReason.MovedOutsideProviderArea.Name</MudSelectItem>
+                <MudSelectItem Value="ArchiveReason.MovedToNonCFO">@ArchiveReason.MovedToNonCFO.Name</MudSelectItem>
+                <MudSelectItem Value="ArchiveReason.NoFurtherSupport">@ArchiveReason.NoFurtherSupport.Name</MudSelectItem>
+                <MudSelectItem Value="ArchiveReason.NoRightToLiveWork">@ArchiveReason.NoRightToLiveWork.Name</MudSelectItem>
+                <MudSelectItem Value="ArchiveReason.NoWishToParticipate">@ArchiveReason.NoWishToParticipate.Name</MudSelectItem>
+                <MudSelectItem Value="ArchiveReason.NoLongerEngaging">@ArchiveReason.NoLongerEngaging.Name</MudSelectItem>
+                <MudSelectItem Value="ArchiveReason.PersonalCircumstances">@ArchiveReason.PersonalCircumstances.Name</MudSelectItem>
+                <MudSelectItem Value="ArchiveReason.Other">@ArchiveReason.Other.Name</MudSelectItem>                
+
+            </MudSelect>
+            <MudTextField @bind-Value="Model.Justification"
+                          Label="@Model.GetMemberDescription(x => x.Justification)"
+                          For="@(() => Model.Justification)"
+                          Lines="5" 
+                          Class="mt-4" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>        
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Archive</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    bool saving = false;
+    MudForm? form;
+
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public required ArchiveCase.Command Model { get; set; }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            saving = true;
+
+            if(form is null)
+            {
+                saving = false;
+                return;
+            }
+
+            await form.Validate();
+
+            if(form.IsValid)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+}
