@@ -12,7 +12,7 @@
 
     <ItemGroup>
         <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.301" />
-        <PackageReference Include="AWSSDK.S3" Version="3.7.405" />
+        <PackageReference Include="AWSSDK.S3" Version="3.7.405.9" />
         <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
         <PackageReference Include="GovukNotify" Version="7.2.0" />
         <PackageReference Include="IPAddressRange" Version="6.0.0" />
@@ -32,14 +32,14 @@
         <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.10" />
         <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.10" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="Quartz" Version="3.13.0" />
-        <PackageReference Include="Quartz.AspNetCore" Version="3.13.0" />
-        <PackageReference Include="QuestPDF" Version="2024.10.1" />
-        <PackageReference Include="Sentry.Serilog" Version="4.12.1" />
-        <PackageReference Include="Serilog" Version="4.0.2" />
+        <PackageReference Include="Quartz" Version="3.13.1" />
+        <PackageReference Include="Quartz.AspNetCore" Version="3.13.1" />
+        <PackageReference Include="QuestPDF" Version="2024.10.2" />
+        <PackageReference Include="Sentry.Serilog" Version="4.12.2" />
+        <PackageReference Include="Serilog" Version="4.1.0" />
         <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
         <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
-        <PackageReference Include="ZiggyCreatures.FusionCache" Version="1.4.0" />
+        <PackageReference Include="ZiggyCreatures.FusionCache" Version="1.4.1" />
         <PackageReference Include="Hmpps.Cfo.Matching.Core" Version="1.0.0" />
     </ItemGroup>
     <ItemGroup>

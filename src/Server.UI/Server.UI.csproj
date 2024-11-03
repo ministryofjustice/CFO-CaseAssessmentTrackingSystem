@@ -17,10 +17,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ActualLab.Fusion" Version="9.5.45" />
-        <PackageReference Include="ActualLab.Fusion.Blazor" Version="9.5.45" />
-        <PackageReference Include="ActualLab.Fusion.Ext.Services" Version="9.5.45" />
-        <PackageReference Include="ActualLab.Generators" Version="9.5.45">
+        <PackageReference Include="ActualLab.Fusion" Version="9.5.59" />
+        <PackageReference Include="ActualLab.Fusion.Blazor" Version="9.5.59" />
+        <PackageReference Include="ActualLab.Fusion.Ext.Services" Version="9.5.59" />
+        <PackageReference Include="ActualLab.Generators" Version="9.5.59">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -41,7 +41,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="MudBlazor" Version="7.12.1" />
+        <PackageReference Include="MudBlazor" Version="7.15.0" />
         <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="5.1.0" />
     </ItemGroup>
     <ItemGroup>
