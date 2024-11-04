@@ -25,34 +25,34 @@
             </MudCardHeader>
             <MudCardContent>
                 <MudList T="string">
-                    <MudListItem Href="@GetParticipantsUrl(ParticipantListView.Enrolling)">
-                        <div class="d-flex justify-space-between align-center width-90">
-                            <MudText>Identified</MudText>
-                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.IdentifiedCases == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps.IdentifiedCases" />
+                    <MudListItem Href="@GetParticipantsUrl(ParticipantListView.Identified)">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">Identified</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_participantSteps.IdentifiedCases == 0 ? Color.Secondary : Color.Success)">@_participantSteps.IdentifiedCases</MudText>
                         </div>
                     </MudListItem>
                     <MudListItem Href="@GetParticipantsUrl(ParticipantListView.Enrolling)">
                         <div class="d-flex justify-space-between align-center width-100">
-                            <MudText>Enrolling</MudText>
-                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.EnrollingCases == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps.EnrollingCases" />
+                            <MudText Typo="Typo.body1">Enrolling</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_participantSteps.EnrollingCases == 0 ? Color.Secondary : Color.Success)">@_participantSteps.EnrollingCases</MudText>
                         </div>
                     </MudListItem>
                     <MudListItem Href="@GetParticipantsUrl(ParticipantListView.SubmittedToProvider)">
                         <div class="d-flex justify-space-between align-center width-100">
-                            <MudText>Submitted to PQA</MudText>
-                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.CasesAtPqa == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps!.CasesAtPqa" />
+                            <MudText Typo="Typo.body1">Submitted to PQA</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_participantSteps.CasesAtPqa == 0 ? Color.Secondary : Color.Success)">@_participantSteps.CasesAtPqa</MudText>
                         </div>
                     </MudListItem>
                     <MudListItem Href="@GetParticipantsUrl(ParticipantListView.SubmittedToQa)">
                         <div class="d-flex justify-space-between align-center width-100">
-                            <MudText>Submitted to Authority</MudText>
-                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.CasesAtCfo == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps!.CasesAtCfo" />
+                            <MudText Typo="Typo.body1">Submitted to Authority</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_participantSteps.CasesAtCfo == 0 ? Color.Secondary : Color.Success)">@_participantSteps.CasesAtCfo</MudText>
                         </div>
                     </MudListItem>
                     <MudListItem Href="@GetParticipantsUrl(ParticipantListView.Approved)">
                         <div class="d-flex justify-space-between align-center width-100">
-                            <MudText>Approved</MudText>
-                            <MudBadge Origin="Origin.CenterRight" Color="@(_participantSteps.ApprovedCases == 0 ? Color.Secondary : Color.Success)" Content="@_participantSteps!.ApprovedCases" />
+                            <MudText Typo="Typo.body1">Approved</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_participantSteps.ApprovedCases == 0 ? Color.Secondary : Color.Success)">@_participantSteps.ApprovedCases</MudText>
                         </div>
                     </MudListItem>
                 </MudList>
