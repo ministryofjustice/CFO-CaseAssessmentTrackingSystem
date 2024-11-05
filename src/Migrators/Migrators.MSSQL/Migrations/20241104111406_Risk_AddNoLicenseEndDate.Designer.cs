@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241104111406_Risk_AddNoLicenseEndDate")]
+    partial class Risk_AddNoLicenseEndDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -629,9 +632,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime>("NotificationDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("OwnerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(36)");
@@ -645,11 +645,11 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasIndex("EditorId");
 
-                    b.HasIndex("OwnerId", "NotificationDate", "ReadDate");
+                    b.HasIndex("OwnerId", "Created", "ReadDate");
 
-                    b.HasIndex(new[] { "NotificationDate" }, "clst_notification");
+                    b.HasIndex(new[] { "Created" }, "clst_notification");
 
-                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex(new[] { "NotificationDate" }, "clst_notification"));
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex(new[] { "Created" }, "clst_notification"));
 
                     b.ToTable("Notification", "Identity");
                 });
