@@ -1,4 +1,4 @@
-﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Common.Interfaces.Locations
 @using Cfo.Cats.Application.Features.Inductions.Commands
 @using Cfo.Cats.Application.Features.Inductions.DTOs
 @using Cfo.Cats.Application.Features.Inductions.Queries
@@ -215,7 +215,7 @@
             FullWidth = true
         };
         var dialog = DialogService.Show<AddInductionPhaseDialog>
-            ("Add an induction phase", parameters, options);
+            ("Add a Wing Phase", parameters, options);
 
         var state = await dialog.Result;
 
