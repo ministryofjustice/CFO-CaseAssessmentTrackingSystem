@@ -13,14 +13,18 @@
                       Lines="5"
                       For="@(() => Model.LicenseConditions)"
                       Placeholder="All conditions must be relevant to the Participant and linked to their involvement to the CFO Evolution Programme. This must be clear and concise, e.g. exclusion zone in place which restricts XX from entering XX City Centre." />
-        
+
+        <MudCheckBox @bind-Value="@Model.NoLicenseEndDate" Label="@Model.GetMemberDescription(x => x.NoLicenseEndDate)" />
+        <MudTextField ReadOnly Underline="false" For="@(() => Model.NoLicenseEndDate)" hidden />
+        @if (Model.NoLicenseEndDate!.Value == false)
+        {
         <MudDatePicker @bind-Date="Model.LicenseEnd" 
                        Label="@Model.GetMemberDescription(x => x.LicenseEnd)"
                        For="@(() => Model.LicenseEnd)"
                        MinDate="DateTime.UtcNow.Date" 
                        Class="mt-4"
-                       Editable="true"
-                       PickerVariant="PickerVariant.Dialog"/>
+                       Editable="true" />
+        }
     </CatsMudStep>
 }
 
@@ -32,6 +36,7 @@
     {
         options.IncludeProperties(x => x.LicenseConditions);
         options.IncludeProperties(x => x.LicenseEnd);
+        options.IncludeProperties(x => x.NoLicenseEndDate);
     };
 
 }
