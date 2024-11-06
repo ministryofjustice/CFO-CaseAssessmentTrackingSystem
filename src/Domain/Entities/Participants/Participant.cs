@@ -340,4 +340,6 @@ public class Participant : OwnerPropertyEntity<string>
 
         return this;
     }
+
+    public bool HasActivePRI() => false; // todo
 }
