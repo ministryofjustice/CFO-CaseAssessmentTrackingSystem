@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Participants.EventHandlers;
 
-public class ParticipantMovedLocation(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantMovedDomainEvent>
+public class RecordLocationHistoryOnMovement(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantMovedDomainEvent>
 {
     public async Task Handle(ParticipantMovedDomainEvent notification, CancellationToken cancellationToken)
     {
