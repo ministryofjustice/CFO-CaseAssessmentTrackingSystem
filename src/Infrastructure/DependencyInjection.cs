@@ -169,19 +169,12 @@ public static class DependencyInjection
             services.AddDefaultAWSOptions(options);
             services.AddAWSService<IAmazonS3>();            
         }
-        
-        if(configuration.GetValue<bool>("UseDummyCandidateService"))
+
+        services.AddHttpClient<ICandidateService, CandidateService>((provider, client) =>
         {
-            services.AddScoped<ICandidateService, DummyCandidateService>();
-        }
-        else
-        {
-            services.AddHttpClient<ICandidateService, CandidateService>((provider, client) =>
-            {
-                client.DefaultRequestHeaders.Add("X-API-KEY", configuration.GetRequiredValue("DMS:ApiKey"));
-                client.BaseAddress = new Uri(configuration.GetRequiredValue("DMS:ApplicationUrl"));
-            });
-        }
+            client.DefaultRequestHeaders.Add("X-API-KEY", configuration.GetRequiredValue("DMS:ApiKey"));
+            client.BaseAddress = new Uri(configuration.GetRequiredValue("DMS:ApplicationUrl"));
+        });
 
         services.AddQuartzJobsAndTriggers(configuration);
         
