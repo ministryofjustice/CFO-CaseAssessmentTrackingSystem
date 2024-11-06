@@ -30,7 +30,7 @@
                 <MudList T="string">
                     <MudListItem>
                         <MudSwitch T="bool" Value="@Query.ShowReadNotifications" ValueChanged="OnShowUnreadChanged" Color="Color.Info">
-                            Show unread
+                            Include Read Notifications 
                         </MudSwitch>
                     </MudListItem>
                     @if (Results.Items.Any())
@@ -113,7 +113,7 @@
     {
         Query.CurrentUser = UserProfile;
         Query.OrderBy = "Created";
-        Query.SortDirection = SortDirection.Descending.ToString();
+        Query.SortDirection = SortDirection.Ascending.ToString();
         Results = await GetNewMediator().Send(Query).ConfigureAwait(false);
     }
 
