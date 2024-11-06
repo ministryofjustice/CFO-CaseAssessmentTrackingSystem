@@ -113,7 +113,7 @@
     {
         Query.CurrentUser = UserProfile;
         Query.OrderBy = "Created";
-        Query.SortDirection = SortDirection.Ascending.ToString();
+        Query.SortDirection = SortDirection.Descending.ToString();
         Results = await GetNewMediator().Send(Query).ConfigureAwait(false);
     }
 
