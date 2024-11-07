@@ -17,18 +17,6 @@ public class OutgoingTransferQueueEntityTypeConfiguration : IEntityTypeConfigura
             .IsRequired()
             .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId);
 
-        builder.HasOne(q => q.FromContract)
-            .WithMany();
-
-        builder.HasOne(q => q.ToContract)
-            .WithMany();
-
-        builder.HasOne(q => q.FromLocation)
-            .WithMany();
-
-        builder.HasOne(q => q.ToLocation)
-            .WithMany();
-
         builder.Property(q => q.TransferType)
             .IsRequired()
             .HasConversion(
