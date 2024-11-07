@@ -8,7 +8,7 @@ namespace Cfo.Cats.Domain.Entities.Participants;
 public abstract class ParticipantTransferQueueEntry : BaseAuditableEntity<Guid>
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    private ParticipantTransferQueueEntry()
+    protected ParticipantTransferQueueEntry()
     {
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -22,10 +22,10 @@ public abstract class ParticipantTransferQueueEntry : BaseAuditableEntity<Guid>
         DateTime moveOccured)
     {
         ParticipantId = participantId;
-        FromContractId = fromContract?.Id;
-        ToContractId = toContract?.Id;
-        FromLocationId = fromLocation.Id;
-        ToLocationId = toLocation.Id;
+        FromContract = fromContract;
+        ToContract = toContract;
+        FromLocation = fromLocation;
+        ToLocation = toLocation;
         MoveOccured = moveOccured;
         TransferType = TransferLocationType.DetermineFromLocationTypes(fromLocation, toLocation);
     }
@@ -48,21 +48,21 @@ public abstract class ParticipantTransferQueueEntry : BaseAuditableEntity<Guid>
     /// <summary>
     /// The original (source) contract, may be null (out of contract).
     /// </summary>
-    public string? FromContractId { get; }
+    public virtual Contract? FromContract { get; }
 
     /// <summary>
     /// The destination contract, may be null (out of contract).
     /// </summary>
-    public string? ToContractId { get; }
+    public virtual Contract? ToContract { get; }
 
     /// <summary>
     /// The original (source) location, may be in custody or the community.
     /// </summary>
-    public int FromLocationId { get; private set; }
+    public virtual Location FromLocation { get; private set; }
 
     /// <summary>
     /// The destination location, may be in custody or the community.
     /// </summary>
-    public int ToLocationId { get; private set; }
+    public virtual Location ToLocation { get; private set; }
 
 }
