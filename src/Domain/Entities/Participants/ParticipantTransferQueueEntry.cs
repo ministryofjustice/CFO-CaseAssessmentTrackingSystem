@@ -22,10 +22,10 @@ public abstract class ParticipantTransferQueueEntry : BaseAuditableEntity<Guid>
         DateTime moveOccured)
     {
         ParticipantId = participantId;
-        FromContract = fromContract;
-        ToContract = toContract;
-        FromLocation = fromLocation;
-        ToLocation = toLocation;
+        FromContractId = fromContract?.Id;
+        ToContractId = toContract?.Id;
+        FromLocationId = fromLocation.Id;
+        ToLocationId = toLocation.Id;
         MoveOccured = moveOccured;
         TransferType = TransferLocationType.DetermineFromLocationTypes(fromLocation, toLocation);
     }
@@ -48,21 +48,21 @@ public abstract class ParticipantTransferQueueEntry : BaseAuditableEntity<Guid>
     /// <summary>
     /// The original (source) contract, may be null (out of contract).
     /// </summary>
-    public virtual Contract? FromContract { get; }
+    public string? FromContractId { get; }
 
     /// <summary>
     /// The destination contract, may be null (out of contract).
     /// </summary>
-    public virtual Contract? ToContract { get; }
+    public string? ToContractId { get; }
 
     /// <summary>
     /// The original (source) location, may be in custody or the community.
     /// </summary>
-    public virtual Location FromLocation { get; private set; }
+    public int FromLocationId { get; private set; }
 
     /// <summary>
     /// The destination location, may be in custody or the community.
     /// </summary>
-    public virtual Location ToLocation { get; private set; }
+    public int ToLocationId { get; private set; }
 
 }
