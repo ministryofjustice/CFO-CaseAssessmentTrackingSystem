@@ -40,7 +40,8 @@ internal static class DatabaseConstants
         public const string Supervisor = nameof(Supervisor);
         public const string LocationHistory = nameof(LocationHistory);
         public const string OwnershipHistory = nameof(OwnershipHistory);
-
+        public const string IncomingTransferQueue = nameof(IncomingTransferQueue);
+        public const string OutgoingTransferQueue = nameof(OutgoingTransferQueue);
 
         public const string AssessmentPathwayScore = nameof(AssessmentPathwayScore);
 

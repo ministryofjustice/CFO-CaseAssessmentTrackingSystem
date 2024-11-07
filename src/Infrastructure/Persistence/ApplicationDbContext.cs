@@ -74,6 +74,10 @@ public class ApplicationDbContext
     public DbSet<ParticipantAccessAuditTrail> AccessAuditTrails => Set<ParticipantAccessAuditTrail>();
     
     public DbSet<Notification> Notifications => Set<Notification>();
+
+    public DbSet<ParticipantIncomingTransferQueueEntry> ParticipantIncomingTransferQueue => Set<ParticipantIncomingTransferQueueEntry>();
+    public DbSet<ParticipantOutgoingTransferQueueEntry> ParticipantOutgoingTransferQueue => Set<ParticipantOutgoingTransferQueueEntry>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
