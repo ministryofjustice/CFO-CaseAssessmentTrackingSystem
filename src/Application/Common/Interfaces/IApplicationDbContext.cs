@@ -48,6 +48,8 @@ public interface IApplicationDbContext
     DbSet<EnrolmentQa1QueueEntry> EnrolmentQa1Queue { get; }
     DbSet<EnrolmentQa2QueueEntry> EnrolmentQa2Queue { get; }
     DbSet<EnrolmentEscalationQueueEntry> EnrolmentEscalationQueue { get; }
+    DbSet<ParticipantIncomingTransferQueueEntry> ParticipantIncomingTransferQueue { get; }
+    DbSet<ParticipantOutgoingTransferQueueEntry> ParticipantOutgoingTransferQueue { get; }
 
     DbSet<LocationMapping> LocationMappings { get; }
 
