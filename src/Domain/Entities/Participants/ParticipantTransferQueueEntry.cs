@@ -48,12 +48,12 @@ public abstract class ParticipantTransferQueueEntry : BaseAuditableEntity<Guid>
     /// <summary>
     /// The original (source) contract, may be null (out of contract).
     /// </summary>
-    public string? FromContractId { get; }
+    public string? FromContractId { get; private set; }
 
     /// <summary>
     /// The destination contract, may be null (out of contract).
     /// </summary>
-    public string? ToContractId { get; }
+    public string? ToContractId { get; private set; }
 
     /// <summary>
     /// The original (source) location, may be in custody or the community.
