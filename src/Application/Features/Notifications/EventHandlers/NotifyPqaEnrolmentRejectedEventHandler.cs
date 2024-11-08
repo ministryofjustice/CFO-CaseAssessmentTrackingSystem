@@ -23,7 +23,7 @@ public class NotifyPqaEnrolmentRejectedEventHandler(IUnitOfWork unitOfWork) : IN
 
             Notification? previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
                 n => n.Heading == heading
-                && n.OwnerId == notification.Item.OwnerId
+                && n.OwnerId == qaUser
                 && n.ReadDate == null
             );
 
