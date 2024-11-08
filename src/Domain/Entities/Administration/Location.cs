@@ -94,5 +94,23 @@ public class Location : BaseAuditableEntity<int>, ILifetime
         _parentLocationId = null;
         ParentLocation = null;
     }
+
+    public static class Constants
+    {
+        /// <summary>
+        /// Database identifier for an Unmapped Custody Location.
+        /// </summary>
+        public const int UnmappedCustody = -1;
+
+        /// <summary>
+        /// Database identifier for an Unmapped Community Location.
+        /// </summary>
+        public const int UnmappedCommunity = -2;
+
+        /// <summary>
+        /// Database identifier for an Unknown Location.
+        /// </summary>
+        public const int Unknown = 0;
+    }
     
 }
