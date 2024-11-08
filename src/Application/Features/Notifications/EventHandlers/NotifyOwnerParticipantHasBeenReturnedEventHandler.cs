@@ -12,12 +12,16 @@ public class NotifyOwnerParticipantHasBeenReturnedEventHandler(IUnitOfWork unitO
             const string heading = "Enrolment returned";
 
             string details = "You have enrolments that have been returned by PQA";
-            
-            if(unitOfWork.DbContext.Notifications.Any(n => 
-                   n.Heading == heading 
-                   && n.OwnerId == notification.Item.OwnerId
-                   && n.ReadDate == null
-                   ) == false)
+
+            Notification? previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
+                n => n.Heading == heading
+                && n.OwnerId == notification.Item.OwnerId
+                && n.ReadDate == null
+            );
+
+            previous?.ResetNotificationDate();
+
+            if(previous is null)
             {
                 var n = Notification.Create(heading, details, notification.Item.OwnerId!);
                 n.SetLink($"/pages/participants/?listView=Enrolling");

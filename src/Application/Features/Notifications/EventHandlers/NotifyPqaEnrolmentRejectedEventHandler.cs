@@ -1,6 +1,4 @@
-﻿using Cfo.Cats.Application.Features.QualityAssurance.Queries;
-using Cfo.Cats.Domain.Entities.Notifications;
-using Cfo.Cats.Domain.Entities.Participants;
+﻿using Cfo.Cats.Domain.Entities.Notifications;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Notifications.EventHandlers;
@@ -23,11 +21,15 @@ public class NotifyPqaEnrolmentRejectedEventHandler(IUnitOfWork unitOfWork) : IN
                 .Select(pqa => pqa.LastModifiedBy!)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (unitOfWork.DbContext.Notifications.Any(n =>
-                    n.Heading == heading
-                    && n.OwnerId == qaUser
-                    && n.ReadDate == null
-                ) == false)
+            Notification? previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
+                n => n.Heading == heading
+                && n.OwnerId == notification.Item.OwnerId
+                && n.ReadDate == null
+            );
+
+            previous?.ResetNotificationDate();
+
+            if (previous == null)
             {
                 var n = Notification.Create(heading, details, qaUser!);
                 n.SetLink($"pages/qa/enrolments/pqa/");

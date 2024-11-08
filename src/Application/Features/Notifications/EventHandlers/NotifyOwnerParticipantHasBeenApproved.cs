@@ -13,16 +13,21 @@ public class NotifyOwnerParticipantHasBeenApproved(IUnitOfWork unitOfWork) : INo
 
             string details = "You have enrolments that have been approved";
 
-            if (unitOfWork.DbContext.Notifications.Any(n =>
-                    n.Heading == heading
-                    && n.OwnerId == notification.Item.OwnerId
-                    && n.ReadDate == null
-                ) == false)
+            Notification? previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
+                n => n.Heading == heading
+                && n.OwnerId == notification.Item.OwnerId
+                && n.ReadDate == null
+            );
+
+            previous?.ResetNotificationDate();
+
+            if (previous is null)
             {
                 var n = Notification.Create(heading, details, notification.Item.OwnerId!);
                 n.SetLink($"/pages/participants/?listView=Approved");
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }
+           
         }
     }
 }

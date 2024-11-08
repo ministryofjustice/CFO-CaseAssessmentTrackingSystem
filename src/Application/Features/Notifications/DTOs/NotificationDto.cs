@@ -22,7 +22,7 @@ public class NotificationDto
                 .ForMember(t => t.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(t => t.Heading, opt => opt.MapFrom(src => src.Heading))
                 .ForMember(t => t.Details, opt => opt.MapFrom(src => src.Details))
-                .ForMember(t => t.NotificationDate, opt => opt.MapFrom(src => src.Created))
+                .ForMember(t => t.NotificationDate, opt => opt.MapFrom(src => src.NotificationDate))
                 .ForMember(t => t.ReadDate, opt => opt.MapFrom(src => src.ReadDate))
                 .ForMember(t => t.Link, opt => opt.MapFrom(src => src.Link));
         }

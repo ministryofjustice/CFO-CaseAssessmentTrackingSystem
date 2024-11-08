@@ -17,13 +17,13 @@ public class NotificationEntityTypeConfiguration : IEntityTypeConfiguration<Noti
 
         //make the clustered index based on the created date
         builder.HasIndex(x => new { 
-            x.Created
+            x.NotificationDate
         }, "clst_notification")
         .IsClustered(true);
 
         builder.HasIndex(x => new {
             x.OwnerId,
-            x.Created,
+            x.NotificationDate,
             x.ReadDate
         });
 

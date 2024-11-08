@@ -13,12 +13,13 @@ public class Notification : OwnerPropertyEntity<Guid>
     
     private Notification(string heading, string details, string userId)
     {
-        this.Id = Guid.NewGuid();
-        this.Heading = heading;
-        this.Details = details;
-        this.OwnerId = userId;
+        Id = Guid.NewGuid();
+        Heading = heading;
+        Details = details;
+        OwnerId = userId;
+        NotificationDate = DateTime.UtcNow;
 
-        this.AddDomainEvent(new NotificationCreatedDomainEvent(this));
+        AddDomainEvent(new NotificationCreatedDomainEvent(this));
     }
 
     public static Notification Create(string heading, string details, string userId)
@@ -28,7 +29,7 @@ public class Notification : OwnerPropertyEntity<Guid>
 
     public Notification SetLink(string url)
     {
-        this.Link = url;
+        Link = url;
         return this;
     }
     public Notification UpdateReadDate(DateTime? readDate)
@@ -37,10 +38,17 @@ public class Notification : OwnerPropertyEntity<Guid>
         return this;
     }
 
+    public Notification ResetNotificationDate()
+    {
+        NotificationDate = DateTime.UtcNow;
+        return this;
+    }
+
     public string Heading { get; private set; }
     public string Details { get; private set; }
 
     public string? Link {get; private set; }
 
+    public DateTime NotificationDate {get; private set;}
     public DateTime? ReadDate { get; private set; }
 }
