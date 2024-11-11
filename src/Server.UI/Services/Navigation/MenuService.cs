@@ -39,6 +39,13 @@ public class MenuService : IMenuService
                                 PageStatus = PageStatus.Completed,
                                 Roles = [RoleNames.QAFinance, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
                             },
+                            new()
+                            {
+                                Title = "Transfers",
+                                Href = "/pages/participants/transfers",
+                                PageStatus = PageStatus.Completed,
+                                Roles = [RoleNames.QAFinance, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            },
                         }
                     },
                     new()

@@ -1,0 +1,143 @@
+﻿@page "/pages/participants/transfers"
+
+@using Cfo.Cats.Application.Features.Transfers.DTOs
+@using Cfo.Cats.Application.Features.Transfers.Queries
+@using Cfo.Cats.Application.SecurityConstants
+
+@inherits CatsComponentBase
+
+@attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+
+@*<MudDataGrid ServerData="@(ServerReload)"
+             FixedHeader="true"
+             FixedFooter="true"
+             Virtualize="true"
+             @bind-RowsPerPage="_defaultPageSize"
+             Height="calc(100vh - 330px)"
+             Loading="@_loading"
+             MultiSelection="true"
+             @bind-SelectedItems="_selectedItems"
+             Hover="true"
+             @ref="_table">
+    <ToolBarContent>
+        <div class="d-flex align-start flex-grow-1">
+            <div class="d-flex gap-4">
+                <MudIcon Icon="@Icons.Material.Filled.Checklist" Size="Size.Medium" Color="Color.Primary" />
+                Transfers
+            </div>
+        </div>
+    </ToolBarContent>
+    <Columns>
+        <PropertyColumn Property="x => x.ParticipantId">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+    </Columns>
+    <NoRecordsContent>
+        <MudText>@ConstantString.NoRecords</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>@ConstantString.Loading</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
+    </PagerContent>
+</MudDataGrid>*@
+
+<MudText Typo="Typo.h2">Incoming Transfers</MudText>
+<MudSimpleTable>
+    <thead>
+        <tr>
+            <th>Participant</th>
+            <th>Occurred</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var transfer in incomingTransfers)
+        {
+            <tr>
+                <td>@transfer.ParticipantId</td>
+                <td>@transfer.MoveOccured.ToShortDateString()</td>
+                <td>@transfer.FromLocationId</td>
+                <td>@transfer.ToLocationId</td>
+                <td>@transfer.TransferType.Name</td>
+            </tr>
+        }
+    </tbody>
+</MudSimpleTable>
+
+<MudText Typo="Typo.h2">Outgoing Transfers</MudText>
+<MudSimpleTable>
+    <thead>
+        <tr>
+            <th>Participant</th>
+            <th>Occurred</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var transfer in outgoingTransfers)
+        {
+            <tr>
+                <td>@transfer.ParticipantId</td>
+                <td>@transfer.MoveOccured.ToShortDateString()</td>
+                <td>@transfer.FromLocationId</td>
+                <td>@transfer.ToLocationId</td>
+                <td>@transfer.TransferType.Name</td>
+            </tr>
+        }
+    </tbody>
+</MudSimpleTable>
+
+@code {
+    //private int _defaultPageSize = 15;
+    //private bool _loading;
+    // private MudDataGrid<IncomingTransferDto> _table = default!;
+    // private HashSet<IncomingTransferDto> _selectedItems = [];
+    private IEnumerable<IncomingTransferDto> incomingTransfers = [];
+    private IEnumerable<OutgoingTransferDto> outgoingTransfers = [];
+
+    protected async override Task OnInitializedAsync()
+    {
+        incomingTransfers = await GetIncomingTransfers();
+        outgoingTransfers = await GetOutgoingTransfers();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task<IEnumerable<IncomingTransferDto>> GetIncomingTransfers()
+    {
+        var query = await GetNewMediator().Send(new GetIncomingTransfers.Query());
+        return query.Data ?? [];
+    }
+    private async Task<IEnumerable<OutgoingTransferDto>> GetOutgoingTransfers()
+    {
+        var query = await GetNewMediator().Send(new GetOutgoingTransfers.Query());
+        return query.Data ?? [];
+    }
+
+    /*
+    private async Task<GridData<IncomingTransferDto>> ServerReload(GridState<IncomingTransferDto> state)
+    {
+        try
+        {
+            _loading = true;
+
+            return await Task.FromResult(new GridData<IncomingTransferDto>(){ Items = [], TotalItems = 5 });
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+    */
+
+}
