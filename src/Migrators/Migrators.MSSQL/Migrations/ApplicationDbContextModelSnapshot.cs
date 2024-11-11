@@ -17,7 +17,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -590,6 +590,70 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.ToTable("KeyValue", "Configuration");
                 });
 
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Notifications.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(36)
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("Created")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("Details")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EditorId")
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("Heading")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("Link")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("NotificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<DateTime?>("ReadDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
+
+                    b.HasIndex("EditorId");
+
+                    b.HasIndex("OwnerId", "NotificationDate", "ReadDate");
+
+                    b.HasIndex(new[] { "NotificationDate" }, "clst_notification");
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex(new[] { "NotificationDate" }, "clst_notification"));
+
+                    b.ToTable("Notification", "Identity");
+                });
+
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.ParticipantAccessAuditTrail", b =>
                 {
                     b.Property<int>("Id")
@@ -847,6 +911,13 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<bool>("ActiveInFeed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ArchiveJustification")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int?>("ArchiveReason")
+                        .HasColumnType("int");
+
                     b.Property<string>("AssessmentJustification")
                         .HasColumnType("nvarchar(max)");
 
@@ -978,6 +1049,95 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.HasIndex("ParticipantId");
 
                     b.ToTable("EnrolmentHistory", "Participant");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantLocationHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ParticipantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(9)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.ToTable("LocationHistory", "Participant");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantOwnershipHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("ParticipantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("OwnershipHistory", "Participant");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.PathwayPlan", b =>
@@ -1866,6 +2026,23 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("Phases");
                 });
 
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Notifications.Notification", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
+                        .WithMany()
+                        .HasForeignKey("EditorId");
+
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Editor");
+
+                    b.Navigation("Owner");
+                });
+
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.ParticipantAccessAuditTrail", b =>
                 {
                     b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
@@ -2597,6 +2774,42 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("RightToWorks");
 
                     b.Navigation("Supervisor");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantLocationHistory", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", null)
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
+                        .WithMany()
+                        .HasForeignKey("ParticipantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantOwnershipHistory", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
+                        .WithMany()
+                        .HasForeignKey("ParticipantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", null)
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.PathwayPlan", b =>

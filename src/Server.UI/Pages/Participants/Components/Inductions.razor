@@ -154,7 +154,7 @@
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
         var dialog = DialogService.Show<AddHubInductionDialog>
-            ("Add a hub induction", parameters, options);
+            ("Add a Hub Induction", parameters, options);
 
         var state = await dialog.Result;
 
@@ -180,7 +180,7 @@
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
         var dialog = DialogService.Show<AddWingInductionDialog>
-            ("Add a wing induction", parameters, options);
+            ("Add a Wing Induction", parameters, options);
 
         var state = await dialog.Result;
 
@@ -253,7 +253,7 @@
             FullWidth = true
         };
         var dialog = DialogService.Show<CompletePhaseDialog>
-            ("Complete induction phase", parameters, options);
+            ("Complete Wing Phase", parameters, options);
 
         var state = await dialog.Result;
 

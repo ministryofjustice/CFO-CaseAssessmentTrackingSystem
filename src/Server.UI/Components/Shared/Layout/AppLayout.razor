@@ -28,16 +28,6 @@
                 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mb-4 mt-4">
                     <ErrorBoundary @ref="ErrorBoundary">
                         <ChildContent>
-                            @if(Env.EnvironmentName is not "Production" && _showAlert)
-                            {
-                                <MudAlert Severity="Severity.Warning" 
-                                        Variant="Variant.Filled" Square="true" 
-                                        ContentAlignment="HorizontalAlignment.Center"
-                                        Icon="@Icons.Material.Filled.Construction"
-                                        Class="mb-4" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(true))">
-                                        @Env.EnvironmentName
-                                </MudAlert>
-                            }
                             <CascadingValue Value="@_userProfile">
                                 @Body
                             </CascadingValue>
@@ -57,7 +47,6 @@
 
 @code
 {
-    private bool _showAlert = true;
     private bool _commandPaletteOpen;
     private bool _navigationMenuDrawerOpen = false;
     private bool _themingDrawerOpen = false;
@@ -71,10 +60,7 @@
         _userProfile = state.User.GetUserProfileFromClaim();
     }
 
-    private void CloseMe(bool value)
-    {
-        _showAlert = value is false;
-    }
+   
     
     protected override void OnParametersSet()
     {

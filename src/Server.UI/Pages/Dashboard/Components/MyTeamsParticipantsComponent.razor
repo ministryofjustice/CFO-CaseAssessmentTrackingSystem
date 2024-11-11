@@ -1,0 +1,132 @@
+﻿@using Cfo.Cats.Application.Features.Dashboard.Queries
+@using Cfo.Cats.Application.Features.Dashboard.DTOs
+@using Cfo.Cats.Application.Features.Participants.Specifications
+@inherits CatsComponentBase
+
+
+@if (_participantSteps is null)
+{
+    <MudItem xs="12" md="6" lg="3">
+        <LoadingCard Title="Participants" />
+    </MudItem>
+    <MudItem xs="12" md="6" lg="3">
+        <LoadingCard Title="Participants Breakdown" />
+    </MudItem>
+}
+
+@if (_participantSteps is not null)
+{
+    <MudItem xs="12" md="6" lg="3">
+        <MudCard Style="height:100%">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">Participants</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudList T="string">
+                    <MudListItem Href="@GetParticipantsUrl(ParticipantListView.Identified)">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">Identified</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_participantSteps.IdentifiedCases == 0 ? Color.Secondary : Color.Success)">@_participantSteps.IdentifiedCases</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem Href="@GetParticipantsUrl(ParticipantListView.Enrolling)">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">Enrolling</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_participantSteps.EnrollingCases == 0 ? Color.Secondary : Color.Success)">@_participantSteps.EnrollingCases</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem Href="@GetParticipantsUrl(ParticipantListView.SubmittedToProvider)">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">Submitted to PQA</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_participantSteps.CasesAtPqa == 0 ? Color.Secondary : Color.Success)">@_participantSteps.CasesAtPqa</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem Href="@GetParticipantsUrl(ParticipantListView.SubmittedToQa)">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">Submitted to Authority</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_participantSteps.CasesAtCfo == 0 ? Color.Secondary : Color.Success)">@_participantSteps.CasesAtCfo</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem Href="@GetParticipantsUrl(ParticipantListView.Approved)">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">Approved</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_participantSteps.ApprovedCases == 0 ? Color.Secondary : Color.Success)">@_participantSteps.ApprovedCases</MudText>
+                        </div>
+                    </MudListItem>
+                </MudList>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="GotoParticipants">View</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" md="6" lg="3">
+        <MudCard Style="height:100%">
+            <MudCardHeader>
+                    <MudText Typo="Typo.h5">Participants Breakdown</MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudChart ChartType="ChartType.Pie" InputData="@_data" InputLabels="@_labels">
+
+                </MudChart>
+
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="GotoParticipants">View All</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+}
+
+@code {
+
+
+    [CascadingParameter]
+    public UserProfile? UserProfile { get; set; }
+
+    private double[] _data = [];
+
+    private readonly string[] _labels =
+    [
+        "Identified",
+        "Enrolling",
+        "Submitted To PQA",
+        "Submitted To Authority",
+        "Approved"
+    ];
+
+    private ParticipantCountSummaryDto? _participantSteps; 
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var query = new GetMyTeamsParticipantsDashboard.Query()
+        {
+            CurrentUser = UserProfile!
+        };
+
+        var result = await GetNewMediator().Send(query);
+
+        if (result.Succeeded)
+        {
+            _participantSteps = result.Data;
+            _data =
+            [
+                _participantSteps!.IdentifiedCases,
+                _participantSteps.EnrollingCases,
+                _participantSteps.CasesAtPqa,
+                _participantSteps.CasesAtCfo,
+                _participantSteps.ApprovedCases
+            ];
+        }
+    }
+
+
+    private string GetParticipantsUrl(ParticipantListView listView) => $"/pages/participants?listView={listView.ToString()}";
+
+
+    private void GotoParticipants() => Navigation.NavigateTo("/pages/participants");
+
+}

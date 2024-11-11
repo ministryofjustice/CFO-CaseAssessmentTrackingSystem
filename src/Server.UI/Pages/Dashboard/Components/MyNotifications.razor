@@ -1,0 +1,139 @@
+﻿@using Cfo.Cats.Application.Features.Notifications.Command
+@using Cfo.Cats.Application.Features.Notifications.DTOs
+@using Cfo.Cats.Application.Features.Notifications.Queries
+@using Humanizer
+@inherits CatsComponentBase
+
+
+<style>
+    .pointer-cursor {
+        cursor: pointer;
+    }
+</style>
+
+<MudItem xs="12" lg="6">
+    
+    @if (Results is null)
+    {
+        <LoadingCard Title="Notifications" />
+    }
+
+    @if (Results is not null)
+    {
+        <MudCard style="height:100%">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">Notifications</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudSwitch T="bool" Value="@Query.ShowReadNotifications" ValueChanged="OnShowUnreadChanged" Color="Color.Info">
+                            Include Read 
+                    </MudSwitch>
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudList T="string">
+                    @foreach (var item in Results.Items)
+                    {
+                        <MudListItem T="string" OnClickPreventDefault="true" OnClick="(() => GotoNotification(item.Link))">
+                            <div class="d-flex justify-space-between align-center width-90">
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Info">@item.Heading</MudText>
+                                    <MudText Typo="Typo.body1">@item.Details</MudText>
+                                    <MudText Typo="Typo.body2">@item.NotificationDate.Humanize()</MudText>
+                                </div>
+                                @if (item.ReadDate is null)
+                                {
+                                    <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="(() => DismissNotification(item.Id))"/>
+                                }
+                                else
+                                {
+                                    <MudIconButton Icon="@Icons.Material.Filled.MarkAsUnread" OnClick="(() => UnreadNotification(item.Id))"/>
+                                }
+
+                            </div>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudCardContent>
+            <MudCardActions>
+                <MudPagination Count="@Results.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged"/>
+            </MudCardActions>
+        </MudCard>
+    }
+</MudItem>
+
+@code {
+
+    [CascadingParameter] 
+    public UserProfile UserProfile { get; set; } = default!;
+
+    private NotificationsWithPaginationQuery.Query Query { get; set; } = new()
+    {
+        PageSize = 5
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await OnRefresh();
+    }
+
+
+    private async Task DismissNotification(Guid id)
+    {
+        var result = await GetNewMediator().Send(new MarkAsRead.Command
+        {
+            CurrentUser = UserProfile,
+            NotificationsToMarkAsRead = [id]
+        });
+        await OnRefresh();
+    }
+
+    private async Task UnreadNotification(Guid id)
+    {
+        var result = await GetNewMediator().Send(new MarkAsUnread.Command
+        {
+            CurrentUser = UserProfile,
+            NotificationsToMarkAsUnread = [id]
+        });
+        await OnRefresh();
+    }
+
+    private async Task OnShowClosedChanged(bool value)
+    {
+        Query!.ShowReadNotifications = value;
+        await OnRefresh();
+    }
+
+    private async Task OnRefresh()
+    {
+        Query.CurrentUser = UserProfile;
+        Query.OrderBy = "NotificationDate";
+        Query.SortDirection = SortDirection.Descending.ToString();
+        Results = await GetNewMediator().Send(Query).ConfigureAwait(false);
+    }
+
+    PaginatedData<NotificationDto>? Results { get; set; }
+
+    private Task OnPaginationChanged(int arg)
+    {
+        Query.PageNumber = arg;
+        return OnRefresh();
+    }
+
+
+    private async Task OnShowUnreadChanged(bool value)
+    {
+        Query!.ShowReadNotifications = value;
+        await OnRefresh();
+    }
+
+    private void GotoNotification(string? itemLink)
+    {
+        if (itemLink is not null)
+        {
+            Navigation.NavigateTo(itemLink);
+        }
+    }
+
+}

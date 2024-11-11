@@ -44,8 +44,6 @@
             </MudMenuItem>            
         }
 
-
-
     </ChildContent>
 </MudMenu>
 
@@ -60,7 +58,6 @@
 
     [CascadingParameter] public UserProfile UserProfile { get; set; } = default!;
 
-
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
@@ -71,21 +68,23 @@
 
     protected async Task Archive()
     {
-        var parameters = new DialogParameters<ConfirmationDialog>()
-        {
-            { x => x.ContentText, "Are you sure you would like to archive this case?" }
-        };
+        var command = new ArchiveCase.Command()
+                {
+                    ParticipantId = Participant.Id
+                };
 
-        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Archive", parameters);
-        var dialogResult = await dialog.Result;
-
-        if (dialogResult?.Canceled is not true)
-        {
-            var command = new ArchiveCase.Command()
+        var parameters = new DialogParameters<ArchiveCaseDialog>()
             {
-                ParticipantId = Participant.Id                
+                { x => x.Model,command}
             };
 
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<ArchiveCaseDialog>("Archive Case", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
             var result = await GetNewMediator().Send(command);
 
             if (result.Succeeded)
@@ -96,9 +95,7 @@
             {
                 ShowActionFailure("Failed to archive", result);
             }
-
-        }
-
+        }    
     }
 
     protected async Task Suspend()
@@ -114,9 +111,9 @@
         if (dialogResult?.Canceled is not true)
         {
             var command = new SuspendCase.Command()
-            {
-                ParticipantId = Participant.Id
-            };
+                {
+                    ParticipantId = Participant.Id
+                };
 
             var result = await GetNewMediator().Send(command);
             if (result.Succeeded)
@@ -127,9 +124,7 @@
             {
                 ShowActionFailure("Failed to suspend", result);
             }
-
         }
-
     }
 
     protected async Task SubmitToPqa()
@@ -170,7 +165,6 @@
                 await SubmitToPqa();
             }
         }
-
     }
 
     protected async Task OpenRightToWorkDialog()
@@ -192,12 +186,10 @@
         {
             dialog.Close();
         }
-
     }
 
     protected async Task OpenAdjustLocationDialog()
     {
-
         var parameters = new DialogParameters<AdjustEnrolmentLocationDialog>()
         {
             { x => x.UserProfile, this.UserProfile },
@@ -235,8 +227,8 @@
         {
             dialog.Close();
         }
-
     }
+
     private void ShowActionFailure(string title, IResult result)
     {
         Snackbar.Add(
@@ -254,5 +246,4 @@
             options.SnackbarVariant = Variant.Text;
         } );
     }
-
 }

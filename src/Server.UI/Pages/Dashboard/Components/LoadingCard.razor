@@ -1,0 +1,18 @@
+﻿<MudCard style="height:100%">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h5">@Title</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    </MudCardContent>
+</MudCard>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = default!;
+
+
+}
