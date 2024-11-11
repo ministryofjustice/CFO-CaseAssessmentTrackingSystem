@@ -17,18 +17,30 @@ public class TransferLocationType(string name, int value) : SmartEnum<TransferLo
 
     public static TransferLocationType DetermineFromLocationTypes(Location from, Location to)
     {
-        if(from.LocationType == LocationType.UnmappedCustody)
+        bool fromIsUnmapped = from.LocationType == LocationType.UnmappedCustody ||
+                            from.LocationType == LocationType.UnmappedCommunity ||
+                            from.LocationType == LocationType.Unknown;
+
+        bool toIsUnmapped = to.LocationType == LocationType.UnmappedCommunity ||
+                            to.LocationType == LocationType.UnmappedCustody ||
+                            to.LocationType == LocationType.Unknown;
+
+        if (fromIsUnmapped)
         {
-            if (to.LocationType.IsCustody)
+            if (toIsUnmapped)
+            {
+                return UnmappedToUnmapped;
+            }
+            else if (to.LocationType.IsCustody)
             {
                 return UnmappedToCustody;
             }
-            else if(to.LocationType.IsCommunity)
+            else if (to.LocationType.IsCommunity)
             {
                 return UnmappedToCommunity;
             }
         }
-        else if (to.LocationType == LocationType.UnmappedCustody)
+        else if (toIsUnmapped)
         {
             if (from.LocationType.IsCustody)
             {
@@ -38,7 +50,6 @@ public class TransferLocationType(string name, int value) : SmartEnum<TransferLo
             {
                 return CommunityToUnmapped;
             }
-
         }
         else if (to.LocationType.IsCommunity)
         {
@@ -50,7 +61,6 @@ public class TransferLocationType(string name, int value) : SmartEnum<TransferLo
             {
                 return CommunityToCommunity;
             }
-
         }
         else if (to.LocationType.IsCustody)
         {
@@ -66,5 +76,4 @@ public class TransferLocationType(string name, int value) : SmartEnum<TransferLo
 
         return UnmappedToUnmapped;
     }
-
 }
