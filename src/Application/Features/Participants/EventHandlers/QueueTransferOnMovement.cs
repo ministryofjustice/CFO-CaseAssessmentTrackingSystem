@@ -1,4 +1,4 @@
-using Cfo.Cats.Domain.Entities.Participants;
+﻿using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Participants.EventHandlers;
@@ -8,6 +8,17 @@ public class QueueTransferOnMovement(IUnitOfWork unitOfWork) : INotificationHand
     public async Task Handle(ParticipantMovedDomainEvent notification, CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
+
+        var inProgressIncomingQueueEntry = await unitOfWork.DbContext.ParticipantIncomingTransferQueue
+            .Where(q => q.ParticipantId == notification.Item.Id && q.Completed == false)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        // Complete any in progress transfers
+        if(inProgressIncomingQueueEntry is not null)
+        {
+            inProgressIncomingQueueEntry?.Complete();
+        }
+
         var locations = await unitOfWork.DbContext.Locations
             .Where(l => new[] { notification.From.Id, notification.To.Id }.Contains(l.Id))
             .Include(l => l.Contract)
