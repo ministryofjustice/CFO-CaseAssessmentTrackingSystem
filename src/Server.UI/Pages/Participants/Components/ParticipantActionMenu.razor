@@ -21,10 +21,10 @@
             <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error" OnClick="Archive">Archive</MudMenuItem>
         }
         
-        //@if (Participant.EnrolmentStatus.AllowSuspend())
-        //{
-        //    <MudMenuItem Icon="@Icons.Material.Filled.HideSource" IconColor="Color.Error" OnClick="Suspend">Suspend</MudMenuItem>
-        //}
+        @* @if (Participant.EnrolmentStatus.AllowSuspend())
+        {
+            <MudMenuItem Icon="@Icons.Material.Filled.HideSource" IconColor="Color.Error" OnClick="Suspend">Suspend</MudMenuItem>
+        } *@
 
         @if (Participant.EnrolmentStatus.AllowSubmitToPqa())
         {
