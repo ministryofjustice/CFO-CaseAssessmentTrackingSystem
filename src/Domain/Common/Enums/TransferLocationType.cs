@@ -3,77 +3,78 @@ using Cfo.Cats.Domain.Entities.Administration;
 
 namespace Cfo.Cats.Domain.Common.Enums;
 
-public class TransferLocationType(string name, int value) : SmartEnum<TransferLocationType>(name, value)
+public class TransferLocationType(string name, int value, IEnumerable<LocationType> fromTranslations, IEnumerable<LocationType> toTranslations) : SmartEnum<TransferLocationType>(name, value)
 {
-    public static readonly TransferLocationType CommunityToCommunity = new("Community to Community", 0);
-    public static readonly TransferLocationType CommunityToCustody = new("Community to Custody", 1);
-    public static readonly TransferLocationType CustodyToCommunity = new("Custody to Community", 2);
-    public static readonly TransferLocationType CustodyToCustody = new("Custody to Custody", 3);
-    public static readonly TransferLocationType CustodyToUnmapped = new("Custody to Unmapped", 4);
-    public static readonly TransferLocationType CommunityToUnmapped = new("Community to Unmapped", 5);
-    public static readonly TransferLocationType UnmappedToCustody = new("Unmapped to Custody", 6);
-    public static readonly TransferLocationType UnmappedToCommunity = new("Unmapped to Community", 7);
-    public static readonly TransferLocationType UnmappedToUnmapped = new("Unmapped to Unmapped", 8);
+    public static readonly TransferLocationType CommunityToCommunity = new(
+        name: "Community to Community", 
+        value: 0, 
+        fromTranslations: LocationType.List.Where(location => location is { IsCommunity: true, IsMapped: true }), 
+        toTranslations: LocationType.List.Where(location => location is { IsCommunity: true, IsMapped: true }));
+
+    public static readonly TransferLocationType CommunityToCustody = new(
+        name: "Community to Custody",
+        value: 1,
+        fromTranslations: LocationType.List.Where(location => location is { IsCommunity: true, IsMapped: true }),
+        toTranslations: LocationType.List.Where(location => location is { IsCustody: true, IsMapped: true }));
+
+    public static readonly TransferLocationType CustodyToCommunity = new(
+        name: "Custody to Community",
+        value: 2,
+        fromTranslations: LocationType.List.Where(location => location is { IsCustody: true, IsMapped: true }),
+        toTranslations: LocationType.List.Where(location => location is { IsCommunity: true, IsMapped: true }));
+
+    public static readonly TransferLocationType CustodyToCustody = new(
+        name: "Custody to Custody",
+        value: 3,
+        fromTranslations: LocationType.List.Where(location => location is { IsCustody: true, IsMapped: true }),
+        toTranslations: LocationType.List.Where(location => location is { IsCustody: true, IsMapped: true }));
+
+    public static readonly TransferLocationType CustodyToUnmapped = new(
+        name: "Custody to Unmapped",
+        value: 4,
+        fromTranslations: LocationType.List.Where(location => location is { IsCustody: true, IsMapped: true }),
+        toTranslations: LocationType.List.Where(location => location is { IsMapped: false }));
+
+    public static readonly TransferLocationType CommunityToUnmapped = new(
+        name: "Community to Unmapped",
+        value: 5,
+        fromTranslations: LocationType.List.Where(location => location is { IsCommunity: true, IsMapped: true }),
+        toTranslations: LocationType.List.Where(location => location is { IsMapped: false }));
+
+    public static readonly TransferLocationType UnmappedToCustody = new(
+        name: "Unmapped to Custody",
+        value: 6,
+        fromTranslations: LocationType.List.Where(location => location is { IsMapped: false }),
+        toTranslations: LocationType.List.Where(location => location is { IsCustody: true, IsMapped: true }));
+
+    public static readonly TransferLocationType UnmappedToCommunity = new(
+        name: "Unmapped to Community",
+        value: 7,
+        fromTranslations: LocationType.List.Where(location => location is { IsMapped: false }),
+        toTranslations: LocationType.List.Where(location => location is { IsCommunity: true, IsMapped: true }));
+
+    public static readonly TransferLocationType UnmappedToUnmapped = new(
+        name: "Unmapped to Unmapped",
+        value: 8,
+        fromTranslations: LocationType.List.Where(location => location is { IsMapped: false }),
+        toTranslations: LocationType.List.Where(location => location is { IsMapped: false }));
+
+    public IEnumerable<LocationType> FromTranslations { get; private set; } = fromTranslations;
+    public IEnumerable<LocationType> ToTranslations { get; private set; } = toTranslations;
 
     public static TransferLocationType DetermineFromLocationTypes(Location from, Location to)
     {
-        bool fromIsUnmapped = from.LocationType == LocationType.UnmappedCustody ||
-                            from.LocationType == LocationType.UnmappedCommunity ||
-                            from.LocationType == LocationType.Unknown;
+        var locationTypes = List
+            .Where(tlt => tlt.FromTranslations.Contains(from.LocationType) 
+                && tlt.ToTranslations.Contains(to.LocationType))
+            .ToArray();
 
-        bool toIsUnmapped = to.LocationType == LocationType.UnmappedCommunity ||
-                            to.LocationType == LocationType.UnmappedCustody ||
-                            to.LocationType == LocationType.Unknown;
-
-        if (fromIsUnmapped)
+        if(locationTypes is not { Length: 1 })
         {
-            if (toIsUnmapped)
-            {
-                return UnmappedToUnmapped;
-            }
-            else if (to.LocationType.IsCustody)
-            {
-                return UnmappedToCustody;
-            }
-            else if (to.LocationType.IsCommunity)
-            {
-                return UnmappedToCommunity;
-            }
-        }
-        else if (toIsUnmapped)
-        {
-            if (from.LocationType.IsCustody)
-            {
-                return CustodyToUnmapped;
-            }
-            else if (from.LocationType.IsCommunity)
-            {
-                return CommunityToUnmapped;
-            }
-        }
-        else if (to.LocationType.IsCommunity)
-        {
-            if (from.LocationType.IsCustody)
-            {
-                return CustodyToCommunity;
-            }
-            else if (from.LocationType.IsCommunity)
-            {
-                return CommunityToCommunity;
-            }
-        }
-        else if (to.LocationType.IsCustody)
-        {
-            if (from.LocationType.IsCustody)
-            {
-                return CustodyToCustody;
-            }
-            else if (from.LocationType.IsCommunity)
-            {
-                return CommunityToCustody;
-            }
+            throw new Exception($"Unsupported transfer type mapping configuration from {from.LocationType.Name} to {to.LocationType.Name}.");
         }
 
-        return UnmappedToUnmapped;
+        return locationTypes.Single();
     }
+
 }
