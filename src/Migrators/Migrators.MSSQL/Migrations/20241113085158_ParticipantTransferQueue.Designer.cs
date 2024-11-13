@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241108141208_ParticipantTransferQueue_2")]
-    partial class ParticipantTransferQueue_2
+    [Migration("20241113085158_ParticipantTransferQueue")]
+    partial class ParticipantTransferQueue
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -632,6 +632,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<DateTime>("NotificationDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("OwnerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(36)");
@@ -645,11 +648,11 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasIndex("EditorId");
 
-                    b.HasIndex("OwnerId", "Created", "ReadDate");
+                    b.HasIndex("OwnerId", "NotificationDate", "ReadDate");
 
-                    b.HasIndex(new[] { "Created" }, "clst_notification");
+                    b.HasIndex(new[] { "NotificationDate" }, "clst_notification");
 
-                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex(new[] { "Created" }, "clst_notification"));
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex(new[] { "NotificationDate" }, "clst_notification"));
 
                     b.ToTable("Notification", "Identity");
                 });
@@ -1067,7 +1070,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FromContractId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(12)");
 
                     b.Property<int>("FromLocationId")
                         .HasColumnType("int");
@@ -1087,7 +1090,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("nvarchar(9)");
 
                     b.Property<string>("ToContractId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(12)");
 
                     b.Property<int>("ToLocationId")
                         .HasColumnType("int");
@@ -1098,6 +1101,14 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Completed");
+
+                    b.HasIndex("FromContractId");
+
+                    b.HasIndex("FromLocationId");
+
+                    b.HasIndex("ToContractId");
+
+                    b.HasIndex("ToLocationId");
 
                     b.ToTable("IncomingTransferQueue", "Participant");
                 });
@@ -1156,7 +1167,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FromContractId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(12)");
 
                     b.Property<int>("FromLocationId")
                         .HasColumnType("int");
@@ -1176,7 +1187,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("nvarchar(9)");
 
                     b.Property<string>("ToContractId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(12)");
 
                     b.Property<int>("ToLocationId")
                         .HasColumnType("int");
@@ -1185,6 +1196,14 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FromContractId");
+
+                    b.HasIndex("FromLocationId");
+
+                    b.HasIndex("ToContractId");
+
+                    b.HasIndex("ToLocationId");
 
                     b.ToTable("OutgoingTransferQueue", "Participant");
                 });
@@ -2873,6 +2892,39 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("Supervisor");
                 });
 
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantIncomingTransferQueueEntry", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Contract", "FromContract")
+                        .WithMany()
+                        .HasForeignKey("FromContractId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "FromLocation")
+                        .WithMany()
+                        .HasForeignKey("FromLocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Contract", "ToContract")
+                        .WithMany()
+                        .HasForeignKey("ToContractId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "ToLocation")
+                        .WithMany()
+                        .HasForeignKey("ToLocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FromContract");
+
+                    b.Navigation("FromLocation");
+
+                    b.Navigation("ToContract");
+
+                    b.Navigation("ToLocation");
+                });
+
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantLocationHistory", b =>
                 {
                     b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", null)
@@ -2886,6 +2938,39 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantOutgoingTransferQueueEntry", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Contract", "FromContract")
+                        .WithMany()
+                        .HasForeignKey("FromContractId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "FromLocation")
+                        .WithMany()
+                        .HasForeignKey("FromLocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Contract", "ToContract")
+                        .WithMany()
+                        .HasForeignKey("ToContractId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "ToLocation")
+                        .WithMany()
+                        .HasForeignKey("ToLocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FromContract");
+
+                    b.Navigation("FromLocation");
+
+                    b.Navigation("ToContract");
+
+                    b.Navigation("ToLocation");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantOwnershipHistory", b =>
