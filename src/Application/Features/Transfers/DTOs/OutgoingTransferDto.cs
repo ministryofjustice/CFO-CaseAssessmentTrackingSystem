@@ -8,9 +8,9 @@ public class OutgoingTransferDto
 {
     public required string ParticipantId { get; set; }
     public string? FromContractId { get; set; }
-    public Contract? ToContractId { get; set; }
-    public required LocationDto FromLocationId { get; set; }
-    public required LocationDto ToLocationId { get; set; }
+    public string? ToContractId { get; set; }
+    public required LocationDto FromLocation { get; set; }
+    public required LocationDto ToLocation { get; set; }
     public required DateTime MoveOccured { get; set; }
     public required TransferLocationType TransferType { get; set; }
 
