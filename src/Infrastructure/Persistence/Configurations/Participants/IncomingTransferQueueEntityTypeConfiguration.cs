@@ -24,6 +24,22 @@ public class IncomingTransferQueueEntityTypeConfiguration : IEntityTypeConfigura
                 tlt => TransferLocationType.FromValue(tlt)
             );
 
+        builder.HasOne(q => q.ToContract)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(q => q.FromContract)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(q => q.ToLocation)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(q => q.FromLocation)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(q => q.Completed);
     }
 }
