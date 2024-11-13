@@ -21,11 +21,11 @@
         </tr>
     </thead>
     <tbody>
-        @foreach(var transfer in incomingTransfers)
+        @foreach(var transfer in incomingTransfers.OrderByDescending(t => t.MoveOccured))
         {
             <tr>
                 <td>@transfer.ParticipantId</td>
-                <td>@transfer.MoveOccured.ToShortDateString()</td>
+                <td>@transfer.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
                 <td>@transfer.FromLocation.Name (@transfer.FromLocation.LocationType.Name)</td>
                 <td>@transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)</td>
                 <td>@transfer.TransferType.Name</td>
@@ -49,13 +49,13 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var transfer in outgoingTransfers)
+        @foreach (var transfer in outgoingTransfers.OrderByDescending(t => t.MoveOccured))
         {
             <tr>
                 <td>@transfer.ParticipantId</td>
-                <td>@transfer.MoveOccured.ToShortDateString()</td>
-                    <td>@transfer.FromLocation.Name (@transfer.FromLocation.LocationType.Name)</td>
-                    <td>@transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)</td>
+                <td>@transfer.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@transfer.FromLocation.Name (@transfer.FromLocation.LocationType.Name)</td>
+                <td>@transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)</td>
                 <td>@transfer.TransferType.Name</td>
             </tr>
         }
