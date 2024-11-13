@@ -29,7 +29,7 @@ public static class GetOutgoingTransfers
             if (locations.Any())
             {
                 transfers = await unitOfWork.DbContext.ParticipantOutgoingTransferQueue
-                    .Where(q => locations.Contains(q.FromLocationId))
+                    .Where(q => locations.Contains(q.FromLocation.Id))
                     .Where(q => q.MoveOccured > DateTime.UtcNow.AddDays(-60)) // Specification?
                     .ProjectTo<OutgoingTransferDto>(mapper.ConfigurationProvider) // ProjectToPaginatedDataAsync
                     .ToListAsync(cancellationToken);

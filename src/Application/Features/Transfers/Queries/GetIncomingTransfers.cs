@@ -29,7 +29,7 @@ public static class GetIncomingTransfers
             if (locations.Any())
             {
                 transfers = await unitOfWork.DbContext.ParticipantIncomingTransferQueue
-                    .Where(q => locations.Contains(q.ToLocationId))
+                    .Where(q => locations.Contains(q.ToLocation.Id))
                     .Where(q => q.Completed == false) // Specification?
                     .ProjectTo<IncomingTransferDto>(mapper.ConfigurationProvider) // ProjectToPaginatedDataAsync
                     .ToListAsync(cancellationToken);
