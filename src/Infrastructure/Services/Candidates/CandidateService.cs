@@ -55,7 +55,7 @@ public class CandidateService(
                 _ => "Unmapped Location",
             };
 
-            if(location is { Location: not null })
+            if (location is { Location: not null })
             {
                 candidate.MappedLocationId = location.Location.Id;
             }

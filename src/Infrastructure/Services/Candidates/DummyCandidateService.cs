@@ -1,6 +1,8 @@
 using Cfo.Cats.Application.Features.Candidates.DTOs;
 using Cfo.Cats.Application.Features.Candidates.Queries.Search;
+using Cfo.Cats.Domain.Entities.Administration;
 using Matching.Core.Search;
+using Newtonsoft.Json;
 
 namespace Cfo.Cats.Infrastructure.Services.Candidates;
 
@@ -1543,11 +1545,21 @@ public class DummyCandidateService(IUnitOfWork unitOfWork) : ICandidateService
                 _ => "Unmapped Location",
             };
 
-            candidate.MappedLocationId = location switch
+            if (location is { Location: not null })
             {
-                { Location: not null } => location.Location.Id,
-                _ => 0
-            };
+                candidate.MappedLocationId = location.Location.Id;
+            }
+            else
+            {
+                candidate.MappedLocationId = locationMapping.Type switch
+                {
+                    "Prison" => Location.Constants.UnmappedCustody,
+                    "Probation" => Location.Constants.UnmappedCommunity,
+                    _ => Location.Constants.Unknown
+                };
+            }
+
+            candidate.RegistrationDetailsJson = JsonConvert.SerializeObject(candidate.RegistrationDetails);
 
         }
 

@@ -8,8 +8,8 @@ public class IncomingTransferDto
     public required string ParticipantId { get; set; }
     public string? FromContractId { get; set; }
     public string? ToContractId { get; set; }
-    public required int FromLocationId { get; set; }
-    public required int ToLocationId { get; set; }
+    public required LocationDto FromLocation { get; set; }
+    public required LocationDto ToLocation { get; set; }
     public required DateTime MoveOccured { get; set; }
     public required TransferLocationType TransferType { get; set; }
     public required bool Completed { get; set; }

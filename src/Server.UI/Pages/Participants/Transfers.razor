@@ -8,45 +8,6 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
 
-@*<MudDataGrid ServerData="@(ServerReload)"
-             FixedHeader="true"
-             FixedFooter="true"
-             Virtualize="true"
-             @bind-RowsPerPage="_defaultPageSize"
-             Height="calc(100vh - 330px)"
-             Loading="@_loading"
-             MultiSelection="true"
-             @bind-SelectedItems="_selectedItems"
-             Hover="true"
-             @ref="_table">
-    <ToolBarContent>
-        <div class="d-flex align-start flex-grow-1">
-            <div class="d-flex gap-4">
-                <MudIcon Icon="@Icons.Material.Filled.Checklist" Size="Size.Medium" Color="Color.Primary" />
-                Transfers
-            </div>
-        </div>
-    </ToolBarContent>
-    <Columns>
-        <PropertyColumn Property="x => x.ParticipantId">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
-                </div>
-            </CellTemplate>
-        </PropertyColumn>
-    </Columns>
-    <NoRecordsContent>
-        <MudText>@ConstantString.NoRecords</MudText>
-    </NoRecordsContent>
-    <LoadingContent>
-        <MudText>@ConstantString.Loading</MudText>
-    </LoadingContent>
-    <PagerContent>
-        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
-    </PagerContent>
-</MudDataGrid>*@
-
 <MudText Typo="Typo.h2">Incoming Transfers</MudText>
 <MudSimpleTable>
     <thead>
@@ -56,6 +17,7 @@
             <th>From</th>
             <th>To</th>
             <th>Type</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -64,9 +26,12 @@
             <tr>
                 <td>@transfer.ParticipantId</td>
                 <td>@transfer.MoveOccured.ToShortDateString()</td>
-                <td>@transfer.FromLocationId</td>
-                <td>@transfer.ToLocationId</td>
+                <td>@transfer.FromLocation.Name (@transfer.FromLocation.LocationType.Name)</td>
+                <td>@transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)</td>
                 <td>@transfer.TransferType.Name</td>
+                <td>
+
+                </td>
             </tr>
         }
     </tbody>
@@ -89,8 +54,8 @@
             <tr>
                 <td>@transfer.ParticipantId</td>
                 <td>@transfer.MoveOccured.ToShortDateString()</td>
-                <td>@transfer.FromLocationId</td>
-                <td>@transfer.ToLocationId</td>
+                    <td>@transfer.FromLocation.Name (@transfer.FromLocation.LocationType.Name)</td>
+                    <td>@transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)</td>
                 <td>@transfer.TransferType.Name</td>
             </tr>
         }
@@ -98,10 +63,6 @@
 </MudSimpleTable>
 
 @code {
-    //private int _defaultPageSize = 15;
-    //private bool _loading;
-    // private MudDataGrid<IncomingTransferDto> _table = default!;
-    // private HashSet<IncomingTransferDto> _selectedItems = [];
     private IEnumerable<IncomingTransferDto> incomingTransfers = [];
     private IEnumerable<OutgoingTransferDto> outgoingTransfers = [];
 
@@ -123,21 +84,5 @@
         var query = await GetNewMediator().Send(new GetOutgoingTransfers.Query());
         return query.Data ?? [];
     }
-
-    /*
-    private async Task<GridData<IncomingTransferDto>> ServerReload(GridState<IncomingTransferDto> state)
-    {
-        try
-        {
-            _loading = true;
-
-            return await Task.FromResult(new GridData<IncomingTransferDto>(){ Items = [], TotalItems = 5 });
-        }
-        finally
-        {
-            _loading = false;
-        }
-    }
-    */
 
 }
