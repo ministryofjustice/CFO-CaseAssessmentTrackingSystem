@@ -33,7 +33,6 @@
 
 @code
 {
-
     [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter]
@@ -85,6 +84,7 @@
             {
                 pages.Add("Reassign", "/pages/participants/reassign");
                 pages.Add("Transfers", "/pages/participants/transfers");
+                pages.Add("Transfers", "/pages/participants/movedparticipants");
             }
 
             string[] allowed = [RoleNames.QAFinance, RoleNames.SMT, RoleNames.SystemSupport];
@@ -111,8 +111,7 @@
                 pages.Add("Queue Management", "/pages/qa/servicedesk/enrolments");    
             }
 
-            allowed = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT];
-            
+            allowed = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT];           
             
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
@@ -121,15 +120,7 @@
                 pages.Add("Lookup Values", "/system/picklist");
                 pages.Add("Audit Trails", "/system/audittrails");
             }
-            
-           
-
-            
         }
-        
-        
-        
-        
         
         pagesFiltered = pages;
 
