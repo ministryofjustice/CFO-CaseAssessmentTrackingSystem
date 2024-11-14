@@ -39,5 +39,7 @@ public class OutgoingTransferQueueEntityTypeConfiguration : IEntityTypeConfigura
         builder.HasOne(q => q.FromLocation)
             .WithMany()
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(q => q.IsReplaced);
     }
 }
