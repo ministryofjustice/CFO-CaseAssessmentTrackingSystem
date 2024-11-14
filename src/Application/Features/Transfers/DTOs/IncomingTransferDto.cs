@@ -5,6 +5,7 @@ namespace Cfo.Cats.Application.Features.Transfers.DTOs;
 
 public class IncomingTransferDto
 {
+    public required Guid Id { get; set; }
     public required string ParticipantId { get; set; }
     public string? FromContractId { get; set; }
     public string? ToContractId { get; set; }
