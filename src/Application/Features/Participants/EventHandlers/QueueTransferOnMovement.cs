@@ -5,7 +5,7 @@ using Cfo.Cats.Domain.Events;
 namespace Cfo.Cats.Application.Features.Participants.EventHandlers;
 
 public class QueueTransferOnMovement(IUnitOfWork unitOfWork,        
-      ILocationService locationService) : INotificationHandler<ParticipantMovedDomainEvent>
+      ILocationService locationService) //: INotificationHandler<ParticipantMovedDomainEvent>
 {
     public async Task Handle(ParticipantMovedDomainEvent notification, CancellationToken cancellationToken)
     {
