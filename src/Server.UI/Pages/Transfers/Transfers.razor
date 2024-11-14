@@ -1,8 +1,10 @@
 ﻿@page "/pages/participants/transfers"
 
+@using Cfo.Cats.Application.Features.Transfers.Commands
 @using Cfo.Cats.Application.Features.Transfers.DTOs
 @using Cfo.Cats.Application.Features.Transfers.Queries
 @using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Pages.Transfers.Components
 
 @inherits CatsComponentBase
 
@@ -30,7 +32,7 @@
                 <td>@transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)</td>
                 <td>@transfer.TransferType.Name</td>
                 <td>
-
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="async() => await Process(transfer)">Process</MudButton>
                 </td>
             </tr>
         }
@@ -79,10 +81,40 @@
         var query = await GetNewMediator().Send(new GetIncomingTransfers.Query());
         return query.Data ?? [];
     }
+
     private async Task<IEnumerable<OutgoingTransferDto>> GetOutgoingTransfers()
     {
         var query = await GetNewMediator().Send(new GetOutgoingTransfers.Query());
         return query.Data ?? [];
+    }
+
+    async Task Process(IncomingTransferDto incomingTransfer)
+    {
+        var command = new ProcessIncomingTransfer.Command()
+        {
+            IncomingTransfer = incomingTransfer
+        };
+
+        var parameters = new DialogParameters<ProcessTransferDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+        var dialog = DialogService.Show<ProcessTransferDialog>("Process and Assign", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                dialog.Close();
+            }
+
+        }
     }
 
 }
