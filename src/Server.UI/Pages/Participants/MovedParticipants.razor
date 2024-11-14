@@ -1,0 +1,64 @@
+﻿@page "/pages/participants/movedparticipants"
+
+@using Cfo.Cats.Application.Features.Transfers.DTOs
+@using Cfo.Cats.Application.Features.Transfers.Queries
+@using Cfo.Cats.Application.SecurityConstants
+
+@inherits CatsComponentBase
+
+@attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+
+<MudText Typo="Typo.h2">Participants You're Losing Access To'</MudText>
+<MudSimpleTable>
+    <thead>
+        <tr>
+            <th>Participant</th>
+            <th>Occurred</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var transfer in outgoingTransfers.OrderByDescending(t => t.MoveOccured))
+        {
+            <tr>
+                <td>@transfer.ParticipantId</td>
+                <td>@transfer.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@transfer.FromLocation.Name (@transfer.FromLocation.LocationType.Name)</td>
+                <td>@transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)</td>
+                <td>@transfer.TransferType.Name</td>
+                <MudMenuItem OnClick="@(()=> Edit(transfer.ParticipantId))">
+                    @ConstantString.Edit
+                </MudMenuItem>
+            </tr>
+        }
+    </tbody>
+</MudSimpleTable>
+
+@code {
+    private IEnumerable<OutgoingTransferDto> outgoingTransfers = [];
+
+    protected async override Task OnInitializedAsync()
+    {
+        outgoingTransfers = await GetOutgoingTransfers();
+        await base.OnInitializedAsync();
+    }
+    
+    private async Task<IEnumerable<OutgoingTransferDto>> GetOutgoingTransfers()
+    {
+        var query = await GetNewMediator().Send(new GetOutgoingTransfers.Query());
+        
+        var latestTransfers = query.Data?
+       .GroupBy(dto => new { dto.ParticipantId, dto.FromLocation }) 
+       .Select(g => g.OrderByDescending(dto => dto.MoveOccured).First()) 
+       .ToList();
+
+        return query.Data ?? [];
+    }
+
+    private void Edit(string participantId)
+    {
+        Navigation.NavigateTo($"/pages/participants/{participantId}");
+    }
+}
