@@ -26,4 +26,17 @@ public class ParticipantOutgoingTransferQueueEntry : ParticipantTransferQueueEnt
         Contract? fromContract,
         Contract? toContract,
         DateTime moveOccured) => new(participantId, fromLocation, toLocation, fromContract, toContract, moveOccured);
+
+    /// <summary>
+    /// Represents the replaced status of an outgoing transfer. 
+    /// A transfer gets replaced when another transfer takes place from the same contract.
+    /// </summary>
+    public bool IsReplaced { get; private set; }
+
+    public ParticipantOutgoingTransferQueueEntry MarkAsReplaced()
+    {
+        IsReplaced = true;
+        return this;
+    }
+
 }

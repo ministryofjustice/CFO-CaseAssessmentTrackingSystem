@@ -31,6 +31,7 @@ public static class GetOutgoingTransfers
                 transfers = await unitOfWork.DbContext.ParticipantOutgoingTransferQueue
                     .Where(q => locations.Contains(q.FromLocation.Id))
                     .Where(q => q.MoveOccured > DateTime.UtcNow.AddDays(-60)) // Specification?
+                    .Where(q => q.IsReplaced == false)
                     .ProjectTo<OutgoingTransferDto>(mapper.ConfigurationProvider) // ProjectToPaginatedDataAsync
                     .ToListAsync(cancellationToken);
             }
