@@ -6,7 +6,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build (UI)",
-            "program": "${workspaceFolder}/src/Server.UI/bin/Debug/net8.0/Cfo.Cats.Server.UI.dll",
+            "program": "${workspaceFolder}/src/Server.UI/bin/Debug/net9.0/Cfo.Cats.Server.UI.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Server.UI/",
             "stopAtEntry": false,
