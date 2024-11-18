@@ -27,8 +27,7 @@ public class QueueTransferOnMovement(IUnitOfWork unitOfWork,
                 //get list of owners
                 var previouslyOwned = await unitOfWork.DbContext.ParticipantOwnershipHistories
                     .Where(x => x.ParticipantId == notification.Item.Id
-                    && x.From > DateTime.UtcNow.AddDays(-60))
-                    //.Where(x => x.TenantId.StartsWith(notification.From.Tenants))
+                    && x.From > DateTime.UtcNow.AddDays(-90))
                     .ToListAsync(cancellationToken);               
 
                 //are there previous owners
