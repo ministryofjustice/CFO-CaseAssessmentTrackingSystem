@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
@@ -7,6 +8,7 @@ using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Domain.Entities.Administration;
 
+[DebuggerDisplay("{Id} {Name} {LocationType}")]
 public class Location : BaseAuditableEntity<int>, ILifetime
 {
 
