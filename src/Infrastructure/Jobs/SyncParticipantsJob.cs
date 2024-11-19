@@ -10,6 +10,10 @@ public class SyncParticipantsJob(
     ILogger<SyncParticipantsJob> logger,
     IUnitOfWork unitOfWork) : IJob
 {
+
+    private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+
     public static readonly JobKey Key = new JobKey(name: nameof(SyncParticipantsJob));
     public static readonly string Description = "A job to synchronise participant information retrieved by the Candidate Service";
 
@@ -18,6 +22,12 @@ public class SyncParticipantsJob(
         if (context.RefireCount > 3)
         {
             logger.LogWarning($"Quartz Job - {Key}: failed to complete within 3 tries, aborting...");
+            return;
+        }
+
+        if (!await _semaphore.WaitAsync(TimeSpan.Zero))
+        {
+            // Job is already running, skip this execution
             return;
         }
 
@@ -113,7 +123,12 @@ public class SyncParticipantsJob(
         }
         catch (Exception ex)
         {
-            throw new JobExecutionException(msg: $"Quartz Job - {Key}: An unexpected error occurred executing job", refireImmediately: true, cause: ex);
+            throw new JobExecutionException(msg: $"Quartz Job - {Key}: An unexpected error occurred executing job",
+                refireImmediately: true, cause: ex);
+        }
+        finally
+        {
+            _semaphore.Release();
         }
 
         logger.LogInformation($"Job {Key} completed");
