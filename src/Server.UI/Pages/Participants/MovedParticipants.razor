@@ -6,9 +6,9 @@
 
 @inherits CatsComponentBase
 
-@attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-<MudText Typo="Typo.h2">Participants You're Losing Access To'</MudText>
+<MudText Typo="Typo.h2">Participants You're Losing Access To</MudText>
 <MudSimpleTable>
     <thead>
         <tr>
