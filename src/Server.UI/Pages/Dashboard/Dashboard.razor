@@ -21,7 +21,16 @@
             {
                 <MyTeamsParticipantsComponent />
             }
+
+            @if(UserProfile?.AssignedRoles.Contains(RoleNames.SystemSupport) == true)
+            {
+                <JobManagement />
+            }
+
             <MyNotifications />
+
+           
+
         </MudGrid>
 
 
