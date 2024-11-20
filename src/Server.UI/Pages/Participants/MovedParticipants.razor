@@ -1,8 +1,10 @@
 ﻿@page "/pages/participants/movedparticipants"
 
-@using Cfo.Cats.Application.Features.Transfers.DTOs
-@using Cfo.Cats.Application.Features.Transfers.Queries
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Application.SecurityConstants
+@using Humanizer
+@using static Cfo.Cats.Application.Features.Participants.Queries.GetParticipantsWithAccessEndingSoon
 
 @inherits CatsComponentBase
 
@@ -13,52 +15,35 @@
     <thead>
         <tr>
             <th>Participant</th>
-            <th>Occurred</th>
-            <th>From</th>
-            <th>To</th>
-            <th>Type</th>
+            <th>Accessible Until</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var transfer in outgoingTransfers.OrderByDescending(t => t.MoveOccured))
+        @foreach (var access in participantAccess.OrderBy(p => p.HasAccessTo))
         {
             <tr>
-                <td>@transfer.ParticipantId</td>
-                <td>@transfer.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
-                <td>@transfer.FromLocation.Name (@transfer.FromLocation.LocationType.Name)</td>
-                <td>@transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)</td>
-                <td>@transfer.TransferType.Name</td>
-                <MudMenuItem OnClick="@(()=> Edit(transfer.ParticipantId))">
-                    @ConstantString.Edit
-                </MudMenuItem>
+                <td>@string.Join(' ', access.Participant.FirstName, access.Participant.LastName) (@access.Participant.Id)</td>
+                <td>@access.HasAccessTo.ToLocalTime().ToShortDateString() (@access.HasAccessTo.Humanize())</td>
+                <td>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="@(()=> View(access.Participant))">View</MudButton>
+                </td>
             </tr>
         }
     </tbody>
 </MudSimpleTable>
 
 @code {
-    private IEnumerable<OutgoingTransferDto> outgoingTransfers = [];
+    private IEnumerable<ParticipantWithAccessEndingSoonDto> participantAccess = [];
 
     protected async override Task OnInitializedAsync()
     {
-        outgoingTransfers = await GetOutgoingTransfers();
+        participantAccess = await GetNewMediator().Send(new GetParticipantsWithAccessEndingSoon.Query());
         await base.OnInitializedAsync();
     }
-    
-    private async Task<IEnumerable<OutgoingTransferDto>> GetOutgoingTransfers()
-    {
-        var query = await GetNewMediator().Send(new GetOutgoingTransfers.Query());
-        
-        var latestTransfers = query.Data?
-       .GroupBy(dto => new { dto.ParticipantId, dto.FromLocation }) 
-       .Select(g => g.OrderByDescending(dto => dto.MoveOccured).First()) 
-       .ToList();
 
-        return query.Data ?? [];
-    }
-
-    private void Edit(string participantId)
+    private void View(ParticipantDto participant)
     {
-        Navigation.NavigateTo($"/pages/participants/{participantId}");
+        Navigation.NavigateTo($"/pages/participants/{participant.Id}");
     }
 }
