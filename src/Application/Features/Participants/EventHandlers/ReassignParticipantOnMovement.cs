@@ -10,15 +10,8 @@ public class ReassignParticipantOnMovement(
 {
     public async Task Handle(ParticipantMovedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var participant = await unitOfWork.DbContext.Participants.FindAsync([notification.Item.Id], cancellationToken);
-
-        if(participant is null)
-        {
-            return;
-        }
-
         string? newAssignee = await GetNewAssignee(notification);
-        participant.AssignTo(newAssignee);
+        notification.Item.AssignTo(newAssignee);
     }
 
     private async Task<string?> GetNewAssignee(ParticipantMovedDomainEvent notification)
