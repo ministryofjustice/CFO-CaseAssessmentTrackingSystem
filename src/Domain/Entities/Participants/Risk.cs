@@ -57,6 +57,7 @@ public class Risk : BaseAuditableEntity<Guid>
     public string? CompletedBy { get; private set; }
     public string? LicenseConditions { get; private set; }
     public DateTime? LicenseEnd { get; private set; }
+    public bool? NoLicenseEndDate { get; private set; }
     public bool? IsRelevantToCustody { get; private set; }
     public bool? IsRelevantToCommunity { get; private set; }
     public ConfirmationStatus? IsSubjectToSHPO { get; private set; }
