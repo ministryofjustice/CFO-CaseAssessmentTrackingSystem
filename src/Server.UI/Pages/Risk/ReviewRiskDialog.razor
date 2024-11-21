@@ -6,13 +6,22 @@
 <MudDialog>
     <DialogContent>
         <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
-            <MudSelect @bind-Value="Model.ReviewReason" 
-                       Label="@Model.GetMemberDescription(x => x.ReviewReason)"
-                       For="@(() => Model.ReviewReason)">
-                <MudSelectItem Value="RiskReviewReason.ChangeToCircumstances">@RiskReviewReason.ChangeToCircumstances.Name</MudSelectItem>
-                <MudSelectItem Value="RiskReviewReason.NoRiskInformationAvailable">@RiskReviewReason.NoRiskInformationAvailable.Name</MudSelectItem>
-                <MudSelectItem Value="RiskReviewReason.NoChange">@RiskReviewReason.NoChange.Name</MudSelectItem>
+            <MudSelect @bind-Value="Model.ReviewReason"
+                        Label="@Model.GetMemberDescription(x => x.ReviewReason)"
+                        For="@(() => Model.ReviewReason)">
+                @if(AddReviewRequest)
+                {
+                    <MudSelectItem Value="RiskReviewReason.InitialReview">@RiskReviewReason.InitialReview.Name</MudSelectItem>
+                    <MudSelectItem Value="RiskReviewReason.NoRiskInformationAvailable">@RiskReviewReason.NoRiskInformationAvailable.Name</MudSelectItem>
+                }
+                else
+                {
+                    <MudSelectItem Value="RiskReviewReason.ChangeToCircumstances">@RiskReviewReason.ChangeToCircumstances.Name</MudSelectItem>
+                    <MudSelectItem Value="RiskReviewReason.NoRiskInformationAvailable">@RiskReviewReason.NoRiskInformationAvailable.Name</MudSelectItem>
+                    <MudSelectItem Value="RiskReviewReason.NoChange">@RiskReviewReason.NoChange.Name</MudSelectItem>
+                }
             </MudSelect>
+
             <MudTextField @bind-Value="Model.Justification"
                           Label="@Model.GetMemberDescription(x => x.Justification)"
                           For="@(() => Model.Justification)"
@@ -34,6 +43,9 @@
 
     [Parameter, EditorRequired]
     public required AddRisk.Command Model { get; set; }
+
+    [Parameter]
+    public bool AddReviewRequest { get; set; }
 
     private void Cancel()
     {
