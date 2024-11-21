@@ -10,7 +10,7 @@ public class ParticipantOwnershipHistory : BaseAuditableEntity<int>
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    private ParticipantOwnershipHistory(string participantId, string ownerId, string tenantId, DateTime from)
+    private ParticipantOwnershipHistory(string participantId, string? ownerId, string? tenantId, DateTime from)
     {
         ParticipantId = participantId;
         TenantId = tenantId;
@@ -18,10 +18,10 @@ public class ParticipantOwnershipHistory : BaseAuditableEntity<int>
         From = from;
     }
 
-    public static ParticipantOwnershipHistory Create(string participantId, string ownerId, string tenantId, DateTime from) => new(participantId, ownerId, tenantId, from);
+    public static ParticipantOwnershipHistory Create(string participantId, string? ownerId, string? tenantId, DateTime from) => new(participantId, ownerId, tenantId, from);
 
-    public string TenantId { get; private set; }
+    public string? TenantId { get; private set; }
     public string ParticipantId { get; private set; }
-    public string OwnerId { get; private set; }
+    public string? OwnerId { get; private set; }
     public DateTime From { get; private set; }
 }
