@@ -1,7 +1,5 @@
 ﻿@using Cfo.Cats.Infrastructure.Jobs
 @using Quartz;
-@using Quartz.Impl
-@using Quartz.Impl.Matchers
 
 @inject IServiceProvider ServiceProvider
 
@@ -29,7 +27,7 @@
                             <MudText Typo="Typo.caption" Color="Color.Primary" >@SyncParticipantsJob.Key</MudText>
                             <MudText Typo="Typo.body1" Color="Color.Info">@SyncParticipantsJob.Description</MudText>
                         </div>
-                        <MudButton Disabled="@_isTriggering" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="() => TriggerJob(SyncParticipantsJob.Key)">
+                        <MudButton Disabled="@_isTriggering" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => TriggerJob(SyncParticipantsJob.Key)">
                             @if(_isTriggering)
                             {
                                 <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
@@ -41,15 +39,14 @@
                             }
                     </MudButton>
                     </div>
-                
                 </MudListItem>                
                 <MudListItem>
                     <div class="d-flex justify-space-between align-center width-100">
                         <div>
-                            <MudText Typo="Typo.caption" Color="Color.Primary" >@DisableDormantAccountsJob.Key</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Primary">@DisableDormantAccountsJob.Key</MudText>
                             <MudText Typo="Typo.body1" Color="Color.Info">@DisableDormantAccountsJob.Description</MudText>
                         </div>
-                        <MudButton Disabled="@_isTriggering" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="() => TriggerJob(DisableDormantAccountsJob.Key)">
+                        <MudButton Disabled="@_isTriggering" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => TriggerJob(DisableDormantAccountsJob.Key)">
                             @if(_isTriggering)
                             {
                                 <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
@@ -61,16 +58,14 @@
                             }
                     </MudButton>
                     </div>
-                
                 </MudListItem>
-
                 <MudListItem>
                     <div class="d-flex justify-space-between align-center width-100">
                         <div>
-                            <MudText Typo="Typo.caption" Color="Color.Primary" >@NotifyAccountDeactivationJob.Key</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Primary">@NotifyAccountDeactivationJob.Key</MudText>
                             <MudText Typo="Typo.body1" Color="Color.Info">@NotifyAccountDeactivationJob.Description</MudText>
                         </div>
-                        <MudButton Disabled="@_isTriggering" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="() => TriggerJob(NotifyAccountDeactivationJob.Key)">
+                        <MudButton Disabled="@_isTriggering" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => TriggerJob(NotifyAccountDeactivationJob.Key)">
                             @if(_isTriggering)
                             {
                                 <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
@@ -82,45 +77,7 @@
                             }
                     </MudButton>
                     </div>
-                
                 </MudListItem>
-@* 
-                <MudListItem>
-                    <div class="d-flex justify-space-between align-center width-100">
-                    <MudText Typo="Typo.h5">@NotifyAccountDeactivationJob.Key</MudText>
-                    <MudText Typo="Typo.h6">@NotifyAccountDeactivationJob.Description</MudText>
-                    <MudButton Disabled="@_isTriggering" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="() => TriggerJob(NotifyAccountDeactivationJob.Key)">
-                            @if(_isTriggering)
-                            {
-                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                                <MudText Class="ms-2">Triggering</MudText>
-                            }
-                            else
-                            {
-                                <MudText>Trigger</MudText>
-                            }
-                        </MudButton>
-                    </div>
-                </MudListItem>
-
-                <MudListItem>
-                    <div class="d-flex justify-space-between align-center width-100">
-                    <MudText Typo="Typo.h5">@DisableDormantAccountsJob.Key</MudText>
-                    <MudText Typo="Typo.h6">@DisableDormantAccountsJob.Description</MudText>
-                        <MudButton Disabled="@_isTriggering" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="() => TriggerJob(DisableDormantAccountsJob.Key)">
-                            @if(_isTriggering)
-                            {
-                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                                <MudText Class="ms-2">Triggering</MudText>
-                            }
-                            else
-                            {
-                                <MudText>Trigger</MudText>
-                            }
-                        </MudButton>
-                    </div>
-                </MudListItem> *@
-
             </MudList> 
         </MudCardContent>
     </MudCard>
