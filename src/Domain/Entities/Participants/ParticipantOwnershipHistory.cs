@@ -20,8 +20,15 @@ public class ParticipantOwnershipHistory : BaseAuditableEntity<int>
 
     public static ParticipantOwnershipHistory Create(string participantId, string? ownerId, string? tenantId, DateTime from) => new(participantId, ownerId, tenantId, from);
 
+    public ParticipantOwnershipHistory SetTo(DateTime to)
+    {
+        To = to;
+        return this;
+    }
+
     public string? TenantId { get; private set; }
     public string ParticipantId { get; private set; }
     public string? OwnerId { get; private set; }
     public DateTime From { get; private set; }
+    public DateTime? To { get; private set; }
 }
