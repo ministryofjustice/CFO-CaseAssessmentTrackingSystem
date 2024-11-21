@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Interfaces.Locations;
+using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -32,16 +32,17 @@ public static class GetParticipantsWithAccessEndingSoon
     {
         public async Task<IEnumerable<ParticipantWithAccessEndingSoonDto>> Handle(Query request, CancellationToken cancellationToken)
         {
+            var backdatePeriod = DateTime.UtcNow.AddDays(-90);
             string ownerId = request.OwnerId ?? currentUser.UserId!;
 
             // Has the owner ever worked with anyone?
-            if(await GetParticipantsOwnedBy(ownerId, cancellationToken) is not { Count: > 0 } participants)
+            if(await GetParticipantsOwnedByInPeriod(ownerId, backdatePeriod, cancellationToken) is not { Count: > 0 } participantsOwnedInLast90Days)
             {
                 return [];
             }
 
-            var participantsUnassignedInLast90Days = await unitOfWork.DbContext.ParticipantOwnershipHistories
-                .Where(h => participants.Contains(h.ParticipantId))
+            var unassignedParticipants = await unitOfWork.DbContext.ParticipantOwnershipHistories
+                .Where(h => participantsOwnedInLast90Days.Contains(h.ParticipantId))
                 .GroupBy(h => h.ParticipantId)
                 .Select(g => new
                 {
@@ -52,7 +53,7 @@ public static class GetParticipantsWithAccessEndingSoon
                 .Where(x => x.CurrentOwnerId != ownerId)
                 .ToDictionaryAsync(p => p.ParticipantId, cancellationToken);
 
-            if(participantsUnassignedInLast90Days is not { Count: > 0 })
+            if(unassignedParticipants is not { Count: > 0 })
             {
                 return [];
             }
@@ -63,7 +64,7 @@ public static class GetParticipantsWithAccessEndingSoon
             var locations = await GetAccessibleLocations(ownerId, cancellationToken);
 
             var participantsWithAccessEndingSoon = await unitOfWork.DbContext.Participants
-                .Where(p => participantsUnassignedInLast90Days.Select(x => x.Key).Contains(p.Id))
+                .Where(p => unassignedParticipants.Select(x => x.Key).Contains(p.Id))
                 .Where(p => locations.Contains(p.CurrentLocation.Id) == false)
                 .ProjectTo<ParticipantDto>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
@@ -72,16 +73,14 @@ public static class GetParticipantsWithAccessEndingSoon
             return participantsWithAccessEndingSoon.Select(participant => new ParticipantWithAccessEndingSoonDto
             {
                 Participant = participant, 
-                LostAccessOn = participantsUnassignedInLast90Days[participant.Id].FromDate
+                LostAccessOn = unassignedParticipants[participant.Id].FromDate
             });
         }
 
-        async Task<List<string>> GetParticipantsOwnedBy(string ownerId, CancellationToken cancellationToken)
+        async Task<List<string>> GetParticipantsOwnedByInPeriod(string ownerId, DateTime backdatePeriod, CancellationToken cancellationToken)
         {
-            var backdate = DateTime.UtcNow.AddDays(-90);
-
             var participants = await unitOfWork.DbContext.ParticipantOwnershipHistories
-                .Where(h => h.OwnerId == ownerId && h.From >= backdate)
+                .Where(h => h.OwnerId == ownerId && h.From >= backdatePeriod)
                 .GroupBy(h => h.ParticipantId)
                 .Select(h => h.Key)
                 .ToListAsync(cancellationToken);
