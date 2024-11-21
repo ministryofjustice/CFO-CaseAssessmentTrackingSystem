@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Interfaces.Locations;
+using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -92,7 +92,6 @@ public static class GetParticipantsWithAccessEndingSoon
             var participants = await unitOfWork.DbContext.ParticipantOwnershipHistories
                 .Where(h => h.OwnerId == ownerId && h.To >= backdatePeriod)
                 .GroupBy(h => h.ParticipantId)
-                .Where(h => h.OrderByDescending(x => x.From).First().OwnerId != ownerId) // Ensures the Owner does not 
                 .Select(h => h.Key)
                 .ToListAsync(cancellationToken);
 
