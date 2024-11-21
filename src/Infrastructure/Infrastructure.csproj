@@ -8,6 +8,7 @@
         <Nullable>enable</Nullable>
         <LangVersion>default</LangVersion>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <NuGetAudit>false</NuGetAudit>
     </PropertyGroup>
 
     <ItemGroup>

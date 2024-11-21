@@ -5,21 +5,23 @@
 
 <MudDialog>
     <DialogContent>
-        @if (Model is not null)
-        {
-            <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
-                <MudGrid xs="12">
-                    <MudItem xs="12">
-                        <MudDatePicker Label="@Model.GetMemberDescription(x => x.StartDate)"
-                                       @bind-Date="Model.StartDate"
-                                       For="(() => Model.StartDate)"
-                                       ImmediateText="true" Editable="false"
-                                       MinDate="EarliestStartDate"
-                                       MaxDate="DateTime.Today.Date"/>    
-                    </MudItem>
-                </MudGrid>
-            </MudForm>    
-        }
+        <MudPaper Height="300px" Elevation="0">
+            @if (Model is not null)
+            {
+                <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                    <MudGrid xs="12">
+                        <MudItem xs="12">
+                            <MudDatePicker Label="@Model.GetMemberDescription(x => x.StartDate)"
+                                           @bind-Date="Model.StartDate"
+                                           For="(() => Model.StartDate)"
+                                           ImmediateText="true" Editable="false"
+                                           MinDate="EarliestStartDate"
+                                           MaxDate="DateTime.Today.Date" PickerVariant="PickerVariant.Dialog"/>
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+            }
+        </MudPaper>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>

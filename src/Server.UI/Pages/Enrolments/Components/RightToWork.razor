@@ -56,7 +56,8 @@
                                Label="@Model.GetMemberDescription(x => x.ValidFrom)"
                                MaxDate="DateTime.Now.Date"
                                MinDate="DateTime.Now.AddYears(-5).Date"
-                               Editable="true" />
+                               Editable="true"
+                               PickerVariant="PickerVariant.Dialog"/>
 
                 @if (Model.IndefiniteRightToWork is false)
                 {
@@ -65,7 +66,8 @@
                                    Label="@Model.GetMemberDescription(x => x.ValidTo)"
                                    MaxDate="DateTime.MaxValue.Date"
                                    MinDate="DateTime.Now.Date"
-                                   Editable="true" />
+                                   Editable="true"
+                                   PickerVariant="PickerVariant.Dialog"/>
                 }
 
                 <div class="mb-4 mt-8">

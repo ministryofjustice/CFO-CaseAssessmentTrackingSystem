@@ -17,7 +17,8 @@
                           MinDate="new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1)"
                           Label="@Model.GetMemberDescription(x => x.Due)"
                           For="@(() => Model.Due)"
-                           Editable="true" />
+                          Editable="true"
+                          PickerVariant="PickerVariant.Dialog"/>
         </MudForm>
     </DialogContent>
     <DialogActions>
