@@ -1,5 +1,7 @@
 ﻿using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
+using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -41,5 +43,15 @@ public class OutgoingTransferQueueEntityTypeConfiguration : IEntityTypeConfigura
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(q => q.IsReplaced);
+
+        builder.HasOne<ApplicationUser>()
+            .WithMany()
+            .HasForeignKey(q => q.PreviousOwnerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(q => q.PreviousTenantId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

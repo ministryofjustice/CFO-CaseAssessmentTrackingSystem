@@ -33,10 +33,19 @@ public class ParticipantOutgoingTransferQueueEntry : ParticipantTransferQueueEnt
     /// </summary>
     public bool IsReplaced { get; private set; }
 
+    /// <summary>
+    /// Represents the previous owner  who owned participant.
+    /// </summary>
+    public string? PreviousOwnerId { get; private set; }
+
+    /// <summary>
+    /// Represents the previous tenant who owned participant.
+    /// </summary>
+    public string? PreviousTenantId { get; private set; }   
+
     public ParticipantOutgoingTransferQueueEntry MarkAsReplaced()
     {
         IsReplaced = true;
         return this;
     }
-
 }
