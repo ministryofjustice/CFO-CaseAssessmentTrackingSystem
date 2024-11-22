@@ -1,6 +1,7 @@
 ﻿@using Cfo.Cats.Application.Features.PathwayPlans.Commands
 @using Cfo.Cats.Application.Features.PathwayPlans.DTOs
 @using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Payables
 @using Humanizer
 
 @inherits CatsComponentBase
@@ -80,9 +81,9 @@
                 </MudTooltip>
                 <MudTooltip Text="Record">
                     <MudMenu Icon="@Icons.Material.Filled.LibraryAdd" Variant="Variant.Filled" Disabled="Model.IsCompleted" Size="Size.Small" Dense>
-                        <MudMenuItem Disabled>New Activity (Coming Soon)</MudMenuItem>
-                        <MudMenuItem Disabled>New ETE (Coming Soon)</MudMenuItem>
-                        <MudMenuItem Disabled>New PSF (Coming Soon)</MudMenuItem>
+                        <MudMenuItem OnClick="AddActivity">Claim Activity</MudMenuItem>
+                        <MudMenuItem OnClick="AddETE">Claim ETE</MudMenuItem>
+                        <MudMenuItem Disabled>Claim PSF (Coming Soon)</MudMenuItem>
                     </MudMenu>
                 </MudTooltip>
                 <MudTooltip Text="Expand">
@@ -221,6 +222,36 @@
                 await OnChange.InvokeAsync();
             }
 
+        }
+    }
+
+    async Task AddActivity()
+    {
+        var dialog = DialogService.Show<AddActivityDialog>("Add Activity", new DialogOptions
+        {
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true,
+            CloseButton = true
+        });
+
+        if (await dialog.Result is { Canceled: false })
+        {
+            await OnChange.InvokeAsync();
+        }
+    }
+
+    async Task AddETE()
+    {
+        var dialog = DialogService.Show<AddETEDialog>("Add ETE", new DialogOptions 
+        {
+            MaxWidth = MaxWidth.Small, 
+            FullWidth = true, 
+            CloseButton = true 
+        });
+
+        if (await dialog.Result is { Canceled: false })
+        {
+            await OnChange.InvokeAsync();
         }
     }
 
