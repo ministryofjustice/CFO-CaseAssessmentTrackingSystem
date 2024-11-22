@@ -19,7 +19,8 @@
                        For="@(() => Model.ActivityRestrictionsReceived)"
                        MaxDate="DateTime.UtcNow.Date"
                        Class="mt-4"
-                       Editable="true" />
+                       Editable="true"
+                       PickerVariant="PickerVariant.Dialog"/>
 
         <MudDivider Class="mt-8 mb-8"/>
 
@@ -34,7 +35,8 @@
                        For="@(() => Model.PSFRestrictionsReceived)"
                        MaxDate="DateTime.UtcNow.Date"
                        Class="mt-4"
-                       Editable="true" />
+                       Editable="true"
+                       PickerVariant="PickerVariant.Dialog"/>
     </CatsMudStep>
 }
 

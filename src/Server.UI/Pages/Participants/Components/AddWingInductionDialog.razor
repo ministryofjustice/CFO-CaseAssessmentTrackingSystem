@@ -6,25 +6,27 @@
 
 <MudDialog>
     <DialogContent>
-        @if(Model is not null)
-        {
-            <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
-                <MudGrid>
-                    <MudItem xs="12">
-                        <MudDatePicker Label="@Model.GetMemberDescription(x => x.InductionDate)"
-                                       @bind-Date="Model.InductionDate"
-                                       For="(() => Model.InductionDate)"
-                                       ImmediateText="true" Editable="false" MaxDate="DateTime.Today.Date" />
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudAutocomplete T="LocationDto" Label="@Model.GetMemberDescription(x => x.Location)" @bind-Value="Model.Location" SearchFunc="@SearchLocations"
-                                         Required="true" RequiredError="Location is required"
-                                         ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
-                                         AdornmentColor="Color.Primary" ToStringFunc="@(e=> e==null?null : e.Name)" />
-                    </MudItem>
-                </MudGrid>
-            </MudForm>
-        }
+        <MudPaper Height="300px" Elevation="0">
+            @if (Model is not null)
+            {
+                <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudDatePicker Label="@Model.GetMemberDescription(x => x.InductionDate)"
+                                           @bind-Date="Model.InductionDate"
+                                           For="(() => Model.InductionDate)"
+                                           ImmediateText="true" Editable="false" MaxDate="DateTime.Today.Date" PickerVariant="PickerVariant.Dialog"/>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudAutocomplete T="LocationDto" Label="@Model.GetMemberDescription(x => x.Location)" @bind-Value="Model.Location" SearchFunc="@SearchLocations"
+                                             Required="true" RequiredError="Location is required"
+                                             ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                                             AdornmentColor="Color.Primary" ToStringFunc="@(e => e == null ? null : e.Name)"/>
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+            }
+        </MudPaper>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>

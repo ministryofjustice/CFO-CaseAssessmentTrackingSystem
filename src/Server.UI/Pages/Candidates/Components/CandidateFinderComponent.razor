@@ -24,7 +24,7 @@
                             Immediate="true" />
                     </MudItem>
                     <MudItem xs="12">
-                        <MudDatePicker Label="Date Of Birth" @bind-Date="Query.DateOfBirth" For="(() => Query.DateOfBirth)"
+                        <MudDatePicker Label="Date Of Birth" @bind-Date="Query.DateOfBirth" For="(() => Query.DateOfBirth)" PickerVariant="PickerVariant.Dialog"
                             ImmediateText="true" Editable="true" MaxDate="DateTime.Today.AddYears(-18)" />
                     </MudItem>
                 </MudFocusTrap>
