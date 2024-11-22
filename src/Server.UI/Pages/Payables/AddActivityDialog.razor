@@ -1,0 +1,66 @@
+﻿@using Cfo.Cats.Application.Features.Payables.Commands
+@using Cfo.Cats.Server.UI.Pages.Payables.Components
+
+@inherits CatsComponentBase
+
+<MudDialog>
+    <DialogContent>
+        @if (model is not null)
+        {
+            <MudForm @ref="form" Model="model" Validation="@(Validator.ValidateValue(model))">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <AvailableLocationsDropdown LocationChanged="(location) => model.Location = location" />
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    AddActivity.Command model = new();
+    MudForm form = new();
+    bool saving;
+
+    [CascadingParameter]
+    public required MudDialogInstance MudDialog { get; set; }
+
+    async Task Submit()
+    {
+        try
+        {
+            saving = true;
+
+            await form.Validate();
+
+            if(form.IsValid is false)
+            {
+                return;
+            }
+
+            var result = await GetNewMediator().Send(model);
+
+            if (result.Succeeded)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}
