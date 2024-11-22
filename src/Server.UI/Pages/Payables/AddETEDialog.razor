@@ -17,7 +17,7 @@
         }
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudButton OnClick="Dialog.Cancel">@ConstantString.Cancel</MudButton>
         <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>
@@ -28,7 +28,7 @@
     bool saving;
     
     [CascadingParameter]
-    public required MudDialogInstance MudDialog { get; set; }
+    public required MudDialogInstance Dialog { get; set; }
 
     async Task Submit()
     {
@@ -47,7 +47,7 @@
 
             if (result.Succeeded)
             {
-                MudDialog.Close(DialogResult.Ok(true));
+                Dialog.Close(DialogResult.Ok(true));
                 Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
             }
             else
@@ -61,6 +61,4 @@
             saving = false;
         }
     }
-
-    private void Cancel() => MudDialog.Cancel();
 }
