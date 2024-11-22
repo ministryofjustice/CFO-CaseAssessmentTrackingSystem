@@ -1,4 +1,4 @@
-﻿@using Cfo.Cats.Application.Features.PathwayPlans.Commands
+@using Cfo.Cats.Application.Features.PathwayPlans.Commands
 @using Cfo.Cats.Domain.Common.Enums
 
 @inherits CatsComponentBase
@@ -20,6 +20,10 @@
                           Lines="5"
                           Class="mt-4" />
         </MudForm>
+        <MudAlert Severity="Severity.Info">
+            No further payables (Activity/ETE/PSF) can be claimed for this task once completed. 
+            You may still record payables against other tasks.
+        </MudAlert>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
