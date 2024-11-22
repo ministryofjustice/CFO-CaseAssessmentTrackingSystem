@@ -1,10 +1,12 @@
-﻿
+﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Locations.DTOs;
+using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Payables.Commands;
 
 public static class AddActivity
 {
+    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command : IRequest<Result<bool>>
     {
         public LocationDto? Location { get; set; }
