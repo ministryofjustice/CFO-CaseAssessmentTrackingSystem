@@ -7,9 +7,9 @@ namespace Cfo.Cats.Application.Features.Participants.EventHandlers;
 public class QueueTransferOnMovement(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantMovedDomainEvent>
 {
     public async Task Handle(ParticipantMovedDomainEvent notification, CancellationToken cancellationToken)
-    {
-        string participantId = notification.Item.Id;
-
+    {        
+        string participantId = notification.Item.Id;        
+        
         var locations = await unitOfWork.DbContext.Locations
             .Where(l => new[] { notification.From.Id, notification.To.Id }.Contains(l.Id))
             .Include(l => l.Contract)
@@ -24,20 +24,19 @@ public class QueueTransferOnMovement(IUnitOfWork unitOfWork) : INotificationHand
             .OrderByDescending(q => q.Created)
             .FirstOrDefaultAsync(cancellationToken);
 
-        if (latestIncomingTransfer is { Completed: true })
+        if (latestIncomingTransfer is { Completed: false })
         {
-            await PublishOutgoingTransfer(participantId, from, to, cancellationToken);
+            latestIncomingTransfer?.Complete();            
         }
         else
         {
-            latestIncomingTransfer?.Complete();
+            await PublishOutgoingTransfer(participantId, notification.ParticipantOwnerIdPreMovement, from, to, cancellationToken);
         }
 
         await PublishIncomingTransfer(participantId, from, to, cancellationToken);
-
     }
 
-    async Task PublishOutgoingTransfer(string participantId, Location from, Location to, CancellationToken cancellationToken)
+    async Task PublishOutgoingTransfer(string participantId, string? participantOwnerIdPreMovement, Location from, Location to, CancellationToken cancellationToken)
     {
         // Only publish an outgoing transfer if:
         // The source/original contract exists
@@ -45,13 +44,19 @@ public class QueueTransferOnMovement(IUnitOfWork unitOfWork) : INotificationHand
         // This is a cross-contract transfer
         if (from.Contract is not null && from.Contract != to.Contract)
         {
+            var ownersTenantId=await unitOfWork.DbContext.Users.Where(x=>x.Id==participantOwnerIdPreMovement)
+                .Select(x=>x.TenantId).FirstOrDefaultAsync(cancellationToken);
+
             var outgoingTransfer = ParticipantOutgoingTransferQueueEntry.Create(
                 participantId,
                 from,
                 to,
                 from.Contract,
                 to.Contract,
-                DateTime.UtcNow);
+                DateTime.UtcNow,
+                participantOwnerIdPreMovement,
+                ownersTenantId
+                );
 
             await unitOfWork.DbContext.ParticipantOutgoingTransferQueue.AddAsync(outgoingTransfer, cancellationToken);
         }
@@ -91,5 +96,4 @@ public class QueueTransferOnMovement(IUnitOfWork unitOfWork) : INotificationHand
             transfer.MarkAsReplaced();
         }
     }
-
 }
