@@ -1,5 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Interfaces.Locations;
-using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Transfers.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -16,25 +15,20 @@ public static class GetOutgoingTransfers
     class Handler(
         ICurrentUserService currentUserService,
         IUnitOfWork unitOfWork,
-        ILocationService locationService,
         IMapper mapper) : IRequestHandler<Query, Result<IEnumerable<OutgoingTransferDto>>>
     {
         public async Task<Result<IEnumerable<OutgoingTransferDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             List<OutgoingTransferDto> transfers = [];
 
-            var locations = locationService.GetVisibleLocations(request.TenantId ?? currentUserService.TenantId!)
-                .Select(location => location.Id);
-
-            if (locations.Any())
-            {
+            var userTenantId = request.TenantId ?? currentUserService.TenantId!;
+            
                 transfers = await unitOfWork.DbContext.ParticipantOutgoingTransferQueue
-                    .Where(q => locations.Contains(q.FromLocation.Id))
+                    .Where(u => u.PreviousTenantId!.StartsWith(userTenantId))
                     .Where(q => q.MoveOccured > DateTime.UtcNow.AddDays(-90)) 
                     .Where(q => q.IsReplaced == false)
-                    .ProjectTo<OutgoingTransferDto>(mapper.ConfigurationProvider) // ProjectToPaginatedDataAsync
-                    .ToListAsync(cancellationToken);
-            }
+                    .ProjectTo<OutgoingTransferDto>(mapper.ConfigurationProvider) 
+                    .ToListAsync(cancellationToken);           
 
             return transfers;
         }
@@ -42,7 +36,5 @@ public static class GetOutgoingTransfers
 
     class Validator : AbstractValidator<Query>
     {
-
     }
-
 }
