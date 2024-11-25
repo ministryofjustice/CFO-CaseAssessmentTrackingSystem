@@ -16,8 +16,14 @@ public class ParticipantOutgoingTransferQueueEntry : ParticipantTransferQueueEnt
         Location toLocation,
         Contract? fromContract,
         Contract? toContract,
-        DateTime moveOccured)
-    : base(participantId, fromLocation, toLocation, fromContract, toContract, moveOccured) { }
+        DateTime moveOccured,
+        string? previousOwnerId=null,
+        string? previousTenantId = null
+        )
+    : base(participantId, fromLocation, toLocation, fromContract, toContract, moveOccured) {
+        PreviousOwnerId = previousOwnerId;
+        PreviousTenantId = previousTenantId;
+    }
 
     public static ParticipantOutgoingTransferQueueEntry Create(
         string participantId,
@@ -25,8 +31,11 @@ public class ParticipantOutgoingTransferQueueEntry : ParticipantTransferQueueEnt
         Location toLocation,
         Contract? fromContract,
         Contract? toContract,
-        DateTime moveOccured) => new(participantId, fromLocation, toLocation, fromContract, toContract, moveOccured);
-
+        DateTime moveOccured,
+        string? previousOwnerId = null,
+        string? previousTenantId = null
+        ) => new(participantId, fromLocation, toLocation, fromContract, toContract, moveOccured, previousOwnerId, previousTenantId);
+    
     /// <summary>
     /// Represents the replaced status of an outgoing transfer. 
     /// A transfer gets replaced when another transfer takes place from the same contract.
