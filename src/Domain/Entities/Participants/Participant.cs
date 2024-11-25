@@ -182,7 +182,8 @@ public class Participant : OwnerPropertyEntity<string>
     {
         if (CurrentLocation.Id != to.Id)
         {
-            AddDomainEvent(new ParticipantMovedDomainEvent(this, CurrentLocation, to));
+            var ownerId = this.OwnerId;
+            AddDomainEvent(new ParticipantMovedDomainEvent(this, CurrentLocation, to, ownerId));
             CurrentLocation = to;
             _currentLocationId = to.Id;
         }
