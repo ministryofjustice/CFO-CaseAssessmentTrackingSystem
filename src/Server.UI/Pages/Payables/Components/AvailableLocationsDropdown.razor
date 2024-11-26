@@ -8,7 +8,7 @@
 
 @if(loading is false)
 {
-    <MudSelect T="LocationDto" ValueChanged="LocationChanged">
+    <MudSelect Label="Location" T="LocationDto" ValueChanged="LocationChanged">
         @foreach (var location in locations)
         {
             <MudSelectItem Value="location">@location.Name</MudSelectItem>
