@@ -24,7 +24,10 @@ namespace Cfo.Cats.Domain.Entities
         ReferralSource = 0,
 
         [Description("QA Return Reason")]
-        QaReturnReason = 1
+        QaReturnReason = 1,
+
+        [Description("Education Category")]
+        EducationCategory = 2
 
     }
     
