@@ -81,9 +81,8 @@
                 </MudTooltip>
                 <MudTooltip Text="Record">
                     <MudMenu Icon="@Icons.Material.Filled.LibraryAdd" Variant="Variant.Filled" Disabled="Model.IsCompleted" Size="Size.Small" Dense>
-                        <MudMenuItem OnClick="AddActivity">Claim Activity</MudMenuItem>
-                        <MudMenuItem OnClick="AddETE">Claim ETE</MudMenuItem>
-                        <MudMenuItem Disabled>Claim PSF (Coming Soon)</MudMenuItem>
+                        <MudMenuItem OnClick="AddActivity">Add Activity/ETE</MudMenuItem>
+                        <MudMenuItem Disabled>Add PSF (Coming Soon)</MudMenuItem>
                     </MudMenu>
                 </MudTooltip>
                 <MudTooltip Text="Expand">
@@ -224,32 +223,17 @@
 
         }
     }
-
+      
     async Task AddActivity()
     {
-        var dialog = DialogService.Show<AddActivityDialog>("Add Activity", new DialogOptions
+        var dialog = DialogService.Show<AddActivityDialog>("Add Activity/ETE", new DialogOptions
         {
             MaxWidth = MaxWidth.Small,
             FullWidth = true,
             CloseButton = true
         });
 
-        if (await dialog.Result is { Canceled: false })
-        {
-            await OnChange.InvokeAsync();
-        }
-    }
-
-    async Task AddETE()
-    {
-        var dialog = DialogService.Show<AddETEDialog>("Add ETE", new DialogOptions 
-        {
-            MaxWidth = MaxWidth.Small, 
-            FullWidth = true, 
-            CloseButton = true 
-        });
-
-        if (await dialog.Result is { Canceled: false })
+        if (await dialog.Result is not { Canceled: true })
         {
             await OnChange.InvokeAsync();
         }
