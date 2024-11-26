@@ -1,4 +1,7 @@
-﻿@using Cfo.Cats.Application.Features.Payables.Commands
+﻿@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Payables.Commands
+@using Cfo.Cats.Application.Features.Payables.DTOs
+@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Payables.Components
 
 @inherits CatsComponentBase
@@ -10,7 +13,37 @@
             <MudForm @ref="form" Model="model" Validation="@(Validator.ValidateValue(model))">
                 <MudGrid>
                     <MudItem xs="12">
-                        <AvailableLocationsDropdown LocationChanged="(location) => model.Location = location" />
+                        <AvailableLocationsDropdown LocationChanged="LocationChanged" />
+                        <MudTextField ReadOnly For="() => model.Location" hidden /> @* Hidden validation property *@
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudChipSet T="ActivityType" 
+                                    SelectedValuesChanged="ActivityTypesChanged"
+                                    Disabled="Disabled"
+                                    SelectionMode="SelectionMode.MultiSelection" 
+                                    CheckMark>
+                            @foreach (var type in ActivityType.List.OrderByDescending(type => type.Name))
+                            {
+                                <MudChip Value="type" SelectedColor="Color.Success">@type.Name</MudChip>
+                            }
+                        </MudChipSet>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudSelect @ref="activityDropdown" 
+                                   Disabled="Disabled" 
+                                   Label="Activity/ETE" 
+                                   @bind-Value="model.Activity" 
+                                   For="() => model.Activity">
+                            @foreach (var activity in activities.Where(activity => filteredTypes.Contains(activity.Type) || filteredTypes.Any() is false))
+                            {
+                                <MudSelectItem Value="activity">
+                                    <div class="d-flex gap-2 align-center">
+                                        <MudChip T="string" Size="Size.Small" Text="@activity.Type.Name" Color="Color.Secondary" />
+                                        @activity.Description
+                                    </div>
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
                     </MudItem>
                 </MudGrid>
             </MudForm>
@@ -23,9 +56,30 @@
 </MudDialog>
 
 @code {
-    AddActivity.Command model = new();
+    IEnumerable<ActivityDto> activities = 
+        new List<ActivityDto>
+        {
+            new ActivityDto("Activity #1", ActivityType.CommunityAndSocial),
+            new ActivityDto("Activity #2", ActivityType.EducationAndTraining),
+            new ActivityDto("Activity #3", ActivityType.Employment),
+            new ActivityDto("Activity #4", ActivityType.HumanAndCitizenship),
+            new ActivityDto("Activity #5", ActivityType.InterventionsAndServicesWraparoundSupport),
+            new ActivityDto("Activity #5", ActivityType.SupportWork),
+            new ActivityDto("Activity #6", ActivityType.CommunityAndSocial),
+            new ActivityDto("Activity #7", ActivityType.EducationAndTraining),
+            new ActivityDto("Activity #8", ActivityType.Employment),
+            new ActivityDto("Activity #9", ActivityType.HumanAndCitizenship),
+            new ActivityDto("Activity #10", ActivityType.InterventionsAndServicesWraparoundSupport),
+            new ActivityDto("Activity #11", ActivityType.SupportWork)
+        };
+
+    MudSelect<ActivityDto?> activityDropdown = new();
     MudForm form = new();
+    IReadOnlyCollection<ActivityType> filteredTypes = [];
+    AddActivity.Command model = new();
     bool saving;
+
+    bool Disabled => model.Location is null;
 
     [CascadingParameter]
     public required MudDialogInstance Dialog { get; set; }
@@ -61,4 +115,18 @@
             saving = false;
         }
     }
+
+    void LocationChanged(LocationDto location)
+    {
+        model.Location = location;
+
+        // await GetNewMediator().Send(new GetActivitiesForLocation.Command(){ Location = location });
+    }
+
+    void ActivityTypesChanged(IReadOnlyCollection<ActivityType>? selectedTypes) 
+    { 
+        filteredTypes = selectedTypes ?? [];
+        activityDropdown.Clear();
+    }
+
 }
