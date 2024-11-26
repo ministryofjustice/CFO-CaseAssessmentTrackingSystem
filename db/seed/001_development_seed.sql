@@ -663,6 +663,17 @@ BEGIN TRY
     INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Occupation', N'9267', N'Leisure and theme park attendants', N'An Occupation option', @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Occupation', N'9269', N'Other elementary services occupations n.e.c.', N'An Occupation option', @Created, @CreatedUserId, null, null);
 
+    -- Education Level
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Entry', N'Entry', N'An Education Level', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Level 1', N'Level 1', N'An Education Level', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Level 2', N'Level 2', N'An Education Level', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Level 3', N'Level 3', N'An Education Level', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Level 4', N'Level 4', N'An Education Level', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Level 5', N'Level 5', N'An Education Level', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Level 6', N'Level 6', N'An Education Level', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Level 7', N'Level 7', N'An Education Level', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Level 8', N'Level 8', N'An Education Level', @Created, @CreatedUserId, null, null);
+
     SET IDENTITY_INSERT [Configuration].[KeyValue] OFF;
 
     SET IDENTITY_INSERT [Configuration].[Location] ON;
