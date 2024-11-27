@@ -8,20 +8,20 @@
 
 <MudDialog>
     <DialogContent>
-        @if (model is not null)
+        @if (Model is not null)
         {
-            <MudForm @ref="form" Model="model" Validation="@(Validator.ValidateValue(model))">
+            <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
                 <MudGrid>
                     <MudItem xs="12">
                         <AvailableLocationsDropdown LocationChanged="LocationChanged" />
-                        <MudTextField ReadOnly For="() => model.Location" hidden /> @* Hidden validation property *@
+                        <MudTextField ReadOnly For="() => Model.Location" hidden /> @* Hidden validation property *@
                     </MudItem>
                     <MudItem xs="12">
                         <MudChipSet T="ActivityType" 
-                                    SelectedValuesChanged="ActivityTypesChanged"
-                                    Disabled="Disabled"
-                                    SelectionMode="SelectionMode.MultiSelection" 
-                                    CheckMark>
+                        SelectedValuesChanged="ActivityTypesChanged"
+                        Disabled="Disabled"
+                        SelectionMode="SelectionMode.MultiSelection" 
+                        CheckMark>
                             @foreach (var type in ActivityType.List.OrderByDescending(type => type.Name))
                             {
                                 <MudChip Value="type" SelectedColor="Color.Success">@type.Name</MudChip>
@@ -30,10 +30,10 @@
                     </MudItem>
                     <MudItem xs="12">
                         <MudSelect @ref="activityDropdown" 
-                                   Disabled="Disabled" 
-                                   Label="Activity/ETE" 
-                                   @bind-Value="model.Activity" 
-                                   For="() => model.Activity">
+                        Disabled="Disabled" 
+                        Label="Activity/ETE" 
+                        @bind-Value="Model.Activity" 
+                        For="() => Model.Activity">
                             @foreach (var activity in activities.Where(activity => filteredTypes.Contains(activity.Type) || filteredTypes.Any() is false))
                             {
                                 <MudSelectItem Value="activity">
@@ -76,13 +76,15 @@
     MudSelect<ActivityDto?> activityDropdown = new();
     MudForm form = new();
     IReadOnlyCollection<ActivityType> filteredTypes = [];
-    AddActivity.Command model = new();
     bool saving;
 
-    bool Disabled => model.Location is null;
+    bool Disabled => Model.Location is null;
 
     [CascadingParameter]
     public required MudDialogInstance Dialog { get; set; }
+
+    [Parameter, EditorRequired]
+    public required AddActivity.Command Model { get; set; }
 
     async Task Submit()
     {
@@ -97,7 +99,7 @@
                 return;
             }
 
-            var result = await GetNewMediator().Send(model);
+            var result = await GetNewMediator().Send(Model);
 
             if (result.Succeeded)
             {
@@ -118,7 +120,7 @@
 
     void LocationChanged(LocationDto location)
     {
-        model.Location = location;
+        Model.Location = location;
 
         // await GetNewMediator().Send(new GetActivitiesForLocation.Command(){ Location = location });
     }
