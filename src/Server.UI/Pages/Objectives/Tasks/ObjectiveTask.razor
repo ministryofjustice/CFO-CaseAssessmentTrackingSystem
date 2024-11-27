@@ -1,5 +1,7 @@
-﻿@using Cfo.Cats.Application.Features.PathwayPlans.Commands
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.PathwayPlans.Commands
 @using Cfo.Cats.Application.Features.PathwayPlans.DTOs
+@using Cfo.Cats.Application.Features.Payables.Commands
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Payables
 @using Humanizer
@@ -110,6 +112,9 @@
 
     [Parameter]
     public EventCallback OnChange { get; set; }
+
+    [CascadingParameter]
+    public required ParticipantSummaryDto ParticipantSummaryDto { get; set; }
 
     public async Task Complete()
     {
@@ -223,10 +228,15 @@
 
         }
     }
-      
+
     async Task AddActivity()
     {
-        var dialog = DialogService.Show<AddActivityDialog>("Add Activity/ETE", new DialogOptions
+        var parameters = new DialogParameters<AddActivityDialog>()
+        {
+            { x => x.Model, new AddActivity.Command() { ParticipantId = ParticipantSummaryDto.Id } }
+        };
+
+        var dialog = DialogService.Show<AddActivityDialog>("Add Activity/ETE", parameters, new DialogOptions
         {
             MaxWidth = MaxWidth.Small,
             FullWidth = true,
