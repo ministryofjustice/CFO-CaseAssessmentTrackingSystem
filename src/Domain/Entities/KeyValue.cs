@@ -24,10 +24,22 @@ namespace Cfo.Cats.Domain.Entities
         ReferralSource = 0,
 
         [Description("QA Return Reason")]
-        QaReturnReason = 1
+        QaReturnReason = 1,
+
+        [Description("Education Category")]
+        EducationCategory = 2,
+
+        [Description("Education Level")]
+        EducationLevel = 3,
+
+        [Description("Employment Type")]
+        EmploymentType = 4,
+
+        [Description("Occupation")]
+        Occupation = 5
 
     }
-    
+
     public sealed class KeyValueCreatedDomainEvent(KeyValue entity) : CreatedDomainEvent<KeyValue>(entity)
     {
     }
