@@ -244,6 +244,11 @@ BEGIN TRY
     INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'QaReturnReason', N'Information conflicts with CATS', N'Information conflicts with CATS', N'A QA return reason', @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'QaReturnReason', N'Other', N'Other', N'A QA return reason', @Created, @CreatedUserId, null, null);
 
+    --Employment Type/ full time / part time
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EmploymentType', N'Self-employment', N'Self-employment', N'An Employment category', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EmploymentType', N'Full time', N'Full time', N'An Employment category', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EmploymentType', N'Part time', N'Part time', N'An Employment category', @Created, @CreatedUserId, null, null);
+
     SET IDENTITY_INSERT [Configuration].[KeyValue] OFF;
 
     SET IDENTITY_INSERT [Configuration].[Location] ON;
