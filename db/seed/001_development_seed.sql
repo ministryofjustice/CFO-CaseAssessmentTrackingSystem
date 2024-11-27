@@ -665,7 +665,7 @@ BEGIN TRY
 
     -- Education Level
     INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Entry', N'Entry Level', N'An Education Level', @Created, @CreatedUserId, null, null);
-    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Level 1', N'Level 1 (GCSE grades D-G or 1-3, Foundation Diplomas, NVQ Level 1)', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Level 1', N'Level 1 (GCSE grades D-G or 1-3, Foundation Diplomas, NVQ Level 1)', N'An Education Level', @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Level 2', N'Level 2 (GCSE grades A*-C or 4-9, Intermediate Apprenticeships, NVQ Level 2)', N'An Education Level', @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Level 3', N'Level 3 (A Levels, T Levels, BTEC Nationals, Advanced Apprenticeships)', N'An Education Level', @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Level 4', N'Level 4 (Certificates of Higher Education, HNC, Level 4 NVQ)', N'An Education Level', @Created, @CreatedUserId, null, null);
