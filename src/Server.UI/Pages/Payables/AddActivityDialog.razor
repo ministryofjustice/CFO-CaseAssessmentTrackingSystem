@@ -20,11 +20,10 @@
                         <MudChipSet T="ActivityType" 
                         SelectedValuesChanged="ActivityTypesChanged"
                         Disabled="Disabled"
-                        SelectionMode="SelectionMode.MultiSelection" 
-                        CheckMark>
+                        SelectionMode="SelectionMode.MultiSelection">
                             @foreach (var type in ActivityType.List.OrderByDescending(type => type.Name))
                             {
-                                <MudChip Value="type" SelectedColor="Color.Success">@type.Name</MudChip>
+                                <MudChip Value="type" SelectedColor="Color.Info">@type.Name</MudChip>
                             }
                         </MudChipSet>
                     </MudItem>
