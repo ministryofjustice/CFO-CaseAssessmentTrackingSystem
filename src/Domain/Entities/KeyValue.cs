@@ -26,18 +26,14 @@ namespace Cfo.Cats.Domain.Entities
         [Description("QA Return Reason")]
         QaReturnReason = 1,
 
-        [Description("Education Category")]
-        EducationCategory = 2,
-
         [Description("Education Level")]
-        EducationLevel = 3,
+        EducationLevel = 2,
 
         [Description("Employment Type")]
-        EmploymentType = 4,
+        EmploymentType = 3,
 
         [Description("Occupation")]
-        Occupation = 5
-
+        Occupation = 4
     }
 
     public sealed class KeyValueCreatedDomainEvent(KeyValue entity) : CreatedDomainEvent<KeyValue>(entity)
