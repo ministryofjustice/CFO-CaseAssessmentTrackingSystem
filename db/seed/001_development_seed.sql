@@ -244,10 +244,11 @@ BEGIN TRY
     INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'QaReturnReason', N'Information conflicts with CATS', N'Information conflicts with CATS', N'A QA return reason', @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'QaReturnReason', N'Other', N'Other', N'A QA return reason', @Created, @CreatedUserId, null, null);
 
-    --Employment Type/ full time / part time
-    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EmploymentType', N'Self-employment', N'Self-employment', N'An Employment category', @Created, @CreatedUserId, null, null);
-    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EmploymentType', N'Full time', N'Full time', N'An Employment category', @Created, @CreatedUserId, null, null);
-    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EmploymentType', N'Part time', N'Part time', N'An Employment category', @Created, @CreatedUserId, null, null);
+    --Employment Type
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EmploymentType', N'Full Time', N'Full time', N'An Employment type', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EmploymentType', N'Part Time', N'Part time', N'An Employment type', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EmploymentType', N'Self-Employment', N'Self-employment', N'An Employment type', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EmploymentType', N'Zero Hours Contract', N'Zero Hours Contract', N'An Employment type', @Created, @CreatedUserId, null, null);
 
     --Occupation
     INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'Occupation', N'1111', N'Chief executives and senior officials', N'An Occupation option', @Created, @CreatedUserId, null, null);
