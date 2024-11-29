@@ -43,18 +43,25 @@ public static class ProcessIncomingTransfer
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator() 
+        IUnitOfWork unitOfWork;
+        public Validator(IUnitOfWork unitOfWork) 
         {
+            this.unitOfWork = unitOfWork;
+
             RuleFor(c => c.IncomingTransfer)
                 .NotNull();
 
-            RuleFor(c => c.IncomingTransfer.Completed)
-                .Equal(false)
+            RuleFor(c => c.IncomingTransfer)
+                .MustAsync(NotBeCompleted)
                 .WithMessage("Transfer already completed");
 
             RuleFor(c => c.Assignee)
                 .NotNull()
                 .WithMessage("You must choose an assignee");
         }
+
+        async Task<bool> NotBeCompleted(IncomingTransferDto transfer, CancellationToken cancellationToken) 
+            => await unitOfWork.DbContext.ParticipantIncomingTransferQueue
+                .AnyAsync(t => t.Id == transfer.Id && t.Completed == false, cancellationToken);
     }
 }
