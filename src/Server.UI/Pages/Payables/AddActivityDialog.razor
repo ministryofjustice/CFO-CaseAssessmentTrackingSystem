@@ -33,7 +33,9 @@
                         Label="Activity/ETE" 
                         @bind-Value="Model.Activity" 
                         For="() => Model.Activity">
-                            @foreach (var activity in activities.Where(activity => filteredTypes.Contains(activity.Type) || filteredTypes.Any() is false))
+                            @foreach (var activity in activities
+                            .Where(activity => filteredTypes is not { Count: > 0} || filteredTypes.Contains(activity.Type))
+                            .OrderByDescending(activity => activity.Description))
                             {
                                 <MudSelectItem Value="activity">
                                     <div class="d-flex gap-2 align-center">
