@@ -65,8 +65,8 @@
 </MudSimpleTable>
 
 @code {
-    private IEnumerable<IncomingTransferDto> incomingTransfers = [];
-    private IEnumerable<OutgoingTransferDto> outgoingTransfers = [];
+    private List<IncomingTransferDto> incomingTransfers = [];
+    private List<OutgoingTransferDto> outgoingTransfers = [];
 
     protected async override Task OnInitializedAsync()
     {
@@ -76,16 +76,16 @@
         await base.OnInitializedAsync();
     }
 
-    private async Task<IEnumerable<IncomingTransferDto>> GetIncomingTransfers()
+    private async Task<List<IncomingTransferDto>> GetIncomingTransfers()
     {
         var query = await GetNewMediator().Send(new GetIncomingTransfers.Query());
-        return query.Data ?? [];
+        return query.Data?.ToList() ?? [];
     }
 
-    private async Task<IEnumerable<OutgoingTransferDto>> GetOutgoingTransfers()
+    private async Task<List<OutgoingTransferDto>> GetOutgoingTransfers()
     {
         var query = await GetNewMediator().Send(new GetOutgoingTransfers.Query());
-        return query.Data ?? [];
+        return query.Data?.ToList() ?? [];
     }
 
     async Task Process(IncomingTransferDto incomingTransfer)
@@ -114,6 +114,8 @@
                 dialog.Close();
             }
 
+            // Remove dto from UI
+            incomingTransfers.Remove(incomingTransfer);
         }
     }
 
