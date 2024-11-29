@@ -24,11 +24,26 @@ public class QueueTransferOnMovement(IUnitOfWork unitOfWork) : INotificationHand
             .OrderByDescending(q => q.Created)
             .FirstOrDefaultAsync(cancellationToken);
 
+        bool shouldPublishOutgoing = false;
+
         if (latestIncomingTransfer is { Completed: false })
         {
-            latestIncomingTransfer?.Complete();            
+            latestIncomingTransfer.Complete();
+
+            // In cases where the previous incoming transfer was a same contract transfer
+            // publish an outgoing (even if this transfer wasn't processed).
+            shouldPublishOutgoing = latestIncomingTransfer.FromContract == latestIncomingTransfer.ToContract;
         }
         else
+        {
+            // Publish the outgoing transfer if:
+            // This is the first transfer
+            // OR
+            // The previous transfer was processed
+            shouldPublishOutgoing = true;
+        }
+
+        if(shouldPublishOutgoing)
         {
             await PublishOutgoingTransfer(participantId, notification.ParticipantOwnerIdPreMovement, from, to, cancellationToken);
         }
