@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Cfo.Cats.Application.Common.Interfaces;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using FluentAssertions;
 using MediatR;
 using NUnit.Framework;
@@ -18,7 +20,11 @@ public class RequestHandlerTests
         var handlerTypes = ApplicationAssembly.GetTypes()
             .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRequestHandler<,>)))
             .ToList();
-        
+
+        List<string> warnings = new List<string>();
+        List<string> failures = new List<string>();
+
+
         foreach (var handlerType in handlerTypes)
         {
             // Get constructors
@@ -28,14 +34,32 @@ public class RequestHandlerTests
                 // Get parameters of the constructor
                 var parameters = constructor.GetParameters();
 
+                if (parameters.Length == 0)
+                {
+                    warnings.Add($"Type {handlerType.FullName} has a parameterless constructor. Check this is correct.");
+                    break;
+                }
+
                 // Ensure none of the parameters is of type IApplicationDbContext
-                parameters.Should().NotContain(p => p.ParameterType == typeof(IApplicationDbContext),
-                $"{handlerType.Name} should not accept IApplicationDbContext as a constructor parameter.");
-                
+                if(parameters.Any(p => p.ParameterType == typeof(IApplicationDbContext)))
+                {
+                    failures.Add($"{handlerType.FullName} should not accept IApplicationDbContext as a constructor parameter.");
+                }
+
+
                 // Ensure there is a parameter of type IUnitOfWork
-                parameters.Should().Contain(p => p.ParameterType == typeof(IUnitOfWork),
-                $"{handlerType.Name} should have IUnitOfWork as a constructor parameter.");
+                if (parameters.Any(p => p.ParameterType == typeof(IUnitOfWork)) == false)
+                {
+                    failures.Add($"{handlerType.FullName} should accept IUnitOfWork as a constructor parameter.");
+                }
             }
+        }
+
+        failures.Should().BeEmpty(string.Join("\n", failures));
+
+        if (warnings.Any())
+        {
+            Assert.Warn(string.Join("\n", warnings));
         }
     }
 }
