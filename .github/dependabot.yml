@@ -6,6 +6,7 @@ updates:
       interval: "weekly"
       day: "sunday"
       time: "04:00"
+    target-branch: "develop"
     commit-message:
       prefix: "deps"
     open-pull-requests-limit: 1
