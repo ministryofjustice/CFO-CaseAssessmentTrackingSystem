@@ -10,8 +10,9 @@
                           For="@(() => Model.Note)"
                           Lines="5"
                           Class="mt-4"
-                          />
-
+                          Immediate 
+                          MaxLength="ValidationConstants.NotesLength" />
+            <MudText Class="ml-2">Characters: @(Model.Note?.Length ?? 0) / @ValidationConstants.NotesLength</MudText>
         </MudForm>
         
     </DialogContent>
@@ -75,7 +76,7 @@
             }
 
             RuleFor(x => x.Note)
-                .MaximumLength(250)
+                .MaximumLength(ValidationConstants.NotesLength)
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Note"));
         }
@@ -89,4 +90,5 @@
         };
 
     }
+
 }
