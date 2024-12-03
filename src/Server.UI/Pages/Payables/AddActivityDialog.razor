@@ -46,6 +46,15 @@
                             }
                         </MudSelect>
                     </MudItem>
+                    <MudItem xs="12">
+                        <MudDatePicker @bind-Date="Model.Completed"
+                                       For="() => Model.Completed"
+                                       MaxDate="DateTime.UtcNow"
+                                       Label="@Model.GetMemberDescription(x => x.Completed)"
+                                       PickerVariant="PickerVariant.Dialog"
+                                       ImmediateText="true" 
+                                       Editable="true" />
+                    </MudItem>
                 </MudGrid>
             </MudForm>
         }
