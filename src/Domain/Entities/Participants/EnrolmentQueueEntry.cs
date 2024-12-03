@@ -25,7 +25,7 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHave
 
     protected EnrolmentQueueEntry(string participantId)
     {
-        Id = Guid.NewGuid();
+        Id = Guid.CreateVersion7();
         ParticipantId = participantId;
     }
 

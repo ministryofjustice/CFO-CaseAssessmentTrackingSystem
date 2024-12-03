@@ -47,7 +47,7 @@ public class Risk : BaseAuditableEntity<Guid>
 
     public static Risk Review(Risk from, RiskReviewReason reason, string? justification)
     {
-        from.Id = Guid.NewGuid();
+        from.Id = Guid.CreateVersion7();
         from.ReviewReason = reason;
         from.ReviewJustification = justification;
         from.Completed = null;

@@ -46,7 +46,7 @@ public static class BeginAssessment
             await Task.CompletedTask;
             Assessment assessment = new Assessment()
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.CreateVersion7(),
                 ParticipantId = request.ParticipantId,
                 Pathways =
                 [
