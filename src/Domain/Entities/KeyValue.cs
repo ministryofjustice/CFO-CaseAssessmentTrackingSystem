@@ -33,7 +33,10 @@ namespace Cfo.Cats.Domain.Entities
         EmploymentType = 3,
 
         [Description("Occupation")]
-        Occupation = 4
+        Occupation = 4,
+
+        [Description("Salary Frequency")]
+        SalaryFrequency = 5
     }
 
     public sealed class KeyValueCreatedDomainEvent(KeyValue entity) : CreatedDomainEvent<KeyValue>(entity)
