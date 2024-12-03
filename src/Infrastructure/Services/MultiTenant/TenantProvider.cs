@@ -31,7 +31,7 @@ public sealed class TenantProvider : ITenantProvider
 
     public Guid Register(Action callback)
     {
-        var id = Guid.NewGuid();
+        var id = Guid.CreateVersion7();
         callbacks.Add(id, callback);
         return id;
     }

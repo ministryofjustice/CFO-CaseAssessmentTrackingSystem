@@ -34,7 +34,7 @@ public class UploadService : IUploadService
                     return Result<string>.Failure("Folder should not end in forward slash");
                 }
                 
-                string key = $"{_rootFolder}/{folder}/{Guid.NewGuid()}";
+                string key = $"{_rootFolder}/{folder}/{Guid.CreateVersion7()}";
 
                 using var stream = new MemoryStream(uploadRequest.Data);
          
@@ -103,7 +103,7 @@ public class UploadService : IUploadService
         var scopeInfo = new Dictionary<string, object>()
         {
             {
-                "OperationId", Guid.NewGuid()
+                "OperationId", Guid.CreateVersion7()
             },
             {
                 "Folder", folder

@@ -15,7 +15,7 @@ public class Document : OwnerPropertyEntity<Guid>, IMayHaveTenant, IAuditTrial
 
     private Document(string title, string description, DocumentType documentType)
     {
-        Id = Guid.NewGuid();
+        Id = Guid.CreateVersion7();
         Title = title;
         IsPublic = false;
         Description = description;
