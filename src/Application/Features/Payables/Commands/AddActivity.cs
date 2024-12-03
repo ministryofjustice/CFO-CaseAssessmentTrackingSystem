@@ -1,4 +1,4 @@
-using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Payables.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -43,10 +43,9 @@ public static class AddActivity
                 .NotNull()
                 .WithMessage("You must choose a location");
 
-            // Require an induction if the activity took place in a hub
             RuleFor(c => c.Location)
                 .MustAsync(async (command, location, token) => await HaveAHubInduction(command.ParticipantId, location!, token))
-                .When(c => c.Location is not null && c.Location.LocationType.IsHub)
+                .When(c => c.Location is { LocationType.IsHub: true })
                 .WithMessage("A hub induction is required for the selected location");
 
             When(c => c.Location is not null, () =>
