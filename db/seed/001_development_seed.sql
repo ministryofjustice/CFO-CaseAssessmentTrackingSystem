@@ -676,6 +676,12 @@ BEGIN TRY
     INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Level 7', N'Level 7', N'An Education Level', @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'EducationLevel', N'Level 8', N'Level 8', N'An Education Level', @Created, @CreatedUserId, null, null);
 
+    -- Salary Frequency
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'SalaryFrequency', N'Per day', N'Per day', N'A salary frequency option', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'SalaryFrequency', N'Per week', N'Per week', N'A salary frequency option', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'SalaryFrequency', N'Per month', N'Per month', N'A salary frequency option', @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.KeyValue (Name, Value, Text, Description, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (N'SalaryFrequency', N'Per year', N'Per year', N'A salary frequency option', @Created, @CreatedUserId, null, null);
+
     SET IDENTITY_INSERT [Configuration].[KeyValue] OFF;
 
     SET IDENTITY_INSERT [Configuration].[Location] ON;
