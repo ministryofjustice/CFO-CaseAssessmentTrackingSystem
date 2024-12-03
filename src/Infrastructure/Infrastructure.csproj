@@ -13,7 +13,7 @@
 
     <ItemGroup>
         <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.301" />
-        <PackageReference Include="AWSSDK.S3" Version="3.7.406.1" />
+        <PackageReference Include="AWSSDK.S3" Version="3.7.409" />
         <PackageReference Include="GovukNotify" Version="7.2.0" />
         <PackageReference Include="IPAddressRange" Version="6.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.0" />
@@ -36,7 +36,7 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Quartz" Version="3.13.1" />
         <PackageReference Include="Quartz.AspNetCore" Version="3.13.1" />
-        <PackageReference Include="QuestPDF" Version="2024.10.3" />
+        <PackageReference Include="QuestPDF" Version="2024.10.4" />
         <PackageReference Include="Sentry.Serilog" Version="4.13.0" />
         <PackageReference Include="Serilog" Version="4.1.0" />
         <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
