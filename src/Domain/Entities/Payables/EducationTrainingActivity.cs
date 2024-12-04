@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Payables;
 
@@ -19,7 +20,10 @@ public class EducationTrainingActivity : Activity
         Contract contract,
         string? additionalInformation,
         DateTime completed,
-        string completedBy) : base(definition, participantId, description, location, contract, additionalInformation, completed, completedBy) { }
+        string completedBy) : base(definition, participantId, description, location, contract, additionalInformation, completed, completedBy) 
+    {
+        AddDomainEvent(new EducationTrainingActivityCreatedDomainEvent(this));
+    }
 
     /*
     public string CourseTitle { get; private set; }
@@ -50,8 +54,6 @@ public class EducationTrainingActivity : Activity
             additionalInformation, 
             completed, 
             completedBy);
-
-        //activity.AddDomainEvent(new EducationTrainingActivityAddedDomainEvent());
 
         return activity;
     }
