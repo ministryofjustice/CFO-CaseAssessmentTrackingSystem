@@ -1,4 +1,4 @@
-﻿@page "/pages/participants/transfers"
+@page "/pages/participants/transfers"
 
 @using Cfo.Cats.Application.Features.Transfers.Commands
 @using Cfo.Cats.Application.Features.Transfers.DTOs
@@ -10,9 +10,18 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
 
-<MudText Typo="Typo.h2">Incoming Transfers</MudText>
-<MudSimpleTable>
+<MudSimpleTable Class="mb-8 pa-4">
     <thead>
+        <tr>
+            <div class="d-flex align-start flex-grow-1">
+                <div class="d-flex gap-4">
+                    <MudIcon Icon="@Icons.Material.Filled.Input" Size="Size.Large" />
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.caption">Incoming Transfers</MudText>
+                    </div>
+                </div>
+            </div>
+        </tr>
         <tr>
             <th>Participant</th>
             <th>Occurred</th>
@@ -57,12 +66,30 @@
                 </td>
             </tr>
         }
+        <tr>
+            <td colspan="6">
+                <div class="d-flex justify-center">
+                    <MudText Typo="Typo.caption">
+                        @incomingTransfers.Count incoming transfer(s)
+                    </MudText>
+                </div>
+            </td>
+        </tr>
     </tbody>
 </MudSimpleTable>
 
-<MudText Typo="Typo.h2">Outgoing Transfers</MudText>
-<MudSimpleTable>
+<MudSimpleTable Class="mb-8 pa-4">
     <thead>
+        <tr>
+            <div class="d-flex align-start flex-grow-1">
+                <div class="d-flex gap-4">
+                    <MudIcon Icon="@Icons.Material.Filled.Output" Size="Size.Large" />
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.caption">Outgoing Transfers</MudText>
+                    </div>
+                </div>
+            </div>
+        </tr>
         <tr>
             <th>Participant</th>
             <th>Occurred</th>
@@ -103,6 +130,15 @@
                 </td>
             </tr>
         }
+        <tr>
+            <td colspan="6">
+                <div class="d-flex justify-center">
+                    <MudText Typo="Typo.caption">
+                        @outgoingTransfers.Count outgoing transfer(s)
+                    </MudText>
+                </div>
+            </td>
+        </tr>
     </tbody>
 </MudSimpleTable>
 
