@@ -1,3 +1,9 @@
-﻿namespace Cfo.Cats.Application.Features.Payables.DTOs;
+﻿using Cfo.Cats.Application.Features.Locations.DTOs;
 
-public record class ActivityDto(string Description, ActivityType Type);
+namespace Cfo.Cats.Application.Features.Payables.DTOs;
+
+public record class ActivityDto(ActivityDefinition Definition, LocationDto Location);
+
+
+
+//public record class ActivityDto(string Description, ActivityType Type);

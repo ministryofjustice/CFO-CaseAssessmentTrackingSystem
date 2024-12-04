@@ -17,11 +17,11 @@
                         <MudTextField ReadOnly For="() => Model.Location" hidden /> @* Hidden validation property *@
                     </MudItem>
                     <MudItem xs="12">
-                        <MudChipSet T="ActivityType" 
+                        <MudChipSet T="ActivityETEType" 
                         SelectedValuesChanged="ActivityTypesChanged"
                         Disabled="Disabled"
                         SelectionMode="SelectionMode.MultiSelection">
-                            @foreach (var type in ActivityType.List.OrderByDescending(type => type.Name))
+                            @foreach (var type in ActivityETEType.List.OrderByDescending(type => type.Name))
                             {
                                 <MudChip Value="type" SelectedColor="Color.Info">@type.Name</MudChip>
                             }
@@ -34,13 +34,13 @@
                         @bind-Value="Model.Activity" 
                         For="() => Model.Activity">
                             @foreach (var activity in activities
-                            .Where(activity => filteredTypes is not { Count: > 0} || filteredTypes.Contains(activity.Type))
-                            .OrderByDescending(activity => activity.Description))
+                            .Where(activity => filteredTypes is not { Count: > 0} || filteredTypes.Contains(activity.ActivityETEType))
+                            .OrderByDescending(activity => activity.Name))
                             {
                                 <MudSelectItem Value="activity">
                                     <div class="d-flex gap-2 align-center">
-                                        <MudChip T="string" Size="Size.Small" Text="@activity.Type.Name" Color="Color.Secondary" />
-                                        @activity.Description
+                                        <MudChip T="string" Size="Size.Small" Text="@activity.Name" Color="Color.Secondary" />
+                                        @activity.ActivityTitle
                                     </div>
                                 </MudSelectItem>
                             }
@@ -66,26 +66,10 @@
 </MudDialog>
 
 @code {
-    IEnumerable<ActivityDto> activities = 
-        new List<ActivityDto>
-        {
-            new ActivityDto("Activity #1", ActivityType.CommunityAndSocial),
-            new ActivityDto("Activity #2", ActivityType.EducationAndTraining),
-            new ActivityDto("Activity #3", ActivityType.Employment),
-            new ActivityDto("Activity #4", ActivityType.HumanCitizenship),
-            new ActivityDto("Activity #5", ActivityType.InterventionsAndServicesWraparoundSupport),
-            new ActivityDto("Activity #5", ActivityType.SupportWork),
-            new ActivityDto("Activity #6", ActivityType.CommunityAndSocial),
-            new ActivityDto("Activity #7", ActivityType.EducationAndTraining),
-            new ActivityDto("Activity #8", ActivityType.Employment),
-            new ActivityDto("Activity #9", ActivityType.HumanCitizenship),
-            new ActivityDto("Activity #10", ActivityType.InterventionsAndServicesWraparoundSupport),
-            new ActivityDto("Activity #11", ActivityType.SupportWork)
-        };
-
+    IEnumerable<ActivityDefinition> activities = [];
     MudSelect<ActivityDto?> activityDropdown = new();
     MudForm form = new();
-    IReadOnlyCollection<ActivityType> filteredTypes = [];
+    IReadOnlyCollection<ActivityETEType> filteredTypes = [];
     bool saving;
 
     bool Disabled => Model.Location is null;
@@ -97,7 +81,7 @@
     public required AddActivity.Command Model { get; set; }
 
     async Task Submit()
-    {
+    {        
         try
         {
             saving = true;
@@ -131,11 +115,10 @@
     void LocationChanged(LocationDto location)
     {
         Model.Location = location;
-
-        // await GetNewMediator().Send(new GetActivitiesForLocation.Command(){ Location = location });
+        activities = ActivityDefinition.GetForLocationType(location.LocationType);
     }
 
-    void ActivityTypesChanged(IReadOnlyCollection<ActivityType>? selectedTypes) 
+    void ActivityTypesChanged(IReadOnlyCollection<ActivityETEType>? selectedTypes)
     { 
         filteredTypes = selectedTypes ?? [];
         activityDropdown.Clear();
