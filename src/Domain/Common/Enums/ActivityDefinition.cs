@@ -11,30 +11,42 @@ public class ActivityDefinition : SmartEnum<ActivityDefinition>
     public ExpectedClaims ExpectedClaims { get; private set; }
     public CheckType CheckType { get; private set; }
 
+    public static IEnumerable<ActivityETEType> GetDistinctETEType(LocationType? locationType = null)
+    {
+        var activityDefinitions = locationType != null
+            ? ActivityDefinition.GetForLocationType(locationType) 
+            : ActivityDefinition.List; 
+
+        return activityDefinitions
+               .Select(ad => ad.ActivityETEType) 
+               .Distinct();        
+    }
+
     public static IEnumerable<ActivityDefinition> GetForLocationType(LocationType locationType)
     {
+        var returnList= new List<ActivityDefinition>();
         if (locationType is { IsCommunity: true, IsHub: false })
         {
-            return List
+            returnList= List
                    .Where(ad => ad.DeliveryLocationType == DeliveryLocationType.WiderCommunity)
                    .ToList();
         }
 
         if (locationType.IsCustody)
         {
-            return List
+            returnList = List
                    .Where(ad => ad.DeliveryLocationType == DeliveryLocationType.Custody)
                    .ToList();
         }
 
         if (locationType.IsHub)
         {
-            return List
+            returnList = List
                    .Where(ad => ad.DeliveryLocationType == DeliveryLocationType.Hub)
                    .ToList();
         }
 
-        return [];
+        return returnList;
     }
 
     private ActivityDefinition(
@@ -110,6 +122,117 @@ public class ActivityDefinition : SmartEnum<ActivityDefinition>
       ExpectedClaims.MoreThanOne,
       CheckType.Dip
   );
+
+    public static readonly ActivityDefinition AFutureFocusHub = new(
+  "A Future Focus Hub",
+  1,
+  DeliveryLocationType.Hub,
+  ClassificationType.NonISWActivity,
+  ActivityETEType.HumanCitizenship,
+  "A Future Focus",
+  ExpectedClaims.MoreThanOne,
+  CheckType.Dip
+);
+
+    public static readonly ActivityDefinition AccomSuppAdviceHub = new(
+"Accommodation Support / Advice Hub",
+1,
+DeliveryLocationType.Hub,
+ClassificationType.NonISWActivity,
+ActivityETEType.CommunityAndSocial,
+"Accommodation Support / Advice",
+ExpectedClaims.MoreThanOne,
+CheckType.Dip
+);
+
+    public static readonly ActivityDefinition ApprovedPremisesWiderComm = new(
+"Approved Premises Wider Community",
+1,
+DeliveryLocationType.WiderCommunity,
+ClassificationType.ISWActivity,
+ActivityETEType.InterventionsAndServicesWraparoundSupport,
+"Approved Premises",
+ExpectedClaims.One,
+CheckType.QA
+);
+
+    public static readonly ActivityDefinition ApprovedPremisesHub = new(
+"Approved Premises Hub",
+1,
+DeliveryLocationType.Hub,
+ClassificationType.ISWActivity,
+ActivityETEType.InterventionsAndServicesWraparoundSupport,
+"Approved Premises",
+ExpectedClaims.One,
+CheckType.QA
+);
+
+    public static readonly ActivityDefinition EducationAndTrainingHub = new(
+"Education and Training Hub",
+1,
+DeliveryLocationType.Hub,
+ClassificationType.EducationAndTraining,
+ActivityETEType.EducationAndTraining,
+"Education and Training",
+ExpectedClaims.MoreThanOne,
+CheckType.QA
+);
+
+    public static readonly ActivityDefinition EducationAndTraininWiderComm = new(
+"Education and Training Wider Community",
+1,
+DeliveryLocationType.WiderCommunity,
+ClassificationType.EducationAndTraining,
+ActivityETEType.EducationAndTraining,
+"Education and Training",
+ExpectedClaims.MoreThanOne,
+CheckType.QA
+);
+
+    public static readonly ActivityDefinition EducationAndTraininWiderCust = new(
+"Education and Training Wider Custody",
+1,
+DeliveryLocationType.Custody,
+ClassificationType.EducationAndTraining,
+ActivityETEType.EducationAndTraining,
+"Education and Training",
+ExpectedClaims.MoreThanOne,
+CheckType.QA
+);
+
+
+    public static readonly ActivityDefinition EmploymentHub = new(
+"Employment Hub",
+1,
+DeliveryLocationType.Hub,
+ClassificationType.Employment,
+ActivityETEType.Employment,
+"Employment in Community",
+ExpectedClaims.MoreThanOne,
+CheckType.QA
+);
+
+    public static readonly ActivityDefinition EmploymentWiderComm = new(
+"Employment Wider Community",
+1,
+DeliveryLocationType.WiderCommunity,
+ClassificationType.Employment,
+ActivityETEType.Employment,
+"Employment in Community",
+ExpectedClaims.MoreThanOne,
+CheckType.QA
+);
+
+    public static readonly ActivityDefinition EmploymentCust = new(
+"Employment on ROTL",
+1,
+DeliveryLocationType.Custody,
+ClassificationType.Employment,
+ActivityETEType.Employment,
+"Employment on ROTL",
+ExpectedClaims.MoreThanOne,
+CheckType.QA
+);
 }
 
 // Enums for related properties using Ardalis SmartEnum
