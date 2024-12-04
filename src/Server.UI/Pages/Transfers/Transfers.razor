@@ -96,6 +96,7 @@
             <th>From</th>
             <th>To</th>
             <th>Type</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -127,6 +128,9 @@
                     <MudText Typo="Typo.body2">
                         @transfer.TransferType.Name
                     </MudText>
+                </td>
+                <td>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="() => View(transfer)">View</MudButton>
                 </td>
             </tr>
         }
@@ -196,5 +200,7 @@
             incomingTransfers.Remove(incomingTransfer);
         }
     }
+
+    private void View(OutgoingTransferDto transfer) => Navigation.NavigateTo($"/pages/participants/{transfer.ParticipantId}");
 
 }
