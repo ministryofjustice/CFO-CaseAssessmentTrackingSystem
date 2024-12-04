@@ -10,9 +10,18 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-<MudText Typo="Typo.h2">Participants You're Losing Access To</MudText>
-<MudSimpleTable>
+<MudSimpleTable Class="pa-4">
     <thead>
+        <tr>
+            <div class="d-flex align-start flex-grow-1">
+                <div class="d-flex gap-4">
+                    <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.caption">Participants you are losing access to</MudText>
+                    </div>
+                </div>
+            </div>
+        </tr>
         <tr>
             <th>Participant</th>
             <th>Accessible Until</th>
@@ -39,6 +48,15 @@
                 </td>
             </tr>
         }
+        <tr>
+            <td colspan="6">
+                <div class="d-flex justify-center">
+                    <MudText Typo="Typo.caption">
+                        @participantAccess.Count() participant(s)
+                    </MudText>
+                </div>
+            </td>
+        </tr>
     </tbody>
 </MudSimpleTable>
 
