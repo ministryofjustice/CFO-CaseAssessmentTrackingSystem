@@ -16,7 +16,7 @@ public class NotifyUserOnUnassignment(
         }
 
         var oldAssignee = await unitOfWork.DbContext.Users
-            .FindAsync(notification.FromOwner);
+            .FindAsync([notification.FromOwner], cancellationToken);
 
         if(oldAssignee is null)
         {
