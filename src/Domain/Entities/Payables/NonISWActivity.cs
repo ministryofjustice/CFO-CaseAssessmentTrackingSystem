@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Payables;
 
@@ -19,7 +20,10 @@ public class NonISWActivity : Activity
         Contract contract,
         string? additionalInformation,
         DateTime completed,
-        string completedBy) : base(definition, participantId, description, location, contract, additionalInformation, completed, completedBy) { }
+        string completedBy) : base(definition, participantId, description, location, contract, additionalInformation, completed, completedBy)
+    {
+        AddDomainEvent(new NonISWActivityCreatedDomainEvent(this));
+    }
 
     public static NonISWActivity Create(
         ActivityDefinition definition,
@@ -40,8 +44,6 @@ public class NonISWActivity : Activity
             additionalInformation,
             completed,
             completedBy);
-
-        //activity.AddDomainEvent(new NonISWActivityAddedDomainEvent());
 
         return activity;
     }
