@@ -3,30 +3,30 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Participants.EventHandlers;
 
-public class ParticipantUnassigned(
+public class NotifyUserOnAssignment(
     IUnitOfWork unitOfWork,
     ICurrentUserService currentUserService) : INotificationHandler<ParticipantAssignedDomainEvent>
 {
     public async Task Handle(ParticipantAssignedDomainEvent notification, CancellationToken cancellationToken)
     {
         // No need to notify themselves!
-        if (currentUserService.UserId == notification.FromOwner)
+        if (currentUserService.UserId == notification.NewOwner)
         {
             return;
         }
 
-        var oldAssignee = await unitOfWork.DbContext.Users
-            .FindAsync(notification.FromOwner);
+        var newAssignee = await unitOfWork.DbContext.Users
+            .FindAsync([notification.FromOwner], cancellationToken);
 
-        if(oldAssignee is null)
+        if(newAssignee is null)
         {
             return;
         }
 
         var n = Notification.Create(
-            heading: "Participant unassigned", 
-            details: $"{notification.Item.FullName} ({notification.Item.Id}), who you were previously working with, was unassigned from you.", 
-            userId: oldAssignee.Id)
+            heading: "Participant assigned", 
+            details: $"{notification.Item.FullName} ({notification.Item.Id}) was assigned to you.", 
+            userId: newAssignee.Id)
             .SetLink($"/pages/participants/{notification.Item.Id}");
 
         await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
