@@ -21,7 +21,7 @@
                         SelectedValuesChanged="ActivityTypesChanged"
                         Disabled="Disabled"
                         SelectionMode="SelectionMode.MultiSelection">
-                            @foreach (var type in ActivityETEType.List.OrderByDescending(type => type.Name))
+                            @foreach (var type in ActivityDefinition.GetDistinctETEType(Model.Location?.LocationType))                                
                             {
                                 <MudChip Value="type" SelectedColor="Color.Info">@type.Name</MudChip>
                             }
