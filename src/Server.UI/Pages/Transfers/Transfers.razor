@@ -203,6 +203,6 @@
         }
     }
 
-    private void View(OutgoingTransferDto transfer) => Navigation.NavigateTo($"/pages/participants/{transfer.ParticipantId}");
+    private void View(OutgoingTransferDto transfer) => Navigation.NavigateTo($"/pages/participants/{transfer.Participant.Id}");
 
 }
