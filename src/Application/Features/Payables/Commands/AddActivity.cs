@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -15,6 +15,9 @@ public static class AddActivity
 
         [Description("Completed on")]
         public DateTime? Completed { get; set; }
+
+        [Description("Additional Information")]
+        public string? AdditionalInformation { get; set; }
     }
 
     class Handler : IRequestHandler<Command, Result<bool>>
@@ -59,6 +62,11 @@ public static class AddActivity
                 .WithMessage("You must provide a date of completion")
                 .Must(NotBeCompletedInTheFuture)
                 .WithMessage("Completion date cannot be in the future");
+
+            RuleFor(c => c.AdditionalInformation)
+                .MaximumLength(ValidationConstants.NotesLength)
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Additional Information"));
         }
 
         async Task<bool> HaveAHubInduction(string participantId, LocationDto location, CancellationToken cancellationToken)

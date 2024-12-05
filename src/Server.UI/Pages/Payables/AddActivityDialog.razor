@@ -1,4 +1,4 @@
-﻿@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Payables.Commands
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Payables.Components
@@ -53,6 +53,12 @@
                         PickerVariant="PickerVariant.Dialog"
                         ImmediateText="true" 
                         Editable="true" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="Model.AdditionalInformation"
+                        Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
+                        For="() => Model.AdditionalInformation"
+                        Lines="5" />
                     </MudItem>
                 </MudGrid>
             </MudForm>
