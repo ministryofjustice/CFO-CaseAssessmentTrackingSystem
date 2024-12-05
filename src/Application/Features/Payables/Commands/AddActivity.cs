@@ -1,6 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Locations.DTOs;
-using Cfo.Cats.Application.Features.Payables.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Payables.Commands;
@@ -12,7 +11,7 @@ public static class AddActivity
     {
         public required string ParticipantId { get; set; }
         public LocationDto? Location { get; set; }
-        public ActivityDto? Activity { get; set; }
+        public ActivityDefinition? ActivityDefinition { get; set; }
 
         [Description("Completed on")]
         public DateTime? Completed { get; set; }
@@ -50,7 +49,7 @@ public static class AddActivity
 
             When(c => c.Location is not null, () =>
             {
-                RuleFor(c => c.Activity)
+                RuleFor(c => c.ActivityDefinition)
                     .NotNull()
                     .WithMessage("You must choose an Activity/ETE");
             });

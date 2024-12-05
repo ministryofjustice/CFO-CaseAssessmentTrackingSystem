@@ -1,6 +1,5 @@
 ﻿@using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Payables.Commands
-@using Cfo.Cats.Application.Features.Payables.DTOs
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Payables.Components
 
@@ -21,7 +20,7 @@
                         SelectedValuesChanged="ActivityTypesChanged"
                         Disabled="Disabled"
                         SelectionMode="SelectionMode.MultiSelection">
-                            @foreach (var type in ActivityDefinition.GetDistinctETEType(Model.Location?.LocationType))                                
+                            @foreach (var type in ActivityETEType.List)                                
                             {
                                 <MudChip Value="type" SelectedColor="Color.Info">@type.Name</MudChip>
                             }
@@ -31,15 +30,15 @@
                         <MudSelect @ref="activityDropdown" 
                         Disabled="Disabled" 
                         Label="Activity/ETE" 
-                        @bind-Value="Model.Activity" 
-                        For="() => Model.Activity">
+                        @bind-Value="Model.ActivityDefinition" 
+                        For="() => Model.ActivityDefinition">
                             @foreach (var activity in activities
-                            .Where(activity => filteredTypes is not { Count: > 0} || filteredTypes.Contains(activity.ActivityETEType))
+                            .Where(activity => filteredTypes.Count is 0 || filteredTypes.Contains(activity.ActivityETEType))
                             .OrderByDescending(activity => activity.Name))
                             {
                                 <MudSelectItem Value="activity">
                                     <div class="d-flex gap-2 align-center">
-                                        <MudChip T="string" Size="Size.Small" Text="@activity.Name" Color="Color.Secondary" />
+                                        <MudChip T="string" Size="Size.Small" Text="@activity.ActivityETEType.Name" Color="Color.Secondary" />
                                         @activity.ActivityTitle
                                     </div>
                                 </MudSelectItem>
@@ -48,12 +47,12 @@
                     </MudItem>
                     <MudItem xs="12">
                         <MudDatePicker @bind-Date="Model.Completed"
-                                       For="() => Model.Completed"
-                                       MaxDate="DateTime.UtcNow"
-                                       Label="@Model.GetMemberDescription(x => x.Completed)"
-                                       PickerVariant="PickerVariant.Dialog"
-                                       ImmediateText="true" 
-                                       Editable="true" />
+                        For="() => Model.Completed"
+                        MaxDate="DateTime.UtcNow"
+                        Label="@Model.GetMemberDescription(x => x.Completed)"
+                        PickerVariant="PickerVariant.Dialog"
+                        ImmediateText="true" 
+                        Editable="true" />
                     </MudItem>
                 </MudGrid>
             </MudForm>
@@ -67,7 +66,7 @@
 
 @code {
     IEnumerable<ActivityDefinition> activities = [];
-    MudSelect<ActivityDto?> activityDropdown = new();
+    MudSelect<ActivityDefinition?> activityDropdown = new();
     MudForm form = new();
     IReadOnlyCollection<ActivityETEType> filteredTypes = [];
     bool saving;
@@ -115,13 +114,22 @@
     void LocationChanged(LocationDto location)
     {
         Model.Location = location;
-        activities = ActivityDefinition.GetForLocationType(location.LocationType);
+        activities = ActivityDefinition.GetActivitiesForLocation(location.LocationType);
+
+        if (activityDropdown.Value is not null)
+        {
+            activityDropdown.Clear();
+        }
     }
 
     void ActivityTypesChanged(IReadOnlyCollection<ActivityETEType>? selectedTypes)
     { 
         filteredTypes = selectedTypes ?? [];
-        activityDropdown.Clear();
+
+        if (activityDropdown.Value is not null)
+        {
+            activityDropdown.Clear();
+        }
     }
 
 }
