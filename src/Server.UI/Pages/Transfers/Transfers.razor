@@ -66,15 +66,16 @@
                 </td>
             </tr>
         }
-        <tr>
-            <td colspan="6">
-                <div class="d-flex justify-center">
-                    <MudText Typo="Typo.caption">
-                        @incomingTransfers.Count incoming transfer(s)
-                    </MudText>
-                </div>
-            </td>
-        </tr>
+        @if(incomingTransfers.Count is 0)
+        {
+            <tr>
+                <td colspan="6">
+                    <div class="d-flex justify-center">
+                        <MudText>@ConstantString.NoRecords</MudText>
+                    </div>
+                </td>
+            </tr>
+        }
     </tbody>
 </MudSimpleTable>
 
@@ -134,15 +135,16 @@
                 </td>
             </tr>
         }
-        <tr>
-            <td colspan="6">
-                <div class="d-flex justify-center">
-                    <MudText Typo="Typo.caption">
-                        @outgoingTransfers.Count outgoing transfer(s)
-                    </MudText>
-                </div>
-            </td>
-        </tr>
+        @if (outgoingTransfers.Count is 0)
+        {
+            <tr>
+                <td colspan="6">
+                    <div class="d-flex justify-center">
+                        <MudText>@ConstantString.NoRecords</MudText>
+                    </div>
+                </td>
+            </tr>
+        }
     </tbody>
 </MudSimpleTable>
 
