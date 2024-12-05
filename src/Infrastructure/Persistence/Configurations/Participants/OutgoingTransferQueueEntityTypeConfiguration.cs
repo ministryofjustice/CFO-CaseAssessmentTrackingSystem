@@ -15,10 +15,6 @@ public class OutgoingTransferQueueEntityTypeConfiguration : IEntityTypeConfigura
             DatabaseConstants.Tables.OutgoingTransferQueue,
             DatabaseConstants.Schemas.Participant);
 
-        builder.Property(q => q.ParticipantId)
-            .IsRequired()
-            .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId);
-
         builder.Property(q => q.TransferType)
             .IsRequired()
             .HasConversion(
@@ -52,6 +48,11 @@ public class OutgoingTransferQueueEntityTypeConfiguration : IEntityTypeConfigura
         builder.HasOne<Tenant>()
             .WithMany()
             .HasForeignKey(q => q.PreviousTenantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(q => q.Participant)
+            .WithMany()
+            .HasForeignKey(q => q.ParticipantId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

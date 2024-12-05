@@ -65,4 +65,5 @@ public abstract class ParticipantTransferQueueEntry : BaseAuditableEntity<Guid>
     /// </summary>
     public Location ToLocation { get; private set; }
 
+    public virtual Participant? Participant { get; private set; }
 }
