@@ -49,6 +49,9 @@
                         </MudSelect>
                     </MudItem>
                     <MudItem xs="12">
+                        <Employment @ref="Employment" Model="AddEmploymentCommand"></Employment>
+                    </MudItem>
+                    <MudItem xs="12">
                         <MudDatePicker @bind-Date="Model.Completed"
                         For="() => Model.Completed"
                         MaxDate="DateTime.UtcNow"
@@ -127,6 +130,11 @@
         activities = ActivityDefinition.GetActivitiesForLocation(location.LocationType);
         filteredTypes = [];
         ClearSelectedActivity();
+    }
+    void ActivityChanged(ActivityDto activity){
+        if(activity.Type.Name == ActivityType.Employment.Name){
+                AddEmploymentCommand = new AddEmployment.Command();
+        }
     }
 
     void ClearSelectedActivity()
