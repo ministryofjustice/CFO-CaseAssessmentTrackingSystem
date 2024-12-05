@@ -27,6 +27,7 @@ public static class GetOutgoingTransfers
                     .Where(u => u.PreviousTenantId!.StartsWith(userTenantId))
                     .Where(q => q.MoveOccured > DateTime.UtcNow.AddDays(-90)) 
                     .Where(q => q.IsReplaced == false)
+                    .Include(q => q.Participant)
                     .ProjectTo<OutgoingTransferDto>(mapper.ConfigurationProvider) 
                     .ToListAsync(cancellationToken);           
 
