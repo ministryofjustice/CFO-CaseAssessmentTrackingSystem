@@ -1,4 +1,4 @@
-@using Cfo.Cats.Application.Features.Locations.DTOs
+﻿@using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Payables.Commands
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Payables.Components
@@ -16,20 +16,23 @@
                         <MudTextField ReadOnly For="() => Model.Location" hidden /> @* Hidden validation property *@
                     </MudItem>
                     <MudItem xs="12">
-                        <MudChipSet T="ActivityETEType" 
-                        SelectedValuesChanged="ActivityTypesChanged"
+                        <MudChipSet @bind-SelectedValues="filteredTypes"
                         Disabled="Disabled"
                         SelectionMode="SelectionMode.MultiSelection">
-                            @foreach (var type in ActivityDefinition.GetDistinctETEType(Model.Location?.LocationType))
+                            @foreach (var type in ActivityETEType.List)
                             {
-                                <MudChip Value="type" SelectedColor="Color.Info">@type.Name</MudChip>
+                                <MudChip Value="type" 
+                                SelectedColor="Color.Info" 
+                                Text="@type.Name" 
+                                OnClick="ClearSelectedActivity" 
+                                Disabled="IsAvailableAtSelectedLocation(type) is false" />
                             }
                         </MudChipSet>
                     </MudItem>
                     <MudItem xs="12">
-                        <MudSelect @ref="activityDropdown" 
+                        <MudSelect @ref="activityDropdown"
                         @bind-Value="Model.ActivityDefinition"
-                        Disabled="Disabled" 
+                        Disabled="Disabled"
                         Label="@Model.GetMemberDescription(x => x.ActivityDefinition)"
                         For="() => Model.ActivityDefinition">
                             @foreach (var activity in activities
@@ -121,20 +124,17 @@
     {
         Model.Location = location;
         activities = ActivityDefinition.GetActivitiesForLocation(location.LocationType);
-
-        if (activityDropdown.Value is not null)
-        {
-            activityDropdown.Clear();
-        }
+        filteredTypes = [];
+        ClearSelectedActivity();
     }
 
-    void ActivityTypesChanged(IReadOnlyCollection<ActivityETEType>? selectedTypes)
+    void ClearSelectedActivity()
     { 
-        filteredTypes = selectedTypes ?? [];
-
         if (activityDropdown.Value is not null)
         {
             activityDropdown.Clear();
         }
     }
+
+    bool IsAvailableAtSelectedLocation(ActivityETEType type) => activities.Any(activity => activity.ActivityETEType == type);
 }
