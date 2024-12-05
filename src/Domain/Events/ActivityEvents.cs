@@ -3,6 +3,7 @@ using Cfo.Cats.Domain.Entities.Payables;
 
 namespace Cfo.Cats.Domain.Events;
 
+public sealed class ActivityCreatedDomainEvent(Activity entity) : CreatedDomainEvent<Activity>(entity);
 public sealed class EducationTrainingActivityCreatedDomainEvent(EducationTrainingActivity entity) : CreatedDomainEvent<EducationTrainingActivity>(entity);
 public sealed class EmploymentActivityCreatedDomainEvent(EmploymentActivity entity) : CreatedDomainEvent<EmploymentActivity>(entity);
 public sealed class ISWActivityCreatedDomainEvent(ISWActivity entity) : CreatedDomainEvent<ISWActivity>(entity);
