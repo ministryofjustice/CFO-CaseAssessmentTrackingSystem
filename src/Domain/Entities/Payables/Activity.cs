@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Payables;
 
@@ -22,6 +23,8 @@ public abstract class Activity : BaseAuditableEntity<Guid>
         AdditionalInformation = additionalInformation;
         Completed = completed;
         CompletedBy = completedBy;
+
+        AddDomainEvent(new ActivityCreatedDomainEvent(this));
     }
 
     public ActivityDefinition Definition { get; protected set; }
