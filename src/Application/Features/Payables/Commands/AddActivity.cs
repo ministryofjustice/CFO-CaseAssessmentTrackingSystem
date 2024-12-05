@@ -1,4 +1,5 @@
-using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -11,6 +12,8 @@ public static class AddActivity
     {
         public required string ParticipantId { get; set; }
         public LocationDto? Location { get; set; }
+
+        [Description("Activity/ETE")]
         public ActivityDefinition? ActivityDefinition { get; set; }
 
         [Description("Completed on")]
