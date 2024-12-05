@@ -23,8 +23,17 @@
         @foreach (var access in participantAccess.OrderBy(p => p.HasAccessTo))
         {
             <tr>
-                <td>@string.Join(' ', access.Participant.FirstName, access.Participant.LastName) (@access.Participant.Id)</td>
-                <td>@access.HasAccessTo.ToLocalTime().ToShortDateString() (@access.HasAccessTo.Humanize())</td>
+                <td>
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.body2">@access.Participant.FullName</MudText>
+                        <MudText Typo="Typo.body2">@access.Participant.Id</MudText>
+                    </div>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @access.HasAccessTo.ToLocalTime().ToShortDateString() (@access.HasAccessTo.Humanize())
+                    </MudText>
+                </td>
                 <td>
                     <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="@(()=> View(access.Participant))">View</MudButton>
                 </td>

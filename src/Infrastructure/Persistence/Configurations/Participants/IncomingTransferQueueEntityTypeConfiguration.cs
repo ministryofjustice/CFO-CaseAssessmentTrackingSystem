@@ -13,10 +13,6 @@ public class IncomingTransferQueueEntityTypeConfiguration : IEntityTypeConfigura
             DatabaseConstants.Tables.IncomingTransferQueue, 
             DatabaseConstants.Schemas.Participant);
 
-        builder.Property(q => q.ParticipantId)
-            .IsRequired()
-            .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId);
-
         builder.Property(q => q.TransferType)
             .IsRequired()
             .HasConversion(
@@ -38,6 +34,11 @@ public class IncomingTransferQueueEntityTypeConfiguration : IEntityTypeConfigura
 
         builder.HasOne(q => q.FromLocation)
             .WithMany()
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(q => q.Participant)
+            .WithMany()
+            .HasForeignKey(q => q.ParticipantId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(q => q.Completed);

@@ -26,11 +26,32 @@
         @foreach(var transfer in incomingTransfers.OrderByDescending(t => t.MoveOccured))
         {
             <tr>
-                <td>@transfer.ParticipantId</td>
-                <td>@transfer.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
-                <td>@transfer.FromLocation.Name (@transfer.FromLocation.LocationType.Name)</td>
-                <td>@transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)</td>
-                <td>@transfer.TransferType.Name</td>
+                <td>
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.body2">@transfer.Participant.FullName</MudText>
+                        <MudText Typo="Typo.body2">@transfer.Participant.Id</MudText>
+                    </div>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                    </MudText>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.FromLocation.Name (@transfer.FromLocation.LocationType.Name)
+                    </MudText>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)
+                    </MudText>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.TransferType.Name
+                    </MudText>
+                </td>
                 <td>
                     <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="async() => await Process(transfer)">Process</MudButton>
                 </td>
@@ -54,11 +75,32 @@
         @foreach (var transfer in outgoingTransfers.OrderByDescending(t => t.MoveOccured))
         {
             <tr>
-                <td>@transfer.ParticipantId</td>
-                <td>@transfer.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
-                <td>@transfer.FromLocation.Name (@transfer.FromLocation.LocationType.Name)</td>
-                <td>@transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)</td>
-                <td>@transfer.TransferType.Name</td>
+                <td>
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.body2">@transfer.Participant.FullName</MudText>
+                        <MudText Typo="Typo.body2">@transfer.Participant.Id</MudText>
+                    </div>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                    </MudText>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.FromLocation.Name (@transfer.FromLocation.LocationType.Name)
+                    </MudText>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)
+                    </MudText>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.TransferType.Name
+                    </MudText>
+                </td>
             </tr>
         }
     </tbody>

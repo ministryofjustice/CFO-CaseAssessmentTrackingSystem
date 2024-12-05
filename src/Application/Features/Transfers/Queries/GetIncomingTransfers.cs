@@ -31,11 +31,12 @@ public static class GetIncomingTransfers
                 transfers = await unitOfWork.DbContext.ParticipantIncomingTransferQueue
                     .Where(q => locations.Contains(q.ToLocation.Id))
                     .Where(q => q.Completed == false) // Specification?
+                    .Include(q => q.Participant)
                     .ProjectTo<IncomingTransferDto>(mapper.ConfigurationProvider) // ProjectToPaginatedDataAsync
                     .ToListAsync(cancellationToken);
             }
 
-            return transfers;
+            return transfers;  
         }
     }
 
