@@ -84,7 +84,7 @@ function Invoke-SqlFile {
     }
 
     $appSettings = Get-Content -Raw -Path $appSettingsPath | ConvertFrom-Json
-    $connectionString = $appSettings.DatabaseSettings.ConnectionString
+    $connectionString = $appSettings.ConnectionStrings.CatsDb
 
     if (-not $connectionString) {
         Write-Host "Connection string not found in appsettings.json"
