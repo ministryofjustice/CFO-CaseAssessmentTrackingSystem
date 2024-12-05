@@ -4,51 +4,6 @@ namespace Cfo.Cats.Domain.Common.Enums;
 
 public class ActivityDefinition : SmartEnum<ActivityDefinition>
 {
-    public DeliveryLocationType DeliveryLocationType { get; private set; }
-    public ActivityETEType ActivityETEType { get; private set; }
-    public ClassificationType ClassificationType { get; private set; }
-    public string ActivityTitle { get; private set; }
-    public ExpectedClaims ExpectedClaims { get; private set; }
-    public CheckType CheckType { get; private set; }
-
-    public static IEnumerable<ActivityETEType> GetDistinctETEType(LocationType? locationType = null)
-    {
-        var activityDefinitions = locationType != null
-            ? ActivityDefinition.GetForLocationType(locationType) 
-            : ActivityDefinition.List; 
-
-        return activityDefinitions
-               .Select(ad => ad.ActivityETEType) 
-               .Distinct();        
-    }
-
-    public static IEnumerable<ActivityDefinition> GetForLocationType(LocationType locationType)
-    {
-        var returnList= new List<ActivityDefinition>();
-        if (locationType is { IsCommunity: true, IsHub: false })
-        {
-            returnList= List
-                   .Where(ad => ad.DeliveryLocationType == DeliveryLocationType.WiderCommunity)
-                   .ToList();
-        }
-
-        if (locationType.IsCustody)
-        {
-            returnList = List
-                   .Where(ad => ad.DeliveryLocationType == DeliveryLocationType.Custody)
-                   .ToList();
-        }
-
-        if (locationType.IsHub)
-        {
-            returnList = List
-                   .Where(ad => ad.DeliveryLocationType == DeliveryLocationType.Hub)
-                   .ToList();
-        }
-
-        return returnList;
-    }
-
     private ActivityDefinition(
         string name,
         int value,
@@ -67,6 +22,27 @@ public class ActivityDefinition : SmartEnum<ActivityDefinition>
         ExpectedClaims = expectedClaims;
         CheckType = checkType;
     }
+
+    public DeliveryLocationType DeliveryLocationType { get; private set; }
+    public ActivityETEType ActivityETEType { get; private set; }
+    public ClassificationType ClassificationType { get; private set; }
+    public string ActivityTitle { get; private set; }
+    public ExpectedClaims ExpectedClaims { get; private set; }
+    public CheckType CheckType { get; private set; }
+
+    public static IEnumerable<ActivityDefinition> GetActivitiesForLocation(LocationType locationType)
+    {
+        DeliveryLocationType deliveryLocation = locationType switch
+        {
+            { IsCommunity: true, IsHub: false } => DeliveryLocationType.WiderCommunity,
+            { IsCustody: true } => DeliveryLocationType.Custody,
+            { IsHub: true } => DeliveryLocationType.Hub,
+            _ => throw new InvalidOperationException("Unsupported delivery location")
+        };
+
+        return List.Where(ad => ad.DeliveryLocationType == deliveryLocation);
+    }
+
 
     public static readonly ActivityDefinition AccessingHealthSupportCustody = new(
         "Accessing Health Support Custody",
