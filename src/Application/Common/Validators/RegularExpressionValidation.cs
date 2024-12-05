@@ -46,6 +46,9 @@
 
         public const string TenantDomain = @"^@[a-z0-9]+(?:[-]?[a-z0-9]+)*(?:\.[a-z0-9]+(?:[-]?[a-z0-9]+)*)+$";
         public const string TenantDomainMessage = "Must be in the format '@example.com'";
+
+        public const string NumberWithTwoDecimalPlaces = @"^[0-9]*\.?[0-9]{1,2}$";
+
         
     }
 }

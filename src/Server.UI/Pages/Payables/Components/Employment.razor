@@ -1,0 +1,117 @@
+﻿@using Cfo.Cats.Application.Features.Payables.Commands
+@using Cfo.Cats.Application.Features.Payables.DTOs
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Payables.Components
+@inherits CatsComponentBase
+
+@inject IStringLocalizer<Employment> L
+@if (Model is not null)
+{
+    <MudGrid>
+        <MudItem xs="12">
+            <MudSelect @bind-Value="Model.EmploymentType" Disabled="Disabled"
+            For="() => Model.EmploymentType"
+            Label="@Model.GetMemberDescription(x => x.EmploymentType)">
+                @foreach (var employmentType in PicklistService.DataSource
+                .Where(c => c.Name == Picklist.EmploymentType)
+                .OrderBy(c => c.Text))
+                {
+                    <MudSelectItem Value="@employmentType.Value">@employmentType.Text</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField Label="@Model.GetMemberDescription(x => x.CompanyName)" Value="Model.CompanyName" Disabled="Disabled" />
+        </MudItem>    
+        <MudItem xs="12">
+            <MudSelect @bind-Value="Model.JobTitle" Disabled="Disabled"
+            For="() => Model.JobTitle"
+            Label="@Model.GetMemberDescription(x => x.JobTitle)">
+                @foreach (var jobTitle in PicklistService.DataSource
+                .Where(c => c.Name == Picklist.Occupation)
+                .OrderBy(c => c.Text))
+                {
+                    <MudSelectItem Value="@jobTitle.Value">@jobTitle.Text</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12">
+            <MudItem xs="12">
+                <MudTextField Label="@Model.GetMemberDescription(x => x.Salary)" Value="Model.Salary" Disabled="Disabled" />
+            </MudItem>
+            <MudSelect @bind-Value="Model.SalaryFrequency"
+            For="() => Model.SalaryFrequency" Disabled="Disabled">
+                @foreach (var salaryFrequency in PicklistService.DataSource
+                .Where(c => c.Name == Picklist.SalaryFrequency)
+                .OrderBy(c => c.Text))
+                {
+                    <MudSelectItem Value="@salaryFrequency.Value">@salaryFrequency.Text</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12">
+            <MudDatePicker Label="@Model.GetMemberDescription(x => x.EmploymentStartDate)"
+            @bind-Date="Model.EmploymentStartDate"
+            For="(() => Model.EmploymentStartDate)"
+            ImmediateText="true" Editable="false" MaxDate="DateTime.Today.Date.AddDays(30)" Disabled="Disabled" />
+        </MudItem>
+        <MudItem xs="12">
+            <div class="mb-4 mt-8">
+                <MudFileUpload @bind-Files="Model.Document"
+                For="() => Model.Document"
+                MaximumFileCount="1"
+                Accept=".pdf" Disabled="Disabled">
+                    <ActivatorContent>
+                        <MudLoadingButton Loading="_uploading"
+                        Variant="Variant.Outlined"
+                        Color="Color.Primary"
+                        StartIcon="@Icons.Material.Filled.Upload">
+                            @if (_uploading)
+                            {
+                                @ConstantString.Uploading
+                            }
+                            else
+                            {
+                                @ConstantString.Upload
+                            }
+                        </MudLoadingButton>
+                    </ActivatorContent>
+                    <SelectedTemplate>
+                        <br />
+                        @if (context != null)
+                        {
+                            <MudText>
+                                Right To Work supporting documentation uploaded:  @context.Name
+                            </MudText>
+                        }
+                        else
+                        {
+                            <MudText>No Files</MudText>
+                        }
+                        <br />
+                    </SelectedTemplate>
+                </MudFileUpload>
+            </div>
+        </MudItem>
+        <MudItem xs="12">
+        <MudTextField @bind-Value="@Model.AdditionalInformation"
+                      For="@(() => Model.AdditionalInformation)"
+                      Lines="5"
+                      Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
+                      Placeholder="Use this area to provide any additional information with regards to Employment.">
+        </MudTextField>
+        </MudItem>
+    </MudGrid>
+}
+@code {
+    [Inject]
+    private IPicklistService PicklistService { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public required AddEmployment.Command Model { get; set; }
+
+    private bool _uploading = false;
+
+    //bool Disabled => Model.Location is null;
+    bool Disabled = false;
+
+}
