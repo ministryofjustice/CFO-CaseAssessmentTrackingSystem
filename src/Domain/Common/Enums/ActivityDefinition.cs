@@ -41,8 +41,18 @@ public class ActivityDefinition : SmartEnum<ActivityDefinition>
         };
 
         return List.Where(ad => ad.DeliveryLocationType == deliveryLocation);
-    }
+    }   
 
+    public static IEnumerable<ActivityETEType> GetDistinctETEType(LocationType? locationType = null)
+    {
+        var activityDefinitions = locationType != null
+            ? ActivityDefinition.GetActivitiesForLocation(locationType)
+            : Enumerable.Empty<ActivityDefinition>(); // Return empty when null.
+
+        return activityDefinitions
+               .Select(ad => ad.ActivityETEType)
+               .Distinct();
+    }
 
     public static readonly ActivityDefinition AccessingHealthSupportCustody = new(
         "Accessing Health Support Custody",
@@ -212,7 +222,6 @@ CheckType.QA
 }
 
 // Enums for related properties using Ardalis SmartEnum
-
 public class DeliveryLocationType : SmartEnum<DeliveryLocationType>
 {
     public static readonly DeliveryLocationType Custody = new DeliveryLocationType("Custody", 0);
