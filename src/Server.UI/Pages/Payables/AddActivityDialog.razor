@@ -1,4 +1,4 @@
-﻿@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Payables.Commands
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Payables.Components
@@ -48,6 +48,7 @@
                             }
                         </MudSelect>
                     </MudItem>
+                    <EducationTraining @ref="EducationTraining" Model="AddEducationTrainingCommand"></EducationTraining>
                     <MudItem xs="12">
                         <MudDatePicker @bind-Date="Model.Completed"
                         For="() => Model.Completed"
@@ -78,6 +79,10 @@
     MudSelect<ActivityDefinition?> activityDropdown = new();
     MudForm form = new();
     IReadOnlyCollection<ActivityETEType> filteredTypes = [];
+
+    EducationTraining? EducationTraining { get; set; }
+    private AddEducationTraining.Command AddEducationTrainingCommand { get; set; } = new();
+
     bool saving;
 
     bool Disabled => Model.Location is null;
@@ -126,6 +131,11 @@
         activities = ActivityDefinition.GetActivitiesForLocation(location.LocationType);
         filteredTypes = [];
         ClearSelectedActivity();
+    }
+    void ActivityChanged(ActivityDto activity){
+        if (activity.Type.Name == ActivityType.EducationAndTraining.Name){
+                AddEducationTrainingCommand = new AddEducationTraining.Command();
+        }
     }
 
     void ClearSelectedActivity()

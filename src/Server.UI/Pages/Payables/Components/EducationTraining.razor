@@ -1,0 +1,65 @@
+﻿@using Cfo.Cats.Application.Features.Payables.Commands
+@using Cfo.Cats.Application.Features.Payables.DTOs
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Payables.Components
+@inherits CatsComponentBase
+
+@inject IStringLocalizer<EducationTraining> L
+@if (Model is not null)
+{
+    <MudGrid>
+        <MudItem xs="12">
+            <MudTextField Label="@Model.GetMemberDescription(x => x.CourseTitle)" Value="Model.CourseTitle" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField Label="@Model.GetMemberDescription(x => x.CourseHyperlink)" Value="Model.CourseHyperlink" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudSelect @bind-Value="Model.CourseLevel"
+            For="() => Model.CourseLevel"
+            Label="@Model.GetMemberDescription(x => x.CourseLevel)">
+                @foreach (var courseLevel in PicklistService.DataSource
+                .Where(c => c.Name == Picklist.EducationLevel)
+                .OrderBy(c => c.Text))
+                {
+                    <MudSelectItem Value="@courseLevel.Value">@courseLevel.Text</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12">
+            <MudDatePicker @bind-Date="Model.CourseCommencedDate"
+                            For="() => Model.CourseCommencedDate"
+                            Label="@Model.GetMemberDescription(x => x.CourseCommencedDate)"
+                            Editable="true"
+                            PickerVariant="PickerVariant.Dialog" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudDatePicker @bind-Date="Model.CourseCompletedDate"
+                           For="() => Model.CourseCompletedDate"
+                           Label="@Model.GetMemberDescription(x => x.CourseCompletedDate)"
+                            Editable="true"
+                            PickerVariant="PickerVariant.Dialog" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudSelect @bind-Value="Model.Passed" For="() => Model.Passed"
+            Label="@Model.GetMemberDescription(x => x.Passed)">
+                <MudSelectItem Value="@("Yes")">Yes </MudSelectItem>
+                <MudSelectItem Value="@("No")">No</MudSelectItem>
+                <MudSelectItem Value="@("Not Applicable")">Not Applicable</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudTextField @bind-Value="@Model.AdditionalInformation"
+        For="@(() => Model.AdditionalInformation)"
+        Lines="5"
+        Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
+        Placeholder="Use this area to provide any additional information with regards to Employment.">
+        </MudTextField>
+    </MudGrid>
+}
+@code {
+    [Inject]
+    private IPicklistService PicklistService { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public required AddEducationTraining.Command Model { get; set; }
+
+}
