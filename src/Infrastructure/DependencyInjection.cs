@@ -80,28 +80,17 @@ public static class DependencyInjection
     {
         services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();        
 
-        if (configuration.GetValue<bool>("UseInMemoryDatabase"))
-        {
-            services.AddDbContext<ApplicationDbContext>(options => {
-                options.UseInMemoryDatabase("CatsDb");
-                options.EnableSensitiveDataLogging();
-            });
-        }
-        else
-        {            
-            services.AddDbContext<ApplicationDbContext>(
+        services.AddDbContext<ApplicationDbContext>(
             (p, m) => {
-                var databaseSettings = p.GetRequiredService<IOptions<DatabaseSettings>>().Value;
                 m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
-                m.UseDatabase(databaseSettings.DbProvider, databaseSettings.ConnectionString);
+                m.UseDatabase(configuration.GetConnectionString("CatsDb")!);
             });
-        }
-
+        
         services.AddDbContextFactory<ApplicationDbContext>((serviceProvider, optionsBuilder) =>
         {
             var databaseSettings = serviceProvider.GetRequiredService<IOptions<DatabaseSettings>>().Value;
             optionsBuilder.AddInterceptors(serviceProvider.GetServices<ISaveChangesInterceptor>());
-            optionsBuilder.UseDatabase(databaseSettings.DbProvider, databaseSettings.ConnectionString);
+            optionsBuilder.UseDatabase(configuration.GetConnectionString("CatsDb")!);
         }, ServiceLifetime.Scoped);
                 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -114,28 +103,12 @@ public static class DependencyInjection
 
     private static DbContextOptionsBuilder UseDatabase(
         this DbContextOptionsBuilder builder,
-        string dbProvider,
         string connectionString
-    )
-    {
-        switch (dbProvider.ToLowerInvariant())
-        {
-            case DbProviderKeys.SqlServer:
-                return builder.UseSqlServer(
-                connectionString,
-                e => e.MigrationsAssembly("Cfo.Cats.Migrators.MSSQL")
-                );
-
-            case DbProviderKeys.SqLite:
-                return builder.UseSqlite(
-                connectionString,
-                e => e.MigrationsAssembly("Cfo.Cats.Migrators.SqLite")
-                ).EnableSensitiveDataLogging();
-
-            default:
-                throw new InvalidOperationException($"DB Provider {dbProvider} is not supported.");
-        }
-    }
+    ) =>
+        builder.UseSqlServer(
+            connectionString,
+            e => e.MigrationsAssembly("Cfo.Cats.Migrators.MSSQL")
+        );
 
     private static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
