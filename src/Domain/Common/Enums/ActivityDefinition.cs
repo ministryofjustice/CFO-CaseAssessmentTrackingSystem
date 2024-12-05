@@ -1,4 +1,5 @@
 ﻿using Ardalis.SmartEnum;
+using System.Xml.Linq;
 
 namespace Cfo.Cats.Domain.Common.Enums;
 
@@ -352,16 +353,16 @@ public class ClassificationType : SmartEnum<ClassificationType>
     private ClassificationType(string name, int value) : base(name, value) { }
 }
 
-public class ActivityETEType : SmartEnum<ActivityETEType>
+public class ActivityETEType(string name, int value, string? shortenedDisplayName = null) : SmartEnum<ActivityETEType>(name, value)
 {
     public static readonly ActivityETEType CommunityAndSocial = new ActivityETEType("Community and Social", 0);
     public static readonly ActivityETEType EducationAndTraining = new ActivityETEType("Education and Training", 1);
     public static readonly ActivityETEType Employment = new ActivityETEType("Employment", 2);
     public static readonly ActivityETEType HumanCitizenship = new ActivityETEType("Human Citizenship", 3);
-    public static readonly ActivityETEType InterventionsAndServicesWraparoundSupport = new ActivityETEType("Interventions And Services Wraparound Support", 4);
+    public static readonly ActivityETEType InterventionsAndServicesWraparoundSupport = new ActivityETEType("Interventions And Services Wraparound Support (ISW)", 4, "ISW");
     public static readonly ActivityETEType SupportWork = new ActivityETEType("Support Work", 5);
 
-    private ActivityETEType(string name, int value) : base(name, value) { }
+    public string ShortenedDisplayName { get; private set; } = shortenedDisplayName ?? name;
 }
 
 public class ExpectedClaims : SmartEnum<ExpectedClaims>
