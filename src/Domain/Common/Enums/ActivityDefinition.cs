@@ -41,173 +41,296 @@ public class ActivityDefinition : SmartEnum<ActivityDefinition>
         };
 
         return List.Where(ad => ad.DeliveryLocationType == deliveryLocation);
-    }   
-
-    public static readonly ActivityDefinition AccessingHealthSupportCustody = new(
-        "Accessing Health Support Custody",
-        1,
-        DeliveryLocationType.Custody,
-        ClassificationType.NonISWActivity,
-        ActivityETEType.SupportWork,
-        "Accessing Health Support",
-        ExpectedClaims.MoreThanOne,
-        CheckType.Dip
-    );
-
-    public static readonly ActivityDefinition AddictionCustody = new ActivityDefinition(
-        "Addiction Custody",
-        2,
-        DeliveryLocationType.Custody,
-        ClassificationType.NonISWActivity,
-        ActivityETEType.SupportWork,
-        "Addiction",
-        ExpectedClaims.MoreThanOne,
-        CheckType.Dip
-    );
-
-    public static readonly ActivityDefinition AngerManagementSupportCustody = new ActivityDefinition(
-        "Anger Management Support Custody",
-        3,
-        DeliveryLocationType.Custody,
-        ClassificationType.NonISWActivity,
-        ActivityETEType.SupportWork,
-        "Anger Management Support",
-        ExpectedClaims.MoreThanOne,
-        CheckType.Dip
-    );
-
-    public static readonly ActivityDefinition ApplicationsJobsCustody = new ActivityDefinition(
-        "Applications (Jobs) Custody",
-        4,
-        DeliveryLocationType.Custody,
-        ClassificationType.NonISWActivity,
-        ActivityETEType.SupportWork,
-        "Applications (Jobs)",
-        ExpectedClaims.MoreThanOne,
-        CheckType.Dip
-    );
-
-    public static readonly ActivityDefinition AccessingHealthSupportHub = new(
-      "Accessing Health Support Hub",
-      1,
-      DeliveryLocationType.Hub,
-      ClassificationType.NonISWActivity,
-      ActivityETEType.SupportWork,
-      "Accessing Health Support",
-      ExpectedClaims.MoreThanOne,
-      CheckType.Dip
-  );
-
-    public static readonly ActivityDefinition AFutureFocusHub = new(
-  "A Future Focus Hub",
-  1,
-  DeliveryLocationType.Hub,
-  ClassificationType.NonISWActivity,
-  ActivityETEType.HumanCitizenship,
-  "A Future Focus",
-  ExpectedClaims.MoreThanOne,
-  CheckType.Dip
-);
-
-    public static readonly ActivityDefinition AccomSuppAdviceHub = new(
-"Accommodation Support / Advice Hub",
-1,
-DeliveryLocationType.Hub,
-ClassificationType.NonISWActivity,
-ActivityETEType.CommunityAndSocial,
-"Accommodation Support / Advice",
-ExpectedClaims.MoreThanOne,
-CheckType.Dip
-);
-
-    public static readonly ActivityDefinition ApprovedPremisesWiderComm = new(
-"Approved Premises Wider Community",
-1,
-DeliveryLocationType.WiderCommunity,
-ClassificationType.ISWActivity,
-ActivityETEType.InterventionsAndServicesWraparoundSupport,
-"Approved Premises",
-ExpectedClaims.One,
-CheckType.QA
-);
-
-    public static readonly ActivityDefinition ApprovedPremisesHub = new(
-"Approved Premises Hub",
-1,
-DeliveryLocationType.Hub,
-ClassificationType.ISWActivity,
-ActivityETEType.InterventionsAndServicesWraparoundSupport,
-"Approved Premises",
-ExpectedClaims.One,
-CheckType.QA
-);
-
-    public static readonly ActivityDefinition EducationAndTrainingHub = new(
-"Education and Training Hub",
-1,
-DeliveryLocationType.Hub,
-ClassificationType.EducationAndTraining,
-ActivityETEType.EducationAndTraining,
-"Education and Training",
-ExpectedClaims.MoreThanOne,
-CheckType.QA
-);
-
-    public static readonly ActivityDefinition EducationAndTraininWiderComm = new(
-"Education and Training Wider Community",
-1,
-DeliveryLocationType.WiderCommunity,
-ClassificationType.EducationAndTraining,
-ActivityETEType.EducationAndTraining,
-"Education and Training",
-ExpectedClaims.MoreThanOne,
-CheckType.QA
-);
-
-    public static readonly ActivityDefinition EducationAndTraininWiderCust = new(
-"Education and Training Wider Custody",
-1,
-DeliveryLocationType.Custody,
-ClassificationType.EducationAndTraining,
-ActivityETEType.EducationAndTraining,
-"Education and Training",
-ExpectedClaims.MoreThanOne,
-CheckType.QA
-);
-
-
-    public static readonly ActivityDefinition EmploymentHub = new(
-"Employment Hub",
-1,
-DeliveryLocationType.Hub,
-ClassificationType.Employment,
-ActivityETEType.Employment,
-"Employment in Community",
-ExpectedClaims.MoreThanOne,
-CheckType.QA
-);
-
-    public static readonly ActivityDefinition EmploymentWiderComm = new(
-"Employment Wider Community",
-1,
-DeliveryLocationType.WiderCommunity,
-ClassificationType.Employment,
-ActivityETEType.Employment,
-"Employment in Community",
-ExpectedClaims.MoreThanOne,
-CheckType.QA
-);
-
-    public static readonly ActivityDefinition EmploymentCust = new(
-"Employment on ROTL",
-1,
-DeliveryLocationType.Custody,
-ClassificationType.Employment,
-ActivityETEType.Employment,
-"Employment on ROTL",
-ExpectedClaims.MoreThanOne,
-CheckType.QA
-);
+    }
+    public static readonly ActivityDefinition AccessingHealthSupportCustody = new("Accessing Health Support Custody", 1, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Accessing Health Support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AddictionCustody = new("Addiction Custody", 2, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Addiction", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AngerManagementSupportCustody = new("Anger Management Support Custody", 3, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Anger Management Support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ApplicationsJobsCustody = new("Applications (Jobs) Custody", 4, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Applications (Jobs)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AssessmentOfLiteracyAndNumeracySkillsCustody = new("Assessment of Literacy and Numeracy Skills Custody", 5, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Assessment of Literacy and Numeracy Skills", ExpectedClaims.One, CheckType.Dip);
+    public static readonly ActivityDefinition AwarenessAndUseOfSocialMediaDigitalPlatformsCustody = new("Awareness and use of social media / digital platforms Custody", 6, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Awareness and use of social media / digital platforms", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition BuildingRelationshipsCustody = new("Building Relationships Custody", 7, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Building Relationships", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition BuildingResilienceConfidenceCustody = new("Building Resilience / Confidence Custody", 8, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Building Resilience / Confidence", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CareLeaverSupportCustody = new("Care Leaver support Custody", 9, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Care Leaver support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CausesOfOffendingCustody = new("Causes of offending Custody", 10, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Causes of offending", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CIAGSupportCustody = new("CIAG SupportCustody", 11, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "CIAG Support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CommunicationCustody = new("Communication Custody", 12, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Communication", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CommunityIntegrationCustody = new("Community Integration Custody", 13, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Community Integration", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CompletingApplicationsCustody = new("Completing Applications Custody", 14, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Completing Applications", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CVPreparationCustody = new("CV preparation Custody", 15, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "CV preparation", ExpectedClaims.One, CheckType.Dip);
+    public static readonly ActivityDefinition DisclosureToEmployersOrganisationsCustody = new("Disclosure to employers / organisations Custody", 16, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Disclosure to employers / organisations", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition DisclosureToFamiliesCustody = new("Disclosure to families Custody", 17, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Disclosure to families", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition DrivingTestCustody = new("Driving Test Custody", 18, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Driving Test", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition EqualityAndDiversityCustody = new("Equality and Diversity Custody", 19, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Equality and Diversity", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition FaithAndBeliefsIncludingReligionCustody = new("Faith and beliefs (including religion) Custody", 20, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Faith and beliefs (including religion)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition FamilyTreeCustody = new("Family Tree Custody", 21, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Family Tree", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition FinancialLiteracyCustody = new("Financial Literacy Custody", 22, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Financial Literacy", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition HealthyLivingCustody = new("Healthy Living Custody", 23, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Healthy Living", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition HowToCountMoneyValueOfMoneyCustody = new("How to count money/value of money", 24, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "How to count mExpectedClaims.Oney/value of mExpectedClaims.Oney", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition HowToTellTheTimeCustody = new("How to tell the time Custody", 25, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "How to tell the time", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition InCellLearningCustodyOnlyCustody = new("In-cell learning (Custody only)", 26, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "In-cell learning (Custody only)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition IndustrySpecificCardsCustody = new("Industry Specific Cards Custody", 27, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Industry Specific Cards", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition InterviewPreparationCustody = new("Interview PreparationCustody", 28, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Interview Preparation", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition IntroductionToSelfEmploymentCustody = new("Introduction to Self-Employment Custody", 29, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Introduction to Self-Employment", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition LifeaftermilitaryCustody = new("Life after military Custody", 30, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Life after military", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MentalHealthSupportCustody = new("Mental Health Support Custody", 31, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Mental Health Support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MentoringCustody = new("MentoringCustody", 32, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Mentoring", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MockInterviewsCustody = new("Mock Interviews Custody", 33, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Mock Interviews", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MotivationCustody = new("Motivation Custody", 34, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Motivation", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition NeurodiversityAwarenessAndSupportCustody = new("Neurodiversity awareness and support Custody", 35, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Neurodiversity awareness and support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ObtainingIDCustody = new("Obtaining ID Custody", 36, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Obtaining ID", ExpectedClaims.One, CheckType.Dip);
+    public static readonly ActivityDefinition ObtainingaNINOCustody = new("Obtaining a NINO Custody", 37, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Obtaining a NINO", ExpectedClaims.One, CheckType.Dip);
+    public static readonly ActivityDefinition ParentingSkillsCustody = new("Parenting Skills Custody", 38, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Parenting Skills", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ParolePreparationCustody = new("Parole preparation Custody", 39, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Parole preparation", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition PersonalJournalCustody = new("Personal journal Custody", 40, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Personal journal", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ProblemSolvingCustody = new("Problem Solving Custody", 41, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Problem Solving", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ReflectivePracticeCustody = new("Reflective PracticeCustody", 42, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Reflective Practice", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ReleaseOnTemporaryLeaveROTLSupportAndPreparationCustody = new("Release on Temporary Leave (ROTL) support and preparation Custody", 43, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Release on Temporary Leave (ROTL) support and preparation ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ReferralOrSignpostingToOtherServicesExternalToCFOCustody = new("Referral or signposting to other services (external to CFO) Custody", 44, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Referral or signposting to other services (external to CFO)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SafeguardingAndConfidentialityCustody = new("Safeguarding and confidentiality Custody", 45, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Safeguarding and confidentiality", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SecureBankAccountCustody = new("Secure Bank Account Custody", 46, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Secure Bank Account", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SelfCareCustody = new("Self-Care Custody", 47, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Self-Care", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SelfIsolationCustody = new("Self-Isolation Custody", 48, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Self-Isolation", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SexualHealthCustody = new("Sexual Health Custody", 49, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Sexual Health", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition UnderstandingStressStressManagementCustody = new("Understanding stress / stress management Custody", 50, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Understanding stress / stress management", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition UsingPublicTransportCustody = new("Using Public Transport Custody", 51, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Using Public Transport", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition VictimAwarenessCustody = new("Victim Awareness Custody", 52, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Victim Awareness", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition VolunteeringWorkExperienceCustody = new("Volunteering / Work Experience Custody", 53, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Volunteering / Work Experience", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition WellbeingCustody = new("Wellbeing", 54, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Wellbeing", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AccessingHealthSupportWiderCommunity = new("Accessing Health Support Wider Community", 55, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Accessing Health Support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AddictioWiderCommunity = new("Addiction Wider Community", 56, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Addiction", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AngerManagementSupportWiderCommunity = new("Anger Management Support Wider Community", 57, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Anger Management Support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ApplicationsJobsWiderCommunity = new("Applications (Jobs) Wider Community", 58, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Applications (Jobs)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AssessmentofLiteracyandNumeracySkillsWiderCommunity = new("Assessment of Literacy and Numeracy Skills Wider Community", 59, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Assessment of Literacy and Numeracy Skills", ExpectedClaims.One, CheckType.Dip);
+    public static readonly ActivityDefinition AwarenessAndUseOfSocialMediaDigitalPlatformsWiderCommunity = new("Awareness and use of social media / digital platforms Wider Community", 60, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Awareness and use of social media / digital platforms", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition BuildingRelationshipsWiderCommunity = new("Building Relationships Wider Community", 61, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Building Relationships", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition BuildingResilienceConfidenceWiderCommunity = new("Building Resilience / Confidence Wider Community", 62, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Building Resilience / Confidence", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CareLeaversupportWiderCommunity = new("Care Leaver support Wider Community", 63, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Care Leaver support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CausesofoffendingWiderCommunity = new("Causes of offending Wider Community", 64, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Causes of offending", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CIAGSupportWiderCommunity = new("CIAG Support Wider Community", 65, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "CIAG Support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CommunicationWiderCommunity = new("Communication Wider Community", 66, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Communication", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CommunityIntegrationWiderCommunity = new("Community Integration Wider Community", 67, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Community Integration", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CompletingApplicationsWiderCommunity = new("Completing Applications Wider Community", 68, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Completing Applications", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CVpreparationWiderCommunity = new("CV preparation Wider Community", 69, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "CV preparation", ExpectedClaims.One, CheckType.Dip);
+    public static readonly ActivityDefinition DisclosureToEmployersOrganisationsWiderCommunity = new("Disclosure to employers / organisations Wider Community", 70, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Disclosure to employers / organisations", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition DisclosureToFamiliesWiderCommunity = new("Disclosure to families Wider Community", 71, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Disclosure to families", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition DrivingTestWiderCommunity = new("Driving Test Wider Community", 72, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Driving Test", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition EqualityandDiversityWiderCommunity = new("Equality and Diversity Wider Community", 73, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Equality and Diversity", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition FaithAndBeliefsIncludingReligionWiderCommunity = new("Faith and beliefs (including religion) Wider Community", 74, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Faith and beliefs (including religion)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition FamilyTreeWiderCommunity = new("Family Tree Wider Community", 75, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Family Tree", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition FinancialLiteracyWiderCommunity = new("Financial Literacy Wider Community", 76, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Financial Literacy", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition HealthyLivingWiderCommunity = new("Healthy Living Wider Community", 77, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Healthy Living", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition HowToCountMoneyValueOfMoneyWiderCommunity = new("How to count money/value of money Wider Community", 78, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "How to count mExpectedClaims.Oney/value of mExpectedClaims.Oney", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition HowToTellTheTimeWiderCommunity = new("How to tell the time Wider Community", 79, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "How to tell the time", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition InCellLearningCustodyOnlyWiderCommunity = new("In-cell learning (Custody only) Wider Community", 80, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "In-cell learning (DeliveryLocationType.Custody only)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition IndustrySpecificCardsWiderCommunity = new("Industry Specific Cards Wider Community", 81, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Industry Specific Cards", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition InterviewPreparationWiderCommunity = new("Interview Preparation Wider Community", 82, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Interview Preparation", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition IntroductionToSelfEmploymentWiderCommunity = new("Introduction to Self-Employment Wider Community", 83, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Introduction to Self-Employment", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition LifeAfterMilitaryWiderCommunity = new("Life after military Wider Community", 84, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Life after military", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MentalHealthSupportWiderCommunity = new("Mental Health Support Wider Community", 85, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Mental Health Support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MentoringWiderCommunity = new("Mentoring Wider Community", 86, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Mentoring", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MockInterviewsWiderCommunity = new("Mock Interviews Wider Community", 87, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Mock Interviews", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MotivationWiderCommunity = new("Motivation Wider Community", 88, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Motivation", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition NeurodiversityAwarenessAndSupportWiderCommunity = new("Neurodiversity awareness and support Wider Community", 89, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Neurodiversity awareness and support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ObtainingIDWiderCommunity = new("Obtaining ID Wider Community", 90, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Obtaining ID", ExpectedClaims.One, CheckType.Dip);
+    public static readonly ActivityDefinition ObtainingaNINOWiderCommunity = new("Obtaining a NINO Wider Community", 91, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Obtaining a NINO", ExpectedClaims.One, CheckType.Dip);
+    public static readonly ActivityDefinition ParentingSkillsWiderCommunity = new("Parenting Skills Wider Community", 92, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Parenting Skills", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ParolepreparationWiderCommunity = new("Parole preparation Wider Community", 93, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Parole preparation", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition PersonaljournalWiderCommunity = new("Personal journal Wider Community", 94, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Personal journal", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ProblemSolvingWiderCommunity = new("Problem Solving Wider Community", 95, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Problem Solving", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ReflectivePracticeWiderCommunity = new("Reflective Practice Wider Community", 96, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Reflective Practice", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ReferralOrSignpostingToOtherServicesExternalToCFOWiderCommunity = new("Referral or signposting to other services (external to CFO) Wider Community", 97, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Referral or signposting to other services (external to CFO)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SafeguardingandconfidentialityWiderCommunity = new("Safeguarding and confidentiality Wider Community", 98, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Safeguarding and confidentiality", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SecureBankAccountWiderCommunity = new("Secure Bank Account Wider Community", 99, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Secure Bank Account", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SelfCareWiderCommunity = new("Self-Care Wider Community", 100, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Self-Care", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SelfIsolationWiderCommunity = new("Self-Isolation Wider Community", 101, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Self-Isolation", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SexualHealthWiderCommunity = new("Sexual Health Wider Community", 102, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Sexual Health", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition UnderstandingStressStressManagementWiderCommunity = new("Understanding stress / stress management Wider Community", 103, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Understanding stress / stress management", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition UsingPublicTransportWiderCommunity = new("Using Public Transport Wider Community", 104, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Using Public Transport", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition VictimAwarenessWiderCommunity = new("Victim Awareness Wider Community", 105, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Victim Awareness", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition VolunteeringWorkExperienceWiderCommunity = new("Volunteering / Work Experience Wider Community", 106, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Volunteering / Work Experience", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition WellbeingWiderCommunity = new("Wellbeing Wider Community", 107, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Wellbeing", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AccessingHealthSupport = new("Accessing Health Support Hub", 108, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Accessing Health Support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition Addiction = new("Addiction Hub", 109, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Addiction", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AngerManagementSupport = new("Anger Management Support Hub", 110, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Anger Management Support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ApplicationsJobsHub = new("Applications (Jobs) Hub", 111, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Applications (Jobs)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AssessmentofLiteracyandNumeracySkillsHub = new("Assessment of Literacy and Numeracy Skills Hub", 112, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Assessment of Literacy and Numeracy Skills", ExpectedClaims.One, CheckType.Dip);
+    public static readonly ActivityDefinition AwarenessAndUseOfSocialMediaDigitalPlatformsHub = new("Awareness and use of social media / digital platforms Hub", 113, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Awareness and use of social media / digital platforms", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition BuildingRelationshipsHub = new("Building Relationships Hub", 114, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Building Relationships", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition BuildingResilienceConfidenceHub = new("Building Resilience / Confidence Hub", 115, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Building Resilience / Confidence", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CareLeaversupportHub = new("Care Leaver support Hub", 116, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Care Leaver support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CausesofoffendingHub = new("Causes of offending Hub", 117, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Causes of offending", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CIAGSupportHub = new("CIAG Support Hub", 118, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "CIAG Support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CommunicationHub = new("Communication Hub", 119, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Communication", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CommunityIntegrationHub = new("Community Integration Hub", 120, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Community Integration", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CompletingApplicationsHub = new("Completing Applications Hub", 121, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Completing Applications", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CVPreparationHub = new("CV preparation Hub", 122, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "CV preparation", ExpectedClaims.One, CheckType.Dip);
+    public static readonly ActivityDefinition DisclosureToEmployersOrganisationsHub = new("Disclosure to employers / organisations Hub", 123, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Disclosure to employers / organisations", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition DisclosureToFamiliesHub = new("Disclosure to families Hub", 124, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Disclosure to families", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition DrivingTestHub = new("Driving Test Hub", 125, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Driving Test", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition EqualityandDiversityHub = new("Equality and Diversity Hub", 126, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Equality and Diversity", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition FaithAndBeliefsIncludingReligionHub = new("Faith and beliefs (including religion) Hub", 127, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Faith and beliefs (including religion)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition FamilyTreeHub = new("Family Tree Hub", 128, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Family Tree", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition FinancialLiteracyHub = new("Financial Literacy Hub", 129, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Financial Literacy", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition HealthyLivingHub = new("Healthy Living Hub", 130, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Healthy Living", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition HowToCountMoneyValueOfMoneyHub = new("How to count money/value of money Hub", 131, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "How to count mExpectedClaims.Oney/value of mExpectedClaims.Oney", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition HowToTellTheTimeHub = new("How to tell the time Hub", 132, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "How to tell the time", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition InCellLearningCustodyOnlyHub = new("In-cell learning (Custody only) Hub", 133, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "In-cell learning (DeliveryLocationType.Custody only)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition IndustrySpecificCardsHub = new("Industry Specific Cards Hub", 134, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Industry Specific Cards", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition InterviewPreparationHub = new("Interview Preparation Hub", 135, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Interview Preparation", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition IntroductionToSelfEmploymentHub = new("Introduction to Self-Employment Hub", 136, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Introduction to Self-Employment", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition LifeaftermilitaryHub = new("Life after military Hub", 137, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Life after military", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MentalHealthSupportHub = new("Mental Health Support Hub", 138, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Mental Health Support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MentoringHub = new("Mentoring Hub", 139, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Mentoring", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MockInterviewsHub = new("Mock Interviews Hub", 140, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Mock Interviews", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MotivationHub = new("Motivation Hub", 141, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Motivation", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition NeurodiversityAwarenessAndSupportHub = new("Neurodiversity awareness and support Hub", 142, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Neurodiversity awareness and support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ObtainingIDHub = new("Obtaining ID Hub", 143, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Obtaining ID", ExpectedClaims.One, CheckType.Dip);
+    public static readonly ActivityDefinition ObtainingaNINOHub = new("Obtaining a NINO Hub", 144, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Obtaining a NINO", ExpectedClaims.One, CheckType.Dip);
+    public static readonly ActivityDefinition ParentingSkillsHub = new("Parenting Skills Hub", 145, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Parenting Skills", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ParolepreparationHub = new("Parole preparation Hub", 146, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Parole preparation", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition PersonaljournalHub = new("Personal journal Hub", 147, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Personal journal", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ProblemSolvingHub = new("Problem Solving Hub", 148, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Problem Solving", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ReflectivePracticeHub = new("Reflective Practice Hub", 149, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Reflective Practice", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ReferralOrSignpostingToOtherServicesExternalToCFOHub = new("Referral or signposting to other services (external to CFO) Hub", 150, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Referral or signposting to other services (external to CFO)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SafeguardingandconfidentialityHub = new("Safeguarding and confidentiality Hub", 151, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Safeguarding and confidentiality", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SecureBankAccountHub = new("Secure Bank Account Hub", 152, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Secure Bank Account", ExpectedClaims.One, CheckType.Dip);
+    public static readonly ActivityDefinition SelfCareHub = new("Self-Care Hub", 153, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Self-Care", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SelfIsolationHub = new("Self-Isolation Hub", 154, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Self-Isolation", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SexualHealthHub = new("Sexual Health Hub", 155, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Sexual Health", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition UnderstandingStressStressManagementHub = new("Understanding stress / stress management Hub", 156, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Understanding stress / stress management", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition UsingPublicTransportHub = new("Using Public Transport Hub", 157, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Using Public Transport", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition VictimAwarenessHub = new("Victim Awareness Hub", 158, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Victim Awareness", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition VolunteeringWorkExperienceHub = new("Volunteering / Work Experience Hub", 159, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Volunteering / Work Experience", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition WellbeingHub = new("Wellbeing Hub", 160, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Wellbeing", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AFutureFocusCustody = new("A Future Focus Custody", 161, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "A Future Focus", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ASenseOfANewAndProSocialIdentityCustody = new("A Sense of a New and Pro-Social Identity Custody", 162, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "A Sense of a New and Pro-Social Identity", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ArtsandCraftsCustody = new("Arts and Crafts Custody", 163, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Arts and Crafts", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ChangingLivesCustody = new("Changing Lives Custody", 164, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Changing Lives", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CognitiveBehaviouralTherapyCustody = new("Cognitive Behavioural Therapy Custody", 165, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Cognitive Behavioural Therapy", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition DoingGoodToBeGoodCustody = new("Doing Good, to be GoodCustody", 166, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Doing Good, to be Good", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition DramaCustody = new("DramaCustody", 167, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Drama", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition FeelingsOfHopeAndSelfEfficacyCustody = new("Feelings of Hope and Self-efficacy Custody", 168, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Feelings of Hope and Self-efficacy ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition HorticultureActivitiesCustody = new("Horticulture Activities Custody", 169, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Horticulture Activities ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MediaCustody = new("Media Custody", 170, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Media", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MusicandDanceCustody = new("Music and Dance Custody", 171, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Music and Dance", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SparkInsideCustody = new("Spark Inside Custody", 172, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Spark Inside", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SpecificProjectsSocialGoodCustody = new("Specific Projects (Social Good) Custody", 173, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Specific Projects (Social Good)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SportsCustody = new("Sports Custody", 174, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Sports", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition WellbeingAndMindfulnessCustody = new("Well-being and Mindfulness Custody", 175, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Well-being and Mindfulness", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition WomensWorldCustody = new("Women’s World Custody", 176, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Women’s World ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AccommodationSupportAdviceCustody = new("Accommodation Support / Advice Custody", 177, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Accommodation Support / Advice", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition BusinessStartupSupportCustody = new("Business Start-up Support Custody", 178, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Business Start-up Support ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CommunityCapitalCustody = new("Community Capital Custody", 179, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Community Capital", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition DebtAdviceCustody = new("Debt Advice Custody", 180, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Debt Advice ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition EmploymentFocusedProgrammesCustody = new("Employment-focused Programmes Custody", 181, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Employment-focused Programmes ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition EverydayEnglishPracticalMathsCustody = new("Everyday English / Practical Maths Custody", 182, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Everyday English / Practical Maths", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition IndependentLivingCustody = new("Independent Living Custody", 183, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Independent Living", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition IntrotoDigitalLiteracyCustody = new("Intro to Digital Literacy Custody", 184, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Intro to Digital Literacy ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition LifeSkillsCustody = new("Life Skills Custody", 185, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Life Skills", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition LiteracyandNumeracyCustody = new("Literacy and Numeracy Custody", 186, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Literacy and Numeracy ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition PracticalSupporttoAccessServicesCustody = new("Practical Support to Access Services Custody", 187, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Practical Support to Access Services", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ReferralToHealthcareIncludingReconnectProgrammeCustody = new("Referral to Healthcare (including Reconnect Programme) Custody", 188, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Referral to Healthcare (including Reconnect Programme)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition RelationshipCoachingInterventionsCustody = new("Relationship Coaching Interventions Custody", 189, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Relationship Coaching Interventions ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SenseOfPurposeMeaningandRecognitionOfYourWorthFromOthersCustody = new("Sense of Purpose, Meaning and Recognition of Your Worth from others Custody", 190, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Sense of Purpose, Meaning and Recognition of Your Worth from others", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition StrongTiesToFamilyProSocialPersonalSupportCustody = new("Strong Ties to Family & Pro-Social Personal Support Custody", 191, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Strong Ties to Family & Pro-Social Personal Support ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SustainablewayOflifeIntrotoSustainabilityCustody = new("Sustainable way of life/Intro to Sustainability Custody", 192, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Sustainable way of life/Intro to Sustainability ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition TherapeuticApproachesforYoungAdultsCustody = new("Therapeutic Approaches for Young Adults Custody", 193, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Therapeutic Approaches for Young Adults", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition WheretoStartandIntroductiontoEmployabilityCustody = new("Where to Start and Introduction to Employability Custody", 194, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Where to Start and Introduction to Employability ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition WorkRelatedMentoringInWorkSupportCustody = new("Work-Related Mentoring / In Work Support Custody", 195, DeliveryLocationType.Custody, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Work-Related Mentoring / In Work Support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AFutureFocuWiderCommunity = new("A Future Focus Wider Community", 196, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "A Future Focus", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ASenseofaNewandProSocialIdentityWiderCommunity = new("A Sense of a New and Pro-Social Identity Wider Community", 197, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "A Sense of a New and Pro-Social Identity", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ArtsandCraftsWiderCommunity = new("Arts and Crafts Wider Community", 198, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Arts and Crafts", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ChangingLivesWiderCommunity = new("Changing Lives Wider Community", 199, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Changing Lives", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CognitiveBehaviouralTherapyWiderCommunity = new("Cognitive Behavioural Therapy Wider Community", 200, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Cognitive Behavioural Therapy", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition DoingGoodToBeGoodWiderCommunity = new("Doing Good, to be Good Wider Community", 201, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Doing Good, to be Good", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition DramaWiderCommunity = new("Drama Wider Community", 202, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Drama", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition FeelingsOfHopeandSelfEfficacyWiderCommunity = new("Feelings of Hope and Self-efficacy Wider Community", 203, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Feelings of Hope and Self-efficacy ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition HorticultureActivitiesWiderCommunity = new("Horticulture Activities Wider Community", 204, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Horticulture Activities ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MediaWiderCommunity = new("Media Wider Community", 205, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Media", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MusicandDanceWiderCommunity = new("Music and Dance Wider Community", 206, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Music and Dance", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SparkInsideWiderCommunity = new("Spark Inside Wider Community", 207, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Spark Inside", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SpecificProjectsSocialGoodWiderCommunity = new("Specific Projects (Social Good) Wider Community", 208, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Specific Projects (Social Good)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SportsWiderCommunity = new("Sports Wider Community", 209, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Sports", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition WellbeingAndMindfulnessWiderCommunity = new("Well-being and Mindfulness Wider Community", 210, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Well-being and Mindfulness", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition WomensWorldWiderCommunity = new("Women’s World Wider Community", 211, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Women’s World ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AccommodationSupportAdviceWiderCommunity = new("Accommodation Support / Advice Wider Community", 212, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Accommodation Support / Advice", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition BusinessStartupSupportWiderCommunity = new("Business Start-up Support Wider Community", 213, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Business Start-up Support ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CommunityCapitalWiderCommunity = new("Community Capital Wider Community", 214, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Community Capital", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition DebtAdviceWiderCommunity = new("Debt Advice Wider Community", 215, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Debt Advice ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition EmploymentFocusedProgrammesWiderCommunity = new("Employment-focused Programmes Wider Community", 216, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Employment-focused Programmes ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition EverydayEnglishPracticalMathsWiderCommunity = new("Everyday English / Practical Maths Wider Community", 217, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Everyday English / Practical Maths", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition IndependentLivingWiderCommunity = new("Independent Living Wider Community", 218, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Independent Living", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition IntrotoDigitalLiteracyWiderCommunity = new("Intro to Digital Literacy Wider Community", 219, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Intro to Digital Literacy ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition LifeSkillsWiderCommunity = new("Life Skills Wider Community", 220, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Life Skills", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition LiteracyAndNumeracyWiderCommunity = new("Literacy and Numeracy Wider Community", 221, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Literacy and Numeracy ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition PracticalSupporttoAccessServicesWiderCommunity = new("Practical Support to Access Services Wider Community", 222, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Practical Support to Access Services", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ReferraltoHealthcareIncludingReconnectProgrammeWiderCommunity = new("Referral to Healthcare (including Reconnect Programme) Wider Community", 223, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Referral to Healthcare (including Reconnect Programme)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition RelationshipCoachingInterventionsWiderCommunity = new("Relationship Coaching Interventions Wider Community", 224, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Relationship Coaching Interventions ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SenseofPurposeMeaningandRecognitionofYourWorthFromOthersWiderCommunity = new("Sense of Purpose, Meaning and Recognition of Your Worth from others Wider Community", 225, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Sense of Purpose, Meaning and Recognition of Your Worth from others", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition StrongTiestoFamilyProSocialPersonalSupportWiderCommunity = new("Strong Ties to Family & Pro-Social Personal Support Wider Community", 226, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Strong Ties to Family & Pro-Social Personal Support ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SustainablewayOfLifeIntrotoSustainabilityWiderCommunity = new("Sustainable way of life/Intro to Sustainability Wider Community", 227, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Sustainable way of life/Intro to Sustainability ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition TherapeuticApproachesforYoungAdultsWiderCommunity = new("Therapeutic Approaches for Young Adults Wider Community", 228, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Therapeutic Approaches for Young Adults", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition WheretoStartandIntroductiontoEmployabilityWiderCommunity = new("Where to Start and Introduction to Employability Wider Community", 229, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Where to Start and Introduction to Employability ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition WorkRelatedMentoringInWorkSupportWiderCommunity = new("Work-Related Mentoring / In Work Support Wider Community", 230, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.SupportWork, "Work-Related Mentoring / In Work Support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AFutureFocusWiderCommunity = new("A Future Focus Wider Community", 231, DeliveryLocationType.WiderCommunity, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "A Future Focus", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ASenseOfANewAndProSocialIdentityHub = new("A Sense of a New and Pro-Social Identity Hub", 232, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "A Sense of a New and Pro-Social Identity", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ArtsandCraftsHub = new("Arts and Crafts Hub", 233, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "Arts and Crafts", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ChangingLivesHub = new("Changing Lives Hub", 234, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "Changing Lives", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CognitiveBehaviouralTherapyHub = new("Cognitive Behavioural Therapy Hub", 235, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "Cognitive Behavioural Therapy", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition DoingGoodToBeGoodHub = new("Doing Good, to be Good Hub", 236, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "Doing Good, to be Good", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition DramaHub = new("Drama Hub", 237, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "Drama", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition FeelingsOfHopeAndSelfEfficacyHub = new("Feelings of Hope and Self-efficacy Hub", 238, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "Feelings of Hope and Self-efficacy ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition HorticultureActivitiesHub = new("Horticulture Activities Hub", 239, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "Horticulture Activities ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MediaHub = new("Media Hub", 240, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "Media", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition MusicandDanceHub = new("Music and Dance Hub", 241, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "Music and Dance", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SparkInsideHub = new("Spark Inside Hub", 242, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "Spark Inside", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SpecificProjectsSocialGoodHub = new("Specific Projects (Social Good) Hub", 243, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "Specific Projects (Social Good)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SportsHub = new("Sports Hub", 244, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "Sports", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition WellbeingAndMindfulnessHub = new("Well-being and Mindfulness Hub", 245, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "Well-being and Mindfulness", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition WomensWorldHub = new("Women’s World Hub", 246, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.HumanCitizenship, "Women’s World ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition AccommodationSupportAdviceHub = new("Accommodation Support / Advice Hub", 247, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Accommodation Support / Advice", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition BusinessStartupSupportHub = new("Business Start-up Support Hub", 248, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Business Start-up Support ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition CommunityCapitalHub = new("Community Capital Hub", 249, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Community Capital", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition DebtAdviceHub = new("Debt Advice Hub", 250, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Debt Advice ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition EmploymentFocusedProgrammesHub = new("Employment-focused Programmes Hub", 251, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Employment-focused Programmes ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition EverydayEnglishPracticalMathsHub = new("Everyday English / Practical Maths Hub", 252, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Everyday English / Practical Maths", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition IndependentLivingHub = new("Independent Living Hub", 253, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Independent Living", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition IntrotoDigitalLiteracyHub = new("Intro to Digital Literacy Hub", 254, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Intro to Digital Literacy ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition LifeSkillsHub = new("Life Skills Hub", 255, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Life Skills", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition LiteracyandNumeracyHub = new("Literacy and Numeracy Hub", 256, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Literacy and Numeracy ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition PracticalSupportToAccessServicesHub = new("Practical Support to Access Services Hub", 257, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Practical Support to Access Services", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ReferraltoHealthcareIncludingReconnectProgrammeHub = new("Referral to Healthcare (including Reconnect Programme) Hub", 258, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Referral to Healthcare (including Reconnect Programme)", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition RelationshipCoachingInterventionsHub = new("Relationship Coaching Interventions Hub", 259, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Relationship Coaching Interventions ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SenseofPurposeMeaningandRecognitionOfYourWorthFromOthersHub = new("Sense of Purpose, Meaning and Recognition of Your Worth from others Hub", 260, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Sense of Purpose, Meaning and Recognition of Your Worth from others", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition StrongTiestoFamilyProSocialPersonalSupportHub = new("Strong Ties to Family & Pro-Social Personal Support Hub", 261, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Strong Ties to Family & Pro-Social Personal Support ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition SustainableWayOfLifeIntroToSustainabilityHub = new("Sustainable way of life/Intro to Sustainability Hub", 262, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Sustainable way of life/Intro to Sustainability ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition TherapeuticApproachesForYoungAdultsHub = new("Therapeutic Approaches for Young Adults Hub", 263, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Therapeutic Approaches for Young Adults", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition WhereToStartAndIntroductionToEmployabilityHub = new("Where to Start and Introduction to Employability Hub", 264, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Where to Start and Introduction to Employability ", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition WorkRelatedMentoringInWorkSupportHub = new("Work-Related Mentoring / In Work Support Hub", 265, DeliveryLocationType.Hub, ClassificationType.NonISWActivity, ActivityETEType.CommunityAndSocial, "Work-Related Mentoring / In Work Support", ExpectedClaims.MoreThanOne, CheckType.Dip);
+    public static readonly ActivityDefinition ApprovedPremisesWiderCommunity = new("Approved Premises Wider Community", 266, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Approved Premises ", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition CBTOngoingSupportWiderCommunity = new("CBT Ongoing Support Wider Community", 267, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "CBT Ongoing Support", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition IndirectRestorativeJusticeRJInitiativesWiderCommunity = new("Indirect Restorative Justice (RJ) initiatives Wider Community", 268, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Indirect Restorative Justice (RJ) initiatives ", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition InterventionsWhichAreCognitiveBehaviouralWiderCommunity = new("Interventions which are Cognitive Behavioural Wider Community", 269, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Interventions which are Cognitive Behavioural", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition NonAccreditedAccreditedStructuredInterventionsWiderCommunity = new("Non-accredited / accredited structured interventions Wider Community", 270, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Non-accredited / accredited structured interventions ", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition OpiateSubstitutionPsychoSocialTherapyWiderCommunity = new("Opiate Substitution / Psycho-social Therapy Wider Community", 271, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Opiate Substitution / Psycho-social Therapy", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition SentenceConditionRequirementsWiderCommunity = new("Sentence Condition Requirements Wider Community", 272, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Sentence Condition Requirements", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition UnpaidWorkWiderCommunity = new("Unpaid Work Wider Community", 273, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Unpaid Work", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition VictimOffenderConferencingWiderCommunity = new("Victim-Offender Conferencing Wider Community", 274, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Victim-Offender Conferencing", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition ApprovedPremisesHub = new("Approved Premises Hub", 275, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Approved Premises ", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition CBTOngoingSupportHub = new("CBT Ongoing Support Hub", 276, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "CBT Ongoing Support", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition IndirectRestorativeJusticeRJInitiativesHub = new("Indirect Restorative Justice (RJ) initiatives Hub", 277, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Indirect Restorative Justice (RJ) initiatives ", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition InterventionsWhichAreCognitiveBehaviouralHub = new("Interventions which are Cognitive Behavioural Hub", 278, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Interventions which are Cognitive Behavioural", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition NonAccreditedAccreditedStructuredInterventionsHub = new("Non-accredited / accredited structured interventions Hub", 279, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Non-accredited / accredited structured interventions ", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition OpiateSubstitutionPsychoSocialTherapyHub = new("Opiate Substitution / Psycho-social Therapy Hub", 280, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Opiate Substitution / Psycho-social Therapy", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition SentenceConditionRequirementsHub = new("Sentence Condition Requirements Hub", 281, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Sentence Condition Requirements", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition UnpaidWorkHub = new("Unpaid Work Hub", 282, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Unpaid Work", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition VictimOffenderConferencingHub = new("Victim-Offender Conferencing Hub", 283, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityETEType.InterventionsAndServicesWraparoundSupport, "Victim-Offender Conferencing", ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition EducationandTrainingCustody = new("Education and Training Custody", 284, DeliveryLocationType.Custody, ClassificationType.EducationAndTraining, ActivityETEType.EducationAndTraining, "Education and Training", ExpectedClaims.MoreThanOne, CheckType.QA);
+    public static readonly ActivityDefinition EducationandTrainingWiderCommunity = new("Education and Training Wider Community", 285, DeliveryLocationType.WiderCommunity, ClassificationType.EducationAndTraining, ActivityETEType.EducationAndTraining, "Education and Training", ExpectedClaims.MoreThanOne, CheckType.QA);
+    public static readonly ActivityDefinition EducationandTrainingHub = new("Education and Training Hub", 286, DeliveryLocationType.Hub, ClassificationType.EducationAndTraining, ActivityETEType.EducationAndTraining, "Education and Training", ExpectedClaims.MoreThanOne, CheckType.QA);
+    public static readonly ActivityDefinition EmploymentinCommunityWiderCommunity = new("Employment in Community Wider Community", 287, DeliveryLocationType.WiderCommunity, ClassificationType.EducationAndTraining, ActivityETEType.Employment, "Employment in Community", ExpectedClaims.MoreThanOne, CheckType.QA);
+    public static readonly ActivityDefinition EmploymentinCommunityHub = new("Employment in Community Hub", 288, DeliveryLocationType.Hub, ClassificationType.EducationAndTraining, ActivityETEType.Employment, "Employment in Community", ExpectedClaims.MoreThanOne, CheckType.QA);
+    public static readonly ActivityDefinition EmploymentonROTLCustody = new("Employment on ROTL Custody", 289, DeliveryLocationType.Custody, ClassificationType.EducationAndTraining, ActivityETEType.Employment, "Employment on ROTL", ExpectedClaims.MoreThanOne, CheckType.QA);
 }
 
 // Enums for related properties using Ardalis SmartEnum
