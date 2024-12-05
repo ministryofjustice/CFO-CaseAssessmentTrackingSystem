@@ -28,9 +28,9 @@
                     </MudItem>
                     <MudItem xs="12">
                         <MudSelect @ref="activityDropdown" 
+                        @bind-Value="Model.ActivityDefinition"
                         Disabled="Disabled" 
-                        Label="Activity/ETE" 
-                        @bind-Value="Model.ActivityDefinition" 
+                        Label="@Model.GetMemberDescription(x => x.ActivityDefinition)"
                         For="() => Model.ActivityDefinition">
                             @foreach (var activity in activities
                             .Where(activity => filteredTypes.Count is 0 || filteredTypes.Contains(activity.ActivityETEType))
