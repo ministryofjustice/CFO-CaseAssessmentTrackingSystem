@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Participants.EventHandlers;
 
-public class ParticipantUnassigned(
+public class NotifyUserOnUnassignment(
     IUnitOfWork unitOfWork,
     ICurrentUserService currentUserService) : INotificationHandler<ParticipantAssignedDomainEvent>
 {
@@ -16,7 +16,7 @@ public class ParticipantUnassigned(
         }
 
         var oldAssignee = await unitOfWork.DbContext.Users
-            .FindAsync(notification.FromOwner);
+            .FindAsync([notification.FromOwner], cancellationToken);
 
         if(oldAssignee is null)
         {
