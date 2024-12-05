@@ -100,6 +100,18 @@
                             </MudText>
                         </MudItem>
                     }
+                    <MudItem md="3">
+                        <MudText Typo="Typo.h6" Color="Color.Primary">
+                            <b>
+                                Support Worker
+                            </b>
+                        </MudText>
+                    </MudItem>
+                    <MudItem md="3">
+                        <MudText Typo="Typo.h6">
+                            @_participant.OwnerName
+                        </MudText>
+                    </MudItem>
                 </MudGrid>
 
                 @if(_participant.EnrolmentStatus != EnrolmentStatus.IdentifiedStatus)
