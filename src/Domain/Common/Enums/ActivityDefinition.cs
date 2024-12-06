@@ -345,12 +345,17 @@ public class DeliveryLocationType : SmartEnum<DeliveryLocationType>
 
 public class ClassificationType : SmartEnum<ClassificationType>
 {
-    public static readonly ClassificationType EducationAndTraining = new ClassificationType("Education and Training", 0);
-    public static readonly ClassificationType Employment = new ClassificationType("Employment", 1);
-    public static readonly ClassificationType ISWActivity = new ClassificationType("ISW Activity", 2);
+    public static readonly ClassificationType EducationAndTraining = new ClassificationType("Education and Training", 0, true);
+    public static readonly ClassificationType Employment = new ClassificationType("Employment", 1, true);
+    public static readonly ClassificationType ISWActivity = new ClassificationType("ISW Activity", 2, true);
     public static readonly ClassificationType NonISWActivity = new ClassificationType("Non-ISW Activity", 3);
 
-    private ClassificationType(string name, int value) : base(name, value) { }
+    private ClassificationType(string name, int value, bool requiresFurtherInformation = false) : base(name, value) 
+    {
+        RequiresFurtherInformation = requiresFurtherInformation;
+    }
+
+    public bool RequiresFurtherInformation { get; private set; }
 }
 
 public class ActivityETEType(string name, int value, string? shortenedDisplayName = null) : SmartEnum<ActivityETEType>(name, value)
