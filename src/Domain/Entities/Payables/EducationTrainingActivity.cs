@@ -1,5 +1,5 @@
 ﻿using Cfo.Cats.Domain.Common.Enums;
-using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Payables;
@@ -13,55 +13,45 @@ public class EducationTrainingActivity : Activity
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     EducationTrainingActivity(
-        ActivityDefinition definition,
-        string participantId,
-        Location tookPlaceAtLocation,
-        Contract tookPlaceAtContract,
-        Location participantCurrentLocation,
-        Contract? participantCurrentContract,
-        EnrolmentStatus participantStatus,
-        string? additionalInformation,
-        DateTime completed,
-        string tenantId) : base(definition, participantId, tookPlaceAtLocation, tookPlaceAtContract, participantCurrentLocation, participantCurrentContract, participantStatus, additionalInformation, completed, tenantId) 
+        ActivityContext context, 
+        string courseTitle, 
+        string? courseUrl, 
+        string courseLevel,
+        DateTime courseCommencedOn, 
+        CourseCompletionStatus courseCompletionStatus) : base(context) 
     {
-        AddDomainEvent(new EducationTrainingActivityCreatedDomainEvent(this));
+        CourseTitle = courseTitle;
+        CourseUrl = courseUrl;
+        CourseLevel = courseLevel;
+        CourseCommencedOn = courseCommencedOn;
+        CourseCompletionStatus = courseCompletionStatus;
     }
 
-    /*
     public string CourseTitle { get; private set; }
-    public string CourseUrl { get; private set; }
+    public string? CourseUrl { get; private set; }
     public string CourseLevel { get; private set; }
-    public DateTime CourseCommenced { get; private set; }
-    public Datetime CourseCompleted { get; private set; }
-    public bool Passed { get; private set; } // Needs to be enum: Passed, Failed, Not Applicable
-    public Document Document { get; private set; } // Uploaded template
-    */
+    public DateTime CourseCommencedOn { get; private set; }
+    public CourseCompletionStatus CourseCompletionStatus { get; private set; }
+    public bool Passed { get; private set; }
+    public virtual Document? Document { get; private set; } // Uploaded template
 
     public static EducationTrainingActivity Create(
-        ActivityDefinition definition,
-        string participantId,
-        Location tookPlaceAtLocation,
-        Contract tookPlaceAtContract,
-        Location participantCurrentLocation,
-        Contract? participantCurrentContract,
-        EnrolmentStatus participantStatus,
-        string? additionalInformation,
-        DateTime completed,
-        string tenantId)
+        ActivityContext context,
+        string courseTitle,
+        string? courseUrl,
+        string courseLevel,
+        DateTime courseCommencedOn,
+        CourseCompletionStatus courseCompletionStatus)
     {
-        EducationTrainingActivity activity = new(
-            definition, 
-            participantId, 
-            tookPlaceAtLocation, 
-            tookPlaceAtContract, 
-            participantCurrentLocation, 
-            participantCurrentContract, 
-            participantStatus, 
-            additionalInformation, 
-            completed, 
-            tenantId);
-
+        EducationTrainingActivity activity = new(context, courseTitle, courseUrl, courseLevel, courseCommencedOn, courseCompletionStatus);
+        activity.AddDomainEvent(new EducationTrainingActivityCreatedDomainEvent(activity));
         return activity;
+    }
+
+    public EducationTrainingActivity AddDocument(Document document)
+    {
+        Document = document;
+        return this;
     }
 
 }
