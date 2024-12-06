@@ -40,7 +40,7 @@
                 <MudTextField Label="@Model.GetMemberDescription(x => x.Salary)" Value="Model.Salary" Disabled="Disabled" />
             </MudItem>
             <MudSelect @bind-Value="Model.SalaryFrequency"
-            For="() => Model.SalaryFrequency" Disabled="Disabled">
+            For="() => Model.SalaryFrequency" Disabled="Disabled" Label="@Model.GetMemberDescription(x => x.SalaryFrequency)">
                 @foreach (var salaryFrequency in PicklistService.DataSource
                 .Where(c => c.Name == Picklist.SalaryFrequency)
                 .OrderBy(c => c.Text))
