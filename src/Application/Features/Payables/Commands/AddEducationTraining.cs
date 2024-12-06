@@ -25,9 +25,6 @@ public static class AddEducationTraining
 
         [Description("Passed")]
         public string? Passed { get; set; }
-
-        [Description("Additional Information")]
-        public string? AdditionalInformation { get; set; }
     }
 
     class Handler: IRequestHandler<Command, Result<bool>>

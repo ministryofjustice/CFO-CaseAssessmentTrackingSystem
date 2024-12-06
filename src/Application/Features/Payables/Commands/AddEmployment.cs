@@ -30,9 +30,6 @@ public static class AddEmployment
 
         [Description("Upload Employment Template")]
         public IBrowserFile? Document { get; set; }
-
-        [Description("Additional Information")]
-        public string? AdditionalInformation { get; set; }
     }
 
     class Handler: IRequestHandler<Command, Result<bool>>
@@ -74,7 +71,6 @@ public static class AddEmployment
             RuleFor(c => c.EmploymentStartDate)
                 .NotNull()
                 .WithMessage("You must choose a Employment start date");
-
 
             RuleFor(v => v.Document)
                     .NotNull()

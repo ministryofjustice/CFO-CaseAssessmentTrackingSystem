@@ -93,25 +93,17 @@
                 </MudFileUpload>
             </div>
         </MudItem>
-        <MudItem xs="12">
-        <MudTextField @bind-Value="@Model.AdditionalInformation"
-                      For="@(() => Model.AdditionalInformation)"
-                      Lines="5"
-                      Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
-                      Placeholder="Use this area to provide any additional information with regards to Employment.">
-        </MudTextField>
-        </MudItem>
     </MudGrid>
 }
 @code {
     [Inject]
     private IPicklistService PicklistService { get; set; } = default!;
+
     [Parameter, EditorRequired]
     public required AddEmployment.Command Model { get; set; }
 
     private bool _uploading = false;
 
-    //bool Disabled => Model.Location is null;
     bool Disabled = false;
 
 }
