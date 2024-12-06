@@ -15,12 +15,11 @@ public class EducationTrainingActivity : Activity
     EducationTrainingActivity(
         ActivityDefinition definition,
         string participantId,
-        string description,
         Location location, 
         Contract contract,
         string? additionalInformation,
         DateTime completed,
-        string completedBy) : base(definition, participantId, description, location, contract, additionalInformation, completed, completedBy) 
+        string completedBy) : base(definition, participantId, location, contract, additionalInformation, completed, completedBy) 
     {
         AddDomainEvent(new EducationTrainingActivityCreatedDomainEvent(this));
     }
@@ -38,7 +37,6 @@ public class EducationTrainingActivity : Activity
     public static EducationTrainingActivity Create(
         ActivityDefinition definition,
         string participantId,
-        string description,
         Location location,
         Contract contract,
         string? additionalInformation,
@@ -47,8 +45,7 @@ public class EducationTrainingActivity : Activity
     {
         EducationTrainingActivity activity = new(
             definition, 
-            participantId, 
-            description, 
+            participantId,
             location,
             contract,
             additionalInformation, 
