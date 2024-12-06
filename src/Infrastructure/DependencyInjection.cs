@@ -3,6 +3,7 @@ using Amazon.S3;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
+using Cfo.Cats.Application.Features.Participants.Consumers;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
@@ -14,7 +15,9 @@ using Cfo.Cats.Infrastructure.Persistence.Interceptors;
 using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.Locations;
 using Cfo.Cats.Infrastructure.Services.MultiTenant;
+using Cfo.Cats.Infrastructure.Services.Outbox;
 using Cfo.Cats.Infrastructure.Services.Serialization;
+using MassTransit;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -70,6 +73,21 @@ public static class DependencyInjection
             .AddSingleton<IRightToWorkSettings>(s =>
                 s.GetRequiredService<RightToWorkSettings>()
             );
+
+        services.AddMassTransit(x =>
+        {
+            x.AddConsumer<EnrolmentApprovedIntegrationEventConsumer>();
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(configuration.GetConnectionString("rabbit"));
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+
+        services.AddHostedService<OutboxBackgroundService>();
+        services.AddScoped<OutboxProcessor>();
+
         return services;
     }
 

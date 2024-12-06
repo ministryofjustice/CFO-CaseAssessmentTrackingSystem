@@ -5,7 +5,7 @@ using MassTransit.Logging;
 
 namespace Cfo.Cats.Infrastructure.Services.Outbox;
 
-internal sealed class OutboxProcessor(IApplicationDbContext dataSource, IPublishEndpoint publishEndpoint)
+internal sealed class OutboxProcessor(ApplicationDbContext dataSource, IPublishEndpoint publishEndpoint)
 {
     private const int BatchSize = 10;
 
@@ -21,7 +21,7 @@ internal sealed class OutboxProcessor(IApplicationDbContext dataSource, IPublish
         {
             try
             {
-                var messageType = typeof(Domain.Common.DomainEvent).Assembly.GetType(outboxMessage.Type)!;
+                var messageType = typeof(OutboxMessage).Assembly.GetType(outboxMessage.Type)!;
                 var deserializedMessage = JsonSerializer.Deserialize(outboxMessage.Content, messageType)!;
 
                 await publishEndpoint.Publish(deserializedMessage, messageType, cancellationToken);
@@ -34,6 +34,8 @@ internal sealed class OutboxProcessor(IApplicationDbContext dataSource, IPublish
                 outboxMessage.Error = ex.ToString();
             }
         }
+
+        await dataSource.SaveChangesAsync(cancellationToken);
 
         return outboxMessages.Count;
     }
