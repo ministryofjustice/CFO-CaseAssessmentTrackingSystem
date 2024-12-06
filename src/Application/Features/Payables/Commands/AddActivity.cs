@@ -47,17 +47,19 @@ public static class AddActivity
                 return Result.Failure("Activities cannot be recorded against the chosen location");
             }
 
-            var activity = NonISWActivity.Create(
-                definition: request.ActivityDefinition!, 
-                participantId: participant.Id, 
-                tookPlaceAtLocation: location,
-                tookPlaceAtContract: location.Contract,
-                participantCurrentLocation: participant.CurrentLocation, 
-                participantCurrentContract: participant.CurrentLocation.Contract,
-                participantStatus: participant.EnrolmentStatus!,
-                additionalInformation: request.AdditionalInformation, 
-                completed: request.Completed!.Value, 
-                currentUserService.TenantId!);
+            var cxt = new Activity.ActivityContext(
+                Definition: request.ActivityDefinition!,
+                ParticipantId: participant.Id,
+                TookPlaceAtLocation: location,
+                TookPlaceAtContract: location.Contract,
+                ParticipantCurrentLocation: participant.CurrentLocation,
+                ParticipantCurrentContract: participant.CurrentLocation.Contract,
+                ParticipantStatus: participant.EnrolmentStatus!,
+                Completed: request.Completed!.Value,
+                currentUserService.TenantId!,
+                AdditionalInformation: request.AdditionalInformation);
+
+            var activity = NonISWActivity.Create(cxt);
 
             await unitOfWork.DbContext.NonISWActivities.AddAsync(activity, cancellationToken);
 
