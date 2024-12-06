@@ -8,34 +8,36 @@ namespace Cfo.Cats.Domain.Entities.Payables;
 
 public abstract class Activity : BaseAuditableEntity<Guid>
 {
+    public record ActivityContext(
+        ActivityDefinition Definition,
+        string ParticipantId,
+        Location TookPlaceAtLocation,
+        Contract TookPlaceAtContract,
+        Location ParticipantCurrentLocation,
+        Contract? ParticipantCurrentContract,
+        EnrolmentStatus ParticipantStatus,
+        DateTime Completed,
+        string TenantId,
+        string? AdditionalInformation = null);
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected Activity()
     {
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    protected Activity(
-        ActivityDefinition definition, 
-        string participantId, 
-        Location tookPlaceAtLocation, 
-        Contract tookPlaceAtContract, 
-        Location participantCurrentLocation,
-        Contract? participantCurrentContract,
-        EnrolmentStatus participantStatus,
-        string? additionalInformation, 
-        DateTime completed, 
-        string tenantId)
+    protected Activity(ActivityContext context)
     {
-        Definition = definition;
-        ParticipantId = participantId;
-        TookPlaceAtLocation = tookPlaceAtLocation;
-        TookPlaceAtContract = tookPlaceAtContract;
-        ParticipantCurrentLocation = participantCurrentLocation;
-        ParticipantCurrentContract = participantCurrentContract;
-        ParticipantStatus = participantStatus;
-        AdditionalInformation = additionalInformation;
-        Completed = completed;
-        TenantId = tenantId;
+        Definition = context.Definition;
+        ParticipantId = context.ParticipantId;
+        TookPlaceAtLocation = context.TookPlaceAtLocation;
+        TookPlaceAtContract = context.TookPlaceAtContract;
+        ParticipantCurrentLocation = context.ParticipantCurrentLocation;
+        ParticipantCurrentContract = context.ParticipantCurrentContract;
+        ParticipantStatus = context.ParticipantStatus;
+        Completed = context.Completed;
+        TenantId = context.TenantId;
+        AdditionalInformation = context.AdditionalInformation;
         Status = ActivityStatus.Submitted;
 
         AddDomainEvent(new ActivityCreatedDomainEvent(this));
