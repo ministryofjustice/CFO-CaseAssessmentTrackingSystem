@@ -15,12 +15,11 @@ public class ISWActivity : Activity
     ISWActivity(
         ActivityDefinition definition,
         string participantId,
-        string description,
         Location location,
         Contract contract,
         string? additionalInformation,
         DateTime completed,
-        string completedBy) : base(definition, participantId, description, location, contract, additionalInformation, completed, completedBy)
+        string completedBy) : base(definition, participantId, location, contract, additionalInformation, completed, completedBy)
     {
         AddDomainEvent(new ISWActivityCreatedDomainEvent(this));
     }
@@ -36,7 +35,6 @@ public class ISWActivity : Activity
     public static ISWActivity Create(
         ActivityDefinition definition,
         string participantId,
-        string description,
         Location location,
         Contract contract,
         string? additionalInformation,
@@ -46,7 +44,6 @@ public class ISWActivity : Activity
         ISWActivity activity = new(
             definition,
             participantId,
-            description,
             location,
             contract,
             additionalInformation,

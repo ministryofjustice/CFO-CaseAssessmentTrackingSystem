@@ -15,12 +15,11 @@ public class EmploymentActivity : Activity
     EmploymentActivity(
         ActivityDefinition definition,
         string participantId,
-        string description,
         Location location,
         Contract contract,
         string? additionalInformation,
         DateTime completed,
-        string completedBy) : base(definition, participantId, description, location, contract, additionalInformation, completed, completedBy) 
+        string completedBy) : base(definition, participantId, location, contract, additionalInformation, completed, completedBy) 
     {
         AddDomainEvent(new EmploymentActivityCreatedDomainEvent(this));
     }
@@ -38,7 +37,6 @@ public class EmploymentActivity : Activity
     public static EmploymentActivity Create(
         ActivityDefinition definition,
         string participantId,
-        string description,
         Location location,
         Contract contract,
         string? additionalInformation,
@@ -48,7 +46,6 @@ public class EmploymentActivity : Activity
         EmploymentActivity activity = new(
             definition,
             participantId,
-            description,
             location,
             contract,
             additionalInformation,

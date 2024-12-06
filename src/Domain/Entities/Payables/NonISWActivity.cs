@@ -15,12 +15,11 @@ public class NonISWActivity : Activity
     NonISWActivity(
         ActivityDefinition definition,
         string participantId,
-        string description,
         Location location,
         Contract contract,
         string? additionalInformation,
         DateTime completed,
-        string completedBy) : base(definition, participantId, description, location, contract, additionalInformation, completed, completedBy)
+        string completedBy) : base(definition, participantId, location, contract, additionalInformation, completed, completedBy)
     {
         AddDomainEvent(new NonISWActivityCreatedDomainEvent(this));
     }
@@ -28,7 +27,6 @@ public class NonISWActivity : Activity
     public static NonISWActivity Create(
         ActivityDefinition definition,
         string participantId,
-        string description,
         Location location,
         Contract contract,
         string? additionalInformation,
@@ -38,7 +36,6 @@ public class NonISWActivity : Activity
         NonISWActivity activity = new(
             definition,
             participantId,
-            description,
             location,
             contract,
             additionalInformation,
