@@ -15,11 +15,14 @@ public class EducationTrainingActivity : Activity
     EducationTrainingActivity(
         ActivityDefinition definition,
         string participantId,
-        Location location, 
-        Contract contract,
+        Location tookPlaceAtLocation,
+        Contract tookPlaceAtContract,
+        Location participantCurrentLocation,
+        Contract? participantCurrentContract,
+        EnrolmentStatus participantStatus,
         string? additionalInformation,
         DateTime completed,
-        string completedBy) : base(definition, participantId, location, contract, additionalInformation, completed, completedBy) 
+        string tenantId) : base(definition, participantId, tookPlaceAtLocation, tookPlaceAtContract, participantCurrentLocation, participantCurrentContract, participantStatus, additionalInformation, completed, tenantId) 
     {
         AddDomainEvent(new EducationTrainingActivityCreatedDomainEvent(this));
     }
@@ -37,20 +40,26 @@ public class EducationTrainingActivity : Activity
     public static EducationTrainingActivity Create(
         ActivityDefinition definition,
         string participantId,
-        Location location,
-        Contract contract,
+        Location tookPlaceAtLocation,
+        Contract tookPlaceAtContract,
+        Location participantCurrentLocation,
+        Contract? participantCurrentContract,
+        EnrolmentStatus participantStatus,
         string? additionalInformation,
         DateTime completed,
-        string completedBy)
+        string tenantId)
     {
         EducationTrainingActivity activity = new(
             definition, 
-            participantId,
-            location,
-            contract,
+            participantId, 
+            tookPlaceAtLocation, 
+            tookPlaceAtContract, 
+            participantCurrentLocation, 
+            participantCurrentContract, 
+            participantStatus, 
             additionalInformation, 
             completed, 
-            completedBy);
+            tenantId);
 
         return activity;
     }

@@ -15,11 +15,14 @@ public class NonISWActivity : Activity
     NonISWActivity(
         ActivityDefinition definition,
         string participantId,
-        Location location,
-        Contract contract,
+        Location tookPlaceAtLocation,
+        Contract tookPlaceAtContract,
+        Location participantCurrentLocation,
+        Contract? participantCurrentContract,
+        EnrolmentStatus participantStatus,
         string? additionalInformation,
         DateTime completed,
-        string completedBy) : base(definition, participantId, location, contract, additionalInformation, completed, completedBy)
+        string tenantId) : base(definition, participantId, tookPlaceAtLocation, tookPlaceAtContract, participantCurrentLocation, participantCurrentContract, participantStatus, additionalInformation, completed, tenantId)
     {
         AddDomainEvent(new NonISWActivityCreatedDomainEvent(this));
     }
@@ -27,20 +30,26 @@ public class NonISWActivity : Activity
     public static NonISWActivity Create(
         ActivityDefinition definition,
         string participantId,
-        Location location,
-        Contract contract,
+        Location tookPlaceAtLocation,
+        Contract tookPlaceAtContract,
+        Location participantCurrentLocation,
+        Contract? participantCurrentContract,
+        EnrolmentStatus participantStatus,
         string? additionalInformation,
         DateTime completed,
-        string completedBy)
+        string tenantId)
     {
         NonISWActivity activity = new(
             definition,
             participantId,
-            location,
-            contract,
+            tookPlaceAtLocation,
+            tookPlaceAtContract,
+            participantCurrentLocation,
+            participantCurrentContract,
+            participantStatus,
             additionalInformation,
             completed,
-            completedBy);
+            tenantId);
 
         return activity;
     }
