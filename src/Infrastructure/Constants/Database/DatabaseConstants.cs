@@ -42,6 +42,10 @@ internal static class DatabaseConstants
         public const string OwnershipHistory = nameof(OwnershipHistory);
         public const string IncomingTransferQueue = nameof(IncomingTransferQueue);
         public const string OutgoingTransferQueue = nameof(OutgoingTransferQueue);
+        public const string EducationTrainingActivities = nameof(EducationTrainingActivities);
+        public const string EmploymentActivities = nameof(EmploymentActivities);
+        public const string ISWActivities = nameof(ISWActivities);
+        public const string NonISWActivities = nameof(NonISWActivities);
 
         public const string AssessmentPathwayScore = nameof(AssessmentPathwayScore);
 
