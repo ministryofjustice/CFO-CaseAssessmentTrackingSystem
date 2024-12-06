@@ -2,13 +2,14 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.Entities.Payables;
 
 namespace Cfo.Cats.Application.Features.Payables.Commands;
 
 public static class AddActivity
 {
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
-    public class Command : IRequest<Result<bool>>
+    public class Command : IRequest<Result>
     {
         public required string ParticipantId { get; set; }
         public LocationDto? Location { get; set; }
@@ -23,12 +24,44 @@ public static class AddActivity
         public string? AdditionalInformation { get; set; }
     }
 
-    class Handler : IRequestHandler<Command, Result<bool>>
+    class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : IRequestHandler<Command, Result>
     {
-        public async Task<Result<bool>> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            // TODO: record activity
-            return await Task.FromResult(true);
+            var participant = await unitOfWork.DbContext.Participants
+                .Include(p => p.CurrentLocation)
+                .ThenInclude(l => l.Contract)
+                .FirstOrDefaultAsync(p => p.Id == request.ParticipantId, cancellationToken);
+
+            if(participant is null)
+            {
+                return Result.Failure("Participant not found");
+            }
+
+            var location = await unitOfWork.DbContext.Locations
+                .Include(l => l.Contract)
+                .FirstOrDefaultAsync(l => l.Id == request.Location!.Id, cancellationToken);
+
+            if(location is not { Contract: not null })
+            {
+                return Result.Failure("Activities cannot be recorded against the chosen location");
+            }
+
+            var activity = NonISWActivity.Create(
+                definition: request.ActivityDefinition!, 
+                participantId: participant.Id, 
+                tookPlaceAtLocation: location,
+                tookPlaceAtContract: location.Contract,
+                participantCurrentLocation: participant.CurrentLocation, 
+                participantCurrentContract: participant.CurrentLocation.Contract,
+                participantStatus: participant.EnrolmentStatus!,
+                additionalInformation: request.AdditionalInformation, 
+                completed: request.Completed!.Value, 
+                currentUserService.TenantId!);
+
+            await unitOfWork.DbContext.NonISWActivities.AddAsync(activity, cancellationToken);
+
+            return Result.Success();
         }
     }
 
