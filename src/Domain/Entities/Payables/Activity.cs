@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Events;
@@ -23,6 +23,7 @@ public abstract class Activity : BaseAuditableEntity<Guid>
         AdditionalInformation = additionalInformation;
         Completed = completed;
         CompletedBy = completedBy;
+        Status = ActivityStatus.Submitted;
 
         AddDomainEvent(new ActivityCreatedDomainEvent(this));
     }
@@ -35,4 +36,19 @@ public abstract class Activity : BaseAuditableEntity<Guid>
     public string? AdditionalInformation { get; protected set; }
     public DateTime Completed { get; protected set; }
     public string CompletedBy { get; protected set; }
+    public ActivityStatus Status { get; protected set; }
+
+    public Activity TransitionTo(ActivityStatus to)
+    {
+        if(Status != to)
+        {
+            AddDomainEvent(new ActivityTransitionedDomainEvent(this, Status, to));
+            Status = to;
+        }
+
+        return this;
+    }
+
+    public bool RequiresQa => Definition.CheckType == CheckType.QA;
+
 }
