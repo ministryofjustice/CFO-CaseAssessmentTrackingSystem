@@ -58,15 +58,15 @@
         <MudItem xs="12">
             <div class="mb-4 mt-8">
                 <MudFileUpload @bind-Files="Model.Document"
-                For="() => Model.Document"
-                MaximumFileCount="1"
-                Accept=".pdf" Disabled="Disabled">
+                               For="() => Model.Document"
+                               MaximumFileCount="1"
+                               Accept=".pdf" Disabled="Disabled">
                     <ActivatorContent>
-                        <MudLoadingButton Loading="_uploading"
+                        <MudLoadingButton Loading="uploading"
                         Variant="Variant.Outlined"
                         Color="Color.Primary"
                         StartIcon="@Icons.Material.Filled.Upload">
-                            @if (_uploading)
+                            @if (uploading)
                             {
                                 @ConstantString.Uploading
                             }
@@ -81,7 +81,7 @@
                         @if (context != null)
                         {
                             <MudText>
-                                Right To Work supporting documentation uploaded:  @context.Name
+                                Employment template uploaded:  @context.Name
                             </MudText>
                         }
                         else
@@ -96,13 +96,13 @@
     </MudGrid>
 }
 @code {
+    private bool uploading = false;
+
     [Inject]
     private IPicklistService PicklistService { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public required AddEmployment.Command Model { get; set; }
-
-    private bool _uploading = false;
 
     bool Disabled = false;
 

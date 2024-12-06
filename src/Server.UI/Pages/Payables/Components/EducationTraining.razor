@@ -48,12 +48,52 @@
                 <MudSelectItem Value="@("Not Applicable")">Not Applicable</MudSelectItem>
             </MudSelect>
         </MudItem>
+        <MudItem xs="12">
+            <div class="mb-4 mt-8">
+                <MudFileUpload @bind-Files="Model.Document"
+                               For="() => Model.Document"
+                               MaximumFileCount="1"
+                               Accept=".pdf" >
+                    <ActivatorContent>
+                        <MudLoadingButton Loading="uploading"
+                                          Variant="Variant.Outlined"
+                                          Color="Color.Primary"
+                                          StartIcon="@Icons.Material.Filled.Upload">
+                            @if (uploading)
+                            {
+                                @ConstantString.Uploading
+                            }
+                            else
+                            {
+                                @ConstantString.Upload
+                            }
+                        </MudLoadingButton>
+                    </ActivatorContent>
+                    <SelectedTemplate>
+                        <br />
+                        @if (context != null)
+                        {
+                            <MudText>
+                                Education template uploaded:  @context.Name
+                            </MudText>
+                        }
+                        else
+                        {
+                            <MudText>No Files</MudText>
+                        }
+                        <br />
+                    </SelectedTemplate>
+                </MudFileUpload>
+            </div>
+        </MudItem>
     </MudGrid>
 }
 @code {
+    private bool uploading = false;
+
     [Inject]
     private IPicklistService PicklistService { get; set; } = default!;
+
     [Parameter, EditorRequired]
     public required AddEducationTraining.Command Model { get; set; }
-
 }
