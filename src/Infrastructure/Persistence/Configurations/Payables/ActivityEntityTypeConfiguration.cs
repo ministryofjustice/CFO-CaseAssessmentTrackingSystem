@@ -2,6 +2,7 @@
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Entities.Payables;
+using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Payables;
@@ -11,6 +12,10 @@ internal class ActivityEntityTypeConfiguration : IEntityTypeConfiguration<Activi
     public void Configure(EntityTypeBuilder<Activity> builder)
     {
         builder.HasKey(a => a.Id);
+
+        builder.ToTable(
+            DatabaseConstants.Tables.Activities,
+            DatabaseConstants.Schemas.Payables);
 
         builder.HasOne<Participant>()
             .WithMany()
