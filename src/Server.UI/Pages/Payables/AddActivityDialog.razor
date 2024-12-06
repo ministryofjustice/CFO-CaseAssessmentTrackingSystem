@@ -48,7 +48,6 @@
                             }
                         </MudSelect>
                     </MudItem>
-
                     <MudItem xs="12">
                         <MudDatePicker @bind-Date="Model.Completed"
                         For="() => Model.Completed"
@@ -64,6 +63,26 @@
                         For="() => Model.AdditionalInformation"
                         Lines="5" />
                     </MudItem>
+                        @if (Model.ActivityDefinition is { ClassificationType.RequiresFurtherInformation: true })
+                        {
+                            <MudItem xs="12">
+                                <MudAlert Severity="Severity.Info">Further information is required for this type of activity</MudAlert>
+
+                                @if(Model.ActivityDefinition.ClassificationType == ClassificationType.Employment)
+                                {
+                                    <Employment Model="new AddEmployment.Command()"/>
+                                }
+                                else if(Model.ActivityDefinition.ClassificationType == ClassificationType.EducationAndTraining)
+                                {
+                                    <EducationTraining Model="new AddEducationTraining.Command()" />
+                                }
+                                else if(Model.ActivityDefinition.ClassificationType == ClassificationType.ISWActivity)
+                                {
+                                    <MudText>ISW Template</MudText>
+                                }
+
+                            </MudItem>
+                        }
                 </MudGrid>
             </MudForm>
         }

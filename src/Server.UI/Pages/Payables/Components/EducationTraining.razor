@@ -48,18 +48,52 @@
                 <MudSelectItem Value="@("Not Applicable")">Not Applicable</MudSelectItem>
             </MudSelect>
         </MudItem>
-        <MudTextField @bind-Value="@Model.AdditionalInformation"
-        For="@(() => Model.AdditionalInformation)"
-        Lines="5"
-        Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
-        Placeholder="Use this area to provide any additional information with regards to Employment.">
-        </MudTextField>
+        <MudItem xs="12">
+            <div class="mb-4 mt-8">
+                <MudFileUpload @bind-Files="Model.Document"
+                               For="() => Model.Document"
+                               MaximumFileCount="1"
+                               Accept=".pdf" >
+                    <ActivatorContent>
+                        <MudLoadingButton Loading="uploading"
+                                          Variant="Variant.Outlined"
+                                          Color="Color.Primary"
+                                          StartIcon="@Icons.Material.Filled.Upload">
+                            @if (uploading)
+                            {
+                                @ConstantString.Uploading
+                            }
+                            else
+                            {
+                                @ConstantString.Upload
+                            }
+                        </MudLoadingButton>
+                    </ActivatorContent>
+                    <SelectedTemplate>
+                        <br />
+                        @if (context != null)
+                        {
+                            <MudText>
+                                Education template uploaded:  @context.Name
+                            </MudText>
+                        }
+                        else
+                        {
+                            <MudText>No Files</MudText>
+                        }
+                        <br />
+                    </SelectedTemplate>
+                </MudFileUpload>
+            </div>
+        </MudItem>
     </MudGrid>
 }
 @code {
+    private bool uploading = false;
+
     [Inject]
     private IPicklistService PicklistService { get; set; } = default!;
+
     [Parameter, EditorRequired]
     public required AddEducationTraining.Command Model { get; set; }
-
 }
