@@ -359,7 +359,7 @@ public class ActivityETEType(string name, int value, string? shortenedDisplayNam
     public static readonly ActivityETEType EducationAndTraining = new ActivityETEType("Education and Training", 1);
     public static readonly ActivityETEType Employment = new ActivityETEType("Employment", 2);
     public static readonly ActivityETEType HumanCitizenship = new ActivityETEType("Human Citizenship", 3);
-    public static readonly ActivityETEType InterventionsAndServicesWraparoundSupport = new ActivityETEType("Interventions And Services Wraparound Support (ISW)", 4, "ISW");
+    public static readonly ActivityETEType InterventionsAndServicesWraparoundSupport = new ActivityETEType("Interventions And Services Wraparound (ISW) Support", 4, "ISW Support");
     public static readonly ActivityETEType SupportWork = new ActivityETEType("Support Work", 5);
 
     public string ShortenedDisplayName { get; private set; } = shortenedDisplayName ?? name;
