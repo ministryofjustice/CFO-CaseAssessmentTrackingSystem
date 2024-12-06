@@ -11,7 +11,7 @@ public class EducationTrainingActivityEntityTypeConfiguration : IEntityTypeConfi
     {
         builder.ToTable(
             DatabaseConstants.Tables.EducationTrainingActivities,
-            DatabaseConstants.Schemas.Participant);
+            DatabaseConstants.Schemas.Payables);
 
         builder.HasOne(a => a.Document)
             .WithMany()

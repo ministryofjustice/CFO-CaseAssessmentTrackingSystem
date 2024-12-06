@@ -13,6 +13,6 @@ public class NonISWActivityEntityTypeConfiguration : IEntityTypeConfiguration<No
     {
         builder.ToTable(
             DatabaseConstants.Tables.NonISWActivities, 
-            DatabaseConstants.Schemas.Participant);
+            DatabaseConstants.Schemas.Payables);
     }
 }

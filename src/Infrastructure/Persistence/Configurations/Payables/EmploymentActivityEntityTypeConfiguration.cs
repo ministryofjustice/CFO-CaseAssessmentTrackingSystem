@@ -10,7 +10,7 @@ public class EmploymentActivityEntityTypeConfiguration : IEntityTypeConfiguratio
     {
         builder.ToTable(
             DatabaseConstants.Tables.EmploymentActivities,
-            DatabaseConstants.Schemas.Participant);
+            DatabaseConstants.Schemas.Payables);
 
         builder.HasOne(a => a.Document)
             .WithMany()

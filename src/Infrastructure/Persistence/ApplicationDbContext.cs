@@ -76,6 +76,7 @@ public class ApplicationDbContext
     
     public DbSet<Notification> Notifications => Set<Notification>();
 
+    public DbSet<Activity> Activities => Set<Activity>();
     public DbSet<EducationTrainingActivity> EducationTrainingActivities => Set<EducationTrainingActivity>();
     public DbSet<EmploymentActivity> EmploymentActivities => Set<EmploymentActivity>();
     public DbSet<ISWActivity> ISWActivities => Set<ISWActivity>();

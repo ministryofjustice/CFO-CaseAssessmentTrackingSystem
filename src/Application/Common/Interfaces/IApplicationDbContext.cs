@@ -68,6 +68,7 @@ public interface IApplicationDbContext
 
     DbSet<WingInduction> WingInductions { get; }
     DbSet<Notification> Notifications { get; }
+    DbSet<Activity> Activities { get; }
     DbSet<EducationTrainingActivity> EducationTrainingActivities { get; }
     DbSet<EmploymentActivity> EmploymentActivities { get; }
     DbSet<ISWActivity> ISWActivities { get; }

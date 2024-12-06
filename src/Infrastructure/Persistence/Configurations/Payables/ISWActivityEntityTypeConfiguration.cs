@@ -10,7 +10,7 @@ public class ISWActivityEntityTypeConfiguration : IEntityTypeConfiguration<ISWAc
     {
         builder.ToTable(
             DatabaseConstants.Tables.ISWActivities,
-            DatabaseConstants.Schemas.Participant);
+            DatabaseConstants.Schemas.Payables);
 
         builder.HasOne(a => a.Document)
             .WithMany()
