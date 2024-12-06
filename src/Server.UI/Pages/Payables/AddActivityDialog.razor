@@ -48,7 +48,6 @@
                             }
                         </MudSelect>
                     </MudItem>
-                    <EducationTraining @ref="EducationTraining" Model="AddEducationTrainingCommand"></EducationTraining>
                     <MudItem xs="12">
                         <MudDatePicker @bind-Date="Model.Completed"
                         For="() => Model.Completed"
@@ -79,9 +78,6 @@
     MudSelect<ActivityDefinition?> activityDropdown = new();
     MudForm form = new();
     IReadOnlyCollection<ActivityETEType> filteredTypes = [];
-
-    EducationTraining? EducationTraining { get; set; }
-    private AddEducationTraining.Command AddEducationTrainingCommand { get; set; } = new();
 
     bool saving;
 
@@ -131,11 +127,6 @@
         activities = ActivityDefinition.GetActivitiesForLocation(location.LocationType);
         filteredTypes = [];
         ClearSelectedActivity();
-    }
-    void ActivityChanged(ActivityDto activity){
-        if (activity.Type.Name == ActivityType.EducationAndTraining.Name){
-                AddEducationTrainingCommand = new AddEducationTraining.Command();
-        }
     }
 
     void ClearSelectedActivity()
