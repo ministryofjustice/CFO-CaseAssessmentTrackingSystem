@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Outbox;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.Documents;
@@ -73,6 +74,9 @@ public interface IApplicationDbContext
     DbSet<EmploymentActivity> EmploymentActivities { get; }
     DbSet<ISWActivity> ISWActivities { get; }
     DbSet<NonISWActivity> NonISWActivities { get; }
+
+
+    DbSet<OutboxMessage> OutboxMessages { get; }
 
 }
 

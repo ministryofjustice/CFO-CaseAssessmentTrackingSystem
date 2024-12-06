@@ -1,4 +1,5 @@
 using System.Reflection;
+using Cfo.Cats.Application.Outbox;
 using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Assessments;
@@ -81,7 +82,8 @@ public class ApplicationDbContext
     public DbSet<EmploymentActivity> EmploymentActivities => Set<EmploymentActivity>();
     public DbSet<ISWActivity> ISWActivities => Set<ISWActivity>();
     public DbSet<NonISWActivity> NonISWActivities => Set<NonISWActivity>();
-
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+    
     public DbSet<ParticipantIncomingTransferQueueEntry> ParticipantIncomingTransferQueue => Set<ParticipantIncomingTransferQueueEntry>();
     public DbSet<ParticipantOutgoingTransferQueueEntry> ParticipantOutgoingTransferQueue => Set<ParticipantOutgoingTransferQueueEntry>();
 

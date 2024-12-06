@@ -1,6 +1,6 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var sqlPassword = builder.AddParameter("sql-password", secret: true);
+var sqlPassword = builder.AddParameter("sqlPassword", secret: true);
 var rabbitUser = builder.AddParameter("rabbitUser", secret: true);
 var rabbitPassword = builder.AddParameter("rabbitPassword", secret: true);
 

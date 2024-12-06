@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241206101802_AddOutbox")]
+    partial class AddOutbox
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1515,80 +1518,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.ToTable("Timeline", "Participant");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.Activity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AdditionalInformation")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<DateTime>("Completed")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Definition")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ParticipantCurrentContractId")
-                        .HasColumnType("nvarchar(12)");
-
-                    b.Property<int>("ParticipantCurrentLocationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<int>("ParticipantStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("TookPlaceAtContractId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(12)");
-
-                    b.Property<int>("TookPlaceAtLocationId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParticipantCurrentContractId");
-
-                    b.HasIndex("ParticipantCurrentLocationId");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.HasIndex("TenantId");
-
-                    b.HasIndex("TookPlaceAtContractId");
-
-                    b.HasIndex("TookPlaceAtLocationId");
-
-                    b.ToTable("Activities", "Payables");
-
-                    b.UseTptMappingStrategy();
-                });
-
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")
@@ -1954,106 +1883,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("TenantLocation", "Configuration");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.EducationTrainingActivity", b =>
-                {
-                    b.HasBaseType("Cfo.Cats.Domain.Entities.Payables.Activity");
-
-                    b.Property<DateTime>("CourseCommencedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CourseCompletionStatus")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CourseLevel")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CourseTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CourseUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("DocumentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("Passed")
-                        .HasColumnType("bit");
-
-                    b.HasIndex("DocumentId");
-
-                    b.ToTable("EducationTrainingActivities", "Payables");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.EmploymentActivity", b =>
-                {
-                    b.HasBaseType("Cfo.Cats.Domain.Entities.Payables.Activity");
-
-                    b.Property<Guid>("DocumentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("EmployerName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("EmploymentCommenced")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EmploymentType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("JobTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("JobTitleCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double?>("Salary")
-                        .HasColumnType("float");
-
-                    b.HasIndex("DocumentId");
-
-                    b.ToTable("EmploymentActivities", "Payables");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.ISWActivity", b =>
-                {
-                    b.HasBaseType("Cfo.Cats.Domain.Entities.Payables.Activity");
-
-                    b.Property<DateTime>("BaselineAchievedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("DocumentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("HoursPerformedDuring")
-                        .HasColumnType("int");
-
-                    b.Property<int>("HoursPerformedPost")
-                        .HasColumnType("int");
-
-                    b.Property<int>("HoursPerformedPre")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("WraparoundSupportStartedOn")
-                        .HasColumnType("datetime2");
-
-                    b.HasIndex("DocumentId");
-
-                    b.ToTable("ISWActivities", "Payables");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.NonISWActivity", b =>
-                {
-                    b.HasBaseType("Cfo.Cats.Domain.Entities.Payables.Activity");
-
-                    b.ToTable("NonISWActivities", "Payables");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.Contract", b =>
@@ -3436,52 +3265,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("CreatedByUser");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.Activity", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Contract", "ParticipantCurrentContract")
-                        .WithMany()
-                        .HasForeignKey("ParticipantCurrentContractId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "ParticipantCurrentLocation")
-                        .WithMany()
-                        .HasForeignKey("ParticipantCurrentLocationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", null)
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Contract", "TookPlaceAtContract")
-                        .WithMany()
-                        .HasForeignKey("TookPlaceAtContractId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "TookPlaceAtLocation")
-                        .WithMany()
-                        .HasForeignKey("TookPlaceAtLocationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ParticipantCurrentContract");
-
-                    b.Navigation("ParticipantCurrentLocation");
-
-                    b.Navigation("TookPlaceAtContract");
-
-                    b.Navigation("TookPlaceAtLocation");
-                });
-
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationRoleClaim", b =>
                 {
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationRole", "Role")
@@ -3641,66 +3424,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.EducationTrainingActivity", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Documents.Document", "Document")
-                        .WithMany()
-                        .HasForeignKey("DocumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Payables.Activity", null)
-                        .WithOne()
-                        .HasForeignKey("Cfo.Cats.Domain.Entities.Payables.EducationTrainingActivity", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Document");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.EmploymentActivity", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Documents.Document", "Document")
-                        .WithMany()
-                        .HasForeignKey("DocumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Payables.Activity", null)
-                        .WithOne()
-                        .HasForeignKey("Cfo.Cats.Domain.Entities.Payables.EmploymentActivity", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Document");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.ISWActivity", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Documents.Document", "Document")
-                        .WithMany()
-                        .HasForeignKey("DocumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Payables.Activity", null)
-                        .WithOne()
-                        .HasForeignKey("Cfo.Cats.Domain.Entities.Payables.ISWActivity", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Document");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.NonISWActivity", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Payables.Activity", null)
-                        .WithOne()
-                        .HasForeignKey("Cfo.Cats.Domain.Entities.Payables.NonISWActivity", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
