@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.Notifications;
+using Cfo.Cats.Domain.Entities.Payables;
 
 namespace Cfo.Cats.Application.Common.Interfaces;
 
@@ -67,5 +68,10 @@ public interface IApplicationDbContext
 
     DbSet<WingInduction> WingInductions { get; }
     DbSet<Notification> Notifications { get; }
+    DbSet<EducationTrainingActivity> EducationTrainingActivities { get; }
+    DbSet<EmploymentActivity> EmploymentActivities { get; }
+    DbSet<ISWActivity> ISWActivities { get; }
+    DbSet<NonISWActivity> NonISWActivities { get; }
+
 }
 

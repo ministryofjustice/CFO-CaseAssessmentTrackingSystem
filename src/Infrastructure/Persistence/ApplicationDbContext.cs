@@ -10,6 +10,7 @@ using Cfo.Cats.Infrastructure.Persistence.Configurations.Enrolments;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.Notifications;
+using Cfo.Cats.Domain.Entities.Payables;
 
 namespace Cfo.Cats.Infrastructure.Persistence;
 
@@ -74,6 +75,11 @@ public class ApplicationDbContext
     public DbSet<ParticipantAccessAuditTrail> AccessAuditTrails => Set<ParticipantAccessAuditTrail>();
     
     public DbSet<Notification> Notifications => Set<Notification>();
+
+    public DbSet<EducationTrainingActivity> EducationTrainingActivities => Set<EducationTrainingActivity>();
+    public DbSet<EmploymentActivity> EmploymentActivities => Set<EmploymentActivity>();
+    public DbSet<ISWActivity> ISWActivities => Set<ISWActivity>();
+    public DbSet<NonISWActivity> NonISWActivities => Set<NonISWActivity>();
 
     public DbSet<ParticipantIncomingTransferQueueEntry> ParticipantIncomingTransferQueue => Set<ParticipantIncomingTransferQueueEntry>();
     public DbSet<ParticipantOutgoingTransferQueueEntry> ParticipantOutgoingTransferQueue => Set<ParticipantOutgoingTransferQueueEntry>();
