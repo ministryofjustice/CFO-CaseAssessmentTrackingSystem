@@ -1,3 +1,3 @@
-﻿namespace Cfo.Cats.Application.Features.Participants.Contracts;
+﻿namespace Cfo.Cats.Contracts.IntegrationEvents.Enrolments;
 
 public record EnrolmentApprovedIntegrationEvent(string ParticipantId);

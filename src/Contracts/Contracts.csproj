@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <RootNamespace>Cfo.Cats.Contracts</RootNamespace>
+        <AssemblyName>Cfo.Cats.Contracts</AssemblyName>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>default</LangVersion>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <NuGetAudit>false</NuGetAudit>
+    </PropertyGroup>
+
+</Project>

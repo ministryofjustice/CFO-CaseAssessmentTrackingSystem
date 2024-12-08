@@ -41,6 +41,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aspire.AppHost", "src\Aspir
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aspire.ServiceDefaults", "src\Aspire\Aspire.ServiceDefaults\Aspire.ServiceDefaults.csproj", "{434C903B-00A1-4AD0-AA26-8AE0560C3AE3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "src\Contracts\Contracts.csproj", "{F8C545CC-4AF5-4FC0-90C7-966082E19D64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Management", "src\Management\Management.csproj", "{6C5DDD70-96A4-4D59-AF91-930B48224056}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +87,14 @@ Global
 		{434C903B-00A1-4AD0-AA26-8AE0560C3AE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{434C903B-00A1-4AD0-AA26-8AE0560C3AE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{434C903B-00A1-4AD0-AA26-8AE0560C3AE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8C545CC-4AF5-4FC0-90C7-966082E19D64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8C545CC-4AF5-4FC0-90C7-966082E19D64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8C545CC-4AF5-4FC0-90C7-966082E19D64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8C545CC-4AF5-4FC0-90C7-966082E19D64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C5DDD70-96A4-4D59-AF91-930B48224056}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C5DDD70-96A4-4D59-AF91-930B48224056}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C5DDD70-96A4-4D59-AF91-930B48224056}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C5DDD70-96A4-4D59-AF91-930B48224056}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -99,6 +111,8 @@ Global
 		{7BEB31CD-0784-4CE9-8261-A77A1D76D5F4} = {28581377-5421-47F6-A678-9510117A7791}
 		{D195114F-DD86-45A0-93C7-081259B0D7C6} = {7BEB31CD-0784-4CE9-8261-A77A1D76D5F4}
 		{434C903B-00A1-4AD0-AA26-8AE0560C3AE3} = {7BEB31CD-0784-4CE9-8261-A77A1D76D5F4}
+		{F8C545CC-4AF5-4FC0-90C7-966082E19D64} = {28581377-5421-47F6-A678-9510117A7791}
+		{6C5DDD70-96A4-4D59-AF91-930B48224056} = {28581377-5421-47F6-A678-9510117A7791}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {916B96E7-FFB9-4D43-A9BD-88CB137B2783}

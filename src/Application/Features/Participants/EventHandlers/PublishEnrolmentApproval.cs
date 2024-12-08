@@ -1,5 +1,5 @@
-﻿using Cfo.Cats.Application.Features.Participants.Contracts;
-using Cfo.Cats.Application.Outbox;
+﻿using Cfo.Cats.Application.Outbox;
+using Cfo.Cats.Contracts.IntegrationEvents.Enrolments;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Participants.EventHandlers;
