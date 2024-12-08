@@ -1,7 +1,7 @@
 ﻿using Cfo.Cats.Contracts.IntegrationEvents.Enrolments;
 using MassTransit;
 
-namespace Cfo.Cats.Application.Features.Participants.Consumers;
+namespace Management;
 
 public class EnrolmentApprovedIntegrationEventConsumer(ILogger<EnrolmentApprovedIntegrationEventConsumer> logger) : IConsumer<EnrolmentApprovedIntegrationEvent>
 {

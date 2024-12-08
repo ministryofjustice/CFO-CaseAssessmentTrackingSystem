@@ -20,9 +20,9 @@ builder.AddProject<Projects.Server_Ui>("cats")
     .WithReference(rabbit)
     .WaitFor(db);
 
-builder.AddProject<Projects.Management>("cats-mi");
+builder.AddProject<Projects.Management>("cats-mi")
+    .WithReference(rabbit)
+    .WaitFor(rabbit);
     
-
-
 
 builder.Build().Run();
