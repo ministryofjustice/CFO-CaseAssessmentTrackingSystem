@@ -23,7 +23,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0" />
         <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="9.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="System.Linq.Dynamic.Core" Version="1.4.9" />
+        <PackageReference Include="System.Linq.Dynamic.Core" Version="1.5.0" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Domain\Domain.csproj" />
