@@ -12,6 +12,7 @@ public static class AddActivity
     public class Command : IRequest<Result>
     {
         public required string ParticipantId { get; set; }
+        public required Guid TaskId { get; set; }
         public LocationDto? Location { get; set; }
 
         [Description("Activity/ETE")]
@@ -50,6 +51,7 @@ public static class AddActivity
             var cxt = new Activity.ActivityContext(
                 Definition: request.ActivityDefinition!,
                 ParticipantId: participant.Id,
+                TaskId: request.TaskId,
                 TookPlaceAtLocation: location,
                 TookPlaceAtContract: location.Contract,
                 ParticipantCurrentLocation: participant.CurrentLocation,
