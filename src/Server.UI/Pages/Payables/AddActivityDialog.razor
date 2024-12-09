@@ -48,9 +48,6 @@
                             }
                         </MudSelect>
                     </MudItem>
-                    <MudItem>
-                        <Isw @ref="Isw" Model="AddIswCommand"></Isw>
-                    </MudItem>
                     <MudItem xs="12">
                         <MudDatePicker @bind-Date="Model.Completed"
                         For="() => Model.Completed"
@@ -81,7 +78,7 @@
                                 }
                                 else if(Model.ActivityDefinition.ClassificationType == ClassificationType.ISWActivity)
                                 {
-                                    <MudText>ISW Template</MudText>
+                                    <Isw Model="new AddIsw.Command()"></Isw>
                                 }
 
                             </MudItem>
@@ -102,10 +99,6 @@
     MudSelect<ActivityDefinition?> activityDropdown = new();
     MudForm form = new();
     IReadOnlyCollection<ActivityETEType> filteredTypes = [];
-
-    Isw? Isw { get; set; }
-    //private AddEmployment.Command AddEmploymentCommand { get; set; } = null!;
-    private AddIsw.Command AddIswCommand { get; set; } = new();
 
     bool saving;
 

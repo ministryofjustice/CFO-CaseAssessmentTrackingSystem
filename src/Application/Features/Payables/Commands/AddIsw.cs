@@ -24,16 +24,16 @@ public static class AddIsw
         public DateTime? BaselineAchievedDate { get; set; }
 
         [Description("Total Hours Performed Pre-intervention")]
-        public decimal? TotalHoursPerformedPreIntervention { get; set; }
+        public decimal TotalHoursPerformedPreIntervention { get; set; } = 0;
 
         [Description("Total Hours Performed During Intervention")]
-        public decimal? TotalHoursPerformedDuringIntervention { get; set; }
+        public decimal TotalHoursPerformedDuringIntervention { get; set; } = 0;
 
         [Description("Total Hours Performed After Intervention")]
-        public decimal? TotalHoursPerformedAfterIntervention { get; set; }
+        public decimal TotalHoursPerformedAfterIntervention { get; set; } = 0;
 
-        [Description("Additional Information")]
-        public string? AdditionalInformation { get; set; }
+        [Description("Upload ISW Template")]
+        public IBrowserFile? Document { get; set; }
     }
 
     class Handler: IRequestHandler<Command, Result<bool>>
@@ -70,7 +70,43 @@ public static class AddIsw
 
             RuleFor(c => c.TotalHoursPerformedAfterIntervention.ToString())
                 .Matches(ValidationConstants.NumberBetweenZeroAndTenWithQuarterIncrement)
-                .WithMessage("You must enter a valid value for Total hours performed after intervention i.e. number with a Maximum of 2 digits after decimal point for example 1.25,2.5 or 4.75 etc.");
+                .WithMessage("You must enter a valid value for Total hours performed after intervention i.e. number with a Maximum of 2 digits after decimal point for example 1.25, 2.5 or 4.75 etc.");
+
+            RuleFor(v => v.Document)
+                    .NotNull()
+                    .WithMessage("You must upload a Right to Work document")
+                    .Must(file => NotExceedMaximumFileSize(file, Infrastructure.Constants.Documents.RightToWork.MaximumSizeInMegabytes))
+                    .WithMessage($"File size exceeds the maxmimum allowed size of {Infrastructure.Constants.Documents.RightToWork.MaximumSizeInMegabytes} megabytes")
+                    .MustAsync(BePdfFile)
+                    .WithMessage("File is not a PDF");
+        }
+
+        private static bool NotExceedMaximumFileSize(IBrowserFile? file, double maxSizeMB)
+            => file?.Size < ByteSize.FromMegabytes(maxSizeMB).Bytes;
+
+        private async Task<bool> BePdfFile(IBrowserFile? file, CancellationToken cancellationToken)
+        {
+            if (file is null)
+                return false;
+
+            // Check file extension
+            if (!Path.GetExtension(file.Name).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            // Check MIME type
+            if (file.ContentType != "application/pdf")
+                return false;
+
+            long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.RightToWork.MaximumSizeInMegabytes).Bytes);
+
+            // Check file signature (magic numbers)
+            using (var stream = file.OpenReadStream(maxSizeBytes, cancellationToken))
+            {
+                byte[] buffer = new byte[4];
+                await stream.ReadExactlyAsync(buffer.AsMemory(0, 4), cancellationToken);
+                string header = System.Text.Encoding.ASCII.GetString(buffer);
+                return header == "%PDF";
+            }
         }
 
     }

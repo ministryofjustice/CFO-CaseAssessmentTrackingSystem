@@ -2,6 +2,7 @@
 @using Cfo.Cats.Application.Features.Payables.DTOs
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Payables.Components
+@using Humanizer
 @inherits CatsComponentBase
 
 @inject IStringLocalizer<Isw> L
@@ -10,17 +11,17 @@
     <MudGrid>
         <MudItem xs="12">
             <MudDatePicker @bind-Date="Model.WraparoundSupportStartDate"
-                           For="() => Model.WraparoundSupportStartDate"
-                           Label="@Model.GetMemberDescription(x => x.WraparoundSupportStartDate)"
-                            Editable="true"
-                            PickerVariant="PickerVariant.Dialog" />
+            For="() => Model.WraparoundSupportStartDate"
+            Label="@Model.GetMemberDescription(x => x.WraparoundSupportStartDate)"
+            Editable="true"
+            PickerVariant="PickerVariant.Dialog" />
         </MudItem>
         <MudItem xs="12">
             <MudDatePicker @bind-Date="Model.BaselineAchievedDate"
-                           For="() => Model.BaselineAchievedDate"
-                           Label="@Model.GetMemberDescription(x => x.BaselineAchievedDate)"
-                            Editable="true"
-                            PickerVariant="PickerVariant.Dialog" />
+            For="() => Model.BaselineAchievedDate"
+            Label="@Model.GetMemberDescription(x => x.BaselineAchievedDate)"
+            Editable="true"
+            PickerVariant="PickerVariant.Dialog" />
         </MudItem>
         <MudItem xs="12">
             <MudNumericField Label="@Model.GetMemberDescription(x => x.TotalHoursPerformedPreIntervention)" Value="Model.TotalHoursPerformedPreIntervention" Step="0.25M" Min="0" Max="10" />
@@ -32,19 +33,53 @@
             <MudNumericField Label="@Model.GetMemberDescription(x => x.TotalHoursPerformedAfterIntervention)" Value="Model.TotalHoursPerformedAfterIntervention" Step="0.25M" Min="0" Max="10" />
         </MudItem>
         <MudItem xs="12">
-            <MudTextField @bind-Value="@Model.AdditionalInformation"
-            For="@(() => Model.AdditionalInformation)"
-            Lines="5"
-            Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
-            Placeholder="Use this area to provide any additional information with regards to Employment.">
-            </MudTextField>
+            <div class="mb-4 mt-8">
+                <MudFileUpload @bind-Files="Model.Document"
+                For="() => Model.Document"
+                MaximumFileCount="1"
+                Accept=".pdf" Disabled="Disabled">
+                    <ActivatorContent>
+                        <MudLoadingButton Loading="uploading"
+                        Variant="Variant.Outlined"
+                        Color="Color.Primary"
+                        StartIcon="@Icons.Material.Filled.Upload">
+                            @if (uploading)
+                            {
+                                @ConstantString.Uploading
+                            }
+                            else
+                            {
+                                @ConstantString.Upload
+                            }
+                        </MudLoadingButton>
+                    </ActivatorContent>
+                    <SelectedTemplate>
+                        <br />
+                        @if (context != null)
+                        {
+                            <MudText>
+                                Employment template uploaded:  @context.Name
+                            </MudText>
+                        }
+                        else
+                        {
+                            <MudText>No Files</MudText>
+                        }
+                        <br />
+                    </SelectedTemplate>
+                </MudFileUpload>
+            </div>
         </MudItem>
     </MudGrid>
 }
 @code {
+    private bool uploading = false;
+
     [Inject]
     private IPicklistService PicklistService { get; set; } = default!;
+
     [Parameter, EditorRequired]
     public required AddIsw.Command Model { get; set; }
 
+    bool Disabled = false;
 }
