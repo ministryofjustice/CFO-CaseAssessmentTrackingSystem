@@ -1,0 +1,65 @@
+﻿@using Cfo.Cats.Application.Features.Payables.DTOs
+@using Cfo.Cats.Application.Features.Payables.Queries
+@using Humanizer
+
+@inherits CatsComponentBase
+
+<MudDialog>
+    <DialogContent>
+        <MudList T="ActivitySummaryDto">
+            @foreach(var activity in activities)
+            {
+                <MudListItem>
+                    <ChildContent>
+                        <div class="d-flex justify-space-between align-center width-90">
+                            <div>
+                                <MudText Typo="Typo.caption" Color="Color.Info">@activity.Definition.Type.Name</MudText>
+                                <MudText Typo="Typo.body1">@activity.Definition.Category.Name</MudText>
+                                <MudText Typo="Typo.body2">Completed @activity.Completed.Humanize()</MudText>
+                            </div>
+                        </div>
+                    </ChildContent>
+                    <NestedList>
+                        @* Additional Information, ETE/ISW specific fields *@
+                    </NestedList>
+                </MudListItem>
+            }
+        </MudList>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Dialog.Cancel">@ConstantString.Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    IEnumerable<ActivitySummaryDto> activities = [];
+    //bool loading;
+
+    [Parameter, EditorRequired]
+    public required GetAllActivities.Query Model { get; set; }
+
+    [CascadingParameter]
+    public required MudDialogInstance Dialog { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            //loading = true;
+
+            var result = await GetNewMediator().Send(Model);
+
+            if(result is { Succeeded: true, Data: not null })
+            {
+                activities = result.Data;
+            }
+
+        }
+        finally
+        {
+            //loading = false;
+        }
+
+        await base.OnInitializedAsync();
+    }
+}
