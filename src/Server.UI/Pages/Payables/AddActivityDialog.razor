@@ -1,5 +1,6 @@
 @using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Payables.Commands
+@using Cfo.Cats.Application.Features.Payables.Queries
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Payables.Components
 
@@ -19,7 +20,7 @@
                         <MudChipSet @bind-SelectedValues="filteredTypes"
                         Disabled="Disabled"
                         SelectionMode="SelectionMode.MultiSelection">
-                            @foreach (var type in ActivityETEType.List)
+                            @foreach (var type in ActivityType.List)
                             {
                                 <MudChip Value="type" 
                                 SelectedColor="Color.Info" 
@@ -31,23 +32,34 @@
                     </MudItem>
                     <MudItem xs="12">
                         <MudSelect @ref="activityDropdown"
-                        @bind-Value="Model.ActivityDefinition"
+                        T="ActivityDefinition"
+                        ValueChanged="ActivityChanged"
                         Disabled="Disabled"
                         Label="@Model.GetMemberDescription(x => x.ActivityDefinition)"
                         For="() => Model.ActivityDefinition">
                             @foreach (var activity in activities
-                            .Where(activity => filteredTypes.Count is 0 || filteredTypes.Contains(activity.ActivityETEType))
-                            .OrderByDescending(activity => activity.Name))
+                           .Where(activity => filteredTypes.Count is 0 || filteredTypes.Contains(activity.Type))
+                           .OrderByDescending(activity => activity.Name))
                             {
                                 <MudSelectItem Value="activity">
                                     <div class="d-flex gap-2 align-center">
-                                        <MudChip T="string" Size="Size.Small" Text="@activity.ActivityETEType.ShortenedDisplayName" Color="Color.Secondary" />
-                                        @activity.ActivityTitle
+                                        <MudChip T="string" Size="Size.Small" Text="@activity.Type.Name" Color="Color.Secondary" />
+                                        @activity.Category.Name
                                     </div>
                                 </MudSelectItem>
                             }
                         </MudSelect>
                     </MudItem>
+
+                    @if (hasSelectedActivityAlreadyBeenAddedToday)
+                    {
+                        <MudItem xs="12">
+                            <MudAlert Severity="Severity.Warning">
+                                This activity was added recently. Did you mean to choose a different activity?
+                            </MudAlert>
+                        </MudItem>
+                    }
+
                     <MudItem xs="12">
                         <MudDatePicker @bind-Date="Model.Completed"
                         For="() => Model.Completed"
@@ -63,10 +75,10 @@
                         For="() => Model.AdditionalInformation"
                         Lines="5" />
                     </MudItem>
-                        @if (Model.ActivityDefinition is { ClassificationType.RequiresFurtherInformation: true })
-                        {
-                            <MudItem xs="12">
-                                <MudAlert Severity="Severity.Info">Further information is required for this type of activity</MudAlert>
+                    @if (Model.ActivityDefinition is { Classification.RequiresFurtherInformation: true })
+                    {
+                        <MudItem xs="12">
+                            <MudAlert Severity="Severity.Info">Further information is required for this type of activity</MudAlert>
 
                                 @if(Model.ActivityDefinition.ClassificationType == ClassificationType.Employment)
                                 {
@@ -81,8 +93,8 @@
                                     <Isw Model="new AddIsw.Command()"></Isw>
                                 }
 
-                            </MudItem>
-                        }
+                        </MudItem>
+                    }
                 </MudGrid>
 
             </MudForm>
@@ -98,10 +110,10 @@
     IEnumerable<ActivityDefinition> activities = [];
     MudSelect<ActivityDefinition?> activityDropdown = new();
     MudForm form = new();
-    IReadOnlyCollection<ActivityETEType> filteredTypes = [];
+    IReadOnlyCollection<ActivityType> filteredTypes = [];
 
     bool saving;
-
+    bool hasSelectedActivityAlreadyBeenAddedToday;
     bool Disabled => Model.Location is null;
 
     [CascadingParameter]
@@ -150,6 +162,19 @@
         ClearSelectedActivity();
     }
 
+    async Task ActivityChanged(ActivityDefinition definition)
+    {
+        Model.ActivityDefinition = definition;
+
+        hasSelectedActivityAlreadyBeenAddedToday = definition is not null && await GetNewMediator().Send(new ExistsByCategory.Query()
+        {
+            Category = definition.Category,
+            ParticipantId = Model.ParticipantId,
+            AddedOn = DateTime.UtcNow.Date
+        });
+        
+    }
+
     void ClearSelectedActivity()
     { 
         if (activityDropdown.Value is not null)
@@ -158,5 +183,5 @@
         }
     }
 
-    bool IsAvailableAtSelectedLocation(ActivityETEType type) => activities.Any(activity => activity.ActivityETEType == type);
+    bool IsAvailableAtSelectedLocation(ActivityType type) => activities.Any(activity => activity.Type == type);
 }
