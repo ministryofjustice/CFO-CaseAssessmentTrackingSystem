@@ -48,6 +48,9 @@
                             }
                         </MudSelect>
                     </MudItem>
+                    <MudItem>
+                        <Isw @ref="Isw" Model="AddIswCommand"></Isw>
+                    </MudItem>
                     <MudItem xs="12">
                         <MudDatePicker @bind-Date="Model.Completed"
                         For="() => Model.Completed"
@@ -84,6 +87,7 @@
                             </MudItem>
                         }
                 </MudGrid>
+
             </MudForm>
         }
     </DialogContent>
@@ -99,6 +103,9 @@
     MudForm form = new();
     IReadOnlyCollection<ActivityETEType> filteredTypes = [];
 
+    Isw? Isw { get; set; }
+    //private AddEmployment.Command AddEmploymentCommand { get; set; } = null!;
+    private AddIsw.Command AddIswCommand { get; set; } = new();
     bool saving;
 
     bool Disabled => Model.Location is null;
@@ -147,6 +154,11 @@
         activities = ActivityDefinition.GetActivitiesForLocation(location.LocationType);
         filteredTypes = [];
         ClearSelectedActivity();
+    }
+    void ActivityChanged(ActivityDto activity){
+        // if(activity.Type.Name == ActivityType.Isw.Name){
+        //         AddIswCommand = new AddIsw.Command();
+        // }
     }
 
     void ClearSelectedActivity()
