@@ -29,6 +29,7 @@ public abstract class Activity : BaseAuditableEntity<Guid>
     protected Activity(ActivityContext context)
     {
         Definition = context.Definition;
+        Category = context.Definition.Category;
         ParticipantId = context.ParticipantId;
         TookPlaceAtLocation = context.TookPlaceAtLocation;
         TookPlaceAtContract = context.TookPlaceAtContract;
@@ -44,6 +45,7 @@ public abstract class Activity : BaseAuditableEntity<Guid>
     }
 
     public ActivityDefinition Definition { get; protected set; }
+    public ActivityCategory Category { get; init; }
     public string ParticipantId { get; protected set; }
     public virtual Location TookPlaceAtLocation { get; protected set; }
     public virtual Contract TookPlaceAtContract { get; protected set; }

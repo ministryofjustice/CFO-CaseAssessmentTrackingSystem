@@ -64,5 +64,12 @@ internal class ActivityEntityTypeConfiguration : IEntityTypeConfiguration<Activi
                 s => s!.Value,
                 s => ActivityStatus.FromValue(s)
             );
+
+        builder.Property(a => a.Category)
+            .IsRequired()
+            .HasConversion(
+                c => c!.Value,
+                c => ActivityCategory.FromValue(c)
+            );
     }
 }
