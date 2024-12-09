@@ -2,6 +2,7 @@
 @using Cfo.Cats.Application.Features.PathwayPlans.Commands
 @using Cfo.Cats.Application.Features.PathwayPlans.DTOs
 @using Cfo.Cats.Application.Features.Payables.Commands
+@using Cfo.Cats.Application.Features.Payables.Queries
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Payables
 @using Humanizer
@@ -88,7 +89,10 @@
                     </MudMenu>
                 </MudTooltip>
                 <MudTooltip Text="Expand">
-                    <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="Expand" Variant="Variant.Filled" Size="Size.Small" />
+                    <MudMenu Icon="@Icons.Material.Filled.OpenInNew" Variant="Variant.Filled" Disabled="Model.IsCompleted" Size="Size.Small" Dense>
+                        <MudMenuItem OnClick="Expand">Expand</MudMenuItem>
+                        <MudMenuItem OnClick="ShowActivityHistory">Activity/ETE history</MudMenuItem>
+                    </MudMenu>
                 </MudTooltip>
                 <MudTooltip>
                     <TooltipContent>
@@ -233,10 +237,42 @@
     {
         var parameters = new DialogParameters<AddActivityDialog>()
         {
-            { x => x.Model, new AddActivity.Command() { ParticipantId = ParticipantSummaryDto.Id } }
+            { 
+                x => x.Model, new AddActivity.Command() 
+                { 
+                    ParticipantId = ParticipantSummaryDto.Id,
+                    TaskId = Model.Id
+                } 
+            }
         };
 
         var dialog = DialogService.Show<AddActivityDialog>("Add Activity/ETE", parameters, new DialogOptions
+        {
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true,
+            CloseButton = true
+        });
+
+        if (await dialog.Result is not { Canceled: true })
+        {
+            await OnChange.InvokeAsync();
+        }
+    }
+
+    async Task ShowActivityHistory()
+    {
+        var parameters = new DialogParameters<ActivitiesDialog>()
+        {
+            {
+                x => x.Model, new GetAllActivities.Query()
+                {
+                    ParticipantId = ParticipantSummaryDto.Id,
+                    TaskId = Model.Id
+                }
+            }
+        };
+
+        var dialog = DialogService.Show<ActivitiesDialog>("Activity/ETE history", parameters, new DialogOptions
         {
             MaxWidth = MaxWidth.Small,
             FullWidth = true,

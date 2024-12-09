@@ -11,6 +11,7 @@ public abstract class Activity : BaseAuditableEntity<Guid>
     public record ActivityContext(
         ActivityDefinition Definition,
         string ParticipantId,
+        Guid TaskId,
         Location TookPlaceAtLocation,
         Contract TookPlaceAtContract,
         Location ParticipantCurrentLocation,
@@ -47,6 +48,7 @@ public abstract class Activity : BaseAuditableEntity<Guid>
     public ActivityDefinition Definition { get; protected set; }
     public ActivityCategory Category { get; init; }
     public string ParticipantId { get; protected set; }
+    public Guid TaskId { get; set; }
     public virtual Location TookPlaceAtLocation { get; protected set; }
     public virtual Contract TookPlaceAtContract { get; protected set; }
     public virtual Location ParticipantCurrentLocation { get; protected set; }
