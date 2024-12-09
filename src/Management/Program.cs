@@ -7,6 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.AddServiceDefaults();
+
+
 builder.Services.AddMassTransit(x => {
     
     x.AddConsumer<EnrolmentApprovedIntegrationEventConsumer>();
@@ -20,12 +23,14 @@ builder.Services.AddMassTransit(x => {
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
+app.MapDefaultEndpoints();
 app.UseHttpsRedirection();
 
 var summaries = new[]

@@ -21,7 +21,7 @@ internal sealed class OutboxProcessor(ApplicationDbContext dataSource, IPublishE
         {
             try
             {
-                var messageType = typeof(OutboxMessage).Assembly.GetType(outboxMessage.Type)!;
+                var messageType = Contracts.AssemblyInformation.Assembly.GetType(outboxMessage.Type)!;
                 var deserializedMessage = JsonSerializer.Deserialize(outboxMessage.Content, messageType)!;
 
                 await publishEndpoint.Publish(deserializedMessage, messageType, cancellationToken);
