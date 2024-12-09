@@ -48,11 +48,6 @@ namespace Cfo.Cats.Application.Common.Validators
         public const string TenantDomainMessage = "Must be in the format '@example.com'";
 
         public const string NumberBetweenZeroAndTenWithQuarterIncrement = @"^(10(\.00?)?|[0-9](\.(00?|25|50?|75?))?|\.(00?|25|50?|75?)?)$";
-
-
-
         public const string NumberWithTwoDecimalPlaces = @"^[0-9]*\.?[0-9]{1,2}$";
-
-        
     }
 }
