@@ -48,10 +48,21 @@ public static class AddActivity
                 return Result.Failure("Activities cannot be recorded against the chosen location");
             }
 
+            var task = await unitOfWork.DbContext.PathwayPlans
+                .SelectMany(p => p.Objectives)
+                .SelectMany(o => o.Tasks.Where(task => task.Id == request.TaskId))
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if(task is null)
+            {
+                return Result.Failure("Task not found");
+            }
+
             var cxt = new Activity.ActivityContext(
                 Definition: request.ActivityDefinition!,
                 ParticipantId: participant.Id,
-                TaskId: request.TaskId,
+                Task: task,
                 TookPlaceAtLocation: location,
                 TookPlaceAtContract: location.Contract,
                 ParticipantCurrentLocation: participant.CurrentLocation,

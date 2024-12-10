@@ -1,9 +1,12 @@
-﻿@using Cfo.Cats.Application.Features.PathwayPlans.Commands
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.PathwayPlans.Commands
 @using Cfo.Cats.Application.Features.PathwayPlans.DTOs
 @using Cfo.Cats.Application.Features.PathwayPlans.Queries
+@using Cfo.Cats.Application.Features.Payables.Queries
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Objectives
 @using Cfo.Cats.Server.UI.Pages.Objectives.Tasks
+@using Cfo.Cats.Server.UI.Pages.Payables
 @using Humanizer
 
 @inherits CatsComponentBase
@@ -63,6 +66,10 @@
                 <MudIconButton OnClick="Expand" Icon="@Icons.Material.Filled.OpenInNew" />
             </MudTooltip>
 
+            <MudTooltip Text="Activity/ETE History">
+                <MudIconButton OnClick="ShowActivityHistory" Icon="@Icons.Material.Filled.LibraryBooks" />
+            </MudTooltip>
+
             @if(Model.IsCompleted is false)
             {
                 <MudTooltip Text="New Task">
@@ -74,6 +81,9 @@
 </MudListItem>
 
 @code {
+    [CascadingParameter]
+    public required ParticipantSummaryDto ParticipantSummaryDto { get; set; }
+
     [Parameter, EditorRequired]
     public required ObjectiveDto Model { get; set; }
 
@@ -189,4 +199,31 @@
 
         }
     }
+
+    async Task ShowActivityHistory()
+    {
+        var parameters = new DialogParameters<ActivitiesDialog>()
+        {
+            {
+                x => x.Model, new ActivitiesWithPagination.Query()
+                {
+                    ParticipantId = ParticipantSummaryDto.Id,
+                    ObjectiveId = Model.Id
+                }
+            }
+        };
+
+        var dialog = DialogService.Show<ActivitiesDialog>("Activity/ETE history", parameters, new DialogOptions
+        {
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true,
+            CloseButton = true
+        });
+
+        if (await dialog.Result is not { Canceled: true })
+        {
+            await OnChange.InvokeAsync();
+        }
+    }
+
 }
