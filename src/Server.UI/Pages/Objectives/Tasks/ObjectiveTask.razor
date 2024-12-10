@@ -264,7 +264,7 @@
         var parameters = new DialogParameters<ActivitiesDialog>()
         {
             {
-                x => x.Model, new GetAllActivities.Query()
+                x => x.Model, new ActivitiesWithPagination.Query()
                 {
                     ParticipantId = ParticipantSummaryDto.Id,
                     TaskId = Model.Id
