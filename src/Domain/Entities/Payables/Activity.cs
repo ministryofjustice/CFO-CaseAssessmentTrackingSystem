@@ -1,12 +1,12 @@
-using Ardalis.SmartEnum;
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Payables;
 
-public abstract class Activity : BaseAuditableEntity<Guid>
+public abstract class Activity : OwnerPropertyEntity<Guid>
 {
     public record ActivityContext(
         ActivityDefinition Definition,
@@ -39,13 +39,14 @@ public abstract class Activity : BaseAuditableEntity<Guid>
         Completed = context.Completed;
         TenantId = context.TenantId;
         AdditionalInformation = context.AdditionalInformation;
-        Status = ActivityStatus.Submitted;
+        Status = ActivityStatus.CreatingStatus;
 
         AddDomainEvent(new ActivityCreatedDomainEvent(this));
     }
 
     public ActivityDefinition Definition { get; protected set; }
     public ActivityCategory Category { get; init; }
+    public virtual Participant? Participant { get; protected set; }
     public string ParticipantId { get; protected set; }
     public virtual Location TookPlaceAtLocation { get; protected set; }
     public virtual Contract TookPlaceAtContract { get; protected set; }
@@ -69,5 +70,4 @@ public abstract class Activity : BaseAuditableEntity<Guid>
     }
 
     public bool RequiresQa => Definition.CheckType == CheckType.QA;
-
 }

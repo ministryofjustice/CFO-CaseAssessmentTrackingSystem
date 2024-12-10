@@ -85,6 +85,8 @@ public class ApplicationDbContext
     public DbSet<ParticipantIncomingTransferQueueEntry> ParticipantIncomingTransferQueue => Set<ParticipantIncomingTransferQueueEntry>();
     public DbSet<ParticipantOutgoingTransferQueueEntry> ParticipantOutgoingTransferQueue => Set<ParticipantOutgoingTransferQueueEntry>();
 
+    public DbSet<ActivityPqaQueueEntry> ActivityPqaQueue => Set<ActivityPqaQueueEntry>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

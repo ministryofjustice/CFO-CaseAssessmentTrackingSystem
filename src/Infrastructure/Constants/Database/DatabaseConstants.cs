@@ -66,6 +66,8 @@ internal static class DatabaseConstants
         public const string WingInductionPhase = nameof(WingInductionPhase);
 
         public const string Notification = nameof(Notification);
+
+        public const string ActivityPqaQueue = "ActivityPqaQueue";        
     }
     public static class Schemas
     {
