@@ -8,69 +8,78 @@
 @inject IStringLocalizer<Isw> L
 @if (Model is not null)
 {
-    <MudGrid>
-        <MudItem xs="12">
-            <MudDatePicker @bind-Date="Model.WraparoundSupportStartDate"
-            For="() => Model.WraparoundSupportStartDate"
-            Label="@Model.GetMemberDescription(x => x.WraparoundSupportStartDate)"
-            Editable="true"
-            PickerVariant="PickerVariant.Dialog" />
-        </MudItem>
-        <MudItem xs="12">
-            <MudDatePicker @bind-Date="Model.BaselineAchievedDate"
-            For="() => Model.BaselineAchievedDate"
-            Label="@Model.GetMemberDescription(x => x.BaselineAchievedDate)"
-            Editable="true"
-            PickerVariant="PickerVariant.Dialog" />
-        </MudItem>
-        <MudItem xs="12">
-            <MudNumericField Label="@Model.GetMemberDescription(x => x.TotalHoursPerformedPreIntervention)" Value="Model.TotalHoursPerformedPreIntervention" Step="0.25M" Min="0" Max="10" />
-        </MudItem>
-        <MudItem xs="12">
-            <MudNumericField Label="@Model.GetMemberDescription(x => x.TotalHoursPerformedDuringIntervention)" Value="Model.TotalHoursPerformedDuringIntervention" Step="0.25M" Min="0" Max="10" />
-        </MudItem>
-        <MudItem xs="12">
-            <MudNumericField Label="@Model.GetMemberDescription(x => x.TotalHoursPerformedAfterIntervention)" Value="Model.TotalHoursPerformedAfterIntervention" Step="0.25M" Min="0" Max="10" />
-        </MudItem>
-        <MudItem xs="12">
-            <div class="mb-4 mt-8">
-                <MudFileUpload @bind-Files="Model.Document"
-                For="() => Model.Document"
-                MaximumFileCount="1"
-                Accept=".pdf" Disabled="Disabled">
-                    <ActivatorContent>
-                        <MudLoadingButton Loading="uploading"
-                        Variant="Variant.Outlined"
-                        Color="Color.Primary"
-                        StartIcon="@Icons.Material.Filled.Upload">
-                            @if (uploading)
+    <MudForm @ref="@form" Model="@Model" Validation="@(Validator.ValidateValue(Model))">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudDatePicker @bind-Date="Model.WraparoundSupportStartDate"
+                For="() => Model.WraparoundSupportStartDate"
+                Label="@Model.GetMemberDescription(x => x.WraparoundSupportStartDate)"
+                Editable="true"
+                PickerVariant="PickerVariant.Dialog" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudDatePicker @bind-Date="Model.BaselineAchievedDate"
+                For="() => Model.BaselineAchievedDate"
+                Label="@Model.GetMemberDescription(x => x.BaselineAchievedDate)"
+                Editable="true"
+                PickerVariant="PickerVariant.Dialog" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudNumericField Label="@Model.GetMemberDescription(x => x.TotalHoursPerformedPreIntervention)" @bind-Value="@Model.TotalHoursPerformedPreIntervention" For="() => Model.TotalHoursPerformedPreIntervention" Step=".25M" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudNumericField Label="@Model.GetMemberDescription(x => x.TotalHoursPerformedDuringIntervention)" @bind-Value="@Model.TotalHoursPerformedDuringIntervention" For="() => Model.TotalHoursPerformedDuringIntervention" Step=".25M" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudNumericField Label="@Model.GetMemberDescription(x => x.TotalHoursPerformedAfterIntervention)" @bind-Value="@Model.TotalHoursPerformedAfterIntervention" For="() => Model.TotalHoursPerformedAfterIntervention" Step=".25M" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudText>Total Intervention Hours (pre, during and after): @(Model.TotalHoursPerformedPreIntervention + Model.TotalHoursPerformedDuringIntervention + Model.TotalHoursPerformedAfterIntervention)</MudText>
+                @if ((Model.TotalHoursPerformedPreIntervention + Model.TotalHoursPerformedDuringIntervention + Model.TotalHoursPerformedAfterIntervention) > 10)
+                {
+                    <MudAlert Class="mb-2" Severity="MudBlazor.Severity.Error" Variant="Variant.Outlined" Dense="false">Total Intervention Hours (pre, during and after) must NOT exceed 10 hours</MudAlert>
+                }
+            </MudItem>
+            <MudItem xs="12">
+                <div class="mb-4 mt-8">
+                    <MudFileUpload @bind-Files="Model.Document"
+                        For="() => Model.Document"
+                        MaximumFileCount="1"
+                        Accept=".pdf" Disabled="Disabled">
+                            <ActivatorContent>
+                                <MudLoadingButton Loading="uploading"
+                                Variant="Variant.Outlined"
+                                Color="Color.Primary"
+                                StartIcon="@Icons.Material.Filled.Upload">
+                                    @if (uploading)
+                                {
+                                    @ConstantString.Uploading
+                                }
+                                else
+                                {
+                                    @ConstantString.Upload
+                                }
+                            </MudLoadingButton>
+                        </ActivatorContent>
+                        <SelectedTemplate>
+                            <br />
+                            @if (context != null)
                             {
-                                @ConstantString.Uploading
+                                <MudText>
+                                    Employment template uploaded:  @context.Name
+                                </MudText>
                             }
                             else
                             {
-                                @ConstantString.Upload
+                                <MudText>No Files</MudText>
                             }
-                        </MudLoadingButton>
-                    </ActivatorContent>
-                    <SelectedTemplate>
-                        <br />
-                        @if (context != null)
-                        {
-                            <MudText>
-                                Employment template uploaded:  @context.Name
-                            </MudText>
-                        }
-                        else
-                        {
-                            <MudText>No Files</MudText>
-                        }
-                        <br />
-                    </SelectedTemplate>
-                </MudFileUpload>
-            </div>
-        </MudItem>
-    </MudGrid>
+                            <br />
+                        </SelectedTemplate>
+                    </MudFileUpload>
+                </div>
+            </MudItem>
+        </MudGrid>
+    </MudForm>
 }
 @code {
     private bool uploading = false;
@@ -80,6 +89,8 @@
 
     [Parameter, EditorRequired]
     public required AddIsw.Command Model { get; set; }
+    public MudForm form = new();
 
     bool Disabled = false;
+
 }
