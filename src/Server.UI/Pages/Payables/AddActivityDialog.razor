@@ -157,7 +157,7 @@
     void LocationChanged(LocationDto location)
     {
         Model.Location = location;
-        activities = ActivityDefinition.GetActivitiesForLocation(location.LocationType);
+        activities = location is null ? [] : ActivityDefinition.GetActivitiesForLocation(location.LocationType);
         filteredTypes = [];
         ClearSelectedActivity();
     }

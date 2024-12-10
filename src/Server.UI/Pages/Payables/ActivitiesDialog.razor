@@ -1,28 +1,66 @@
-﻿@using Cfo.Cats.Application.Features.Payables.DTOs
+﻿@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Payables.DTOs
 @using Cfo.Cats.Application.Features.Payables.Queries
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Payables.Components
 @using Humanizer
 
 @inherits CatsComponentBase
 
+<style>
+    .mud-list-item-child:hover,
+    .mud-list-item-child:focus {
+    background-color: initial !important;
+    }
+</style>
+
 <MudDialog>
     <DialogContent>
-        <MudList T="ActivitySummaryDto">
-            @foreach(var activity in activities)
+        <MudList T="ActivitySummaryDto" ReadOnly>
+            <MudListSubheader>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <AvailableLocationsDropdown LocationChanged="OnLocationChanged" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudChipSet T="ActivityType"
+                        SelectedValuesChanged="OnActivityTypesChanged"
+                        SelectionMode="SelectionMode.MultiSelection">
+                            @foreach (var type in ActivityType.List)
+                            {
+                                <MudChip Value="type"
+                                SelectedColor="Color.Info"
+                                Text="@type.Name" />
+                            }
+                        </MudChipSet>
+                    </MudItem>
+                </MudGrid>
+            </MudListSubheader>
+            @if(activities is not null)
             {
-                <MudListItem>
-                    <ChildContent>
-                        <div class="d-flex justify-space-between align-center width-90">
-                            <div>
-                                <MudText Typo="Typo.caption" Color="Color.Info">@activity.Definition.Type.Name</MudText>
-                                <MudText Typo="Typo.body1">@activity.Definition.Category.Name</MudText>
-                                <MudText Typo="Typo.body2">Completed @activity.Completed.Humanize()</MudText>
+                @foreach (var activity in activities.Items)
+                {
+                    <MudListItem Class="mud-list-item-child" ExpandedChanged="(expanded) => OnExpandedChanged(activity, expanded)">
+                        <ChildContent>
+                            <div class="d-flex gap-2 align-center">
+                                <MudChip T="string" Size="Size.Small" Text="@activity.Definition.Type.Name" Color="Color.Secondary" />
+                                <MudText Typo="Typo.body2">@activity.Definition.Category.Name</MudText>
                             </div>
-                        </div>
-                    </ChildContent>
-                    <NestedList>
-                        @* Additional Information, ETE/ISW specific fields *@
-                    </NestedList>
-                </MudListItem>
+                            <MudText Typo="Typo.body2">Added @activity.Created.Humanize()</MudText>
+                            <MudText Typo="Typo.body2">Completed @activity.Completed.ToShortDateString()</MudText>
+                        </ChildContent>
+                        <NestedList>
+                            <div class="pl-6 pa-2">
+                                <MudText Typo="Typo.body2">@activity.AdditionalInformation</MudText>
+                                @* More detailed information, ISW/Education/Employment specific fields *@
+                            </div>
+                        </NestedList>
+                    </MudListItem>
+                    <MudDivider />
+                }
+                <MudListSubheader Class="d-flex justify-center mt-2">
+                    <MudPagination Count="@activities.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
+                </MudListSubheader>
             }
         </MudList>
     </DialogContent>
@@ -32,11 +70,11 @@
 </MudDialog>
 
 @code {
-    IEnumerable<ActivitySummaryDto> activities = [];
+    PaginatedData<ActivitySummaryDto>? activities;
     //bool loading;
 
     [Parameter, EditorRequired]
-    public required GetAllActivities.Query Model { get; set; }
+    public required ActivitiesWithPagination.Query Model { get; set; }
 
     [CascadingParameter]
     public required MudDialogInstance Dialog { get; set; }
@@ -46,13 +84,7 @@
         try
         {
             //loading = true;
-
-            var result = await GetNewMediator().Send(Model);
-
-            if(result is { Succeeded: true, Data: not null })
-            {
-                activities = result.Data;
-            }
+            await OnRefresh();
 
         }
         finally
@@ -62,4 +94,42 @@
 
         await base.OnInitializedAsync();
     }
+
+    async Task OnRefresh()
+    {
+        Model.PageSize = 5;
+        Model.OrderBy = "Created";
+        Model.SortDirection = $"{SortDirection.Descending}";
+
+        activities = await GetNewMediator().Send(Model);
+    }
+
+    Task OnPaginationChanged(int arg)
+    {
+        Model.PageNumber = arg;
+        return OnRefresh();
+    }
+
+    Task OnLocationChanged(LocationDto location)
+    {
+        Model.Location = location;
+        return OnRefresh();
+    }
+
+    Task OnActivityTypesChanged(IReadOnlyCollection<ActivityType>? types)
+    {
+        Model.IncludeTypes = types?.ToList();
+        return OnRefresh();
+    }
+
+    async Task OnExpandedChanged(ActivitySummaryDto activity, bool expanded)
+    {
+        if(expanded)
+        {
+
+        }
+
+        await Task.CompletedTask;
+    }
+
 }
