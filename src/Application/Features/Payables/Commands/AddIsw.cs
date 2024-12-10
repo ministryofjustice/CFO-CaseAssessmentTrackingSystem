@@ -24,13 +24,20 @@ public static class AddIsw
         public DateTime? BaselineAchievedDate { get; set; }
 
         [Description("Total Hours Performed Pre-intervention")]
-        public decimal TotalHoursPerformedPreIntervention { get; set; } = 0;
+        public decimal TotalHoursPerformedPreIntervention { get; set; }
 
         [Description("Total Hours Performed During Intervention")]
-        public decimal TotalHoursPerformedDuringIntervention { get; set; } = 0;
+        public decimal TotalHoursPerformedDuringIntervention { get; set; }
 
         [Description("Total Hours Performed After Intervention")]
-        public decimal TotalHoursPerformedAfterIntervention { get; set; } = 0;
+        public decimal TotalHoursPerformedAfterIntervention { get; set; }
+
+        [Description("Total Hours pre, during and after intervention")]
+        public decimal TotalHoursIntervention { 
+            get {
+                return TotalHoursPerformedPreIntervention + TotalHoursPerformedDuringIntervention + TotalHoursPerformedAfterIntervention;
+            } 
+        }
 
         [Description("Upload ISW Template")]
         public IBrowserFile? Document { get; set; }
@@ -60,17 +67,21 @@ public static class AddIsw
                 .NotNull()
                 .WithMessage("You must enter Baseline achieved date");
 
-            RuleFor(c => c.TotalHoursPerformedPreIntervention.ToString())
-                .Matches(ValidationConstants.NumberWithTwoDecimalPlaces)
-                .WithMessage("You must enter a valid value for Total hours performed pre-intervention i.e. number with a Maximum of 2 digits after decimal point for example 1.25 or 2.5 or 4.75 etc.");
+            RuleFor(x => x.TotalHoursPerformedPreIntervention)
+                .Must(BeValidNumber)
+                .WithMessage("Please enter a valid number, digits after decimal point may only contain 0, .25 or .5 or .75");
+            RuleFor(x => x.TotalHoursPerformedDuringIntervention)
+                .Must(BeValidNumber)
+                .WithMessage("Please enter a valid number, digits after decimal point may only contain 0, .25 or .5 or .75");
+            RuleFor(x => x.TotalHoursPerformedAfterIntervention)
+                .Must(BeValidNumber)
+                .WithMessage("Please enter a valid number, digits after decimal point may only contain 0, .25 or .5 or .75");
 
-            RuleFor(c => c.TotalHoursPerformedDuringIntervention.ToString())
-                .Matches(ValidationConstants.NumberWithTwoDecimalPlaces)
-                .WithMessage("You must enter a valid value for Total hours performed during intervention i.e. number with a Maximum of 2 digits after decimal point for example 1.25 or 2.5 or 4.75 etc.");
+            RuleFor(c => (c.TotalHoursPerformedPreIntervention + c.TotalHoursPerformedDuringIntervention + c.TotalHoursPerformedAfterIntervention))
+                .LessThanOrEqualTo(10)
+                .WithMessage("Total Intervention Hours (pre, during and after) must NOT exceed 10 hours");
 
-            RuleFor(c => c.TotalHoursPerformedAfterIntervention.ToString())
-                .Matches(ValidationConstants.NumberBetweenZeroAndTenWithQuarterIncrement)
-                .WithMessage("You must enter a valid value for Total hours performed after intervention i.e. number with a Maximum of 2 digits after decimal point for example 1.25, 2.5 or 4.75 etc.");
+            
 
             RuleFor(v => v.Document)
                     .NotNull()
@@ -79,8 +90,17 @@ public static class AddIsw
                     .WithMessage($"File size exceeds the maxmimum allowed size of {Infrastructure.Constants.Documents.RightToWork.MaximumSizeInMegabytes} megabytes")
                     .MustAsync(BePdfFile)
                     .WithMessage("File is not a PDF");
-        }
 
+            
+        }
+        private bool BeValidNumber(decimal number)
+        { 
+            // Convert the number to its fractional part
+            var fractionalPart = number - Math.Truncate(number); 
+            
+            // Check if the fractional part is not .25, .5, or .75
+            return fractionalPart == 0.0m || fractionalPart == 0.25m || fractionalPart == 0.5m || fractionalPart == 0.75m;
+        }
         private static bool NotExceedMaximumFileSize(IBrowserFile? file, double maxSizeMB)
             => file?.Size < ByteSize.FromMegabytes(maxSizeMB).Bytes;
 
