@@ -6,6 +6,7 @@ public class ActivitiesAdvancedFilter : PaginationFilter
 {
     public required string ParticipantId { get; set; }
     public Guid? TaskId { get; set; }
+    public Guid? ObjectiveId { get; set; }
     public LocationDto? Location { get; set; }
     public List<ActivityType>? IncludeTypes { get; set; }
 }

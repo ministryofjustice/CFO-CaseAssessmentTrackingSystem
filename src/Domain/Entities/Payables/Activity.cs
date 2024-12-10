@@ -2,6 +2,7 @@ using Ardalis.SmartEnum;
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Payables;
@@ -11,7 +12,7 @@ public abstract class Activity : BaseAuditableEntity<Guid>
     public record ActivityContext(
         ActivityDefinition Definition,
         string ParticipantId,
-        Guid TaskId,
+        ObjectiveTask Task,
         Location TookPlaceAtLocation,
         Contract TookPlaceAtContract,
         Location ParticipantCurrentLocation,
@@ -40,7 +41,8 @@ public abstract class Activity : BaseAuditableEntity<Guid>
         ParticipantStatus = context.ParticipantStatus;
         Completed = context.Completed;
         TenantId = context.TenantId;
-        TaskId = context.TaskId;
+        TaskId = context.Task.Id;
+        ObjectiveId = context.Task.ObjectiveId;
         AdditionalInformation = context.AdditionalInformation;
         Status = ActivityStatus.Submitted;
 
@@ -51,7 +53,8 @@ public abstract class Activity : BaseAuditableEntity<Guid>
     public ActivityCategory Category { get; init; }
     public ActivityType Type { get; init; }
     public string ParticipantId { get; protected set; }
-    public Guid TaskId { get; set; }
+    public Guid TaskId { get; init; }
+    public Guid ObjectiveId { get; init; }
     public virtual Location TookPlaceAtLocation { get; protected set; }
     public virtual Contract TookPlaceAtContract { get; protected set; }
     public virtual Location ParticipantCurrentLocation { get; protected set; }
