@@ -24,13 +24,13 @@ public static class AddIsw
         public DateTime? BaselineAchievedDate { get; set; }
 
         [Description("Total Hours Performed Pre-intervention")]
-        public decimal TotalHoursPerformedPreIntervention { get; set; }
+        public decimal TotalHoursPerformedPreIntervention { get; set; } = 0;
 
         [Description("Total Hours Performed During Intervention")]
-        public decimal TotalHoursPerformedDuringIntervention { get; set; }
+        public decimal TotalHoursPerformedDuringIntervention { get; set; } =0;
 
         [Description("Total Hours Performed After Intervention")]
-        public decimal TotalHoursPerformedAfterIntervention { get; set; }
+        public decimal TotalHoursPerformedAfterIntervention { get; set; } = 0;
 
         [Description("Total Hours pre, during and after intervention")]
         public decimal TotalHoursIntervention { 
@@ -78,8 +78,8 @@ public static class AddIsw
                 .WithMessage("Please enter a valid number, digits after decimal point may only contain 0, .25 or .5 or .75");
 
             RuleFor(c => (c.TotalHoursPerformedPreIntervention + c.TotalHoursPerformedDuringIntervention + c.TotalHoursPerformedAfterIntervention))
-                .LessThanOrEqualTo(10)
-                .WithMessage("Total Intervention Hours (pre, during and after) must NOT exceed 10 hours");
+                .GreaterThanOrEqualTo(10)
+                .WithMessage("Total Intervention Hours (pre, during and after) must be atleast 10 hours or more");
 
             
 

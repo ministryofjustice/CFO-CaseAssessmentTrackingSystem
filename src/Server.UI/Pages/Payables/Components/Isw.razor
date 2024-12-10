@@ -8,7 +8,6 @@
 @inject IStringLocalizer<Isw> L
 @if (Model is not null)
 {
-    <MudForm @ref="@form" Model="@Model" Validation="@(Validator.ValidateValue(Model))">
         <MudGrid>
             <MudItem xs="12">
                 <MudDatePicker @bind-Date="Model.WraparoundSupportStartDate"
@@ -35,9 +34,9 @@
             </MudItem>
             <MudItem xs="12">
                 <MudText>Total Intervention Hours (pre, during and after): @(Model.TotalHoursPerformedPreIntervention + Model.TotalHoursPerformedDuringIntervention + Model.TotalHoursPerformedAfterIntervention)</MudText>
-                @if ((Model.TotalHoursPerformedPreIntervention + Model.TotalHoursPerformedDuringIntervention + Model.TotalHoursPerformedAfterIntervention) > 10)
+                @if ((Model.TotalHoursPerformedPreIntervention + Model.TotalHoursPerformedDuringIntervention + Model.TotalHoursPerformedAfterIntervention) < 10)
                 {
-                    <MudAlert Class="mb-2" Severity="MudBlazor.Severity.Error" Variant="Variant.Outlined" Dense="false">Total Intervention Hours (pre, during and after) must NOT exceed 10 hours</MudAlert>
+                    <MudAlert Class="mb-2" Severity="MudBlazor.Severity.Error" Variant="Variant.Outlined" Dense="false">Total Intervention Hours (pre, during and after) must be atleast 10 hours or more</MudAlert>
                 }
             </MudItem>
             <MudItem xs="12">
@@ -79,7 +78,6 @@
                 </div>
             </MudItem>
         </MudGrid>
-    </MudForm>
 }
 @code {
     private bool uploading = false;
