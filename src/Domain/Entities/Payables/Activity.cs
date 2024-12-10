@@ -39,6 +39,7 @@ public abstract class Activity : BaseAuditableEntity<Guid>
         ParticipantStatus = context.ParticipantStatus;
         Completed = context.Completed;
         TenantId = context.TenantId;
+        TaskId = context.TaskId;
         AdditionalInformation = context.AdditionalInformation;
         Status = ActivityStatus.Submitted;
 
