@@ -21,6 +21,7 @@ public static class ActivitiesWithPagination
         public async Task<PaginatedData<ActivitySummaryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             return await unitOfWork.DbContext.Activities
+                .Include(a => a.TookPlaceAtLocation)
                 .OrderBy($"{request.OrderBy} {request.SortDirection}")
                 .ProjectToPaginatedDataAsync<Activity, ActivitySummaryDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
         }

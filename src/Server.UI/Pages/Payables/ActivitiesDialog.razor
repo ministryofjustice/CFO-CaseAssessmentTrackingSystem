@@ -1,4 +1,4 @@
-﻿@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Payables.DTOs
 @using Cfo.Cats.Application.Features.Payables.Queries
 @using Cfo.Cats.Domain.Common.Enums
@@ -40,21 +40,24 @@
             {
                 @foreach (var activity in activities.Items)
                 {
-                    <MudListItem Class="mud-list-item-child" ExpandedChanged="(expanded) => OnExpandedChanged(activity, expanded)">
+                    <MudListItem Class="mud-list-item-child">
                         <ChildContent>
                             <div class="d-flex gap-2 align-center">
                                 <MudChip T="string" Size="Size.Small" Text="@activity.Definition.Type.Name" Color="Color.Secondary" />
                                 <MudText Typo="Typo.body2">@activity.Definition.Category.Name</MudText>
                             </div>
-                            <MudText Typo="Typo.body2">Added @activity.Created.Humanize()</MudText>
-                            <MudText Typo="Typo.body2">Completed @activity.Completed.ToShortDateString()</MudText>
+                            @{
+                                var created = activity.Created.ToLocalTime();
+                                var completed = DateOnly.FromDateTime(activity.Completed);
+                            }
+                            <MudText Typo="Typo.body2">
+                                Added on @created.ToShortDateString() at @created.ToShortTimeString() (@created.Humanize())
+                            </MudText>
+                            <MudText Typo="Typo.body2" Class="pt-1">
+                                Completed on @completed.ToShortDateString() (@(completed == DateOnly.FromDateTime(DateTime.Today) ? "today" : completed.Humanize()))
+                                at @activity.TookPlaceAtLocationName
+                            </MudText>
                         </ChildContent>
-                        <NestedList>
-                            <div class="pl-6 pa-2">
-                                <MudText Typo="Typo.body2">@activity.AdditionalInformation</MudText>
-                                @* More detailed information, ISW/Education/Employment specific fields *@
-                            </div>
-                        </NestedList>
                     </MudListItem>
                     <MudDivider />
                 }
@@ -120,16 +123,6 @@
     {
         Model.IncludeTypes = types?.ToList();
         return OnRefresh();
-    }
-
-    async Task OnExpandedChanged(ActivitySummaryDto activity, bool expanded)
-    {
-        if(expanded)
-        {
-
-        }
-
-        await Task.CompletedTask;
     }
 
 }
