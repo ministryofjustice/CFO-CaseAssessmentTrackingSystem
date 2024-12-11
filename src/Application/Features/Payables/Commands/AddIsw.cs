@@ -39,6 +39,11 @@ public static class AddIsw
             } 
         }
 
+        string TotalHoursDescription => string.Concat((int)Math.Floor(TotalHoursIntervention), " hour", Math.Floor(TotalHoursIntervention) is 1 ? string.Empty : "s");
+        string TotalMinsDescription => string.Concat((int)(TotalHoursIntervention % 1 * 60), " mins");
+
+        public string TotalHoursInterventionDescription => $"{TotalHoursDescription} {TotalMinsDescription}";
+
         [Description("Upload ISW Template")]
         public IBrowserFile? Document { get; set; }
     }

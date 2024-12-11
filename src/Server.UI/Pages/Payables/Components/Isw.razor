@@ -33,14 +33,20 @@
                 <MudNumericField Label="@Model.GetMemberDescription(x => x.TotalHoursPerformedAfterIntervention)" @bind-Value="@Model.TotalHoursPerformedAfterIntervention" For="() => Model.TotalHoursPerformedAfterIntervention" Step=".25M" />
             </MudItem>
             <MudItem xs="12">
-                <MudText>Total Intervention Hours (pre, during and after): @(Model.TotalHoursPerformedPreIntervention + Model.TotalHoursPerformedDuringIntervention + Model.TotalHoursPerformedAfterIntervention)</MudText>
-                @if ((Model.TotalHoursPerformedPreIntervention + Model.TotalHoursPerformedDuringIntervention + Model.TotalHoursPerformedAfterIntervention) < 10)
-                {
-                    <MudAlert Class="mb-2" Severity="MudBlazor.Severity.Error" Variant="Variant.Outlined" Dense="false">Total Intervention Hours (pre, during and after) must be atleast 10 hours or more</MudAlert>
-                }
+                <MudText>
+                        Total Intervention Hours (pre, during and after): @(Model.TotalHoursInterventionDescription)
+                </MudText>
+
+            @if (Model.TotalHoursIntervention < 10)
+            {
+                <MudAlert Class="my-2" Severity="Severity.Warning">
+                    Total Intervention Hours (pre, during and after) must be atleast 10 hours or more
+                </MudAlert>
+            }
+
             </MudItem>
             <MudItem xs="12">
-                <div class="mb-4 mt-8">
+                <div class="mb-4">
                     <MudFileUpload @bind-Files="Model.Document"
                         For="() => Model.Document"
                         MaximumFileCount="1"
