@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.Notifications;
 using Cfo.Cats.Domain.Entities.Payables;
+using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using MassTransit.EntityFrameworkCoreIntegration;
 
 namespace Cfo.Cats.Infrastructure.Persistence;
 
@@ -92,6 +95,19 @@ public class ApplicationDbContext
 
 
         builder.ApplyGlobalFilters<ISoftDelete>(s => s.Deleted == null);
+
+        builder.AddInboxStateEntity();
+        builder.AddOutboxMessageEntity();
+        builder.AddOutboxStateEntity();
+
+        builder.Entity<InboxState>()
+            .ToTable(nameof(InboxState), nameof(MassTransit));
+
+        builder.Entity<OutboxMessage>()
+            .ToTable(nameof(OutboxMessage), nameof(MassTransit));
+        
+        builder.Entity<OutboxState>()
+            .ToTable(nameof(OutboxState), nameof(MassTransit));
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

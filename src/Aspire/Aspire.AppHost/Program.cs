@@ -1,18 +1,23 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var password = builder.AddParameter("password", secret: true);
+var sqlPassword = builder.AddParameter("sqlPassword", secret: true);
+var rabbitUser = builder.AddParameter("rabbitUser", secret: true);
+var rabbitPassword = builder.AddParameter("rabbitPassword", secret: true);
 
-var sqlServer = builder.AddSqlServer("sql", password, 1433)
+var db = builder.AddSqlServer("sql", sqlPassword, 1433)
     .WithDataVolume("cats-aspire-data")
+    .WithLifetime(ContainerLifetime.Persistent)
+    .AddDatabase("CatsDb");
+
+var rabbit = builder.AddRabbitMQ("rabbit",
+        userName: rabbitUser,
+        password: rabbitPassword)
+    .WithManagementPlugin()
     .WithLifetime(ContainerLifetime.Persistent);
-    
-
-var database = sqlServer.AddDatabase("CatsDb");
-
 
 builder.AddProject<Projects.Server_Ui>("cats")
-    .WithReference(database)
-    .WaitFor(database);
-
+    .WithReference(db)
+    .WithReference(rabbit)
+    .WaitFor(db);
 
 builder.Build().Run();
