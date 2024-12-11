@@ -1,4 +1,4 @@
-@using Cfo.Cats.Application.Features.Locations.DTOs
+﻿@using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Payables.DTOs
 @using Cfo.Cats.Application.Features.Payables.Queries
 @using Cfo.Cats.Domain.Common.Enums
@@ -19,6 +19,13 @@
         <MudList T="ActivitySummaryDto" ReadOnly>
             <MudListSubheader>
                 <MudGrid>
+                    <MudItem xs="12">
+                        <MudDateRangePicker 
+                            Label="Completed from/to range" 
+                            DateRangeChanged="OnDateRangeChanged" 
+                            Clearable 
+                            MaxDate="DateTime.Today" />
+                    </MudItem>
                     <MudItem xs="12">
                         <AvailableLocationsDropdown LocationChanged="OnLocationChanged" />
                     </MudItem>
@@ -110,6 +117,13 @@
     Task OnPaginationChanged(int arg)
     {
         Model.PageNumber = arg;
+        return OnRefresh();
+    }
+
+    Task OnDateRangeChanged(DateRange range)
+    {
+        Model.CompletedStart = range.Start;
+        Model.CompletedEnd = range.End;
         return OnRefresh();
     }
 
