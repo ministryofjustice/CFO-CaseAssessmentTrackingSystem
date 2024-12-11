@@ -1,4 +1,3 @@
-using Ardalis.SmartEnum;
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
@@ -7,7 +6,7 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Payables;
 
-public abstract class Activity : BaseAuditableEntity<Guid>
+public abstract class Activity : OwnerPropertyEntity<Guid>
 {
     public record ActivityContext(
         ActivityDefinition Definition,
@@ -34,6 +33,7 @@ public abstract class Activity : BaseAuditableEntity<Guid>
         Category = context.Definition.Category;
         Type = context.Definition.Type;
         ParticipantId = context.ParticipantId;
+
         TookPlaceAtLocation = context.TookPlaceAtLocation;
         TookPlaceAtContract = context.TookPlaceAtContract;
         ParticipantCurrentLocation = context.ParticipantCurrentLocation;
@@ -51,6 +51,7 @@ public abstract class Activity : BaseAuditableEntity<Guid>
 
     public ActivityDefinition Definition { get; protected set; }
     public ActivityCategory Category { get; init; }
+    public virtual Participant? Participant { get; protected set; }
     public ActivityType Type { get; init; }
     public string ParticipantId { get; protected set; }
     public Guid TaskId { get; init; }
