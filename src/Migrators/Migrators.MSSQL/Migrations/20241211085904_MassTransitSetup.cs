@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     /// <inheritdoc />
-    public partial class AddOutbox : Migration
+    public partial class MassTransitSetup : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
