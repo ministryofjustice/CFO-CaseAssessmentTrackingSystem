@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
 using Cfo.Cats.Application.Outbox;
 using Cfo.Cats.Domain.Events;
 
@@ -12,6 +13,6 @@ internal class PublishParticipantTransitionedEventHandler(IUnitOfWork unitOfWork
 {
     public async Task Handle(ParticipantTransitionedDomainEvent notification, CancellationToken cancellationToken)
     {
-        await unitOfWork.DbContext.InsertOutboxMessage(notification);
+        await unitOfWork.DbContext.InsertOutboxMessage(new ParticipantTransitionedIntegrationEvent(notification.Item.Id, notification.From.Name, notification.To.Name));
     }
 }
