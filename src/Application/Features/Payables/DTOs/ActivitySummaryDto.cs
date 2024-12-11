@@ -6,6 +6,7 @@ public class ActivitySummaryDto
 {
     public required Guid Id { get; set; }
     public required string TookPlaceAtLocationName { get; set; }
+    public required Guid TaskId { get; set; }
     public required DateTime Created { get; set; }
     public required DateTime Completed { get; set; }
     public required ActivityDefinition Definition { get; set; }
