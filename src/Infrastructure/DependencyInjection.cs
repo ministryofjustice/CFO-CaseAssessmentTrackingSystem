@@ -15,6 +15,7 @@ using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.Locations;
 using Cfo.Cats.Infrastructure.Services.MultiTenant;
 using Cfo.Cats.Infrastructure.Services.Serialization;
+using MassTransit;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -70,6 +71,18 @@ public static class DependencyInjection
             .AddSingleton<IRightToWorkSettings>(s =>
                 s.GetRequiredService<RightToWorkSettings>()
             );
+
+        services.AddMassTransit(x =>
+        {
+            // x.AddConsumer<EnrolmentApprovedIntegrationEventConsumer>();
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(configuration.GetConnectionString("rabbit"));
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+
         return services;
     }
 
@@ -377,6 +390,20 @@ public static class DependencyInjection
                     .WithDescription(NotifyAccountDeactivationJob.Description)
                     .WithCronSchedule(notifyAccountDeactivationJobOptions.CronSchedule));
             }
+
+            if (options.GetSection(PublishOutboxMessagesJob.Key.Name).Get<JobOptions>() is
+                { Enabled: true } publishOutboxMessagesOptions)
+            {
+                quartz.AddJob<PublishOutboxMessagesJob>(opts => opts.WithIdentity(PublishOutboxMessagesJob.Key));
+
+                quartz.AddTrigger(opts => opts
+                    .ForJob(PublishOutboxMessagesJob.Key)
+                    .WithIdentity($"{PublishOutboxMessagesJob.Key}-trigger")
+                    .WithDescription(PublishOutboxMessagesJob.Description)
+                    .WithCronSchedule(publishOutboxMessagesOptions.CronSchedule));
+            }
+
+
         });
 
         services.AddQuartzServer(options =>

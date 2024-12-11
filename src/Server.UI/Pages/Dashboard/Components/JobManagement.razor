@@ -75,9 +75,28 @@
                             {
                                 <MudText>Trigger</MudText>
                             }
-                    </MudButton>
+                        </MudButton>
                     </div>
                 </MudListItem>
+                <MudListItem>
+                    <div class="d-flex justify-space-between align-center width-100">
+                        <div>
+                            <MudText Typo="Typo.caption" Color="Color.Primary" >@PublishOutboxMessagesJob.Key</MudText>
+                            <MudText Typo="Typo.body1" Color="Color.Info">@PublishOutboxMessagesJob.Description</MudText>
+                        </div>
+                        <MudButton Disabled="@_isTriggering" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => TriggerJob(PublishOutboxMessagesJob.Key)">
+                            @if(_isTriggering)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                                <MudText Class="ms-2">Triggering</MudText>
+                            }
+                            else
+                            {
+                                <MudText>Trigger</MudText>
+                            }
+                        </MudButton>
+                    </div>
+                </MudListItem>  
             </MudList> 
         </MudCardContent>
     </MudCard>
