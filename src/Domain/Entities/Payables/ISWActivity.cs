@@ -14,9 +14,9 @@ public class ISWActivity : Activity
     ISWActivity(
         ActivityContext context,
         DateTime wraparoundSupportStartedOn,
-        int hoursPerformedPre,
-        int hoursPerformedDuring,
-        int hoursPerformedPost,
+        double hoursPerformedPre,
+        double hoursPerformedDuring,
+        double hoursPerformedPost,
         DateTime baselineAchievedOn) : base(context) 
     {
         WraparoundSupportStartedOn = wraparoundSupportStartedOn;
@@ -27,18 +27,18 @@ public class ISWActivity : Activity
     }
 
     public DateTime WraparoundSupportStartedOn { get; private set; }
-    public int HoursPerformedPre { get; private set; }
-    public int HoursPerformedDuring { get; private set; }
-    public int HoursPerformedPost { get; private set; }
+    public double HoursPerformedPre { get; private set; }
+    public double HoursPerformedDuring { get; private set; }
+    public double HoursPerformedPost { get; private set; }
     public DateTime BaselineAchievedOn { get; private set; }
     public virtual Document? Document { get; private set; } // Uploaded template
 
     public static ISWActivity Create(
         ActivityContext context,
         DateTime wraparoundSupportStartedOn,
-        int hoursPerformedPre,
-        int hoursPerformedDuring,
-        int hoursPerformedPost,
+        double hoursPerformedPre,
+        double hoursPerformedDuring,
+        double hoursPerformedPost,
         DateTime baselineAchievedOn)
     {
         ISWActivity activity = new(context, wraparoundSupportStartedOn, hoursPerformedPre, hoursPerformedDuring, hoursPerformedPost, baselineAchievedOn);
