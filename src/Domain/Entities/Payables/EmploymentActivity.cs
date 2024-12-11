@@ -18,6 +18,7 @@ public class EmploymentActivity : Activity
         string jobTitle,
         string jobTitleCode,
         double? salary,
+        string? salaryFrequency,
         DateTime employmentCommenced) : base(context) 
     {
         EmploymentType = employmentType;
@@ -25,6 +26,7 @@ public class EmploymentActivity : Activity
         JobTitle = jobTitle;
         JobTitleCode = jobTitleCode;
         Salary = salary;
+        SalaryFrequency = salaryFrequency;
         EmploymentCommenced = employmentCommenced;
     }
 
@@ -33,6 +35,7 @@ public class EmploymentActivity : Activity
     public string JobTitle { get; private set; }
     public string JobTitleCode { get; private set; } // SOC Code
     public double? Salary { get; private set; }
+    public string? SalaryFrequency { get; private set; }
     public DateTime EmploymentCommenced { get; private set; }
     public virtual Document? Document { get; private set; } // Uploaded template
 
@@ -43,9 +46,10 @@ public class EmploymentActivity : Activity
         string jobTitle,
         string jobTitleCode,
         double? salary,
+        string salaryFrequency,
         DateTime employmentCommenced)
     {
-        EmploymentActivity activity = new(context, employmentType, employerName, jobTitle, jobTitleCode, salary, employmentCommenced);
+        EmploymentActivity activity = new(context, employmentType, employerName, jobTitle, jobTitleCode, salary, salaryFrequency, employmentCommenced);
         activity.AddDomainEvent(new EmploymentActivityCreatedDomainEvent(activity));
         return activity;
     }
