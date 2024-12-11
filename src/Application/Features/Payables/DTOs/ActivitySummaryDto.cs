@@ -5,6 +5,7 @@ namespace Cfo.Cats.Application.Features.Payables.DTOs;
 public class ActivitySummaryDto
 {
     public required Guid Id { get; set; }
+    public required string TookPlaceAtLocationName { get; set; }
     public required DateTime Created { get; set; }
     public required DateTime Completed { get; set; }
     public required ActivityDefinition Definition { get; set; }
@@ -15,7 +16,8 @@ public class ActivitySummaryDto
     {
         public Mapping()
         {
-            CreateMap<Activity, ActivitySummaryDto>();
+            CreateMap<Activity, ActivitySummaryDto>()
+                .ForMember(dest => dest.TookPlaceAtLocationName, opts => opts.MapFrom(src => src.TookPlaceAtLocation.Name));
         }
     }
 
