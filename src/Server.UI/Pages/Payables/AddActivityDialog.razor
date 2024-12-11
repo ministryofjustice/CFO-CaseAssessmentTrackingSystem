@@ -80,15 +80,15 @@
                         <MudItem xs="12">
                             <MudAlert Severity="Severity.Info">Further information is required for this type of activity</MudAlert>
 
-                                @if(Model.ActivityDefinition.ClassificationType == ClassificationType.Employment)
+                                @if(Model.ActivityDefinition.Classification == ClassificationType.Employment)
                                 {
                                     <Employment Model="new AddEmployment.Command()"/>
                                 }
-                                else if(Model.ActivityDefinition.ClassificationType == ClassificationType.EducationAndTraining)
+                                else if(Model.ActivityDefinition.Classification == ClassificationType.EducationAndTraining)
                                 {
                                     <EducationTraining Model="new AddEducationTraining.Command()" />
                                 }
-                                else if(Model.ActivityDefinition.ClassificationType == ClassificationType.ISWActivity)
+                                else if(Model.ActivityDefinition.Classification == ClassificationType.ISWActivity)
                                 {
                                     <Isw Model="new AddIsw.Command()"></Isw>
                                 }
