@@ -17,7 +17,7 @@ internal class ActivityEntityTypeConfiguration : IEntityTypeConfiguration<Activi
             DatabaseConstants.Tables.Activities,
             DatabaseConstants.Schemas.Payables);
 
-        builder.HasOne<Participant>()
+        builder.HasOne(a=>a.Participant)
             .WithMany()
             .HasForeignKey(a => a.ParticipantId);
 
