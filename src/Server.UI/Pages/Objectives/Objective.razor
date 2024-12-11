@@ -45,12 +45,14 @@
         </div>
     </ChildContent>
     <NestedList>
-        @foreach (var task in Model.Tasks
-        .Where(task => task.IsCompleted is false || HideCompletedTasks is false)
-        .OrderBy(task => task.Created))
-        {
-            <ObjectiveTask Model="task" OnChange="async() => await OnChange.InvokeAsync()" PathwayPlanId="Model.PathwayPlanId" />
-        }
+        <CascadingValue Value="Model">
+            @foreach (var task in Model.Tasks
+            .Where(task => task.IsCompleted is false || HideCompletedTasks is false)
+            .OrderBy(task => task.Created))
+            {
+                <ObjectiveTask Model="task" OnChange="async() => await OnChange.InvokeAsync()" PathwayPlanId="Model.PathwayPlanId" />
+            }
+        </CascadingValue>
         <div class="d-flex align-center ml-2 mt-4 mb-2">
             @if(Model.IsCompleted is false)
             {
@@ -210,10 +212,11 @@
                     ParticipantId = ParticipantSummaryDto.Id,
                     ObjectiveId = Model.Id
                 }
-            }
+            },
+            { x => x.Objective, Model }
         };
 
-        var dialog = DialogService.Show<ActivitiesDialog>("Activity/ETE history", parameters, new DialogOptions
+        var dialog = DialogService.Show<ActivitiesDialog>("Activity/ETE history for objective", parameters, new DialogOptions
         {
             MaxWidth = MaxWidth.Small,
             FullWidth = true,

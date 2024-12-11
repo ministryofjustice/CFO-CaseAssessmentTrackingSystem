@@ -1,4 +1,5 @@
 ﻿@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.PathwayPlans.DTOs
 @using Cfo.Cats.Application.Features.Payables.DTOs
 @using Cfo.Cats.Application.Features.Payables.Queries
 @using Cfo.Cats.Domain.Common.Enums
@@ -20,11 +21,25 @@
             <MudListSubheader>
                 <MudGrid>
                     <MudItem xs="12">
+                        <MudAlert Severity="Severity.Info" Class="pa-2 mb-1">
+                            @if (Task is not null)
+                            {
+                                <MudText Typo="Typo.body1" Class="mb-1">Viewing all activities for task</MudText>
+                                <MudText Typo="Typo.subtitle2">@Task.DisplayName</MudText>
+                            }
+                            else if (Objective is not null)
+                            {
+                                <MudText Typo="Typo.body1" Class="mb-1">Viewing all activities for objective</MudText>
+                                <MudText Typo="Typo.subtitle2">@Objective.DisplayName</MudText>
+                            }
+                        </MudAlert>
+                    </MudItem>
+                    <MudItem xs="12">
                         <MudDateRangePicker 
-                            Label="Completed from/to range" 
-                            DateRangeChanged="OnDateRangeChanged" 
-                            Clearable 
-                            MaxDate="DateTime.Today" />
+                        Label="Completed from/to range" 
+                        DateRangeChanged="OnDateRangeChanged" 
+                        Clearable 
+                        MaxDate="DateTime.Today" />
                     </MudItem>
                     <MudItem xs="12">
                         <AvailableLocationsDropdown LocationChanged="OnLocationChanged" />
@@ -45,25 +60,37 @@
             </MudListSubheader>
             @if(activities is not null)
             {
-                @foreach (var activity in activities.Items)
+                foreach (var activity in activities.Items)
                 {
+                    var created = activity.Created.ToLocalTime();
+                    var completed = DateOnly.FromDateTime(activity.Completed);
+
                     <MudListItem Class="mud-list-item-child">
                         <ChildContent>
-                            <div class="d-flex gap-2 align-center">
-                                <MudChip T="string" Size="Size.Small" Text="@activity.Definition.Type.Name" Color="Color.Secondary" />
-                                <MudText Typo="Typo.body2">@activity.Definition.Category.Name</MudText>
+                            <div class="d-flex align-center">
+                                @if(Task is null)
+                                {
+                                    var task = Objective.Tasks.Single(task => task.Id == activity.TaskId);
+
+                                    <div class="d-flex align-center flex-column mr-3">
+                                        <MudText Typo="Typo.body1">Task</MudText>
+                                        <MudText Typo="Typo.body1">@string.Format("{0}.", task.Index)</MudText>
+                                    </div>
+                                }
+                                <div>
+                                    <div class="d-flex gap-2 align-center">
+                                        <MudChip T="string" Size="Size.Small" Text="@activity.Definition.Type.Name" Color="Color.Secondary" />
+                                        <MudText Typo="Typo.body2">@activity.Definition.Category.Name</MudText>
+                                    </div>
+                                    <MudText Typo="Typo.body2">
+                                        Added on @created.ToShortDateString() at @created.ToShortTimeString() (@created.Humanize())
+                                    </MudText>
+                                    <MudText Typo="Typo.body2" Class="pt-1">
+                                        Completed on @completed.ToShortDateString() (@(completed == DateOnly.FromDateTime(DateTime.Today) ? "today" : completed.Humanize()))
+                                        at @activity.TookPlaceAtLocationName
+                                    </MudText>
+                                </div>
                             </div>
-                            @{
-                                var created = activity.Created.ToLocalTime();
-                                var completed = DateOnly.FromDateTime(activity.Completed);
-                            }
-                            <MudText Typo="Typo.body2">
-                                Added on @created.ToShortDateString() at @created.ToShortTimeString() (@created.Humanize())
-                            </MudText>
-                            <MudText Typo="Typo.body2" Class="pt-1">
-                                Completed on @completed.ToShortDateString() (@(completed == DateOnly.FromDateTime(DateTime.Today) ? "today" : completed.Humanize()))
-                                at @activity.TookPlaceAtLocationName
-                            </MudText>
                         </ChildContent>
                     </MudListItem>
                     <MudDivider />
@@ -86,8 +113,14 @@
     [Parameter, EditorRequired]
     public required ActivitiesWithPagination.Query Model { get; set; }
 
+    [Parameter, EditorRequired]
+    public required ObjectiveDto Objective { get; set; }
+
     [CascadingParameter]
     public required MudDialogInstance Dialog { get; set; }
+
+    [Parameter]
+    public ObjectiveTaskDto? Task { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
