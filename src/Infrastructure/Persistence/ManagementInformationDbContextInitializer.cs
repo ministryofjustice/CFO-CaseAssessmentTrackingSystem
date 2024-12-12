@@ -1,6 +1,6 @@
 ﻿namespace Cfo.Cats.Infrastructure.Persistence;
 
-public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger, ApplicationDbContext context)
+public class ManagementInformationDbContextInitializer(ILogger<ManagementInformationDbContextInitializer> logger, ManagementInformationDbContext context)
 {
     public async Task InitialiseAsync()
     {

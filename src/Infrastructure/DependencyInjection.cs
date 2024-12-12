@@ -3,6 +3,7 @@ using Amazon.S3;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
+using Cfo.Cats.Application.Features.ManagementInformation;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
@@ -74,6 +75,8 @@ public static class DependencyInjection
 
         services.AddMassTransit(x =>
         {
+            x.AddConsumer<ParticipantEnrolmentAcceptedIntegrationEventHandler>();
+            
             // x.AddConsumer<EnrolmentApprovedIntegrationEventConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
@@ -101,14 +104,28 @@ public static class DependencyInjection
         
         services.AddDbContextFactory<ApplicationDbContext>((serviceProvider, optionsBuilder) =>
         {
-            var databaseSettings = serviceProvider.GetRequiredService<IOptions<DatabaseSettings>>().Value;
             optionsBuilder.AddInterceptors(serviceProvider.GetServices<ISaveChangesInterceptor>());
             optionsBuilder.UseDatabase(configuration.GetConnectionString("CatsDb")!);
         }, ServiceLifetime.Scoped);
-                
+
+
+        services.AddDbContext<ManagementInformationDbContext>(
+            (p, m) => {
+                m.UseDatabase(configuration.GetConnectionString("MiDb")!);
+            });
+
+        services.AddDbContextFactory<ManagementInformationDbContext>((_, optionsBuilder) =>
+        {
+            optionsBuilder.UseDatabase(configuration.GetConnectionString("MiDb")!);
+        }, ServiceLifetime.Scoped);
+
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+        services.AddScoped<IManagementInformationDbContext, ManagementInformationDbContext>();
+
         services.AddScoped<ApplicationDbContextInitializer>();
+        services.AddScoped<ManagementInformationDbContextInitializer>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
         return services;

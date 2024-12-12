@@ -77,4 +77,3 @@ public interface IApplicationDbContext
 
     DbSet<OutboxMessage> OutboxMessages { get; }
 }
-
