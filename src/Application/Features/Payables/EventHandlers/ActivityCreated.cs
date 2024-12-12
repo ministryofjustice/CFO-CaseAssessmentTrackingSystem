@@ -8,7 +8,7 @@ public class ActivityCreated : INotificationHandler<ActivityCreatedDomainEvent>
     {
         if(notification.Entity.RequiresQa)
         {
-            // Add to Queue
+            notification.Entity.TransitionTo(ActivityStatus.SubmittedToProviderStatus);
         }
         else
         {
