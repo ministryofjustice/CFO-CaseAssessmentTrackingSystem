@@ -4,7 +4,7 @@
 var target = Argument("target", "Test");
 var configuration = Argument("configuration", "Release");
 var fromVersion = Argument("fromVersion", "");
-
+var context = Argument("context", "ApplicationDbContext");
 
 Task("Clean")
     .WithCriteria(c => c.@HasArgument("rebuild"))
@@ -69,10 +69,10 @@ Task("Migrate")
     .Does(() =>{
         var migrationProject = "src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj";
         var startupProject = "src/Server.UI/Server.UI.csproj";
-        var context = "Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext";
+        var dbContext = $"Cfo.Cats.Infrastructure.Persistence.{context}";
 
         
-        var result = StartProcess("dotnet", $"ef migrations script {fromVersion} --no-build --configuration {configuration} --project {migrationProject} --startup-project {startupProject} --context {context} --idempotent -o ./publish/MigrationScript.sql");
+        var result = StartProcess("dotnet", $"ef migrations script {fromVersion} --no-build --configuration {configuration} --project {migrationProject} --startup-project {startupProject} --context {dbContext} --idempotent -o ./publish/{context}-MigrationScript.sql");
         if(result != 0)
         {
             Error("Failed to generate migration script");
