@@ -72,7 +72,7 @@ namespace Cfo.Cats.Application.Features.ManagementInformation
                     .WithSubmissionToPqa(submissionToPqa!.Value)
                     .WithSubmissionToAuthority(submissionToAuthority!.Value)
                     .WithSubmissionsToAuthority(submissionsToAuthority)
-                    .WithApproved(context.Message.OccuredOn)
+                    .WithApproved(context.Message.OccuredOn.Date)
                     .WithLocationId(participantInfo.LocationId)
                     .WithLocationType(participantInfo.LocationType)
                     .WithTenantId(supportWorker.TenantId)

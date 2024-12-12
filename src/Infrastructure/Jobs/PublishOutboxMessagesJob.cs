@@ -6,7 +6,7 @@ using Quartz;
 
 namespace Cfo.Cats.Infrastructure.Jobs;
 
-public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOutboxMessagesJob> logger , IPublishEndpoint publishEndpoint)
+public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOutboxMessagesJob> logger, IBus bus)
     : IJob
 {
     private const int BatchSize = 10;
@@ -52,7 +52,7 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
                         throw new ApplicationException("Unable to deserialize message content");
                     }
 
-                    await publishEndpoint.Publish(deserializedMessage, messageType);
+                    await bus.Publish(deserializedMessage, messageType);
 
                     outboxMessage.ProcessedOnUtc = DateTime.UtcNow;
                 }

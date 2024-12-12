@@ -75,9 +75,8 @@ public static class DependencyInjection
 
         services.AddMassTransit(x =>
         {
-            x.AddConsumer<ParticipantEnrolmentAcceptedIntegrationEventHandler>();
-            
-            // x.AddConsumer<EnrolmentApprovedIntegrationEventConsumer>();
+
+            x.AddConsumers(typeof(ParticipantEnrolmentAcceptedIntegrationEventHandler).Assembly); // Automatically add all consumers
 
             x.UsingRabbitMq((context, cfg) =>
             {
