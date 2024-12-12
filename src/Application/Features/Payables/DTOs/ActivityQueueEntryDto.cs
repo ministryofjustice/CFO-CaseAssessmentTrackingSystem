@@ -5,7 +5,8 @@ namespace Cfo.Cats.Application.Features.Payables.DTOs
     public class ActivityQueueEntryDto
     {
         public Guid Id { get; set; }
-        public string ActivityId { get; set; } = default!;
+
+        public Guid ActivityId { get; set; } = default!;
         public DateTime Created { get; set; } = default!;
         public string TenantId { get; set; } = default!;
         public string TenantName { get; set; } = default!;
