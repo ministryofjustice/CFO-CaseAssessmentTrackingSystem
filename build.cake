@@ -5,6 +5,7 @@ var target = Argument("target", "Test");
 var configuration = Argument("configuration", "Release");
 var fromVersion = Argument("fromVersion", "");
 var context = Argument("context", "ApplicationDbContext");
+var migrationName = Argument("migrationName", "");
 
 Task("Clean")
     .WithCriteria(c => c.@HasArgument("rebuild"))
@@ -77,6 +78,26 @@ Task("Migrate")
         {
             Error("Failed to generate migration script");
         }
+    });
+
+Task("AddMigration")
+    .IsDependentOn("Test")
+    .Does(() => {
+        var migrationProject = "src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj";
+        var startupProject = "src/Server.UI/Server.UI.csproj";
+        var dbContext = $"Cfo.Cats.Infrastructure.Persistence.{context}";
+
+        if(string.IsNullOrEmpty(migrationName))
+        {
+            throw new InvalidOperationException("You need to pass a migration name");
+        }
+
+        var result = StartProcess("dotnet", $"ef migrations add {migrationName} --no-build --configuration {configuration} --project {migrationProject} --startup-project {startupProject} --context {dbContext}");
+        if(result != 0)
+        {
+            throw new InvalidOperationException("Failed to add migration");
+        }
+
     });
 
 RunTarget(target);
