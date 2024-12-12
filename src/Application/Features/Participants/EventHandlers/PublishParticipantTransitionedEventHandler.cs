@@ -13,6 +13,6 @@ internal class PublishParticipantTransitionedEventHandler(IUnitOfWork unitOfWork
 {
     public async Task Handle(ParticipantTransitionedDomainEvent notification, CancellationToken cancellationToken)
     {
-        await unitOfWork.DbContext.InsertOutboxMessage(new ParticipantTransitionedIntegrationEvent(notification.Item.Id, notification.From.Name, notification.To.Name));
+        await unitOfWork.DbContext.InsertOutboxMessage(new ParticipantTransitionedIntegrationEvent(notification.Item.Id, notification.From.Name, notification.To.Name, notification.DateOccurred.Date));
     }
 }

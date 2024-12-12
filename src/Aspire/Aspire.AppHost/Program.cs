@@ -4,10 +4,13 @@ var sqlPassword = builder.AddParameter("sqlPassword", secret: true);
 var rabbitUser = builder.AddParameter("rabbitUser", secret: true);
 var rabbitPassword = builder.AddParameter("rabbitPassword", secret: true);
 
-var db = builder.AddSqlServer("sql", sqlPassword, 1433)
+var sql = builder.AddSqlServer("sql", sqlPassword, 1433)
     .WithDataVolume("cats-aspire-data")
-    .WithLifetime(ContainerLifetime.Persistent)
-    .AddDatabase("CatsDb");
+    .WithLifetime(ContainerLifetime.Persistent);
+    
+    
+var catsDb = sql.AddDatabase("CatsDb");
+var miDb = sql.AddDatabase("MiDb");
 
 var rabbit = builder.AddRabbitMQ("rabbit",
         userName: rabbitUser,
@@ -16,8 +19,9 @@ var rabbit = builder.AddRabbitMQ("rabbit",
     .WithLifetime(ContainerLifetime.Persistent);
 
 builder.AddProject<Projects.Server_Ui>("cats")
-    .WithReference(db)
+    .WithReference(catsDb)
+    .WithReference(miDb)
     .WithReference(rabbit)
-    .WaitFor(db);
+    .WaitFor(sql);
 
 builder.Build().Run();

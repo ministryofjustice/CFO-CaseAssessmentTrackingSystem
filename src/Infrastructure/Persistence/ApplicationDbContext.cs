@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.Notifications;
 using Cfo.Cats.Domain.Entities.Payables;
+using Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformation;
 
 namespace Cfo.Cats.Infrastructure.Persistence;
 
@@ -91,8 +92,8 @@ public class ApplicationDbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
+        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly(),
+            x => x.Namespace!.StartsWith(typeof(EnrolmentPaymentEntityTypeConfiguration).Namespace!) == false);
 
         builder.ApplyGlobalFilters<ISoftDelete>(s => s.Deleted == null);
     }
