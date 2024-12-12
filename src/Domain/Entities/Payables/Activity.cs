@@ -40,7 +40,7 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
         Completed = context.Completed;
         TenantId = context.TenantId;
         AdditionalInformation = context.AdditionalInformation;
-        Status = ActivityStatus.Submitted;
+        Status = ActivityStatus.CreatingStatus;
 
         AddDomainEvent(new ActivityCreatedDomainEvent(this));
     }
