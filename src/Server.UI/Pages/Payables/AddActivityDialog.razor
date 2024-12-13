@@ -39,7 +39,7 @@
                         For="() => Model.ActivityDefinition">
                             @foreach (var activity in activities
                            .Where(activity => filteredTypes.Count is 0 || filteredTypes.Contains(activity.Type))
-                           .OrderByDescending(activity => activity.Name))
+                           .OrderBy(activity => activity.Name))
                             {
                                 <MudSelectItem Value="activity">
                                     <div class="d-flex gap-2 align-center">
