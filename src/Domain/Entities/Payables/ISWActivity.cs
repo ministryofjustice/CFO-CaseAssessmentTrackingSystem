@@ -46,10 +46,9 @@ public class ISWActivity : Activity
         return activity;
     }
 
-    public ISWActivity AddDocument(Document document)
+    public ISWActivity AddTemplate(Document document)
     {
         Document = document;
         return this;
     }
-
 }

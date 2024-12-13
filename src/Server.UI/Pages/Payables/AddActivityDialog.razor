@@ -1,4 +1,5 @@
 @using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Payables.DTOs
 @using Cfo.Cats.Application.Features.Payables.Commands
 @using Cfo.Cats.Application.Features.Payables.Queries
 @using Cfo.Cats.Domain.Common.Enums
@@ -80,18 +81,18 @@
                         <MudItem xs="12">
                             <MudAlert Severity="Severity.Info">Further information is required for this type of activity</MudAlert>
 
-                                @if(Model.ActivityDefinition.Classification == ClassificationType.Employment)
-                                {
-                                    <Employment Model="new AddEmployment.Command()"/>
-                                }
-                                else if(Model.ActivityDefinition.Classification == ClassificationType.EducationAndTraining)
-                                {
-                                    <EducationTraining Model="new AddEducationTraining.Command()" />
-                                }
-                                else if(Model.ActivityDefinition.Classification == ClassificationType.ISWActivity)
-                                {
-                                    <Isw Model="new AddIsw.Command()"></Isw>
-                                }
+                            @if(Model.ActivityDefinition.Classification == ClassificationType.Employment)
+                            {
+                                <Employment Model="Model.EmploymentTemplate"/>
+                            }
+                            else if(Model.ActivityDefinition.Classification == ClassificationType.EducationAndTraining)
+                            {
+                                <EducationTraining Model="Model.EducationTrainingTemplate" />
+                            }
+                            else if(Model.ActivityDefinition.Classification == ClassificationType.ISWActivity)
+                            {
+                                <Isw Model="Model.ISWTemplate" />
+                            }
 
                         </MudItem>
                     }

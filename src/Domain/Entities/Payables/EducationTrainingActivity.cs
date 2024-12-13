@@ -33,7 +33,7 @@ public class EducationTrainingActivity : Activity
     public DateTime CourseCommencedOn { get; private set; }
     public CourseCompletionStatus CourseCompletionStatus { get; private set; }
     public bool Passed { get; private set; }
-    public virtual Document? Document { get; private set; } // Uploaded template
+    public virtual Document? Document { get; private set; }
 
     public static EducationTrainingActivity Create(
         ActivityContext context,
@@ -48,10 +48,9 @@ public class EducationTrainingActivity : Activity
         return activity;
     }
 
-    public EducationTrainingActivity AddDocument(Document document)
+    public EducationTrainingActivity AddTemplate(Document document)
     {
         Document = document;
         return this;
     }
-
 }
