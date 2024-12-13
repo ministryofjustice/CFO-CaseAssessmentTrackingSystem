@@ -56,6 +56,9 @@
                             }
                         </MudChipSet>
                     </MudItem>
+                    <MudItem xs="12">
+                        <MudCheckBox T="bool" ValueChanged="OnExcludeNotInProgress" Label="Hide activities that don't require my attention" />
+                    </MudItem>
                 </MudGrid>
             </MudListSubheader>
             @if(activities is not null)
@@ -109,17 +112,17 @@
                                     </MudTooltip>
                                 }
                             </div>
-                            </ChildContent>
-                            <NestedList>
-                                <MudListItem>
-                                    <MudTextField Label="Additional Information"
-                                                  Value="@activity.AdditionalInformation"
-                                                  Lines="5"
-                                                  Class="mt-0"
-                                                  Disabled />
-                                </MudListItem>
-                            </NestedList>
-                        </MudListItem>
+                        </ChildContent>
+                        <NestedList>
+                            <MudListItem>
+                                <MudTextField Label="Additional Information"
+                                Value="@activity.AdditionalInformation"
+                                Lines="5"
+                                Class="mt-0"
+                                Disabled />
+                            </MudListItem>
+                        </NestedList>
+                    </MudListItem>
                     <MudDivider />
                 }
                 <MudListSubheader Class="d-flex justify-center mt-2">
@@ -196,6 +199,12 @@
     Task OnActivityTypesChanged(IReadOnlyCollection<ActivityType>? types)
     {
         Model.IncludeTypes = types?.ToList();
+        return OnRefresh();
+    }
+
+    Task OnExcludeNotInProgress(bool exclude)
+    {
+        Model.Status = exclude ? ActivityStatus.PendingStatus : null;
         return OnRefresh();
     }
 
