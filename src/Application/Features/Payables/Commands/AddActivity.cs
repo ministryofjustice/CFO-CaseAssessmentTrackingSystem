@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Payables.DTOs;
@@ -119,7 +119,7 @@ public static class AddActivity
             {
                 var document = Document
                     .Create(request.Document!.Name, $"Activity Template for {request.ParticipantId}", DocumentType.PDF)
-                    .SetURL($"{request.ParticipantId}/activities");
+                    .SetURL($"{request.ParticipantId}/{templatedActivity.DocumentLocation}");
 
                 if (await UploadDocumentAsync(request.Document, document.URL!, cancellationToken) is not { Succeeded: true })
                 {
@@ -134,7 +134,7 @@ public static class AddActivity
             return Result.Success();
         }
 
-        public async Task<Result<string>> UploadDocumentAsync(IBrowserFile file, string path, CancellationToken cancellationToken)
+        async Task<Result<string>> UploadDocumentAsync(IBrowserFile file, string path, CancellationToken cancellationToken)
         {
             long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.RightToWork.MaximumSizeInMegabytes).Bytes);
             await using var stream = file.OpenReadStream(maxSizeBytes, cancellationToken);
@@ -159,7 +159,7 @@ public static class AddActivity
             When(c => c.ActivityId is not null, () =>
             {
                 RuleFor(c => c.ActivityId)
-                    .MustAsync(BeInProgressStatus);
+                    .MustAsync(BeInPendingStatus);
             });
 
             RuleFor(c => c.ParticipantId)
@@ -205,7 +205,7 @@ public static class AddActivity
             });
         }
 
-        async Task<bool> BeInProgressStatus(Guid? activityId, CancellationToken cancellationToken)
+        async Task<bool> BeInPendingStatus(Guid? activityId, CancellationToken cancellationToken)
         {
             var activity = await unitOfWork.DbContext.Activities.SingleAsync(a => a.Id == activityId, cancellationToken);
             return activity.Status == ActivityStatus.PendingStatus;

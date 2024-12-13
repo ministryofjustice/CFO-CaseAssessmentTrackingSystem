@@ -38,6 +38,8 @@ public class EmploymentActivity : ActivityWithTemplate
     public string? SalaryFrequency { get; private set; }
     public DateTime EmploymentCommenced { get; private set; }
 
+    public override string DocumentLocation => "activity/employment";
+
     public static EmploymentActivity Create(
         ActivityContext context,
         string employmentType,
