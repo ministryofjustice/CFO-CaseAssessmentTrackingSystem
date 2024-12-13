@@ -21,9 +21,6 @@ public class IswDto
     [Description("Baseline Achieved Date")]
     public DateTime? BaselineAchievedOn { get; set; }
 
-    [Description("Upload ISW Template")]
-    public IBrowserFile? Document { get; set; }
-
     [Description("Total Hours pre, during and after intervention")]
     public double TotalHoursIntervention => HoursPerformedPre + HoursPerformedDuring + HoursPerformedPost;
 
@@ -62,14 +59,6 @@ public class IswDto
             RuleFor(c => c.TotalHoursIntervention)
                 .GreaterThanOrEqualTo(10)
                 .WithMessage("Total Intervention Hours (pre, during and after) must be atleast 10 hours or more");
-
-            RuleFor(v => v.Document)
-                    .NotNull()
-                    .WithMessage("You must upload a ISW Template")
-                    .Must(file => NotExceedMaximumFileSize(file, Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes))
-                    .WithMessage($"File size exceeds the maxmimum allowed size of {Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes} megabytes")
-                    .MustAsync(BePdfFile)
-                    .WithMessage("File is not a PDF");
         }
 
         private bool BeValidNumber(double number)
@@ -79,34 +68,6 @@ public class IswDto
 
             // Check if the fractional part is not .25, .5, or .75
             return fractionalPart == 0.0 || fractionalPart == 0.25 || fractionalPart == 0.5 || fractionalPart == 0.75;
-        }
-
-        private static bool NotExceedMaximumFileSize(IBrowserFile? file, double maxSizeMB)
-        => file?.Size < ByteSize.FromMegabytes(maxSizeMB).Bytes;
-
-        private async Task<bool> BePdfFile(IBrowserFile? file, CancellationToken cancellationToken)
-        {
-            if (file is null)
-                return false;
-
-            // Check file extension
-            if (!Path.GetExtension(file.Name).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
-                return false;
-
-            // Check MIME type
-            if (file.ContentType != "application/pdf")
-                return false;
-
-            long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes).Bytes);
-
-            // Check file signature (magic numbers)
-            using (var stream = file.OpenReadStream(maxSizeBytes, cancellationToken))
-            {
-                byte[] buffer = new byte[4];
-                await stream.ReadExactlyAsync(buffer.AsMemory(0, 4), cancellationToken);
-                string header = System.Text.Encoding.ASCII.GetString(buffer);
-                return header == "%PDF";
-            }
         }
 
     }

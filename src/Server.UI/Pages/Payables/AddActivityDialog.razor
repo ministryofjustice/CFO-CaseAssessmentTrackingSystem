@@ -19,28 +19,28 @@
                     </MudItem>
                     <MudItem xs="12">
                         <MudChipSet @bind-SelectedValues="filteredTypes"
-                        Disabled="Disabled"
-                        SelectionMode="SelectionMode.MultiSelection">
+                                    Disabled="Disabled"
+                                    SelectionMode="SelectionMode.MultiSelection">
                             @foreach (var type in ActivityType.List)
                             {
-                                <MudChip Value="type" 
-                                SelectedColor="Color.Info" 
-                                Text="@type.Name" 
-                                OnClick="ClearSelectedActivity" 
-                                Disabled="IsAvailableAtSelectedLocation(type) is false" />
+                                <MudChip Value="type"
+                                         SelectedColor="Color.Info"
+                                         Text="@type.Name"
+                                         OnClick="ClearSelectedActivity"
+                                         Disabled="IsAvailableAtSelectedLocation(type) is false" />
                             }
                         </MudChipSet>
                     </MudItem>
                     <MudItem xs="12">
                         <MudSelect @ref="activityDropdown"
-                        T="ActivityDefinition"
-                        ValueChanged="ActivityChanged"
-                        Disabled="Disabled"
-                        Label="@Model.GetMemberDescription(x => x.ActivityDefinition)"
-                        For="() => Model.ActivityDefinition">
+                                   T="ActivityDefinition"
+                                   ValueChanged="ActivityChanged"
+                                   Disabled="Disabled"
+                                   Label="@Model.GetMemberDescription(x => x.ActivityDefinition)"
+                                   For="() => Model.ActivityDefinition">
                             @foreach (var activity in activities
-                        .Where(activity => filteredTypes.Count is 0 || filteredTypes.Contains(activity.Type))
-                        .OrderBy(activity => activity.Name))
+                           .Where(activity => filteredTypes.Count is 0 || filteredTypes.Contains(activity.Type))
+                           .OrderBy(activity => activity.Name))
                             {
                                 <MudSelectItem Value="activity">
                                     <div class="d-flex gap-2 align-center">
@@ -63,41 +63,79 @@
 
                     <MudItem xs="12">
                         <MudDatePicker @bind-Date="Model.Completed"
-                        For="() => Model.Completed"
-                        MaxDate="DateTime.UtcNow"
-                        Label="@Model.GetMemberDescription(x => x.Completed)"
-                        PickerVariant="PickerVariant.Dialog"
-                        ImmediateText="true" 
-                        Editable="true" />
+                                       For="() => Model.Completed"
+                                       MaxDate="DateTime.UtcNow"
+                                       Label="@Model.GetMemberDescription(x => x.Completed)"
+                                       PickerVariant="PickerVariant.Dialog"
+                                       ImmediateText="true"
+                                       Editable="true" />
                     </MudItem>
                     <MudItem xs="12">
                         <MudTextField @bind-Value="Model.AdditionalInformation"
-                        Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
-                        For="() => Model.AdditionalInformation"
-                        Lines="5" />
+                                      Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
+                                      For="() => Model.AdditionalInformation"
+                                      Lines="5" />
                     </MudItem>
                     @if (Model.ActivityDefinition is { Classification.RequiresFurtherInformation: true })
                     {
                         <MudItem xs="12">
                             <MudAlert Class="mb-2" Severity="Severity.Info">Further information is required for this type of activity</MudAlert>
 
-                            @if(Model.ActivityDefinition.Classification == ClassificationType.Employment)
+                            @if (Model.ActivityDefinition.Classification == ClassificationType.Employment)
                             {
-                                <Employment Model="Model.EmploymentTemplate"/>
+                                <Employment Model="Model.EmploymentTemplate" />
                             }
-                            else if(Model.ActivityDefinition.Classification == ClassificationType.EducationAndTraining)
+                            else if (Model.ActivityDefinition.Classification == ClassificationType.EducationAndTraining)
                             {
                                 <EducationTraining Model="Model.EducationTrainingTemplate" />
                             }
-                            else if(Model.ActivityDefinition.Classification == ClassificationType.ISWActivity)
+                            else if (Model.ActivityDefinition.Classification == ClassificationType.ISWActivity)
                             {
                                 <Isw Model="Model.ISWTemplate" />
                             }
 
+                            <MudItem xs="12">
+                                <div class="mb-4">
+                                    <MudFileUpload @bind-Files="Model.Document"
+                                                   For="() => Model.Document"
+                                                   MaximumFileCount="1"
+                                                   Accept=".pdf">
+                                        <ActivatorContent>
+                                            <MudLoadingButton Loading="uploading"
+                                                              Variant="Variant.Outlined"
+                                                              Color="Color.Primary"
+                                                              StartIcon="@Icons.Material.Filled.Upload">
+                                                @if (uploading)
+                                                {
+                                                    @ConstantString.Uploading
+                                                }
+                                                else
+                                                {
+                                                    @ConstantString.Upload
+                                                }
+                                            </MudLoadingButton>
+                                        </ActivatorContent>
+                                        <SelectedTemplate>
+                                            <br />
+                                            @if (context != null)
+                                            {
+                                                <MudText>
+                                                    Template uploaded: @context.Name
+                                                </MudText>
+                                            }
+                                            else
+                                            {
+                                                <MudText>No Files</MudText>
+                                            }
+                                            <br />
+                                        </SelectedTemplate>
+                                    </MudFileUpload>
+                                </div>
+                            </MudItem>
+
                         </MudItem>
                     }
                 </MudGrid>
-
             </MudForm>
         }
     </DialogContent>
@@ -111,6 +149,7 @@
     IEnumerable<ActivityDefinition> activities = [];
     MudSelect<ActivityDefinition?> activityDropdown = new();
     MudForm form = new();
+    bool uploading = false;
     IReadOnlyCollection<ActivityType> filteredTypes = [];
 
     bool saving;

@@ -1,17 +1,12 @@
-﻿using Cfo.Cats.Application.Common.Interfaces;
-using Cfo.Cats.Application.Common.Models;
-using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Locations.DTOs;
-using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Payables.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Entities.Payables;
 using Humanizer.Bytes;
 using Microsoft.AspNetCore.Components.Forms;
-using System.Threading;
 
 namespace Cfo.Cats.Application.Features.Payables.Commands;
 
@@ -20,6 +15,7 @@ public static class AddActivity
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command : IRequest<Result>
     {
+        public Guid? ActivityId { get; set; }
         public required string ParticipantId { get; set; }
         public required Guid TaskId { get; set; }
         public LocationDto? Location { get; set; }
@@ -36,6 +32,9 @@ public static class AddActivity
         public EmploymentDto EmploymentTemplate { get; set; } = new();
         public EducationTrainingDto EducationTrainingTemplate { get; set; } = new();
         public IswDto ISWTemplate { get; set; } = new();
+
+        [Description("Upload Template")]
+        public IBrowserFile? Document { get; set; }
     }
 
     class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IUploadService uploadService) : IRequestHandler<Command, Result>
@@ -47,7 +46,7 @@ public static class AddActivity
                 .ThenInclude(l => l.Contract)
                 .FirstOrDefaultAsync(p => p.Id == request.ParticipantId, cancellationToken);
 
-            if(participant is null)
+            if (participant is null)
             {
                 return Result.Failure("Participant not found");
             }
@@ -56,7 +55,7 @@ public static class AddActivity
                 .Include(l => l.Contract)
                 .FirstOrDefaultAsync(l => l.Id == request.Location!.Id, cancellationToken);
 
-            if(location is not { Contract: not null })
+            if (location is not { Contract: not null })
             {
                 return Result.Failure("Activities cannot be recorded against the chosen location");
             }
@@ -67,7 +66,7 @@ public static class AddActivity
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if(task is null)
+            if (task is null)
             {
                 return Result.Failure("Task not found");
             }
@@ -85,13 +84,18 @@ public static class AddActivity
                 currentUserService.TenantId!,
                 AdditionalInformation: request.AdditionalInformation);
 
-            Document document;
+            var classification = request.ActivityDefinition!.Classification;
 
-            if(request.ActivityDefinition!.Classification == ClassificationType.Employment)
+            Activity activity = classification switch
             {
-                document = Document.Create(request.EmploymentTemplate!.Document!.Name, $"Employment Template for {request.ParticipantId}", DocumentType.PDF);
-
-                var employmentActivity = EmploymentActivity.Create(cxt,
+                _ when classification == ClassificationType.EducationAndTraining => EducationTrainingActivity.Create(cxt,
+                    request.EducationTrainingTemplate!.CourseTitle!,
+                    request.EducationTrainingTemplate!.CourseUrl!,
+                    request.EducationTrainingTemplate!.CourseLevel!,
+                    request.EducationTrainingTemplate!.CourseCommencedOn!.Value,
+                    request.EducationTrainingTemplate!.CourseCompletionStatus!
+                ),
+                _ when classification == ClassificationType.Employment => EmploymentActivity.Create(cxt,
                     request.EmploymentTemplate!.EmploymentType!,
                     request.EmploymentTemplate!.EmployerName!,
                     request.EmploymentTemplate!.JobTitle!,
@@ -99,70 +103,39 @@ public static class AddActivity
                     request.EmploymentTemplate!.Salary,
                     request.EmploymentTemplate!.SalaryFrequency,
                     request.EmploymentTemplate!.EmploymentCommenced!.Value
-                );
-
-                var result = await UploadDocumentAsync(document, request.EmploymentTemplate!.Document!, $"{request.ParticipantId}/activity/employment", cancellationToken);
-
-                if (result.Succeeded)
-                {
-                    employmentActivity.AddTemplate(document);
-                    await unitOfWork.DbContext.EmploymentActivities.AddAsync(employmentActivity, cancellationToken);
-                }
-            }
-            else if(request.ActivityDefinition!.Classification == ClassificationType.EducationAndTraining)
-            {
-                document = Document.Create(request.EducationTrainingTemplate!.Document!.Name, $"Education/Training Template for {request.ParticipantId}", DocumentType.PDF);
-
-                var educationActivity = EducationTrainingActivity.Create(cxt,
-                    request.EducationTrainingTemplate!.CourseTitle!,
-                    request.EducationTrainingTemplate!.CourseUrl!,
-                    request.EducationTrainingTemplate!.CourseLevel!,
-                    request.EducationTrainingTemplate!.CourseCommencedOn!.Value,
-                    request.EducationTrainingTemplate!.CourseCompletionStatus!
-                );
-
-                var result = await UploadDocumentAsync(document, request.EducationTrainingTemplate!.Document!, $"{request.ParticipantId}/activity/educationTraining", cancellationToken);
-
-                if(result.Succeeded)
-                {
-                    educationActivity.AddTemplate(document);
-                    await unitOfWork.DbContext.EducationTrainingActivities.AddAsync(educationActivity, cancellationToken);
-                }
-            }
-            else if(request.ActivityDefinition!.Classification == ClassificationType.ISWActivity)
-            {
-                document = Document.Create(request.ISWTemplate!.Document!.Name, $"ISW Activity Template for {request.ParticipantId}", DocumentType.PDF);
-
-                var iswActivity = ISWActivity.Create(cxt,
+                ),
+                _ when classification == ClassificationType.ISWActivity => ISWActivity.Create(cxt,
                     request.ISWTemplate!.WraparoundSupportStartedOn!.Value,
                     request.ISWTemplate!.HoursPerformedPre,
                     request.ISWTemplate!.HoursPerformedDuring,
                     request.ISWTemplate!.HoursPerformedPost,
                     request.ISWTemplate!.BaselineAchievedOn!.Value
-                );
+                ),
+                _ => NonISWActivity.Create(cxt)
+            };
 
-                var result = await UploadDocumentAsync(document, request.ISWTemplate!.Document!, $"{request.ParticipantId}/activity/isw", cancellationToken);
+            // Upload template (if required)
+            if(activity is ActivityWithTemplate templatedActivity)
+            {
+                var document = Document
+                    .Create(request.Document!.Name, $"Activity Template for {request.ParticipantId}", DocumentType.PDF)
+                    .SetURL($"{request.ParticipantId}/activities");
 
-                if(result.Succeeded)
+                if (await UploadDocumentAsync(request.Document, document.URL!, cancellationToken) is not { Succeeded: true })
                 {
-                    iswActivity.AddTemplate(document);
-                    await unitOfWork.DbContext.ISWActivities.AddAsync(iswActivity, cancellationToken);
+                    return Result.Failure("Failed to upload template");
                 }
 
+                templatedActivity.AddTemplate(document);
             }
-            else if(request.ActivityDefinition!.Classification == ClassificationType.NonISWActivity)
-            {
-                var activity = NonISWActivity.Create(cxt);
-                await unitOfWork.DbContext.NonISWActivities.AddAsync(activity, cancellationToken);
-            }
+
+            await unitOfWork.DbContext.Activities.AddAsync(activity, cancellationToken);
 
             return Result.Success();
         }
 
-        public async Task<Result<string>> UploadDocumentAsync(Document document, IBrowserFile file, string path, CancellationToken cancellationToken)
+        public async Task<Result<string>> UploadDocumentAsync(IBrowserFile file, string path, CancellationToken cancellationToken)
         {
-            // Now use the upload service to upload document
-            // Store document in documents table
             long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.RightToWork.MaximumSizeInMegabytes).Bytes);
             await using var stream = file.OpenReadStream(maxSizeBytes, cancellationToken);
             using var memoryStream = new MemoryStream();
@@ -170,9 +143,7 @@ public static class AddActivity
 
             var uploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
 
-            var result = await uploadService.UploadAsync(path, uploadRequest);
-
-            return result;
+            return await uploadService.UploadAsync(path, uploadRequest);
         }
 
     }
@@ -184,6 +155,12 @@ public static class AddActivity
         public Validator(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
+
+            When(c => c.ActivityId is not null, () =>
+            {
+                RuleFor(c => c.ActivityId)
+                    .MustAsync(BeInProgressStatus);
+            });
 
             RuleFor(c => c.ParticipantId)
                 .NotNull()
@@ -215,12 +192,57 @@ public static class AddActivity
                 .MaximumLength(ValidationConstants.NotesLength)
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Additional Information"));
+
+            When(c => c.ActivityDefinition?.Classification.RequiresFurtherInformation is true, () =>
+            {
+                RuleFor(v => v.Document)
+                        .NotNull()
+                        .WithMessage("You must upload a Template")
+                        .Must(file => NotExceedMaximumFileSize(file, Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes))
+                        .WithMessage($"File size exceeds the maxmimum allowed size of {Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes} megabytes")
+                        .MustAsync(BePdfFile)
+                        .WithMessage("File is not a PDF");
+            });
+        }
+
+        async Task<bool> BeInProgressStatus(Guid? activityId, CancellationToken cancellationToken)
+        {
+            var activity = await unitOfWork.DbContext.Activities.SingleAsync(a => a.Id == activityId, cancellationToken);
+            return activity.Status == ActivityStatus.PendingStatus;
         }
 
         async Task<bool> HaveAHubInduction(string participantId, LocationDto location, CancellationToken cancellationToken)
         {
             return await unitOfWork.DbContext.HubInductions.AnyAsync(induction => 
                 induction.ParticipantId == participantId && induction.LocationId == location.Id, cancellationToken);
+        }
+
+        private static bool NotExceedMaximumFileSize(IBrowserFile? file, double maxSizeMB)
+        => file?.Size < ByteSize.FromMegabytes(maxSizeMB).Bytes;
+
+        private async Task<bool> BePdfFile(IBrowserFile? file, CancellationToken cancellationToken)
+        {
+            if (file is null)
+                return false;
+
+            // Check file extension
+            if (!Path.GetExtension(file.Name).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            // Check MIME type
+            if (file.ContentType != "application/pdf")
+                return false;
+
+            long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes).Bytes);
+
+            // Check file signature (magic numbers)
+            using (var stream = file.OpenReadStream(maxSizeBytes, cancellationToken))
+            {
+                byte[] buffer = new byte[4];
+                await stream.ReadExactlyAsync(buffer.AsMemory(0, 4), cancellationToken);
+                string header = System.Text.Encoding.ASCII.GetString(buffer);
+                return header == "%PDF";
+            }
         }
 
         bool NotBeCompletedInTheFuture(DateTime? completed) => completed < DateTime.UtcNow;

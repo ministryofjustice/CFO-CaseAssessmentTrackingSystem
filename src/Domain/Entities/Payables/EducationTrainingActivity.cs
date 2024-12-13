@@ -1,10 +1,9 @@
 ﻿using Cfo.Cats.Domain.Common.Enums;
-using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Payables;
 
-public class EducationTrainingActivity : Activity
+public class EducationTrainingActivity : ActivityWithTemplate
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     EducationTrainingActivity()
@@ -32,7 +31,6 @@ public class EducationTrainingActivity : Activity
     public string CourseLevel { get; private set; }
     public DateTime CourseCommencedOn { get; private set; }
     public CourseCompletionStatus CourseCompletionStatus { get; private set; }
-    public virtual Document? Document { get; private set; }
 
     public static EducationTrainingActivity Create(
         ActivityContext context,
@@ -47,9 +45,4 @@ public class EducationTrainingActivity : Activity
         return activity;
     }
 
-    public EducationTrainingActivity AddTemplate(Document document)
-    {
-        Document = document;
-        return this;
-    }
 }

@@ -1,9 +1,8 @@
-﻿using Cfo.Cats.Domain.Entities.Documents;
-using Cfo.Cats.Domain.Events;
+﻿using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Payables;
 
-public class ISWActivity : Activity
+public class ISWActivity : ActivityWithTemplate
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     ISWActivity()
@@ -31,7 +30,6 @@ public class ISWActivity : Activity
     public double HoursPerformedDuring { get; private set; }
     public double HoursPerformedPost { get; private set; }
     public DateTime BaselineAchievedOn { get; private set; }
-    public virtual Document? Document { get; private set; } // Uploaded template
 
     public static ISWActivity Create(
         ActivityContext context,
@@ -44,11 +42,5 @@ public class ISWActivity : Activity
         ISWActivity activity = new(context, wraparoundSupportStartedOn, hoursPerformedPre, hoursPerformedDuring, hoursPerformedPost, baselineAchievedOn);
         activity.AddDomainEvent(new ISWActivityCreatedDomainEvent(activity));
         return activity;
-    }
-
-    public ISWActivity AddTemplate(Document document)
-    {
-        Document = document;
-        return this;
     }
 }
