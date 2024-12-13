@@ -31,7 +31,7 @@ public abstract class ActivityStatus : SmartEnum<ActivityStatus>
 
     private sealed class Creating() : ActivityStatus("Creating", 0)
     {
-        protected override ActivityStatus[] GetAllowedTransitions() => [AbandonedStatus, SubmittedToProviderStatus];
+        protected override ActivityStatus[] GetAllowedTransitions() => [AbandonedStatus, SubmittedToProviderStatus, ApprovedStatus];
     }
 
     private sealed class SubmittedToProvider() : ActivityStatus("Submitted to Provider", 1)
