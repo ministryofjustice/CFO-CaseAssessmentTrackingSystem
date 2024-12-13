@@ -3,7 +3,7 @@ using Amazon.S3;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
-using Cfo.Cats.Application.Features.ManagementInformation;
+using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
@@ -76,7 +76,7 @@ public static class DependencyInjection
         services.AddMassTransit(x =>
         {
 
-            x.AddConsumers(typeof(ParticipantEnrolmentAcceptedIntegrationEventHandler).Assembly); // Automatically add all consumers
+            x.AddConsumers(typeof(RecordEnrolmentPayment).Assembly); // Automatically add all consumers
 
             x.UsingRabbitMq((context, cfg) =>
             {

@@ -12,7 +12,8 @@ public sealed class WingInductionCreatedDomainEvent(WingInduction induction) : D
     public WingInduction Item { get; } = induction;
 }
 
-public sealed class InductionPhaseCompletedDomainEvent(InductionPhase phase) : DomainEvent
+public sealed class InductionPhaseCompletedDomainEvent(Guid inductionId, InductionPhase phase) : DomainEvent
 {
     public InductionPhase Item { get; } = phase;
+    public Guid InductionId { get; } = inductionId;
 }

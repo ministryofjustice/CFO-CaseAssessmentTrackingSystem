@@ -120,7 +120,7 @@ public class InductionPaymentBuilder
             ParticipantId = _participantId ?? throw new ApplicationException("ParticipantId must be set before calling build"), 
             SupportWorker = _supportWorker ?? throw new ApplicationException("SupportWorker must be set before calling build"), 
             ContractId = _contractId ?? throw new ApplicationException("ContractId must be set before calling build"), 
-            Approved = _approved ?? throw new ApplicationException("Approved must be set before calling build"),
+            Approved = _approved,
             Induction = _induction ?? throw new ApplicationException("Induction must be set before calling build"),
             LocationId = _locationId ?? throw new ApplicationException("LocationId must be set before calling build"), 
             LocationType = _locationType ?? throw new ApplicationException("LocationType must be set before calling build"),
