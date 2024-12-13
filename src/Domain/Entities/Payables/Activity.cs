@@ -1,5 +1,6 @@
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Common.Exceptions;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Events;
@@ -68,13 +69,14 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
 
     public Activity TransitionTo(ActivityStatus to)
     {
-        if(Status != to)
+        if(Status.CanTransitionTo(to))
         {
             AddDomainEvent(new ActivityTransitionedDomainEvent(this, Status, to));
             Status = to;
+            return this;
         }
 
-        return this;
+        throw new InvalidActivityTransition(Status, to);
     }
 
     public bool RequiresQa => Definition.CheckType == CheckType.QA;
