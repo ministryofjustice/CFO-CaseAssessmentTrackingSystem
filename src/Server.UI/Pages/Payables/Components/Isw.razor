@@ -8,41 +8,38 @@
 @inject IStringLocalizer<Isw> L
 @if (Model is not null)
 {
+    <MudForm Model="Model" Validation="Validator.ValidateValue(Model)">
         <MudGrid>
             <MudItem xs="12">
-                <MudDatePicker @bind-Date="Model.WraparoundSupportStartDate"
-                For="() => Model.WraparoundSupportStartDate"
-                Label="@Model.GetMemberDescription(x => x.WraparoundSupportStartDate)"
+            <MudDatePicker @bind-Date="Model.WraparoundSupportStartedOn"
+                           For="() => Model.WraparoundSupportStartedOn"
+                           Label="@Model.GetMemberDescription(x => x.WraparoundSupportStartedOn)"
                 Editable="true"
                 PickerVariant="PickerVariant.Dialog" />
             </MudItem>
             <MudItem xs="12">
-                <MudDatePicker @bind-Date="Model.BaselineAchievedDate"
-                For="() => Model.BaselineAchievedDate"
-                Label="@Model.GetMemberDescription(x => x.BaselineAchievedDate)"
+            <MudDatePicker @bind-Date="Model.BaselineAchievedOn"
+                           For="() => Model.BaselineAchievedOn"
+                           Label="@Model.GetMemberDescription(x => x.BaselineAchievedOn)"
                 Editable="true"
                 PickerVariant="PickerVariant.Dialog" />
             </MudItem>
             <MudItem xs="12">
-                <MudNumericField Label="@Model.GetMemberDescription(x => x.TotalHoursPerformedPreIntervention)" @bind-Value="@Model.TotalHoursPerformedPreIntervention" For="() => Model.TotalHoursPerformedPreIntervention" Step=".25M" />
+            <MudNumericField Label="@Model.GetMemberDescription(x => x.HoursPerformedPre)" @bind-Value="@Model.HoursPerformedPre" For="() => Model.HoursPerformedPre" Step="0.25" />
             </MudItem>
             <MudItem xs="12">
-                <MudNumericField Label="@Model.GetMemberDescription(x => x.TotalHoursPerformedDuringIntervention)" @bind-Value="@Model.TotalHoursPerformedDuringIntervention" For="() => Model.TotalHoursPerformedDuringIntervention" Step=".25M" />
+            <MudNumericField Label="@Model.GetMemberDescription(x => x.HoursPerformedDuring)" @bind-Value="@Model.HoursPerformedDuring" For="() => Model.HoursPerformedDuring" Step="0.25" />
             </MudItem>
             <MudItem xs="12">
-                <MudNumericField Label="@Model.GetMemberDescription(x => x.TotalHoursPerformedAfterIntervention)" @bind-Value="@Model.TotalHoursPerformedAfterIntervention" For="() => Model.TotalHoursPerformedAfterIntervention" Step=".25M" />
+            <MudNumericField Label="@Model.GetMemberDescription(x => x.HoursPerformedPost)" @bind-Value="@Model.HoursPerformedPost" For="() => Model.HoursPerformedPost" Step="0.25" />
             </MudItem>
             <MudItem xs="12">
+
                 <MudText>
-                        Total Intervention Hours (pre, during and after): @(Model.TotalHoursInterventionDescription)
+                    Total Intervention Hours (pre, during and after): @(Model.TotalHoursInterventionDescription)
                 </MudText>
 
-            @if (Model.TotalHoursIntervention < 10)
-            {
-                <MudAlert Class="my-2" Severity="Severity.Warning">
-                    Total Intervention Hours (pre, during and after) must be atleast 10 hours or more
-                </MudAlert>
-            }
+                <MudTextField ReadOnly Underline="false" For="@(() => Model.TotalHoursIntervention)" hidden />
 
             </MudItem>
             <MudItem xs="12">
@@ -84,6 +81,7 @@
                 </div>
             </MudItem>
         </MudGrid>
+    </MudForm>
 }
 @code {
     private bool uploading = false;
@@ -92,7 +90,8 @@
     private IPicklistService PicklistService { get; set; } = default!;
 
     [Parameter, EditorRequired]
-    public required AddIsw.Command Model { get; set; }
+    public required IswDto Model { get; set; }
+
     public MudForm form = new();
 
     bool Disabled = false;

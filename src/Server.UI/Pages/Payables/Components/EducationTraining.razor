@@ -5,88 +5,92 @@
 @inherits CatsComponentBase
 
 @inject IStringLocalizer<EducationTraining> L
+
 @if (Model is not null)
 {
-    <MudGrid>
-        <MudItem xs="12">
-            <MudTextField Label="@Model.GetMemberDescription(x => x.CourseTitle)" Value="Model.CourseTitle" />
-        </MudItem>
-        <MudItem xs="12">
-            <MudTextField Label="@Model.GetMemberDescription(x => x.CourseHyperlink)" Value="Model.CourseHyperlink" />
-        </MudItem>
-        <MudItem xs="12">
-            <MudSelect @bind-Value="Model.CourseLevel"
-            For="() => Model.CourseLevel"
-            Label="@Model.GetMemberDescription(x => x.CourseLevel)">
-                @foreach (var courseLevel in PicklistService.DataSource
-                .Where(c => c.Name == Picklist.EducationLevel)
-                .OrderBy(c => c.Text))
-                {
-                    <MudSelectItem Value="@courseLevel.Value">@courseLevel.Text</MudSelectItem>
-                }
-            </MudSelect>
-        </MudItem>
-        <MudItem xs="12">
-            <MudDatePicker @bind-Date="Model.CourseCommencedDate"
-                            For="() => Model.CourseCommencedDate"
-                            Label="@Model.GetMemberDescription(x => x.CourseCommencedDate)"
-                            Editable="true"
-                            PickerVariant="PickerVariant.Dialog" />
-        </MudItem>
-        <MudItem xs="12">
-            <MudDatePicker @bind-Date="Model.CourseCompletedDate"
-                           For="() => Model.CourseCompletedDate"
-                           Label="@Model.GetMemberDescription(x => x.CourseCompletedDate)"
-                            Editable="true"
-                            PickerVariant="PickerVariant.Dialog" />
-        </MudItem>
-        <MudItem xs="12">
-            <MudSelect @bind-Value="Model.Passed" For="() => Model.Passed"
-            Label="@Model.GetMemberDescription(x => x.Passed)">
-                <MudSelectItem Value="@("Yes")">Yes </MudSelectItem>
-                <MudSelectItem Value="@("No")">No</MudSelectItem>
-                <MudSelectItem Value="@("Not Applicable")">Not Applicable</MudSelectItem>
-            </MudSelect>
-        </MudItem>
-        <MudItem xs="12">
-            <div class="mb-4">
-                <MudFileUpload @bind-Files="Model.Document"
-                               For="() => Model.Document"
-                               MaximumFileCount="1"
-                               Accept=".pdf" >
-                    <ActivatorContent>
-                        <MudLoadingButton Loading="uploading"
-                                          Variant="Variant.Outlined"
-                                          Color="Color.Primary"
-                                          StartIcon="@Icons.Material.Filled.Upload">
-                            @if (uploading)
+    <MudForm Model="Model" Validation="Validator.ValidateValue(Model)">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudTextField Label="@Model.GetMemberDescription(x => x.CourseTitle)" @bind-Value="Model.CourseTitle" For="() => Model.CourseTitle" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField Label="@Model.GetMemberDescription(x => x.CourseUrl)" @bind-Value="Model.CourseUrl" For="() => Model.CourseUrl" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudSelect @bind-Value="Model.CourseLevel"
+                For="() => Model.CourseLevel"
+                Label="@Model.GetMemberDescription(x => x.CourseLevel)">
+                    @foreach (var courseLevel in PicklistService.DataSource
+                    .Where(c => c.Name == Picklist.EducationLevel)
+                    .OrderBy(c => c.Text))
+                    {
+                        <MudSelectItem Value="@courseLevel.Value">@courseLevel.Text</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12">
+                <MudDatePicker @bind-Date="Model.CourseCommencedOn"
+                For="() => Model.CourseCommencedOn"
+                Label="@Model.GetMemberDescription(x => x.CourseCommencedOn)"
+                Editable="true"
+                PickerVariant="PickerVariant.Dialog" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudDatePicker @bind-Date="Model.CourseCompletedDate"
+                For="() => Model.CourseCompletedDate"
+                Label="@Model.GetMemberDescription(x => x.CourseCompletedDate)"
+                MinDate="@Model.CourseCommencedOn"
+                Editable="true"
+                PickerVariant="PickerVariant.Dialog" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudSelect @bind-Value="Model.CourseCompletionStatus" For="() => Model.CourseCompletionStatus"
+                Label="@Model.GetMemberDescription(x => x.CourseCompletionStatus)">
+                    <MudSelectItem Value="CourseCompletionStatus.Yes">@CourseCompletionStatus.Yes.Name</MudSelectItem>
+                    <MudSelectItem Value="CourseCompletionStatus.No">@CourseCompletionStatus.No.Name</MudSelectItem>
+                    <MudSelectItem Value="CourseCompletionStatus.NotApplicable">@CourseCompletionStatus.NotApplicable.Name</MudSelectItem>
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12">
+                <div class="mb-4">
+                    <MudFileUpload @bind-Files="Model.Document"
+                    For="() => Model.Document"
+                    MaximumFileCount="1"
+                    Accept=".pdf" >
+                        <ActivatorContent>
+                            <MudLoadingButton Loading="uploading"
+                            Variant="Variant.Outlined"
+                            Color="Color.Primary"
+                            StartIcon="@Icons.Material.Filled.Upload">
+                                @if (uploading)
+                                {
+                                    @ConstantString.Uploading
+                                }
+                                else
+                                {
+                                    @ConstantString.Upload
+                                }
+                            </MudLoadingButton>
+                        </ActivatorContent>
+                        <SelectedTemplate>
+                            <br />
+                            @if (context != null)
                             {
-                                @ConstantString.Uploading
+                                <MudText>
+                                    Education template uploaded:  @context.Name
+                                </MudText>
                             }
                             else
                             {
-                                @ConstantString.Upload
+                                <MudText>No Files</MudText>
                             }
-                        </MudLoadingButton>
-                    </ActivatorContent>
-                    <SelectedTemplate>
-                        <br />
-                        @if (context != null)
-                        {
-                            <MudText>
-                                Education template uploaded:  @context.Name
-                            </MudText>
-                        }
-                        else
-                        {
-                            <MudText>No Files</MudText>
-                        }
-                        <br />
-                    </SelectedTemplate>
-                </MudFileUpload>
-            </div>
-        </MudItem>
-    </MudGrid>
+                            <br />
+                        </SelectedTemplate>
+                    </MudFileUpload>
+                </div>
+            </MudItem>
+        </MudGrid>
+    </MudForm>
 }
 @code {
     private bool uploading = false;
@@ -95,5 +99,5 @@
     private IPicklistService PicklistService { get; set; } = default!;
 
     [Parameter, EditorRequired]
-    public required AddEducationTraining.Command Model { get; set; }
+    public required EducationTrainingDto Model { get; set; }
 }

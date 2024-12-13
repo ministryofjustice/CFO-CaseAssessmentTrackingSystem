@@ -37,7 +37,7 @@ public class EmploymentActivity : Activity
     public double? Salary { get; private set; }
     public string? SalaryFrequency { get; private set; }
     public DateTime EmploymentCommenced { get; private set; }
-    public virtual Document? Document { get; private set; } // Uploaded template
+    public virtual Document? Document { get; private set; }
 
     public static EmploymentActivity Create(
         ActivityContext context,
@@ -46,7 +46,7 @@ public class EmploymentActivity : Activity
         string jobTitle,
         string jobTitleCode,
         double? salary,
-        string salaryFrequency,
+        string? salaryFrequency,
         DateTime employmentCommenced)
     {
         EmploymentActivity activity = new(context, employmentType, employerName, jobTitle, jobTitleCode, salary, salaryFrequency, employmentCommenced);
@@ -54,7 +54,7 @@ public class EmploymentActivity : Activity
         return activity;
     }
 
-    public EmploymentActivity AddDocument(Document document)
+    public EmploymentActivity AddTemplate(Document document)
     {
         Document = document;
         return this;
