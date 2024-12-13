@@ -32,7 +32,6 @@ public class EducationTrainingActivity : Activity
     public string CourseLevel { get; private set; }
     public DateTime CourseCommencedOn { get; private set; }
     public CourseCompletionStatus CourseCompletionStatus { get; private set; }
-    public bool Passed { get; private set; }
     public virtual Document? Document { get; private set; }
 
     public static EducationTrainingActivity Create(
