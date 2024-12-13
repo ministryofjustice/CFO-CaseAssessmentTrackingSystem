@@ -14,6 +14,8 @@ public abstract class ActivityWithTemplate : Activity
 
     public virtual Document? Document { get; protected set; }
 
+    public abstract string DocumentLocation { get; }
+
     public ActivityWithTemplate AddTemplate(Document document)
     {
         Document = document;

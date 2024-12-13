@@ -32,6 +32,8 @@ public class EducationTrainingActivity : ActivityWithTemplate
     public DateTime CourseCommencedOn { get; private set; }
     public CourseCompletionStatus CourseCompletionStatus { get; private set; }
 
+    public override string DocumentLocation => "activity/educationandtraining";
+
     public static EducationTrainingActivity Create(
         ActivityContext context,
         string courseTitle,
