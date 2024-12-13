@@ -9,7 +9,7 @@ internal static class OutboxExtensions
     {
         var outboxMessage = new OutboxMessage
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.CreateVersion7(),
             Type = message.GetType().FullName!,
             Content = JsonSerializer.Serialize(message),
             OccurredOnUtc = DateTime.UtcNow
