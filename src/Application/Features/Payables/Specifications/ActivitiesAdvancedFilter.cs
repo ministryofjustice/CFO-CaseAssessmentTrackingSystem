@@ -10,6 +10,7 @@ public class ActivitiesAdvancedFilter : PaginationFilter
     public DateTime? CompletedStart { get; set; }
     public DateTime? CompletedEnd { get; set; }
     public LocationDto? Location { get; set; }
+    public ActivityStatus? Status { get; set; }
     public List<ActivityType>? IncludeTypes { get; set; }
 }
 
