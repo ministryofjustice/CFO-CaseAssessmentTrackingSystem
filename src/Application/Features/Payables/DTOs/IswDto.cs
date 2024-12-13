@@ -1,4 +1,5 @@
-﻿using Humanizer.Bytes;
+﻿using Cfo.Cats.Application.Common.Validators;
+using Humanizer.Bytes;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace Cfo.Cats.Application.Features.Payables.DTOs;
@@ -36,11 +37,15 @@ public class IswDto
         {
             RuleFor(c => c.WraparoundSupportStartedOn)
                 .NotNull()
-                .WithMessage("You must enter Wraparound support start date");
+                .WithMessage("You must enter Wraparound support start date")
+                .LessThanOrEqualTo(DateTime.UtcNow.Date)
+                .WithMessage(ValidationConstants.DateMustBeInPast);
 
             RuleFor(c => c.BaselineAchievedOn)
                 .NotNull()
-                .WithMessage("You must enter Baseline achieved date");
+                .WithMessage("You must enter Baseline achieved date")
+                .LessThanOrEqualTo(DateTime.UtcNow.Date)
+                .WithMessage(ValidationConstants.DateMustBeInPast);
 
             RuleFor(x => x.HoursPerformedPre)
                 .Must(BeValidNumber)
