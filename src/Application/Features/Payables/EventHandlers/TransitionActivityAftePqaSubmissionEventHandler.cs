@@ -17,7 +17,7 @@ namespace Cfo.Cats.Application.Features.Payables.EventHandlers
             {
                 notification.Entry
                     .Activity!
-                    .TransitionTo(ActivityStatus.CreatingStatus);
+                    .TransitionTo(ActivityStatus.PendingStatus);
             }
 
             return Task.CompletedTask;

@@ -45,7 +45,7 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
         TaskId = context.Task.Id;
         ObjectiveId = context.Task.ObjectiveId;
         AdditionalInformation = context.AdditionalInformation;
-        Status = ActivityStatus.CreatingStatus;
+        Status = ActivityStatus.PendingStatus;
 
         AddDomainEvent(new ActivityCreatedDomainEvent(this));
     }
