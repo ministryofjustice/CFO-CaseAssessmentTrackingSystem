@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Migrators.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241213121315_ActivityQAQueues")]
+    partial class ActivityQAQueues
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2233,6 +2236,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<Guid>("DocumentId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("Passed")
+                        .HasColumnType("bit");
+
                     b.HasIndex("DocumentId");
 
                     b.ToTable("EducationTrainingActivities", "Payables");
@@ -2267,9 +2273,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<double?>("Salary")
                         .HasColumnType("float");
 
-                    b.Property<string>("SalaryFrequency")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasIndex("DocumentId");
 
                     b.ToTable("EmploymentActivities", "Payables");
@@ -2285,14 +2288,14 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Property<Guid>("DocumentId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("HoursPerformedDuring")
-                        .HasColumnType("float");
+                    b.Property<int>("HoursPerformedDuring")
+                        .HasColumnType("int");
 
-                    b.Property<double>("HoursPerformedPost")
-                        .HasColumnType("float");
+                    b.Property<int>("HoursPerformedPost")
+                        .HasColumnType("int");
 
-                    b.Property<double>("HoursPerformedPre")
-                        .HasColumnType("float");
+                    b.Property<int>("HoursPerformedPre")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("WraparoundSupportStartedOn")
                         .HasColumnType("datetime2");
