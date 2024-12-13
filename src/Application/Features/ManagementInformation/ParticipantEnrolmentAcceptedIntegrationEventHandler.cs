@@ -38,24 +38,18 @@ namespace Cfo.Cats.Application.Features.ManagementInformation
                     .Where(p => p.ParticipantId == context.Message.ParticipantId)
                     .MaxAsync(p => p.Created);
 
-                var submissionToPqa = await applicationDbContext
-                    .EnrolmentPqaQueue
-                    .Where(p => p.ParticipantId == context.Message.ParticipantId)
-                    .MaxAsync(p => p.Created);
-
                 var submissionsToAuthority = await applicationDbContext
                     .EnrolmentQa1Queue
                     .Where(p => p.ParticipantId == context.Message.ParticipantId)
                     .CountAsync();
-
-                //// go get the support worker who created the most recent PQA submission. That will tell us the details of the SW
 
                 var supportWorker = await applicationDbContext.EnrolmentPqaQueue
                     .Where(q => q.ParticipantId == context.Message.ParticipantId)
                     .OrderByDescending(q => q.Created)
                     .Select(p => new {
                         SupportWorkerId = p.CreatedBy!,
-                        p.TenantId
+                        p.TenantId,
+                        SubmissionToPqa = p.Created
                     } )
                     .SingleAsync();
 
@@ -69,7 +63,7 @@ namespace Cfo.Cats.Application.Features.ManagementInformation
                     .WithContractId(participantInfo.ContractId)
                     .WithConsentAdded(participantInfo.Consent.ConsentAdded!.Value)
                     .WithConsentSigned(participantInfo.Consent.ConsentSigned)
-                    .WithSubmissionToPqa(submissionToPqa!.Value)
+                    .WithSubmissionToPqa(supportWorker.SubmissionToPqa!.Value)
                     .WithSubmissionToAuthority(submissionToAuthority!.Value)
                     .WithSubmissionsToAuthority(submissionsToAuthority)
                     .WithApproved(context.Message.OccuredOn.Date)
