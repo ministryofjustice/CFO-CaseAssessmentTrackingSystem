@@ -88,7 +88,9 @@ public class ApplicationDbContext
     public DbSet<ParticipantOutgoingTransferQueueEntry> ParticipantOutgoingTransferQueue => Set<ParticipantOutgoingTransferQueueEntry>();
 
     public DbSet<ActivityPqaQueueEntry> ActivityPqaQueue => Set<ActivityPqaQueueEntry>();
-
+    public DbSet<ActivityQa1QueueEntry> ActivityQa1Queue => Set<ActivityQa1QueueEntry>();
+    public DbSet<ActivityQa2QueueEntry> ActivityQa2Queue => Set<ActivityQa2QueueEntry>();
+    public DbSet<ActivityEscalationQueueEntry> ActivityEscalationQueue => Set<ActivityEscalationQueueEntry>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder builder)
