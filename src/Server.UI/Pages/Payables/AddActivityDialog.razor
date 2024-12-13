@@ -79,7 +79,7 @@
                     @if (Model.ActivityDefinition is { Classification.RequiresFurtherInformation: true })
                     {
                         <MudItem xs="12">
-                            <MudAlert Severity="Severity.Info">Further information is required for this type of activity</MudAlert>
+                            <MudAlert Class="mb-2" Severity="Severity.Info">Further information is required for this type of activity</MudAlert>
 
                             @if(Model.ActivityDefinition.Classification == ClassificationType.Employment)
                             {
