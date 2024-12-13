@@ -11,7 +11,7 @@
 <style>
     .mud-list-item:focus,
     .mud-list-item:hover {
-        background-color: initial !important;
+    background-color: initial !important;
     }
 </style>
 
@@ -64,37 +64,51 @@
                 {
                     var created = activity.Created.ToLocalTime();
                     var completed = DateOnly.FromDateTime(activity.Completed);
-                        <MudListItem Class="flex-row-reverse">
-                            <ChildContent>
-                                <div class="d-flex justify-space-between align-center ml-2">
-                                    <div class="d-flex align-center">
-                                        @if (Task is null)
-                                        {
-                                            var task = Objective.Tasks.Single(task => task.Id == activity.TaskId);
+                    <MudListItem Class="flex-row-reverse">
+                        <ChildContent>
+                            <div class="d-flex justify-space-between align-center ml-2">
+                                <div class="d-flex align-center">
+                                    @if (Task is null)
+                                    {
+                                        var task = Objective.Tasks.Single(task => task.Id == activity.TaskId);
 
-                                            <div class="d-flex align-center flex-column mr-3">
-                                                <MudText Typo="Typo.body1">Task</MudText>
-                                                <MudText Typo="Typo.body1">@string.Format("{0}.", task.Index)</MudText>
-                                            </div>
-                                        }
-                                        <div class="pr-2">
-                                            <div class="d-flex gap-2 align-center">
-                                                <MudChip T="string" Size="Size.Small" Text="@activity.Definition.Type.Name" Color="Color.Secondary" />
-                                                <MudText Typo="Typo.body2">@activity.Definition.Category.Name</MudText>
-                                            </div>
-                                            <MudText Typo="Typo.body2">
-                                                Added on @created.ToShortDateString() at @created.ToShortTimeString() (@created.Humanize())
-                                            </MudText>
-                                            <MudText Typo="Typo.body2" Class="pt-1">
-                                                Completed on @completed.ToShortDateString() (@(completed == DateOnly.FromDateTime(DateTime.Today) ? "today" : completed.Humanize()))
-                                                at @activity.TookPlaceAtLocationName
-                                            </MudText>
+                                        <div class="d-flex align-center flex-column mr-3">
+                                            <MudText Typo="Typo.body1">Task</MudText>
+                                            <MudText Typo="Typo.body1">@string.Format("{0}.", task.Index)</MudText>
                                         </div>
+                                    }
+                                    <div class="pr-2">
+                                        <div class="d-flex gap-2 align-center">
+                                            <MudChip T="string" Size="Size.Small" Text="@activity.Definition.Type.Name" Color="Color.Secondary" />
+                                            <MudText Typo="Typo.body2">@activity.Definition.Category.Name</MudText>
+                                        </div>
+                                        <MudText Typo="Typo.body2">
+                                            Added on @created.ToShortDateString() at @created.ToShortTimeString() (@created.Humanize())
+                                        </MudText>
+                                        <MudText Typo="Typo.body2" Class="pt-1">
+                                            Completed on @completed.ToShortDateString() (@(completed == DateOnly.FromDateTime(DateTime.Today) ? "today" : completed.Humanize()))
+                                            at @activity.TookPlaceAtLocationName
+                                        </MudText>
+
+                                        @{
+                                            Color color = activity.Status switch
+                                            {
+                                                _ when activity.Status == ActivityStatus.PendingStatus => Color.Warning,
+                                                _ when activity.Status == ActivityStatus.ApprovedStatus => Color.Success,
+                                                _ => Color.Default
+                                            };
+                                        }
+
+                                        <MudChip Color="color" Size="Size.Small">@activity.Status.Name</MudChip>
                                     </div>
+                                </div>
+                                @if (activity.Status.AllowsChanges)
+                                {
                                     <MudTooltip Text="Edit">
                                         <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" />
                                     </MudTooltip>
-                                </div>
+                                }
+                            </div>
                             </ChildContent>
                             <NestedList>
                                 <MudListItem>
