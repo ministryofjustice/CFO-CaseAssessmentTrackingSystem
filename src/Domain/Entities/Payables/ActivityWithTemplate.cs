@@ -1,0 +1,23 @@
+﻿using Cfo.Cats.Domain.Entities.Documents;
+
+namespace Cfo.Cats.Domain.Entities.Payables;
+
+public abstract class ActivityWithTemplate : Activity
+{
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    protected ActivityWithTemplate()
+    {
+    }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+    protected ActivityWithTemplate(ActivityContext context) : base(context) { }
+
+    public virtual Document? Document { get; protected set; }
+
+    public ActivityWithTemplate AddTemplate(Document document)
+    {
+        Document = document;
+        return this;
+    }
+
+}

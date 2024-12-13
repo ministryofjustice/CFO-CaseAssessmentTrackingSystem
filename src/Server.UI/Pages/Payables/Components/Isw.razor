@@ -44,58 +44,15 @@
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.TotalHoursIntervention)" hidden />
 
             </MudItem>
-            <MudItem xs="12">
-                <div class="mb-4">
-                    <MudFileUpload @bind-Files="Model.Document"
-                        For="() => Model.Document"
-                        MaximumFileCount="1"
-                        Accept=".pdf" Disabled="Disabled">
-                            <ActivatorContent>
-                                <MudLoadingButton Loading="uploading"
-                                Variant="Variant.Outlined"
-                                Color="Color.Primary"
-                                StartIcon="@Icons.Material.Filled.Upload">
-                                    @if (uploading)
-                                {
-                                    @ConstantString.Uploading
-                                }
-                                else
-                                {
-                                    @ConstantString.Upload
-                                }
-                            </MudLoadingButton>
-                        </ActivatorContent>
-                        <SelectedTemplate>
-                            <br />
-                            @if (context != null)
-                            {
-                                <MudText>
-                                    Employment template uploaded:  @context.Name
-                                </MudText>
-                            }
-                            else
-                            {
-                                <MudText>No Files</MudText>
-                            }
-                            <br />
-                        </SelectedTemplate>
-                    </MudFileUpload>
-                </div>
-            </MudItem>
         </MudGrid>
     </MudForm>
 }
 @code {
-    private bool uploading = false;
+    MudForm form = new();
 
     [Inject]
     private IPicklistService PicklistService { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public required IswDto Model { get; set; }
-
-    public MudForm form = new();
-
-    bool Disabled = false;
-
 }

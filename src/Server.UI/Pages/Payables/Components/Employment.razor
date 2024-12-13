@@ -10,7 +10,7 @@
     <MudForm Model="Model" Validation="Validator.ValidateValue(Model)">
         <MudGrid>
             <MudItem xs="12">
-                <MudSelect @bind-Value="Model.EmploymentType" Disabled="Disabled"
+                <MudSelect @bind-Value="Model.EmploymentType" 
                 For="() => Model.EmploymentType"
                 Label="@Model.GetMemberDescription(x => x.EmploymentType)">
                     @foreach (var employmentType in PicklistService.DataSource
@@ -22,10 +22,10 @@
                 </MudSelect>
             </MudItem>
             <MudItem xs="12">
-                <MudTextField Label="@Model.GetMemberDescription(x => x.EmployerName)" For="() => Model.EmployerName" @bind-Value="Model.EmployerName" Disabled="Disabled" />
+                <MudTextField Label="@Model.GetMemberDescription(x => x.EmployerName)" For="() => Model.EmployerName" @bind-Value="Model.EmployerName" />
             </MudItem>    
             <MudItem xs="12">
-                <MudSelect Value="Model.JobTitle" Disabled="Disabled"
+                <MudSelect Value="Model.JobTitle" 
                 For="() => Model.JobTitle"
                 Label="@Model.GetMemberDescription(x => x.JobTitle)" T="string" ValueChanged="OnJobTitleValueChange">
                     @foreach (var jobTitle in PicklistService.DataSource
@@ -38,10 +38,10 @@
             </MudItem>
             <MudItem xs="12">
                 <MudItem xs="12">
-                    <MudNumericField Label="@Model.GetMemberDescription(x => x.Salary)" For="() => Model.Salary" @bind-Value="Model.Salary" Disabled="Disabled" />
+                    <MudNumericField Label="@Model.GetMemberDescription(x => x.Salary)" For="() => Model.Salary" @bind-Value="Model.Salary" />
                 </MudItem>
                 <MudSelect @bind-Value="Model.SalaryFrequency"
-                For="() => Model.SalaryFrequency" Disabled="Disabled" Label="@Model.GetMemberDescription(x => x.SalaryFrequency)">
+                For="() => Model.SalaryFrequency"  Label="@Model.GetMemberDescription(x => x.SalaryFrequency)">
                     @foreach (var salaryFrequency in PicklistService.DataSource
                     .Where(c => c.Name == Picklist.SalaryFrequency)
                     .OrderBy(c => c.Text))
@@ -54,61 +54,19 @@
                 <MudDatePicker Label="@Model.GetMemberDescription(x => x.EmploymentCommenced)"
                 @bind-Date="Model.EmploymentCommenced"
                 For="(() => Model.EmploymentCommenced)"
-                ImmediateText="true" Editable="false" Disabled="Disabled" />
-            </MudItem>
-            <MudItem xs="12">
-                <div class="mb-4">
-                    <MudFileUpload @bind-Files="Model.Document"
-                    For="() => Model.Document"
-                    MaximumFileCount="1"
-                    Accept=".pdf" Disabled="Disabled">
-                        <ActivatorContent>
-                            <MudLoadingButton Loading="uploading"
-                            Variant="Variant.Outlined"
-                            Color="Color.Primary"
-                            StartIcon="@Icons.Material.Filled.Upload">
-                                @if (uploading)
-                                {
-                                    @ConstantString.Uploading
-                                }
-                                else
-                                {
-                                    @ConstantString.Upload
-                                }
-                            </MudLoadingButton>
-                        </ActivatorContent>
-                        <SelectedTemplate>
-                            <br />
-                            @if (context != null)
-                            {
-                                <MudText>
-                                    Employment template uploaded:  @context.Name
-                                </MudText>
-                            }
-                            else
-                            {
-                                <MudText>No Files</MudText>
-                            }
-                            <br />
-                        </SelectedTemplate>
-                    </MudFileUpload>
-                </div>
+                ImmediateText="true" Editable="false"  />
             </MudItem>
         </MudGrid>
     </MudForm>
 }
 @code {
-    private bool uploading = false;
-
     [Inject]
     private IPicklistService PicklistService { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public required EmploymentDto Model { get; set; }
 
-    bool Disabled = false;
-
-    private void OnJobTitleValueChange(string value)
+    void OnJobTitleValueChange(string value)
     {
         var jobs = PicklistService.DataSource.Where(c => c.Name == Picklist.Occupation);
         Model.JobTitle = jobs.FirstOrDefault(i => i.Value == value)?.Text;

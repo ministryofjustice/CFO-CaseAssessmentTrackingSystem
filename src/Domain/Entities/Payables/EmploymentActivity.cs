@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Payables;
 
-public class EmploymentActivity : Activity
+public class EmploymentActivity : ActivityWithTemplate
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     EmploymentActivity()
@@ -37,7 +37,6 @@ public class EmploymentActivity : Activity
     public double? Salary { get; private set; }
     public string? SalaryFrequency { get; private set; }
     public DateTime EmploymentCommenced { get; private set; }
-    public virtual Document? Document { get; private set; }
 
     public static EmploymentActivity Create(
         ActivityContext context,
@@ -52,11 +51,5 @@ public class EmploymentActivity : Activity
         EmploymentActivity activity = new(context, employmentType, employerName, jobTitle, jobTitleCode, salary, salaryFrequency, employmentCommenced);
         activity.AddDomainEvent(new EmploymentActivityCreatedDomainEvent(activity));
         return activity;
-    }
-
-    public EmploymentActivity AddTemplate(Document document)
-    {
-        Document = document;
-        return this;
     }
 }
