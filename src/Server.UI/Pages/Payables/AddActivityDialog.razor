@@ -39,8 +39,8 @@
                         Label="@Model.GetMemberDescription(x => x.ActivityDefinition)"
                         For="() => Model.ActivityDefinition">
                             @foreach (var activity in activities
-                           .Where(activity => filteredTypes.Count is 0 || filteredTypes.Contains(activity.Type))
-                           .OrderBy(activity => activity.Name))
+                        .Where(activity => filteredTypes.Count is 0 || filteredTypes.Contains(activity.Type))
+                        .OrderBy(activity => activity.Name))
                             {
                                 <MudSelectItem Value="activity">
                                     <div class="d-flex gap-2 align-center">
@@ -173,7 +173,15 @@
             ParticipantId = Model.ParticipantId,
             AddedOn = DateTime.UtcNow.Date
         });
-        
+
+        ClearTemplates();
+    }
+
+    void ClearTemplates()
+    {
+        Model.ISWTemplate = new();
+        Model.EducationTrainingTemplate = new();
+        Model.EmploymentTemplate = new();
     }
 
     void ClearSelectedActivity()
