@@ -8,12 +8,14 @@ var context = Argument("context", "ApplicationDbContext");
 var migrationName = Argument("migrationName", "");
 
 Task("Clean")
-    .WithCriteria(c => c.@HasArgument("rebuild"))
+    .Description("Cleans all the bin and obj folders for the solution")
     .Does(() =>{
-        CleanDirectories($"./src/**/bin/{configuration}");
+        CleanDirectories($"./src/**/bin/");
+        CleanDirectories($"./src/**/obj/");
     });
 
 Task("Build")
+    .Description("Builds the solution in the given configuration. (Defaults to Release)")
     .IsDependentOn("Clean")
     .Does(() =>
 {
@@ -24,6 +26,7 @@ Task("Build")
 });
 
 Task("Test")
+    .Description("Runs all the unit tests in the solution")
     .IsDependentOn("Build")
     .Does(() =>
 {
@@ -35,6 +38,7 @@ Task("Test")
 });
 
 Task("Publish")
+    .Description("Publishes the Server.UI project, and compresses the output as ./publish/build-artifacts.zip")
     .IsDependentOn("Test")
     .Does(() => {
         CleanDirectory("./publish");
@@ -46,17 +50,6 @@ Task("Publish")
             };
 
         DotNetPublish("./cats.sln", settings);
-
-        var migrationProject = "src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj";
-        var startupProject = "src/Server.UI/Server.UI.csproj";
-        var context = "Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext";
-        var result = StartProcess("dotnet", $"ef migrations script --no-build --configuration {configuration} --project {migrationProject} --startup-project {startupProject} --context {context} --idempotent -o ./publish/MigrationScript.sql");
-
-        if(result != 0)
-        {
-            Error("Failed to generate migration script");
-        }
-
         ZipCompress("./publish/workspace", "./publish/build-artifacts.zip");
         CleanDirectory("./publish/workspace");
         DeleteDirectory("./publish/workspace", new DeleteDirectorySettings{
@@ -65,13 +58,24 @@ Task("Publish")
         });
     });
 
-Task("Migrate")
-    .IsDependentOn("Test")
+Task("Script")
+    .Description("Generates a migration script for the given context (ApplicationDbContext or ManagementInformationDbContext).")
+    .IsDependentOn("Build")
     .Does(() =>{
+
+        string[] allowedContexts = new string[] {
+            "ApplicationDbContext",
+            "ManagementInformationDbContext"
+        };
+
+        if(allowedContexts.Contains(context) == false)
+        {
+            throw new InvalidOperationException($"Unknown db context {context}");
+        }
+
         var migrationProject = "src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj";
         var startupProject = "src/Server.UI/Server.UI.csproj";
         var dbContext = $"Cfo.Cats.Infrastructure.Persistence.{context}";
-
         
         var result = StartProcess("dotnet", $"ef migrations script {fromVersion} --no-build --configuration {configuration} --project {migrationProject} --startup-project {startupProject} --context {dbContext} --idempotent -o ./publish/{context}-MigrationScript.sql");
         if(result != 0)
@@ -81,17 +85,29 @@ Task("Migrate")
     });
 
 Task("AddMigration")
-    .IsDependentOn("Test")
+    .Description("Adds a new migration for the given context (ApplicationDbContext or ManagementInformationDbContext).")
+    .IsDependentOn("Build")
     .Does(() => {
-        var migrationProject = "src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj";
-        var startupProject = "src/Server.UI/Server.UI.csproj";
-        var dbContext = $"Cfo.Cats.Infrastructure.Persistence.{context}";
+        
+        string[] allowedContexts = new string[] {
+            "ApplicationDbContext",
+            "ManagementInformationDbContext"
+        };
+
+        if(allowedContexts.Contains(context) == false)
+        {
+            throw new InvalidOperationException($"Unknown db context {context}");
+        }
 
         if(string.IsNullOrEmpty(migrationName))
         {
             throw new InvalidOperationException("You need to pass a migration name");
         }
 
+        var migrationProject = "src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj";
+        var startupProject = "src/Server.UI/Server.UI.csproj";
+        var dbContext = $"Cfo.Cats.Infrastructure.Persistence.{context}";
+        
         var result = StartProcess("dotnet", $"ef migrations add {migrationName} --no-build --configuration {configuration} --project {migrationProject} --startup-project {startupProject} --context {dbContext}");
         if(result != 0)
         {
