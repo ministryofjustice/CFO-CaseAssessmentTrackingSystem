@@ -14,15 +14,17 @@
             <MudDatePicker @bind-Date="Model.WraparoundSupportStartedOn"
                            For="() => Model.WraparoundSupportStartedOn"
                            Label="@Model.GetMemberDescription(x => x.WraparoundSupportStartedOn)"
-                Editable="true"
-                PickerVariant="PickerVariant.Dialog" />
+                           Editable="true"
+                           MaxDate="DateTime.Today"
+                           PickerVariant="PickerVariant.Dialog" />
             </MudItem>
             <MudItem xs="12">
             <MudDatePicker @bind-Date="Model.BaselineAchievedOn"
                            For="() => Model.BaselineAchievedOn"
                            Label="@Model.GetMemberDescription(x => x.BaselineAchievedOn)"
-                Editable="true"
-                PickerVariant="PickerVariant.Dialog" />
+                           Editable="true"
+                           MaxDate="DateTime.Today"
+                           PickerVariant="PickerVariant.Dialog" />
             </MudItem>
             <MudItem xs="12">
             <MudNumericField Label="@Model.GetMemberDescription(x => x.HoursPerformedPre)" @bind-Value="@Model.HoursPerformedPre" For="() => Model.HoursPerformedPre" Step="0.25" />
