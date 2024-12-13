@@ -8,7 +8,7 @@ public class ActivityApproved(IUnitOfWork unitOfWork) : INotificationHandler<Act
 {
     public async Task Handle(ActivityTransitionedDomainEvent notification, CancellationToken cancellationToken)
     {
-        if (notification.To == ActivityStatus.ApprovedStatus)
+        if (notification.To == ActivityStatus.ApprovedStatus && notification.Item.RequiresQa == true)
         {
             // Do some stuff        
             const string heading = "Activity approved";
