@@ -64,7 +64,7 @@ public class WingInduction : OwnerPropertyEntity<Guid>
             _phases.Remove(current);
             var phase = new InductionPhase(current.Number, current.StartDate, completionDate);
             _phases.Add(phase);
-            this.AddDomainEvent(new InductionPhaseCompletedDomainEvent(phase));
+            AddDomainEvent(new InductionPhaseCompletedDomainEvent(Id, phase));
         }
         return this;
     }
