@@ -76,5 +76,9 @@ public interface IApplicationDbContext
     DbSet<NonISWActivity> NonISWActivities { get; }
 
     DbSet<ActivityPqaQueueEntry> ActivityPqaQueue { get; }
+    DbSet<ActivityQa1QueueEntry> ActivityQa1Queue { get; }
+    DbSet<ActivityQa2QueueEntry> ActivityQa2Queue { get; }
+    DbSet<ActivityEscalationQueueEntry> ActivityEscalationQueue { get; }
+
     DbSet<OutboxMessage> OutboxMessages { get; }
 }

@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Payables
 {
-    public class ActivityPqaQueueEntityTypeConfiguration : IEntityTypeConfiguration<ActivityPqaQueueEntry>
+    public class ActivityQa2QueueEntityTypeConfiguration : IEntityTypeConfiguration<ActivityQa2QueueEntry>
     {
-        public void Configure(EntityTypeBuilder<ActivityPqaQueueEntry> builder)
+        public void Configure(EntityTypeBuilder<ActivityQa2QueueEntry> builder)
         {
-            builder.ToTable(DatabaseConstants.Tables.ActivityPqaQueue, DatabaseConstants.Schemas.Payables);
+            builder.ToTable(DatabaseConstants.Tables.ActivityQa2Queue, DatabaseConstants.Schemas.Payables);
 
             builder.Property(p => p.ActivityId)
-                .IsRequired()
-                 .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+           .IsRequired()
+           .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
             builder.Property(p => p.TenantId)
                 .IsRequired()
@@ -23,7 +23,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Payables
             {
                 note.WithOwner();
                 note.ToTable(
-                $"PqaQueue{DatabaseConstants.Tables.Note}",
+                $"Qa2Queue{DatabaseConstants.Tables.Note}",
                 DatabaseConstants.Schemas.Payables
                 );
                 note.HasKey("Id");
@@ -45,8 +45,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Payables
 
                 note.Property(n => n.LastModifiedBy)
                     .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
-
-                note.Ignore(x => x.IsExternal);
             });
 
             builder.HasOne(t => t.Tenant)
@@ -54,8 +52,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Payables
                 .HasForeignKey(x => x.TenantId);
 
             builder.HasOne(t => t.Activity)
-                .WithMany()
-                .HasForeignKey(t => t.ActivityId);
+                   .WithMany()
+                   .HasForeignKey(t => t.ActivityId);
 
             builder.Property(e => e.TenantId)
                 .IsRequired()

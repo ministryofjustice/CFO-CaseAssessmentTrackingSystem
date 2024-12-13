@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Payables
 {
-    public class ActivityPqaQueueEntityTypeConfiguration : IEntityTypeConfiguration<ActivityPqaQueueEntry>
+    public class ActivityEscalationQueueEntityTypeConfiguration : IEntityTypeConfiguration<ActivityEscalationQueueEntry>
     {
-        public void Configure(EntityTypeBuilder<ActivityPqaQueueEntry> builder)
+        public void Configure(EntityTypeBuilder<ActivityEscalationQueueEntry> builder)
         {
-            builder.ToTable(DatabaseConstants.Tables.ActivityPqaQueue, DatabaseConstants.Schemas.Payables);
+            builder.ToTable(DatabaseConstants.Tables.ActivityEscalationQueue, DatabaseConstants.Schemas.Payables);
 
             builder.Property(p => p.ActivityId)
-                .IsRequired()
-                 .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+                    .IsRequired()
+                    .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
             builder.Property(p => p.TenantId)
                 .IsRequired()
@@ -23,11 +23,12 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Payables
             {
                 note.WithOwner();
                 note.ToTable(
-                $"PqaQueue{DatabaseConstants.Tables.Note}",
+                $"Escalation{DatabaseConstants.Tables.Note}",
                 DatabaseConstants.Schemas.Payables
                 );
                 note.HasKey("Id");
-                note.Property(x => x.Message).HasMaxLength(ValidationConstants.NotesLength);
+                note.Property(x => x.Message)
+                    .HasMaxLength(ValidationConstants.NotesLength);
 
                 note.Property(x => x.CallReference)
                     .HasMaxLength(DatabaseConstants.FieldLengths.CallReference);
@@ -45,8 +46,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Payables
 
                 note.Property(n => n.LastModifiedBy)
                     .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
-
-                note.Ignore(x => x.IsExternal);
             });
 
             builder.HasOne(t => t.Tenant)
