@@ -19,6 +19,8 @@ public class ActivityDefinition(
     public ExpectedClaims ExpectedClaims { get; private set; } = expectedClaims;
     public CheckType CheckType { get; private set; } = checkType ?? CheckType.Dip;
 
+    public bool RequiresQa => CheckType == CheckType.QA;
+
     public static IEnumerable<ActivityDefinition> GetActivitiesForLocation(LocationType locationType)
     {
         DeliveryLocationType deliveryLocation = locationType switch

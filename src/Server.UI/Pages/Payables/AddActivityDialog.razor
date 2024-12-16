@@ -95,7 +95,7 @@
                             }
 
                             <MudItem xs="12">
-                                <div class="mb-4">
+                                <div class="mt-4">
                                     <MudFileUpload @bind-Files="Model.Document"
                                                    For="() => Model.Document"
                                                    MaximumFileCount="1"
@@ -105,14 +105,7 @@
                                                               Variant="Variant.Outlined"
                                                               Color="Color.Primary"
                                                               StartIcon="@Icons.Material.Filled.Upload">
-                                                @if (uploading)
-                                                {
-                                                    @ConstantString.Uploading
-                                                }
-                                                else
-                                                {
-                                                    @ConstantString.Upload
-                                                }
+                                                @string.Format("{0} Template", uploading ? ConstantString.Uploading : ConstantString.Upload)
                                             </MudLoadingButton>
                                         </ActivatorContent>
                                         <SelectedTemplate>
@@ -135,13 +128,22 @@
 
                         </MudItem>
                     }
+                    @if(Model.ActivityDefinition is { RequiresQa: true })
+                    {
+                        <MudItem xs="12">
+                            <MudAlert Severity="Severity.Warning">
+                                Submission of this type of Activity/ETE is subject to Quality Assurance (QA) checks. 
+                                Are you sure you would like to submit to Provider QA?
+                            </MudAlert>
+                        </MudItem>
+                    }
                 </MudGrid>
             </MudForm>
         }
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Dialog.Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+        <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Submit</MudLoadingButton>
     </DialogActions>
 </MudDialog>
 

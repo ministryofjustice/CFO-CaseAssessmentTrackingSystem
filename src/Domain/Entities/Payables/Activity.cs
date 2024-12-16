@@ -79,6 +79,6 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
         throw new InvalidActivityTransition(Status, to);
     }
 
-    public bool RequiresQa => Definition.CheckType == CheckType.QA;
+    public bool RequiresQa => Definition.RequiresQa;
 
 }
