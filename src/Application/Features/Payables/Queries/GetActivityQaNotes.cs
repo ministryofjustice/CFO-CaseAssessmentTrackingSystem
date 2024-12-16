@@ -23,14 +23,11 @@ namespace Cfo.Cats.Application.Features.Payables.Queries
             public async Task<Result<ActivityQaNoteDto[]>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var pqa = await GetPqaNotes(request.ActivityId!);
-
-                //todo under CFODEV-863
-                //var qa1 = await GetQa1Notes(request.ActivityId!, request.IncludeInternalNotes);
-                //var qa2 = await GetQa2Notes(request.ActivityId!, request.IncludeInternalNotes);
-                //var es = await GetEscalationNotes(request.ActivityId!, request.IncludeInternalNotes);
-                //return Result<ActivityQaNoteDto[]>.Success(pqa.Union(qa1).Union(qa2).Union(es).ToArray()
-                //);
-                return Result<ActivityQaNoteDto[]>.Success(pqa.ToArray());
+                var qa1 = await GetQa1Notes(request.ActivityId!, request.IncludeInternalNotes);
+                var qa2 = await GetQa2Notes(request.ActivityId!, request.IncludeInternalNotes);
+                var es = await GetEscalationNotes(request.ActivityId!, request.IncludeInternalNotes);
+                return Result<ActivityQaNoteDto[]>.Success(pqa.Union(qa1).Union(qa2).Union(es).ToArray()
+                );                
             }
 
             private async Task<ActivityQaNoteDto[]> GetPqaNotes(Guid? activityId)
@@ -45,44 +42,42 @@ namespace Cfo.Cats.Application.Features.Payables.Queries
                 return results;
             }
 
-            //todo under CFODEV-863
-            //private async Task<ActivityQaNoteDto[]> GetQa1Notes(string participantId, bool includeInternalNotes)
-            //{
-            //    var query1 = unitOfWork.DbContext.EnrolmentQa1Queue
-            //                            .AsNoTracking()
-            //                            .Where(c => c.ParticipantId == participantId)
-            //                            .SelectMany(c => c.Notes.Where(n => n.IsExternal || includeInternalNotes))
-            //                            .ProjectTo<ActivityQaNoteDto>(mapper.ConfigurationProvider);
+            private async Task<ActivityQaNoteDto[]> GetQa1Notes(Guid? activityId, bool includeInternalNotes)
+            {
+                var query1 = unitOfWork.DbContext.ActivityQa1Queue
+                                        .AsNoTracking()
+                                        .Where(c => c.ActivityId == activityId)
+                                        .SelectMany(c => c.Notes.Where(n => n.IsExternal || includeInternalNotes))
+                                        .ProjectTo<ActivityQaNoteDto>(mapper.ConfigurationProvider);
+
+                var results = await query1.ToArrayAsync()!;
+                return results;
+            }
+
+            private async Task<ActivityQaNoteDto[]> GetQa2Notes(Guid? activityId, bool includeInternalNotes)
+            {
+                var query1 = unitOfWork.DbContext.ActivityQa2Queue
+                                        .AsNoTracking()
+                                        .Where(c => c.ActivityId == activityId)
+                                        .SelectMany(c => c.Notes.Where(n => n.IsExternal || includeInternalNotes))
+                                        .ProjectTo<ActivityQaNoteDto>(mapper.ConfigurationProvider);
 
 
-            //    var results = await query1.ToArrayAsync()!;
-            //    return results;
-            //}
+                var results = await query1.ToArrayAsync()!;
+                return results;
+            }
 
-            //private async Task<ActivityQaNoteDto[]> GetQa2Notes(string participantId, bool includeInternalNotes)
-            //{
-            //    var query1 = unitOfWork.DbContext.EnrolmentQa2Queue
-            //                            .AsNoTracking()
-            //                            .Where(c => c.ParticipantId == participantId)
-            //                            .SelectMany(c => c.Notes.Where(n => n.IsExternal || includeInternalNotes))
-            //                            .ProjectTo<ActivityQaNoteDto>(mapper.ConfigurationProvider);
+            private async Task<ActivityQaNoteDto[]> GetEscalationNotes(Guid? activityId, bool includeInternalNotes)
+            {
+                var query1 = unitOfWork.DbContext.ActivityEscalationQueue
+                                        .AsNoTracking()
+                                        .Where(c => c.ActivityId == activityId)
+                                        .SelectMany(c => c.Notes.Where(n => n.IsExternal || includeInternalNotes))
+                                        .ProjectTo<ActivityQaNoteDto>(mapper.ConfigurationProvider);
 
-
-            //    var results = await query1.ToArrayAsync()!;
-            //    return results;
-            //}
-            //private async Task<ActivityQaNoteDto[]> GetEscalationNotes(string participantId, bool includeInternalNotes)
-            //{
-            //    var query1 = unitOfWork.DbContext.EnrolmentEscalationQueue
-            //                            .AsNoTracking()
-            //                            .Where(c => c.ParticipantId == participantId)
-            //                            .SelectMany(c => c.Notes.Where(n => n.IsExternal || includeInternalNotes))
-            //                            .ProjectTo<ActivityQaNoteDto>(mapper.ConfigurationProvider);
-
-
-            //    var results = await query1.ToArrayAsync()!;
-            //    return results;
-            //}
+                var results = await query1.ToArrayAsync()!;
+                return results;
+            }
         }
 
         public class Validator : AbstractValidator<Query>

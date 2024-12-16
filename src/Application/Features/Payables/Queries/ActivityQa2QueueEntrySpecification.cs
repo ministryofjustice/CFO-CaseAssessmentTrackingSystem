@@ -2,9 +2,9 @@
 
 namespace Cfo.Cats.Application.Features.Payables.Queries
 {
-    public class ActivityQa1QueueEntrySpecification : Specification<ActivityQa1QueueEntry>
+    public class ActivityQa2QueueEntrySpecification : Specification<ActivityQa2QueueEntry>
     {
-        public ActivityQa1QueueEntrySpecification(ActivityQueueEntryFilter filter)
+        public ActivityQa2QueueEntrySpecification(ActivityQueueEntryFilter filter)
         {
             Query.Where(e => e.TenantId
                     .StartsWith(filter.CurrentUser!.TenantId!))

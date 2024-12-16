@@ -2,7 +2,7 @@
 
 namespace Cfo.Cats.Application.Features.Payables.EventHandlers
 {
-    public class TransitionParticipantAfterActivityPqaSubmissionEventHandler
+    public class TransitionActivityAftePqaSubmissionEventHandler
       : INotificationHandler<ActivityPqaEntryCompletedDomainEvent>
     {
         public Task Handle(ActivityPqaEntryCompletedDomainEvent notification, CancellationToken cancellationToken)
