@@ -16,14 +16,14 @@
 
         <MudCheckBox @bind-Value="@Model.NoLicenseEndDate" Label="@Model.GetMemberDescription(x => x.NoLicenseEndDate)" />
         <MudTextField ReadOnly Underline="false" For="@(() => Model.NoLicenseEndDate)" hidden />
-        @if (Model.NoLicenseEndDate!.Value == false)
+        @if (Model.NoLicenseEndDate is not true)
         {
-        <MudDatePicker @bind-Date="Model.LicenseEnd" 
-                       Label="@Model.GetMemberDescription(x => x.LicenseEnd)"
-                       For="@(() => Model.LicenseEnd)"
-                       MinDate="DateTime.UtcNow.Date" 
-                       Class="mt-4"
-                       Editable="true" />
+            <MudDatePicker @bind-Date="Model.LicenseEnd" 
+                           Label="@Model.GetMemberDescription(x => x.LicenseEnd)"
+                           For="@(() => Model.LicenseEnd)"
+                           MinDate="DateTime.UtcNow.Date" 
+                           Class="mt-4"
+                           Editable="true" />
         }
     </CatsMudStep>
 }
