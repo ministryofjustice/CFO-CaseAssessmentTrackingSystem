@@ -40,5 +40,4 @@ public static class ActivitiesWithPagination
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
         }
     }
-
 }

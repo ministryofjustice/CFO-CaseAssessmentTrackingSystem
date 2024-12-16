@@ -5,10 +5,10 @@ using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Payables;
 
 namespace Cfo.Cats.Application.Features.Payables.Queries
-{    
-    public static class ActivityQa1WithPagination
+{
+    public static class ActivityQa2WithPagination
     {
-        [RequestAuthorize(Roles = $"{RoleNames.QAOfficer}, {RoleNames.QAManager}, {RoleNames.QASupportManager}, {RoleNames.SMT}, {RoleNames.SystemSupport}")]
+        [RequestAuthorize(Roles = $"{RoleNames.QAManager}, {RoleNames.QASupportManager}, {RoleNames.SMT}, {RoleNames.SystemSupport}")]
         public class Query : ActivityQueueEntryFilter, IRequest<PaginatedData<ActivityQueueEntryDto>>
         {
             public Query()
@@ -16,7 +16,7 @@ namespace Cfo.Cats.Application.Features.Payables.Queries
                 SortDirection = "Desc";
                 OrderBy = "Created";
             }
-            public ActivityQa1QueueEntrySpecification Specification => new(this);
+            public ActivityQa2QueueEntrySpecification Specification => new(this);
         }
 
         public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, PaginatedData<ActivityQueueEntryDto>>
@@ -24,7 +24,7 @@ namespace Cfo.Cats.Application.Features.Payables.Queries
             public async Task<PaginatedData<ActivityQueueEntryDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var query = unitOfWork.DbContext
-                    .ActivityQa1Queue
+                    .ActivityQa2Queue
                     .AsNoTracking();
 
                 var sortExpression = GetSortExpression(request);
@@ -34,14 +34,14 @@ namespace Cfo.Cats.Application.Features.Payables.Queries
                     : query.OrderBy(sortExpression);
 
                 var data = await ordered
-                    .ProjectToPaginatedDataAsync<ActivityQa1QueueEntry, ActivityQueueEntryDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
+                    .ProjectToPaginatedDataAsync<ActivityQa2QueueEntry, ActivityQueueEntryDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
 
                 return data;
             }
 
-            private Expression<Func<ActivityQa1QueueEntry, object?>> GetSortExpression(Query request)
+            private Expression<Func<ActivityQa2QueueEntry, object?>> GetSortExpression(Query request)
             {
-                Expression<Func<ActivityQa1QueueEntry, object?>> sortExpression;
+                Expression<Func<ActivityQa2QueueEntry, object?>> sortExpression;
                 switch (request.OrderBy)
                 {
                     case "ParticipantId":
