@@ -1,5 +1,6 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.Features.Documents.DTOs;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Payables.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -51,11 +52,22 @@ public static class AddActivity
                     .ForPath(dest => dest.EmploymentTemplate, opt => opt.MapFrom(src => src as EmploymentActivity))
                     .ForPath(dest => dest.EducationTrainingTemplate, opt => opt.MapFrom(src => src as EducationTrainingActivity))
                     .ForPath(dest => dest.ISWTemplate, opt => opt.MapFrom(src => src as ISWActivity));
+
+                // Self-mapping for updates
+                CreateMap<Activity, Activity>()
+                    .ForMember(dest => dest.Id, opt => opt.Ignore())
+                    .ForMember(dest => dest.DomainEvents, opt => opt.Ignore())
+                    .ForMember(dest => dest.Created, opt => opt.Ignore())
+                    .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
             }
         }
     }
 
-    class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IUploadService uploadService) : IRequestHandler<Command, Result>
+    class Handler(
+        IUnitOfWork unitOfWork, 
+        ICurrentUserService currentUserService, 
+        IUploadService uploadService,
+        IMapper mapper) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -134,10 +146,10 @@ public static class AddActivity
             };
 
             // Upload template (if required)
-            if(activity is ActivityWithTemplate templatedActivity)
+            if (activity is ActivityWithTemplate templatedActivity && request.Document is not null)
             {
                 var document = Document
-                    .Create(request.Document!.Name, $"Activity Template for {request.ParticipantId}", DocumentType.PDF)
+                    .Create(request.Document.Name, $"Activity Template for {request.ParticipantId}", DocumentType.PDF)
                     .SetURL($"{request.ParticipantId}/{templatedActivity.DocumentLocation}");
 
                 if (await UploadDocumentAsync(request.Document, document.URL!, cancellationToken) is not { Succeeded: true })
@@ -148,7 +160,19 @@ public static class AddActivity
                 templatedActivity.AddTemplate(document);
             }
 
-            await unitOfWork.DbContext.Activities.AddAsync(activity, cancellationToken);
+            if (request.ActivityId is null)
+            {
+                await unitOfWork.DbContext.Activities.AddAsync(activity, cancellationToken);
+            }
+            else
+            {
+                activity.ClearDomainEvents(); // Suppress "create" domain events
+                var entity = await unitOfWork.DbContext.Activities.SingleAsync(a => a.Id == request.ActivityId, cancellationToken);
+                mapper.Map(activity, entity); // Map activity with new values
+                entity.TransitionTo(ActivityStatus.SubmittedToProviderStatus);
+                unitOfWork.DbContext.Activities.Entry(entity).State = EntityState.Modified;
+                unitOfWork.DbContext.Activities.Update(entity);
+            }
 
             return Result.Success();
         }
@@ -212,18 +236,27 @@ public static class AddActivity
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Additional Information"));
 
+            // Require document upload when:
+            // The selected activity type requires further information
             When(c => c.Definition?.Classification.RequiresFurtherInformation is true, () =>
             {
                 RuleFor(v => v.Document)
                         .NotNull()
-                        .WithMessage("You must upload a Template")
-                        .Must(file => NotExceedMaximumFileSize(file, Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes))
-                        .WithMessage($"File size exceeds the maxmimum allowed size of {Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes} megabytes")
-                        .MustAsync(BePdfFile)
-                        .WithMessage("File is not a PDF");
+                        .When(c => c.ActivityId is null)
+                        .WithMessage("You must upload a Template");
+
+                When(c => c.Document is not null, () =>
+                {
+                    RuleFor(v => v.Document)
+                            .Must(file => NotExceedMaximumFileSize(file, Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes))
+                            .WithMessage($"File size exceeds the maxmimum allowed size of {Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes} megabytes")
+                            .MustAsync(BePdfFile)
+                            .WithMessage("File is not a PDF");
+                });
+
             });
         }
-
+        
         async Task<bool> BeInPendingStatus(Guid? activityId, CancellationToken cancellationToken)
         {
             var activity = await unitOfWork.DbContext.Activities.SingleAsync(a => a.Id == activityId, cancellationToken);

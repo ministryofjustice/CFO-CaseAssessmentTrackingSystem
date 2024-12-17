@@ -17,9 +17,11 @@ public static class GetActivityById
     {
         public async Task<Activity?> Handle(Query request, CancellationToken cancellationToken)
         {
-            return await unitOfWork.DbContext.Activities
+            var activity = await unitOfWork.DbContext.Activities
                 .Include(a => a.TookPlaceAtLocation)
                 .SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
+
+            return activity;
         }
     }
 }

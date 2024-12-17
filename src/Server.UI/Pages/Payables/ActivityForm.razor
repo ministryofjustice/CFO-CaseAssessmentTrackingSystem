@@ -14,11 +14,11 @@
 <MudGrid>
     <MudItem xs="12">
         <MudSelect @bind-Value="Model.Location" 
-                   @bind-Value:after="LocationChanged" 
-                   Label="@Model.GetMemberDescription(x => x.Location)"
-                   For="() => Model.Location"
-                   Clearable="true"
-                   ToStringFunc="location => location?.Name">
+        @bind-Value:after="LocationChanged" 
+        Label="@Model.GetMemberDescription(x => x.Location)"
+        For="() => Model.Location"
+        Clearable="true"
+        ToStringFunc="location => location?.Name">
             @foreach (var location in locations)
             {
                 <MudSelectItem Value="location">@location.Name</MudSelectItem>
@@ -81,9 +81,9 @@
     </MudItem>
     <MudItem xs="12">
         <MudTextField @bind-Value="Model.AdditionalInformation"
-                      Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
-                      For="() => Model.AdditionalInformation"
-                      Lines="5" />
+        Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
+        For="() => Model.AdditionalInformation"
+        Lines="5" />
     </MudItem>
     @if (Model.Definition is { Classification.RequiresFurtherInformation: true })
     {
@@ -114,20 +114,25 @@
                             Variant="Variant.Outlined"
                             Color="Color.Primary"
                             StartIcon="@Icons.Material.Filled.Upload">
-                                @string.Format("{0} Template", uploading ? ConstantString.Uploading : ConstantString.Upload)
+                                @if(Model.ActivityId is null)
+                                {
+                                    @string.Format("{0} Template", uploading ? ConstantString.Uploading : ConstantString.Upload)
+                                }
+                                else
+                                {
+                                    @string.Format("{0} Template", uploading ? "Replacing" : "Replace")
+                                }
                             </MudLoadingButton>
                         </ActivatorContent>
                         <SelectedTemplate>
                             <br />
-                            @if (context != null)
+                            @if (context is null)
                             {
-                                <MudText>
-                                    Template uploaded: @context.Name
-                                </MudText>
+                                <MudText>@string.Format("{0}", Model.ActivityId is null ? "No Files" : "Document already uploaded")</MudText>
                             }
                             else
                             {
-                                <MudText>No Files</MudText>
+                                <MudText>Template uploaded: @context.Name</MudText>
                             }
                             <br />
                         </SelectedTemplate>
