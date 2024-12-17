@@ -69,10 +69,10 @@
     }
 
     <MudItem xs="12">
-        <MudDatePicker @bind-Date="Model.Completed"
-        For="() => Model.Completed"
+        <MudDatePicker @bind-Date="Model.CommencedOn"
+        For="() => Model.CommencedOn"
         MaxDate="DateTime.UtcNow"
-        Label="@Model.GetMemberDescription(x => x.Completed)"
+        Label="@Model.GetMemberDescription(x => x.CommencedOn)"
         PickerVariant="PickerVariant.Dialog"
         ImmediateText="true"
         Editable="true" />

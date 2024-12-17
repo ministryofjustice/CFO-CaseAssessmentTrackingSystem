@@ -25,8 +25,8 @@ public static class AddActivity
         [Description("Activity/ETE")]
         public ActivityDefinition? Definition { get; set; }
 
-        [Description("Completed on")]
-        public DateTime? Completed { get; set; }
+        [Description("Date activity took place")]
+        public DateTime? CommencedOn { get; set; }
 
         [Description("Additional Information (optional)")]
         public string? AdditionalInformation { get; set; }
@@ -98,7 +98,7 @@ public static class AddActivity
                 ParticipantCurrentLocation: participant.CurrentLocation,
                 ParticipantCurrentContract: participant.CurrentLocation.Contract,
                 ParticipantStatus: participant.EnrolmentStatus!,
-                Completed: request.Completed!.Value,
+                CommencedOn: request.CommencedOn!.Value,
                 currentUserService.TenantId!,
                 AdditionalInformation: request.AdditionalInformation);
 
@@ -201,11 +201,11 @@ public static class AddActivity
                     .WithMessage("You must choose an Activity/ETE");
             });
 
-            RuleFor(c => c.Completed)
+            RuleFor(c => c.CommencedOn)
                 .NotNull()
-                .WithMessage("You must provide a date of completion")
+                .WithMessage("You must provide the date the activity took place")
                 .Must(NotBeCompletedInTheFuture)
-                .WithMessage("Completion date cannot be in the future");
+                .WithMessage("The date the activity took place cannot be in the future");
 
             RuleFor(c => c.AdditionalInformation)
                 .MaximumLength(ValidationConstants.NotesLength)
