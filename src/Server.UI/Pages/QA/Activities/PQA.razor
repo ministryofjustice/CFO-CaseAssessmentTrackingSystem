@@ -1,0 +1,188 @@
+@page "/pages/qa/activities/pqa/{id:guid}"
+
+@attribute [Authorize(Policy = SecurityPolicies.Pqa)]
+@using Cfo.Cats.Application.Common.Validators
+@using Cfo.Cats.Application.Features.Payables.Commands
+@using Cfo.Cats.Application.Features.Payables.DTOs
+@using Cfo.Cats.Application.Features.Payables.Queries
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.QA.Activities.Components
+@inherits CatsComponentBase
+
+<style>
+    .document-container {
+        width: 90%;
+        height: calc(100vh - 350px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .full-size-object {
+        width: 100%;
+        height: 100%;
+    }
+
+    .mud-radio {
+        display: block;
+        margin-bottom: 0.5rem; 
+    }
+    
+</style>
+
+@if (_activitySummaryDto is not null && _activitySummaryDto.Status == ActivityStatus.SubmittedToProviderStatus)
+{
+    @if (_queueEntry!.IsAccepted || _queueEntry.IsCompleted)
+    {
+        <MudAlert Severity="Severity.Warning">
+            This entry has already been processed
+        </MudAlert>
+    }
+        
+        <MudGrid Style="height: 100vh; width: 100%;">
+            @* <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
+                <ActivityQaDetails Participant="_activitySummaryDto"/>
+            </MudItem>
+ *@
+            <MudItem xs="8" Style="height: 100%; width: 100%;">
+                <MudTabs>
+                    <MudTabPanel Text="QA Notes">
+                        <QaNotes ActivityId="@_activitySummaryDto.Id" />                    
+                    </MudTabPanel>
+                    <MudTabPanel Text="Attachment" Style="min-width: 185px;" BadgeColor="Color.Info" > @* BadgeData="@_activitySummaryDto..RightToWorks.Length"> *@
+                        <AttachmentPanel ActivitySummaryDto="_activitySummaryDto" />
+                    </MudTabPanel>                
+                    <MudTabPanel Text="Submission">
+                        @if (_queueEntry.IsCompleted == false)
+                        {
+                            <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
+                                <MudItem xs="12">
+                                    <MudRadioGroup T="SubmitActivityPqaResponse.PqaResponse?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
+                                    <MudRadio T="SubmitActivityPqaResponse.PqaResponse?" Value="SubmitActivityPqaResponse.PqaResponse.Accept" Color="Color.Primary">
+                                            Accept
+                                        </MudRadio>
+                                    <MudRadio T="SubmitActivityPqaResponse.PqaResponse?" Value="SubmitActivityPqaResponse.PqaResponse.Return" Color="Color.Secondary">
+                                            Return
+                                        </MudRadio>
+                                    <MudRadio T="SubmitActivityPqaResponse.PqaResponse?" Value="SubmitActivityPqaResponse.PqaResponse.Comment" Color="Color.Secondary">
+                                            Comment / Defer
+                                        </MudRadio>
+                                    </MudRadioGroup>
+                                </MudItem>
+
+                                <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" Class="mt-4" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
+                                <MudText Class="ml-2">Characters: @CharacterCount / 1000</MudText>
+                            </MudForm>
+                            <MudContainer Class="d-flex px-0 pt-8">
+                                <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
+                            </MudContainer>
+                        }
+                        else
+                        {
+                            <MudAlert Variant="Variant.Outlined" Severity="Severity.Info">
+                                This entry has already been processed
+                            </MudAlert>
+                        }
+                    </MudTabPanel>
+                </MudTabs>
+            </MudItem>
+        </MudGrid>    
+}
+
+@code {
+    private MudForm? _form;
+    private ActivityQueueEntryDto? _queueEntry;
+    private ActivitySummaryDto? _activitySummaryDto;
+    
+    [Parameter] public Guid Id { get; set; }
+
+    [CascadingParameter] public UserProfile? UserProfile { get; set; }
+
+    private SubmitActivityPqaResponse.Command Command { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_activitySummaryDto is null)
+        {
+            var result = await GetNewMediator().Send(new GetActivityPqaEntryById.Query
+            {
+                Id = Id,
+                CurrentUser = UserProfile
+            });
+
+            if (result.Succeeded)
+            {
+                _queueEntry = result.Data!;
+//                _activitySummaryDto = await GetNewMediator().Send(Model);
+                _activitySummaryDto = await GetNewMediator().Send(new GetActivityById.Query
+                {
+                    Id = _queueEntry.ActivityId
+                });
+
+
+                // _participantDto = await GetNewMediator().Send(new GetParticipantById.Query
+                //         {
+                //             Id = _queueEntry.ParticipantId
+                //         });
+
+
+                Command = new SubmitActivityPqaResponse.Command
+                {
+                    QueueEntryId = Id,
+                    CurrentUser = UserProfile
+                };
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    protected async Task SubmitToQa()
+    {
+        await _form!.Validate().ConfigureAwait(false);
+        if (_form.IsValid)
+        {
+            var result = await GetNewMediator().Send(Command);
+
+            var message = Command.Response switch
+            {
+                SubmitActivityPqaResponse.PqaResponse.Accept => "Activity submitted to QA",
+                SubmitActivityPqaResponse.PqaResponse.Return => "Activity returned to Support Worker",
+                _ => "Comment added"
+            };
+
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add(message, Severity.Info);
+                Navigation.NavigateTo("/pages/qa/activities/pqa");
+            }
+            else
+            {
+                ShowActionFailure("Failed to return to submit", result);
+            }
+        }
+    }
+
+    private void ShowActionFailure(string title, IResult result)
+    {
+        Snackbar.Add(
+            @<div>
+                <h2>@title</h2>
+                <ul>
+                    @foreach (var e in result.Errors)
+                    {
+                        <li>@e</li>
+                    }
+                </ul>
+            </div>
+            , Severity.Error, options =>
+            {
+                options.RequireInteraction = true;
+                options.SnackbarVariant = Variant.Text;
+            });
+    }
+
+    private int CharacterCount => Command.Message?.Length ?? 0;
+}

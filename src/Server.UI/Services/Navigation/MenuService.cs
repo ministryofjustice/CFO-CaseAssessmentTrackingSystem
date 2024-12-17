@@ -105,6 +105,43 @@ public class MenuService : IMenuService
                                 Roles = [ RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
                             }
                         }
+                    },
+                     new()
+                    {
+                        IsParent = true,
+                        Title = "Activities",
+                        Icon = Icons.Material.Filled.SelfImprovement,
+                        MenuItems = new List<MenuSectionSubItemModel>
+                        {
+                            new()
+                            {
+                                Title = "PQA",
+                                Href="/pages/qa/activities/pqa",
+                                PageStatus = PageStatus.Completed,
+                                Roles = [ RoleNames.QAFinance, RoleNames.SMT, RoleNames.SystemSupport ]
+                            },
+                            new()
+                            {
+                                Title = "Queue Management",
+                                PageStatus = PageStatus.Completed,
+                                Href="/pages/qa/servicedesk/activities",
+                                Roles = [ RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            },
+                            new()
+                            {
+                                Title="First Pass",
+                                PageStatus = PageStatus.Completed,
+                                Href = "/pages/qa/activities/qa1/",
+                                Roles = [ RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            },
+                            new()
+                            {
+                                Title="Second Pass",
+                                PageStatus = PageStatus.Completed,
+                                Href = "/pages/qa/activities/qa2/",
+                                Roles = [ RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            }
+                        }
                     }
                 }
             },

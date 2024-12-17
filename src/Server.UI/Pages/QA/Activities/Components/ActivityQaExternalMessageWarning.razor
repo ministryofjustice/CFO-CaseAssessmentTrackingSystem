@@ -1,0 +1,22 @@
+﻿<MudMessageBox @ref="warningMessage" CancelText="Cancel">
+    <TitleContent>
+        Submit
+    </TitleContent>
+    <MessageContent>
+        <MudText>Are you sure you would like to submit?</MudText>
+        <MudText>The message you have left will be visible to PQA.</MudText>
+    </MessageContent>
+    <YesButton>
+        <MudButton Class="ml-2" Color="Color.Warning">Submit</MudButton>
+    </YesButton>
+</MudMessageBox>
+
+@code {
+    private MudMessageBox? warningMessage;
+
+    public async Task<bool> ShowAsync()
+    {
+        var result = await warningMessage!.ShowAsync();
+        return result ?? false;
+    }
+}

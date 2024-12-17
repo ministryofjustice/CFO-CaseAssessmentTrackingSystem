@@ -1,0 +1,73 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+<MudForm>
+    <MudList T="string">
+        <MudListSubheader>
+            <ChildContent>
+                <MudText Typo="Typo.h5">Participant Confirmation</MudText>
+            </ChildContent>
+        </MudListSubheader>
+        <MudDivider />
+        @foreach (var item in Participant.ExternalIdentifiers)
+        {
+            <MudListItem>
+                <MudText Typo="Typo.body1">@item.Type</MudText>
+                <MudText Typo="Typo.body2">@item.Value</MudText>
+            </MudListItem>
+        }
+        <MudListItem>
+            <MudText Typo="Typo.body1">First Name</MudText>
+            <MudText Typo="Typo.body2">@Participant.FirstName</MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText Typo="Typo.body1">Last Name</MudText>
+            <MudText Typo="Typo.body2">@Participant.LastName</MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText Typo="Typo.body1">
+                Date Of Birth
+            </MudText>
+            <MudText Typo="Typo.body2">
+                @Participant.DateOfBirth
+            </MudText>
+
+        </MudListItem>
+        <MudListItem>
+            <MudText Typo="Typo.body1">Delivery Location</MudText>
+            <MudText Typo="Typo.body2">@Participant.EnrolmentLocation?.Name</MudText>
+        </MudListItem>
+        @if (Participant.EnrolmentLocationJustification is not null)
+        {
+            <MudListItem>
+                <MudText Typo="Typo.body1">System Location</MudText>
+                <MudText Typo="Typo.body2"> @Participant.CurrentLocation?.Name</MudText>
+            </MudListItem>
+            <MudListItem>
+                <MudText Typo="Typo.body1">Justification</MudText>
+                <MudText Typo="Typo.body2"> @Participant.EnrolmentLocationJustification</MudText>
+            </MudListItem>
+        }
+        <MudListSubheader>
+            <ChildContent>
+                <MudText Typo="Typo.h5">Staff Member Confirmation</MudText>
+            </ChildContent>
+        </MudListSubheader>
+        <MudDivider />
+        <MudListItem>
+            <MudText Typo="Typo.body1">Staff Member</MudText>
+            <MudText Typo="Typo.body2"> @Participant.SupportWorker</MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText Typo="Typo.body1">Consent Date</MudText>
+            <MudText Typo="Typo.body2">@Participant.Consents.Max(c => c.ConsentDate).ToShortDateString()</MudText>
+        </MudListItem>
+
+    </MudList>
+
+</MudForm>
+
+@code{
+
+    [Parameter, EditorRequired]
+    public ParticipantDto Participant { get; set; } = default!;
+
+}
