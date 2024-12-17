@@ -1,3 +1,4 @@
+﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
 @using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.PathwayPlans.DTOs
 @using Cfo.Cats.Application.Features.Payables.DTOs
@@ -7,6 +8,9 @@
 @using Humanizer
 
 @inherits CatsComponentBase
+
+@inject ILocationService Locations;
+@inject ICurrentUserService CurrentUser;
 
 <style>
     .mud-list-item:focus,
@@ -42,7 +46,15 @@
                         MaxDate="DateTime.Today" />
                     </MudItem>
                     <MudItem xs="12">
-                        <AvailableLocationsDropdown LocationChanged="OnLocationChanged" />
+                        <MudSelect @bind-Value="Model.Location"
+                                   @bind-Value:after="OnLocationChanged"
+                                   Label="Location"
+                                   Clearable="true">
+                            @foreach (var location in locations)
+                            {
+                                <MudSelectItem Value="location">@location.Name</MudSelectItem>
+                            }
+                        </MudSelect>
                     </MudItem>
                     <MudItem xs="12">
                         <MudChipSet T="ActivityType"
@@ -108,7 +120,7 @@
                                 @if (activity.Status.AllowsChanges)
                                 {
                                     <MudTooltip Text="Edit">
-                                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" />
+                                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" OnClick="() => Edit(activity)" />
                                     </MudTooltip>
                                 }
                             </div>
@@ -116,10 +128,10 @@
                         <NestedList>
                             <MudListItem>
                                 <MudTextField Label="@activity.GetMemberDescription(x => x.AdditionalInformation)"
-                                Value="@activity.AdditionalInformation"
-                                Lines="5"
-                                Class="mt-0"
-                                Disabled />
+                                              Value="@activity.AdditionalInformation"
+                                              Lines="5"
+                                              Class="mt-0"
+                                              Disabled />
                             </MudListItem>
                         </NestedList>
                     </MudListItem>
@@ -137,6 +149,7 @@
 </MudDialog>
 
 @code {
+    IEnumerable<LocationDto> locations = [];
     PaginatedData<ActivitySummaryDto>? activities;
     //bool loading;
 
@@ -157,6 +170,10 @@
         try
         {
             //loading = true;
+            locations = Locations
+                .GetVisibleLocations(CurrentUser.TenantId!)
+                .ToList();
+
             await OnRefresh();
 
         }
@@ -190,11 +207,7 @@
         return OnRefresh();
     }
 
-    Task OnLocationChanged(LocationDto location)
-    {
-        Model.Location = location;
-        return OnRefresh();
-    }
+    Task OnLocationChanged() => OnRefresh();
 
     Task OnActivityTypesChanged(IReadOnlyCollection<ActivityType>? types)
     {
@@ -206,6 +219,30 @@
     {
         Model.Status = exclude ? ActivityStatus.PendingStatus : null;
         return OnRefresh();
+    }
+
+    async Task Edit(ActivitySummaryDto activity)
+    {
+        Dialog.Close();
+
+        var parameters = new DialogParameters<EditActivityDialog>()
+        {
+            {
+                x => x.ActivityId, activity.Id 
+            }
+        };
+
+        var dialog = DialogService.Show<EditActivityDialog>("Edit Activity/ETE", parameters, new DialogOptions
+        {
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true,
+            CloseButton = true
+        });
+
+        if (await dialog.Result is not { Canceled: true })
+        {
+            // await OnChange.InvokeAsync();
+        }
     }
 
 }

@@ -9,10 +9,10 @@
 
 <MudDialog>
     <DialogContent>
-        @if (Model is not null)
+        @if (model is not null)
         {
-            <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
-                <ActivityForm Model="Model" />
+            <MudForm @ref="form" Model="model" Validation="@(Validator.ValidateValue(model))">
+                <ActivityForm Model="model" />
             </MudForm>
         }
     </DialogContent>
@@ -23,6 +23,7 @@
 </MudDialog>
 
 @code {
+    AddActivity.Command? model;
     MudForm form = new();
     bool saving;
 
@@ -30,12 +31,30 @@
     public required MudDialogInstance Dialog { get; set; }
 
     [Parameter, EditorRequired]
-    public required AddActivity.Command Model { get; set; }
+    public required Guid ActivityId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var activity = await GetNewMediator().Send(new GetActivityById.Query()
+        {
+            Id = ActivityId
+        });
+
+        model = Mapper.Map<AddActivity.Command>(activity);
+
+        await base.OnInitializedAsync();
+    }
 
     async Task Submit()
-    {        
+    {    
+        if(model is null)
+        {
+            return;
+        }
+
         try
         {
+
             saving = true;
 
             await form.Validate();
@@ -45,7 +64,7 @@
                 return;
             }
 
-            var result = await GetNewMediator().Send(Model);
+            var result = await GetNewMediator().Send(model);
 
             if (result.Succeeded)
             {

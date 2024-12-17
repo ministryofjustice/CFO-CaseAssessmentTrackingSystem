@@ -22,7 +22,8 @@ public static class ActivitiesWithPagination
         {
             return await unitOfWork.DbContext.Activities
                 .Include(a => a.TookPlaceAtLocation)
-                .OrderBy($"{request.OrderBy} {request.SortDirection}")
+                .OrderByDescending(a => a.Status == ActivityStatus.PendingStatus.Value) // push "Pending" activities to top
+                .ThenBy($"{request.OrderBy} {request.SortDirection}")
                 .ProjectToPaginatedDataAsync<Activity, ActivitySummaryDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
         }
     }

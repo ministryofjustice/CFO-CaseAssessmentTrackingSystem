@@ -37,6 +37,22 @@ public static class AddActivity
 
         [Description("Upload Template")]
         public IBrowserFile? Document { get; set; }
+
+        class Mapping : Profile
+        {
+            public Mapping()
+            {
+                CreateMap<EmploymentActivity, EmploymentDto>();
+                CreateMap<EducationTrainingActivity, EducationTrainingDto>();
+                CreateMap<ISWActivity, IswDto>();
+
+                CreateMap<Activity, Command>()
+                    .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.TookPlaceAtLocation))
+                    .ForPath(dest => dest.EmploymentTemplate, opt => opt.MapFrom(src => src as EmploymentActivity))
+                    .ForPath(dest => dest.EducationTrainingTemplate, opt => opt.MapFrom(src => src as EducationTrainingActivity))
+                    .ForPath(dest => dest.ISWTemplate, opt => opt.MapFrom(src => src as ISWActivity));
+            }
+        }
     }
 
     class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IUploadService uploadService) : IRequestHandler<Command, Result>
