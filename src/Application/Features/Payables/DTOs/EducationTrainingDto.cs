@@ -1,4 +1,4 @@
-﻿using Humanizer.Bytes;
+using Humanizer.Bytes;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace Cfo.Cats.Application.Features.Payables.DTOs;
@@ -8,7 +8,7 @@ public class EducationTrainingDto
     [Description("Course Title")]
     public string? CourseTitle { get; set; }
 
-    [Description("Course Url")]
+    [Description("Course hyperlink (if applicable)")]
     public string? CourseUrl { get; set; }
 
     [Description("Course Level")]
@@ -17,8 +17,8 @@ public class EducationTrainingDto
     [Description("Course Commenced Date")]
     public DateTime? CourseCommencedOn { get; set; }
 
-    [Description("Course Completed Date")]
-    public DateTime? CourseCompletedDate { get; set; }
+    [Description("Course Completed Date (if applicable)")]
+    public DateTime? CourseCompletedOn { get; set; }
 
     [Description("Passed")]
     public CourseCompletionStatus? CourseCompletionStatus { get; set; }
@@ -32,7 +32,6 @@ public class EducationTrainingDto
         {
             RuleFor(c => c.CourseTitle)
                 .NotNull()
-                .MaximumLength(100)
                 .WithMessage("You must enter a Course Title");
 
             RuleFor(c => c.CourseLevel)
@@ -43,10 +42,10 @@ public class EducationTrainingDto
                 .NotNull()
                 .WithMessage("You must enter Course Commenced Date");
 
-            RuleFor(course => course.CourseCompletedDate)
+            RuleFor(course => course.CourseCompletedOn)
                         .GreaterThanOrEqualTo(course => course.CourseCommencedOn)
-                        .When(course => course.CourseCompletedDate.HasValue)
-                        .WithMessage("Course completed date must be greater than Course commenced date");
+                        .When(course => course.CourseCompletedOn.HasValue && course.CourseCommencedOn.HasValue)
+                        .WithMessage("Course completed date cannot be before the commenced date");
 
             RuleFor(v => v.CourseCompletionStatus)
                 .NotNull()

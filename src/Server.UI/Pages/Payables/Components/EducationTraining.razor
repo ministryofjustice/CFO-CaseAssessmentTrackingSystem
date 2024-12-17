@@ -36,9 +36,9 @@
                 PickerVariant="PickerVariant.Dialog" />
             </MudItem>
             <MudItem xs="12">
-                <MudDatePicker @bind-Date="Model.CourseCompletedDate"
-                For="() => Model.CourseCompletedDate"
-                Label="@Model.GetMemberDescription(x => x.CourseCompletedDate)"
+                <MudDatePicker @bind-Date="Model.CourseCompletedOn"
+                For="() => Model.CourseCompletedOn"
+                Label="@Model.GetMemberDescription(x => x.CourseCompletedOn)"
                 MinDate="@Model.CourseCommencedOn"
                 Editable="true"
                 PickerVariant="PickerVariant.Dialog" />
