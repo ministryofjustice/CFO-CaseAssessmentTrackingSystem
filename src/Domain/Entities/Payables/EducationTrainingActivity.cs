@@ -17,12 +17,14 @@ public class EducationTrainingActivity : ActivityWithTemplate
         string? courseUrl, 
         string courseLevel,
         DateTime courseCommencedOn, 
+        DateTime? courseCompletedOn,
         CourseCompletionStatus courseCompletionStatus) : base(context) 
     {
         CourseTitle = courseTitle;
         CourseUrl = courseUrl;
         CourseLevel = courseLevel;
         CourseCommencedOn = courseCommencedOn;
+        CourseCompletedOn = courseCompletedOn;
         CourseCompletionStatus = courseCompletionStatus;
     }
 
@@ -30,6 +32,7 @@ public class EducationTrainingActivity : ActivityWithTemplate
     public string? CourseUrl { get; private set; }
     public string CourseLevel { get; private set; }
     public DateTime CourseCommencedOn { get; private set; }
+    public DateTime? CourseCompletedOn { get; private set; }
     public CourseCompletionStatus CourseCompletionStatus { get; private set; }
 
     public override string DocumentLocation => "activity/educationandtraining";
@@ -40,9 +43,10 @@ public class EducationTrainingActivity : ActivityWithTemplate
         string? courseUrl,
         string courseLevel,
         DateTime courseCommencedOn,
+        DateTime? courseCompletedOn,
         CourseCompletionStatus courseCompletionStatus)
     {
-        EducationTrainingActivity activity = new(context, courseTitle, courseUrl, courseLevel, courseCommencedOn, courseCompletionStatus);
+        EducationTrainingActivity activity = new(context, courseTitle, courseUrl, courseLevel, courseCommencedOn, courseCompletedOn, courseCompletionStatus);
         activity.AddDomainEvent(new EducationTrainingActivityCreatedDomainEvent(activity));
         return activity;
     }
