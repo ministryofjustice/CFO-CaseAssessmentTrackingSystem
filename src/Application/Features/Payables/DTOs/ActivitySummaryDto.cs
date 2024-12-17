@@ -11,6 +11,8 @@ public class ActivitySummaryDto
     public required DateTime Completed { get; set; }
     public required ActivityDefinition Definition { get; set; }
     public required ActivityStatus Status { get; set; }
+
+    [Description("Additional Information (optional)")]
     public string? AdditionalInformation { get; set; }
 
     public class Mapping : Profile

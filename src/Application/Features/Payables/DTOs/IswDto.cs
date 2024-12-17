@@ -6,22 +6,22 @@ namespace Cfo.Cats.Application.Features.Payables.DTOs;
 
 public class IswDto
 {
-    [Description("Wraparound Support Start Date")]
+    [Description("Wraparound support start date")]
     public DateTime? WraparoundSupportStartedOn { get; set; }
 
-    [Description("Total Hours Performed Pre-intervention")]
+    [Description("Total hours performed pre-intervention")]
     public double HoursPerformedPre { get; set; } = 0;
 
-    [Description("Total Hours Performed During Intervention")]
+    [Description("Total hours performed during intervention")]
     public double HoursPerformedDuring { get; set; } = 0;
 
-    [Description("Total Hours Performed After Intervention")]
+    [Description("Total hours performed post intervention")]
     public double HoursPerformedPost { get; set; } = 0;
 
-    [Description("Baseline Achieved Date")]
+    [Description("Baseline achieved date")]
     public DateTime? BaselineAchievedOn { get; set; }
 
-    [Description("Total Hours pre, during and after intervention")]
+    [Description("Total Hours pre, during, and after intervention")]
     public double TotalHoursIntervention => HoursPerformedPre + HoursPerformedDuring + HoursPerformedPost;
 
     string TotalHoursDescription => string.Concat((int)Math.Floor(TotalHoursIntervention), " hour", Math.Floor(TotalHoursIntervention) is 1 ? string.Empty : "s");

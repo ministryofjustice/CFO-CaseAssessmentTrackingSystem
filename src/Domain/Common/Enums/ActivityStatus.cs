@@ -32,7 +32,7 @@ public abstract class ActivityStatus : SmartEnum<ActivityStatus>
         GetAllowedTransitions()
             .Any(e => next == e);
 
-    private sealed class Pending() : ActivityStatus("Pending", 0, allowsChanges: true)
+    private sealed class Pending() : ActivityStatus("Pending Submission", 0, allowsChanges: true)
     {
         protected override ActivityStatus[] GetAllowedTransitions() => [AbandonedStatus, SubmittedToProviderStatus, ApprovedStatus];
     }

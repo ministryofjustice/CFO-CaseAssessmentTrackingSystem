@@ -18,15 +18,17 @@ public static class AddActivity
         public Guid? ActivityId { get; set; }
         public required string ParticipantId { get; set; }
         public required Guid TaskId { get; set; }
+
+        [Description("Location")]
         public LocationDto? Location { get; set; }
 
         [Description("Activity/ETE")]
-        public ActivityDefinition? ActivityDefinition { get; set; }
+        public ActivityDefinition? Definition { get; set; }
 
         [Description("Completed on")]
         public DateTime? Completed { get; set; }
 
-        [Description("Additional Information")]
+        [Description("Additional Information (optional)")]
         public string? AdditionalInformation { get; set; }
 
         public EmploymentDto EmploymentTemplate { get; set; } = new();
@@ -72,7 +74,7 @@ public static class AddActivity
             }
 
             var cxt = new Activity.ActivityContext(
-                Definition: request.ActivityDefinition!,
+                Definition: request.Definition!,
                 ParticipantId: participant.Id,
                 Task: task,
                 TookPlaceAtLocation: location,
@@ -84,15 +86,16 @@ public static class AddActivity
                 currentUserService.TenantId!,
                 AdditionalInformation: request.AdditionalInformation);
 
-            var classification = request.ActivityDefinition!.Classification;
+            var classification = request.Definition!.Classification;
 
             Activity activity = classification switch
             {
                 _ when classification == ClassificationType.EducationAndTraining => EducationTrainingActivity.Create(cxt,
                     request.EducationTrainingTemplate!.CourseTitle!,
-                    request.EducationTrainingTemplate!.CourseUrl!,
+                    request.EducationTrainingTemplate!.CourseUrl,
                     request.EducationTrainingTemplate!.CourseLevel!,
                     request.EducationTrainingTemplate!.CourseCommencedOn!.Value,
+                    request.EducationTrainingTemplate.CourseCompletedOn,
                     request.EducationTrainingTemplate!.CourseCompletionStatus!
                 ),
                 _ when classification == ClassificationType.Employment => EmploymentActivity.Create(cxt,
@@ -177,7 +180,7 @@ public static class AddActivity
 
             When(c => c.Location is not null, () =>
             {
-                RuleFor(c => c.ActivityDefinition)
+                RuleFor(c => c.Definition)
                     .NotNull()
                     .WithMessage("You must choose an Activity/ETE");
             });
@@ -193,7 +196,7 @@ public static class AddActivity
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Additional Information"));
 
-            When(c => c.ActivityDefinition?.Classification.RequiresFurtherInformation is true, () =>
+            When(c => c.Definition?.Classification.RequiresFurtherInformation is true, () =>
             {
                 RuleFor(v => v.Document)
                         .NotNull()

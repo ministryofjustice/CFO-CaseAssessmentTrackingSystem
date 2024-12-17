@@ -12,7 +12,7 @@ public class EmploymentDto
     [Description("Company Name")]
     public string? EmployerName { get; set; }
 
-    [Description("Job Title")]
+    [Description("Job title")]
     public string? JobTitle { get; set; }
 
     public string? JobTitleCode { get; set; }
@@ -23,7 +23,7 @@ public class EmploymentDto
     [Description("Salary Frequency")]
     public string? SalaryFrequency { get; set; }
 
-    [Description("Employment Start Date")]
+    [Description("Start date of employment")]
     public DateTime? EmploymentCommenced { get; set; }
 
     [Description("Upload Employment Template")]
@@ -57,14 +57,9 @@ public class EmploymentDto
 
             });
 
-            //RuleFor(c => c.SalaryFrequency)
-            //    .NotNull()
-            //    .When(x => x.Salary is not null)
-            //    .WithMessage("You must choose a Salary frequency");
-
             RuleFor(c => c.EmploymentCommenced)
                 .NotNull()
-                .WithMessage("You must choose a Employment start date");
+                .WithMessage("You must choose a start date of employment");
 
             RuleFor(v => v.Document)
                     .NotNull()
