@@ -1,0 +1,174 @@
+﻿@page "/pages/qa/activities/pqa"
+
+@using Cfo.Cats.Application.Features.Payables.DTOs
+@using Cfo.Cats.Application.Features.Payables.Queries
+@using Cfo.Cats.Application.SecurityConstants
+@using Humanizer
+
+@inherits CatsComponentBase;
+
+@inject IStringLocalizer<PQA> L
+
+@attribute [Authorize(Policy = SecurityPolicies.Pqa)]
+
+<style>
+    .mud-table-toolbar {
+        height: 120px !important;
+    }
+    
+    .pointer-cursor {
+        cursor: pointer;
+    }    
+</style>
+
+<MudDataGrid ServerData="@(ServerReload)"
+             T="ActivityQueueEntryDto"
+             FixedHeader="true"
+             FixedFooter="true"
+             Virtualize="true"
+             @bind-RowsPerPage="_defaultPageSize"
+             Height="calc(100vh - 330px)"
+             Loading="@_loading"
+             MultiSelection="true"
+             @bind-SelectedItem="_currentDto"
+             Hover="true"
+             RowClick="@RowClicked"
+             RowClass="pointer-cursor"
+             @ref="_table">
+    <ToolBarContent>
+        <div class="d-flex align-start flex-grow-1">
+            <div class="d-flex gap-4">
+                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large"/>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.caption">Provider QA</MudText>
+                </div>
+            </div>
+            <div class="flex-grow-1"></div>
+            <div class="d-flex flex-column justify-end">
+                <div class="d-flex">
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                        <MudButton Variant="Variant.Outlined"
+                                   Size="Size.Small"
+                                   Disabled="@_loading"
+                                   OnClick="@(() => OnRefresh())"
+                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
+                                   Style="margin-right: 4px; margin-bottom:4px">
+                            @ConstantString.Refresh
+                        </MudButton>
+                    </MudHidden>
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+
+                    </MudHidden>
+                </div>
+                <MudTextField T="string" ValueChanged="@(OnSearch)" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                </MudTextField>
+            </div>
+        </div>
+    </ToolBarContent>
+    <Columns>
+       
+        @* <PropertyColumn Property="x => x.ParticipantId" Title="@L["Participant"]"> *@
+            <PropertyColumn Property="x => x.ParticipantName" Title="@L["Participant"]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>
+                    @* <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText> *@
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.SupportWorker" Title="@L["Support Worker"]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.SupportWorker</MudText>                    
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.TenantId" Title="@L["Tenant"]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.TenantName</MudText>
+                    <MudText Typo="Typo.body2">@context.Item.TenantId</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Created" Title="@L["Submitted"]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">
+                        @context.Item.Created.Date.ToString("d")                        
+                    </MudText>
+                    <MudText Typo="Typo.body2">                        
+                        @context.Item.Created.Humanize()
+                    </MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+    </Columns>
+    <NoRecordsContent>
+        <MudText>@ConstantString.NoRecords</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>@ConstantString.Loading</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })"/>
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+    [CascadingParameter] private UserProfile? UserProfile { get; set; }
+    
+    private bool _loading = false;
+    private int _defaultPageSize = 15;
+    private MudDataGrid<ActivityQueueEntryDto> _table = default!;
+
+    private ActivityPqaQueueWithPagination.Query Query { get; set; } = new();
+    private ActivityQueueEntryDto _currentDto = new();
+    private HashSet<ActivityQueueEntryDto> _selectedItems = new();
+
+    private void RowClicked(DataGridRowClickEventArgs<ActivityQueueEntryDto> args)
+    {
+        Navigation.NavigateTo($"/pages/qa/activities/pqa/{args.Item.Id}");
+    }
+    
+    private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state)
+    {
+        try
+        {
+            _loading = true;
+            Query.CurrentUser = UserProfile;
+            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Created";
+            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
+            Query.PageNumber = state.Page + 1;
+            Query.PageSize = state.PageSize;
+
+            var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
+            return new GridData<ActivityQueueEntryDto> { TotalItems = result.TotalItems, Items = result.Items };
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+    
+    private async Task OnSearch(string text)
+    {
+        if (_loading)
+        {
+            return;
+        }
+        _selectedItems = new();
+        Query.Keyword = text;
+        await _table.ReloadServerData();
+    }
+    
+    private async Task OnRefresh()
+    {
+        _selectedItems = new ();
+        Query.Keyword = string.Empty;
+        await _table.ReloadServerData();
+    }
+}

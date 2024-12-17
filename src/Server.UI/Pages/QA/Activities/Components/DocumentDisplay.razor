@@ -1,0 +1,64 @@
+﻿@using Cfo.Cats.Application.Features.Documents.Queries
+@inherits CatsComponentBase
+
+<MudPaper Class="document-container">
+    @if (fileBase64 != null && extension!.Equals("pdf", StringComparison.CurrentCultureIgnoreCase))
+    {
+        <object data="data:application/pdf;base64,@fileBase64" type="application/pdf" class="full-size-object">
+            <p>PDF cannot be displayed.</p>
+        </object>
+    }
+    else if (IsFileRejected)
+    {
+        <MudText Typo="Typo.caption">
+            File cannot be displayed. Please contact support.
+        </MudText>
+    }
+    else
+    {
+        <MudText Typo="Typo.caption">
+            Please select a file to display
+        </MudText>
+    }
+</MudPaper>
+
+@code {
+    private string? fileBase64;
+    private string? extension;
+
+    private bool IsFileRejected { get; set; }
+    
+    [Parameter]
+    public Guid DocumentId { get; set; }
+
+    private Guid _previous = Guid.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_previous != DocumentId)
+        {
+            var query = new GetDocumentById.Query
+            {
+                Id = DocumentId
+            };
+
+            var result = await GetNewMediator().Send(query);
+            if (result.Succeeded)
+            {
+                _previous = DocumentId;
+                IsFileRejected = false;
+                using (var memoryStream = new MemoryStream())
+                {
+                    await result.Data!.FileStream.CopyToAsync(memoryStream);
+                    var bytes = memoryStream.ToArray();
+                    fileBase64 = Convert.ToBase64String(bytes);
+                }
+                extension = result.Data!.FileExtension;
+            }
+            else
+            {
+                IsFileRejected = true;
+            }
+        }
+    }
+}

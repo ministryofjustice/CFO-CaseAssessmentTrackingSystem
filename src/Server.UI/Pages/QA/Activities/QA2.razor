@@ -1,0 +1,235 @@
+@page "/pages/qa/activities/qa2/"
+
+@using Cfo.Cats.Application.Common.Validators
+@using Cfo.Cats.Application.Features.Documents.Queries
+@using Cfo.Cats.Application.Features.Payables.Commands
+@using Cfo.Cats.Application.Features.Payables.DTOs
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.QA.Activities.Components
+
+@inherits CatsComponentBase
+
+@attribute [Authorize(Policy = SecurityPolicies.Qa2)]
+
+<style>
+    .document-container {
+        width: 90%;
+        height: calc(100vh - 150px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .full-size-object {
+        width: 100%;
+        height: 100%;
+    }
+
+    .mud-radio {
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+<ActivityQaExternalMessageWarning @ref="warningMessage" />
+
+<MudContainer Style="width: 100%; min-width: 480px;" MaxWidth="MaxWidth.ExtraLarge">
+    <MudText Typo="Typo.h5" Class="mb-5">
+        CFO Activity Queue Second Pass
+    </MudText>
+
+    @if (_activitySummaryDto is null)
+    {
+        <MudButton OnClick="GetQueueItem" ButtonType="ButtonType.Button" StartIcon="@Icons.Material.Filled.QueuePlayNext"
+        Variant="Variant.Outlined" Color="Color.Primary">
+            Get Next
+        </MudButton>
+    }
+
+    @if (_activitySummaryDto is not null && _activitySummaryDto.Status== ActivityStatus.SubmittedToAuthorityStatus)
+    {
+
+        @if (_queueEntry!.IsAccepted)
+        {
+            <MudAlert Severity="Severity.Warning">
+                This entry has already been processed
+            </MudAlert>
+        }
+
+        <MudGrid Style="height: 100vh; width: 100%;">
+            @* <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
+                <ParticipantQaDetails Participant="_participantDto" />
+            </MudItem> *@
+            <MudItem xs="8" Style="height: 100%; width: 100%;">
+                <MudTabs>
+                    <MudTabPanel Text="QA Notes">
+                        <QaNotes ActivityId="@_activitySummaryDto.Id" />
+                    </MudTabPanel>
+
+                    <MudTabPanel Text="Attachment" Style="min-width: 185px;" BadgeColor="Color.Info">                        
+                        <AttachmentPanel ActivitySummaryDto="_activitySummaryDto" />
+                    </MudTabPanel>
+                    <MudTabPanel Text="Submission">
+                        @if (_queueEntry.IsCompleted == false)
+                        {
+                            <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
+                                <MudItem xs="12">
+                                    <MudRadioGroup T="SubmitActivityQa2Response.Qa2Response?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
+                                        <MudRadio T="SubmitActivityQa2Response.Qa2Response?" Value="SubmitActivityQa2Response.Qa2Response.Accept" Color="Color.Primary">
+                                            Accept
+                                        </MudRadio>
+                                        <MudRadio T="SubmitActivityQa2Response.Qa2Response?" Value="SubmitActivityQa2Response.Qa2Response.Return" Color="Color.Secondary">
+                                            Return
+                                        </MudRadio>
+                                        <MudRadio T="SubmitActivityQa2Response.Qa2Response?" Value="SubmitActivityQa2Response.Qa2Response.Escalate" Color="Color.Secondary">
+                                            Escalate
+                                        </MudRadio>
+                                    </MudRadioGroup>
+                                </MudItem>
+
+                                <MudDivider Class="py-4" />
+
+                                @if (Command.IsMessageExternal)
+                                {
+                                    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+                                        This comment will be visible to PQA (and internal members of CFO staff)
+                                    </MudAlert>
+                                }
+                                else
+                                {
+                                    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                                        This comment will only be visible to internal members of CFO staff
+                                    </MudAlert>
+                                }
+
+                                <MudGrid Class="py-4">
+                                    <MudItem Class="d-flex align-center" xs="12" md="3" xl="2">
+                                        <MudSwitch @bind-Value="Command.IsMessageExternal"
+                                        For="() => Command.IsMessageExternal"
+                                        Label="External"
+                                        Color="Color.Primary" />
+                                    </MudItem>
+                                    <MudItem xs="12" md="9" xl="10">
+                                        <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
+                                        <MudText Class="ml-2">Characters: @characterCount / 1000</MudText>
+                                    </MudItem>
+                                </MudGrid>
+
+                            </MudForm>
+
+                            <MudContainer Class="d-flex px-0 pt-8">
+                                <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
+                            </MudContainer>
+                        }
+                        else
+                        {
+                            <MudAlert Variant="Variant.Outlined" Severity="Severity.Info">
+                                This entry has already been processed
+                            </MudAlert>
+                        }
+                    </MudTabPanel>
+                </MudTabs>
+            </MudItem>
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    private ActivityQaExternalMessageWarning? warningMessage;
+    private MudForm? _form;
+    private ActivityQueueEntryDto? _queueEntry = null;
+    private ActivitySummaryDto? _activitySummaryDto = null;
+
+    [CascadingParameter]
+    public UserProfile? UserProfile { get; set; } = null!;
+
+    private SubmitActivityQa2Response.Command Command { get; set; } = default!;
+
+    private async Task GetQueueItem()
+    {
+        GrabActivityQa2Entry.Command command = new GrabActivityQa2Entry.Command()
+            {
+                CurrentUser = UserProfile!
+            };
+
+        var result = await GetNewMediator().Send(command);
+
+        if (result.Succeeded)
+        {
+            _queueEntry = result.Data!;
+
+            _activitySummaryDto = await GetNewMediator().Send(new GetActivityById.Query()
+                {
+                    Id = _queueEntry.ActivityId
+                });
+
+            Command = new SubmitActivityQa2Response.Command()
+                {
+                    ActivityQueueEntryId = _queueEntry.Id,
+                    CurrentUser = UserProfile
+                };
+        }
+        else
+        {
+            Snackbar.Add(result.ErrorMessage, Severity.Info);
+        }
+    }
+
+    protected async Task SubmitToQa()
+    {
+        await _form!.Validate().ConfigureAwait(false);
+
+        if (_form.IsValid is false)
+        {
+            return;
+        }
+
+        bool submit = true;
+
+        if (Command is { IsMessageExternal: true, Message.Length: > 0 })
+        {
+            submit = await warningMessage!.ShowAsync();
+        }
+
+        if (submit)
+        {
+            var result = await GetNewMediator().Send(Command);
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add("Activity submitted", Severity.Info);
+                Navigation.NavigateTo("/pages/qa/activities/qa2", true);
+            }
+            else
+            {
+                ShowActionFailure("Failed to submit", result);
+            }
+        }
+    }
+
+    private void ShowActionFailure(string title, IResult result)
+    {
+        Snackbar.Add(
+        @<div>
+            <h2>@title</h2>
+            <ul>
+                @foreach (var e in result.Errors)
+                {
+                    <li>@e</li>
+                }
+            </ul>
+        </div>
+        , Severity.Error, options => {
+            options.RequireInteraction = true;
+            options.SnackbarVariant = Variant.Text;
+        });
+    }
+
+    private int characterCount => Command.Message?.Length ?? 0;
+
+    private void UpdateCharacterCount(ChangeEventArgs args)
+    {
+        Command.Message = args?.Value?.ToString() ?? string.Empty;
+    }
+}
