@@ -17,7 +17,8 @@
                    @bind-Value:after="LocationChanged" 
                    Label="@Model.GetMemberDescription(x => x.Location)"
                    For="() => Model.Location"
-                   Clearable="true">
+                   Clearable="true"
+                   ToStringFunc="location => location?.Name">
             @foreach (var location in locations)
             {
                 <MudSelectItem Value="location">@location.Name</MudSelectItem>
@@ -44,7 +45,8 @@
         @bind-Value:after="ActivityChanged"
         Disabled="Disabled"
         Label="@Model.GetMemberDescription(x => x.Definition)"
-        For="() => Model.Definition">
+        For="() => Model.Definition"
+        ToStringFunc="activity => activity?.Category.Name">
             @foreach (var activity in activities
             .Where(activity => filteredTypes.Count is 0 || filteredTypes.Contains(activity.Type))
             .OrderBy(activity => activity.Name))
