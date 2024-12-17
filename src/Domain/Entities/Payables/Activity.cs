@@ -18,7 +18,7 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
         Location ParticipantCurrentLocation,
         Contract? ParticipantCurrentContract,
         EnrolmentStatus ParticipantStatus,
-        DateTime Completed,
+        DateTime CommencedOn,
         string TenantId,
         string? AdditionalInformation = null);
 
@@ -40,7 +40,7 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
         ParticipantCurrentLocation = context.ParticipantCurrentLocation;
         ParticipantCurrentContract = context.ParticipantCurrentContract;
         ParticipantStatus = context.ParticipantStatus;
-        Completed = context.Completed;
+        CommencedOn = context.CommencedOn;
         TenantId = context.TenantId;
         TaskId = context.Task.Id;
         ObjectiveId = context.Task.ObjectiveId;
@@ -63,7 +63,7 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
     public virtual Contract? ParticipantCurrentContract { get; protected set; }
     public EnrolmentStatus ParticipantStatus { get; protected set; }
     public string? AdditionalInformation { get; protected set; }
-    public DateTime Completed { get; protected set; }
+    public DateTime CommencedOn { get; protected set; }
     public string TenantId { get; protected set; }
     public ActivityStatus Status { get; protected set; }
 

@@ -40,7 +40,7 @@
                     </MudItem>
                     <MudItem xs="12">
                         <MudDateRangePicker 
-                        Label="Completed from/to range" 
+                        Label="Commenced from/to range" 
                         DateRangeChanged="OnDateRangeChanged" 
                         Clearable 
                         MaxDate="DateTime.Today" />
@@ -78,7 +78,7 @@
                 foreach (var activity in activities.Items)
                 {
                     var created = activity.Created.ToLocalTime();
-                    var completed = DateOnly.FromDateTime(activity.Completed);
+                    var commencedOn = DateOnly.FromDateTime(activity.CommencedOn);
                     <MudListItem Class="flex-row-reverse">
                         <ChildContent>
                             <div class="d-flex justify-space-between align-center ml-2">
@@ -101,7 +101,7 @@
                                             Added on @created.ToShortDateString() at @created.ToShortTimeString() (@created.Humanize())
                                         </MudText>
                                         <MudText Typo="Typo.body2" Class="pt-1">
-                                            Completed on @completed.ToShortDateString() (@(completed == DateOnly.FromDateTime(DateTime.Today) ? "today" : completed.Humanize()))
+                                            Took place on @commencedOn.ToShortDateString() (@(commencedOn == DateOnly.FromDateTime(DateTime.Today) ? "today" : commencedOn.Humanize()))
                                             at @activity.TookPlaceAtLocationName
                                         </MudText>
 
@@ -202,8 +202,8 @@
 
     Task OnDateRangeChanged(DateRange range)
     {
-        Model.CompletedStart = range.Start;
-        Model.CompletedEnd = range.End;
+        Model.CommencedStart = range.Start;
+        Model.CommencedEnd = range.End;
         return OnRefresh();
     }
 
