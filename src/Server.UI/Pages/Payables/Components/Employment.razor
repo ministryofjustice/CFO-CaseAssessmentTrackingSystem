@@ -1,5 +1,6 @@
 ﻿@using Cfo.Cats.Application.Features.Payables.Commands
 @using Cfo.Cats.Application.Features.Payables.DTOs
+@using Cfo.Cats.Application.Features.KeyValues.DTOs
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Payables.Components
 @inherits CatsComponentBase
@@ -14,8 +15,8 @@
                 For="() => Model.EmploymentType"
                 Label="@Model.GetMemberDescription(x => x.EmploymentType)">
                     @foreach (var employmentType in PicklistService.DataSource
-                    .Where(c => c.Name == Picklist.EmploymentType)
-                    .OrderBy(c => c.Text))
+                .Where(c => c.Name == Picklist.EmploymentType)
+                .OrderBy(c => c.Text))
                     {
                         <MudSelectItem Value="@employmentType.Value">@employmentType.Text</MudSelectItem>
                     }
@@ -23,18 +24,16 @@
             </MudItem>
             <MudItem xs="12">
                 <MudTextField Label="@Model.GetMemberDescription(x => x.EmployerName)" For="() => Model.EmployerName" @bind-Value="Model.EmployerName" Disabled="Disabled" />
-            </MudItem>    
+            </MudItem>
             <MudItem xs="12">
-                <MudSelect Value="Model.JobTitle" Disabled="Disabled"
-                For="() => Model.JobTitle"
-                Label="@Model.GetMemberDescription(x => x.JobTitle)" T="string" ValueChanged="OnJobTitleValueChange">
-                    @foreach (var jobTitle in PicklistService.DataSource
-                 .Where(c => c.Name == Picklist.Occupation)
-                 .OrderBy(c => c.Text))
-                    {
-                        <MudSelectItem Value="@jobTitle.Value">@jobTitle.Text</MudSelectItem>
-                    }
-                </MudSelect>
+                <MudAutocomplete T="string" 
+                Label="@Model.GetMemberDescription(x => x.JobTitle)" 
+                @bind-Value="Model.JobTitle"
+                @bind-Value:after="OnJobTitleValueChange"
+                Validation="@(new Func<string, string?>(ValidateJobTitle))"
+                SearchFunc="@SearchJobTitles"
+                ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                AdornmentColor="Color.Primary"/>
             </MudItem>
             <MudItem xs="12">
                 <MudItem xs="12">
@@ -43,8 +42,8 @@
                 <MudSelect @bind-Value="Model.SalaryFrequency"
                 For="() => Model.SalaryFrequency" Disabled="Disabled" Label="@Model.GetMemberDescription(x => x.SalaryFrequency)">
                     @foreach (var salaryFrequency in PicklistService.DataSource
-                    .Where(c => c.Name == Picklist.SalaryFrequency)
-                    .OrderBy(c => c.Text))
+                .Where(c => c.Name == Picklist.SalaryFrequency)
+                .OrderBy(c => c.Text))
                     {
                         <MudSelectItem Value="@salaryFrequency.Value">@salaryFrequency.Text</MudSelectItem>
                     }
@@ -108,12 +107,36 @@
 
     bool Disabled = false;
 
-    private void OnJobTitleValueChange(string value)
+    private IEnumerable<KeyValueDto>? filteredJobTitles;
+    protected override void OnInitialized()
     {
-        var jobs = PicklistService.DataSource.Where(c => c.Name == Picklist.Occupation);
-        Model.JobTitle = jobs.FirstOrDefault(i => i.Value == value)?.Text;
-        Model.JobTitleCode = value;
+        filteredJobTitles = PicklistService.DataSource.Where(c => c.Name == Picklist.Occupation).ToList<KeyValueDto>();
     }
 
+    private void OnJobTitleValueChange()
+    {
+        var jobs = PicklistService.DataSource.Where(c => c.Name == Picklist.Occupation);
+        Model.JobTitleCode = jobs.FirstOrDefault(i => i.Text == Model.JobTitle)?.Value;
+    }
+    private Task<IEnumerable<string>> SearchJobTitles(string searchText, CancellationToken cancellationToken)
+    {
+        IEnumerable<string> result;
+        IEnumerable<KeyValueDto> jobs = PicklistService.DataSource.Where(c => c.Name == Picklist.Occupation).ToList<KeyValueDto>();
+        if (string.IsNullOrEmpty(searchText))
+        {
+            result = jobs.Select(x => x.Text)!;
+        }
+        else
+        {
+            result = jobs.Where(x => x.Text!.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                          .Select(x => x.Text)!;
+        }
+
+        return Task.FromResult(result);
+    }
+    private string? ValidateJobTitle(string jobTitle)
+    {
+        return string.IsNullOrEmpty(Model.JobTitleCode) ? "You must choose a valid Job title" : null;
+    }
 }
 
