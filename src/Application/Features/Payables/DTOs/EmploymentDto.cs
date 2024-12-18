@@ -44,15 +44,13 @@ public class EmploymentDto
 
             RuleFor(c => c.JobTitle)
                 .NotNull()
-                .NotEmpty()
                 .WithMessage("You must choose a valid Job title");
 
-            When(c => string.IsNullOrEmpty(c.JobTitle)==false, () =>
+            When(c => c.JobTitle is not null, () =>
             {
                 RuleFor(c => c.JobTitleCode)
-                .NotNull()
-                .NotEmpty()
-                .WithMessage("You must choose a valid Job title");
+                    .NotNull()
+                    .WithMessage("You must choose a valid Job title");
             });
 
             When(c => c.Salary is not null, () =>
