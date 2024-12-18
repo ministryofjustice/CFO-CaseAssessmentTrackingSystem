@@ -1,4 +1,4 @@
-﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Common.Interfaces.Locations
 @using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Payables.DTOs
 @using Cfo.Cats.Application.Features.Payables.Commands
@@ -42,7 +42,8 @@
     <MudItem xs="12">
         <MudAutocomplete @ref="activityDropdown"
                          T="ActivityDefinition"
-                         ValueChanged="ActivityChanged"
+                         @bind-Value="Model.Definition"
+                         @bind-Value:after="ActivityChanged"
                          Disabled="Disabled"
                          Label="@Model.GetMemberDescription(x => x.Definition)"
                          For="() => Model.Definition"
