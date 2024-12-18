@@ -42,7 +42,7 @@
     public UserProfile UserProfile { get; set; } = default!;
 
     [Parameter, EditorRequired]
-    public Guid ActivityId { get; set; } = default!;
+    public Guid? ActivityId { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {

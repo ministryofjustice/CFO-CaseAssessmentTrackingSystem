@@ -19,6 +19,7 @@ public static class GetActivityById
         {
             var activity = await unitOfWork.DbContext.Activities
                 .Include(a => a.TookPlaceAtLocation)
+                .Include(a=>a.Participant)
                 .SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
 
             return activity;

@@ -2,15 +2,7 @@
 @using Cfo.Cats.Application.Features.Payables.DTOs
 @inherits CatsComponentBase
 
-<MudRadioGroup T="Guid" @bind-Value="_selectedDocument">
-
-    @foreach (var rtw in ActivitySummaryDto.Attachment.OrderByDescending(c => c.ValidFrom))
-    {
-    <MudRadio T="Guid" Color="Color.Primary" Value="@rtw.DocumentId!.Value">
-        @rtw.FileName (@rtw.ValidFrom.ToShortDateString())
-    </MudRadio>
-    }
-</MudRadioGroup>
+@ActivitySummaryDto!.Document!.Name.ToString() (@ActivitySummaryDto.Document.LastModified)
 
 @if (_selectedDocument != Guid.Empty)
 {
@@ -19,18 +11,19 @@
 
 @code{
     private Guid _selectedDocument = Guid.Empty;
-    
+
     [Parameter] [EditorRequired]
-    public ActivitySummaryDto ActivitySummaryDto { get; set; } = default!;
+    //public ActivitySummaryDto ActivitySummaryDto { get; set; } = default!;
+    public ActivityQaDetailsDto ActivitySummaryDto { get; set; } = default!;
 
     protected override void OnInitialized()
     {
         if (_selectedDocument == Guid.Empty)
         {
-            var latest = ActivitySummaryDto.Attachment.MaxBy(c => c.ValidFrom);
+            var latest = ActivitySummaryDto.Document;
             if (latest is not null)
             {
-                _selectedDocument = latest.DocumentId.GetValueOrDefault();
+                _selectedDocument = Guid.Empty; // latest.DocumentId.GetValueOrDefault();
             }
         }
     }    
