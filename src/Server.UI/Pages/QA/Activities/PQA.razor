@@ -7,6 +7,7 @@
 @using Cfo.Cats.Application.Features.Payables.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Domain.Entities.Payables
 @using Cfo.Cats.Server.UI.Pages.QA.Activities.Components
 @inherits CatsComponentBase
 
@@ -48,10 +49,10 @@
             <MudItem xs="8" Style="height: 100%; width: 100%;">
                 <MudTabs>
                     <MudTabPanel Text="QA Notes">
-                        <QaNotes ActivityId="@_activitySummaryDto.Id" />                    
+                        <QaNotes ActivityId="@_activitySummaryDto.ActivityId" />                    
                     </MudTabPanel>
                     <MudTabPanel Text="Attachment" Style="min-width: 185px;" BadgeColor="Color.Info" > @* BadgeData="@_activitySummaryDto..RightToWorks.Length"> *@
-                        <AttachmentPanel ActivitySummaryDto="_activitySummaryDto" />
+                    <AttachmentPanel ActivitySummaryDto="_activitySummaryDto" />
                     </MudTabPanel>                
                     <MudTabPanel Text="Submission">
                         @if (_queueEntry.IsCompleted == false)
@@ -93,7 +94,8 @@
 @code {
     private MudForm? _form;
     private ActivityQueueEntryDto? _queueEntry;
-    private ActivitySummaryDto? _activitySummaryDto;
+//    private ActivitySummaryDto? _activitySummaryDto;
+    private ActivityQaDetailsDto? _activitySummaryDto = null;
     
     [Parameter] public Guid Id { get; set; }
 
@@ -114,12 +116,14 @@
             if (result.Succeeded)
             {
                 _queueEntry = result.Data!;
-//                _activitySummaryDto = await GetNewMediator().Send(Model);
-                _activitySummaryDto = await GetNewMediator().Send(new GetActivityById.Query
+
+                //_activitySummaryDto = await GetNewMediator().Send(new GetActivityById.Query()
+                var activity = await GetNewMediator().Send(new GetActivityById.Query()
                 {
                     Id = _queueEntry.ActivityId
                 });
-
+                _activitySummaryDto = Mapper.Map<ActivityQaDetailsDto>(activity);
+//                model.ActivityId = ActivityId;
 
                 // _participantDto = await GetNewMediator().Send(new GetParticipantById.Query
                 //         {

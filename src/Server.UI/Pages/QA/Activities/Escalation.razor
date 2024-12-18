@@ -51,7 +51,7 @@
         <MudItem xs="8" Style="height: 100%; width: 100%;">
             <MudTabs>
                 <MudTabPanel Text="QA Notes">
-                    <QaNotes ActivityId="@_activitySummaryDto.Id" />
+                    <QaNotes ActivityId="@_activitySummaryDto.ActivityId" />
                 </MudTabPanel>
 
                 <MudTabPanel Text="Attachment" Style="min-width: 185px;" BadgeColor="Color.Info">
@@ -125,8 +125,8 @@
     private ActivityQaExternalMessageWarning? warningMessage;
     private MudForm? _form;
     private ActivityQueueEntryDto? _queueEntry;
-    private ActivitySummaryDto? _activitySummaryDto = null;
-    //private ParticipantDto? _participantDto;
+    //private ActivitySummaryDto? _activitySummaryDto = null;
+    private ActivityQaDetailsDto? _activitySummaryDto = null;
 
     [Parameter] public Guid Id { get; set; }
 
@@ -148,7 +148,9 @@
             {
                 _queueEntry = result.Data!;
 
-                _activitySummaryDto = await GetNewMediator().Send(new GetActivityById.Query
+
+                //_activitySummaryDto = await GetNewMediator().Send(new GetActivityById.Query()
+                var activity = await GetNewMediator().Send(new GetActivityById.Query()
                 {
                     Id = _queueEntry.ActivityId
                 });
