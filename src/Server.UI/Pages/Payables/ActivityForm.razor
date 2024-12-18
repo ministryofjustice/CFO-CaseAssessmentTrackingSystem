@@ -1,4 +1,4 @@
-@using Cfo.Cats.Application.Common.Interfaces.Locations
+﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
 @using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Payables.DTOs
 @using Cfo.Cats.Application.Features.Payables.Commands
@@ -51,6 +51,7 @@
                          ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
                          AdornmentColor="Color.Primary"
                          ToStringFunc="activity => activity?.Category.Name"
+                         MaxItems="null">
             <ItemTemplate>
                 <div class="d-flex gap-2 align-center">
                     <MudChip T="string" Size="Size.Small" Text="@context.Type.Name" Color="Color.Secondary" />
