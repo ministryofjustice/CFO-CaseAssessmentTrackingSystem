@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Payables.EventHandlers.SubmittedToQa
 {
-    public class CreateActivityPqaQueueEntry(IUnitOfWork unitOfWork) : INotificationHandler<ActivityTransitionedDomainEvent>
+    public class CreateActivityPqaQueueEntry(IUnitOfWork unitOfWork) //: INotificationHandler<ActivityTransitionedDomainEvent>
     {
         public async Task Handle(ActivityTransitionedDomainEvent notification, CancellationToken cancellationToken)
         {
