@@ -48,6 +48,8 @@ public static class AddActivity
                 CreateMap<ISWActivity, IswDto>();
 
                 CreateMap<Activity, Command>()
+                    .ForMember(dest => dest.ActivityId, opt => opt.MapFrom(src => src.Id))
+                    .ForMember(dest => dest.Document, opt => opt.Ignore())
                     .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.TookPlaceAtLocation))
                     .ForPath(dest => dest.EmploymentTemplate, opt => opt.MapFrom(src => src as EmploymentActivity))
                     .ForPath(dest => dest.EducationTrainingTemplate, opt => opt.MapFrom(src => src as EducationTrainingActivity))

@@ -27,9 +27,6 @@ public class EmploymentDto
     [Description("Start date of employment")]
     public DateTime? EmploymentCommenced { get; set; }
 
-    [Description("Upload Employment Template")]
-    public IBrowserFile? Document { get; set; }
-
     public class Validator : AbstractValidator<EmploymentDto>
     {
         public Validator()
@@ -68,15 +65,6 @@ public class EmploymentDto
             RuleFor(c => c.EmploymentCommenced)
                 .NotNull()
                 .WithMessage("You must choose a start date of employment");
-
-            RuleFor(v => v.Document)
-                    .NotNull()
-                    .WithMessage("You must upload a Employment Template")
-                    .Must(file => NotExceedMaximumFileSize(file, Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes))
-                    .WithMessage($"File size exceeds the maxmimum allowed size of {Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes} megabytes")
-                    .MustAsync(BePdfFile)
-                    .WithMessage("File is not a PDF");
-
         }
         private bool BeValidSalary(double salary)
         {
@@ -86,34 +74,6 @@ public class EmploymentDto
 
                 // Check if the fractional part is not .25, .5, or .75
                 return fractionalPart.ToString().Length <= 2;
-        }
-
-        private static bool NotExceedMaximumFileSize(IBrowserFile? file, double maxSizeMB)
-                    => file?.Size < ByteSize.FromMegabytes(maxSizeMB).Bytes;
-
-        private async Task<bool> BePdfFile(IBrowserFile? file, CancellationToken cancellationToken)
-        {
-            if (file is null)
-                return false;
-
-            // Check file extension
-            if (!Path.GetExtension(file.Name).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
-                return false;
-
-            // Check MIME type
-            if (file.ContentType != "application/pdf")
-                return false;
-
-            long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes).Bytes);
-
-            // Check file signature (magic numbers)
-            using (var stream = file.OpenReadStream(maxSizeBytes, cancellationToken))
-            {
-                byte[] buffer = new byte[4];
-                await stream.ReadExactlyAsync(buffer.AsMemory(0, 4), cancellationToken);
-                string header = System.Text.Encoding.ASCII.GetString(buffer);
-                return header == "%PDF";
-            }
         }
     }
 }

@@ -23,9 +23,6 @@ public class EducationTrainingDto
     [Description("Passed")]
     public CourseCompletionStatus? CourseCompletionStatus { get; set; }
 
-    [Description("Upload Education/Training Template")]
-    public IBrowserFile? Document { get; set; }
-
     public class Validator : AbstractValidator<EducationTrainingDto>
     {
         public Validator()
