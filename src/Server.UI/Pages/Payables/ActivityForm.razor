@@ -50,7 +50,7 @@
                          SearchFunc="@SearchActivities"
                          ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
                          AdornmentColor="Color.Primary"
-                         ToStringFunc="ToStringFunc">
+                         ToStringFunc="activity => activity?.Category.Name"
             <ItemTemplate>
                 <div class="d-flex gap-2 align-center">
                     <MudChip T="string" Size="Size.Small" Text="@context.Type.Name" Color="Color.Secondary" />
@@ -231,5 +231,5 @@
 
         return Task.FromResult(result);
     }
-    private string? ToStringFunc(ActivityDefinition activity) => activity?.Category.Name;
+
 }
