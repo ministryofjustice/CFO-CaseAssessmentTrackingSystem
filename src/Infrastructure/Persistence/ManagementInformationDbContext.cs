@@ -15,6 +15,7 @@ public class ManagementInformationDbContext(DbContextOptions<ManagementInformati
 {
     public DbSet<EnrolmentPayment> EnrolmentPayments => Set<EnrolmentPayment>();
     public DbSet<InductionPayment> InductionPayments => Set<InductionPayment>();
+    public DbSet<ActivityPayment> ActivityPayments => Set<ActivityPayment>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
