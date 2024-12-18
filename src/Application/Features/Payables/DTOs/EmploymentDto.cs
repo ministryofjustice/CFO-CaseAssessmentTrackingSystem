@@ -15,7 +15,6 @@ public class EmploymentDto
     [Description("Job Title")]
     public string? JobTitle { get; set; }
 
-    [Description("Job Title Code")] 
     public string? JobTitleCode { get; set; }
 
     [Description("Salary")]
@@ -44,16 +43,7 @@ public class EmploymentDto
 
             RuleFor(c => c.JobTitle)
                 .NotNull()
-                .NotEmpty()
-                .WithMessage("You must choose a valid Job title");
-
-            When(c => string.IsNullOrEmpty(c.JobTitle)==false, () =>
-            {
-                RuleFor(c => c.JobTitleCode)
-                .NotNull()
-                .NotEmpty()
-                .WithMessage("You must choose a valid Job title");
-            });
+                .WithMessage("You must choose a Job title");
 
             When(c => c.Salary is not null, () =>
             {
