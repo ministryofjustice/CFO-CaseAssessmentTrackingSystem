@@ -27,11 +27,10 @@
                 <MudTextField Label="@Model.GetMemberDescription(x => x.EmployerName)" For="() => Model.EmployerName" @bind-Value="Model.EmployerName" />
             </MudItem>    
             <MudItem xs="12">
-                <MudAutocomplete T="string" 
+                <MudAutocomplete
                 Label="@Model.GetMemberDescription(x => x.JobTitle)" 
                 @bind-Value="Model.JobTitle"
                 @bind-Value:after="OnJobTitleValueChange"
-                Validation="@(new Func<string, string?>(ValidateJobTitle))"
                 SearchFunc="@SearchJobTitles"
                 ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
                 AdornmentColor="Color.Primary"/>
@@ -77,9 +76,10 @@
         var jobs = PicklistService.DataSource.Where(c => c.Name == Picklist.Occupation);
         Model.JobTitleCode = jobs.FirstOrDefault(i => i.Text == Model.JobTitle)?.Value;
     }
-    private Task<IEnumerable<string>> SearchJobTitles(string searchText, CancellationToken cancellationToken)
+
+    private Task<IEnumerable<string?>> SearchJobTitles(string? searchText, CancellationToken cancellationToken)
     {
-        IEnumerable<string> result;
+        IEnumerable<string?> result;
         IEnumerable<KeyValueDto> jobs = PicklistService.DataSource.Where(c => c.Name == Picklist.Occupation).ToList<KeyValueDto>();
         if (string.IsNullOrEmpty(searchText))
         {
@@ -93,9 +93,5 @@
 
         return Task.FromResult(result);
     }
-    private string? ValidateJobTitle(string jobTitle)
-    {
-        return string.IsNullOrEmpty(Model.JobTitleCode) ? "You must choose a valid Job title" : null;
-    }
-}
 
+}
