@@ -32,7 +32,7 @@
                         </MudChipSet>
                     </MudItem>
                     <MudItem xs="12">
-                        @* <MudSelect @ref="activityDropdown"
+                        <MudSelect @ref="activityDropdown"
                         T="ActivityDefinition"
                         ValueChanged="ActivityChanged"
                         Disabled="Disabled"
@@ -49,35 +49,7 @@
                                     </div>
                                 </MudSelectItem>
                             }
-                        </MudSelect> *@
-                        @*
-                        <MudAutocomplete @ref="activityDropdown"
-                            T="ActivityDefinition"
-                            ValueChanged="ActivityChanged"
-                            Disabled="Disabled"
-                            Label="@Model.GetMemberDescription(x => x.ActivityDefinition)"
-                            For="() => Model.ActivityDefinition"
-                            SearchFunc="@SearchActivities"
-                            ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
-                            AdornmentColor="Color.Primary" />
-                            *@
-                        <MudAutocomplete @ref="activityDropdown"
-                        T="ActivityDefinition"
-                        ValueChanged="ActivityChanged"
-                        Disabled="Disabled"
-                        Label="@Model.GetMemberDescription(x => x.ActivityDefinition)"
-                        For="() => Model.ActivityDefinition"
-                        SearchFunc="@SearchActivities"
-                        ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
-                        AdornmentColor="Color.Primary"
-                        ToStringFunc="ToStringFunc">
-                            <ItemTemplate>
-                                <div class="d-flex gap-2 align-center">
-                                    <MudChip T="string" Size="Size.Small" Text="@context.Type.Name" Color="Color.Secondary" />
-                                    @context.Category.Name
-                                </div>
-                            </ItemTemplate>
-                        </MudAutocomplete>
+                        </MudSelect>
                     </MudItem>
 
                     @if (hasSelectedActivityAlreadyBeenAddedToday)
@@ -137,7 +109,7 @@
 
 @code {
     IEnumerable<ActivityDefinition> activities = [];
-    MudAutocomplete<ActivityDefinition?> activityDropdown = new();
+    MudSelect<ActivityDefinition?> activityDropdown = new();
     MudForm form = new();
     IReadOnlyCollection<ActivityType> filteredTypes = [];
 
@@ -216,27 +188,9 @@
     { 
         if (activityDropdown.Value is not null)
         {
-            activityDropdown.ResetAsync();
+            activityDropdown.Clear();
         }
     }
 
     bool IsAvailableAtSelectedLocation(ActivityType type) => activities.Any(activity => activity.Type == type);
-    private Task<IEnumerable<ActivityDefinition>> SearchActivities(string searchText, CancellationToken cancellationToken)
-    {
-        IEnumerable<ActivityDefinition> result;
-        IEnumerable<ActivityDefinition> filteredActivities = activities
-                        .Where(activity => filteredTypes.Count is 0 || filteredTypes.Contains(activity.Type))
-                        .OrderBy(activity => activity.Name);
-        if (string.IsNullOrEmpty(searchText))
-        {
-            result = filteredActivities;
-        }
-        else
-        {
-            result = filteredActivities.Where(x => x.Category.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase));
-        }
-
-        return Task.FromResult(result);
-    }
-    private string? ToStringFunc(ActivityDefinition activity) => activity?.Category.Name; 
 }
