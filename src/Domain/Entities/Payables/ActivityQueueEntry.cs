@@ -2,7 +2,6 @@
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
-using Microsoft.EntityFrameworkCore;
 
 namespace Cfo.Cats.Domain.Entities.Payables
 {

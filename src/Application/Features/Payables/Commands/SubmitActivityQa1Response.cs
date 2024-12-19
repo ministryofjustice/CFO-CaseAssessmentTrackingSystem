@@ -23,7 +23,6 @@ namespace Cfo.Cats.Application.Features.Payables.Commands
             public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
             {
                 var entry = await unitOfWork.DbContext.ActivityQa1Queue
-
                     .Include(pqa => pqa.Participant)
                     .FirstOrDefaultAsync(x => x.Id == request.ActivityQueueEntryId, cancellationToken: cancellationToken);
 
@@ -65,7 +64,6 @@ namespace Cfo.Cats.Application.Features.Payables.Commands
                         .Matches(ValidationConstants.Notes)
                         .WithMessage(string.Format(ValidationConstants.NotesMessage, "Message"));
                 });
-
             }
         }
 
@@ -99,7 +97,7 @@ namespace Cfo.Cats.Application.Features.Payables.Commands
 
             private async Task<bool> MustBeOpen(Guid id, CancellationToken cancellationToken)
             {
-                var entry = await _unitOfWork.DbContext.ActivityQa1Queue.Include(c => c.Participant)
+                var entry = await _unitOfWork.DbContext.ActivityQa1Queue
                     .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
 
                 return entry is { IsCompleted: false };
@@ -121,7 +119,7 @@ namespace Cfo.Cats.Application.Features.Payables.Commands
 
             private async Task<bool> MustBeAtQa(Guid id, CancellationToken cancellationToken)
             {
-                var entry = await _unitOfWork.DbContext.ActivityQa1Queue.Include(c => c.Participant)
+                var entry = await _unitOfWork.DbContext.ActivityQa1Queue.Include(c => c.Activity)
                     .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
 
                 return entry != null && entry.Activity!.Status== ActivityStatus.SubmittedToAuthorityStatus;
@@ -142,10 +140,10 @@ namespace Cfo.Cats.Application.Features.Payables.Commands
 
             private async Task<bool> OwnerMustNotBeApprover(Command c, CancellationToken cancellationToken)
             {
-                var entry = await _unitOfWork.DbContext.ActivityQa1Queue.Include(c => c.Participant)
+                var entry = await _unitOfWork.DbContext.ActivityQa1Queue.Include(c => c.Activity)
                     .FirstOrDefaultAsync(a => a.Id == c.ActivityQueueEntryId, cancellationToken: cancellationToken);
 
-                return entry != null && entry.Participant!.OwnerId!.Equals(c.CurrentUser!.UserId) == false;
+                return entry != null && entry.Activity!.OwnerId!.Equals(c.CurrentUser!.UserId) == false;
             }
         }
     }

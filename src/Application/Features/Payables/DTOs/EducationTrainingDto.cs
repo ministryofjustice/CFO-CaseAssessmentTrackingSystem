@@ -1,3 +1,4 @@
+using Cfo.Cats.Domain.Entities.Documents;
 using Humanizer.Bytes;
 using Microsoft.AspNetCore.Components.Forms;
 
@@ -22,6 +23,9 @@ public class EducationTrainingDto
 
     [Description("Passed")]
     public CourseCompletionStatus? CourseCompletionStatus { get; set; }
+
+    [Description("Document")]
+    public Document? Document { get; set; }
 
     public class Validator : AbstractValidator<EducationTrainingDto>
     {

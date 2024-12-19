@@ -111,7 +111,7 @@ namespace Cfo.Cats.Application.Features.Payables.Commands
 
             private async Task<bool> MustBeOpen(Guid id, CancellationToken cancellationToken)
             {
-                var entry = await _unitOfWork.DbContext.ActivityQa2Queue.Include(c => c.Participant)
+                var entry = await _unitOfWork.DbContext.ActivityQa2Queue
                     .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
 
                 return entry is { IsCompleted: false };
@@ -133,7 +133,7 @@ namespace Cfo.Cats.Application.Features.Payables.Commands
 
             private async Task<bool> MustBeAtQa(Guid id, CancellationToken cancellationToken)
             {
-                var entry = await _unitOfWork.DbContext.ActivityQa2Queue.Include(c => c.Participant)
+                var entry = await _unitOfWork.DbContext.ActivityQa2Queue.Include(c => c.Activity)
                     .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
 
                 return entry != null && entry.Activity!.Status== ActivityStatus.SubmittedToAuthorityStatus;
@@ -154,7 +154,7 @@ namespace Cfo.Cats.Application.Features.Payables.Commands
 
             private async Task<bool> OwnerMustNotBeApprover(Command c, CancellationToken cancellationToken)
             {
-                var entry = await _unitOfWork.DbContext.ActivityQa2Queue.Include(c => c.Participant)
+                var entry = await _unitOfWork.DbContext.ActivityQa2Queue.Include(c => c.Activity)
                     .FirstOrDefaultAsync(a => a.Id == c.ActivityQueueEntryId, cancellationToken: cancellationToken);
 
                 return entry != null && entry.Activity!.OwnerId!.Equals(c.CurrentUser!.UserId) == false;

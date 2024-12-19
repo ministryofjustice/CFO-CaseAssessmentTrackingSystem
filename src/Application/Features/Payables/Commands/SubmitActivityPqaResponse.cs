@@ -110,7 +110,7 @@ namespace Cfo.Cats.Application.Features.Payables.Commands
 
             private async Task<bool> MustBeOpen(Guid id, CancellationToken cancellationToken)
             {
-                var entry = await _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Participant)
+                var entry = await _unitOfWork.DbContext.ActivityPqaQueue
                     .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
 
                 return entry is { IsCompleted: false };
@@ -132,12 +132,13 @@ namespace Cfo.Cats.Application.Features.Payables.Commands
 
             private async Task<bool> MustBeAtPqA(Guid id, CancellationToken cancellationToken)
             {
-                var entry = await _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Participant)
+                var entry = await _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Activity)
                     .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
 
                 return entry != null && entry.Activity!.Status == ActivityStatus.SubmittedToProviderStatus;
             }
         }
+
         public class E_OwnerShouldNotBeApprover : AbstractValidator<Command>
         {
             private readonly IUnitOfWork _unitOfWork;
@@ -152,10 +153,10 @@ namespace Cfo.Cats.Application.Features.Payables.Commands
 
             private async Task<bool> OwnerMustNotBeApprover(Command c, CancellationToken cancellationToken)
             {
-                var entry = await _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Participant)
+                var entry = await _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Activity)
                     .FirstOrDefaultAsync(a => a.Id == c.QueueEntryId, cancellationToken: cancellationToken);
 
-                return entry != null && entry.Participant!.OwnerId!.Equals(c.CurrentUser!.UserId) == false;
+                return entry != null && entry.Activity!.OwnerId!.Equals(c.CurrentUser!.UserId) == false;
             }
         }
     }
