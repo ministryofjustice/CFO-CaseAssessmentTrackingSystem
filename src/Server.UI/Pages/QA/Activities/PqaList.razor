@@ -66,17 +66,21 @@
             </div>
         </div>
     </ToolBarContent>
-    <Columns>
-       
-        @* <PropertyColumn Property="x => x.ParticipantId" Title="@L["Participant"]"> *@
-            <PropertyColumn Property="x => x.ParticipantName" Title="@L["Participant"]">
+    <Columns>              
+        <PropertyColumn Property="x => x.ParticipantName" Title="@L["Participant"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>
-                    @* <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText> *@
+                    <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>             
                 </div>
             </CellTemplate>
         </PropertyColumn>
+        @* <PropertyColumn Property="x => x.Activity" Title="@L["Activity"]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item. .Activity.Category</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn> *@
         <PropertyColumn Property="x => x.SupportWorker" Title="@L["Support Worker"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
