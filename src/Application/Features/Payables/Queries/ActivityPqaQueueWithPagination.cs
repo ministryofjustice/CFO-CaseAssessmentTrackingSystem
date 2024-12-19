@@ -25,7 +25,9 @@ namespace Cfo.Cats.Application.Features.Payables.Queries
             {
                 var query = unitOfWork.DbContext
                     .ActivityPqaQueue
+                    //.Include(a=> a.Activity)
                     .AsNoTracking();
+
 
                 var sortExpression = GetSortExpression(request);
 

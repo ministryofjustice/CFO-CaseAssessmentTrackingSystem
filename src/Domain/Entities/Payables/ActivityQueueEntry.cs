@@ -2,6 +2,7 @@
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cfo.Cats.Domain.Entities.Payables
 {
@@ -20,18 +21,17 @@ namespace Cfo.Cats.Domain.Entities.Payables
         }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.    
 
-        protected ActivityQueueEntry(Guid activityId, string partipantId)
+        protected ActivityQueueEntry(Guid activityId)
         {
             Id = Guid.CreateVersion7();
-            ActivityId = activityId;
-            ParticipantId = partipantId;
+            ActivityId = activityId;         
         }
 
         public virtual Activity? Activity { get; private set; }
 
         public virtual Tenant? Tenant { get; private set; }
 
-        public virtual Participant? Participant { get; private set; }
+        public virtual Participant? Participant { get;  set; }
 
         public IReadOnlyCollection<ActivityQueueEntryNote> Notes => _notes.AsReadOnly();
 
@@ -53,7 +53,6 @@ namespace Cfo.Cats.Domain.Entities.Payables
             return this;
         }
 
-        public string TenantId { get; set; } = default!;
-        public string ParticipantId { get; protected set; }
+        public string TenantId { get; set; } = default!;        
     }
 }
