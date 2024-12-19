@@ -20,10 +20,11 @@ namespace Cfo.Cats.Domain.Entities.Payables
         }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.    
 
-        protected ActivityQueueEntry(Guid activityId)
+        protected ActivityQueueEntry(Guid activityId, string partipantId)
         {
             Id = Guid.CreateVersion7();
             ActivityId = activityId;
+            ParticipantId = partipantId;
         }
 
         public virtual Activity? Activity { get; private set; }
@@ -53,5 +54,6 @@ namespace Cfo.Cats.Domain.Entities.Payables
         }
 
         public string TenantId { get; set; } = default!;
+        public string ParticipantId { get; protected set; }
     }
 }

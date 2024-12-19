@@ -42,16 +42,16 @@
     }
         
         <MudGrid Style="height: 100vh; width: 100%;">
-            @* <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
-                <ActivityQaDetails Participant="_activitySummaryDto"/>
+            <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
+                <ActivityQaDetails Activity="_activitySummaryDto"/>
             </MudItem>
- *@
+
             <MudItem xs="8" Style="height: 100%; width: 100%;">
                 <MudTabs>
                     <MudTabPanel Text="QA Notes">
                         <QaNotes ActivityId="@_activitySummaryDto.ActivityId" />                    
                     </MudTabPanel>
-                    <MudTabPanel Text="Attachment" Style="min-width: 185px;" BadgeColor="Color.Info" > @* BadgeData="@_activitySummaryDto..RightToWorks.Length"> *@
+                    <MudTabPanel Text="Attachment" Style="min-width: 185px;" BadgeColor="Color.Info" > 
                     <AttachmentPanel ActivitySummaryDto="_activitySummaryDto" />
                     </MudTabPanel>                
                     <MudTabPanel Text="Submission">
