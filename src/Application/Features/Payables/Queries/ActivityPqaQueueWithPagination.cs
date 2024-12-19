@@ -24,10 +24,8 @@ namespace Cfo.Cats.Application.Features.Payables.Queries
             public async Task<PaginatedData<ActivityQueueEntryDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var query = unitOfWork.DbContext
-                    .ActivityPqaQueue
-                    //.Include(a=> a.Activity)
+                    .ActivityPqaQueue                    
                     .AsNoTracking();
-
 
                 var sortExpression = GetSortExpression(request);
 
@@ -47,7 +45,7 @@ namespace Cfo.Cats.Application.Features.Payables.Queries
                 {
                     case "ParticipantId":
                         sortExpression = (x => x.Participant!.FirstName + ' ' + x.Participant.LastName);
-                        break;
+                        break;             
                     case "TenantId":
                         sortExpression = (x => x.TenantId);
                         break;
