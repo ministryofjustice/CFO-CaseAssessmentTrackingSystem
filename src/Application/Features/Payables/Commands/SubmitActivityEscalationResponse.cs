@@ -112,7 +112,7 @@ namespace Cfo.Cats.Application.Features.Payables.Commands
 
             private async Task<bool> MustBeOpen(Guid id, CancellationToken cancellationToken)
             {
-                var entry = await _unitOfWork.DbContext.ActivityEscalationQueue.Include(c => c.Participant)
+                var entry = await _unitOfWork.DbContext.ActivityEscalationQueue
                     .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
 
                 return entry is { IsCompleted: false };
@@ -134,7 +134,7 @@ namespace Cfo.Cats.Application.Features.Payables.Commands
 
             private async Task<bool> MustBeAtSubmittedToAuthority(Guid id, CancellationToken cancellationToken)
             {
-                var entry = await _unitOfWork.DbContext.ActivityEscalationQueue.Include(c => c.Participant)
+                var entry = await _unitOfWork.DbContext.ActivityEscalationQueue.Include(c => c.Activity)
                     .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
 
                 return entry != null && entry.Activity!.Status== ActivityStatus.SubmittedToAuthorityStatus;

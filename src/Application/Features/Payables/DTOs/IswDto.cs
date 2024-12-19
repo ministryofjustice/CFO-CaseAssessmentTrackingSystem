@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Domain.Entities.Documents;
 using Humanizer.Bytes;
 using Microsoft.AspNetCore.Components.Forms;
 
@@ -27,6 +28,10 @@ public class IswDto
     string TotalHoursDescription => string.Concat((int)Math.Floor(TotalHoursIntervention), " hour", Math.Floor(TotalHoursIntervention) is 1 ? string.Empty : "s");
     string TotalMinsDescription => string.Concat((int)(TotalHoursIntervention % 1 * 60), " mins");
     public string TotalHoursInterventionDescription => $"{TotalHoursDescription} {TotalMinsDescription}";
+
+
+    [Description("Document")]
+    public Document? Document { get; set; }
 
     public class Validator : AbstractValidator<IswDto>
     {

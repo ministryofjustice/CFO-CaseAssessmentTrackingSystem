@@ -40,7 +40,7 @@
         CFO Activity Queue Second Pass
     </MudText>
 
-    @if (_activitySummaryDto is null)
+    @if (_activityQaDetailsDto is null)
     {
         <MudButton OnClick="GetQueueItem" ButtonType="ButtonType.Button" StartIcon="@Icons.Material.Filled.QueuePlayNext"
         Variant="Variant.Outlined" Color="Color.Primary">
@@ -48,7 +48,7 @@
         </MudButton>
     }
 
-    @if (_activitySummaryDto is not null && _activitySummaryDto.Status== ActivityStatus.SubmittedToAuthorityStatus)
+    @if (_activityQaDetailsDto is not null && _activityQaDetailsDto.Status== ActivityStatus.SubmittedToAuthorityStatus)
     {
 
         @if (_queueEntry!.IsAccepted)
@@ -59,17 +59,14 @@
         }
 
         <MudGrid Style="height: 100vh; width: 100%;">
-            @* <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
-                <ParticipantQaDetails Participant="_participantDto" />
-            </MudItem> *@
             <MudItem xs="8" Style="height: 100%; width: 100%;">
                 <MudTabs>
                     <MudTabPanel Text="QA Notes">
-                        <QaNotes ActivityId="@_activitySummaryDto.ActivityId" />
+                        <QaNotes ActivityId="@_activityQaDetailsDto.ActivityId" />
                     </MudTabPanel>
 
                     <MudTabPanel Text="Attachment" Style="min-width: 185px;" BadgeColor="Color.Info">                        
-                        <AttachmentPanel ActivitySummaryDto="_activitySummaryDto" />
+                        <AttachmentTabPanel ActivityQaDetailsDto="_activityQaDetailsDto" />
                     </MudTabPanel>
                     <MudTabPanel Text="Submission">
                         @if (_queueEntry.IsCompleted == false)
@@ -140,8 +137,7 @@
     private ActivityQaExternalMessageWarning? warningMessage;
     private MudForm? _form;
     private ActivityQueueEntryDto? _queueEntry = null;
-    //private ActivitySummaryDto? _activitySummaryDto = null;
-    private ActivityQaDetailsDto? _activitySummaryDto = null;
+    private ActivityQaDetailsDto? _activityQaDetailsDto = null;
     
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; } = null!;
@@ -161,12 +157,11 @@
         {
             _queueEntry = result.Data!;
 
-            //_activitySummaryDto = await GetNewMediator().Send(new GetActivityById.Query()
             var activity = await GetNewMediator().Send(new GetActivityById.Query()
                 {
                     Id = _queueEntry.ActivityId
                 });
-            _activitySummaryDto = Mapper.Map<ActivityQaDetailsDto>(activity);
+            _activityQaDetailsDto = Mapper.Map<ActivityQaDetailsDto>(activity);
 
             Command = new SubmitActivityQa2Response.Command()
                 {

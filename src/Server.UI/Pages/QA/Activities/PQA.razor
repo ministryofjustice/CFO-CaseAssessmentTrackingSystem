@@ -29,10 +29,10 @@
         display: block;
         margin-bottom: 0.5rem; 
     }
-    
+
 </style>
 
-@if (_activitySummaryDto is not null && _activitySummaryDto.Status == ActivityStatus.SubmittedToProviderStatus)
+@if (_activityQaDetailsDto is not null && _activityQaDetailsDto.Status == ActivityStatus.SubmittedToProviderStatus)
 {
     @if (_queueEntry!.IsAccepted || _queueEntry.IsCompleted)
     {
@@ -40,63 +40,62 @@
             This entry has already been processed
         </MudAlert>
     }
-        
-        <MudGrid Style="height: 100vh; width: 100%;">
-            <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
-                <ActivityQaDetails Activity="_activitySummaryDto"/>
-            </MudItem>
 
-            <MudItem xs="8" Style="height: 100%; width: 100%;">
-                <MudTabs>
-                    <MudTabPanel Text="QA Notes">
-                        <QaNotes ActivityId="@_activitySummaryDto.ActivityId" />                    
-                    </MudTabPanel>
-                    <MudTabPanel Text="Attachment" Style="min-width: 185px;" BadgeColor="Color.Info" > 
-                    <AttachmentPanel ActivitySummaryDto="_activitySummaryDto" />
-                    </MudTabPanel>                
-                    <MudTabPanel Text="Submission">
-                        @if (_queueEntry.IsCompleted == false)
-                        {
-                            <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
-                                <MudItem xs="12">
-                                    <MudRadioGroup T="SubmitActivityPqaResponse.PqaResponse?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
+    <MudGrid Style="height: 100vh; width: 100%;">
+        <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
+            <ActivityQaDetails Activity="_activityQaDetailsDto"/>
+        </MudItem>
+
+        <MudItem xs="8" Style="height: 100%; width: 100%;">
+            <MudTabs>
+                <MudTabPanel Text="QA Notes">
+                    <QaNotes ActivityId="@_activityQaDetailsDto.ActivityId" />                    
+                </MudTabPanel>
+                <MudTabPanel Text="Attachment" Style="min-width: 185px;" BadgeColor="Color.Info" > 
+                    <AttachmentTabPanel ActivityQaDetailsDto="_activityQaDetailsDto" />
+                </MudTabPanel>                
+                <MudTabPanel Text="Submission">
+                    @if (_queueEntry.IsCompleted == false)
+                    {
+                        <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
+                            <MudItem xs="12">
+                                <MudRadioGroup T="SubmitActivityPqaResponse.PqaResponse?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
                                     <MudRadio T="SubmitActivityPqaResponse.PqaResponse?" Value="SubmitActivityPqaResponse.PqaResponse.Accept" Color="Color.Primary">
-                                            Accept
-                                        </MudRadio>
+                                        Accept
+                                    </MudRadio>
                                     <MudRadio T="SubmitActivityPqaResponse.PqaResponse?" Value="SubmitActivityPqaResponse.PqaResponse.Return" Color="Color.Secondary">
-                                            Return
-                                        </MudRadio>
+                                        Return
+                                    </MudRadio>
                                     <MudRadio T="SubmitActivityPqaResponse.PqaResponse?" Value="SubmitActivityPqaResponse.PqaResponse.Comment" Color="Color.Secondary">
-                                            Comment / Defer
-                                        </MudRadio>
-                                    </MudRadioGroup>
-                                </MudItem>
+                                        Comment / Defer
+                                    </MudRadio>
+                                </MudRadioGroup>
+                            </MudItem>
 
-                                <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" Class="mt-4" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
-                                <MudText Class="ml-2">Characters: @CharacterCount / 1000</MudText>
-                            </MudForm>
-                            <MudContainer Class="d-flex px-0 pt-8">
-                                <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
-                            </MudContainer>
-                        }
-                        else
-                        {
-                            <MudAlert Variant="Variant.Outlined" Severity="Severity.Info">
-                                This entry has already been processed
-                            </MudAlert>
-                        }
-                    </MudTabPanel>
-                </MudTabs>
-            </MudItem>
-        </MudGrid>    
+                            <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" Class="mt-4" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
+                            <MudText Class="ml-2">Characters: @CharacterCount / 1000</MudText>
+                        </MudForm>
+                        <MudContainer Class="d-flex px-0 pt-8">
+                            <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
+                        </MudContainer>
+                    }
+                    else
+                    {
+                        <MudAlert Variant="Variant.Outlined" Severity="Severity.Info">
+                            This entry has already been processed
+                        </MudAlert>
+                    }
+                </MudTabPanel>
+            </MudTabs>
+        </MudItem>
+    </MudGrid>    
 }
 
 @code {
     private MudForm? _form;
     private ActivityQueueEntryDto? _queueEntry;
-//    private ActivitySummaryDto? _activitySummaryDto;
-    private ActivityQaDetailsDto? _activitySummaryDto = null;
-    
+    private ActivityQaDetailsDto? _activityQaDetailsDto = null;
+
     [Parameter] public Guid Id { get; set; }
 
     [CascadingParameter] public UserProfile? UserProfile { get; set; }
@@ -105,7 +104,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (_activitySummaryDto is null)
+        if (_activityQaDetailsDto is null)
         {
             var result = await GetNewMediator().Send(new GetActivityPqaEntryById.Query
             {
@@ -117,20 +116,14 @@
             {
                 _queueEntry = result.Data!;
 
-                //_activitySummaryDto = await GetNewMediator().Send(new GetActivityById.Query()
                 var activity = await GetNewMediator().Send(new GetActivityById.Query()
                 {
                     Id = _queueEntry.ActivityId
-                });
-                _activitySummaryDto = Mapper.Map<ActivityQaDetailsDto>(activity);
-//                model.ActivityId = ActivityId;
+                });            
 
-                // _participantDto = await GetNewMediator().Send(new GetParticipantById.Query
-                //         {
-                //             Id = _queueEntry.ParticipantId
-                //         });
+                _activityQaDetailsDto = Mapper.Map<ActivityQaDetailsDto>(activity);
 
-
+     
                 Command = new SubmitActivityPqaResponse.Command
                 {
                     QueueEntryId = Id,

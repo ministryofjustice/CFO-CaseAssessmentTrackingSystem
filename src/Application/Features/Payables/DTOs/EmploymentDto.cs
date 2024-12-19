@@ -1,6 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Validators;
-using Humanizer.Bytes;
-using Microsoft.AspNetCore.Components.Forms;
+﻿using Cfo.Cats.Domain.Entities.Documents;
 
 namespace Cfo.Cats.Application.Features.Payables.DTOs;
 
@@ -26,6 +24,9 @@ public class EmploymentDto
 
     [Description("Start date of employment")]
     public DateTime? EmploymentCommenced { get; set; }
+
+    [Description("Document")]
+    public Document? Document { get; set; }
 
     public class Validator : AbstractValidator<EmploymentDto>
     {

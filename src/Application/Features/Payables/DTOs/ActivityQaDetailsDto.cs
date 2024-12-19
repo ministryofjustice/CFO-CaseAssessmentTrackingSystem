@@ -42,12 +42,16 @@ public class ActivityQaDetailsDto
         public Mapping()
         {
             CreateMap<EmploymentActivity, EmploymentDto>();
-            CreateMap<EducationTrainingActivity, EducationTrainingDto>();
-            CreateMap<ISWActivity, IswDto>();
 
+            CreateMap<EducationTrainingActivity, EducationTrainingDto>();
+
+            CreateMap<ISWActivity, IswDto>();
+            
             CreateMap<Activity, ActivityQaDetailsDto>()
                 .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.TookPlaceAtLocation))
                 .ForPath(dest => dest.EmploymentTemplate, opt => opt.MapFrom(src => src as EmploymentActivity))
+                    
+
                 .ForPath(dest => dest.EducationTrainingTemplate, opt => opt.MapFrom(src => src as EducationTrainingActivity))
                 .ForPath(dest => dest.ISWTemplate, opt => opt.MapFrom(src => src as ISWActivity));
         }

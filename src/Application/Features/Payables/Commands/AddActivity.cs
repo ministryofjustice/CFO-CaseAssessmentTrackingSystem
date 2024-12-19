@@ -162,6 +162,8 @@ public static class AddActivity
                 templatedActivity.AddTemplate(document);
             }
 
+            activity.OwnerId = currentUserService.UserId;
+
             if (request.ActivityId is null)
             {
                 await unitOfWork.DbContext.Activities.AddAsync(activity, cancellationToken);
