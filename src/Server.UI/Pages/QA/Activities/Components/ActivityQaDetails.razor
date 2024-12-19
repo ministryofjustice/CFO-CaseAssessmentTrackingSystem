@@ -1,0 +1,60 @@
+﻿@using Cfo.Cats.Application.Features.Payables.DTOs
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Payables.Components
+
+<MudForm>
+    <MudList T="string">        
+        <MudListSubheader>
+            <ChildContent>
+                <MudText Typo="Typo.h5">Activity Confirmation</MudText>
+            </ChildContent>
+        </MudListSubheader>
+        <MudDivider />
+        <MudListItem>
+            <MudText Typo="Typo.body1">CRN</MudText>
+            <MudText Typo="Typo.body2">@Activity.Participant!.Id</MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText Typo="Typo.body1">Participant</MudText>
+            <MudText Typo="Typo.body2">@Activity.Participant!.FirstName @Activity.Participant!.LastName</MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText Typo="Typo.body1">Location</MudText>
+            <MudText Typo="Typo.body2">@Activity.Location!.Name</MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText Typo="Typo.body1">Activity </MudText>
+            <MudText Typo="Typo.body2">@Activity.Definition!.Name</MudText>
+        </MudListItem>
+        <MudListItem>            
+            <MudText Typo="Typo.body1">Date activity took place</MudText>
+            <MudText Typo="Typo.body2">@Activity.CommencedOn</MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText Typo="Typo.body1">AdditionalInformation</MudText>
+            <MudText Typo="Typo.body2">@Activity.AdditionalInformation</MudText>
+        </MudListItem>
+        @if (Activity.Definition is { Classification.RequiresFurtherInformation: true })
+        {
+            <MudListItem Disabled="true">
+                @if (Activity.Definition.Classification == ClassificationType.Employment)
+                {
+                    <Employment Model="Activity.EmploymentTemplate" />
+                }
+                else if (Activity.Definition.Classification == ClassificationType.EducationAndTraining)
+                {
+                    <EducationTraining Model="Activity.EducationTrainingTemplate" />
+                }
+                else if (Activity.Definition.Classification == ClassificationType.ISWActivity)
+                {
+                    <Isw Model="Activity.ISWTemplate" />
+                }
+            </MudListItem>
+        }
+    </MudList>        
+</MudForm>        
+
+@code{
+    [Parameter, EditorRequired]
+    public ActivityQaDetailsDto Activity { get; set; } = default!;
+}

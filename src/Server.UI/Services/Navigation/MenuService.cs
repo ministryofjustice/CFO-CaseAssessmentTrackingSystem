@@ -124,7 +124,7 @@ public class MenuService : IMenuService
                             {
                                 Title = "Queue Management",
                                 PageStatus = PageStatus.Completed,
-                                Href="/pages/qa/servicedesk/activities",
+                                Href="/pages/qa/activities/activities",
                                 Roles = [ RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
                             },
                             new()

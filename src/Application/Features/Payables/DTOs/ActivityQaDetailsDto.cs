@@ -9,8 +9,6 @@ public class ActivityQaDetailsDto
 {
     public Guid? ActivityId { get; set; }
 
-    //public required Guid Id { get; se0t; }
-    //public required string TookPlaceAtLocationName { get; set; }
     public required Guid TaskId { get; set; }
     public required DateTime Created { get; set; }
     public required ActivityStatus Status { get; set; }     

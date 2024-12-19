@@ -8,9 +8,11 @@ namespace Cfo.Cats.Application.Features.Payables.EventHandlers
     {
         public async Task Handle(ActivityQa1EntryCompletedDomainEvent notification, CancellationToken cancellationToken)
         {
-            var entry = ActivityQa2QueueEntry.Create(notification.Entry.Id);
-            entry.TenantId = notification.Entry!.Participant!.Owner!.TenantId!;
-            await unitOfWork.DbContext.ActivityQa2Queue.AddAsync(entry, cancellationToken);
+            var queueEntry = ActivityQa2QueueEntry.Create(notification.Entry.Id);
+            queueEntry.TenantId = notification.Entry!.Participant!.Owner!.TenantId!;
+            queueEntry.Participant!.Id = notification.Entry!.Participant!.Id;
+            
+            await unitOfWork.DbContext.ActivityQa2Queue.AddAsync(queueEntry, cancellationToken);
         }
     }
 }

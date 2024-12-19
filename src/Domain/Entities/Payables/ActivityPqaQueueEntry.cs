@@ -5,15 +5,15 @@ namespace Cfo.Cats.Domain.Entities.Payables
     public class ActivityPqaQueueEntry : ActivityQueueEntry
     {
         private ActivityPqaQueueEntry()
-            : this(Guid.Empty)
+            : this(Guid.Empty,string.Empty)
         {
         }
 
-        private ActivityPqaQueueEntry(Guid activityId)
-            : base(activityId) =>
+        private ActivityPqaQueueEntry(Guid activityId,string participantId)
+            : base(activityId, participantId) =>
             AddDomainEvent(new ActivityPqaQueueCreatedDomainEvent(this));
 
-        public static ActivityPqaQueueEntry Create(Guid activityId) => new(activityId);
+        public static ActivityPqaQueueEntry Create(Guid activityId,string participantId) => new(activityId, participantId);
 
         public override ActivityQueueEntry Accept()
         {
