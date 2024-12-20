@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Features.Locations.DTOs;
+using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Entities.Payables;
 using Microsoft.AspNetCore.Components.Forms;
@@ -35,7 +36,7 @@ public class ActivityQaDetailsDto
     public IswDto ISWTemplate { get; set; } = new();
 
     [Description("Upload Template")]
-    public IBrowserFile? Document { get; set; }
+    public Document? Document { get; set; }
 
     class Mapping : Profile
     {
@@ -46,14 +47,13 @@ public class ActivityQaDetailsDto
             CreateMap<EducationTrainingActivity, EducationTrainingDto>();
 
             CreateMap<ISWActivity, IswDto>();
-            
+
             CreateMap<Activity, ActivityQaDetailsDto>()
                 .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.TookPlaceAtLocation))
                 .ForPath(dest => dest.EmploymentTemplate, opt => opt.MapFrom(src => src as EmploymentActivity))
-                    
-
                 .ForPath(dest => dest.EducationTrainingTemplate, opt => opt.MapFrom(src => src as EducationTrainingActivity))
-                .ForPath(dest => dest.ISWTemplate, opt => opt.MapFrom(src => src as ISWActivity));
+                .ForPath(dest => dest.ISWTemplate, opt => opt.MapFrom(src => src as ISWActivity))
+                .ForPath(dest => dest.Document, opt => opt.MapFrom(src => (src as ActivityWithTemplate)!.Document));
         }
     }
 }

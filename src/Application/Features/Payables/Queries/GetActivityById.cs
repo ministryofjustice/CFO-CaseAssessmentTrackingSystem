@@ -19,8 +19,13 @@ public static class GetActivityById
         {
             var activity = await unitOfWork.DbContext.Activities
                 .Include(a => a.TookPlaceAtLocation)
-                .Include(a=>a.Participant)
+                .Include(a => a.Participant)
                 .SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
+
+            if(activity is ActivityWithTemplate x)
+            {
+                await unitOfWork.DbContext.Activities.Entry(x).Reference(a => (a as ActivityWithTemplate)!.Document).LoadAsync();
+            }
 
             return activity;
         }

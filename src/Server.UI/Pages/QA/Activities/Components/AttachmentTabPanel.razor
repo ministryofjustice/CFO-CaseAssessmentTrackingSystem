@@ -1,38 +1,15 @@
 ﻿@using Cfo.Cats.Application.Features.Documents.Queries
 @using Cfo.Cats.Application.Features.Payables.DTOs
 @using Cfo.Cats.Domain.Common.Enums
+
 @inherits CatsComponentBase
 
-@ActivityQaDetailsDto!.Document!.Name.ToString() (@ActivityQaDetailsDto.Document.LastModified)
-
-@if (_selectedDocument != Guid.Empty)
+@if (ActivityQaDetailsDto.Document is not null)
 {
-    <DocumentDisplay DocumentId="_selectedDocument" />
+    <DocumentDisplay DocumentId="ActivityQaDetailsDto.Document.Id" />
 }
 
 @code{
-    private Guid _selectedDocument = Guid.Empty;
-
     [Parameter] [EditorRequired]
     public ActivityQaDetailsDto ActivityQaDetailsDto { get; set; } = default!;
-
-    protected override void OnInitialized()
-    {
-        //THE DOUCMENT IS ALWAYS EMPTY
-        if (_selectedDocument == Guid.Empty)
-        {
-            if (ActivityQaDetailsDto!.Definition!.Classification == ClassificationType.Employment)
-            {
-                _selectedDocument = ActivityQaDetailsDto!.EmploymentTemplate!.Document!.Id;
-            }
-            else if (ActivityQaDetailsDto!.Definition.Classification == ClassificationType.EducationAndTraining)
-            {
-                _selectedDocument = ActivityQaDetailsDto!.EducationTrainingTemplate!.Document!.Id;
-            }
-            else if (ActivityQaDetailsDto!.Definition.Classification == ClassificationType.ISWActivity)
-            {
-                _selectedDocument = ActivityQaDetailsDto!.ISWTemplate!.Document!.Id;
-            }
-        }
-    }
 }
