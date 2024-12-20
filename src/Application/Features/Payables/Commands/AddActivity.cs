@@ -1,6 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Application.Features.Documents.DTOs;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Payables.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -151,10 +150,27 @@ public static class AddActivity
             if (activity is ActivityWithTemplate templatedActivity && request.Document is not null)
             {
                 var document = Document
-                    .Create(request.Document.Name, $"Activity Template for {request.ParticipantId}", DocumentType.PDF)
-                    .SetURL($"{request.ParticipantId}/{templatedActivity.DocumentLocation}");
+                    .Create(request.Document.Name,
+                            $"Activity Template for {request.ParticipantId}",
+                            DocumentType.PDF);
+                
+                string path = $"{request.ParticipantId}/{templatedActivity.DocumentLocation}";
 
-                if (await UploadDocumentAsync(request.Document, document.URL!, cancellationToken) is not { Succeeded: true })
+                long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes).Bytes);
+                await using var stream = request.Document.OpenReadStream(maxSizeBytes);
+                using var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream, cancellationToken);
+
+                var uploadRequest = new UploadRequest(request.Document.Name, UploadType.Document, memoryStream.ToArray());
+
+                var result = await uploadService.UploadAsync(path, uploadRequest);
+
+                if (result.Succeeded)
+                {
+                    document.SetURL(result);                 
+                    await unitOfWork.DbContext.Documents.AddAsync(document);
+                }                
+                else                
                 {
                     return Result.Failure("Failed to upload template");
                 }
@@ -180,19 +196,6 @@ public static class AddActivity
 
             return Result.Success();
         }
-
-        async Task<Result<string>> UploadDocumentAsync(IBrowserFile file, string path, CancellationToken cancellationToken)
-        {
-            long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.RightToWork.MaximumSizeInMegabytes).Bytes);
-            await using var stream = file.OpenReadStream(maxSizeBytes, cancellationToken);
-            using var memoryStream = new MemoryStream();
-            await stream.CopyToAsync(memoryStream, cancellationToken);
-
-            var uploadRequest = new UploadRequest(file.Name, UploadType.Document, memoryStream.ToArray());
-
-            return await uploadService.UploadAsync(path, uploadRequest);
-        }
-
     }
 
     public class Validator : AbstractValidator<Command>
