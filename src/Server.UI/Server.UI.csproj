@@ -18,10 +18,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ActualLab.Fusion" Version="9.6.2" />
-        <PackageReference Include="ActualLab.Fusion.Blazor" Version="9.6.2" />
-        <PackageReference Include="ActualLab.Fusion.Ext.Services" Version="9.6.2" />
-        <PackageReference Include="ActualLab.Generators" Version="9.6.2">
+        <PackageReference Include="ActualLab.Fusion" Version="9.7.6" />
+        <PackageReference Include="ActualLab.Fusion.Blazor" Version="9.7.6" />
+        <PackageReference Include="ActualLab.Fusion.Ext.Services" Version="9.7.6" />
+        <PackageReference Include="ActualLab.Generators" Version="9.7.6">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -38,14 +38,14 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <!-- Direct Reference to MessagePack (resolves ActualLab vulnerable transitive dependency issue) -->
-        <PackageReference Include="MessagePack" Version="3.0.300" />
+        <PackageReference Include="MessagePack" Version="3.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="MudBlazor" Version="7.15.0" />
-        <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="5.1.0" />
+        <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj" />
