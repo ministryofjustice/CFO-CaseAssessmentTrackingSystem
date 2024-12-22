@@ -29,13 +29,14 @@
                  FixedFooter="true"
                  Virtualize="true"
                  @bind-RowsPerPage="_defaultPageSize"
-                 Height="calc(100vh - 330px)"
+                 Height="calc(100vh - 260px)"
                  Loading="@_loading"
                  MultiSelection="true"
                  @bind-SelectedItems="_selectedItems"
                  @bind-SelectedItem="_currentDto"
                  Hover="true"
-                 @ref="_table">
+                 @ref="_table"
+                 Breakpoint="Breakpoint.Sm">
         <ToolBarContent>
             <div class="d-flex align-start flex-grow-1">
                 <div class="d-flex gap-4">
