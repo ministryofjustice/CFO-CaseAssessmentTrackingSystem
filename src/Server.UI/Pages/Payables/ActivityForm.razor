@@ -79,12 +79,7 @@
         ImmediateText="true"
         Editable="true" />
     </MudItem>
-    <MudItem xs="12">
-        <MudTextField @bind-Value="Model.AdditionalInformation"
-        Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
-        For="() => Model.AdditionalInformation"
-        Lines="5" />
-    </MudItem>
+
     @if (Model.Definition is { Classification.RequiresFurtherInformation: true })
     {
         <MudItem xs="12">
@@ -96,7 +91,7 @@
             }
             else if (Model.Definition.Classification == ClassificationType.EducationAndTraining)
             {
-                <EducationTraining Model="Model.EducationTrainingTemplate" />
+                <EducationTraining Model="Model.EducationTrainingTemplate" MinCourseCommencedDate="Model.CommencedOn" />
             }
             else if (Model.Definition.Classification == ClassificationType.ISWActivity)
             {
@@ -142,6 +137,12 @@
 
         </MudItem>
     }
+    <MudItem xs="12">
+        <MudTextField @bind-Value="Model.AdditionalInformation"
+                      Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
+                      For="() => Model.AdditionalInformation"
+                      Lines="5" />
+    </MudItem>
     @if(Model.Definition is { RequiresQa: true })
     {
         <MudItem xs="12">
