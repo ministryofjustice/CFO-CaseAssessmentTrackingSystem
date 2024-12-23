@@ -1,20 +1,25 @@
-﻿using Cfo.Cats.Domain.Events.QA.Payables;
+﻿using Cfo.Cats.Domain.Entities.Participants;
+using Cfo.Cats.Domain.Events.QA.Payables;
 
 namespace Cfo.Cats.Domain.Entities.Payables
 {    
     public class ActivityQa2QueueEntry : ActivityQueueEntry
     {
-        private ActivityQa2QueueEntry() : this(Guid.Empty)
+        private ActivityQa2QueueEntry() : base(Guid.Empty)
         {
         }
 
         public bool IsEscalated { get; private set; }
 
-        private ActivityQa2QueueEntry(Guid activityId) : base(activityId)
-            => AddDomainEvent(new ActivityQa2QueueCreatedDomainEvent(this));
+        private ActivityQa2QueueEntry(Guid activityId, string tenantId, Participant participant) : base(activityId)
+        {
+            TenantId = tenantId;
+            Participant = participant;
+            AddDomainEvent(new ActivityQa2QueueCreatedDomainEvent(this));
+        }
 
-        public static ActivityQa2QueueEntry Create(Guid activityId)
-            => new(activityId);
+        public static ActivityQa2QueueEntry Create(Guid activityId, string tenantId, Participant participant)
+            => new(activityId, tenantId, participant);
 
         public override ActivityQueueEntry Accept()
         {
