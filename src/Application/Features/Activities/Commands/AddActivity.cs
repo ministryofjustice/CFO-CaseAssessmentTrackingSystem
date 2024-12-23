@@ -42,9 +42,9 @@ public static class AddActivity
         {
             public Mapping()
             {
-                CreateMap<EmploymentActivity, EmploymentDto>();
-                CreateMap<EducationTrainingActivity, EducationTrainingDto>();
-                CreateMap<ISWActivity, IswDto>();
+                //CreateMap<EmploymentActivity, EmploymentDto>();
+                //CreateMap<EducationTrainingActivity, EducationTrainingDto>();
+                //CreateMap<ISWActivity, IswDto>();
 
                 CreateMap<Activity, Command>()
                     .ForMember(dest => dest.ActivityId, opt => opt.MapFrom(src => src.Id))
