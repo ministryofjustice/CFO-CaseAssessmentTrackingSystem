@@ -53,6 +53,333 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.ToTable("OutboxMessage", "Outbox");
                 });
 
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.Activity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AdditionalInformation")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CommencedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Definition")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EditorId")
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ObjectiveId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("ParticipantCurrentContractId")
+                        .HasColumnType("nvarchar(12)");
+
+                    b.Property<int>("ParticipantCurrentLocationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ParticipantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<int>("ParticipantStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TookPlaceAtContractId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(12)");
+
+                    b.Property<int>("TookPlaceAtLocationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EditorId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ParticipantCurrentContractId");
+
+                    b.HasIndex("ParticipantCurrentLocationId");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TookPlaceAtContractId");
+
+                    b.HasIndex("TookPlaceAtLocationId");
+
+                    b.ToTable("Activity", "Activities");
+
+                    b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.ActivityEscalationQueueEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ActivityId")
+                        .HasMaxLength(36)
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EditorId")
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("ParticipantId")
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
+
+                    b.HasIndex("EditorId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("ActivityEscalationQueue", "Activities");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.ActivityPqaQueueEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ActivityId")
+                        .HasMaxLength(36)
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EditorId")
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("ParticipantId")
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
+
+                    b.HasIndex("EditorId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("ActivityPqaQueue", "Activities");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.ActivityQa1QueueEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ActivityId")
+                        .HasMaxLength(36)
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EditorId")
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("ParticipantId")
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
+
+                    b.HasIndex("EditorId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("ActivityQa1Queue", "Activities");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.ActivityQa2QueueEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ActivityId")
+                        .HasMaxLength(36)
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EditorId")
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEscalated")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("ParticipantId")
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
+
+                    b.HasIndex("EditorId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("ActivityQa2Queue", "Activities");
+                });
+
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.Contract", b =>
                 {
                     b.Property<string>("Id")
@@ -1515,333 +1842,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.ToTable("Timeline", "Participant");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.Activity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AdditionalInformation")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("Category")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CommencedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Definition")
-                        .HasColumnType("int");
-
-                    b.Property<string>("EditorId")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ObjectiveId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("ParticipantCurrentContractId")
-                        .HasColumnType("nvarchar(12)");
-
-                    b.Property<int>("ParticipantCurrentLocationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<int>("ParticipantStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("TaskId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("TookPlaceAtContractId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(12)");
-
-                    b.Property<int>("TookPlaceAtLocationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EditorId");
-
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("ParticipantCurrentContractId");
-
-                    b.HasIndex("ParticipantCurrentLocationId");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.HasIndex("TenantId");
-
-                    b.HasIndex("TookPlaceAtContractId");
-
-                    b.HasIndex("TookPlaceAtLocationId");
-
-                    b.ToTable("Activities", "Payables");
-
-                    b.UseTptMappingStrategy();
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.ActivityEscalationQueueEntry", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ActivityId")
-                        .HasMaxLength(36)
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EditorId")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<bool>("IsAccepted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("ParticipantId")
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityId");
-
-                    b.HasIndex("EditorId");
-
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("ActivityEscalationQueue", "Payables");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.ActivityPqaQueueEntry", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ActivityId")
-                        .HasMaxLength(36)
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EditorId")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<bool>("IsAccepted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("ParticipantId")
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityId");
-
-                    b.HasIndex("EditorId");
-
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("ActivityPqaQueue", "Payables");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.ActivityQa1QueueEntry", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ActivityId")
-                        .HasMaxLength(36)
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EditorId")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<bool>("IsAccepted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("ParticipantId")
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityId");
-
-                    b.HasIndex("EditorId");
-
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("ActivityQa1Queue", "Payables");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.ActivityQa2QueueEntry", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ActivityId")
-                        .HasMaxLength(36)
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EditorId")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<bool>("IsAccepted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEscalated")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("ParticipantId")
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityId");
-
-                    b.HasIndex("EditorId");
-
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("ActivityQa2Queue", "Payables");
-                });
-
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")
@@ -2209,9 +2209,9 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.ToTable("TenantLocation", "Configuration");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.EducationTrainingActivity", b =>
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.EducationTrainingActivity", b =>
                 {
-                    b.HasBaseType("Cfo.Cats.Domain.Entities.Payables.Activity");
+                    b.HasBaseType("Cfo.Cats.Domain.Entities.Activities.Activity");
 
                     b.Property<DateTime>("CourseCommencedOn")
                         .HasColumnType("datetime2");
@@ -2238,12 +2238,12 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasIndex("DocumentId");
 
-                    b.ToTable("EducationTrainingActivities", "Payables");
+                    b.ToTable("EducationTrainingActivity", "Activities");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.EmploymentActivity", b =>
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.EmploymentActivity", b =>
                 {
-                    b.HasBaseType("Cfo.Cats.Domain.Entities.Payables.Activity");
+                    b.HasBaseType("Cfo.Cats.Domain.Entities.Activities.Activity");
 
                     b.Property<Guid>("DocumentId")
                         .HasColumnType("uniqueidentifier");
@@ -2275,12 +2275,12 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasIndex("DocumentId");
 
-                    b.ToTable("EmploymentActivities", "Payables");
+                    b.ToTable("EmploymentActivity", "Activities");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.ISWActivity", b =>
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.ISWActivity", b =>
                 {
-                    b.HasBaseType("Cfo.Cats.Domain.Entities.Payables.Activity");
+                    b.HasBaseType("Cfo.Cats.Domain.Entities.Activities.Activity");
 
                     b.Property<DateTime>("BaselineAchievedOn")
                         .HasColumnType("datetime2");
@@ -2302,14 +2302,495 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
 
                     b.HasIndex("DocumentId");
 
-                    b.ToTable("ISWActivities", "Payables");
+                    b.ToTable("IswActivity", "Activities");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.NonISWActivity", b =>
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.NonISWActivity", b =>
                 {
-                    b.HasBaseType("Cfo.Cats.Domain.Entities.Payables.Activity");
+                    b.HasBaseType("Cfo.Cats.Domain.Entities.Activities.Activity");
 
-                    b.ToTable("NonISWActivities", "Payables");
+                    b.ToTable("NonIsqActivity", "Activities");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.Activity", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
+                        .WithMany()
+                        .HasForeignKey("EditorId");
+
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Contract", "ParticipantCurrentContract")
+                        .WithMany()
+                        .HasForeignKey("ParticipantCurrentContractId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "ParticipantCurrentLocation")
+                        .WithMany()
+                        .HasForeignKey("ParticipantCurrentLocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", "Participant")
+                        .WithMany()
+                        .HasForeignKey("ParticipantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", null)
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Contract", "TookPlaceAtContract")
+                        .WithMany()
+                        .HasForeignKey("TookPlaceAtContractId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "TookPlaceAtLocation")
+                        .WithMany()
+                        .HasForeignKey("TookPlaceAtLocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Editor");
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("Participant");
+
+                    b.Navigation("ParticipantCurrentContract");
+
+                    b.Navigation("ParticipantCurrentLocation");
+
+                    b.Navigation("TookPlaceAtContract");
+
+                    b.Navigation("TookPlaceAtLocation");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.ActivityEscalationQueueEntry", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Entities.Activities.Activity", "Activity")
+                        .WithMany()
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
+                        .WithMany()
+                        .HasForeignKey("EditorId");
+
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", "Participant")
+                        .WithMany()
+                        .HasForeignKey("ParticipantId");
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("Cfo.Cats.Domain.Entities.Activities.ActivityQueueEntryNote", "Notes", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
+
+                            b1.Property<Guid>("ActivityEscalationQueueEntryId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("CallReference")
+                                .HasMaxLength(20)
+                                .HasColumnType("nvarchar(20)");
+
+                            b1.Property<DateTime?>("Created")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("CreatedBy")
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
+
+                            b1.Property<bool>("IsExternal")
+                                .HasColumnType("bit");
+
+                            b1.Property<DateTime?>("LastModified")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("LastModifiedBy")
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
+
+                            b1.Property<string>("Message")
+                                .IsRequired()
+                                .HasMaxLength(1000)
+                                .HasColumnType("nvarchar(1000)");
+
+                            b1.Property<string>("TenantId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("ActivityEscalationQueueEntryId");
+
+                            b1.HasIndex("CreatedBy");
+
+                            b1.HasIndex("LastModifiedBy");
+
+                            b1.ToTable("EscalationNote", "Activities");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ActivityEscalationQueueEntryId");
+
+                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CreatedByUser")
+                                .WithMany()
+                                .HasForeignKey("CreatedBy");
+
+                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "LastModifiedByUser")
+                                .WithMany()
+                                .HasForeignKey("LastModifiedBy");
+
+                            b1.Navigation("CreatedByUser");
+
+                            b1.Navigation("LastModifiedByUser");
+                        });
+
+                    b.Navigation("Activity");
+
+                    b.Navigation("Editor");
+
+                    b.Navigation("Notes");
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("Participant");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.ActivityPqaQueueEntry", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Entities.Activities.Activity", "Activity")
+                        .WithMany()
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
+                        .WithMany()
+                        .HasForeignKey("EditorId");
+
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", "Participant")
+                        .WithMany()
+                        .HasForeignKey("ParticipantId");
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("Cfo.Cats.Domain.Entities.Activities.ActivityQueueEntryNote", "Notes", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
+
+                            b1.Property<Guid>("ActivityPqaQueueEntryId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("CallReference")
+                                .HasMaxLength(20)
+                                .HasColumnType("nvarchar(20)");
+
+                            b1.Property<DateTime?>("Created")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("CreatedBy")
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
+
+                            b1.Property<DateTime?>("LastModified")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("LastModifiedBy")
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
+
+                            b1.Property<string>("Message")
+                                .IsRequired()
+                                .HasMaxLength(1000)
+                                .HasColumnType("nvarchar(1000)");
+
+                            b1.Property<string>("TenantId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("ActivityPqaQueueEntryId");
+
+                            b1.HasIndex("CreatedBy");
+
+                            b1.HasIndex("LastModifiedBy");
+
+                            b1.ToTable("PqaQueueNote", "Activities");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ActivityPqaQueueEntryId");
+
+                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CreatedByUser")
+                                .WithMany()
+                                .HasForeignKey("CreatedBy");
+
+                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "LastModifiedByUser")
+                                .WithMany()
+                                .HasForeignKey("LastModifiedBy");
+
+                            b1.Navigation("CreatedByUser");
+
+                            b1.Navigation("LastModifiedByUser");
+                        });
+
+                    b.Navigation("Activity");
+
+                    b.Navigation("Editor");
+
+                    b.Navigation("Notes");
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("Participant");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.ActivityQa1QueueEntry", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Entities.Activities.Activity", "Activity")
+                        .WithMany()
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
+                        .WithMany()
+                        .HasForeignKey("EditorId");
+
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", "Participant")
+                        .WithMany()
+                        .HasForeignKey("ParticipantId");
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("Cfo.Cats.Domain.Entities.Activities.ActivityQueueEntryNote", "Notes", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
+
+                            b1.Property<Guid>("ActivityQa1QueueEntryId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("CallReference")
+                                .HasMaxLength(20)
+                                .HasColumnType("nvarchar(20)");
+
+                            b1.Property<DateTime?>("Created")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("CreatedBy")
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
+
+                            b1.Property<bool>("IsExternal")
+                                .HasColumnType("bit");
+
+                            b1.Property<DateTime?>("LastModified")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("LastModifiedBy")
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
+
+                            b1.Property<string>("Message")
+                                .IsRequired()
+                                .HasMaxLength(1000)
+                                .HasColumnType("nvarchar(1000)");
+
+                            b1.Property<string>("TenantId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("ActivityQa1QueueEntryId");
+
+                            b1.HasIndex("CreatedBy");
+
+                            b1.HasIndex("LastModifiedBy");
+
+                            b1.ToTable("Qa1QueueNote", "Activities");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ActivityQa1QueueEntryId");
+
+                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CreatedByUser")
+                                .WithMany()
+                                .HasForeignKey("CreatedBy");
+
+                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "LastModifiedByUser")
+                                .WithMany()
+                                .HasForeignKey("LastModifiedBy");
+
+                            b1.Navigation("CreatedByUser");
+
+                            b1.Navigation("LastModifiedByUser");
+                        });
+
+                    b.Navigation("Activity");
+
+                    b.Navigation("Editor");
+
+                    b.Navigation("Notes");
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("Participant");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.ActivityQa2QueueEntry", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Entities.Activities.Activity", "Activity")
+                        .WithMany()
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
+                        .WithMany()
+                        .HasForeignKey("EditorId");
+
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", "Participant")
+                        .WithMany()
+                        .HasForeignKey("ParticipantId");
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("Cfo.Cats.Domain.Entities.Activities.ActivityQueueEntryNote", "Notes", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
+
+                            b1.Property<Guid>("ActivityQa2QueueEntryId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("CallReference")
+                                .HasMaxLength(20)
+                                .HasColumnType("nvarchar(20)");
+
+                            b1.Property<DateTime?>("Created")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("CreatedBy")
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
+
+                            b1.Property<bool>("IsExternal")
+                                .HasColumnType("bit");
+
+                            b1.Property<DateTime?>("LastModified")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("LastModifiedBy")
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
+
+                            b1.Property<string>("Message")
+                                .IsRequired()
+                                .HasMaxLength(1000)
+                                .HasColumnType("nvarchar(1000)");
+
+                            b1.Property<string>("TenantId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("ActivityQa2QueueEntryId");
+
+                            b1.HasIndex("CreatedBy");
+
+                            b1.HasIndex("LastModifiedBy");
+
+                            b1.ToTable("Qa2QueueNote", "Activities");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ActivityQa2QueueEntryId");
+
+                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CreatedByUser")
+                                .WithMany()
+                                .HasForeignKey("CreatedBy");
+
+                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "LastModifiedByUser")
+                                .WithMany()
+                                .HasForeignKey("LastModifiedBy");
+
+                            b1.Navigation("CreatedByUser");
+
+                            b1.Navigation("LastModifiedByUser");
+                        });
+
+                    b.Navigation("Activity");
+
+                    b.Navigation("Editor");
+
+                    b.Navigation("Notes");
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("Participant");
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.Contract", b =>
@@ -3692,487 +4173,6 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                     b.Navigation("CreatedByUser");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.Activity", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
-                        .WithMany()
-                        .HasForeignKey("EditorId");
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Contract", "ParticipantCurrentContract")
-                        .WithMany()
-                        .HasForeignKey("ParticipantCurrentContractId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "ParticipantCurrentLocation")
-                        .WithMany()
-                        .HasForeignKey("ParticipantCurrentLocationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", "Participant")
-                        .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", null)
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Contract", "TookPlaceAtContract")
-                        .WithMany()
-                        .HasForeignKey("TookPlaceAtContractId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "TookPlaceAtLocation")
-                        .WithMany()
-                        .HasForeignKey("TookPlaceAtLocationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Editor");
-
-                    b.Navigation("Owner");
-
-                    b.Navigation("Participant");
-
-                    b.Navigation("ParticipantCurrentContract");
-
-                    b.Navigation("ParticipantCurrentLocation");
-
-                    b.Navigation("TookPlaceAtContract");
-
-                    b.Navigation("TookPlaceAtLocation");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.ActivityEscalationQueueEntry", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Payables.Activity", "Activity")
-                        .WithMany()
-                        .HasForeignKey("ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
-                        .WithMany()
-                        .HasForeignKey("EditorId");
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", "Participant")
-                        .WithMany()
-                        .HasForeignKey("ParticipantId");
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsMany("Cfo.Cats.Domain.Entities.Payables.ActivityQueueEntryNote", "Notes", b1 =>
-                        {
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
-
-                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
-
-                            b1.Property<Guid>("ActivityEscalationQueueEntryId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("CallReference")
-                                .HasMaxLength(20)
-                                .HasColumnType("nvarchar(20)");
-
-                            b1.Property<DateTime?>("Created")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("CreatedBy")
-                                .HasMaxLength(36)
-                                .HasColumnType("nvarchar(36)");
-
-                            b1.Property<bool>("IsExternal")
-                                .HasColumnType("bit");
-
-                            b1.Property<DateTime?>("LastModified")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("LastModifiedBy")
-                                .HasMaxLength(36)
-                                .HasColumnType("nvarchar(36)");
-
-                            b1.Property<string>("Message")
-                                .IsRequired()
-                                .HasMaxLength(1000)
-                                .HasColumnType("nvarchar(1000)");
-
-                            b1.Property<string>("TenantId")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("ActivityEscalationQueueEntryId");
-
-                            b1.HasIndex("CreatedBy");
-
-                            b1.HasIndex("LastModifiedBy");
-
-                            b1.ToTable("EscalationNote", "Payables");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ActivityEscalationQueueEntryId");
-
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CreatedByUser")
-                                .WithMany()
-                                .HasForeignKey("CreatedBy");
-
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "LastModifiedByUser")
-                                .WithMany()
-                                .HasForeignKey("LastModifiedBy");
-
-                            b1.Navigation("CreatedByUser");
-
-                            b1.Navigation("LastModifiedByUser");
-                        });
-
-                    b.Navigation("Activity");
-
-                    b.Navigation("Editor");
-
-                    b.Navigation("Notes");
-
-                    b.Navigation("Owner");
-
-                    b.Navigation("Participant");
-
-                    b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.ActivityPqaQueueEntry", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Payables.Activity", "Activity")
-                        .WithMany()
-                        .HasForeignKey("ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
-                        .WithMany()
-                        .HasForeignKey("EditorId");
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", "Participant")
-                        .WithMany()
-                        .HasForeignKey("ParticipantId");
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsMany("Cfo.Cats.Domain.Entities.Payables.ActivityQueueEntryNote", "Notes", b1 =>
-                        {
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
-
-                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
-
-                            b1.Property<Guid>("ActivityPqaQueueEntryId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("CallReference")
-                                .HasMaxLength(20)
-                                .HasColumnType("nvarchar(20)");
-
-                            b1.Property<DateTime?>("Created")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("CreatedBy")
-                                .HasMaxLength(36)
-                                .HasColumnType("nvarchar(36)");
-
-                            b1.Property<DateTime?>("LastModified")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("LastModifiedBy")
-                                .HasMaxLength(36)
-                                .HasColumnType("nvarchar(36)");
-
-                            b1.Property<string>("Message")
-                                .IsRequired()
-                                .HasMaxLength(1000)
-                                .HasColumnType("nvarchar(1000)");
-
-                            b1.Property<string>("TenantId")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("ActivityPqaQueueEntryId");
-
-                            b1.HasIndex("CreatedBy");
-
-                            b1.HasIndex("LastModifiedBy");
-
-                            b1.ToTable("PqaQueueNote", "Payables");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ActivityPqaQueueEntryId");
-
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CreatedByUser")
-                                .WithMany()
-                                .HasForeignKey("CreatedBy");
-
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "LastModifiedByUser")
-                                .WithMany()
-                                .HasForeignKey("LastModifiedBy");
-
-                            b1.Navigation("CreatedByUser");
-
-                            b1.Navigation("LastModifiedByUser");
-                        });
-
-                    b.Navigation("Activity");
-
-                    b.Navigation("Editor");
-
-                    b.Navigation("Notes");
-
-                    b.Navigation("Owner");
-
-                    b.Navigation("Participant");
-
-                    b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.ActivityQa1QueueEntry", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Payables.Activity", "Activity")
-                        .WithMany()
-                        .HasForeignKey("ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
-                        .WithMany()
-                        .HasForeignKey("EditorId");
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", "Participant")
-                        .WithMany()
-                        .HasForeignKey("ParticipantId");
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsMany("Cfo.Cats.Domain.Entities.Payables.ActivityQueueEntryNote", "Notes", b1 =>
-                        {
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
-
-                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
-
-                            b1.Property<Guid>("ActivityQa1QueueEntryId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("CallReference")
-                                .HasMaxLength(20)
-                                .HasColumnType("nvarchar(20)");
-
-                            b1.Property<DateTime?>("Created")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("CreatedBy")
-                                .HasMaxLength(36)
-                                .HasColumnType("nvarchar(36)");
-
-                            b1.Property<bool>("IsExternal")
-                                .HasColumnType("bit");
-
-                            b1.Property<DateTime?>("LastModified")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("LastModifiedBy")
-                                .HasMaxLength(36)
-                                .HasColumnType("nvarchar(36)");
-
-                            b1.Property<string>("Message")
-                                .IsRequired()
-                                .HasMaxLength(1000)
-                                .HasColumnType("nvarchar(1000)");
-
-                            b1.Property<string>("TenantId")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("ActivityQa1QueueEntryId");
-
-                            b1.HasIndex("CreatedBy");
-
-                            b1.HasIndex("LastModifiedBy");
-
-                            b1.ToTable("Qa1QueueNote", "Payables");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ActivityQa1QueueEntryId");
-
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CreatedByUser")
-                                .WithMany()
-                                .HasForeignKey("CreatedBy");
-
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "LastModifiedByUser")
-                                .WithMany()
-                                .HasForeignKey("LastModifiedBy");
-
-                            b1.Navigation("CreatedByUser");
-
-                            b1.Navigation("LastModifiedByUser");
-                        });
-
-                    b.Navigation("Activity");
-
-                    b.Navigation("Editor");
-
-                    b.Navigation("Notes");
-
-                    b.Navigation("Owner");
-
-                    b.Navigation("Participant");
-
-                    b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.ActivityQa2QueueEntry", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Payables.Activity", "Activity")
-                        .WithMany()
-                        .HasForeignKey("ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
-                        .WithMany()
-                        .HasForeignKey("EditorId");
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", "Participant")
-                        .WithMany()
-                        .HasForeignKey("ParticipantId");
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsMany("Cfo.Cats.Domain.Entities.Payables.ActivityQueueEntryNote", "Notes", b1 =>
-                        {
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
-
-                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
-
-                            b1.Property<Guid>("ActivityQa2QueueEntryId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("CallReference")
-                                .HasMaxLength(20)
-                                .HasColumnType("nvarchar(20)");
-
-                            b1.Property<DateTime?>("Created")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("CreatedBy")
-                                .HasMaxLength(36)
-                                .HasColumnType("nvarchar(36)");
-
-                            b1.Property<bool>("IsExternal")
-                                .HasColumnType("bit");
-
-                            b1.Property<DateTime?>("LastModified")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("LastModifiedBy")
-                                .HasMaxLength(36)
-                                .HasColumnType("nvarchar(36)");
-
-                            b1.Property<string>("Message")
-                                .IsRequired()
-                                .HasMaxLength(1000)
-                                .HasColumnType("nvarchar(1000)");
-
-                            b1.Property<string>("TenantId")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("ActivityQa2QueueEntryId");
-
-                            b1.HasIndex("CreatedBy");
-
-                            b1.HasIndex("LastModifiedBy");
-
-                            b1.ToTable("Qa2QueueNote", "Payables");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ActivityQa2QueueEntryId");
-
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CreatedByUser")
-                                .WithMany()
-                                .HasForeignKey("CreatedBy");
-
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "LastModifiedByUser")
-                                .WithMany()
-                                .HasForeignKey("LastModifiedBy");
-
-                            b1.Navigation("CreatedByUser");
-
-                            b1.Navigation("LastModifiedByUser");
-                        });
-
-                    b.Navigation("Activity");
-
-                    b.Navigation("Editor");
-
-                    b.Navigation("Notes");
-
-                    b.Navigation("Owner");
-
-                    b.Navigation("Participant");
-
-                    b.Navigation("Tenant");
-                });
-
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationRoleClaim", b =>
                 {
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationRole", "Role")
@@ -4336,7 +4336,7 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.EducationTrainingActivity", b =>
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.EducationTrainingActivity", b =>
                 {
                     b.HasOne("Cfo.Cats.Domain.Entities.Documents.Document", "Document")
                         .WithMany()
@@ -4344,16 +4344,16 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Cfo.Cats.Domain.Entities.Payables.Activity", null)
+                    b.HasOne("Cfo.Cats.Domain.Entities.Activities.Activity", null)
                         .WithOne()
-                        .HasForeignKey("Cfo.Cats.Domain.Entities.Payables.EducationTrainingActivity", "Id")
+                        .HasForeignKey("Cfo.Cats.Domain.Entities.Activities.EducationTrainingActivity", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Document");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.EmploymentActivity", b =>
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.EmploymentActivity", b =>
                 {
                     b.HasOne("Cfo.Cats.Domain.Entities.Documents.Document", "Document")
                         .WithMany()
@@ -4361,16 +4361,16 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Cfo.Cats.Domain.Entities.Payables.Activity", null)
+                    b.HasOne("Cfo.Cats.Domain.Entities.Activities.Activity", null)
                         .WithOne()
-                        .HasForeignKey("Cfo.Cats.Domain.Entities.Payables.EmploymentActivity", "Id")
+                        .HasForeignKey("Cfo.Cats.Domain.Entities.Activities.EmploymentActivity", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Document");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.ISWActivity", b =>
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.ISWActivity", b =>
                 {
                     b.HasOne("Cfo.Cats.Domain.Entities.Documents.Document", "Document")
                         .WithMany()
@@ -4378,20 +4378,20 @@ namespace Cfo.Cats.Migrators.MSSQL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Cfo.Cats.Domain.Entities.Payables.Activity", null)
+                    b.HasOne("Cfo.Cats.Domain.Entities.Activities.Activity", null)
                         .WithOne()
-                        .HasForeignKey("Cfo.Cats.Domain.Entities.Payables.ISWActivity", "Id")
+                        .HasForeignKey("Cfo.Cats.Domain.Entities.Activities.ISWActivity", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Document");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Payables.NonISWActivity", b =>
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Activities.NonISWActivity", b =>
                 {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Payables.Activity", null)
+                    b.HasOne("Cfo.Cats.Domain.Entities.Activities.Activity", null)
                         .WithOne()
-                        .HasForeignKey("Cfo.Cats.Domain.Entities.Payables.NonISWActivity", "Id")
+                        .HasForeignKey("Cfo.Cats.Domain.Entities.Activities.NonISWActivity", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

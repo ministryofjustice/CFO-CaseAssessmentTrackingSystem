@@ -1,0 +1,22 @@
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Pages.QA.Activities.Components
+
+@page "/pages/qa/activities/activities"
+@attribute [Authorize(Policy = SecurityPolicies.SeniorInternal)]
+
+<MudContainer Style="width: 100%; min-width: 480px;" >
+        <MudText Typo="Typo.h5">
+        CFO Activities Queues
+        </MudText>
+        <MudTabs Elevation="1" Border="false" ApplyEffectsToContainer="true" PanelClass="pa-6">
+            <MudTabPanel Text="First Pass">
+                <QA1List/>
+            </MudTabPanel>
+            <MudTabPanel Text="Second Pass">
+                <QA2List/>
+            </MudTabPanel>
+            <MudTabPanel Text="Escalation">
+                <EscalationList />
+            </MudTabPanel>
+        </MudTabs>
+</MudContainer>
