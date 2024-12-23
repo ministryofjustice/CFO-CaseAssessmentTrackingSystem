@@ -33,15 +33,16 @@
                 For="() => Model.CourseCommencedOn"
                 Label="@Model.GetMemberDescription(x => x.CourseCommencedOn)"
                 Editable="true"
-                PickerVariant="PickerVariant.Dialog" />
+                PickerVariant="PickerVariant.Dialog" 
+                MaxDate="@MinCourseCommencedDate" Disabled="@(MinCourseCommencedDate is null)" />
             </MudItem>
             <MudItem xs="12">
                 <MudDatePicker @bind-Date="Model.CourseCompletedOn"
                 For="() => Model.CourseCompletedOn"
                 Label="@Model.GetMemberDescription(x => x.CourseCompletedOn)"
-                MinDate="@Model.CourseCommencedOn"
+                MinDate="@Model.CourseCommencedOn" Disabled="@(Model.CourseCommencedOn is null)"
                 Editable="true"
-                PickerVariant="PickerVariant.Dialog" />
+                PickerVariant="PickerVariant.Dialog"/>
             </MudItem>
             <MudItem xs="12">
                 <MudSelect @bind-Value="Model.CourseCompletionStatus" For="() => Model.CourseCompletionStatus"
@@ -60,4 +61,8 @@
 
     [Parameter, EditorRequired]
     public required EducationTrainingDto Model { get; set; }
+
+    [Parameter]
+    public DateTime? MinCourseCommencedDate { get; set; }
+
 }
