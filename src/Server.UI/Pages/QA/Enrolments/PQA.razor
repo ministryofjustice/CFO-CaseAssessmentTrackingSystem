@@ -30,7 +30,7 @@
         display: block;
         margin-bottom: 0.5rem; 
     }
-    
+
 </style>
 
 @if (_participantDto is not null && _participantDto.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus)
@@ -39,6 +39,13 @@
     {
         <MudAlert Severity="Severity.Warning">
             This entry has already been processed
+        </MudAlert>
+    }
+
+    @if(_showRightToWorkWarning)
+    {
+        <MudAlert Severity="Severity.Warning">
+            Consent has been granted for this participant, but they require right to work to proceed.
         </MudAlert>
     }
 
@@ -56,8 +63,8 @@
                 <MudTabPanel Text="Consent" BadgeColor="Color.Info" BadgeData="@_participantDto.Consents.Length">
                     <ConsentTabPanel ParticipantDto="_participantDto"/>
                 </MudTabPanel>
-                <MudTabPanel Text="Right To Work" Style="min-width: 185px;" BadgeColor="Color.Info" BadgeData="@_participantDto.RightToWorks.Length">
-                    <RightToWorkTabPanel ParticipantDto="_participantDto"/>
+                <MudTabPanel Text="Right To Work" Style="min-width: 210px;" BadgeColor="Color.Info" BadgeData="@_participantDto.RightToWorks.Length" Icon="@_rtwIcon" IconColor="@_rtwIconColor" ToolTip="@_rtwInfo">
+                    <RightToWorkTabPanel ParticipantDto="_participantDto" ShowRightToWorkWarning="@_showRightToWorkWarning" />
                 </MudTabPanel>
                 <MudTabPanel Text="Assessment" Icon="@(_participantDto.AssessmentJustification is not null ? Icons.Material.Filled.Warning : string.Empty)" IconColor="Color.Warning">
                     <AssessmentTabPanel ParticipantDto="_participantDto"/>
@@ -68,13 +75,13 @@
                         <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
                             <MudItem xs="12">
                                 <MudRadioGroup T="SubmitPqaResponse.PqaResponse?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
-                                    <MudRadio T="SubmitPqaResponse.PqaResponse?" Value="SubmitPqaResponse.PqaResponse.Accept" Color="Color.Primary">
+                                    <MudRadio T="SubmitPqaResponse.PqaResponse?" Value="SubmitPqaResponse.PqaResponse.Accept" Color="Color.Primary" Disabled="@_pqaResponseDisabled">
                                         Accept
                                     </MudRadio>
                                     <MudRadio T="SubmitPqaResponse.PqaResponse?" Value="SubmitPqaResponse.PqaResponse.Return" Color="Color.Secondary">
                                         Return
                                     </MudRadio>
-                                    <MudRadio T="SubmitPqaResponse.PqaResponse?" Value="SubmitPqaResponse.PqaResponse.Comment" Color="Color.Secondary">
+                                    <MudRadio T="SubmitPqaResponse.PqaResponse?" Value="SubmitPqaResponse.PqaResponse.Comment" Color="Color.Secondary" Disabled="@_pqaResponseDisabled">
                                         Comment / Defer
                                     </MudRadio>
                                 </MudRadioGroup>
@@ -103,12 +110,19 @@
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry;
     private ParticipantDto? _participantDto;
+    private ParticipantSummaryDto? _participantSummaryDto;
 
     [Parameter] public Guid Id { get; set; }
 
     [CascadingParameter] public UserProfile? UserProfile { get; set; }
 
     private SubmitPqaResponse.Command Command { get; set; } = default!;
+
+    private string _rtwInfo = String.Empty;
+    private string _rtwIcon = String.Empty;
+    private Color _rtwIconColor = Color.Transparent;
+    private bool _showRightToWorkWarning = false;
+    private bool _pqaResponseDisabled = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -133,9 +147,16 @@
                     QueueEntryId = Id,
                     CurrentUser = UserProfile
                 };
+
+                _participantSummaryDto = await GetNewMediator().Send(new GetParticipantSummary.Query()
+                {
+                    ParticipantId = _participantDto.Id,
+                    CurrentUser = UserProfile!
+                });
             }
 
             StateHasChanged();
+            ShowRightToWorkWarning();
         }
     }
 
@@ -178,7 +199,7 @@
                     }
                 </ul>
             </div>
-            , Severity.Error, options =>
+    , Severity.Error, options =>
             {
                 options.RequireInteraction = true;
                 options.SnackbarVariant = Variant.Text;
@@ -186,5 +207,22 @@
     }
 
     private int CharacterCount => Command.Message?.Length ?? 0;
+
+    void ShowRightToWorkWarning()
+    {
+        _showRightToWorkWarning = _participantSummaryDto!.IsRightToWorkRequired
+                                && _participantSummaryDto!.ConsentStatus == Domain.Common.Enums.ConsentStatus.GrantedStatus
+                                && _participantSummaryDto!.HasActiveRightToWork == false;
+
+        if (_showRightToWorkWarning)
+        {
+            _rtwInfo = "Right To Work required!";
+            _rtwIcon = Icons.Material.Filled.Error;
+            _rtwIconColor = Color.Error;
+
+            _pqaResponseDisabled = true;
+            Command.Response = SubmitPqaResponse.PqaResponse.Return;
+        }
+    }
 
 }

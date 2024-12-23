@@ -1,4 +1,5 @@
 ﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Domain.Common.Enums
 <MudForm>
     <MudList T="string">
         <MudListSubheader>
@@ -22,6 +23,13 @@
             <MudText Typo="Typo.body1">Last Name</MudText>
             <MudText Typo="Typo.body2">@Participant.LastName</MudText>
         </MudListItem>
+        @if(Participant.ConsentStatus == ConsentStatus.GrantedStatus)
+        {
+            <MudListItem>
+                <MudText Typo="Typo.body1">Nationality</MudText>
+                <MudText Typo="Typo.body2">@(Participant.Nationality ?? "Unknown")</MudText>
+            </MudListItem>
+        }
         <MudListItem>
             <MudText Typo="Typo.body1">
                 Date Of Birth
@@ -70,4 +78,4 @@
     [Parameter, EditorRequired]
     public ParticipantDto Participant { get; set; } = default!;
 
-}
+} 
