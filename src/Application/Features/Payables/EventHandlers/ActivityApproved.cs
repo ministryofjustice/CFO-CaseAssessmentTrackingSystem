@@ -17,7 +17,7 @@ public class ActivityApproved(IUnitOfWork unitOfWork) : INotificationHandler<Act
 
             Notification? previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
                 n => n.Heading == heading
-                && n.OwnerId == notification.Item.Participant!.OwnerId
+                && n.OwnerId == notification.Item.OwnerId
                 && n.ReadDate == null
             );
 
@@ -25,7 +25,7 @@ public class ActivityApproved(IUnitOfWork unitOfWork) : INotificationHandler<Act
 
             if (previous is null)
             {
-                var n = Notification.Create(heading, details, notification.Item.Participant!.OwnerId!);
+                var n = Notification.Create(heading, details, notification.Item.OwnerId!);
                 n.SetLink($"/pages/activities/?listView=Approved");
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }

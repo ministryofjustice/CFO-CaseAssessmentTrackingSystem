@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Payables.EventHandlers
         public async Task Handle(ActivityQa2EntryEscalatedDomainEvent notification, CancellationToken cancellationToken)
         {
             var entry = ActivityEscalationQueueEntry.Create(notification.Entry.Id);
-            entry.TenantId = notification.Entry!.Participant!.Owner!.TenantId!;
+            entry.TenantId = notification.Entry!.Activity!.TenantId!;
             await unitOfWork.DbContext.ActivityEscalationQueue.AddAsync(entry, cancellationToken);
         }
     }

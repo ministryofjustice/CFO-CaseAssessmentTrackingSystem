@@ -24,6 +24,7 @@ namespace Cfo.Cats.Application.Features.Payables.Commands
             {
                 var entry = await unitOfWork.DbContext.ActivityQa1Queue
                     .Include(pqa => pqa.Participant)
+                    .Include(ac=>ac.Activity)
                     .FirstOrDefaultAsync(x => x.Id == request.ActivityQueueEntryId, cancellationToken: cancellationToken);
 
                 if (entry == null)
