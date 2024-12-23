@@ -26,7 +26,7 @@ public class RecordActivityPayment(IManagementInformationDbContext miContext, IA
         // for this contract
         // for this participant
         var previousPayments = await miContext.ActivityPayments
-            .Where(p => p.ActivityCategory == activity.Category // this is now very much dependant on the paymech rules. do we go off the definition? category? activity type? a combination?
+            .Where(p => p.ActivityCategory == activity.Category.Name // this is now very much dependant on the paymech rules. do we go off the definition? category? activity type? a combination?
                    && p.ActivityApproved.HappenedThisMonth()
                    && p.ContractId == activity.TookPlaceAtContract.Id 
                    && p.ParticipantId == activity.ParticipantId)
@@ -40,7 +40,7 @@ public class RecordActivityPayment(IManagementInformationDbContext miContext, IA
             if(activity is EducationTrainingActivity educationTrainingActivity)
             {
                 var previouslyPaidEducationAndTrainingActivityIds = previousPayments
-                    .Where(payment => payment.ActivityType == educationTrainingActivity.Type)
+                    .Where(payment => payment.ActivityType == educationTrainingActivity.Type.Name)
                     .Select(payment => payment.ActivityId);
 
                 bool isDuplicate = await applicationDbContext.EducationTrainingActivities
@@ -59,8 +59,8 @@ public class RecordActivityPayment(IManagementInformationDbContext miContext, IA
 
         var payment = new ActivityPaymentBuilder()
             .WithActivity(activity.Id)
-            .WithActivityCategory(activity.Category)
-            .WithActivityType(activity.Type)
+            .WithActivityCategory(activity.Category.Name)
+            .WithActivityType(activity.Type.Name)
             .WithParticipantId(activity.ParticipantId)
             .WithContractId(activity.TookPlaceAtContract.Id)
             .WithApproved(activity.ApprovedOn!.Value)

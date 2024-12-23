@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Cfo.Cats.Domain.Entities.ManagementInformation;
-using Microsoft.EntityFrameworkCore;
+﻿using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformation

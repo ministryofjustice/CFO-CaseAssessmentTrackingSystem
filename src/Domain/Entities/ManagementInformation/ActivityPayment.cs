@@ -10,8 +10,8 @@ public class ActivityPayment
 
     public Guid Id { get; set; } = Guid.CreateVersion7();
     public Guid ActivityId { get; set; }
-    public int ActivityCategory { get; set; }
-    public int ActivityType { get; set; }
+    public string ActivityCategory { get; set; } = default!;
+    public string ActivityType { get; set; } = default!;
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
     public DateTime ActivityApproved { get; set; }
     public string ParticipantId { get; set; }
@@ -38,13 +38,13 @@ public class ActivityPaymentBuilder
         return this;
     }
 
-    public ActivityPaymentBuilder WithActivityCategory(int activityCategory)
+    public ActivityPaymentBuilder WithActivityCategory(string activityCategory)
     {
         activityPayment.ActivityCategory = activityCategory;
         return this;
     }
 
-    public ActivityPaymentBuilder WithActivityType(int activityType)
+    public ActivityPaymentBuilder WithActivityType(string activityType)
     {
         activityPayment.ActivityCategory = activityType;
         return this;
