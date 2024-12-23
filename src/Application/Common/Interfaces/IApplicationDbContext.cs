@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Outbox;
+using Cfo.Cats.Domain.Entities.Activities;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.Documents;
@@ -11,7 +12,6 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.Notifications;
-using Cfo.Cats.Domain.Entities.Payables;
 
 namespace Cfo.Cats.Application.Common.Interfaces;
 

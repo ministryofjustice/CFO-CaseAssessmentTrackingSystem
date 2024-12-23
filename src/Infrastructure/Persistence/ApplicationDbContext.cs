@@ -1,6 +1,7 @@
 using System.Reflection;
 using Cfo.Cats.Application.Outbox;
 using Cfo.Cats.Domain.Common.Contracts;
+using Cfo.Cats.Domain.Entities.Activities;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.Documents;
@@ -11,7 +12,6 @@ using Cfo.Cats.Infrastructure.Persistence.Configurations.Enrolments;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.Notifications;
-using Cfo.Cats.Domain.Entities.Payables;
 using Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformation;
 
 namespace Cfo.Cats.Infrastructure.Persistence;

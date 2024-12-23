@@ -1,0 +1,57 @@
+﻿@using Cfo.Cats.Application.Features.Activities.DTOs
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Activities.Components
+@using Humanizer
+@inherits CatsComponentBase
+
+@inject IStringLocalizer<Isw> L
+@if (Model is not null)
+{
+    <MudForm Model="Model" Validation="Validator.ValidateValue(Model)">
+        <MudGrid>
+            <MudItem xs="12">
+            <MudDatePicker @bind-Date="Model.WraparoundSupportStartedOn"
+                           For="() => Model.WraparoundSupportStartedOn"
+                           Label="@Model.GetMemberDescription(x => x.WraparoundSupportStartedOn)"
+                           Editable="true"
+                           MaxDate="DateTime.Today"
+                           PickerVariant="PickerVariant.Dialog" />
+            </MudItem>
+            <MudItem xs="12">
+            <MudDatePicker @bind-Date="Model.BaselineAchievedOn"
+                           For="() => Model.BaselineAchievedOn"
+                           Label="@Model.GetMemberDescription(x => x.BaselineAchievedOn)"
+                           Editable="true"
+                           MaxDate="DateTime.Today"
+                           PickerVariant="PickerVariant.Dialog" />
+            </MudItem>
+            <MudItem xs="12">
+            <MudNumericField Label="@Model.GetMemberDescription(x => x.HoursPerformedPre)" @bind-Value="@Model.HoursPerformedPre" For="() => Model.HoursPerformedPre" Step="0.25" />
+            </MudItem>
+            <MudItem xs="12">
+            <MudNumericField Label="@Model.GetMemberDescription(x => x.HoursPerformedDuring)" @bind-Value="@Model.HoursPerformedDuring" For="() => Model.HoursPerformedDuring" Step="0.25" />
+            </MudItem>
+            <MudItem xs="12">
+            <MudNumericField Label="@Model.GetMemberDescription(x => x.HoursPerformedPost)" @bind-Value="@Model.HoursPerformedPost" For="() => Model.HoursPerformedPost" Step="0.25" />
+            </MudItem>
+            <MudItem xs="12">
+
+                <MudText>
+                    Total Intervention Hours (pre, during and after): @(Model.TotalHoursInterventionDescription)
+                </MudText>
+
+                <MudTextField ReadOnly Underline="false" For="@(() => Model.TotalHoursIntervention)" hidden />
+
+            </MudItem>
+        </MudGrid>
+    </MudForm>
+}
+@code {
+    MudForm form = new();
+
+    [Inject]
+    private IPicklistService PicklistService { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public required IswDto Model { get; set; }
+}

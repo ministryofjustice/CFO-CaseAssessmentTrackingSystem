@@ -1,0 +1,15 @@
+﻿@using Cfo.Cats.Application.Features.Activities.DTOs
+@using Cfo.Cats.Application.Features.Documents.Queries
+@using Cfo.Cats.Domain.Common.Enums
+
+@inherits CatsComponentBase
+
+@if (ActivityQaDetailsDto.Document is not null)
+{
+    <DocumentDisplay DocumentId="ActivityQaDetailsDto.Document.Id" />
+}
+
+@code{
+    [Parameter] [EditorRequired]
+    public ActivityQaDetailsDto ActivityQaDetailsDto { get; set; } = default!;
+}

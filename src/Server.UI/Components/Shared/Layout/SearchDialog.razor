@@ -111,6 +111,30 @@
                 pages.Add("Queue Management", "/pages/qa/servicedesk/enrolments");    
             }
 
+            allowed = [RoleNames.QAFinance, RoleNames.SMT, RoleNames.SystemSupport];
+            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+            {
+                pages.Add("Activities Provider QA", "/pages/qa/activities/pqa");
+            }
+
+            allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
+            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+            {
+                pages.Add("Activities First Pass", "/pages/qa/activities/qa1");
+            }
+
+            allowed = [RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
+            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+            {
+                pages.Add("Activities Second Pass", "/pages/qa/activities/qa2");
+            }
+
+            allowed = [RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
+            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+            {
+                pages.Add("Activities Queue Management", "/pages/qa/activities/activities");
+            }
+
             allowed = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT];           
             
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
