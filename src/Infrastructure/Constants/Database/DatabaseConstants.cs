@@ -42,11 +42,11 @@ internal static class DatabaseConstants
         public const string OwnershipHistory = nameof(OwnershipHistory);
         public const string IncomingTransferQueue = nameof(IncomingTransferQueue);
         public const string OutgoingTransferQueue = nameof(OutgoingTransferQueue);
-        public const string Activities = nameof(Activities);
-        public const string EducationTrainingActivities = nameof(EducationTrainingActivities);
-        public const string EmploymentActivities = nameof(EmploymentActivities);
-        public const string ISWActivities = nameof(ISWActivities);
-        public const string NonISWActivities = nameof(NonISWActivities);
+        public const string Activity = nameof(Activity);
+        public const string EducationTrainingActivity = nameof(EducationTrainingActivity);
+        public const string EmploymentActivity = nameof(EmploymentActivity);
+        public const string IswActivity = nameof(IswActivity);
+        public const string NonIsqActivity = nameof(NonIsqActivity);
 
         public const string AssessmentPathwayScore = nameof(AssessmentPathwayScore);
 
@@ -82,7 +82,7 @@ internal static class DatabaseConstants
         public const string Document = nameof(Document);
         public const string Enrolment = nameof(Enrolment);
         public const string Induction = nameof(Induction);
-        public const string Payables = nameof(Payables);
+        public const string Activities = nameof(Activities);
     }
 
     public static class FieldLengths
