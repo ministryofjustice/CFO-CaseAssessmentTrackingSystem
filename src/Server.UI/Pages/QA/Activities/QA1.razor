@@ -65,10 +65,10 @@
 
             <MudItem xs="8" Style="height: 100%; width: 100%;">
                 <MudTabs>
-                     <MudTabPanel Text="QA Notes">
+                    <MudTabPanel Text="QA Notes">
                         <QaNotes ActivityId="@_activityQaDetailsDto.ActivityId" />
                     </MudTabPanel>
-            
+
                     <MudTabPanel Text="Attachment" Style="min-width: 185px;" BadgeColor="Color.Info">
                         <AttachmentTabPanel ActivityQaDetailsDto="_activityQaDetailsDto" />
                     </MudTabPanel>
@@ -124,7 +124,7 @@
     private MudForm? _form;
     private ActivityQueueEntryDto? _queueEntry = null;
     private ActivityQaDetailsDto? _activityQaDetailsDto = null;
-    
+
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; } = null!;
 
@@ -148,6 +148,7 @@
                         Id = _queueEntry.ActivityId
                     });
             _activityQaDetailsDto = Mapper.Map<ActivityQaDetailsDto>(activity);
+            _activityQaDetailsDto.ActivityId = activity!.Id;
 
             Command = new SubmitActivityQa1Response.Command()
                 {
