@@ -127,6 +127,8 @@ public static class ConstantString
 
     public static string RightToWork =>
     Localize("Right To Work");
+    public static string RightToWorkIsRequiredMessage =>
+    Localize("No active Right To Work documentation found for the participant, it is a requirement for non-British/Irish participants.");
     public static string AddConsent =>
     Localize("Add Consent");
 
