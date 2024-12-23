@@ -22,57 +22,6 @@ namespace Cfo.Cats.Migrators.MSSQL.ManagementInformationMigrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.ManagementInformation.ActivityPayment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ActivityApproved")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ActivityCategory")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("ActivityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("ActivityType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ContractId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("EligibleForPayment")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("IneligibilityReason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("LocationType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ActivityPayments");
-                });
-
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.ManagementInformation.EnrolmentPayment", b =>
                 {
                     b.Property<Guid>("Id")

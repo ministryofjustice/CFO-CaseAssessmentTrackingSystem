@@ -8,5 +8,7 @@ public interface IManagementInformationDbContext
     DbSet<InductionPayment> InductionPayments { get; }
     DbSet<ActivityPayment> ActivityPayments { get; }
 
+    DbSet<DateDimension> DateDimensions { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

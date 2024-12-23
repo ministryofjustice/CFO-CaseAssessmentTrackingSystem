@@ -17,6 +17,8 @@ public class ManagementInformationDbContext(DbContextOptions<ManagementInformati
     public DbSet<InductionPayment> InductionPayments => Set<InductionPayment>();
     public DbSet<ActivityPayment> ActivityPayments => Set<ActivityPayment>();
 
+    public DbSet<DateDimension> DateDimensions => Set<DateDimension>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
