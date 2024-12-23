@@ -150,6 +150,9 @@
                     Id = _queueEntry.ActivityId
                 });
 
+                _activityQaDetailsDto = Mapper.Map<ActivityQaDetailsDto>(activity);
+                _activityQaDetailsDto.ActivityId = activity!.Id;
+
                 Command = new SubmitActivityEscalationResponse.Command
                 {
                     ActivityQueueEntryId = Id,
