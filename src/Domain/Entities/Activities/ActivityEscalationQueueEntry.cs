@@ -1,21 +1,23 @@
-﻿using Cfo.Cats.Domain.Events.QA.Payables;
+﻿using Cfo.Cats.Domain.Entities.Participants;
+using Cfo.Cats.Domain.Events.QA.Payables;
 
 namespace Cfo.Cats.Domain.Entities.Activities
 {    
     public class ActivityEscalationQueueEntry : ActivityQueueEntry
     {
-        private ActivityEscalationQueueEntry() : this(Guid.Empty)
+        private ActivityEscalationQueueEntry() : base(Guid.Empty)
         {
         }
 
-        private ActivityEscalationQueueEntry(Guid activityId) : base(activityId)
+        private ActivityEscalationQueueEntry(Guid activityId, string tenantId, Participant participant) : base(activityId)
         {
+            TenantId = tenantId;
+            Participant = participant;
+            //todo: Add event?
         }
 
-        public static ActivityEscalationQueueEntry Create(Guid activityId)
-        {
-            return new ActivityEscalationQueueEntry(activityId);
-        }
+        public static ActivityEscalationQueueEntry Create(Guid activityId, string tenantId, Participant participant)
+            => new(activityId, tenantId, participant);
 
         public override ActivityQueueEntry Accept()
         {
