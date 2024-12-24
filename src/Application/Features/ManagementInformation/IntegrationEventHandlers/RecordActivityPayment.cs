@@ -1,7 +1,7 @@
-﻿using Cfo.Cats.Application.Features.Payables.IntegrationEvents;
-using Cfo.Cats.Domain.Entities.ManagementInformation;
+﻿using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Entities.Activities;
 using MassTransit;
+using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 

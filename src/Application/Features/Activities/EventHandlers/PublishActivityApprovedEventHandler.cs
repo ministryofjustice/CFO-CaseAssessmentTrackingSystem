@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Features.Payables.IntegrationEvents;
+﻿using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
 using Cfo.Cats.Application.Outbox;
 using Cfo.Cats.Domain.Events;
 
