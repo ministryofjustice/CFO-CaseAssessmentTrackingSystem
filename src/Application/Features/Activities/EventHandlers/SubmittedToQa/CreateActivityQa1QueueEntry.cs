@@ -11,7 +11,7 @@ namespace Cfo.Cats.Application.Features.Activities.EventHandlers.SubmittedToQa
             {
                 var queueEntry = ActivityQa1QueueEntry.Create(notification.Item.Id);
                 queueEntry.TenantId = notification.Item.TenantId!;
-                queueEntry.Participant = notification.Item.Participant;
+                queueEntry.ParticipantId = notification.Item.ParticipantId;
 
                 await unitOfWork.DbContext.ActivityQa1Queue.AddAsync(queueEntry, cancellationToken);
             }
