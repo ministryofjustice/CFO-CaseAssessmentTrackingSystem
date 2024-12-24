@@ -14,32 +14,28 @@ public class RaisePaymentsAfterApproval(IApplicationDbContext appDb) : IConsumer
 
             if (await IsFirstApproval(context.Message.ParticipantId))
             {
-                var wingInductions = await appDb.WingInductions.Where(e => e.ParticipantId == context.Message.ParticipantId)
+                List<object> events = [];
+
+                var wings = await appDb.WingInductions
+                    .Where(e => e.ParticipantId == context.Message.ParticipantId)
+                    .Select(e => e.Id)
                     .ToArrayAsync();
 
-                foreach (var wingInduction in wingInductions)
-                {
-                    await context.Publish(new WingInductionCreatedIntegrationEvent(wingInduction.Id));
-                }
-
-                var hubInductions = await appDb.HubInductions.Where(e => e.ParticipantId == context.Message.ParticipantId)
+                var hubs = await appDb.HubInductions
+                    .Where(e => e.ParticipantId == context.Message.ParticipantId)
+                    .Select(e => e.Id)
                     .ToArrayAsync();
 
-                foreach (var hubInduction in hubInductions)
-                {
-                    await context.Publish(new HubInductionCreatedIntegrationEvent(hubInduction.Id));
-                }
-
-                var approvedActivities = await appDb.Activities.Where(e => e.ParticipantId == context.Message.ParticipantId)
+                var activities = await appDb.Activities.Where(e => e.ParticipantId == context.Message.ParticipantId)
                     .Where(e => e.ApprovedOn != null)
                     .Select(e => new { e.Id, e.ApprovedOn })
                     .ToArrayAsync();
 
-                foreach (var activity in approvedActivities)
-                {
-                    await context.Publish(new ActivityApprovedIntegrationEvent(activity.Id, activity.ApprovedOn!.Value));
-                }
-
+                events.AddRange(wings.Select(wi => new WingInductionCreatedIntegrationEvent(wi)));
+                events.AddRange(hubs.Select(hi => new HubInductionCreatedIntegrationEvent(hi)));
+                events.AddRange(activities.Select(e => new ActivityApprovedIntegrationEvent(e.Id, e.ApprovedOn!.Value)));
+                
+                await context.PublishBatch(events);
             }
         }
     }
