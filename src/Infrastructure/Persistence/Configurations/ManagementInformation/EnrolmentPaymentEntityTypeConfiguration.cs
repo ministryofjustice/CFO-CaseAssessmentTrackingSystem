@@ -30,18 +30,23 @@ public class EnrolmentPaymentEntityTypeConfiguration : IEntityTypeConfiguration<
             .IsRequired();
         
         builder.Property(x => x.ConsentAdded)
+            .HasColumnType("date")
             .IsRequired();
 
         builder.Property(x => x.ConsentSigned)
+            .HasColumnType("date")
             .IsRequired();
 
         builder.Property(x => x.SubmissionToPqa)
+            .HasColumnType("date")
             .IsRequired();
 
         builder.Property(x => x.SubmissionToAuthority)
+            .HasColumnType("date")
             .IsRequired();
 
         builder.Property(x => x.Approved)
+            .HasColumnType("date")
             .IsRequired();
 
         builder.Property(x => x.LocationId)

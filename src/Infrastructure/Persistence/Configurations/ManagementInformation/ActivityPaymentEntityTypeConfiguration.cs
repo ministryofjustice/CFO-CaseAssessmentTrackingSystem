@@ -58,7 +58,10 @@ public class ActivityPaymentEntityTypeConfiguration
 
         builder.HasIndex(x => new { 
             x.ParticipantId,
-            x.ContractId
+            x.ContractId,
+            x.ActivityCategory,
+            x.ActivityType,
+            x.ActivityApproved
         })
         .HasDatabaseName("ix_ActivityPayment_ParticipantId");
 

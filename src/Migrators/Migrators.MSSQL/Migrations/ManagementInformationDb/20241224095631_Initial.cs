@@ -3,16 +3,19 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Cfo.Cats.Migrators.MSSQL.ManagementInformationMigrations
+namespace Cfo.Cats.Migrators.MSSQL.Migrations.ManagementInformationDb
 {
     /// <inheritdoc />
-    public partial class NewTables : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
                 name: "Activities");
+
+            migrationBuilder.EnsureSchema(
+                name: "Attachments");
 
             migrationBuilder.CreateTable(
                 name: "ActivityPayment",
@@ -82,10 +85,73 @@ namespace Cfo.Cats.Migrators.MSSQL.ManagementInformationMigrations
                     table.PrimaryKey("PK_DateDimension", x => x.TheDate);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "EnrolmentPayment",
+                schema: "Attachments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ParticipantId = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
+                    SupportWorker = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ContractId = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false),
+                    ConsentAdded = table.Column<DateTime>(type: "date", nullable: false),
+                    ConsentSigned = table.Column<DateTime>(type: "date", nullable: false),
+                    SubmissionToPqa = table.Column<DateTime>(type: "date", nullable: false),
+                    SubmissionToAuthority = table.Column<DateTime>(type: "date", nullable: false),
+                    SubmissionsToAuthority = table.Column<int>(type: "int", nullable: false),
+                    Approved = table.Column<DateTime>(type: "date", nullable: false),
+                    LocationId = table.Column<int>(type: "int", nullable: false),
+                    LocationType = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false, defaultValue: ""),
+                    TenantId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    ReferralRoute = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    EligibleForPayment = table.Column<bool>(type: "bit", nullable: false),
+                    IneligibilityReason = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EnrolmentPayment", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InductionPayment",
+                schema: "Attachments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ParticipantId = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
+                    SupportWorker = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ContractId = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false),
+                    Induction = table.Column<DateTime>(type: "date", nullable: false),
+                    Approved = table.Column<DateTime>(type: "date", nullable: true),
+                    LocationId = table.Column<int>(type: "int", nullable: false),
+                    LocationType = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false, defaultValue: ""),
+                    TenantId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    EligibleForPayment = table.Column<bool>(type: "bit", nullable: false),
+                    IneligibilityReason = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InductionPayment", x => x.Id);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "ix_ActivityPayment_ParticipantId",
                 schema: "Activities",
                 table: "ActivityPayment",
+                columns: new[] { "ParticipantId", "ContractId", "ActivityCategory", "ActivityType", "ActivityApproved" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EnrolmentPayment_ParticipantId",
+                schema: "Attachments",
+                table: "EnrolmentPayment",
+                column: "ParticipantId");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_InductionPayment_ParticipantId",
+                schema: "Attachments",
+                table: "InductionPayment",
                 columns: new[] { "ParticipantId", "ContractId" });
         }
 
@@ -98,6 +164,14 @@ namespace Cfo.Cats.Migrators.MSSQL.ManagementInformationMigrations
 
             migrationBuilder.DropTable(
                 name: "DateDimension");
+
+            migrationBuilder.DropTable(
+                name: "EnrolmentPayment",
+                schema: "Attachments");
+
+            migrationBuilder.DropTable(
+                name: "InductionPayment",
+                schema: "Attachments");
         }
     }
 }

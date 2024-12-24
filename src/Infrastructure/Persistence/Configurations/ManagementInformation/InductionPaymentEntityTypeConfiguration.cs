@@ -33,9 +33,11 @@ public class InductionPaymentEntityTypeConfiguration : IEntityTypeConfiguration<
             .IsRequired();
         
         builder.Property(x => x.Approved)
+            .HasColumnType("date")
             .IsRequired(false);
 
         builder.Property(x => x.Induction)
+            .HasColumnType("date")
             .IsRequired();
 
         builder.Property(x => x.LocationId)

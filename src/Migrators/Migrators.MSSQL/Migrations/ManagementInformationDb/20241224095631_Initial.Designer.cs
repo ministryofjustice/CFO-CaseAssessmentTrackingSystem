@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Cfo.Cats.Migrators.MSSQL.ManagementInformationMigrations
+namespace Cfo.Cats.Migrators.MSSQL.Migrations.ManagementInformationDb
 {
     [DbContext(typeof(ManagementInformationDbContext))]
-    [Migration("20241223192808_NewTables")]
-    partial class NewTables
+    [Migration("20241224095631_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -82,7 +82,7 @@ namespace Cfo.Cats.Migrators.MSSQL.ManagementInformationMigrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParticipantId", "ContractId")
+                    b.HasIndex("ParticipantId", "ContractId", "ActivityCategory", "ActivityType", "ActivityApproved")
                         .HasDatabaseName("ix_ActivityPayment_ParticipantId");
 
                     b.ToTable("ActivityPayment", "Activities");
@@ -220,13 +220,13 @@ namespace Cfo.Cats.Migrators.MSSQL.ManagementInformationMigrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("Approved")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("ConsentAdded")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("ConsentSigned")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<string>("ContractId")
                         .IsRequired()
@@ -264,10 +264,10 @@ namespace Cfo.Cats.Migrators.MSSQL.ManagementInformationMigrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("SubmissionToAuthority")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("SubmissionToPqa")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<int>("SubmissionsToAuthority")
                         .HasColumnType("int");
@@ -296,7 +296,7 @@ namespace Cfo.Cats.Migrators.MSSQL.ManagementInformationMigrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("Approved")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<string>("ContractId")
                         .IsRequired()
@@ -310,7 +310,7 @@ namespace Cfo.Cats.Migrators.MSSQL.ManagementInformationMigrations
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("Induction")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<string>("IneligibilityReason")
                         .HasMaxLength(250)
