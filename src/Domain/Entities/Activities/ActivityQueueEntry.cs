@@ -23,14 +23,17 @@ namespace Cfo.Cats.Domain.Entities.Activities
         protected ActivityQueueEntry(Guid activityId)
         {
             Id = Guid.CreateVersion7();
-            ActivityId = activityId;         
+            ActivityId = activityId;
+            ParticipantId = null;
         }
 
         public virtual Activity? Activity { get; private set; }
 
         public virtual Tenant? Tenant { get; private set; }
 
-        public virtual Participant? Participant { get;  set; }
+        public virtual Participant? Participant { get; protected set; }
+
+        public string? ParticipantId { get; set; }
 
         public IReadOnlyCollection<ActivityQueueEntryNote> Notes => _notes.AsReadOnly();
 

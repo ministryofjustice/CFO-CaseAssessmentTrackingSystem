@@ -9,9 +9,9 @@ namespace Cfo.Cats.Application.Features.Activities.EventHandlers.SubmittedToQa
         {
             if (notification.To == ActivityStatus.SubmittedToProviderStatus)
             {
-                var queueEntry = ActivityPqaQueueEntry.Create(notification.Item.Id);                
+                var queueEntry = ActivityPqaQueueEntry.Create(notification.Item.Id);
                 queueEntry.TenantId = notification.Item.TenantId!;
-                queueEntry.Participant=notification.Item.Participant;
+                queueEntry.ParticipantId = notification.Item.ParticipantId;
 
                 await unitOfWork.DbContext.ActivityPqaQueue.AddAsync(queueEntry, cancellationToken);
             }
