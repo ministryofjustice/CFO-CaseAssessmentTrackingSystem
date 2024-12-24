@@ -6,7 +6,7 @@ using MassTransit;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordWingInductionPayment(IApplicationDbContext applicationDb, IManagementInformationDbContext miDb) : IConsumer<WingInductionCreatedIntegrationEvent>
+public class RecordWingInductionPaymentConsumer(IApplicationDbContext applicationDb, IManagementInformationDbContext miDb) : IConsumer<WingInductionCreatedIntegrationEvent>
 {
 
     private static class IneligibilityReasons

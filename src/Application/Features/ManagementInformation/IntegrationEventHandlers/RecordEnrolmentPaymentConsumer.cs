@@ -4,7 +4,7 @@ using MassTransit;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordEnrolmentPayment(IManagementInformationDbContext miContext, IApplicationDbContext applicationDbContext) : IConsumer<ParticipantTransitionedIntegrationEvent>
+public class RecordEnrolmentPaymentConsumer(IManagementInformationDbContext miContext, IApplicationDbContext applicationDbContext) : IConsumer<ParticipantTransitionedIntegrationEvent>
 {
     public async Task Consume(ConsumeContext<ParticipantTransitionedIntegrationEvent> context)
     {

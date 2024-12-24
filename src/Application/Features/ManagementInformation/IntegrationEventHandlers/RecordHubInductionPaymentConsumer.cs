@@ -4,7 +4,7 @@ using MassTransit;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordHubInductionPayment(IApplicationDbContext applicationDb, IManagementInformationDbContext miDb) : IConsumer<HubInductionCreatedIntegrationEvent>
+public class RecordHubInductionPaymentConsumer(IApplicationDbContext applicationDb, IManagementInformationDbContext miDb) : IConsumer<HubInductionCreatedIntegrationEvent>
 {
 
     private static class IneligibilityReasons

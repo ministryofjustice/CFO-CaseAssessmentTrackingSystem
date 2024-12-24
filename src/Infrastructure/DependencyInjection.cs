@@ -76,7 +76,7 @@ public static class DependencyInjection
         services.AddMassTransit(x =>
         {
 
-            x.AddConsumers(typeof(RecordEnrolmentPayment).Assembly); // Automatically add all consumers
+            x.AddConsumers(typeof(RecordEnrolmentPaymentConsumer).Assembly); // Automatically add all consumers
 
             x.UsingRabbitMq((context, cfg) =>
             {

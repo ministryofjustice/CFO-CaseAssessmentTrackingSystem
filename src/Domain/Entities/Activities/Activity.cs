@@ -66,6 +66,7 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
     public DateTime CommencedOn { get; protected set; }
     public string TenantId { get; protected set; }
     public ActivityStatus Status { get; protected set; }
+    public DateTime? ApprovedOn { get; protected set; }
 
     public Activity TransitionTo(ActivityStatus to)
     {
@@ -77,6 +78,19 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
         }
 
         throw new InvalidActivityTransition(Status, to);
+    }
+
+    public Activity Approve()
+    {
+        if (ApprovedOn.HasValue)
+        {
+            return this;
+        }
+
+        ApprovedOn = DateTime.UtcNow;
+        AddDomainEvent(new ActivityApprovedDomainEvent(this));
+
+        return this;
     }
 
     public bool RequiresQa => Definition.RequiresQa;
