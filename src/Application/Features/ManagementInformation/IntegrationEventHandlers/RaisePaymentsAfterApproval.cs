@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Application.Features.Inductions.IntegrationEvents;
+﻿using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
+using Cfo.Cats.Application.Features.Inductions.IntegrationEvents;
 using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
 using MassTransit;
 
@@ -28,6 +29,17 @@ public class RaisePaymentsAfterApproval(IApplicationDbContext appDb) : IConsumer
                 {
                     await context.Publish(new HubInductionCreatedIntegrationEvent(hubInduction.Id));
                 }
+
+                var approvedActivities = await appDb.Activities.Where(e => e.ParticipantId == context.Message.ParticipantId)
+                    .Where(e => e.ApprovedOn != null)
+                    .Select(e => new { e.Id, e.ApprovedOn })
+                    .ToArrayAsync();
+
+                foreach (var activity in approvedActivities)
+                {
+                    await context.Publish(new ActivityApprovedIntegrationEvent(activity.Id, activity.ApprovedOn!.Value));
+                }
+
             }
         }
     }
