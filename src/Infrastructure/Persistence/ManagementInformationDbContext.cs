@@ -16,6 +16,7 @@ public class ManagementInformationDbContext(DbContextOptions<ManagementInformati
     public DbSet<EnrolmentPayment> EnrolmentPayments => Set<EnrolmentPayment>();
     public DbSet<InductionPayment> InductionPayments => Set<InductionPayment>();
     public DbSet<ActivityPayment> ActivityPayments => Set<ActivityPayment>();
+    public DbSet<EducationPayment> EducationPayments => Set<EducationPayment>();
 
     public DbSet<DateDimension> DateDimensions => Set<DateDimension>();
 
