@@ -13,7 +13,7 @@
 
     <ItemGroup>
         <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.301" />
-        <PackageReference Include="AWSSDK.S3" Version="3.7.410.10" />
+        <PackageReference Include="AWSSDK.S3" Version="3.7.410.12" />
         <PackageReference Include="GovukNotify" Version="7.2.0" />
         <PackageReference Include="IPAddressRange" Version="6.1.0" />
         <PackageReference Include="MassTransit" Version="8.3.4" />
