@@ -99,6 +99,8 @@ public class ApplicationDbContext
     public DbSet<ActivityPayment> ActivityPayments => Set<ActivityPayment>();
     public DbSet<EducationPayment> EducationPayments => Set<EducationPayment>();
 
+    public DbSet<EmploymentPayment> EmploymentPayments => Set<EmploymentPayment>();
+
     public DbSet<DateDimension> DateDimensions => Set<DateDimension>();
 
     protected override void OnModelCreating(ModelBuilder builder)

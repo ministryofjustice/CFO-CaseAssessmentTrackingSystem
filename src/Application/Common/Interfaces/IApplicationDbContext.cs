@@ -89,6 +89,8 @@ public interface IApplicationDbContext
 
     DbSet<EducationPayment> EducationPayments { get; }
 
+    DbSet<EmploymentPayment> EmploymentPayments { get; }
+
     DbSet<DateDimension> DateDimensions { get; }
 
 
