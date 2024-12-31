@@ -127,6 +127,7 @@
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
                 pages.Add("Activities Second Pass", "/pages/qa/activities/qa2");
+                pages.Add("Payments", "/pages/finance/payments/");
             }
 
             allowed = [RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];

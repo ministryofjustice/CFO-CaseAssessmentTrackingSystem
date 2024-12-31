@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Application.SecurityConstants;
+﻿using ActualLab.Api;
+using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
 
 namespace Cfo.Cats.Server.UI.Services.Navigation;
@@ -142,6 +143,21 @@ public class MenuService : IMenuService
                                 Roles = [ RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
                             }
                         }
+                    }
+                }
+            },
+            new MenuSectionModel()
+            {
+                Title = "Finance",
+                Roles = new[] { RoleNames.SystemSupport, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.PerformanceManager },
+                SectionItems = new ApiList<MenuSectionItemModel>
+                {
+                    new()
+                    {
+                        IsParent = false,
+                        Title = "Payments",
+                        Icon = Icons.Material.Filled.Money,
+                        Href = "/pages/finance/payments/"
                     }
                 }
             },
