@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.Notifications;
 using Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformation;
+using Cfo.Cats.Domain.Entities.ManagementInformation;
 
 namespace Cfo.Cats.Infrastructure.Persistence;
 
@@ -93,11 +94,17 @@ public class ApplicationDbContext
     public DbSet<ActivityEscalationQueueEntry> ActivityEscalationQueue => Set<ActivityEscalationQueueEntry>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
+    public DbSet<EnrolmentPayment> EnrolmentPayments => Set<EnrolmentPayment>();
+    public DbSet<InductionPayment> InductionPayments => Set<InductionPayment>();
+    public DbSet<ActivityPayment> ActivityPayments => Set<ActivityPayment>();
+    public DbSet<EducationPayment> EducationPayments => Set<EducationPayment>();
+
+    public DbSet<DateDimension> DateDimensions => Set<DateDimension>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly(),
-            x => x.Namespace!.StartsWith(typeof(EnrolmentPaymentEntityTypeConfiguration).Namespace!) == false);
+        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         builder.ApplyGlobalFilters<ISoftDelete>(s => s.Deleted == null);
     }

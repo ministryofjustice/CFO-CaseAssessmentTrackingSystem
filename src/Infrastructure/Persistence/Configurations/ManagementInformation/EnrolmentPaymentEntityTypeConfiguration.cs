@@ -8,7 +8,7 @@ public class EnrolmentPaymentEntityTypeConfiguration : IEntityTypeConfiguration<
 {
     public void Configure(EntityTypeBuilder<EnrolmentPayment> builder)
     {
-        builder.ToTable(nameof(EnrolmentPayment), "Attachments");
+        builder.ToTable(nameof(EnrolmentPayment), DatabaseConstants.Schemas.Mi);
         builder.HasKey(x => x.Id);
         
         builder.Property(x => x.CreatedOn)

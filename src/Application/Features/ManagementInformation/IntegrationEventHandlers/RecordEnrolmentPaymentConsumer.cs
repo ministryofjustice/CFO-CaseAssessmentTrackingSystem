@@ -4,7 +4,7 @@ using MassTransit;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordEnrolmentPaymentConsumer(IManagementInformationDbContext miContext, IApplicationDbContext applicationDbContext) : IConsumer<ParticipantTransitionedIntegrationEvent>
+public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<ParticipantTransitionedIntegrationEvent>
 {
     public async Task Consume(ConsumeContext<ParticipantTransitionedIntegrationEvent> context)
     {
@@ -12,7 +12,7 @@ public class RecordEnrolmentPaymentConsumer(IManagementInformationDbContext miCo
         {
 
             // get participant information
-            var participantInfo = await applicationDbContext
+            var participantInfo = await unitOfWork.DbContext
                 .Participants
                 .IgnoreAutoIncludes()
                 .AsNoTracking()
@@ -33,17 +33,17 @@ public class RecordEnrolmentPaymentConsumer(IManagementInformationDbContext miCo
                 })
                 .SingleAsync();
 
-            var submissionToAuthority = await applicationDbContext
+            var submissionToAuthority = await unitOfWork.DbContext
                 .EnrolmentQa1Queue
                 .Where(p => p.ParticipantId == context.Message.ParticipantId)
                 .MaxAsync(p => p.Created);
 
-            var submissionsToAuthority = await applicationDbContext
+            var submissionsToAuthority = await unitOfWork.DbContext
                 .EnrolmentQa1Queue
                 .Where(p => p.ParticipantId == context.Message.ParticipantId)
                 .CountAsync();
 
-            var supportWorker = await applicationDbContext.EnrolmentPqaQueue
+            var supportWorker = await unitOfWork.DbContext.EnrolmentPqaQueue
                 .Where(q => q.ParticipantId == context.Message.ParticipantId)
                 .OrderByDescending(q => q.Created)
                 .Select(p => new
@@ -55,7 +55,7 @@ public class RecordEnrolmentPaymentConsumer(IManagementInformationDbContext miCo
                 .SingleAsync();
 
             // do we already have a payment?
-            var exists = miContext.EnrolmentPayments
+            var exists = unitOfWork.DbContext.EnrolmentPayments
                 .Any(p => p.ParticipantId == context.Message.ParticipantId && p.EligibleForPayment);
 
             var payment = new EnrolmentPaymentBuilder()
@@ -77,8 +77,8 @@ public class RecordEnrolmentPaymentConsumer(IManagementInformationDbContext miCo
                 .Build();
 
 
-            miContext.EnrolmentPayments.Add(payment);
-            await miContext.SaveChangesAsync(CancellationToken.None);
+            unitOfWork.DbContext.EnrolmentPayments.Add(payment);
+            await unitOfWork.SaveChangesAsync(CancellationToken.None);
 
         }
     }

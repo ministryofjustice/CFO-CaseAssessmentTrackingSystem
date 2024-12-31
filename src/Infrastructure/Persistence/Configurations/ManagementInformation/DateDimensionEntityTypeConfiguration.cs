@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Domain.Entities.ManagementInformation;
+using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformation
@@ -8,7 +9,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformati
         public void Configure(EntityTypeBuilder<DateDimension> builder)
         {
 
-            builder.ToTable(nameof(DateDimension));
+            builder.ToTable(nameof(DateDimension), DatabaseConstants.Schemas.Mi);
 
             builder.HasKey(e => e.TheDate); 
 
@@ -33,8 +34,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformati
             builder.Property(e => e.Style103).HasMaxLength(10); // e.g., "23/01/2023"
             builder.Property(e => e.Style112).HasMaxLength(8); // e.g., "20230123"
             builder.Property(e => e.Style120).HasMaxLength(10); // e.g., "2023-01-23"
-            
-
 
         }
     }

@@ -4,7 +4,6 @@ using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
 using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
-using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Configurations;
@@ -98,46 +97,23 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>(
             (p, m) => {
                 m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
-                m.UseDatabase(configuration.GetConnectionString("CatsDb")!);
+                m.UseSqlServer(configuration.GetConnectionString("CatsDb")!);
             });
         
         services.AddDbContextFactory<ApplicationDbContext>((serviceProvider, optionsBuilder) =>
         {
             optionsBuilder.AddInterceptors(serviceProvider.GetServices<ISaveChangesInterceptor>());
-            optionsBuilder.UseDatabase(configuration.GetConnectionString("CatsDb")!);
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("CatsDb")!);
         }, ServiceLifetime.Scoped);
-
-
-        services.AddDbContext<ManagementInformationDbContext>(
-            (p, m) => {
-                m.UseDatabase(configuration.GetConnectionString("MiDb")!);
-            });
-
-        services.AddDbContextFactory<ManagementInformationDbContext>((_, optionsBuilder) =>
-        {
-            optionsBuilder.UseDatabase(configuration.GetConnectionString("MiDb")!);
-        }, ServiceLifetime.Scoped);
-
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
-        services.AddScoped<IManagementInformationDbContext, ManagementInformationDbContext>();
-
+        
         services.AddScoped<ApplicationDbContextInitializer>();
-        services.AddScoped<ManagementInformationDbContextInitializer>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
         return services;
     }
-
-    private static DbContextOptionsBuilder UseDatabase(
-        this DbContextOptionsBuilder builder,
-        string connectionString
-    ) =>
-        builder.UseSqlServer(
-            connectionString,
-            e => e.MigrationsAssembly("Cfo.Cats.Migrators.MSSQL")
-        );
 
     private static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {

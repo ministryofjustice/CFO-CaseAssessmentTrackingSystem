@@ -4,7 +4,6 @@
 var target = Argument("target", "Test");
 var configuration = Argument("configuration", "Release");
 var fromVersion = Argument("fromVersion", "");
-var context = Argument("context", "ApplicationDbContext");
 var migrationName = Argument("migrationName", "");
 
 Task("Clean")
@@ -59,25 +58,15 @@ Task("Publish")
     });
 
 Task("Script")
-    .Description("Generates a migration script for the given context (ApplicationDbContext or ManagementInformationDbContext).")
+    .Description("Generates a migration script.")
     .IsDependentOn("Build")
     .Does(() =>{
 
-        string[] allowedContexts = new string[] {
-            "ApplicationDbContext",
-            "ManagementInformationDbContext"
-        };
-
-        if(allowedContexts.Contains(context) == false)
-        {
-            throw new InvalidOperationException($"Unknown db context {context}");
-        }
-
-        var migrationProject = "src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj";
+        var migrationProject = "src/Infrastructure/Infrastructure.csproj";
         var startupProject = "src/Server.UI/Server.UI.csproj";
-        var dbContext = $"Cfo.Cats.Infrastructure.Persistence.{context}";
+        var dbContext = $"Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext";
         
-        var result = StartProcess("dotnet", $"ef migrations script {fromVersion} --no-build --configuration {configuration} --project {migrationProject} --startup-project {startupProject} --context {dbContext} --idempotent -o ./publish/{context}-MigrationScript.sql");
+        var result = StartProcess("dotnet", $"ef migrations script {fromVersion} --no-build --configuration {configuration} --project {migrationProject} --startup-project {startupProject} --context {dbContext} --idempotent -o ./publish/MigrationScript.sql");
         if(result != 0)
         {
             Error("Failed to generate migration script");
@@ -85,28 +74,18 @@ Task("Script")
     });
 
 Task("AddMigration")
-    .Description("Adds a new migration for the given context (ApplicationDbContext or ManagementInformationDbContext).")
+    .Description("Adds a new migration")
     .IsDependentOn("Build")
     .Does(() => {
         
-        string[] allowedContexts = new string[] {
-            "ApplicationDbContext",
-            "ManagementInformationDbContext"
-        };
-
-        if(allowedContexts.Contains(context) == false)
-        {
-            throw new InvalidOperationException($"Unknown db context {context}");
-        }
-
         if(string.IsNullOrEmpty(migrationName))
         {
             throw new InvalidOperationException("You need to pass a migration name");
         }
 
-        var migrationProject = "src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj";
+        var migrationProject = "src/Infrastructure/Infrastructure.csproj";
         var startupProject = "src/Server.UI/Server.UI.csproj";
-        var dbContext = $"Cfo.Cats.Infrastructure.Persistence.{context}";
+        var dbContext = $"Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext";
         
         var result = StartProcess("dotnet", $"ef migrations add {migrationName} --no-build --configuration {configuration} --project {migrationProject} --startup-project {startupProject} --context {dbContext}");
         if(result != 0)

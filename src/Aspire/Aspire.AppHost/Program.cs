@@ -10,7 +10,6 @@ var sql = builder.AddSqlServer("sql", sqlPassword, 1433)
     
     
 var catsDb = sql.AddDatabase("CatsDb");
-var miDb = sql.AddDatabase("MiDb");
 
 var rabbit = builder.AddRabbitMQ("rabbit",
         userName: rabbitUser,
@@ -20,7 +19,6 @@ var rabbit = builder.AddRabbitMQ("rabbit",
 
 builder.AddProject<Projects.Server_Ui>("cats")
     .WithReference(catsDb)
-    .WithReference(miDb)
     .WithReference(rabbit)
     .WaitFor(sql);
 

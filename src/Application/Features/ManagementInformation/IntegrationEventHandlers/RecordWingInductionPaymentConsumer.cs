@@ -6,7 +6,7 @@ using MassTransit;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordWingInductionPaymentConsumer(IApplicationDbContext applicationDb, IManagementInformationDbContext miDb) : IConsumer<WingInductionCreatedIntegrationEvent>
+public class RecordWingInductionPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<WingInductionCreatedIntegrationEvent>
 {
 
     private static class IneligibilityReasons
@@ -17,8 +17,9 @@ public class RecordWingInductionPaymentConsumer(IApplicationDbContext applicatio
 
     public async Task Consume(ConsumeContext<WingInductionCreatedIntegrationEvent> context)
     {
-        var inductionData = await applicationDb
+        var inductionData = await unitOfWork.DbContext
             .WingInductions
+            .AsNoTracking()
             .Where(i => i.Id == context.Message.Id)
             .Select(x => new
             {
@@ -36,13 +37,18 @@ public class RecordWingInductionPaymentConsumer(IApplicationDbContext applicatio
 
         // to be eligible for payment your enrolment must have been approved.
         // and we must not have had a payment for the same type of induction
-        if (await miDb.InductionPayments.AnyAsync(c => c.ParticipantId == inductionData.ParticipantId
-            && c.ContractId == inductionData.ContractId && c.LocationType == inductionData.LocationType && c.EligibleForPayment))
+        if (await unitOfWork.DbContext
+                .InductionPayments
+                .AnyAsync(c => c.ParticipantId == inductionData.ParticipantId
+                            && c.ContractId == inductionData.ContractId 
+                            && c.LocationType == inductionData.LocationType 
+                            && c.EligibleForPayment))
         {
             ineligibilityReason = IneligibilityReasons.AlreadyPaid;
         }
 
-        var history = await applicationDb.ParticipantEnrolmentHistories
+        var history = await unitOfWork.DbContext.ParticipantEnrolmentHistories
+                                .AsNoTracking()
                                 .Where(h => h.ParticipantId == inductionData.ParticipantId)
                                 .ToListAsync();
 
@@ -67,8 +73,8 @@ public class RecordWingInductionPaymentConsumer(IApplicationDbContext applicatio
                     .WithIneligibilityReason(ineligibilityReason)
                     .Build();
 
-        miDb.InductionPayments.Add(payment);
-        await miDb.SaveChangesAsync(CancellationToken.None);
+        unitOfWork.DbContext.InductionPayments.Add(payment);
+        await unitOfWork.SaveChangesAsync(CancellationToken.None);
 
     }
 }

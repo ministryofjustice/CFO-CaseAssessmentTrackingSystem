@@ -4,7 +4,7 @@ using MassTransit;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordHubInductionPaymentConsumer(IApplicationDbContext applicationDb, IManagementInformationDbContext miDb) : IConsumer<HubInductionCreatedIntegrationEvent>
+public class RecordHubInductionPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<HubInductionCreatedIntegrationEvent>
 {
 
     private static class IneligibilityReasons
@@ -15,7 +15,7 @@ public class RecordHubInductionPaymentConsumer(IApplicationDbContext application
 
     public async Task Consume(ConsumeContext<HubInductionCreatedIntegrationEvent> context)
     {
-        var inductionData = await  applicationDb
+        var inductionData = await unitOfWork.DbContext
             .HubInductions
             .Where(i => i.Id == context.Message.Id)
             .Select( x => new {
@@ -33,13 +33,13 @@ public class RecordHubInductionPaymentConsumer(IApplicationDbContext application
             
         // to be eligible for payment your enrolment must have been approved.
         // and we must not have had a payment for the same type of induction
-        if (await miDb.InductionPayments.AnyAsync(c => c.ParticipantId == inductionData.ParticipantId
+        if (await unitOfWork.DbContext.InductionPayments.AnyAsync(c => c.ParticipantId == inductionData.ParticipantId
             && c.ContractId == inductionData.ContractId && c.LocationType == inductionData.LocationType &&  c.EligibleForPayment) )
         {
             ineligibilityReason = IneligibilityReasons.AlreadyPaid;
         }
 
-        var history = await applicationDb.ParticipantEnrolmentHistories
+        var history = await unitOfWork.DbContext.ParticipantEnrolmentHistories
                                 .Where(h => h.ParticipantId == inductionData.ParticipantId)
                                 .ToListAsync();
 
@@ -64,8 +64,8 @@ public class RecordHubInductionPaymentConsumer(IApplicationDbContext application
                     .WithIneligibilityReason(ineligibilityReason)
                     .Build();
 
-        miDb.InductionPayments.Add(payment);
-        await miDb.SaveChangesAsync(CancellationToken.None);
+        unitOfWork.DbContext.InductionPayments.Add(payment);
+        await unitOfWork.SaveChangesAsync(CancellationToken.None);
 
     }
 }

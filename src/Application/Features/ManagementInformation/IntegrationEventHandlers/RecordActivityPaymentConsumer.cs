@@ -5,17 +5,17 @@ using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordActivityPaymentConsumer(IManagementInformationDbContext miContext, IApplicationDbContext applicationDbContext) : IConsumer<ActivityApprovedIntegrationEvent>
+public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<ActivityApprovedIntegrationEvent>
 {
     private static class IneligibilityReasons
     {
-        public const string AlreadyPaidThisMonth = "This activity has already been paid to this contract, for this participant, this month.";
+        public const string AlreadyPaidThisMonth = "An activity of this type has already been paid to this contract, for this participant, this month.";
     }
 
     public async Task Consume(ConsumeContext<ActivityApprovedIntegrationEvent> context)
     {
 
-        var activity = await applicationDbContext.Activities
+        var activity = await unitOfWork.DbContext.Activities
             .Include(a => a.TookPlaceAtContract)
             .Include(a => a.TookPlaceAtLocation)
             .AsNoTracking()
@@ -28,7 +28,7 @@ public class RecordActivityPaymentConsumer(IManagementInformationDbContext miCon
             return;
         }
 
-        var dates = await miContext.DateDimensions
+        var dates = await unitOfWork.DbContext.DateDimensions
             .Where(dd => dd.TheDate == activity.ApprovedOn!.Value)
             .Select(dd => new
             {
@@ -37,7 +37,7 @@ public class RecordActivityPaymentConsumer(IManagementInformationDbContext miCon
             })
             .SingleAsync();
         
-        var query = from ap in miContext.ActivityPayments
+        var query = from ap in unitOfWork.DbContext.ActivityPayments
             where
                   ap.ParticipantId == activity.ParticipantId
                   && ap.ContractId == activity.TookPlaceAtContract.Id
@@ -70,15 +70,8 @@ public class RecordActivityPaymentConsumer(IManagementInformationDbContext miCon
             .WithIneligibilityReason(ineligibilityReason)
             .Build();
 
-        miContext.ActivityPayments.Add(payment);
-        await miContext.SaveChangesAsync(CancellationToken.None);
+        unitOfWork.DbContext.ActivityPayments.Add(payment);
+        await unitOfWork.SaveChangesAsync(CancellationToken.None);
     }
 
-}
-
-static class Ext
-{
-    internal static bool HappenedThisMonth(this DateTime datetime) =>
-        DateTime.UtcNow.Month == datetime.Month
-        && DateTime.UtcNow.Year == datetime.Year;
 }

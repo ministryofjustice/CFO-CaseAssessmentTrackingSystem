@@ -83,6 +83,7 @@ internal static class DatabaseConstants
         public const string Enrolment = nameof(Enrolment);
         public const string Induction = nameof(Induction);
         public const string Activities = nameof(Activities);
+        public const string Mi = nameof(Mi);
     }
 
     public static class FieldLengths

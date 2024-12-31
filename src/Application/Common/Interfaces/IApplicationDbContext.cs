@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.Notifications;
+using Cfo.Cats.Domain.Entities.ManagementInformation;
 
 namespace Cfo.Cats.Application.Common.Interfaces;
 
@@ -81,4 +82,14 @@ public interface IApplicationDbContext
     DbSet<ActivityEscalationQueueEntry> ActivityEscalationQueue { get; }
 
     DbSet<OutboxMessage> OutboxMessages { get; }
+
+    DbSet<EnrolmentPayment> EnrolmentPayments { get; }
+    DbSet<InductionPayment> InductionPayments { get; }
+    DbSet<ActivityPayment> ActivityPayments { get; }
+
+    DbSet<EducationPayment> EducationPayments { get; }
+
+    DbSet<DateDimension> DateDimensions { get; }
+
+
 }

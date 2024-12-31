@@ -8,7 +8,7 @@ public class InductionPaymentEntityTypeConfiguration : IEntityTypeConfiguration<
 {
     public void Configure(EntityTypeBuilder<InductionPayment> builder)
     {
-        builder.ToTable(nameof(InductionPayment), "Attachments");
+        builder.ToTable(nameof(InductionPayment), DatabaseConstants.Schemas.Mi);
         builder.HasKey(x => x.Id);
         
         builder.Property(x => x.CreatedOn)
