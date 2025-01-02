@@ -52,7 +52,7 @@ public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<
                     p.TenantId,
                     SubmissionToPqa = p.Created
                 })
-                .SingleAsync();
+                .FirstAsync();
 
             // do we already have a payment?
             var exists = unitOfWork.DbContext.EnrolmentPayments
