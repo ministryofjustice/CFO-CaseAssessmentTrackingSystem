@@ -49,6 +49,13 @@
         </MudAlert>
     }
 
+    @if(_participantDto.ConsentStatus == ConsentStatus.GrantedStatus && _participantDto.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus)
+    {
+        <MudAlert Severity="Severity.Info">
+            The consent form has previously been approved for this participant. The Right to Work submission requires verifying.
+        </MudAlert>
+    }
+
     <MudGrid Style="height: 100vh; width: 100%;">
         <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
             <ParticipantQaDetails Participant="_participantDto"/>

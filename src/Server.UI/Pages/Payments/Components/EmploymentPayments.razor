@@ -1,17 +1,21 @@
 ﻿@inherits CatsComponentBase
 
-<MudTable Items="@Payments" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+<MudTable Items="@Payments" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
+          GroupBy="_groupDefinition"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4">
     <HeaderContent>
         <MudTh>Created</MudTh>
         <MudTh>Approved</MudTh>
-        <MudTh>Contract</MudTh>
         <MudTh>Participant Id</MudTh>
         <MudTh>Payable</MudTh>
     </HeaderContent>
+    <GroupHeaderTemplate>
+        <MudTh Class="mud-table-cell-custom-group" colspan="4">@context.Key</MudTh>
+    </GroupHeaderTemplate>
     <RowTemplate>
         <MudTd DataLabel="Created">@context.CreatedOn</MudTd>
         <MudTd DataLabel="Approved">@context.ActivityApproved.ToShortDateString()</MudTd>
-        <MudTd DataLabel="Contract">@context.Contract</MudTd>
         <MudTd DataLabel="Participant Id">@context.ParticipantId</MudTd>
         <MudTd DataLabel="Payable">@(context.EligibleForPayment ? "Yes" : "No")</MudTd>
     </RowTemplate>
@@ -29,6 +33,14 @@
     public int Year { get; set; }
 
     private Data[] Payments { get; set; } = [];
+
+    private TableGroupDefinition<Data> _groupDefinition = new()
+    {
+        GroupName = "Contract",
+        Indentation = false,
+        Expandable = true,
+        Selector = (e) => e.Contract
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -57,8 +69,8 @@
                     ParticipantId = x.ParticipantId,
                     EligibleForPayment = x.EligibleForPayment,
                     Contract = x.Contract
-                }
-                )
+                })
+            .OrderByDescending(e => e.CreatedOn)
             .ToArrayAsync();
 
         _loading = false;

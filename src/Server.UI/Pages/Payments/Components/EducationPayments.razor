@@ -1,22 +1,26 @@
 ﻿@inherits CatsComponentBase
 
-<MudTable Items="@Payments" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+<MudTable Items="@Payments" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
+          GroupBy="_groupDefinition"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4">
     <HeaderContent>
         <MudTh>Created</MudTh>
         <MudTh>Approved</MudTh>
-        <MudTh>Contract</MudTh>
         <MudTh>Participant Id</MudTh>
         <MudTh>Location</MudTh>
         <MudTh>Type</MudTh>
         <MudTh>Payable</MudTh>
     </HeaderContent>
+    <GroupHeaderTemplate>
+        <MudTh Class="mud-table-cell-custom-group" colspan="6">@context.Key</MudTh>
+    </GroupHeaderTemplate>
     <RowTemplate>
         <MudTd DataLabel="Approved">@context.CreatedOn</MudTd>
         <MudTd DataLabel="Approved">@context.ActivityApproved.ToShortDateString()</MudTd>
-        <MudTd DataLabel="Contract">@context.Contract</MudTd>
         <MudTd DataLabel="Participant Id">@context.ParticipantId</MudTd>
-        <MudTd DataLabel="Participant Id">@context.Location</MudTd>
-        <MudTd DataLabel="Participant Id">@context.LocationType</MudTd>
+        <MudTd DataLabel="Location">@context.Location</MudTd>
+        <MudTd DataLabel="Location Type">@context.LocationType</MudTd>
         <MudTd DataLabel="Payable">
 
             @if (context.EligibleForPayment)
@@ -47,6 +51,14 @@
     public int Year { get; set; }
 
     private Data[] Payments { get; set; } = [];
+
+    private TableGroupDefinition<Data> _groupDefinition = new()
+    {
+        GroupName = "Contract",
+        Indentation = false,
+        Expandable = true,
+        Selector = (e) => e.Contract
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,8 +94,8 @@
                     Location = x.Location,
                     LocationType = x.LocationType,
                     IneligibilityReason = x.IneligibilityReason
-                }
-                )
+                })
+            .OrderByDescending(e => e.CreatedOn)
             .ToArrayAsync();
 
         _loading = false;
