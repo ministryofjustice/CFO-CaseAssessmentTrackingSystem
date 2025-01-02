@@ -8,7 +8,7 @@ public class PublishHubInductionCreatedDomainEventHandler(IUnitOfWork unitOfWork
 {
     public async Task Handle(HubInductionCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var e = new HubInductionCreatedIntegrationEvent(notification.Item.Id);
+        var e = new HubInductionCreatedIntegrationEvent(notification.Item.Id, DateTime.UtcNow);
         await unitOfWork.DbContext.InsertOutboxMessage(e);
     }
 }

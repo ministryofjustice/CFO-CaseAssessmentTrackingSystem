@@ -55,7 +55,7 @@ public class RecordHubInductionPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
                     .WithParticipantId(inductionData.ParticipantId)
                     .WithSupportWorker(inductionData.CreatedBy!)
                     .WithContractId(inductionData.ContractId)
-                    .WithApproved(firstApproval)
+                    .WithApproved(context.Message.OccurredOn)
                     .WithInduction(inductionData.InductionDate.Date)
                     .WithLocationId(inductionData.LocationId)
                     .WithLocationType(inductionData.LocationType)

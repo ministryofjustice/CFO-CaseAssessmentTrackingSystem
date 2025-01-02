@@ -33,8 +33,8 @@ public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork) : IConsu
                 .Select(e => new { e.Id, e.ApprovedOn })
                 .ToArrayAsync();
 
-            events.AddRange(wings.Select(wi => new WingInductionCreatedIntegrationEvent(wi)));
-            events.AddRange(hubs.Select(hi => new HubInductionCreatedIntegrationEvent(hi)));
+            events.AddRange(wings.Select(wi => new WingInductionCreatedIntegrationEvent(wi, DateTime.UtcNow)));
+            events.AddRange(hubs.Select(hi => new HubInductionCreatedIntegrationEvent(hi, DateTime.UtcNow)));
             events.AddRange(activities.Select(e =>
                 new ActivityApprovedIntegrationEvent(e.Id, e.ApprovedOn!.Value)));
 

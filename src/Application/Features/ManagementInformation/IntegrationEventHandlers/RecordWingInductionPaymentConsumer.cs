@@ -64,7 +64,7 @@ public class RecordWingInductionPaymentConsumer(IUnitOfWork unitOfWork) : IConsu
                     .WithParticipantId(inductionData.ParticipantId)
                     .WithSupportWorker(inductionData.CreatedBy!)
                     .WithContractId(inductionData.ContractId)
-                    .WithApproved(firstApproval)
+                    .WithApproved(context.Message.OccurredOn.Date)
                     .WithInduction(inductionData.InductionDate.Date)
                     .WithLocationId(inductionData.LocationId)
                     .WithLocationType(inductionData.LocationType)

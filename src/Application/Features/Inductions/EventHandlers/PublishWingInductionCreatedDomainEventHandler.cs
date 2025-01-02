@@ -8,7 +8,7 @@ public class PublishWingInductionCreatedDomainEventHandler(IUnitOfWork unitOfWor
 {
     public async Task Handle(WingInductionCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var e = new WingInductionCreatedIntegrationEvent(notification.Item.Id);
+        var e = new WingInductionCreatedIntegrationEvent(notification.Item.Id, DateTime.UtcNow);
         await unitOfWork.DbContext.InsertOutboxMessage(e);
     }
 }

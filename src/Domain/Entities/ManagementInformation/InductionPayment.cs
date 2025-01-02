@@ -21,7 +21,7 @@ public class InductionPayment
 
     public DateTime Induction { get;set; }
 
-    public DateTime? Approved { get; set; }
+    public DateTime Approved { get; set; }
 
     public int LocationId { get; set; }
 
@@ -47,6 +47,7 @@ public class InductionPaymentBuilder
     private string? _tenantId;
     private bool? _eligibleForPayment;
     private string? _ineligibilityReason;
+    private DateTime? _activityApproved;
 
     public InductionPaymentBuilder WithParticipantId(string participantId)
     {
@@ -73,7 +74,8 @@ public class InductionPaymentBuilder
     }
     public InductionPaymentBuilder WithApproved(DateTime? approved)
     {
-        _approved = approved.HasValue ? approved.Value.Date : null;
+        _approved = approved?.Date;
+        _activityApproved = approved.HasValue ? DateTime.Now.Date : null; 
         return this;
     }
 
@@ -120,7 +122,7 @@ public class InductionPaymentBuilder
             ParticipantId = _participantId ?? throw new ApplicationException("ParticipantId must be set before calling build"), 
             SupportWorker = _supportWorker ?? throw new ApplicationException("SupportWorker must be set before calling build"), 
             ContractId = _contractId ?? throw new ApplicationException("ContractId must be set before calling build"), 
-            Approved = _approved,
+            Approved = _approved ?? throw new ApplicationException("Approved must be set before calling build"),
             Induction = _induction ?? throw new ApplicationException("Induction must be set before calling build"),
             LocationId = _locationId ?? throw new ApplicationException("LocationId must be set before calling build"), 
             LocationType = _locationType ?? throw new ApplicationException("LocationType must be set before calling build"),

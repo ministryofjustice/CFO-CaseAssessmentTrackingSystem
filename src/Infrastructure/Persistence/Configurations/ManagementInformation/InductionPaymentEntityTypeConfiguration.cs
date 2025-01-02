@@ -31,10 +31,9 @@ public class InductionPaymentEntityTypeConfiguration : IEntityTypeConfiguration<
         builder.Property(x => x.ContractId)
             .HasMaxLength(12)
             .IsRequired();
-        
+
         builder.Property(x => x.Approved)
-            .HasColumnType("date")
-            .IsRequired(false);
+            .HasColumnType("date");
 
         builder.Property(x => x.Induction)
             .HasColumnType("date")
