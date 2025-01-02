@@ -11,13 +11,14 @@
         <MudTh>Payable</MudTh>
     </HeaderContent>
     <RowTemplate>
+        <MudTd DataLabel="Approved">@context.CreatedOn</MudTd>
         <MudTd DataLabel="Approved">@context.ActivityApproved.ToShortDateString()</MudTd>
         <MudTd DataLabel="Contract">@context.Contract</MudTd>
         <MudTd DataLabel="Participant Id">@context.ParticipantId</MudTd>
         <MudTd DataLabel="Participant Id">@context.Location</MudTd>
         <MudTd DataLabel="Participant Id">@context.LocationType</MudTd>
         <MudTd DataLabel="Payable">
-            
+
             @if (context.EligibleForPayment)
             {
                 @("Yes")
@@ -29,7 +30,7 @@
                 </MudTooltip>
             }
 
-            
+
         </MudTd>
     </RowTemplate>
 </MudTable>
