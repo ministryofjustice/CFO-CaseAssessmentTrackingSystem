@@ -46,6 +46,8 @@ public class ParticipantDto
 
     public string SupportWorker { get;set; } = default!;
 
+    public string? FullName => string.Join(' ', [FirstName, MiddleName, LastName]);
+
     private class Mapping : Profile
     {
         public Mapping()

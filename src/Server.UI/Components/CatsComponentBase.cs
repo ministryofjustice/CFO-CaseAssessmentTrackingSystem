@@ -18,7 +18,15 @@ public abstract class CatsComponentBase : OwningComponentBase
         _scopes.Add(scope);
         return scope.ServiceProvider.GetRequiredService<IMediator>();
     }
-    
+
+    protected IUnitOfWork GetNewUnitOfWork()
+    {
+        // Create a new scope and return a new instance of IMediator
+        var scope = ServiceProvider.CreateScope();
+        _scopes.Add(scope);
+        return scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+    }
+
     protected override void Dispose(bool disposing)
     {
         if (!_disposed)

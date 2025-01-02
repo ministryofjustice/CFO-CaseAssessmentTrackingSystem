@@ -23,8 +23,8 @@ app.ConfigureServer(builder.Configuration);
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
-    var initializer = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitializer>();
-    await initializer.InitialiseAsync();
+    var applicationDbContextInitializer = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitializer>();
+    await applicationDbContextInitializer.InitialiseAsync();
 }
 
 await app.RunAsync();

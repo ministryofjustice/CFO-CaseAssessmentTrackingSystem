@@ -1,4 +1,5 @@
 using Cfo.Cats.Domain.Entities.Notifications;
+using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -48,9 +49,9 @@ public class NotificationEntityTypeConfiguration : IEntityTypeConfiguration<Noti
             .IsRequired(false)
             .HasMaxLength(50);
 
-        builder.Property(x => x.CreatedBy)
-            .IsRequired()
-            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+        builder.HasOne<ApplicationUser>()
+            .WithMany()
+            .HasForeignKey(x => x.CreatedBy);
 
         builder.Property(x => x.Created)
             .IsRequired();

@@ -1,0 +1,79 @@
+﻿@inherits CatsComponentBase
+
+<MudTable Items="@Payments" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>Created</MudTh>
+        <MudTh>Approved</MudTh>
+        <MudTh>Contract</MudTh>
+        <MudTh>Participant Id</MudTh>
+        <MudTh>Payable</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Created">@context.CreatedOn</MudTd>
+        <MudTd DataLabel="Approved">@context.ActivityApproved.ToShortDateString()</MudTd>
+        <MudTd DataLabel="Contract">@context.Contract</MudTd>
+        <MudTd DataLabel="Participant Id">@context.ParticipantId</MudTd>
+        <MudTd DataLabel="Payable">@(context.EligibleForPayment ? "Yes" : "No")</MudTd>
+    </RowTemplate>
+</MudTable>
+
+
+@code {
+
+    private bool _loading = true;
+
+    [Parameter, EditorRequired]
+    public int Month { get; set; }
+
+    [Parameter, EditorRequired]
+    public int Year { get; set; }
+
+    private Data[] Payments { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var unitOfWork = GetNewUnitOfWork();
+
+
+        var query = from ep in unitOfWork.DbContext.EmploymentPayments
+                    join dd in unitOfWork.DbContext.DateDimensions on ep.ActivityApproved equals dd.TheDate
+                    join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
+        where dd.TheMonth == Month && dd.TheYear == Year
+            select new
+            {
+                ep.CreatedOn,
+                ep.ActivityApproved,
+                ep.ParticipantId,
+                ep.EligibleForPayment,
+                Contract = c.Description
+            };
+        
+
+        Payments = await query.AsNoTracking()
+            .Select(x => new Data 
+                { 
+                    CreatedOn = x.CreatedOn,
+                    ActivityApproved = x.ActivityApproved,
+                    ParticipantId = x.ParticipantId,
+                    EligibleForPayment = x.EligibleForPayment,
+                    Contract = x.Contract
+                }
+                )
+            .ToArrayAsync();
+
+        _loading = false;
+
+    }
+
+    private class Data
+    {
+        public DateTime CreatedOn { get; set; }
+        public DateTime ActivityApproved { get; set; }
+        public string Contract { get; set; } = "";
+        public string ParticipantId { get; set; } = "";
+        public bool EligibleForPayment { get; set; }
+
+    }
+
+
+}

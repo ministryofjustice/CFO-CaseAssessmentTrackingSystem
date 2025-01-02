@@ -1,5 +1,7 @@
 using System.Reflection;
+using Cfo.Cats.Application.Outbox;
 using Cfo.Cats.Domain.Common.Contracts;
+using Cfo.Cats.Domain.Entities.Activities;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.Documents;
@@ -10,6 +12,8 @@ using Cfo.Cats.Infrastructure.Persistence.Configurations.Enrolments;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.Notifications;
+using Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformation;
+using Cfo.Cats.Domain.Entities.ManagementInformation;
 
 namespace Cfo.Cats.Infrastructure.Persistence;
 
@@ -74,11 +78,35 @@ public class ApplicationDbContext
     public DbSet<ParticipantAccessAuditTrail> AccessAuditTrails => Set<ParticipantAccessAuditTrail>();
     
     public DbSet<Notification> Notifications => Set<Notification>();
+
+    public DbSet<Activity> Activities => Set<Activity>();
+    public DbSet<EducationTrainingActivity> EducationTrainingActivities => Set<EducationTrainingActivity>();
+    public DbSet<EmploymentActivity> EmploymentActivities => Set<EmploymentActivity>();
+    public DbSet<ISWActivity> ISWActivities => Set<ISWActivity>();
+    public DbSet<NonISWActivity> NonISWActivities => Set<NonISWActivity>();
+
+    public DbSet<ParticipantIncomingTransferQueueEntry> ParticipantIncomingTransferQueue => Set<ParticipantIncomingTransferQueueEntry>();
+    public DbSet<ParticipantOutgoingTransferQueueEntry> ParticipantOutgoingTransferQueue => Set<ParticipantOutgoingTransferQueueEntry>();
+
+    public DbSet<ActivityPqaQueueEntry> ActivityPqaQueue => Set<ActivityPqaQueueEntry>();
+    public DbSet<ActivityQa1QueueEntry> ActivityQa1Queue => Set<ActivityQa1QueueEntry>();
+    public DbSet<ActivityQa2QueueEntry> ActivityQa2Queue => Set<ActivityQa2QueueEntry>();
+    public DbSet<ActivityEscalationQueueEntry> ActivityEscalationQueue => Set<ActivityEscalationQueueEntry>();
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+
+    public DbSet<EnrolmentPayment> EnrolmentPayments => Set<EnrolmentPayment>();
+    public DbSet<InductionPayment> InductionPayments => Set<InductionPayment>();
+    public DbSet<ActivityPayment> ActivityPayments => Set<ActivityPayment>();
+    public DbSet<EducationPayment> EducationPayments => Set<EducationPayment>();
+
+    public DbSet<EmploymentPayment> EmploymentPayments => Set<EmploymentPayment>();
+
+    public DbSet<DateDimension> DateDimensions => Set<DateDimension>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
 
         builder.ApplyGlobalFilters<ISoftDelete>(s => s.Deleted == null);
     }

@@ -145,6 +145,31 @@ public partial class CaseSummary
         }
     }
 
+    public async Task OnClickAddRiskInformation()
+    {
+        var command = new AddRisk.Command
+        {
+            ParticipantId = ParticipantSummaryDto.Id,
+            ReviewReason = RiskReviewReason.InitialReview
+        };
+
+        var parameters = new DialogParameters<ReviewRiskDialog>()
+        {
+            { x => x.Model, command },
+            { x => x.AddReviewRequest, true}
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<ReviewRiskDialog>("Add risk information for a participant", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            await AddRiskInformation(command);
+        }
+    }
+
     public async Task AddRiskInformation(AddRisk.Command? command = null)
     {
         command ??= new AddRisk.Command

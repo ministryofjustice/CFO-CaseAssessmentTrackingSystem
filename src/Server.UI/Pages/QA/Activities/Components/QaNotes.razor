@@ -1,0 +1,68 @@
+@inherits CatsComponentBase
+
+@using System.Globalization
+@using ActualLab.Fusion.Extensions
+@using Cfo.Cats.Application.Features.Activities.DTOs
+@using Cfo.Cats.Application.Features.Activities.Queries
+@using Cfo.Cats.Application.SecurityConstants
+@using Humanizer
+
+
+@if (_notes is { Length: > 0 })
+{
+    <MudTimeline TimelineOrientation="TimelineOrientation.Vertical" TimelinePosition="TimelinePosition.Start">
+        @foreach (var note in _notes.OrderByDescending(n => n.Created))
+        {   
+            <MudTimelineItem Size="Size.Medium" Color="Color.Success" Elevation="25">
+                <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
+                    <MudCard Outlined="false" Elevation="25">
+                        <MudCardContent>
+                            <MudText Typo="Typo.body1">
+                                @note.Message
+                            </MudText>
+                            <MudText Typo="Typo.caption">
+                                @note.CreatedBy (@note.TenantName)  @note.Created.Humanize()    
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudTooltip>
+            </MudTimelineItem>
+        }
+    </MudTimeline>
+}
+
+
+@code{
+    private ActivityQaNoteDto[]? _notes = null;
+
+    [CascadingParameter] 
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+
+    [CascadingParameter]
+    public UserProfile UserProfile { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Guid? ActivityId { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_notes is null)
+        {
+            var state = await AuthState;
+
+            bool includeInternalNotes = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
+
+            var result = await GetNewMediator().Send(new GetActivityQaNotes.Query()
+            {
+                ActivityId = ActivityId,
+                CurentUser = UserProfile,
+                IncludeInternalNotes = includeInternalNotes
+            });
+
+            if (result.Succeeded)
+            {
+                _notes = result.Data!.OrderBy(n => n.Created).ToArray();
+            }
+        }
+    }
+}

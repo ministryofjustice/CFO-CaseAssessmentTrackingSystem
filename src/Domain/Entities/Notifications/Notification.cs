@@ -13,7 +13,7 @@ public class Notification : OwnerPropertyEntity<Guid>
     
     private Notification(string heading, string details, string userId)
     {
-        Id = Guid.NewGuid();
+        Id = Guid.CreateVersion7();
         Heading = heading;
         Details = details;
         OwnerId = userId;

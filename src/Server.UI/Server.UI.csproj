@@ -3,7 +3,7 @@
     <PropertyGroup>
         <RootNamespace>Cfo.Cats.Server.UI</RootNamespace>
         <AssemblyName>Cfo.Cats.Server.UI</AssemblyName>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <InvariantGlobalization>false</InvariantGlobalization>
@@ -18,18 +18,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ActualLab.Fusion" Version="9.5.45" />
-        <PackageReference Include="ActualLab.Fusion.Blazor" Version="9.5.45" />
-        <PackageReference Include="ActualLab.Fusion.Ext.Services" Version="9.5.45" />
-        <PackageReference Include="ActualLab.Generators" Version="9.5.45">
+        <PackageReference Include="ActualLab.Fusion" Version="9.7.6" />
+        <PackageReference Include="ActualLab.Fusion.Blazor" Version="9.7.6" />
+        <PackageReference Include="ActualLab.Fusion.Ext.Services" Version="9.7.6" />
+        <PackageReference Include="ActualLab.Generators" Version="9.7.6">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Blazor-Analytics" Version="3.12.0" />
-        <PackageReference Include="Blazor-ApexCharts" Version="3.5.0" />
+        <PackageReference Include="Blazor-ApexCharts" Version="4.0.1" />
         <PackageReference Include="BlazorDownloadFile" Version="2.4.0.2" />
         <PackageReference Include="BlazorTime" Version="1.0.3" />
-        <PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="7.0.2" />
+        <PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="7.1.0" />
         <PackageReference Include="Faker.Net" Version="2.0.163" />
         <PackageReference Include="Humanizer" Version="2.14.1" />
         <PackageReference Include="Humanizer.Core.uk" Version="2.14.1" />
@@ -37,16 +37,15 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.10" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
+        <!-- Direct Reference to MessagePack (resolves ActualLab vulnerable transitive dependency issue) -->
+        <PackageReference Include="MessagePack" Version="3.1.0" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="MudBlazor" Version="7.12.1" />
-        <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="5.1.0" />
-    </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj" />
+        <PackageReference Include="MudBlazor" Version="7.15.0" />
+        <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Update="Resources\Pages\Dashboard\Dashboard.resx">
@@ -66,6 +65,10 @@
         <None Include="web.config">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
 
     

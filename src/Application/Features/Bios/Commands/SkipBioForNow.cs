@@ -33,7 +33,7 @@ public static class SkipBioForNow
             { 
                 Bio newBio = new Bio()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.CreateVersion7(),
                     ParticipantId = request.ParticipantId!,
                     Pathways =
                        [

@@ -1,3 +1,5 @@
+using Cfo.Cats.Application.Outbox;
+using Cfo.Cats.Domain.Entities.Activities;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.Documents;
@@ -10,6 +12,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.Notifications;
+using Cfo.Cats.Domain.Entities.ManagementInformation;
 
 namespace Cfo.Cats.Application.Common.Interfaces;
 
@@ -48,6 +51,8 @@ public interface IApplicationDbContext
     DbSet<EnrolmentQa1QueueEntry> EnrolmentQa1Queue { get; }
     DbSet<EnrolmentQa2QueueEntry> EnrolmentQa2Queue { get; }
     DbSet<EnrolmentEscalationQueueEntry> EnrolmentEscalationQueue { get; }
+    DbSet<ParticipantIncomingTransferQueueEntry> ParticipantIncomingTransferQueue { get; }
+    DbSet<ParticipantOutgoingTransferQueueEntry> ParticipantOutgoingTransferQueue { get; }
 
     DbSet<LocationMapping> LocationMappings { get; }
 
@@ -65,5 +70,28 @@ public interface IApplicationDbContext
 
     DbSet<WingInduction> WingInductions { get; }
     DbSet<Notification> Notifications { get; }
-}
+    DbSet<Activity> Activities { get; }
+    DbSet<EducationTrainingActivity> EducationTrainingActivities { get; }
+    DbSet<EmploymentActivity> EmploymentActivities { get; }
+    DbSet<ISWActivity> ISWActivities { get; }
+    DbSet<NonISWActivity> NonISWActivities { get; }
 
+    DbSet<ActivityPqaQueueEntry> ActivityPqaQueue { get; }
+    DbSet<ActivityQa1QueueEntry> ActivityQa1Queue { get; }
+    DbSet<ActivityQa2QueueEntry> ActivityQa2Queue { get; }
+    DbSet<ActivityEscalationQueueEntry> ActivityEscalationQueue { get; }
+
+    DbSet<OutboxMessage> OutboxMessages { get; }
+
+    DbSet<EnrolmentPayment> EnrolmentPayments { get; }
+    DbSet<InductionPayment> InductionPayments { get; }
+    DbSet<ActivityPayment> ActivityPayments { get; }
+
+    DbSet<EducationPayment> EducationPayments { get; }
+
+    DbSet<EmploymentPayment> EmploymentPayments { get; }
+
+    DbSet<DateDimension> DateDimensions { get; }
+
+
+}

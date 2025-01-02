@@ -17,4 +17,9 @@ public static class Documents
         public const double MaximumSizeInMegabytes = 1;
     }
 
+    public static class ActivityTemplate
+    {
+        public const double MaximumSizeInMegabytes = 1;
+    }
+
 }

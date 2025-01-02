@@ -38,26 +38,8 @@ v1.0-alpha
 
 # Building and Tool Restore
 
-The project supports MSSQL and (for development and demo sites) in-memory.
+The project supports MSSQL.
 
-To use an in memory database (only good for development) alter the appsettings for use In-Memory database to true. This will
-override any other database settings.
-
-```json
-{
-  "UseInMemoryDatabase": true,
-}
-```
-
-
-For MSSQL server you can use the following. If you are not running local db on windows, you will need to adjust the connection string.
-
-```json
-  "DatabaseSettings": {
-    "DbProvider": "mssql",
-    "ConnectionString": "Server=(LocalDB)\MSSQLLocalDB;Database=CatsDb;Integrated Security=True"
-  },
-```
 
 ## Cake scripts.
 
@@ -70,7 +52,9 @@ dotnet cake --target Publish
 
 ## Database Migrations
 
-There is a powershell script in the root of the folder called ModifyDatabase.ps1. This can be used to 
+```powershell
+dotnet cake --target Migrate 
+```
 
 ### Update the database
 
@@ -85,7 +69,13 @@ There is a powershell script in the root of the folder called ModifyDatabase.ps1
 *Running this will generate a new migration based on changes to the model*
 
 ```powershell
-.\ModifyDatabase.ps1 -Action add -MigrationName NewMigrationName
+dotnet cake --target=AddMigration --MigrationName=Temp   
+```
+
+By default the migration will go to the ApplicationDbContext. You can modify this by passing through another argument.
+
+```powershell
+dotnet cake --target=AddMigration --MigrationName=Temp --context=ManagementInformationDbContext
 ```
 
 ### Remove a migration

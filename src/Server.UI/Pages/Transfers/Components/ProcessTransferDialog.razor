@@ -1,0 +1,121 @@
+﻿@using Cfo.Cats.Application.Features.Identity.DTOs
+@using Cfo.Cats.Application.Features.Identity.Queries
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Application.Features.Transfers.Commands
+@using Cfo.Cats.Application.Features.Transfers.DTOs
+
+@inherits CatsComponentBase
+
+<MudDialog>
+    <DialogContent>
+        @if (Model is not null && loading is false)
+        {
+            <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudSelect @bind-Value="Model.Assignee"
+                                   Label="@Model.GetMemberDescription(x => x.Assignee)"
+                                   For="() => Model.Assignee">
+                            @foreach(var user in users)
+                            {
+                                <MudSelectItem Value="user">
+                                    @user.DisplayName
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private MudForm form = new();
+    private bool loading;
+    private bool saving;
+    private IEnumerable<ApplicationUserDto> users = [];
+
+    [CascadingParameter] 
+    MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired] 
+    public required ProcessIncomingTransfer.Command Model { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            loading = true;
+
+            var result = await GetNewMediator().Send(new GetUsersWithAccessToLocation.Query()
+            {
+                LocationId = Model.IncomingTransfer.ToLocation.Id
+            });
+
+            if(result is not { Succeeded: true, Data: not null })
+            {
+                Snackbar.Add("An unexpected error occurred.");
+                return;
+            }
+
+            users = result.Data;
+
+            var owner = await GetNewMediator().Send(new GetOwnerByParticipantId.Query()
+            {
+                ParticipantId = Model.IncomingTransfer.Participant.Id
+            });
+
+            if (owner is { Succeeded: true, Data: not null })
+            {
+                Model.Assignee = users.FirstOrDefault(user => user.Id == owner.Data.Id);
+            }
+
+        }
+        finally
+        {
+            loading = false;
+            await base.OnInitializedAsync();
+        }
+    }
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    async Task Submit()
+    {
+        try
+        {
+            saving = true;
+
+            if(form.IsValid is false)
+            {
+                return;
+            }
+
+            var result = await GetNewMediator().Send(Model);
+
+            if (result.Succeeded)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+}

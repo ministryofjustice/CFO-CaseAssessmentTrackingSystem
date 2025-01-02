@@ -17,7 +17,7 @@ public class Note : ValueObject, IAuditable, IMustHaveTenant
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return CreatedBy ?? Guid.NewGuid().ToString();
+        yield return CreatedBy ?? Guid.CreateVersion7().ToString();
         yield return Created ?? DateTime.Now;
     }
     public string TenantId { get; set; } = default!;

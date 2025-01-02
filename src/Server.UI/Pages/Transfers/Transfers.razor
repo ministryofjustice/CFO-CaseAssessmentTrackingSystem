@@ -1,0 +1,208 @@
+@page "/pages/participants/transfers"
+
+@using Cfo.Cats.Application.Features.Transfers.Commands
+@using Cfo.Cats.Application.Features.Transfers.DTOs
+@using Cfo.Cats.Application.Features.Transfers.Queries
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Pages.Transfers.Components
+
+@inherits CatsComponentBase
+
+@attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+
+<MudSimpleTable Class="mb-8 pa-4">
+    <thead>
+        <tr>
+            <div class="d-flex align-start flex-grow-1">
+                <div class="d-flex gap-4">
+                    <MudIcon Icon="@Icons.Material.Filled.Input" Size="Size.Large" />
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.caption">Incoming Transfers</MudText>
+                    </div>
+                </div>
+            </div>
+        </tr>
+        <tr>
+            <th>Participant</th>
+            <th>Occurred</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Type</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var transfer in incomingTransfers.OrderByDescending(t => t.MoveOccured))
+        {
+            <tr>
+                <td>
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.body2">@transfer.Participant.FullName</MudText>
+                        <MudText Typo="Typo.body2">@transfer.Participant.Id</MudText>
+                    </div>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                    </MudText>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.FromLocation.Name (@transfer.FromLocation.LocationType.Name)
+                    </MudText>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)
+                    </MudText>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.TransferType.Name
+                    </MudText>
+                </td>
+                <td>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="async() => await Process(transfer)">Process</MudButton>
+                </td>
+            </tr>
+        }
+        @if(incomingTransfers.Count is 0)
+        {
+            <tr>
+                <td colspan="6">
+                    <div class="d-flex justify-center">
+                        <MudText>@ConstantString.NoRecords</MudText>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</MudSimpleTable>
+
+<MudSimpleTable Class="mb-8 pa-4">
+    <thead>
+        <tr>
+            <div class="d-flex align-start flex-grow-1">
+                <div class="d-flex gap-4">
+                    <MudIcon Icon="@Icons.Material.Filled.Output" Size="Size.Large" />
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.caption">Outgoing Transfers</MudText>
+                    </div>
+                </div>
+            </div>
+        </tr>
+        <tr>
+            <th>Participant</th>
+            <th>Occurred</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Type</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var transfer in outgoingTransfers.OrderByDescending(t => t.MoveOccured))
+        {
+            <tr>
+                <td>
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.body2">@transfer.Participant.FullName</MudText>
+                        <MudText Typo="Typo.body2">@transfer.Participant.Id</MudText>
+                    </div>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                    </MudText>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.FromLocation.Name (@transfer.FromLocation.LocationType.Name)
+                    </MudText>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)
+                    </MudText>
+                </td>
+                <td>
+                    <MudText Typo="Typo.body2">
+                        @transfer.TransferType.Name
+                    </MudText>
+                </td>
+                <td>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="() => View(transfer)">View</MudButton>
+                </td>
+            </tr>
+        }
+        @if (outgoingTransfers.Count is 0)
+        {
+            <tr>
+                <td colspan="6">
+                    <div class="d-flex justify-center">
+                        <MudText>@ConstantString.NoRecords</MudText>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</MudSimpleTable>
+
+@code {
+    private List<IncomingTransferDto> incomingTransfers = [];
+    private List<OutgoingTransferDto> outgoingTransfers = [];
+
+    protected async override Task OnInitializedAsync()
+    {
+        incomingTransfers = await GetIncomingTransfers();
+        outgoingTransfers = await GetOutgoingTransfers();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task<List<IncomingTransferDto>> GetIncomingTransfers()
+    {
+        var query = await GetNewMediator().Send(new GetIncomingTransfers.Query());
+        return query.Data?.ToList() ?? [];
+    }
+
+    private async Task<List<OutgoingTransferDto>> GetOutgoingTransfers()
+    {
+        var query = await GetNewMediator().Send(new GetOutgoingTransfers.Query());
+        return query.Data?.ToList() ?? [];
+    }
+
+    async Task Process(IncomingTransferDto incomingTransfer)
+    {
+        var command = new ProcessIncomingTransfer.Command()
+        {
+            IncomingTransfer = incomingTransfer
+        };
+
+        var parameters = new DialogParameters<ProcessTransferDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+        var dialog = DialogService.Show<ProcessTransferDialog>("Process and Assign", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                dialog.Close();
+            }
+
+            // Remove dto from UI
+            incomingTransfers.Remove(incomingTransfer);
+        }
+    }
+
+    private void View(OutgoingTransferDto transfer) => Navigation.NavigateTo($"/pages/participants/{transfer.Participant.Id}");
+
+}

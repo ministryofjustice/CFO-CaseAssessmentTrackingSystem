@@ -14,7 +14,7 @@ public class HubInduction : OwnerPropertyEntity<Guid>
 
     private HubInduction(string participantId, int locationId, DateTime inductionDate, string ownerId)
     {
-        Id = Guid.NewGuid();
+        Id = Guid.CreateVersion7();
         ParticipantId = participantId;
         LocationId = locationId;
         InductionDate = inductionDate;

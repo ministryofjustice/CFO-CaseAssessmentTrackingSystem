@@ -29,6 +29,21 @@ public class RiskDto
     [Description("License/Supervision End Date")]
     public DateTime? LicenseEnd { get; set; }
 
+    private bool? _noLicenseEndDate = false;
+    [Description("No License/Supervision End Date")]
+    public bool? NoLicenseEndDate
+    {
+        get { return _noLicenseEndDate; }
+        set
+        {
+            _noLicenseEndDate = value;
+            if (value == true)
+            {
+                LicenseEnd = null;
+            }
+        }
+    }
+
     [Description("PSF Restrictions")]
     public string? PSFRestrictions { get; set; }
 
@@ -209,6 +224,7 @@ public class RiskDto
 
             RuleFor(x => x.LicenseEnd)
                 .NotEmpty()
+                .When(x => x.NoLicenseEndDate is false)
                 .WithMessage("You must provide the license end date")
                 .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
                 .WithMessage(ValidationConstants.DateMustBeInFuture);

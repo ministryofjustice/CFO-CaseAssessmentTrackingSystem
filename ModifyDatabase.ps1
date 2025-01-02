@@ -2,36 +2,52 @@ param (
     [string]$MigrationName,
     [ValidateSet('add', 'remove', 'drop', 'seed', 'update')]
     [string]$Action,
-    [string]$SqlFilePath
+    [string]$SqlFilePath,
+    [switch]$NoBuild
 )
 
 function Add-Migration {
     param (
-        [string]$Name
+        [string]$Name,
+        [bool]$NoBuild
     )
     if (-not $Name) {
         Write-Host "Please provide a name for the migration."
         return
     }
-    $command = "dotnet ef migrations add $Name --project src\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj --startup-project src\Server.UI\Server.UI.csproj --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --configuration Debug"
+    
+    $noBuildOption = if ($NoBuild) { "--no-build" } else { "" }
+    $command = "dotnet ef migrations add $Name $noBuildOption --project src\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj --startup-project src\Server.UI\Server.UI.csproj --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --configuration Debug"
     Write-Host "Executing: $command"
     Invoke-Expression $command
 }
 
 function Remove-LastMigration {
-    $command = "dotnet ef migrations remove --project src\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj --startup-project src\Server.UI\Server.UI.csproj --no-build --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --configuration Debug"
+    param (
+        [bool]$NoBuild
+    )
+    $noBuildOption = if ($NoBuild) { "--no-build" } else { "" }
+    $command = "dotnet ef migrations remove $noBuildOption --project src\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj --startup-project src\Server.UI\Server.UI.csproj --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --configuration Debug"
     Write-Host "Executing: $command"
     Invoke-Expression $command
 }
 
 function Remove-Database {
-    $command = "dotnet ef database drop --project src\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj --startup-project src\Server.UI\Server.UI.csproj --no-build --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --configuration Debug --force"
+    param (
+        [bool]$NoBuild
+    )
+    $noBuildOption = if ($NoBuild) { "--no-build" } else { "" }
+    $command = "dotnet ef database drop $noBuildOption --project src\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj --startup-project src\Server.UI\Server.UI.csproj --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --configuration Debug --force"
     Write-Host "Executing: $command"
     Invoke-Expression $command
 }
 
 function Update-Database {
-    $command = "dotnet ef database update --project src\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj --startup-project src\Server.UI\Server.UI.csproj --no-build --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --configuration Debug"
+    param (
+        [bool]$NoBuild
+    )
+    $noBuildOption = if ($NoBuild) { "--no-build" } else { "" }
+    $command = "dotnet ef database update $noBuildOption --project src\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj --startup-project src\Server.UI\Server.UI.csproj --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --configuration Debug"
     Write-Host "Executing: $command"
     Invoke-Expression $command
 }
@@ -68,7 +84,7 @@ function Invoke-SqlFile {
     }
 
     $appSettings = Get-Content -Raw -Path $appSettingsPath | ConvertFrom-Json
-    $connectionString = $appSettings.DatabaseSettings.ConnectionString
+    $connectionString = $appSettings.ConnectionStrings.CatsDb
 
     if (-not $connectionString) {
         Write-Host "Connection string not found in appsettings.json"
@@ -96,16 +112,16 @@ function Invoke-SqlFile {
 
 switch ($Action) {
     'add' {
-        Add-Migration -Name $MigrationName
+        Add-Migration -Name $MigrationName -NoBuild $NoBuild
     }
     'remove' {
-        Remove-LastMigration
+        Remove-LastMigration -NoBuild $NoBuild
     }
     'drop' {
-        Remove-Database
+        Remove-Database -NoBuild $NoBuild
     }
     'update' {
-        Update-Database
+        Update-Database -NoBuild $NoBuild
     }
     'seed' {
         Invoke-SqlFile -FilePath $SqlFilePath

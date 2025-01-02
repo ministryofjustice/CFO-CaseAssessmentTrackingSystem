@@ -140,7 +140,7 @@
                 @if (CanAddRiskInformation())
                 {
                     <MudTooltip Text="Add Information">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="async() => await AddRiskInformation()" />
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="OnClickAddRiskInformation" />
                     </MudTooltip>
                 }
                 @if(CanReviewRiskInformation())

@@ -3,7 +3,7 @@ using Amazon.S3;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
-using Cfo.Cats.Application.Features.Participants.Queries;
+using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Configurations;
@@ -15,6 +15,7 @@ using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.Locations;
 using Cfo.Cats.Infrastructure.Services.MultiTenant;
 using Cfo.Cats.Infrastructure.Services.Serialization;
+using MassTransit;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -70,6 +71,19 @@ public static class DependencyInjection
             .AddSingleton<IRightToWorkSettings>(s =>
                 s.GetRequiredService<RightToWorkSettings>()
             );
+
+        services.AddMassTransit(x =>
+        {
+
+            x.AddConsumers(typeof(RecordEnrolmentPaymentConsumer).Assembly); // Automatically add all consumers
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(configuration.GetConnectionString("rabbit"));
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+
         return services;
     }
 
@@ -80,61 +94,25 @@ public static class DependencyInjection
     {
         services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();        
 
-        if (configuration.GetValue<bool>("UseInMemoryDatabase"))
-        {
-            services.AddDbContext<ApplicationDbContext>(options => {
-                options.UseInMemoryDatabase("CatsDb");
-                options.EnableSensitiveDataLogging();
-            });
-        }
-        else
-        {            
-            services.AddDbContext<ApplicationDbContext>(
+        services.AddDbContext<ApplicationDbContext>(
             (p, m) => {
-                var databaseSettings = p.GetRequiredService<IOptions<DatabaseSettings>>().Value;
                 m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
-                m.UseDatabase(databaseSettings.DbProvider, databaseSettings.ConnectionString);
+                m.UseSqlServer(configuration.GetConnectionString("CatsDb")!);
             });
-        }
-
+        
         services.AddDbContextFactory<ApplicationDbContext>((serviceProvider, optionsBuilder) =>
         {
-            var databaseSettings = serviceProvider.GetRequiredService<IOptions<DatabaseSettings>>().Value;
             optionsBuilder.AddInterceptors(serviceProvider.GetServices<ISaveChangesInterceptor>());
-            optionsBuilder.UseDatabase(databaseSettings.DbProvider, databaseSettings.ConnectionString);
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("CatsDb")!);
         }, ServiceLifetime.Scoped);
-                
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+        
         services.AddScoped<ApplicationDbContextInitializer>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
         return services;
-    }
-
-    private static DbContextOptionsBuilder UseDatabase(
-        this DbContextOptionsBuilder builder,
-        string dbProvider,
-        string connectionString
-    )
-    {
-        switch (dbProvider.ToLowerInvariant())
-        {
-            case DbProviderKeys.SqlServer:
-                return builder.UseSqlServer(
-                connectionString,
-                e => e.MigrationsAssembly("Cfo.Cats.Migrators.MSSQL")
-                );
-
-            case DbProviderKeys.SqLite:
-                return builder.UseSqlite(
-                connectionString,
-                e => e.MigrationsAssembly("Cfo.Cats.Migrators.SqLite")
-                ).EnableSensitiveDataLogging();
-
-            default:
-                throw new InvalidOperationException($"DB Provider {dbProvider} is not supported.");
-        }
     }
 
     private static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
@@ -169,19 +147,12 @@ public static class DependencyInjection
             services.AddDefaultAWSOptions(options);
             services.AddAWSService<IAmazonS3>();            
         }
-        
-        if(configuration.GetValue<bool>("UseDummyCandidateService"))
+
+        services.AddHttpClient<ICandidateService, CandidateService>((provider, client) =>
         {
-            services.AddScoped<ICandidateService, DummyCandidateService>();
-        }
-        else
-        {
-            services.AddHttpClient<ICandidateService, CandidateService>((provider, client) =>
-            {
-                client.DefaultRequestHeaders.Add("X-API-KEY", configuration.GetRequiredValue("DMS:ApiKey"));
-                client.BaseAddress = new Uri(configuration.GetRequiredValue("DMS:ApplicationUrl"));
-            });
-        }
+            client.DefaultRequestHeaders.Add("X-API-KEY", configuration.GetRequiredValue("DMS:ApiKey"));
+            client.BaseAddress = new Uri(configuration.GetRequiredValue("DMS:ApplicationUrl"));
+        });
 
         services.AddQuartzJobsAndTriggers(configuration);
         
@@ -411,6 +382,20 @@ public static class DependencyInjection
                     .WithDescription(NotifyAccountDeactivationJob.Description)
                     .WithCronSchedule(notifyAccountDeactivationJobOptions.CronSchedule));
             }
+
+            if (options.GetSection(PublishOutboxMessagesJob.Key.Name).Get<JobOptions>() is
+                { Enabled: true } publishOutboxMessagesOptions)
+            {
+                quartz.AddJob<PublishOutboxMessagesJob>(opts => opts.WithIdentity(PublishOutboxMessagesJob.Key));
+
+                quartz.AddTrigger(opts => opts
+                    .ForJob(PublishOutboxMessagesJob.Key)
+                    .WithIdentity($"{PublishOutboxMessagesJob.Key}-trigger")
+                    .WithDescription(PublishOutboxMessagesJob.Description)
+                    .WithCronSchedule(publishOutboxMessagesOptions.CronSchedule));
+            }
+
+
         });
 
         services.AddQuartzServer(options =>

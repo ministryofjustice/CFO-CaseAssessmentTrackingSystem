@@ -1,6 +1,10 @@
-﻿@using Cfo.Cats.Application.Features.PathwayPlans.Commands
+﻿@using Cfo.Cats.Application.Features.Activities.Commands
+@using Cfo.Cats.Application.Features.Activities.Queries
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.PathwayPlans.Commands
 @using Cfo.Cats.Application.Features.PathwayPlans.DTOs
 @using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Activities
 @using Humanizer
 
 @inherits CatsComponentBase
@@ -79,14 +83,16 @@
                     </MudMenu>
                 </MudTooltip>
                 <MudTooltip Text="Record">
-                    <MudMenu Icon="@Icons.Material.Filled.LibraryAdd" Variant="Variant.Filled" Size="Size.Small" Dense>
-                        <MudMenuItem Disabled>New Activity (Coming Soon)</MudMenuItem>
-                        <MudMenuItem Disabled>New ETE (Coming Soon)</MudMenuItem>
-                        <MudMenuItem Disabled>New PSF (Coming Soon)</MudMenuItem>
+                    <MudMenu Icon="@Icons.Material.Filled.LibraryAdd" Variant="Variant.Filled" Disabled="Model.IsCompleted" Size="Size.Small" Dense>
+                        <MudMenuItem OnClick="AddActivity">Add Activity/ETE</MudMenuItem>
+                        <MudMenuItem Disabled>Add PSF (Coming Soon)</MudMenuItem>
                     </MudMenu>
                 </MudTooltip>
                 <MudTooltip Text="Expand">
                     <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="Expand" Variant="Variant.Filled" Size="Size.Small" />
+                </MudTooltip>
+                <MudTooltip Text="Activity/ETE History">
+                    <MudIconButton Icon="@Icons.Material.Filled.LibraryBooks" OnClick="ShowActivityHistory" Variant="Variant.Filled" Size="Size.Small" />
                 </MudTooltip>
                 <MudTooltip>
                     <TooltipContent>
@@ -102,6 +108,9 @@
 </MudListItem>
 
 @code {
+    [CascadingParameter]
+    public required ObjectiveDto Objective { get; set; }
+
     [Parameter, EditorRequired]
     public required ObjectiveTaskDto Model { get; set; }
 
@@ -110,6 +119,9 @@
 
     [Parameter]
     public EventCallback OnChange { get; set; }
+
+    [CascadingParameter]
+    public required ParticipantSummaryDto ParticipantSummaryDto { get; set; }
 
     public async Task Complete()
     {
@@ -221,6 +233,60 @@
                 await OnChange.InvokeAsync();
             }
 
+        }
+    }
+
+    async Task AddActivity()
+    {
+        var parameters = new DialogParameters<AddActivityDialog>()
+        {
+            { 
+                x => x.Model, new AddActivity.Command() 
+                { 
+                    ParticipantId = ParticipantSummaryDto.Id,
+                    TaskId = Model.Id
+                } 
+            }
+        };
+
+        var dialog = DialogService.Show<AddActivityDialog>("Add Activity/ETE", parameters, new DialogOptions
+        {
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true,
+            CloseButton = true
+        });
+
+        if (await dialog.Result is not { Canceled: true })
+        {
+            await OnChange.InvokeAsync();
+        }
+    }
+
+    async Task ShowActivityHistory()
+    {
+        var parameters = new DialogParameters<ActivitiesDialog>()
+        {
+            {
+                x => x.Model, new ActivitiesWithPagination.Query()
+                {
+                    ParticipantId = ParticipantSummaryDto.Id,
+                    TaskId = Model.Id
+                }
+            },
+            { x => x.Task, Model },
+            { x => x.Objective, Objective }
+        };
+
+        var dialog = DialogService.Show<ActivitiesDialog>("Activity/ETE history for task", parameters, new DialogOptions
+        {
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true,
+            CloseButton = true
+        });
+
+        if (await dialog.Result is not { Canceled: true })
+        {
+            await OnChange.InvokeAsync();
         }
     }
 

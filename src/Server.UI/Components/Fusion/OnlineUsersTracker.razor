@@ -31,7 +31,7 @@
 
     private UserProfile? _me;
 
-    private string sessionId = Guid.NewGuid().ToString();
+    private string sessionId = Guid.CreateVersion7().ToString();
     private string? userId;
     [CascadingParameter]
     private Task<AuthenticationState> AuthState { get; set; } = default!;

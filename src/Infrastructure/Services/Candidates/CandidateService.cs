@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using Cfo.Cats.Application.Features.Candidates.DTOs;
 using Cfo.Cats.Application.Features.Candidates.Queries.Search;
+using Cfo.Cats.Domain.Entities.Administration;
 using Newtonsoft.Json;
 
 namespace Cfo.Cats.Infrastructure.Services.Candidates;
@@ -29,13 +30,13 @@ public class CandidateService(
         {
             var locationMapping = candidate.Primary switch
             {
-                "NOMIS" => (candidate.EstCode, "Prison"),
-                "DELIUS" => (candidate.OrgCode, "Probation"),
+                "NOMIS" => (Code: candidate.EstCode, Type: "Prison"),
+                "DELIUS" => (Code: candidate.OrgCode, Type: "Probation"),
                 _ => (null, null)
             };
 
             var query = from dl in unitOfWork.DbContext.LocationMappings.AsNoTracking()
-                        where dl.Code == locationMapping.Item1 && dl.CodeType == locationMapping.Item2
+                        where dl.Code == locationMapping.Code && dl.CodeType == locationMapping.Type
                         select new
                         {
                             dl.Code,
@@ -54,11 +55,19 @@ public class CandidateService(
                 _ => "Unmapped Location",
             };
 
-            candidate.MappedLocationId = location switch
+            if (location is { Location: not null })
             {
-                { Location: not null } => location.Location.Id,
-                _ => 0
-            };
+                candidate.MappedLocationId = location.Location.Id;
+            }
+            else
+            {
+                candidate.MappedLocationId = locationMapping.Type switch
+                {
+                    "Prison" => Location.Constants.UnmappedCustody,
+                    "Probation" => Location.Constants.UnmappedCommunity,
+                    _ => Location.Constants.Unknown
+                };
+            }
 
             candidate.RegistrationDetailsJson = JsonConvert.SerializeObject(candidate.RegistrationDetails);
         }

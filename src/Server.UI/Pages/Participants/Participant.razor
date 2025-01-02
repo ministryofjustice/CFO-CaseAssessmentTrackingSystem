@@ -100,6 +100,18 @@
                             </MudText>
                         </MudItem>
                     }
+                    <MudItem md="3">
+                        <MudText Typo="Typo.h6" Color="Color.Primary">
+                            <b>
+                                Support Worker
+                            </b>
+                        </MudText>
+                    </MudItem>
+                    <MudItem md="3">
+                        <MudText Typo="Typo.h6">
+                            @_participant.OwnerName
+                        </MudText>
+                    </MudItem>
                 </MudGrid>
 
                 @if(_participant.EnrolmentStatus != EnrolmentStatus.IdentifiedStatus)
@@ -166,7 +178,7 @@
     private string _riskIcon = String.Empty;
     private Color _riskIconColor = Color.Transparent;
     private bool _showRightToWorkWarning = false;
-    private string _rightToWorkAlertMessage = "No active Right To Work documentation found for the participant, it is a requirement for non-British/Irish participants.";
+    private string _rightToWorkAlertMessage = ConstantString.RightToWorkIsRequiredMessage;
 
     protected override async Task OnInitializedAsync()
     {

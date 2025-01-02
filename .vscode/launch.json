@@ -2,31 +2,38 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Blazor Server App",
+            "name": ".NET Core Launch (console)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "Build (UI)",
-            "program": "${workspaceFolder}/src/Server.UI/bin/Debug/net8.0/Cfo.Cats.Server.UI.dll",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/Aspire/Aspire.AppHost/bin/Debug/net9.0/Aspire.AppHost.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/Server.UI/",
+            "cwd": "${workspaceFolder}/src/Aspire/Aspire.AppHost",
+            "console": "internalConsole",
             "stopAtEntry": false,
+            "launchBrowser": {
+                "enabled": true,
+                "args": "${auto-detect-url}",
+                "windows": {
+                    "command": "cmd.exe",
+                    "args": "/C start ${auto-detect-url}"
+                },
+                "osx": {
+                    "command": "open"
+                },
+                "linux": {
+                    "command": "xdg-open"
+                }
+            },
             "serverReadyAction": {
                 "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-            },
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "sourceFileMap": {
-                "/Views": "${workspaceFolder}/src/Server.UI/Views"
+                "pattern": "^\\S+:(?<port>\\d+)$"
             }
         },
         {
-            "name": ".net Core Attach",
+            "name": ".NET Core Attach",
             "type": "coreclr",
-            "request": "attach",
-            "processId": "${command:pickProcess}",
-            "justMyCode": false
+            "request": "attach"
         }
     ]
 }

@@ -19,10 +19,22 @@ public class Risk : BaseAuditableEntity<Guid>
         ReviewReason = reviewReason;
     }
 
-    public static Risk Create(Guid id, string participantId) 
+    public static Risk Create(Guid id, string participantId, RiskReviewReason reviewReason, string? justification = null) 
     {
-        Risk risk = new(id, participantId, RiskReviewReason.InitialReview);
-        risk.AddDomainEvent(new RiskInformationAddedDomainEvent(risk));
+        Risk risk = new(id, participantId, reviewReason)
+        {
+            ReviewJustification = justification
+        };
+        
+        if(reviewReason == RiskReviewReason.NoRiskInformationAvailable)
+        {
+            risk.AddDomainEvent(new RiskInformationCompletedDomainEvent(risk));
+        }
+        else 
+        {
+            risk.AddDomainEvent(new RiskInformationAddedDomainEvent(risk));
+        }
+        
         return risk;
     }
 
@@ -35,7 +47,7 @@ public class Risk : BaseAuditableEntity<Guid>
 
     public static Risk Review(Risk from, RiskReviewReason reason, string? justification)
     {
-        from.Id = Guid.NewGuid();
+        from.Id = Guid.CreateVersion7();
         from.ReviewReason = reason;
         from.ReviewJustification = justification;
         from.Completed = null;
@@ -57,6 +69,7 @@ public class Risk : BaseAuditableEntity<Guid>
     public string? CompletedBy { get; private set; }
     public string? LicenseConditions { get; private set; }
     public DateTime? LicenseEnd { get; private set; }
+    public bool? NoLicenseEndDate { get; private set; }
     public bool? IsRelevantToCustody { get; private set; }
     public bool? IsRelevantToCommunity { get; private set; }
     public ConfirmationStatus? IsSubjectToSHPO { get; private set; }

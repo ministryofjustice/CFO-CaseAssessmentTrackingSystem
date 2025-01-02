@@ -14,7 +14,7 @@ public class WingInduction : OwnerPropertyEntity<Guid>
 
     private WingInduction(string participantId, int locationId, DateTime inductionDate, string ownerId)
     {
-        Id = Guid.NewGuid();
+        Id = Guid.CreateVersion7();
         ParticipantId = participantId;
         LocationId = locationId;
         InductionDate = inductionDate;
@@ -64,7 +64,7 @@ public class WingInduction : OwnerPropertyEntity<Guid>
             _phases.Remove(current);
             var phase = new InductionPhase(current.Number, current.StartDate, completionDate);
             _phases.Add(phase);
-            this.AddDomainEvent(new InductionPhaseCompletedDomainEvent(phase));
+            AddDomainEvent(new InductionPhaseCompletedDomainEvent(Id, phase));
         }
         return this;
     }

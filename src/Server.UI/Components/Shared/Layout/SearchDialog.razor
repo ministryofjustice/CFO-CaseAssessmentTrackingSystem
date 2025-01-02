@@ -33,12 +33,11 @@
 
 @code
 {
-
     [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter]
     public UserProfile? UserProfile { get; set; } = default!;
-    
+
     private readonly Dictionary<string, string> pages = new();
     private HotKeysContext? hotKeysContext;
     private Dictionary<string, string> pagesFiltered = new();
@@ -84,8 +83,9 @@
             if (UserProfile.AssignedRoles.Any())
             {
                 pages.Add("Reassign", "/pages/participants/reassign");
+                pages.Add("Transfers", "/pages/participants/transfers");
+                pages.Add("Moved Participants", "/pages/participants/movedparticipants");
             }
-
 
             string[] allowed = [RoleNames.QAFinance, RoleNames.SMT, RoleNames.SystemSupport];
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
@@ -111,8 +111,32 @@
                 pages.Add("Queue Management", "/pages/qa/servicedesk/enrolments");    
             }
 
-            allowed = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT];
-            
+            allowed = [RoleNames.QAFinance, RoleNames.SMT, RoleNames.SystemSupport];
+            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+            {
+                pages.Add("Activities Provider QA", "/pages/qa/activities/pqa");
+            }
+
+            allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
+            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+            {
+                pages.Add("Activities First Pass", "/pages/qa/activities/qa1");
+            }
+
+            allowed = [RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
+            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+            {
+                pages.Add("Activities Second Pass", "/pages/qa/activities/qa2");
+                pages.Add("Payments", "/pages/finance/payments/");
+            }
+
+            allowed = [RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
+            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+            {
+                pages.Add("Activities Queue Management", "/pages/qa/activities/activities");
+            }
+
+            allowed = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT];           
             
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
@@ -121,15 +145,7 @@
                 pages.Add("Lookup Values", "/system/picklist");
                 pages.Add("Audit Trails", "/system/audittrails");
             }
-            
-           
-
-            
         }
-        
-        
-        
-        
         
         pagesFiltered = pages;
 

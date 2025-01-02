@@ -40,7 +40,13 @@ internal static class DatabaseConstants
         public const string Supervisor = nameof(Supervisor);
         public const string LocationHistory = nameof(LocationHistory);
         public const string OwnershipHistory = nameof(OwnershipHistory);
-
+        public const string IncomingTransferQueue = nameof(IncomingTransferQueue);
+        public const string OutgoingTransferQueue = nameof(OutgoingTransferQueue);
+        public const string Activity = nameof(Activity);
+        public const string EducationTrainingActivity = nameof(EducationTrainingActivity);
+        public const string EmploymentActivity = nameof(EmploymentActivity);
+        public const string IswActivity = nameof(IswActivity);
+        public const string NonIsqActivity = nameof(NonIsqActivity);
 
         public const string AssessmentPathwayScore = nameof(AssessmentPathwayScore);
 
@@ -60,6 +66,11 @@ internal static class DatabaseConstants
         public const string WingInductionPhase = nameof(WingInductionPhase);
 
         public const string Notification = nameof(Notification);
+
+        public const string ActivityPqaQueue = nameof(ActivityPqaQueue);
+        public const string ActivityQa1Queue = nameof(ActivityQa1Queue);
+        public const string ActivityQa2Queue = nameof(ActivityQa2Queue);
+        public const string ActivityEscalationQueue = nameof(ActivityEscalationQueue);
     }
     public static class Schemas
     {
@@ -71,6 +82,8 @@ internal static class DatabaseConstants
         public const string Document = nameof(Document);
         public const string Enrolment = nameof(Enrolment);
         public const string Induction = nameof(Induction);
+        public const string Activities = nameof(Activities);
+        public const string Mi = nameof(Mi);
     }
 
     public static class FieldLengths

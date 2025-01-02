@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Application.SecurityConstants;
+﻿using ActualLab.Api;
+using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
 
 namespace Cfo.Cats.Server.UI.Services.Navigation;
@@ -32,10 +33,23 @@ public class MenuService : IMenuService
                                 Href = "/pages/participants",
                                 PageStatus = PageStatus.Completed
                             },
+                                new()
+                            {
+                                Title = "Moved Participants",
+                                Href = "/pages/participants/movedparticipants",
+                                PageStatus = PageStatus.Completed                                
+                            },
                             new()
                             {
                                 Title = "Reassign",
                                 Href = "/pages/participants/reassign",                                
+                                PageStatus = PageStatus.Completed,
+                                Roles = [RoleNames.QAFinance, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            },
+                            new()
+                            {
+                                Title = "Transfers",
+                                Href = "/pages/participants/transfers",
                                 PageStatus = PageStatus.Completed,
                                 Roles = [RoleNames.QAFinance, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
                             },
@@ -92,6 +106,58 @@ public class MenuService : IMenuService
                                 Roles = [ RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
                             }
                         }
+                    },
+                     new()
+                    {
+                        IsParent = true,
+                        Title = "Activities",
+                        Icon = Icons.Material.Filled.SelfImprovement,
+                        MenuItems = new List<MenuSectionSubItemModel>
+                        {
+                            new()
+                            {
+                                Title = "PQA",
+                                Href="/pages/qa/activities/pqa",
+                                PageStatus = PageStatus.Completed,
+                                Roles = [ RoleNames.QAFinance, RoleNames.SMT, RoleNames.SystemSupport ]
+                            },
+                            new()
+                            {
+                                Title = "Queue Management",
+                                PageStatus = PageStatus.Completed,
+                                Href="/pages/qa/activities/activities",
+                                Roles = [ RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            },
+                            new()
+                            {
+                                Title="First Pass",
+                                PageStatus = PageStatus.Completed,
+                                Href = "/pages/qa/activities/qa1/",
+                                Roles = [ RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            },
+                            new()
+                            {
+                                Title="Second Pass",
+                                PageStatus = PageStatus.Completed,
+                                Href = "/pages/qa/activities/qa2/",
+                                Roles = [ RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                            }
+                        }
+                    }
+                }
+            },
+            new MenuSectionModel()
+            {
+                Title = "Finance",
+                Roles = new[] { RoleNames.SystemSupport, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.PerformanceManager },
+                SectionItems = new ApiList<MenuSectionItemModel>
+                {
+                    new()
+                    {
+                        IsParent = false,
+                        Title = "Payments",
+                        Icon = Icons.Material.Filled.Money,
+                        Href = "/pages/finance/payments/"
                     }
                 }
             },

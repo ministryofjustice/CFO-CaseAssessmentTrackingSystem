@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Identity.DTOs;
 [Description("Users")]
 public class ApplicationUserDto
 {
-    [Description("User Id")] public string Id { get; set; } = Guid.NewGuid().ToString();
+    [Description("User Id")] public string Id { get; set; } = Guid.CreateVersion7().ToString();
 
     [Description("User Name")] public string UserName { get; set; } = string.Empty;
 
