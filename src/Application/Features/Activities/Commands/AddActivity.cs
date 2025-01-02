@@ -176,12 +176,11 @@ public static class AddActivity
                 }
 
                 templatedActivity.AddTemplate(document);
-            }
-
-            activity.OwnerId = currentUserService.UserId;
+            }                        
 
             if (request.ActivityId is null)
             {
+                activity.OwnerId = currentUserService.UserId;
                 await unitOfWork.DbContext.Activities.AddAsync(activity, cancellationToken);
             }
             else
@@ -191,6 +190,7 @@ public static class AddActivity
                 mapper.Map(activity, entity); // Map activity with new values
                 entity.TransitionTo(ActivityStatus.SubmittedToProviderStatus);
                 unitOfWork.DbContext.Activities.Entry(entity).State = EntityState.Modified;
+                entity.OwnerId = currentUserService.UserId;
                 unitOfWork.DbContext.Activities.Update(entity);
             }
 
