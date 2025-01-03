@@ -67,7 +67,7 @@
 
             var owner = await GetNewMediator().Send(new GetOwnerByParticipantId.Query()
             {
-                ParticipantId = Model.IncomingTransfer.Participant.Id
+                ParticipantId = Model.IncomingTransfer.ParticipantId
             });
 
             if (owner is { Succeeded: true, Data: not null })
