@@ -65,9 +65,9 @@
                 <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                          Dense="true"
                          EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">                         
-          @*           <MudMenuItem OnClick="@(() => ViewActivity(context.Item))">
+                    <MudMenuItem OnClick="@(() => ViewActivity(context.Item))">
                         @ConstantString.View Activity
-                    </MudMenuItem> *@
+                    </MudMenuItem>
                     <MudMenuItem OnClick="@(() => ViewParticipant(context.Item))">
                         @ConstantString.View Participant
                     </MudMenuItem>
@@ -141,10 +141,10 @@
     private ActivityQueueEntryDto _currentDto = new();
     private HashSet<ActivityQueueEntryDto> _selectedItems = new();
     
-    // private void ViewActivity(ActivityQueueEntryDto dto)
-    // {
-    //     Navigation.NavigateTo($"/pages/qa/activities/escalation/{dto.Id}");
-    // }
+    private void ViewActivity(ActivityQueueEntryDto dto)
+    {
+         Navigation.NavigateTo($"/pages/qa/activities/escalation/{dto.Id}");
+    }
 
     private void ViewParticipant(ActivityQueueEntryDto dto)
     {        
