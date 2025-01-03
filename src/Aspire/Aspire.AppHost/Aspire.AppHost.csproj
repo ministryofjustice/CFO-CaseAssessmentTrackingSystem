@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Server.Ui\Server.Ui.csproj"></ProjectReference>
+    <ProjectReference Include="..\..\Server.UI\Server.UI.csproj"></ProjectReference>
   </ItemGroup>
 
 </Project>
