@@ -10,145 +10,92 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
 
-<MudSimpleTable Class="mb-8 pa-4">
-    <thead>
-        <tr>
-            <div class="d-flex align-start flex-grow-1">
-                <div class="d-flex gap-4">
-                    <MudIcon Icon="@Icons.Material.Filled.Input" Size="Size.Large" />
-                    <div class="d-flex flex-column">
-                        <MudText Typo="Typo.caption">Incoming Transfers</MudText>
-                    </div>
-                </div>
-            </div>
-        </tr>
-        <tr>
-            <th>Participant</th>
-            <th>Occurred</th>
-            <th>From</th>
-            <th>To</th>
-            <th>Type</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach(var transfer in incomingTransfers.OrderByDescending(t => t.MoveOccured))
-        {
-            <tr>
-                <td>
-                    <div class="d-flex flex-column">
-                        <MudText Typo="Typo.body2">@transfer.Participant.FullName</MudText>
-                        <MudText Typo="Typo.body2">@transfer.Participant.Id</MudText>
-                    </div>
-                </td>
-                <td>
-                    <MudText Typo="Typo.body2">
-                        @transfer.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
-                    </MudText>
-                </td>
-                <td>
-                    <MudText Typo="Typo.body2">
-                        @transfer.FromLocation.Name (@transfer.FromLocation.LocationType.Name)
-                    </MudText>
-                </td>
-                <td>
-                    <MudText Typo="Typo.body2">
-                        @transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)
-                    </MudText>
-                </td>
-                <td>
-                    <MudText Typo="Typo.body2">
-                        @transfer.TransferType.Name
-                    </MudText>
-                </td>
-                <td>
-                    <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="async() => await Process(transfer)">Process</MudButton>
-                </td>
-            </tr>
-        }
-        @if(incomingTransfers.Count is 0)
-        {
-            <tr>
-                <td colspan="6">
-                    <div class="d-flex justify-center">
-                        <MudText>@ConstantString.NoRecords</MudText>
-                    </div>
-                </td>
-            </tr>
-        }
-    </tbody>
-</MudSimpleTable>
 
-<MudSimpleTable Class="mb-8 pa-4">
-    <thead>
-        <tr>
-            <div class="d-flex align-start flex-grow-1">
-                <div class="d-flex gap-4">
-                    <MudIcon Icon="@Icons.Material.Filled.Output" Size="Size.Large" />
-                    <div class="d-flex flex-column">
-                        <MudText Typo="Typo.caption">Outgoing Transfers</MudText>
-                    </div>
-                </div>
-            </div>
-        </tr>
-        <tr>
-            <th>Participant</th>
-            <th>Occurred</th>
-            <th>From</th>
-            <th>To</th>
-            <th>Type</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var transfer in outgoingTransfers.OrderByDescending(t => t.MoveOccured))
-        {
-            <tr>
-                <td>
-                    <div class="d-flex flex-column">
-                        <MudText Typo="Typo.body2">@transfer.Participant.FullName</MudText>
-                        <MudText Typo="Typo.body2">@transfer.Participant.Id</MudText>
-                    </div>
-                </td>
-                <td>
-                    <MudText Typo="Typo.body2">
-                        @transfer.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
-                    </MudText>
-                </td>
-                <td>
-                    <MudText Typo="Typo.body2">
-                        @transfer.FromLocation.Name (@transfer.FromLocation.LocationType.Name)
-                    </MudText>
-                </td>
-                <td>
-                    <MudText Typo="Typo.body2">
-                        @transfer.ToLocation.Name (@transfer.ToLocation.LocationType.Name)
-                    </MudText>
-                </td>
-                <td>
-                    <MudText Typo="Typo.body2">
-                        @transfer.TransferType.Name
-                    </MudText>
-                </td>
-                <td>
-                    <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="() => View(transfer)">View</MudButton>
-                </td>
-            </tr>
-        }
-        @if (outgoingTransfers.Count is 0)
-        {
-            <tr>
-                <td colspan="6">
-                    <div class="d-flex justify-center">
-                        <MudText>@ConstantString.NoRecords</MudText>
-                    </div>
-                </td>
-            </tr>
-        }
-    </tbody>
-</MudSimpleTable>
+<MudTable Items="@incomingTransfers" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@isLoadingIncomingTransfers" LoadingProgressColor="Color.Info" Class="mb-8 pa-4" >
+    <ToolBarContent>
+        <MudIcon Icon="@Icons.Material.Filled.Input" Size="Size.Large" Class="mr-2" />
+        <MudText Typo="Typo.h6">Incoming Transfers</MudText>
+        <MudSpacer />
+    </ToolBarContent>
+    <HeaderContent>
+            <MudTh>Participant</MudTh>
+            <MudTh>Occurred</MudTh>
+            <MudTh>From</MudTh>
+            <MudTh>To</MudTh>
+            <MudTh>Type</MudTh>
+            <MudTh>Action</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Participant">
+             <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.Participant.FullName</MudText>
+                <MudText Typo="Typo.body2">@context.Participant.Id</MudText>
+             </div>
+        </MudTd>
+        <MudTd DataLabel="Occurred">
+            @context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+        </MudTd>
+        <MudTd DataLabel="From">
+            @context.FromLocation.Name (@context.FromLocation.LocationType.Name)
+        </MudTd>
+        <MudTd>
+             @context.ToLocation.Name (@context.ToLocation.LocationType.Name)
+        </MudTd>
+        <MudTd>
+            @context.TransferType.Name
+        </MudTd>
+        <MudTd>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="async() => await Process(context)">Process</MudButton>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+<MudTable Items="@outgoingTransfers" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@isLoadingOutgoingTransfers" LoadingProgressColor="Color.Info" Class="mb-8 pa-4" >
+    <ToolBarContent>
+        <MudIcon Icon="@Icons.Material.Filled.Output" Size="Size.Large" Class="mr-2" />
+        <MudText Typo="Typo.h6">Outgoing Transfers</MudText>
+        <MudSpacer />
+    </ToolBarContent>
+    <HeaderContent>
+            <MudTh>Participant</MudTh>
+            <MudTh>Occurred</MudTh>
+            <MudTh>From</MudTh>
+            <MudTh>To</MudTh>
+            <MudTh>Type</MudTh>
+            <MudTh>Action</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Participant">
+             <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.Participant.FullName</MudText>
+                <MudText Typo="Typo.body2">@context.Participant.Id</MudText>
+             </div>
+        </MudTd>
+        <MudTd DataLabel="Occurred">
+            @context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+        </MudTd>
+        <MudTd DataLabel="From">
+            @context.FromLocation.Name (@context.FromLocation.LocationType.Name)
+        </MudTd>
+        <MudTd>
+             @context.ToLocation.Name (@context.ToLocation.LocationType.Name)
+        </MudTd>
+        <MudTd>
+            @context.TransferType.Name
+        </MudTd>
+        <MudTd>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="() => View(context)">View</MudButton>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+
 
 @code {
+
+    private bool isLoadingIncomingTransfers = true;
+    private bool isLoadingOutgoingTransfers = true;
+
     private List<IncomingTransferDto> incomingTransfers = [];
     private List<OutgoingTransferDto> outgoingTransfers = [];
 
@@ -162,13 +109,17 @@
 
     private async Task<List<IncomingTransferDto>> GetIncomingTransfers()
     {
+        isLoadingIncomingTransfers = true;
         var query = await GetNewMediator().Send(new GetIncomingTransfers.Query());
+        isLoadingIncomingTransfers = false;
         return query.Data?.ToList() ?? [];
     }
 
     private async Task<List<OutgoingTransferDto>> GetOutgoingTransfers()
     {
+        isLoadingOutgoingTransfers = true;
         var query = await GetNewMediator().Send(new GetOutgoingTransfers.Query());
+        isLoadingOutgoingTransfers = false;
         return query.Data?.ToList() ?? [];
     }
 
