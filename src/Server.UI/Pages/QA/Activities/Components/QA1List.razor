@@ -1,6 +1,5 @@
-﻿
-@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
-@using Cfo.Cats.Application.Features.QualityAssurance.Queries
+﻿@using Cfo.Cats.Application.Features.Activities.DTOs
+@using Cfo.Cats.Application.Features.Activities.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Humanizer
 @inherits CatsComponentBase;
@@ -61,6 +60,10 @@
                 <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                          Dense="true"
                          EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                    
+                @*     <MudMenuItem OnClick="@(() => ViewActivity(context.Item))">
+                        @ConstantString.View Activity
+                    </MudMenuItem> *@
 
                     <MudMenuItem OnClick="@(() => ViewParticipant(context.Item))">
                         @ConstantString.View Participant
@@ -69,10 +72,10 @@
                 </MudMenu>
             </CellTemplate>
         </TemplateColumn>
-        <PropertyColumn Property="x => x.ParticipantId" Title="@L["Participant"]">
+        <PropertyColumn Property="x => x.ParticipantName" Title="@L["Participant"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>
+                    <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>                    
                     <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
                 </div>
             </CellTemplate>
@@ -130,18 +133,13 @@
     
     private bool _loading = false;
     private int _defaultPageSize = 15;
-    private MudDataGrid<EnrolmentQueueEntryDto> _table = default!;
+    private MudDataGrid<ActivityQueueEntryDto> _table = default!;
 
-    private Qa1WithPagination.Query Query { get; set; } = new();
-    private EnrolmentQueueEntryDto _currentDto = new();
-    private HashSet<EnrolmentQueueEntryDto> _selectedItems = new();
-    
-    private void OnEdit(EnrolmentQueueEntryDto dto)
-    {
-        Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
-    }
+    private ActivityQa1WithPagination.Query Query { get; set; } = new();
+    private ActivityQueueEntryDto _currentDto = new();
+    private HashSet<ActivityQueueEntryDto> _selectedItems = new();      
    
-    private async Task<GridData<EnrolmentQueueEntryDto>> ServerReload(GridState<EnrolmentQueueEntryDto> state)
+    private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state)
     {
         try
         {
@@ -153,7 +151,7 @@
             Query.PageSize = state.PageSize;
 
             var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
-            return new GridData<EnrolmentQueueEntryDto> { TotalItems = result.TotalItems, Items = result.Items };
+            return new GridData<ActivityQueueEntryDto> { TotalItems = result.TotalItems, Items = result.Items };
         }
         finally
         {
@@ -161,11 +159,16 @@
         }
     }
 
-    private void ViewParticipant(EnrolmentQueueEntryDto dto)
+    private void ViewParticipant(ActivityQueueEntryDto dto)
     {
-        Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
+       Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
     }
-    
+
+    // private void ViewActivity(ActivityQueueEntryDto dto)
+    // {
+    //     Navigation.NavigateTo($"/pages/qa/activities/qa1/{dto.ActivityId}");
+    // }
+
     private async Task OnSearch(string text)
     {
         if (_loading)
