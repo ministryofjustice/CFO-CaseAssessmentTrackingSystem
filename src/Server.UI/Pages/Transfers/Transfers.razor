@@ -28,8 +28,8 @@
     <RowTemplate>
         <MudTd DataLabel="Participant">
              <div class="d-flex flex-column">
-                <MudText Typo="Typo.body2">@context.Participant.FullName</MudText>
-                <MudText Typo="Typo.body2">@context.Participant.Id</MudText>
+                <MudText Typo="Typo.body2">@context.ParticipantFullName</MudText>
+                <MudText Typo="Typo.body2">@context.ParticipantId</MudText>
              </div>
         </MudTd>
         <MudTd DataLabel="Occurred">
@@ -67,8 +67,8 @@
     <RowTemplate>
         <MudTd DataLabel="Participant">
              <div class="d-flex flex-column">
-                <MudText Typo="Typo.body2">@context.Participant.FullName</MudText>
-                <MudText Typo="Typo.body2">@context.Participant.Id</MudText>
+                <MudText Typo="Typo.body2">@context.ParticipantFullName</MudText>
+                <MudText Typo="Typo.body2">@context.ParticipantId</MudText>
              </div>
         </MudTd>
         <MudTd DataLabel="Occurred">
@@ -154,6 +154,6 @@
         }
     }
 
-    private void View(OutgoingTransferDto transfer) => Navigation.NavigateTo($"/pages/participants/{transfer.Participant.Id}");
+    private void View(OutgoingTransferDto transfer) => Navigation.NavigateTo($"/pages/participants/{transfer.ParticipantId}");
 
 }

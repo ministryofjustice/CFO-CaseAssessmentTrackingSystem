@@ -21,7 +21,7 @@ public static class ProcessIncomingTransfer
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var participant = await unitOfWork.DbContext.Participants
-                .FindAsync([request.IncomingTransfer.Participant.Id], cancellationToken);
+                .FindAsync([request.IncomingTransfer.ParticipantId], cancellationToken);
 
             var transfer = await unitOfWork.DbContext.ParticipantIncomingTransferQueue
                 .FindAsync([request.IncomingTransfer.Id], cancellationToken);

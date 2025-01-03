@@ -7,7 +7,12 @@ namespace Cfo.Cats.Application.Features.Transfers.DTOs;
 public class IncomingTransferDto
 {
     public required Guid Id { get; set; }
-    public required ParticipantDto Participant { get; set; }
+
+
+    public required string ParticipantFullName { get; set; }
+    public required string ParticipantId { get; set; }
+
+    //public required ParticipantDto Participant { get; set; }
     public string? FromContractId { get; set; }
     public string? ToContractId { get; set; }
     public required LocationDto FromLocation { get; set; }
@@ -20,7 +25,9 @@ public class IncomingTransferDto
     {
         public Mapper()
         {
-            CreateMap<ParticipantIncomingTransferQueueEntry, IncomingTransferDto>();
+            CreateMap<ParticipantIncomingTransferQueueEntry, IncomingTransferDto>()
+                .ForMember(p => p.ParticipantId, options => options.MapFrom(src => src.ParticipantId))
+                .ForMember(p => p.ParticipantFullName, options => options.MapFrom(src => src.Participant!.FirstName + " " + src.Participant!.LastName));
         }
     }
 }
