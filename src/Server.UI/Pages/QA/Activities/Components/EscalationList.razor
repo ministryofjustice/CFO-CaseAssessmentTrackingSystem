@@ -7,7 +7,6 @@
 
 @inject IStringLocalizer<PQA> L
 
-
 <style>
     .mud-table-toolbar {
         height: 120px !important;
@@ -66,9 +65,9 @@
                 <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                          Dense="true"
                          EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">                         
-                    <MudMenuItem OnClick="@(() => ViewActivity(context.Item))">
+          @*           <MudMenuItem OnClick="@(() => ViewActivity(context.Item))">
                         @ConstantString.View Activity
-                    </MudMenuItem>
+                    </MudMenuItem> *@
                     <MudMenuItem OnClick="@(() => ViewParticipant(context.Item))">
                         @ConstantString.View Participant
                     </MudMenuItem>
@@ -76,14 +75,14 @@
                 </MudMenu>
             </CellTemplate>
         </TemplateColumn>
-        @* <PropertyColumn Property="x => x.ParticipantId" Title="@L["Participant"]">
+        <PropertyColumn Property="x => x.ParticipantName" Title="@L["Participant"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>
-                    <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
+                     <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
                 </div>
             </CellTemplate>
-        </PropertyColumn> *@
+        </PropertyColumn>
         <PropertyColumn Property="x => x.SupportWorker" Title="@L["Support Worker"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
@@ -142,17 +141,15 @@
     private ActivityQueueEntryDto _currentDto = new();
     private HashSet<ActivityQueueEntryDto> _selectedItems = new();
     
-    private void ViewActivity(ActivityQueueEntryDto dto)
-    {
-        Navigation.NavigateTo($"/pages/qa/activities/escalation/{dto.Id}");
-    }
+    // private void ViewActivity(ActivityQueueEntryDto dto)
+    // {
+    //     Navigation.NavigateTo($"/pages/qa/activities/escalation/{dto.Id}");
+    // }
 
     private void ViewParticipant(ActivityQueueEntryDto dto)
-    {
-        //needs adding 
-        //Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
-    }
-   
+    {        
+        Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
+    }   
 
     private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state)
     {

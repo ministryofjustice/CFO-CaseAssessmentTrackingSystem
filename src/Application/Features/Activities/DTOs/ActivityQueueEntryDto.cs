@@ -10,8 +10,9 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
         public DateTime Created { get; set; } = default!;
         public string TenantId { get; set; } = default!;
         public string TenantName { get; set; } = default!;
-        public string ParticipantName { get; set; } = default!;
-
+        public string ParticipantName { get; set; } = default!;        
+        public string? ParticipantId { get; set; }
+        
         public string SupportWorker { get; set; } = default!;
 
         public string? AssignedTo { get; set; }
@@ -37,6 +38,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
                     .ForMember(target => target.ParticipantName, options => {
                         options.MapFrom(target => target.Participant!.FirstName + " " + target.Participant.LastName);
                     })
+                    .ForMember(target => target.ParticipantId,
+                    options => options.MapFrom(source => source.ParticipantId))
                     .ForMember(target => target.SupportWorker, options => options.MapFrom(
                         source => source.Participant!.Owner!.DisplayName
                     ))
@@ -58,6 +61,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
                      {
                          options.MapFrom(target => target.Participant!.FirstName + " " + target.Participant.LastName);
                      })
+                     .ForMember(target => target.ParticipantId,
+                    options => options.MapFrom(source => source.ParticipantId))
                      .ForMember(target => target.SupportWorker, options => options.MapFrom(
                      source => source.Participant!.Owner!.DisplayName
                      ))
@@ -77,6 +82,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
                     {
                         options.MapFrom(target => target.Participant!.FirstName + " " + target.Participant.LastName);
                     })
+                    .ForMember(target => target.ParticipantId,
+                    options => options.MapFrom(source => source.ParticipantId))
                     .ForMember(target => target.SupportWorker, options => options.MapFrom(
                     source => source.Participant!.Owner!.DisplayName
                     ))
@@ -96,6 +103,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
                     {
                         options.MapFrom(target => target.Participant!.FirstName + " " + target.Participant.LastName);
                     })
+                    .ForMember(target => target.ParticipantId,
+                    options => options.MapFrom(source => source.ParticipantId))
                     .ForMember(target => target.SupportWorker, options => options.MapFrom(
                         source => source.Participant!.Owner!.DisplayName
                     ))
