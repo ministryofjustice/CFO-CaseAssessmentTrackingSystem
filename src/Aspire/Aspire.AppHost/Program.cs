@@ -17,7 +17,7 @@ var rabbit = builder.AddRabbitMQ("rabbit",
     .WithManagementPlugin()
     .WithLifetime(ContainerLifetime.Persistent);
 
-builder.AddProject<Projects.Server_Ui>("cats")
+builder.AddProject<Projects.Server_UI>("cats")
     .WithReference(catsDb)
     .WithReference(rabbit)
     .WaitFor(sql);
