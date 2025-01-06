@@ -23,7 +23,7 @@
                 <MudText Typo="Typo.body2">@context.CommencedOn</MudText>
             </MudTd>            
             <MudTd>
-                <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="async() => await Process(context)">Display</MudButton>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="async() => await Display(context)">Display</MudButton>
             </MudTd>
         </RowTemplate>
     </MudTable>
@@ -78,7 +78,7 @@
         return query.ToList() ?? [];
     }
 
-    async Task Process(ActivityQaDetailsDto previousActivity)
+    async Task Display(ActivityQaDetailsDto previousActivity)
     {
         _activityQaDetailsDto = previousActivity;      
         await Task.CompletedTask;  

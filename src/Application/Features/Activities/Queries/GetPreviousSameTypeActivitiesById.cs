@@ -18,7 +18,7 @@ namespace Cfo.Cats.Application.Features.Activities.Queries
         {
             public async Task<List<ActivityQaDetailsDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var activity = GetActivityById(request.Id, unitOfWork);
+                var activity = GetActivityById(request.Id);
 
                 var previousActivities = await unitOfWork.DbContext.Activities
                     .Include(a => a.TookPlaceAtLocation)
@@ -45,7 +45,7 @@ namespace Cfo.Cats.Application.Features.Activities.Queries
                 return listOfPreviousActivities;
             }
 
-            private ActivityWithTemplate? GetActivityById(Guid? id, IUnitOfWork unitOfWork)
+            private ActivityWithTemplate? GetActivityById(Guid? id)
             {
                 var activity = unitOfWork.DbContext.Activities
                     .Include(a => a.TookPlaceAtLocation)
