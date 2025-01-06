@@ -22,26 +22,17 @@
                 <MyTeamsParticipantsComponent />
             }
 
+            <MyNotifications />
+
             @if(UserProfile?.AssignedRoles.Contains(RoleNames.SystemSupport) == true)
             {
                 <JobManagement />
             }
-
-            <MyNotifications />
-
-           
-
         </MudGrid>
-
-
-
-
 
 @code {
 
     public string Title { get; } = "Dashboard";
-
-
 
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; }

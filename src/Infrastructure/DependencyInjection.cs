@@ -350,7 +350,10 @@ public static class DependencyInjection
             if (options.GetSection(SyncParticipantsJob.Key.Name).Get<JobOptions>() is 
                 { Enabled: true } syncParticipantsJobOptions)
             {
-                quartz.AddJob<SyncParticipantsJob>(opts => opts.WithIdentity(SyncParticipantsJob.Key));
+                quartz.AddJob<SyncParticipantsJob>(opts => 
+                    opts.WithIdentity(SyncParticipantsJob.Key)
+                        .WithDescription(SyncParticipantsJob.Description)
+                );
 
                 quartz.AddTrigger(opts => opts
                     .ForJob(SyncParticipantsJob.Key)
@@ -362,7 +365,9 @@ public static class DependencyInjection
             if (options.GetSection(DisableDormantAccountsJob.Key.Name).Get<JobOptions>() is
                 { Enabled: true } disableDormantAccountsJobOptions)
             {
-                quartz.AddJob<DisableDormantAccountsJob>(opts => opts.WithIdentity(DisableDormantAccountsJob.Key));
+                quartz.AddJob<DisableDormantAccountsJob>(opts => 
+                    opts.WithIdentity(DisableDormantAccountsJob.Key)
+                        .WithDescription(DisableDormantAccountsJob.Description));
 
                 quartz.AddTrigger(opts => opts
                     .ForJob(DisableDormantAccountsJob.Key)
@@ -374,7 +379,9 @@ public static class DependencyInjection
             if (options.GetSection(NotifyAccountDeactivationJob.Key.Name).Get<JobOptions>() is
                 { Enabled: true } notifyAccountDeactivationJobOptions)
             {
-                quartz.AddJob<NotifyAccountDeactivationJob>(opts => opts.WithIdentity(NotifyAccountDeactivationJob.Key));
+                quartz.AddJob<NotifyAccountDeactivationJob>(opts => 
+                    opts.WithIdentity(NotifyAccountDeactivationJob.Key)
+                        .WithDescription(NotifyAccountDeactivationJob.Description));
 
                 quartz.AddTrigger(opts => opts
                     .ForJob(NotifyAccountDeactivationJob.Key)
@@ -386,7 +393,9 @@ public static class DependencyInjection
             if (options.GetSection(PublishOutboxMessagesJob.Key.Name).Get<JobOptions>() is
                 { Enabled: true } publishOutboxMessagesOptions)
             {
-                quartz.AddJob<PublishOutboxMessagesJob>(opts => opts.WithIdentity(PublishOutboxMessagesJob.Key));
+                quartz.AddJob<PublishOutboxMessagesJob>(opts => 
+                    opts.WithIdentity(PublishOutboxMessagesJob.Key)
+                        .WithDescription(PublishOutboxMessagesJob.Description));
 
                 quartz.AddTrigger(opts => opts
                     .ForJob(PublishOutboxMessagesJob.Key)
