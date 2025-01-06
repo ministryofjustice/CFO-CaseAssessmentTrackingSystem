@@ -16,7 +16,7 @@ public class NotifyUserOnAssignment(
         }
 
         var newAssignee = await unitOfWork.DbContext.Users
-            .FindAsync([notification.FromOwner], cancellationToken);
+            .FindAsync([notification.NewOwner], cancellationToken);
 
         if(newAssignee is null)
         {
