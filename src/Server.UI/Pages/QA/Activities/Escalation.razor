@@ -53,6 +53,10 @@
                     <QaNotes ActivityId="@_activityQaDetailsDto.ActivityId" />
                 </MudTabPanel>
 
+                <MudTabPanel Text="Previous Activities" Style="min-width: 185px;" BadgeColor="Color.Info">
+                    <PreviousActivitiesPanel ActivityId="@_activityQaDetailsDto.ActivityId" />
+                </MudTabPanel>
+
                 <MudTabPanel Text="Attachment" Style="min-width: 185px;" BadgeColor="Color.Info">                    
                     <AttachmentTabPanel ActivityQaDetailsDto="_activityQaDetailsDto" />
                 </MudTabPanel>

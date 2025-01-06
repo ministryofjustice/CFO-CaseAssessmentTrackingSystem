@@ -1,0 +1,86 @@
+﻿@using Cfo.Cats.Application.Features.Activities.DTOs
+@using Cfo.Cats.Application.Features.Activities.Queries
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Activities.Components
+
+@inherits CatsComponentBase
+
+<MudForm>
+    <MudTable Items="@previousActivities" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@isLoadingPreviousActivities" LoadingProgressColor="Color.Info" Class="mb-8 pa-4">
+        <HeaderContent>            
+            <MudTh>Activity</MudTh>
+            <MudTh>Location</MudTh>
+            <MudTh>Date activity took place</MudTh>
+        </HeaderContent>
+        <RowTemplate>      
+            <MudTd DataLabel="Activity">
+                @context.Definition!.Name
+            </MudTd>
+            <MudTd DataLabel="Location">
+                @context.Location!.Name (@context.Location.LocationType.Name)                
+            </MudTd>
+            <MudTd DataLabel="Date activity took place">                
+                <MudText Typo="Typo.body2">@context.CommencedOn</MudText>
+            </MudTd>            
+            <MudTd>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="async() => await Process(context)">Display</MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+    @if (_activityQaDetailsDto != null)
+    {
+        <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
+            Additional Information
+            @_activityQaDetailsDto.AdditionalInformation
+        </MudItem>
+
+        <br />
+
+        <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%; Disabled: true">
+        @if (@_activityQaDetailsDto.Definition!.Classification == ClassificationType.Employment)
+                {
+                    <Employment Model="_activityQaDetailsDto.EmploymentTemplate" />
+                }
+        else if (@_activityQaDetailsDto.Definition!.Classification == ClassificationType.EducationAndTraining)
+                {
+            <EducationTraining Model="_activityQaDetailsDto.EducationTrainingTemplate" />
+                }
+        else if (@_activityQaDetailsDto.Definition!.Classification == ClassificationType.ISWActivity)
+                {
+            <Isw Model="_activityQaDetailsDto.ISWTemplate" />
+                }
+        </MudItem>     
+    }   
+</MudForm>        
+
+@code{
+    [Parameter, EditorRequired]
+    public Guid? ActivityId { get; set; }
+    private List<ActivityQaDetailsDto> previousActivities = [];
+    private bool isLoadingPreviousActivities = true;
+
+    private ActivityQaDetailsDto? _activityQaDetailsDto ;
+
+    protected override async Task OnInitializedAsync()
+    {
+        previousActivities = await GetPreviousActivities();            
+        await base.OnInitializedAsync();
+    }      
+
+    private async Task<List<ActivityQaDetailsDto>> GetPreviousActivities()
+    {
+        isLoadingPreviousActivities = true;
+        var query = await GetNewMediator().Send(new GetPreviousSameTypeActivitiesById.Query()
+            {
+                Id = ActivityId
+            });
+        isLoadingPreviousActivities = false;
+        return query.ToList() ?? [];
+    }
+
+    async Task Process(ActivityQaDetailsDto previousActivity)
+    {
+        _activityQaDetailsDto = previousActivity;      
+        await Task.CompletedTask;  
+    }    
+}
