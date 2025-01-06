@@ -27,12 +27,13 @@
             </MudItem>    
             <MudItem xs="12">
                 <MudAutocomplete
-                Label="@Model.GetMemberDescription(x => x.JobTitle)" 
-                @bind-Value="Model.JobTitle"
-                @bind-Value:after="OnJobTitleValueChange"
-                SearchFunc="@SearchJobTitles"
-                ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
-                AdornmentColor="Color.Primary" MaxItems="null"/>
+                    Label="@Model.GetMemberDescription(x => x.JobTitle)" 
+                    For="() => Model.JobTitle"
+                    @bind-Value="Model.JobTitle"
+                    @bind-Value:after="OnJobTitleValueChange"
+                    SearchFunc="@SearchJobTitles"
+                    ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                    AdornmentColor="Color.Primary" MaxItems="null"/>
             </MudItem>
             <MudItem xs="12">
                 <MudItem xs="12">
