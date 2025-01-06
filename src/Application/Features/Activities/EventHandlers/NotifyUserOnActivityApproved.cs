@@ -26,7 +26,6 @@ public class NotifyUserOnActivityApproved(IUnitOfWork unitOfWork) : INotificatio
             if (previous is null)
             {
                 var n = Notification.Create(heading, details, notification.Item.Participant!.OwnerId!);
-                n.SetLink($"/pages/activities/?listView=Approved");
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }
         }
