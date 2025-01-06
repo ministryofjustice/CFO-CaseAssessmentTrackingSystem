@@ -1,71 +1,45 @@
 ﻿@using Cfo.Cats.Infrastructure.Jobs
 @using Quartz;
+@using Quartz.Impl.Matchers
 
 @inject IServiceProvider ServiceProvider
 
 
-<MudItem xs="12" lg="6">
+
+<MudItem xs="12">
     <MudCard style="height:100%">
         <MudCardHeader>
             <CardHeaderContent>
                 <MudText Typo="Typo.h5">
                     Jobs
                 </MudText>
-                @if(string.IsNullOrEmpty(_message) == false)
+                @if(_scheduler is not null)
                 {
-                    <MudAlert Severity="_severity">
-                        @_message
+                    <MudAlert Severity="Severity.Info">
+                        @GetSchedulerStatus()
                     </MudAlert>
                 }
             </CardHeaderContent>
         </MudCardHeader>
         <MudCardContent>
-            <MudList T="string">
-                <MudListItem>
-                    <div class="d-flex justify-space-between align-center width-100">
-                        <div>
-                            <MudText Typo="Typo.caption" Color="Color.Primary" >@SyncParticipantsJob.Key</MudText>
-                            <MudText Typo="Typo.body1" Color="Color.Info">@SyncParticipantsJob.Description</MudText>
-                        </div>
-                        <MudButton Disabled="@_isTriggering" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => TriggerJob(SyncParticipantsJob.Key)">
-                            @if(_isTriggering)
-                            {
-                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                                <MudText Class="ms-2">Triggering</MudText>
-                            }
-                            else
-                            {
-                                <MudText>Trigger</MudText>
-                            }
-                    </MudButton>
-                    </div>
-                </MudListItem>                
-                <MudListItem>
-                    <div class="d-flex justify-space-between align-center width-100">
-                        <div>
-                            <MudText Typo="Typo.caption" Color="Color.Primary">@DisableDormantAccountsJob.Key</MudText>
-                            <MudText Typo="Typo.body1" Color="Color.Info">@DisableDormantAccountsJob.Description</MudText>
-                        </div>
-                        <MudButton Disabled="@_isTriggering" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => TriggerJob(DisableDormantAccountsJob.Key)">
-                            @if(_isTriggering)
-                            {
-                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                                <MudText Class="ms-2">Triggering</MudText>
-                            }
-                            else
-                            {
-                                <MudText>Trigger</MudText>
-                            }
-                    </MudButton>
-                    </div>
-                </MudListItem>
-                <MudListItem>
-                    <div class="d-flex justify-space-between align-center width-100">
-                        <div>
-                            <MudText Typo="Typo.caption" Color="Color.Primary">@NotifyAccountDeactivationJob.Key</MudText>
-                            <MudText Typo="Typo.body1" Color="Color.Info">@NotifyAccountDeactivationJob.Description</MudText>
-                        </div>
-                        <MudButton Disabled="@_isTriggering" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => TriggerJob(NotifyAccountDeactivationJob.Key)">
+
+            <MudTable Items="JobDetails" Hover="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Description</MudTh>
+                    <MudTh>State</MudTh>
+                    <MudTh>Next Scheduled</MudTh>
+                    <MudTh>Last Scheduled</MudTh>
+                    <MudTh>Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Name">@context.JobName</MudTd>
+                    <MudTd DataLabel="Description">@context.Description</MudTd>
+                    <MudTd DataLabel="State">@context.TriggerState</MudTd>
+                    <MudTd DataLabel="Next Scheduled">@context.NextFireTime</MudTd>
+                    <MudTd DataLabel="Last Scheduled">@context.PreviousFireTime</MudTd>
+                    <MudTd DataLabel="Actions"> 
+                        <MudButton Disabled="@(_isTriggering || (_scheduler?.InStandbyMode ?? false))" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => TriggerJob(context.JobName!)">
                             @if(_isTriggering)
                             {
                                 <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
@@ -76,29 +50,14 @@
                                 <MudText>Trigger</MudText>
                             }
                         </MudButton>
-                    </div>
-                </MudListItem>
-                <MudListItem>
-                    <div class="d-flex justify-space-between align-center width-100">
-                        <div>
-                            <MudText Typo="Typo.caption" Color="Color.Primary" >@PublishOutboxMessagesJob.Key</MudText>
-                            <MudText Typo="Typo.body1" Color="Color.Info">@PublishOutboxMessagesJob.Description</MudText>
-                        </div>
-                        <MudButton Disabled="@_isTriggering" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => TriggerJob(PublishOutboxMessagesJob.Key)">
-                            @if(_isTriggering)
-                            {
-                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                                <MudText Class="ms-2">Triggering</MudText>
-                            }
-                            else
-                            {
-                                <MudText>Trigger</MudText>
-                            }
-                        </MudButton>
-                    </div>
-                </MudListItem>  
-            </MudList> 
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
         </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Warning" OnClick="() => PauseScheduler()" >Pause Scheduler</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => StartScheduler()" >Resume Scheduler</MudButton>
+        </MudCardActions>
     </MudCard>
 </MudItem>
 
@@ -106,10 +65,10 @@
 @code
 {
 
+    private List<JobDetailInfo> JobDetails = new();
+
     private bool _isTriggering = false;
     private string? _message = string.Empty;
-
-    private Severity _severity = Severity.Info;
 
     private IScheduler? _scheduler;
 
@@ -117,9 +76,10 @@
     {
         var factory = ServiceProvider.GetRequiredService<ISchedulerFactory>();
         _scheduler = await factory.GetScheduler();
+        JobDetails = await GetAllJobs();
     }
 
-    private async Task TriggerJob(JobKey key)
+    private async Task TriggerJob(string key)
     {
         try
         {
@@ -128,21 +88,113 @@
             {
                 throw new InvalidOperationException("Scheduler not initialized");
             }
-                
-            await _scheduler.TriggerJob(key);
-             _message = $"Job '{key}' triggered successfully";
-            _severity = Severity.Info;
+
+            await _scheduler.TriggerJob(new JobKey(key));
+            
+            Snackbar.Add($"Job '{key}' triggered successfully", Severity.Info);
         }
         catch (Exception ex)
         {
-            _message = ex.Message;
-            _severity = Severity.Warning;
+            Snackbar.Add($"Job '{key}' failed. {ex.Message}", Severity.Error);
         }
         finally
         {
             _isTriggering = false;
             StateHasChanged();
         }
+    }
+
+    private async Task<List<JobDetailInfo>> GetAllJobs()
+    {
+        List<JobDetailInfo> jobDetails  = [];
+
+        if(_scheduler is not null)
+        {
+            var jobGroups = await _scheduler.GetJobGroupNames();
+            foreach(var group in jobGroups)
+            {
+                var jobKeys = await _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(group));
+
+                foreach (var jobKey in jobKeys)
+                {
+                    var jobDetail = await _scheduler.GetJobDetail(jobKey);
+
+                    var triggers = await _scheduler.GetTriggersOfJob(jobKey);
+
+                    foreach (var trigger in triggers)
+                    {
+                        var triggerState = await _scheduler.GetTriggerState(trigger.Key);
+
+                        jobDetails.Add(new JobDetailInfo
+                        {
+                            JobName = jobKey.Name,
+                            Group = group,
+                            Description = jobDetail!.Description ?? jobKey.Name,
+                            TriggerState = triggerState.ToString(),
+                            NextFireTime = trigger.GetNextFireTimeUtc()?.DateTime,
+                            PreviousFireTime = trigger.GetPreviousFireTimeUtc()?.DateTime,
+                        });
+                    }
+                }
+            }
+        }
+        
+        return jobDetails;
+    }
+
+    private async Task PauseScheduler()
+    {
+        if(_scheduler is null)
+        {
+            throw new InvalidOperationException("Scheduler not initialized");
+        }
+        await _scheduler.Standby();
+    }
+
+    private async Task StartScheduler()
+    {
+        if(_scheduler is null)
+        {
+            throw new InvalidOperationException("Scheduler not initialized");
+        }
+        await _scheduler.Start();
+    }
+
+    private string GetSchedulerStatus()
+    {
+        if(_scheduler is null)
+        {
+            return "Scheduler not defined";
+        }
+
+        if(_scheduler.InStandbyMode)
+        {
+            return "Scheduler is in standby mode";
+        }
+
+        if(_scheduler.IsShutdown)
+        {
+            return "Scheduler is shutdown";
+        }
+
+        if(_scheduler.IsStarted)
+        {
+            return "Scheduler is active";
+        }
+
+        return "Unknown";
+
+    }
+
+    // Model for job details
+    public class JobDetailInfo
+    {
+        public string JobName { get; set; } = default!;
+        public string Group { get; set; } = default!;
+        public string Description { get; set; } = default!;
+        public string TriggerState { get; set; } = default!;
+        public DateTime? NextFireTime { get; set; } = default!;
+        public DateTime? PreviousFireTime { get; set; } = default!;
     }
 
 }   
