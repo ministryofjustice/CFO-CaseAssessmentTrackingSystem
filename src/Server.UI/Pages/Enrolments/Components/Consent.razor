@@ -32,6 +32,7 @@
                         For="() => Model.ConsentDate"
                         Label="@Model.GetMemberDescription(x => x.ConsentDate)"
                         MaxDate="DateTime.Now.Date"
+                        MinDate="DateTime.Today.AddMonths(-3)"
                         PickerVariant="PickerVariant.Dialog"
                         Editable="true" />
 

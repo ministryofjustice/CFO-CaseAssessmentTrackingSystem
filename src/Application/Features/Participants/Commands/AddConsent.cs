@@ -87,7 +87,9 @@ public static class AddConsent
                 .NotNull()
                 .WithMessage("You must provide the Date of Consent")
                 .LessThanOrEqualTo(DateTime.UtcNow.Date)
-                .WithMessage(ValidationConstants.DateMustBeInPast);
+                .WithMessage(ValidationConstants.DateMustBeInPast)
+                .GreaterThanOrEqualTo(DateTime.Today.AddMonths(-3))
+                .WithMessage("Cannot backdate beyond 3 months");
 
             RuleFor(v => v.Document)
                 .NotNull()
