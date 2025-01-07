@@ -22,7 +22,7 @@ public class ActivityPaymentEntityTypeConfiguration
 
         builder.Property(x => x.ActivityCategory)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(100);
         
         builder.Property(x => x.CreatedOn)
             .IsRequired();
