@@ -165,4 +165,28 @@ public static class SubmitToProviderQa
             return result?.EnrolmentStatus == EnrolmentStatus.EnrollingStatus;
         }
     }
+
+    public class F_ParticipantConsentDateCantBeMoreThanThreeMonthsAgo : AbstractValidator<Command>
+    {
+        private IUnitOfWork _unitOfWork;
+
+        public F_ParticipantConsentDateCantBeMoreThanThreeMonthsAgo(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c.ParticipantId)
+                .MustAsync(HaveGivenConsentWithinLastThreeMonths)
+                .WithMessage("Participant consent date must be within the last 3 months");
+        }
+
+        private async Task<bool> HaveGivenConsentWithinLastThreeMonths(string participantId, CancellationToken cancellationToken)
+        {
+            var consentDate = await _unitOfWork.DbContext
+                    .Participants.Where(x => x.Id == participantId)
+                    .Select(c => c.Consents.Max(d => d.Lifetime.StartDate))
+                    .FirstAsync(cancellationToken);
+
+            return consentDate > DateTime.Today.AddMonths(-3);
+        }
+    }
 }
