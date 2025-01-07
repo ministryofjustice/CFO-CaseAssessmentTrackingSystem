@@ -57,7 +57,7 @@ public static class AddWingInduction
 
             RuleFor(x => x.InductionDate)
                 .NotNull()
-                .GreaterThan(DateTime.Today.AddMonths(-3))
+                .GreaterThanOrEqualTo(DateTime.Today.AddMonths(-3))
                 .WithMessage("Cannot backdate beyond 3 months")
                 .LessThan(DateTime.Today.AddDays(1).Date)
                 .WithMessage("Cannot be in the future");
