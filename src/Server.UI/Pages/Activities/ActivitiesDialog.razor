@@ -47,9 +47,9 @@
                     </MudItem>
                     <MudItem xs="12">
                         <MudSelect @bind-Value="Model.Location"
-                                   @bind-Value:after="OnLocationChanged"
-                                   Label="Location"
-                                   Clearable="true">
+                        @bind-Value:after="OnLocationChanged"
+                        Label="Location"
+                        Clearable="true">
                             @foreach (var location in locations)
                             {
                                 <MudSelectItem Value="location">@location.Name</MudSelectItem>
@@ -78,7 +78,8 @@
                 foreach (var activity in activities.Items)
                 {
                     var created = activity.Created.ToLocalTime();
-                    var commencedOn = DateOnly.FromDateTime(activity.CommencedOn);
+                    var commencedOn = activity.CommencedOn.ToLocalTime();
+                    var today = DateTime.Today.ToLocalTime();
                     <MudListItem Class="flex-row-reverse">
                         <ChildContent>
                             <div class="d-flex justify-space-between align-center ml-2">
@@ -101,7 +102,7 @@
                                             Added on @created.ToShortDateString() at @created.ToShortTimeString() (@created.Humanize())
                                         </MudText>
                                         <MudText Typo="Typo.body2" Class="pt-1">
-                                            Took place on @commencedOn.ToShortDateString() (@(commencedOn == DateOnly.FromDateTime(DateTime.Today) ? "today" : commencedOn.Humanize()))
+                                            Took place on @commencedOn.ToShortDateString() (@(commencedOn == today ? "today" : commencedOn.Humanize()))
                                             at @activity.TookPlaceAtLocationName
                                         </MudText>
 
