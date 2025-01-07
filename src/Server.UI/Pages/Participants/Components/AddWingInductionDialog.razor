@@ -15,7 +15,7 @@
                             <MudDatePicker Label="@Model.GetMemberDescription(x => x.InductionDate)"
                                            @bind-Date="Model.InductionDate"
                                            For="(() => Model.InductionDate)"
-                                           ImmediateText="true" Editable="false" MaxDate="DateTime.Today.Date" PickerVariant="PickerVariant.Dialog"/>
+                                           ImmediateText="true" Editable="false" MaxDate="DateTime.Today.Date" MinDate="DateTime.Today.AddMonths(-3)" PickerVariant="PickerVariant.Dialog" />
                         </MudItem>
                         <MudItem xs="12">
                             <MudAutocomplete T="LocationDto" Label="@Model.GetMemberDescription(x => x.Location)" @bind-Value="Model.Location" SearchFunc="@SearchLocations"
