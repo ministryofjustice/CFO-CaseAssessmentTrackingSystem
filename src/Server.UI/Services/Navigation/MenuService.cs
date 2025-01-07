@@ -212,6 +212,12 @@ public class MenuService : IMenuService
                                 Title = "Audit Trails",
                                 Href = "/system/audittrails",
                                 PageStatus = PageStatus.Completed
+                            },
+                            new()
+                            {
+                                Title = "Outbox Messages",
+                                Href = "/system/outbox",
+                                PageStatus = PageStatus.Completed
                             }
                         }
                     }
