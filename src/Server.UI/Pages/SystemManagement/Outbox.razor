@@ -1,0 +1,255 @@
+﻿@page "/system/outbox"
+@using System.Text.Json
+@using Cfo.Cats.Application.Features.Outbox.Commands
+@using Cfo.Cats.Application.Features.Outbox.DTOs
+@using Cfo.Cats.Application.Features.Outbox.Queries.PaginationQuery
+@using Cfo.Cats.Application.Features.Outbox.Specifications
+@using Cfo.Cats.Application.SecurityConstants
+@using Humanizer
+
+@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}")]
+
+@inject IStringLocalizer<Outbox> L
+@inject IMediator Mediator
+@inherits CatsComponentBase
+
+<PageTitle>
+    @Title
+</PageTitle>
+
+<MudDataGrid ServerData="@(ServerReload)"
+             T="OutboxMessageDto"
+             FixedHeader="true"
+             FixedFooter="true"
+             Virtualize="true"
+             @bind-RowsPerPage="defaultPageSize"
+             Height="calc(100vh - 300px)"
+             Loading="@loading"
+             Hover="true" @ref="table">
+    <ToolBarContent>
+        <div class="d-flex align-start flex-grow-1">
+            <div class="d-flex gap-4">
+                <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Large" />
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.caption" Class="mb-2">@Title</MudText>
+                    <MudEnumSelect Style="min-width:120px" TEnum="OutboxMessageListView" ValueChanged="OnChangedListView" Value="Query.ListView" Dense="true" Label="List View">
+                    </MudEnumSelect>
+                </div>
+            </div>
+            <div class="flex-grow-1" />
+
+            <div class="d-flex flex-column justify-end">
+                <div class="d-flex">
+                    <MudButton Variant="Variant.Outlined"
+                               Size="Size.Small"
+                               OnClick="@(() => OnRefresh())"
+                               StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
+                               Style="margin-right: 4px; margin-bottom:4px">
+                        @ConstantString.Refresh
+                    </MudButton>
+                </div>
+
+                <MudStack Row="true" AlignItems="AlignItems.Stretch">
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Value="@Query.Keyword" Placeholder="Search" Adornment="Adornment.End" Style="min-width:120px" FullWidth="true"
+                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                        </MudTextField>
+                    </MudHidden>
+                </MudStack>
+
+
+            </div>
+        </div>
+    </ToolBarContent>
+    <Columns>
+        <TemplateColumn CellClass="width:60px;" Title="@ConstantString.Actions" Sortable="false">
+            <CellTemplate>
+                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                         Dense="true"
+                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                    <MudMenuItem OnClick="@(() => Reschedule(context.Item))">
+                        Reschedule
+                    </MudMenuItem>
+                </MudMenu>
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.OccurredOnUtc" Title="@L[currentDto.GetMemberDescription(x => x.OccurredOnUtc)]">
+            <CellTemplate>
+                <ToLocal DateTime="@context.Item.OccurredOnUtc.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
+                <MudText Typo="Typo.body2">@context.Item.OccurredOnUtc.ToLocalTime().Humanize()</MudText>
+                @if (context.Item.ParentId.HasValue)
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.FileCopy" Color="Color.Warning" />
+                }
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Type" Title="@L[currentDto.GetMemberDescription(x => x.Type)]">
+            <CellTemplate>
+                <MudText Typo="Typo.body1">
+                    @context.Item.Type.Split(".").Last()
+                </MudText>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.ProcessedOnUtc" Title="@L[currentDto.GetMemberDescription(x => x.ProcessedOnUtc)]">
+            <CellTemplate>
+                @if (context.Item.ProcessedOnUtc.HasValue)
+                {
+                    <ToLocal DateTime="@context.Item.ProcessedOnUtc.Value.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
+                    <MudText Typo="Typo.body2">@context.Item.ProcessedOnUtc.Value.ToLocalTime().Humanize()</MudText>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body2">Unprocessed</MudText>
+                }
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Content" Title="@L[currentDto.GetMemberDescription(x => x.Content)]">
+            <CellTemplate>
+                @{
+                    var jsonRows = ParseJsonToKeyValuePairs(context.Item.Content);
+                }
+                <MudTable Items="jsonRows" Dense="true" Context="sub">
+                    <HeaderContent>
+                        <MudTh>Key</MudTh>
+                        <MudTh>Value</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@sub.Key</MudTd>
+                        <MudTd>@sub.Value</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Error" Title="@L[currentDto.GetMemberDescription(x => x.Error)]"/>
+    </Columns>
+    <NoRecordsContent>
+        <MudText>@ConstantString.NoRecords</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>@ConstantString.Loading</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
+    </PagerContent>
+</MudDataGrid>
+
+<style>
+    .mud-table-toolbar {
+    height: 120px !important;
+    }
+</style>
+@code {
+    public string Title { get; private set; } = "Outbox Messages";
+
+    [CascadingParameter] 
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+
+    [CascadingParameter] 
+    private UserProfile? UserProfile { get; set; }
+
+    private OutboxMessagesWithPagination.Query Query { get; } = new();
+
+    private MudDataGrid<OutboxMessageDto> table = null!;
+    private bool loading;
+    private int defaultPageSize = 15;
+    private readonly OutboxMessageDto currentDto = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Title = L[currentDto.GetClassDescription()];
+        var state = await AuthState;
+    }
+
+    private async Task OnChangedListView(OutboxMessageListView listview)
+    {
+        Query.ListView = listview;
+        await table.ReloadServerData();
+    }
+
+    private async Task OnRefresh()
+    {
+        Query.Keyword = string.Empty;
+        await table.ReloadServerData();
+    }
+
+    private async Task OnSearch(string text)
+    {
+        Query.Keyword = text;
+        await table.ReloadServerData();
+    }
+
+    private List<JsonRow> ParseJsonToKeyValuePairs(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json)) return new List<JsonRow>();
+
+        try
+        {
+            var jsonObject = JsonDocument.Parse(json).RootElement;
+            var rows = new List<JsonRow>();
+
+            foreach (var property in jsonObject.EnumerateObject())
+            {
+                rows.Add(new JsonRow
+                    {
+                        Key = property.Name,
+                        Value = property.Value.ToString()
+                    });
+            }
+
+            return rows;
+        }
+        catch
+        {
+            return new List<JsonRow> { new JsonRow { Key = "Error", Value = "Invalid JSON" } };
+        }
+    }
+
+    private async Task<GridData<OutboxMessageDto>> ServerReload(GridState<OutboxMessageDto> state)
+    {
+        try
+        {
+            loading = true;
+            Query.CurrentUser = UserProfile;
+            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "OccurredOnUtc";
+            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
+            Query.PageNumber = state.Page + 1;
+            Query.PageSize = state.PageSize;
+
+            var result = await Mediator.Send(Query).ConfigureAwait(false);
+            return new GridData<OutboxMessageDto> { TotalItems = result.TotalItems, Items = result.Items };
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+
+    public class JsonRow
+    {
+        public string Key { get; set; } = default!;
+        public string Value { get; set; } = default!;
+    }
+
+    private async Task Reschedule(OutboxMessageDto message)
+    {
+        var mediator = GetNewMediator();
+        var command = new RescheduleOutboxMessage.Command
+        {
+            OutboxMessageId = message.Id
+        };
+        var result = await mediator.Send(command);
+
+        if (result.Succeeded)
+        {
+            Snackbar.Add("Rescheduled message", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add($"Failed to reschedule message {result.ErrorMessage}", Severity.Success);
+        }
+
+        await OnRefresh();
+    }
+
+}

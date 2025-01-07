@@ -26,7 +26,7 @@ public static class QueryableExtensions
         IConfigurationProvider configuration,
         CancellationToken cancellationToken = default
     )
-        where T : class, IEntity
+        where T : class
     {
         var specificationEvaluator = SpecificationEvaluator.Default;
         var count = await specificationEvaluator
