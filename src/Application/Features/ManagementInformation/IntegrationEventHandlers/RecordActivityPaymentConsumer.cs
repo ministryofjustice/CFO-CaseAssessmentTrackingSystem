@@ -10,6 +10,7 @@ public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<A
     private static class IneligibilityReasons
     {
         public const string AlreadyPaidThisMonth = "An activity of this type has already been paid to this contract, for this participant, this month.";
+        public const string NotYetApproved = "The enrolment for this participant has not yet been approved";
     }
 
     public async Task Consume(ConsumeContext<ActivityApprovedIntegrationEvent> context)
@@ -45,6 +46,7 @@ public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<A
                   && ap.ActivityType == activity.Type.Name
                   && ap.ActivityApproved >= dates.TheFirstOfMonth
                   && ap.ActivityApproved <= dates.TheLastOfMonth
+                  && ap.EligibleForPayment
             select ap;
 
         var previousPayments = await query.AsNoTracking().ToListAsync();
@@ -54,6 +56,19 @@ public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<A
         if(previousPayments.Count > 0)
         {
             ineligibilityReason = IneligibilityReasons.AlreadyPaidThisMonth;
+        }
+
+
+        var history = await unitOfWork.DbContext.ParticipantEnrolmentHistories
+            .Where(h => h.ParticipantId == activity.ParticipantId)
+            .ToListAsync();
+
+        var firstApproval = history.Where(h => h.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
+            .Min(x => x.Created);
+
+        if (firstApproval.HasValue == false)
+        {
+            ineligibilityReason = IneligibilityReasons.NotYetApproved;
         }
 
         var payment = new ActivityPaymentBuilder()
