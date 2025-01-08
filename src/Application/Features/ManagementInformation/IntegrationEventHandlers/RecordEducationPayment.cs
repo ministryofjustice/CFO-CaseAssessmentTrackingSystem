@@ -36,6 +36,7 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
                 && ap.ContractId == activity.TookPlaceAtContract.Id
                 && ap.ActivityApproved >= dates.TheFirstOfMonth
                 && ap.ActivityApproved <= dates.TheLastOfMonth
+                && ap.EligibleForPayment
             select ap;
 
         var previousPayments = await query.AsNoTracking().ToListAsync();
@@ -46,7 +47,19 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
         {
             ineligibilityReason = IneligibilityReasons.AlreadyPaidThisMonth;
         }
-        
+
+        var history = await unitOfWork.DbContext.ParticipantEnrolmentHistories
+            .Where(h => h.ParticipantId == activity.ParticipantId)
+            .ToListAsync();
+
+        var firstApproval = history.Where(h => h.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
+            .Min(x => x.Created);
+
+        if (firstApproval.HasValue == false)
+        {
+            ineligibilityReason = IneligibilityReasons.NotYetApproved;
+        }
+
         var payment = new EducationPaymentBuilder()
             .WithActivity(activity.Id)
             .WithParticipantId(activity.ParticipantId)
@@ -67,5 +80,6 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
     private static class IneligibilityReasons
     {
         public const string AlreadyPaidThisMonth = "An education activity has already been paid to this contract, for this participant, this month.";
+        public const string NotYetApproved = "The enrolment for this participant has not yet been approved";
     }
 }
