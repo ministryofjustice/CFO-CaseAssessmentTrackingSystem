@@ -21,7 +21,8 @@ public class EducationPayment
     public string TenantId { get; set; }
     public bool EligibleForPayment { get; set; }
     public string? IneligibilityReason { get; set; }
-
+    public string? CourseTitle { get; set; }
+    public string? CourseLevel { get; set; }
 }
 
 public class EducationPaymentBuilder
@@ -35,7 +36,8 @@ public class EducationPaymentBuilder
     private string? _tenantId;
     private bool? _eligibleForPayment;
     private string? _ineligibilityReason;
-
+    private string? _courseTitle;
+    private string? _courseLevel;
 
     public EducationPaymentBuilder WithActivity(Guid activityId)
     {
@@ -91,6 +93,18 @@ public class EducationPaymentBuilder
         return this;
     }
 
+    public EducationPaymentBuilder WithCourseTitle(string? courseTitle)
+    {
+        _courseTitle = courseTitle;
+        return this;
+    }
+
+    public EducationPaymentBuilder WithCourseLevel(string? courseLevel)
+    {
+        _courseLevel = courseLevel;
+        return this;
+    }
+
     public EducationPayment Build()
     {
         var payment = new EducationPayment()
@@ -106,6 +120,8 @@ public class EducationPaymentBuilder
             LocationType = _locationType ?? throw new InvalidBuilderException("LocationType"),
             ParticipantId = _participantId ?? throw new InvalidBuilderException("ParticipantId"),
             TenantId = _tenantId ?? throw new InvalidBuilderException("TenantId"),
+            CourseTitle = _courseTitle ?? throw new InvalidBuilderException("CourseTitle"),
+            CourseLevel = _courseLevel ?? throw new InvalidBuilderException("CourseLevel"),
         };
         return payment;
     }
