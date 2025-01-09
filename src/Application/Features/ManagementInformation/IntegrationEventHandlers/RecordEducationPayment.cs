@@ -60,6 +60,10 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
             ineligibilityReason = IneligibilityReasons.NotYetApproved;
         }
 
+        var educationTrainingActivity = await unitOfWork.DbContext.EducationTrainingActivities
+          .AsNoTracking()
+          .SingleAsync(eta => eta.Id == activity.Id);
+
         var payment = new EducationPaymentBuilder()
             .WithActivity(activity.Id)
             .WithParticipantId(activity.ParticipantId)
@@ -70,11 +74,12 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
             .WithTenantId(activity.TenantId)
             .WithEligibleForPayment(ineligibilityReason is null)
             .WithIneligibilityReason(ineligibilityReason)
+            .WithCourseTitle(educationTrainingActivity.CourseTitle)
+            .WithCourseLevel(educationTrainingActivity.CourseLevel)
             .Build();
 
         unitOfWork.DbContext.EducationPayments.Add(payment);
         await unitOfWork.SaveChangesAsync(CancellationToken.None);
-
     }
 
     private static class IneligibilityReasons
