@@ -250,11 +250,12 @@
         };
 
         var dialog = DialogService.Show<AddActivityDialog>("Add Activity/ETE", parameters, new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small,
-            FullWidth = true,
-            CloseButton = true
-        });
+            {
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true,
+                CloseButton = true,
+                BackdropClick = false
+            });
 
         if (await dialog.Result is not { Canceled: true })
         {
