@@ -69,7 +69,8 @@
         <PropertyColumn Property="x => x.ParticipantName" Title="@L["Participant"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>             
+                    <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>
+                    <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
