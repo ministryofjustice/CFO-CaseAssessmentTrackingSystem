@@ -10,17 +10,25 @@
 @if (_model != null)
 {
     <div tabindex="-1" @ref="topOfPageElement"></div>
-	<CatsMudStepper @ref="@Stepper" Color="Color.Primary" Variant="Variant.Filled"
-					MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
-                    ActiveStepChanged="@OnStepChange" ShowSkipButton="false" ShowPreviousButton="@_showPrevious">
-		<ChildContent>
-			<MudForm Model="@_model">
-				@*This top-level form is responsible for submission *@
-                
-                @foreach (var pathway in _model.Pathways)
-                {
-                    <BioPathway Model="pathway" />
+    <CatsMudStepper @ref="@Stepper" Color="Color.Primary" Variant="Variant.Filled"
+    MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
+    ActiveStepChanged="@OnStepChange" ShowSkipButton="false" ShowPreviousButton="@_showPrevious">
+        <ChildContent>
+            <MudForm Model="@_model">
+                @*This top-level form is responsible for submission *@
+                @{
+                    var orderedTitles = new List<string> { "Diversity", "Childhood Experiences", "Recent Experiences" };
                 }
+
+                @foreach (var title in orderedTitles)
+                {
+                    var pathway = _model.Pathways.FirstOrDefault(p => p.Title == title);
+                    if (pathway != null)
+                    {
+                        <BioPathway Model="pathway" />
+                    }
+                }
+
                 <StatusResultStep Processing="@Processing" SubmissionSuccess="@SubmissionSuccess" SuccessText="Bio Submitted" FailureText="Bio failed to submit" Upci="@Upci" />
 			</MudForm>
 		</ChildContent>
@@ -28,7 +36,6 @@
 }
 
 @code {
-
     private bool _showPrevious = false;
     private ElementReference topOfPageElement;
 
@@ -97,13 +104,11 @@
             {
                 Snackbar.Add(result.ErrorMessage, Severity.Error);
             }
-
         }
         finally
         {
             Processing = false;
-        }
-        
+        }        
     }
 
 	private async Task SubmitBio()
@@ -123,8 +128,7 @@
                 });
 				Processing = false;
                 SubmissionSuccess = response.Succeeded;
-            }
-			
+            }			
 		}
 	}
 }
