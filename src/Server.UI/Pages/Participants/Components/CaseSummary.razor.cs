@@ -3,7 +3,6 @@ using Cfo.Cats.Application.Features.Assessments.Commands;
 using Cfo.Cats.Application.Features.Bios.Commands;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
-using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Pages.Risk;
 using Humanizer;
@@ -25,6 +24,11 @@ public partial class CaseSummary
     private string _riskIcon = String.Empty;
     private Color _riskIconColor = Color.Transparent;
 
+    private string _bioInfo = String.Empty;
+    private string _bioTooltipText = String.Empty;
+    private string _bioIcon = String.Empty;
+    private Color _bioIconColor = Color.Transparent;
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -32,8 +36,9 @@ public partial class CaseSummary
             ? null
             : ParticipantSummaryDto.Assessments.OrderByDescending(a => a.AssessmentDate)
                 .First();
-        _bio = ParticipantSummaryDto.BioSummary;
+        
         SetRiskDueWarning();
+        SetbBioDueWarning();
     }
 
     void SetRiskDueWarning()
@@ -55,6 +60,39 @@ public partial class CaseSummary
                 case var _ when _dueInDays >= 0 && _dueInDays <= 14:
                     _riskIcon = Icons.Material.Filled.Warning;
                     _riskIconColor = Color.Warning;
+                    break;
+            }
+        }
+    }
+
+    void SetbBioDueWarning()
+    {
+        _bio = ParticipantSummaryDto.BioSummary;
+        if (_bio==null || _bio.BioStatus!=BioStatus.Complete)
+        {
+            // todo:  need to find enrolment date
+            var enrolmentDate = DateTime.Now;
+
+            _bioInfo = String.Format("Enrolment was {0}", enrolmentDate.Humanize()); ;            
+
+            TimeSpan difference = DateTime.Now - enrolmentDate;
+
+            int differenceInDays = difference.Days;
+            
+            switch (differenceInDays)
+            {
+                //“overdue” when 4 weeks is hit
+                case var _ when differenceInDays >28:
+                    _bioIcon = Icons.Material.Filled.Error;                    
+                    _bioIconColor = Color.Error;
+                    _bioTooltipText = "Overdue";
+                    break;
+
+                //“due soon” (within 14 days of the 4 weeks being reached) 
+                case var _ when differenceInDays >= 14 && differenceInDays <= 28:
+                    _bioIcon = Icons.Material.Filled.Warning;
+                    _bioIconColor = Color.Warning;
+                    _bioTooltipText = "Due Soon";
                     break;
             }
         }
