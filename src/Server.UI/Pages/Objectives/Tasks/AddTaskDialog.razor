@@ -2,14 +2,14 @@
 
 @inherits CatsComponentBase
 
-<MudDialog>
+<MudDialog Style="height: 410px; max-height: 90vh; overflow: auto;">
     <DialogContent>
         <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
             <MudTextField @bind-Value="Model.Description"
                           Label="@Model.GetMemberDescription(x => x.Description)"
                           For="@(() => Model.Description)"
-                          Lines="4" />
-
+                          Lines="8" />
+<br />
             <MudDatePicker @bind-Date="Model.Due"
                           FixDay="1"
                           DateFormat="MMM, yyyy"
@@ -17,7 +17,7 @@
                           MinDate="new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1)"
                           Label="@Model.GetMemberDescription(x => x.Due)"
                           For="@(() => Model.Due)"
-                          Editable="true"
+                          Editable="false"
                           PickerVariant="PickerVariant.Dialog"/>
         </MudForm>
     </DialogContent>
@@ -66,6 +66,4 @@
             saving = false;
         }
     }
-
-
 }
