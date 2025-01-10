@@ -8,7 +8,6 @@ using Cfo.Cats.Domain.Entities.Bios;
 using Newtonsoft.Json;
 using Cfo.Cats.Application.Common.Validators;
 
-
 namespace Cfo.Cats.Application.Features.Bios.Commands;
 
 public static class BeginBio
@@ -37,8 +36,8 @@ public static class BeginBio
                 ParticipantId = request.ParticipantId,
                 Pathways =
                 [
-                    new ChildhoodExperiencesPathway(),
                     new DiversityPathway(),
+                    new ChildhoodExperiencesPathway(),                    
                     new RecentExperiencesPathway(),
                 ]
             };
@@ -67,5 +66,4 @@ public static class BeginBio
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, nameof(Command.ParticipantId)));
         }
     }
-
 }
