@@ -176,7 +176,7 @@ public static class SubmitToProviderQa
 
             RuleFor(c => c.ParticipantId)
                 .MustAsync(HaveGivenConsentWithinLastThreeMonths)
-                .WithMessage("Participant consent date must be within the last 3 months");
+                .WithMessage("Participant must have given consent within the last 3 months, up to date consent documentation is required");
         }
 
         private async Task<bool> HaveGivenConsentWithinLastThreeMonths(string participantId, CancellationToken cancellationToken)
