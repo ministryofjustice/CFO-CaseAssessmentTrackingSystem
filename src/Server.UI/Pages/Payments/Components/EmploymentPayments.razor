@@ -1,40 +1,98 @@
 ﻿@inherits CatsComponentBase
 
-<MudTable Items="@Payments" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
-          GroupBy="_groupDefinition"
-          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-          GroupFooterClass="mb-4">
-    <HeaderContent>
-        <MudTh>Created</MudTh>
-        <MudTh>Approved</MudTh>
-        <MudTh>Participant Id</MudTh>
-        <MudTh>Payable</MudTh>
-    </HeaderContent>
-    <GroupHeaderTemplate>
-        <MudTh Class="mud-table-cell-custom-group" colspan="4">@context.Key</MudTh>
-    </GroupHeaderTemplate>
-    <RowTemplate>
-        <MudTd DataLabel="Created">@context.CreatedOn</MudTd>
-        <MudTd DataLabel="Approved">@context.ActivityApproved.ToShortDateString()</MudTd>
-        <MudTd DataLabel="Participant Id">@context.ParticipantId</MudTd>
-        <MudTd DataLabel="Payable">@(context.EligibleForPayment ? "Yes" : "No")</MudTd>
-    </RowTemplate>
-</MudTable>
+<MudGrid>
+    <MudItem xs="12">
+        <MudSwitch @bind-Value="DataView" Label="Data View" Color="Color.Info" />
+    </MudItem>
+    @if (DataView)
+    {
+        <MudTable Items="@Payments" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
+        GroupBy="_groupDefinition"
+        GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+        GroupFooterClass="mb-4">
+            <HeaderContent>
+                <MudTh>Created</MudTh>
+                <MudTh>Approved</MudTh>
+                <MudTh>Participant Id</MudTh>
+                <MudTh>Payable</MudTh>
+            </HeaderContent>
+            <GroupHeaderTemplate>
+                <MudTh Class="mud-table-cell-custom-group" colspan="4">@context.Key</MudTh>
+            </GroupHeaderTemplate>
+            <RowTemplate>
+                <MudTd DataLabel="Created">@context.CreatedOn</MudTd>
+                <MudTd DataLabel="Approved">@context.ActivityApproved.ToShortDateString()</MudTd>
+                <MudTd DataLabel="Participant Id">@context.ParticipantId</MudTd>
+                <MudTd DataLabel="Payable">
+
+                    @if (context.EligibleForPayment)
+                    {
+                        @("Yes")
+                    }
+                    else
+                    {
+                        <MudTooltip Text="@context.IneligibilityReason">
+                            No
+                        </MudTooltip>
+                    }
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+    else
+    {
+        <MudItem xs="12" md="6">
+            <ApexChart TItem="SummaryDataModel"
+            Title="Employments By Contract">
+                <ApexPointSeries TItem="SummaryDataModel"
+                Items="SummaryData"
+                Name="Employments"
+                SeriesType="SeriesType.Bar"
+                XValue="e => e.Contract"
+                YValue="e => e.Employments" />
+            </ApexChart>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTable Items="@SummaryData" Hover="true" Breakpoint="Breakpoint.Sm" Loading="_loading" LoadingProgressColor="Color.Info">
+                <HeaderContent>
+                    <MudTh>
+                        Contract
+                    </MudTh>
+                    <MudTh>
+                        Employments
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Contract">@context.Contract</MudTd>
+                    <MudTd DataLabel="Employments">@context.Employments</MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudItem>
+    }
+</MudGrid>
 
 
 @code {
 
     private bool _loading = true;
 
-    [Parameter, EditorRequired]
+    private bool DataView { get; set; }
+
+    [Parameter]
     public int Month { get; set; }
 
-    [Parameter, EditorRequired]
+    [Parameter]
     public int Year { get; set; }
 
-    private Data[] Payments { get; set; } = [];
+    [Parameter]
+    public ContractDto? Contract { get; set; }
 
-    private TableGroupDefinition<Data> _groupDefinition = new()
+    [CascadingParameter]
+    public UserProfile CurrentUser { get; set; } = default!;
+
+    private RawData[] Payments { get; set; } = [];
+
+    private TableGroupDefinition<RawData> _groupDefinition = new()
     {
         GroupName = "Contract",
         Indentation = false,
@@ -50,42 +108,67 @@
         var query = from ep in unitOfWork.DbContext.EmploymentPayments
                     join dd in unitOfWork.DbContext.DateDimensions on ep.ActivityApproved equals dd.TheDate
                     join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
-        where dd.TheMonth == Month && dd.TheYear == Year
-            select new
-            {
-                ep.CreatedOn,
-                ep.ActivityApproved,
-                ep.ParticipantId,
-                ep.EligibleForPayment,
-                Contract = c.Description
-            };
+                    where dd.TheMonth == Month && dd.TheYear == Year
+                    select new
+                    {
+                        ep.CreatedOn,
+                        ep.ActivityApproved,
+                        ep.ParticipantId,
+                        ep.EligibleForPayment,
+                        Contract = c.Description,
+                        ContractId = c.Id,
+                        ep.IneligibilityReason,
+                        TenantId = c!.Tenant!.Id!
+                    };
         
+        query = Contract is null 
+            ? query.Where(q => q.TenantId.StartsWith(CurrentUser.TenantId!)) 
+            : query.Where(q => q.ContractId == Contract.Id);
 
         Payments = await query.AsNoTracking()
-            .Select(x => new Data 
+            .Select(x => new RawData 
                 { 
                     CreatedOn = x.CreatedOn,
                     ActivityApproved = x.ActivityApproved,
                     ParticipantId = x.ParticipantId,
                     EligibleForPayment = x.EligibleForPayment,
-                    Contract = x.Contract
+                    Contract = x.Contract,
                 })
-            .OrderByDescending(e => e.CreatedOn)
+            .OrderBy(e => e.Contract)
+            .ThenByDescending(e => e.CreatedOn)
             .ToArrayAsync();
+
+        this.SummaryData = Payments
+            .Where(e => e.EligibleForPayment)
+            .GroupBy(e => e.Contract)
+            .Select(x => new SummaryDataModel
+            {
+                Contract = x.Key,
+                Employments = x.Count()
+            })
+            .OrderBy(c => c.Contract)
+            .ToList();
 
         _loading = false;
 
     }
 
-    private class Data
+    private List<SummaryDataModel> SummaryData = [];
+
+    private record RawData
     {
         public DateTime CreatedOn { get; set; }
         public DateTime ActivityApproved { get; set; }
         public string Contract { get; set; } = "";
         public string ParticipantId { get; set; } = "";
         public bool EligibleForPayment { get; set; }
-
+        public string? IneligibilityReason { get; set; }
     }
 
+    private class SummaryDataModel
+    {
+        public required string Contract { get; set; } 
+        public required int Employments { get; set; } 
+    }
 
 }

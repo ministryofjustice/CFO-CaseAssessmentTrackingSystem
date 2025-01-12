@@ -20,6 +20,7 @@ using ActualLab.Fusion.Extensions;
 using Cfo.Cats.Server.UI.Middlewares;
 using Cfo.Cats.Infrastructure;
 using Cfo.Cats.Infrastructure.Services;
+using ApexCharts;
 
 namespace Cfo.Cats.Server.UI;
 
@@ -111,6 +112,7 @@ public static class DependencyInjection
             .AddScoped<IUserPreferencesService, UserPreferencesService>()
             .AddScoped<IMenuService, MenuService>();
 
+        services.AddApexCharts();
         
         services.Configure<ForwardedHeadersOptions>(options =>
         {
