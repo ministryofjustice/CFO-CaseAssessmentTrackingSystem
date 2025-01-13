@@ -46,7 +46,15 @@ public class EducationPaymentEntityTypeConfiguration
 
         builder.Property(x => x.ParticipantId)
             .IsRequired()
-            .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId);   
+            .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId);
+
+        builder.Property(x => x.CourseTitle)
+            .IsRequired()
+            .HasMaxLength(200);
+        
+        builder.Property(x => x.CourseLevel)
+            .IsRequired()
+            .HasMaxLength(100);
 
         builder.HasIndex(x => new { 
             x.ParticipantId,
@@ -54,6 +62,5 @@ public class EducationPaymentEntityTypeConfiguration
             x.ActivityApproved
         })
         .HasDatabaseName("ix_ActivityPayment_ParticipantId");
-
     }
 }
