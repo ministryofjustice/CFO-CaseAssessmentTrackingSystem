@@ -149,7 +149,8 @@ public class MenuService : IMenuService
             new MenuSectionModel()
             {
                 Title = "Finance",
-                Roles = new[] { RoleNames.SystemSupport, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.PerformanceManager },
+                
+                Roles = new[] { RoleNames.SystemSupport, RoleNames.Finance },
                 SectionItems = new ApiList<MenuSectionItemModel>
                 {
                     new()
