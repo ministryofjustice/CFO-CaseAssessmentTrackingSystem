@@ -13,6 +13,17 @@ public class EducationTrainingActivityEntityTypeConfiguration : IEntityTypeConfi
             DatabaseConstants.Tables.EducationTrainingActivity,
             DatabaseConstants.Schemas.Activities);
 
+        builder.Property(x => x.CourseTitle)
+        .IsRequired()
+        .HasMaxLength(200);
+
+        builder.Property(x => x.CourseUrl)        
+        .HasMaxLength(2000);
+
+        builder.Property(x => x.CourseLevel)
+        .IsRequired()
+        .HasMaxLength(100);
+
         builder.HasOne(a => a.Document)
             .WithMany()
             .IsRequired(true);
