@@ -70,7 +70,6 @@
     {
         <MudItem xs="12" md="6">
             <ApexChart TItem="SummaryDataModel" 
-                       Options="_options"
                        Title="Enrolments By Contract">
                 <ApexPointSeries TItem="SummaryDataModel"
                                  Items="SummaryData"
@@ -143,8 +142,6 @@
 
 @code {
 
-    private readonly ApexChartOptions<SummaryDataModel> _options = new();
-
     private bool _loading = true;
 
     private bool DataView { get; set; }
@@ -174,12 +171,6 @@
     protected override async Task OnInitializedAsync()
     {
         var unitOfWork = GetNewUnitOfWork();
-
-        _options.Theme = new Theme()
-            {
-                Mode = LayoutService.UserPreferences.IsDarkMode ? Mode.Dark : Mode.Light
-            };
-
 
         var query = from ep in unitOfWork.DbContext.EnrolmentPayments
                     join dd in unitOfWork.DbContext.DateDimensions on ep.Approved equals dd.TheDate
