@@ -14,6 +14,7 @@ public class LayoutService
     {
         this.userPreferencesService = userPreferencesService;
         this.PrimaryColor = configuration["PrimaryColour"] ?? "#722660";
+        
     }
 
     public bool IsRTL { get; private set; }
