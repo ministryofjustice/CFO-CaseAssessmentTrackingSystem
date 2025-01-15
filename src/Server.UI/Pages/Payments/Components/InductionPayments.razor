@@ -62,7 +62,6 @@
     {
         <MudItem xs="12" md="6">
             <ApexChart TItem="SummaryDataModel" 
-                       Options="_options"
                        Title="Inductions By Contract">
                 <ApexPointSeries TItem="SummaryDataModel"
                 Items="SummaryData"
@@ -135,8 +134,6 @@
 
 @code {
 
-    private readonly ApexChartOptions<SummaryDataModel> _options = new();
-
     private bool _loading = true;
 
     private bool DataView { get; set; }
@@ -166,12 +163,6 @@
     protected override async Task OnInitializedAsync()
     {
         var unitOfWork = GetNewUnitOfWork();
-
-        _options.Theme = new Theme()
-        {
-            Mode = LayoutService.UserPreferences.IsDarkMode ? Mode.Dark : Mode.Light
-        };
-
 
         var query = from ip in unitOfWork.DbContext.InductionPayments
                     join dd in unitOfWork.DbContext.DateDimensions on ip.Approved equals dd.TheDate

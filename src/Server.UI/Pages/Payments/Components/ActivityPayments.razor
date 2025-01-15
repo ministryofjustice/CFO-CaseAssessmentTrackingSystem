@@ -1,5 +1,17 @@
 ﻿@inherits CatsComponentBase
 
+<style type="text/css">
+
+    .centered {
+        text-align: center;
+    }
+
+    .mud-table-head th {
+        text-align: center;
+        font-weight: bold;
+    }
+
+</style>
 
 <MudGrid>
     <MudItem xs="12">
@@ -52,62 +64,102 @@
     }
     else
     {
-        <MudItem xs="12" md="6">
-            <ApexChart TItem="SummaryDataModel"
-                       Title="Activity By Location">
+     
+        <MudItem xs="12">
+            <MudTable Items="@SummaryData" 
+                      Hover="true" 
+                      Breakpoint="Breakpoint.Sm" 
+                      Loading="_loading" 
+                      LoadingProgressColor="Color.Info"
+                      Striped="true"
+                      Bordered="true"
+                      HeaderClass="table-head-bordered"
+                      CustomHeader="true">
+                <HeaderContent>
+                    <MudTHeadRow>
+                        <MudTh>
+
+                        </MudTh>
+                        <MudTh colspan="3">
+                            @ActivityType.SupportWork.Name
+                        </MudTh>
+                        <MudTh colspan="3">
+                            @ActivityType.HumanCitizenship.Name
+                        </MudTh>
+                        <MudTh colspan="3">
+                            @ActivityType.CommunityAndSocial.Name
+                        </MudTh>
+                        <MudTh colspan="3">
+                            @ActivityType.InterventionsAndServicesWraparoundSupport.Name
+                        </MudTh>
+                    </MudTHeadRow>
+                    <MudTHeadRow>
+                        <MudTh>
+                            Contract
+                        </MudTh>
+                        <MudTh>Ach</MudTh>
+                        <MudTh>Tgt</MudTh>
+                        <MudTh>%</MudTh>
+                        <MudTh>Ach</MudTh>
+                        <MudTh>Tgt</MudTh>
+                        <MudTh>%</MudTh>
+                        <MudTh>Ach</MudTh>
+                        <MudTh>Tgt</MudTh>
+                        <MudTh>%</MudTh>
+                        <MudTh>Ach</MudTh>
+                        <MudTh>Tgt</MudTh>
+                        <MudTh>%</MudTh>
+                    </MudTHeadRow>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Contract">@context.Contract</MudTd>
+                    <MudTd Class="centered">@context.SupportWork</MudTd>
+                    <MudTd Class="centered">@context.SupportWorkTarget</MudTd>
+                    <MudTd Class="centered">@context.SupportWorkPercentage</MudTd>
+                    <MudTd Class="centered">@context.HumanCitizenship</MudTd>
+                    <MudTd Class="centered">@context.HumanCitizenshipTarget</MudTd>
+                    <MudTd Class="centered">@context.HumanCitizenshipPercentage</MudTd>
+                    <MudTd Class="centered">@context.CommunityAndSocial</MudTd>
+                    <MudTd Class="centered">@context.CommunityAndSocialTarget</MudTd>
+                    <MudTd Class="centered">@context.CommunityAndSocialPercentage</MudTd>
+                    <MudTd Class="centered">@context.ISWSupport</MudTd>
+                    <MudTd Class="centered">@context.ISWSupportTarget</MudTd>
+                    <MudTd Class="centered">@context.ISWSupportPercentage</MudTd>
+                </RowTemplate>
+            </MudTable>    
+        </MudItem>
+           <MudItem xs="12" md="6">
+             <ApexChart TItem="SummaryDataModel"
+                       Title="Activities By Contract">
                 <ApexPointSeries TItem="SummaryDataModel"
                                  Items="SummaryData"
                                  Name="@ActivityType.SupportWork.Name"
                                  SeriesType="SeriesType.Bar"
                                  XValue="e => e.Contract"
-                                 YValue="e => e.SupportWork" />
+                                 YValue="e => e.SupportWork"
+                                  />
                 <ApexPointSeries TItem="SummaryDataModel"
                                  Items="SummaryData"
                                  Name="@ActivityType.HumanCitizenship.Name"
                                  SeriesType="SeriesType.Bar"
                                  XValue="e => e.Contract"
-                                 YValue="e => e.HumanCitizenship" />
+                                 YValue="e => e.HumanCitizenship"
+                              />
                 <ApexPointSeries TItem="SummaryDataModel"
                                  Items="SummaryData"
                                  Name="@ActivityType.CommunityAndSocial.Name"
                                  SeriesType="SeriesType.Bar"
                                  XValue="e => e.Contract"
-                                 YValue="e => e.CommunityAndSocial" />
+                                 YValue="e => e.CommunityAndSocial"
+                                 />
                 <ApexPointSeries TItem="SummaryDataModel"
                                  Items="SummaryData"
                                  Name="@ActivityType.InterventionsAndServicesWraparoundSupport.Name"
                                  SeriesType="SeriesType.Bar"
                                  XValue="e => e.Contract"
-                                 YValue="e => e.ISWSupport" />
-            </ApexChart>
-        </MudItem>
-        <MudItem xs="12" md="6">
-            <MudTable Items="@SummaryData" Hover="true" Breakpoint="Breakpoint.Sm" Loading="_loading" LoadingProgressColor="Color.Info">
-                <HeaderContent>
-                    <MudTh>
-                        Contract
-                    </MudTh>
-                    <MudTh>
-                        @ActivityType.SupportWork.Name
-                    </MudTh>
-                    <MudTh>
-                        @ActivityType.HumanCitizenship.Name
-                    </MudTh>
-                    <MudTh>
-                        @ActivityType.CommunityAndSocial.Name
-                    </MudTh>
-                    <MudTh>
-                        @ActivityType.InterventionsAndServicesWraparoundSupport.Name
-                    </MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel="Contract">@context.Contract</MudTd>
-                    <MudTd DataLabel="SW">@context.SupportWork</MudTd>
-                    <MudTd DataLabel="HC">@context.HumanCitizenship</MudTd>
-                    <MudTd DataLabel="CS">@context.CommunityAndSocial</MudTd>
-                    <MudTd DataLabel="ISW">@context.ISWSupport</MudTd>
-                </RowTemplate>
-            </MudTable>    
+                                 YValue="e => e.ISWSupport"
+                                 />
+            </ApexChart> 
         </MudItem>
     }
 </MudGrid>
@@ -116,11 +168,12 @@
 
 
 @code {
+    private readonly ApexChartOptions<SummaryDataModel> _options = new();
 
     private bool _loading = true;
 
     private bool DataView { get; set; }
-
+    
     [Parameter]
     public int Month { get; set; }
 
@@ -146,7 +199,6 @@
     protected override async Task OnInitializedAsync()
     {
         var unitOfWork = GetNewUnitOfWork();
-
 
         var query = from ep in unitOfWork.DbContext.ActivityPayments
                     join dd in unitOfWork.DbContext.DateDimensions on ep.ActivityApproved equals dd.TheDate
@@ -199,9 +251,13 @@
                 {
                     Contract = x.Key,
                     SupportWork = x.Count(g => g.Type == ActivityType.SupportWork.Name),
+                    SupportWorkTarget = TargetProvider.GetTarget(x.Key, Month, Year).SupportWork,
                     CommunityAndSocial = x.Count(g => g.Type == ActivityType.CommunityAndSocial.Name),
+                    CommunityAndSocialTarget = TargetProvider.GetTarget(x.Key, Month, Year).CommunityAndSocial,
                     HumanCitizenship = x.Count(g => g.Type == ActivityType.HumanCitizenship.Name),
+                    HumanCitizenshipTarget = TargetProvider.GetTarget(x.Key, Month, Year).HumanCitizenship,
                     ISWSupport = x.Count(g => g.Type == ActivityType.InterventionsAndServicesWraparoundSupport.Name),
+                    ISWSupportTarget = TargetProvider.GetTarget(x.Key, Month, Year).Interventions
                 })
             .OrderBy(c => c.Contract)
             .ToList();
@@ -230,9 +286,17 @@
     {
         public required string Contract {get; set;}
         public int SupportWork { get; set; }
+        public int SupportWorkTarget { get;set; }
+        public decimal SupportWorkPercentage => SupportWork.CalculateCappedPercentage(SupportWorkTarget);
         public int CommunityAndSocial { get; set; }
+        public int CommunityAndSocialTarget { get;set; }
+        public decimal CommunityAndSocialPercentage => CommunityAndSocial.CalculateCappedPercentage(CommunityAndSocialTarget);
         public int HumanCitizenship { get; set; }
+        public int HumanCitizenshipTarget { get;set; }
+        public decimal HumanCitizenshipPercentage => HumanCitizenship.CalculateCappedPercentage(HumanCitizenshipTarget);
         public int ISWSupport { get; set; }
+        public int ISWSupportTarget { get;set; }
+        public decimal ISWSupportPercentage => ISWSupport.CalculateCappedPercentage(ISWSupportTarget);
     }
 
 }

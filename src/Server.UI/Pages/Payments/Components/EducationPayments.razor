@@ -1,5 +1,16 @@
 ﻿@inherits CatsComponentBase
 
+<style type="text/css">
+    .centered {
+        text-align: center;
+    }
+
+    .mud-table-head th {
+        text-align: center;
+        font-weight: bold;
+    }
+</style>
+
 <MudGrid>
     <MudItem xs="12">
         <MudSwitch @bind-Value="DataView" Label="Data View" Color="Color.Info" />
@@ -47,28 +58,47 @@
     {
         <MudItem xs="12" md="6">
             <ApexChart TItem="SummaryDataModel"
-                       Title="Educations By Contract">
+                       Title="Education & Training By Contract">
                 <ApexPointSeries TItem="SummaryDataModel"
                                  Items="SummaryData"
                                  Name="Educations"
                                  SeriesType="SeriesType.Bar"
                                  XValue="e => e.Contract"
-                                 YValue="e => e.Educations" />
+                                 YValue="e => e.Educations"
+                                 ShowDataLabels="true"/>
             </ApexChart>
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudTable Items="@SummaryData" Hover="true" Breakpoint="Breakpoint.Sm" Loading="_loading" LoadingProgressColor="Color.Info">
+            <MudTable Items="@SummaryData"
+                      Hover="true"
+                      Breakpoint="Breakpoint.Sm"
+                      Loading="_loading"
+                      LoadingProgressColor="Color.Info"
+                      Striped="true"
+                      Bordered="true"
+                      HeaderClass="table-head-bordered"
+                      CustomHeader="true">
                 <HeaderContent>
+                    <MudTHeadRow Class="centered">
+                        <MudTh>
+
+                        </MudTh>
+                        <MudTh colspan="3">
+                            Education & Training
+                        </MudTh>
+                    </MudTHeadRow>
                     <MudTh>
                         Contract
                     </MudTh>
-                    <MudTh>
-                        Educations
-                    </MudTh>
+                    <MudTh>Ach</MudTh>
+                    <MudTh>Tgt</MudTh>
+                    <MudTh>%</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Contract">@context.Contract</MudTd>
                     <MudTd DataLabel="Educations">@context.Educations</MudTd>
+                    <MudTd DataLabel="Educations">@context.EducationsTarget</MudTd>
+                    <MudTd DataLabel="Educations">@context.EducationsPercentage</MudTd>
                 </RowTemplate>
             </MudTable>
         </MudItem>
@@ -156,7 +186,8 @@
             .Select(x => new SummaryDataModel
             {
                 Contract = x.Key,
-                Educations = x.Count()
+                Educations = x.Count(),
+                EducationsTarget = TargetProvider.GetTarget(x.Key, Month, Year).TrainingAndEducation
             })
             .OrderBy(c => c.Contract)
             .ToList();
@@ -183,6 +214,8 @@
     {
         public required string Contract { get; set; } 
         public required int Educations { get; set; } 
+        public required int EducationsTarget { get; set; }
+        public decimal EducationsPercentage => Educations.CalculateCappedPercentage(EducationsTarget);
     }
 
 }
