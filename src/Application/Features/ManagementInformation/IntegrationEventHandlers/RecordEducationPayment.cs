@@ -9,23 +9,17 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
 {
     public async Task Consume(ConsumeContext<ActivityApprovedIntegrationEvent> context)
     {
-        var activity = await unitOfWork.DbContext.Activities
+        var activity = await unitOfWork.DbContext.EducationTrainingActivities
             .Include(a => a.TookPlaceAtContract)
             .Include(a => a.TookPlaceAtLocation)
             .AsNoTracking()
-            .SingleAsync(activity => activity.Id == context.Message.Id);
+            .SingleOrDefaultAsync(activity => activity.Id == context.Message.Id);
 
-        if (activity.Type != ActivityType.EducationAndTraining)
+        if (activity is null)
         {
             // we are only interested in Education
             return;
         }
-
-        var educationActivity = await unitOfWork.DbContext.EducationTrainingActivities
-            .Include(a => a.TookPlaceAtContract)
-            .Include(a => a.TookPlaceAtLocation)
-            .AsNoTracking()
-            .SingleAsync(ea => ea.Id == activity.Id);
 
         var dates = await unitOfWork.DbContext.DateDimensions
             .Where(dd => dd.TheDate == activity.ApprovedOn!.Value)
@@ -56,8 +50,8 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
         {
             var previousSameEducationActivities = await unitOfWork.DbContext.EducationTrainingActivities
                     .Where(a => previousPaymentIds.Select(p => p.ActivityId).Contains(a.Id)
-                                && a.CourseTitle == educationActivity.CourseTitle
-                                && a.CourseLevel == educationActivity.CourseLevel)
+                                && a.CourseTitle == activity.CourseTitle
+                                && a.CourseLevel == activity.CourseLevel)
                     .AsNoTracking()
                     .ToListAsync();
 
@@ -89,8 +83,8 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
             .WithTenantId(activity.TenantId)
             .WithEligibleForPayment(ineligibilityReason is null)
             .WithIneligibilityReason(ineligibilityReason)
-            .WithCourseTitle(educationTrainingActivity.CourseTitle)
-            .WithCourseLevel(educationTrainingActivity.CourseLevel)
+            .WithCourseTitle(activity.CourseTitle)
+            .WithCourseLevel(activity.CourseLevel)
             .Build();
 
         unitOfWork.DbContext.EducationPayments.Add(payment);
