@@ -1,5 +1,17 @@
 ﻿@inherits CatsComponentBase
 
+<style type="text/css">
+
+    .centered {
+    text-align: center;
+    }
+
+    .mud-table-head th {
+    text-align: center;
+    font-weight: bold;
+    }
+
+</style>
 
 <MudGrid>
     <MudItem xs="12">
@@ -49,14 +61,15 @@
     else
     {
         <MudItem xs="12" md="6">
-            <ApexChart TItem="SummaryDataModel"
-            Title="Inductions">
+            <ApexChart TItem="SummaryDataModel" 
+                       Title="Inductions By Contract">
                 <ApexPointSeries TItem="SummaryDataModel"
                 Items="SummaryData"
                 Name="Wing"
                 SeriesType="SeriesType.Bar"
                 XValue="e => e.Contract"
-                YValue="e => e.Wings" />
+                YValue="e => e.Wings"
+                ShowDataLabels="true" />
 
 
                 <ApexPointSeries TItem="SummaryDataModel"
@@ -64,26 +77,50 @@
                 Name="Hub"
                 SeriesType="SeriesType.Bar"
                 XValue="e => e.Contract"
-                YValue="e => e.Hubs" />
+                YValue="e => e.Hubs"
+                ShowDataLabels="true"/>
             </ApexChart>
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudTable Items="@SummaryData" Hover="true" Breakpoint="Breakpoint.Sm" Loading="_loading" LoadingProgressColor="Color.Info">
+            <MudTable Items="@SummaryData" 
+            Hover="true" 
+            Breakpoint="Breakpoint.Sm" 
+            Loading="_loading" 
+            LoadingProgressColor="Color.Info"
+            Striped="true"
+            Bordered="true"
+            HeaderClass="table-head-bordered"
+            CustomHeader="true">
                 <HeaderContent>
-                    <MudTh>
-                        Contract
-                    </MudTh>
-                    <MudTh>
-                        Wing
-                    </MudTh>
-                    <MudTh>
-                        Hub
-                    </MudTh>
+                    <MudTHeadRow Class="centered">
+                        <MudTh>
+
+                        </MudTh>
+                        <MudTh colspan="3">
+                            Wing
+                        </MudTh>
+                        <MudTh colspan="3">
+                            Hub
+                        </MudTh>
+                    </MudTHeadRow>
+                    <MudTHeadRow Class="centered">
+                        <MudTh>Contract</MudTh>
+                        <MudTh>Ach</MudTh>
+                        <MudTh>Tgt</MudTh>
+                        <MudTh>%</MudTh>
+                        <MudTh>Ach</MudTh>
+                        <MudTh>Tgt</MudTh>
+                        <MudTh>%</MudTh>
+                    </MudTHeadRow>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Contract">@context.Contract</MudTd>
-                    <MudTd DataLabel="Custody">@context.Wings</MudTd>
-                    <MudTd DataLabel="Community">@context.Hubs</MudTd>
+                    <MudTd Class="centered">@context.Wings</MudTd>
+                    <MudTd Class="centered">@context.WingsTarget</MudTd>
+                    <MudTd Class="centered">@context.WingsPercentage</MudTd>
+                    <MudTd Class="centered">@context.Hubs</MudTd>
+                    <MudTd Class="centered">@context.HubsTarget</MudTd>
+                    <MudTd Class="centered">@context.HubsPercentage</MudTd>
                 </RowTemplate>
             </MudTable>    
         </MudItem>
@@ -126,7 +163,6 @@
     protected override async Task OnInitializedAsync()
     {
         var unitOfWork = GetNewUnitOfWork();
-
 
         var query = from ip in unitOfWork.DbContext.InductionPayments
                     join dd in unitOfWork.DbContext.DateDimensions on ip.Approved equals dd.TheDate
@@ -175,7 +211,9 @@
             {
                 Contract = x.Key,
                 Wings = x.Count(g => g.LocationType == "Wing"),
-                Hubs = x.Count(g => g.LocationType == "Hub")
+                Hubs = x.Count(g => g.LocationType == "Hub"),
+                WingsTarget = TargetProvider.GetTarget(x.Key, Month, Year).Wings, 
+                HubsTarget = TargetProvider.GetTarget(x.Key, Month, Year).Hubs,
             })
             .OrderBy(c => c.Contract)
             .ToList();
@@ -197,11 +235,15 @@
         public string Location { get; set; } = "";
         public string? IneligibilityReason { get; set; }
     }
-    
+
     private class SummaryDataModel
     {
         public required string Contract { get; set; }
         public int Wings { get; set; }
+        public int WingsTarget { get; set; }
+        public decimal WingsPercentage => Wings.CalculateCappedPercentage(WingsTarget);
         public int Hubs { get; set; }
+        public int HubsTarget { get; set; }
+        public decimal HubsPercentage => Hubs.CalculateCappedPercentage(HubsTarget);
     }
 }

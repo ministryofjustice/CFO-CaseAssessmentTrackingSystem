@@ -1,70 +1,104 @@
 ﻿@inherits CatsComponentBase
 
+<style type="text/css">
+    .centered {
+    text-align: center;
+    }
+
+    .mud-table-head th {
+    text-align: center;
+    font-weight: bold;
+    }
+</style>
+
+
 <MudGrid>
     <MudItem xs="12">
         <MudSwitch @bind-Value="DataView" Label="Data View" Color="Color.Info" />
     </MudItem>
     @if (DataView)
     {
-        <MudTable Items="@Payments" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
-        GroupBy="_groupDefinition"
-        GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-        GroupFooterClass="mb-4">
-            <HeaderContent>
-                <MudTh>Created</MudTh>
-                <MudTh>Approved</MudTh>
-                <MudTh>Participant Id</MudTh>
-                <MudTh>Payable</MudTh>
-            </HeaderContent>
-            <GroupHeaderTemplate>
-                <MudTh Class="mud-table-cell-custom-group" colspan="4">@context.Key</MudTh>
-            </GroupHeaderTemplate>
-            <RowTemplate>
-                <MudTd DataLabel="Created">@context.CreatedOn</MudTd>
-                <MudTd DataLabel="Approved">@context.ActivityApproved.ToShortDateString()</MudTd>
-                <MudTd DataLabel="Participant Id">@context.ParticipantId</MudTd>
-                <MudTd DataLabel="Payable">
+        <MudItem xs="12">
+            <MudTable Items="@Payments" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
+                      GroupBy="_groupDefinition"
+                      GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+                      GroupFooterClass="mb-4">
+                <HeaderContent>
+                    <MudTh>Created</MudTh>
+                    <MudTh>Approved</MudTh>
+                    <MudTh>Participant Id</MudTh>
+                    <MudTh>Payable</MudTh>
+                </HeaderContent>
+                <GroupHeaderTemplate>
+                    <MudTh Class="mud-table-cell-custom-group" colspan="4">@context.Key</MudTh>
+                </GroupHeaderTemplate>
+                <RowTemplate>
+                    <MudTd DataLabel="Created">@context.CreatedOn</MudTd>
+                    <MudTd DataLabel="Approved">@context.ActivityApproved.ToShortDateString()</MudTd>
+                    <MudTd DataLabel="Participant Id">@context.ParticipantId</MudTd>
+                    <MudTd DataLabel="Payable">
 
-                    @if (context.EligibleForPayment)
-                    {
-                        @("Yes")
-                    }
-                    else
-                    {
-                        <MudTooltip Text="@context.IneligibilityReason">
-                            No
-                        </MudTooltip>
-                    }
-                </MudTd>
-            </RowTemplate>
-        </MudTable>
+                        @if (context.EligibleForPayment)
+                        {
+                            @("Yes")
+                        }
+                        else
+                        {
+                            <MudTooltip Text="@context.IneligibilityReason">
+                                No
+                            </MudTooltip>
+                        }
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudItem>
+        
     }
     else
     {
         <MudItem xs="12" md="6">
             <ApexChart TItem="SummaryDataModel"
-            Title="Employments By Contract">
+            Title="Employment By Contract">
                 <ApexPointSeries TItem="SummaryDataModel"
                 Items="SummaryData"
                 Name="Employments"
                 SeriesType="SeriesType.Bar"
                 XValue="e => e.Contract"
-                YValue="e => e.Employments" />
+                YValue="e => e.Employments"
+                ShowDataLabels="true"/>
             </ApexChart>
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudTable Items="@SummaryData" Hover="true" Breakpoint="Breakpoint.Sm" Loading="_loading" LoadingProgressColor="Color.Info">
+            <MudTable Items="@SummaryData"
+            Hover="true"
+            Breakpoint="Breakpoint.Sm"
+            Loading="_loading"
+            LoadingProgressColor="Color.Info"
+            Striped="true"
+            Bordered="true"
+            HeaderClass="table-head-bordered"
+            CustomHeader="true">
                 <HeaderContent>
+                    <MudTHeadRow Class="centered">
+                        <MudTh>
+
+                        </MudTh>
+                        <MudTh colspan="3">
+                            Employment
+                        </MudTh>
+                    </MudTHeadRow>
                     <MudTh>
                         Contract
                     </MudTh>
-                    <MudTh>
-                        Employments
-                    </MudTh>
+                    <MudTh>Ach</MudTh>
+                    <MudTh>Tgt</MudTh>
+                    <MudTh>%</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Contract">@context.Contract</MudTd>
                     <MudTd DataLabel="Employments">@context.Employments</MudTd>
+                    <MudTd DataLabel="Employments">@context.EmploymentsTarget</MudTd>
+                    <MudTd DataLabel="Employments">@context.EmploymentsPercentage</MudTd>
                 </RowTemplate>
             </MudTable>
         </MudItem>
@@ -120,7 +154,7 @@
                         ep.IneligibilityReason,
                         TenantId = c!.Tenant!.Id!
                     };
-        
+
         query = Contract is null 
             ? query.Where(q => q.TenantId.StartsWith(CurrentUser.TenantId!)) 
             : query.Where(q => q.ContractId == Contract.Id);
@@ -144,7 +178,8 @@
             .Select(x => new SummaryDataModel
             {
                 Contract = x.Key,
-                Employments = x.Count()
+                Employments = x.Count(),
+                EmploymentsTarget = TargetProvider.GetTarget(x.Key, Month, Year).Employment
             })
             .OrderBy(c => c.Contract)
             .ToList();
@@ -167,8 +202,10 @@
 
     private class SummaryDataModel
     {
-        public required string Contract { get; set; } 
-        public required int Employments { get; set; } 
+        public required string Contract { get; set; }
+        public required int Employments { get; set; }
+        public required int EmploymentsTarget { get; set; }
+        public decimal EmploymentsPercentage => Employments.CalculateCappedPercentage(EmploymentsTarget);
     }
 
 }

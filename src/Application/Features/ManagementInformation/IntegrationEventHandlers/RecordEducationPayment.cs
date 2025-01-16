@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
+using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using MassTransit;
 
@@ -9,13 +9,13 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
 {
     public async Task Consume(ConsumeContext<ActivityApprovedIntegrationEvent> context)
     {
-        var activity = await unitOfWork.DbContext.Activities
+        var activity = await unitOfWork.DbContext.EducationTrainingActivities
             .Include(a => a.TookPlaceAtContract)
             .Include(a => a.TookPlaceAtLocation)
             .AsNoTracking()
-            .SingleAsync(activity => activity.Id == context.Message.Id);
+            .SingleOrDefaultAsync(activity => activity.Id == context.Message.Id);
 
-        if (activity.Type != ActivityType.EducationAndTraining)
+        if (activity is null)
         {
             // we are only interested in Education
             return;
@@ -30,7 +30,7 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
             })
             .SingleAsync();
 
-        var query = from ap in unitOfWork.DbContext.EducationPayments
+        var previousPaymentsQuery = from ap in unitOfWork.DbContext.EducationPayments
             where
                 ap.ParticipantId == activity.ParticipantId
                 && ap.ContractId == activity.TookPlaceAtContract.Id
@@ -39,13 +39,26 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
                 && ap.EligibleForPayment
             select ap;
 
-        var previousPayments = await query.AsNoTracking().ToListAsync();
+        var previousPaymentIds = await previousPaymentsQuery
+                .Select(ap => new { ap.ActivityId })
+                .AsNoTracking()
+                .ToListAsync();
 
         string? ineligibilityReason = null;
 
-        if (previousPayments.Count > 0)
+        if (previousPaymentIds.Any())
         {
-            ineligibilityReason = IneligibilityReasons.AlreadyPaidThisMonth;
+            var previousSameEducationActivities = await unitOfWork.DbContext.EducationTrainingActivities
+                    .Where(a => previousPaymentIds.Select(p => p.ActivityId).Contains(a.Id)
+                                && a.CourseTitle == activity.CourseTitle
+                                && a.CourseLevel == activity.CourseLevel)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+            if (previousSameEducationActivities.Any())
+            {
+                ineligibilityReason = IneligibilityReasons.AlreadyPaidThisMonth;
+            }
         }
 
         var history = await unitOfWork.DbContext.ParticipantEnrolmentHistories
@@ -58,11 +71,7 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
         if (firstApproval.HasValue == false)
         {
             ineligibilityReason = IneligibilityReasons.NotYetApproved;
-        }
-
-        var educationTrainingActivity = await unitOfWork.DbContext.EducationTrainingActivities
-          .AsNoTracking()
-          .SingleAsync(eta => eta.Id == activity.Id);
+        }       
 
         var payment = new EducationPaymentBuilder()
             .WithActivity(activity.Id)
@@ -74,8 +83,8 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
             .WithTenantId(activity.TenantId)
             .WithEligibleForPayment(ineligibilityReason is null)
             .WithIneligibilityReason(ineligibilityReason)
-            .WithCourseTitle(educationTrainingActivity.CourseTitle)
-            .WithCourseLevel(educationTrainingActivity.CourseLevel)
+            .WithCourseTitle(activity.CourseTitle)
+            .WithCourseLevel(activity.CourseLevel)
             .Build();
 
         unitOfWork.DbContext.EducationPayments.Add(payment);
@@ -84,7 +93,7 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
 
     private static class IneligibilityReasons
     {
-        public const string AlreadyPaidThisMonth = "An education activity has already been paid to this contract, for this participant, this month.";
+        public const string AlreadyPaidThisMonth = "This education activity has already been paid to this contract, for this participant, this month.";
         public const string NotYetApproved = "The enrolment for this participant has not yet been approved";
     }
 }

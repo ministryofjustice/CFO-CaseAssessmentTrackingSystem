@@ -38,6 +38,7 @@ public static class Theme
                 AppbarText = "#FFFFFF",
                 Error = "#FF4D4D", // Brighter red than #CC0033 for better visibility,
                 White = "#FFFFFF",
+                TextPrimary = "#FFFFFF",
             },
             Typography = new Typography
             {

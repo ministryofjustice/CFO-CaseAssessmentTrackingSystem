@@ -1,12 +1,11 @@
-﻿@using Cfo.Cats.Application.Features.Contracts.DTOs
-@using Cfo.Cats.Application.SecurityConstants
+﻿@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.Payments.Components
-@using Toolbelt.Blazor.HotKeys2
+
 
 @page "/pages/finance/payments/"
 
 
-@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.QAManager}, {RoleNames.QASupportManager}, {RoleNames.SMT}, {RoleNames.PerformanceManager}")]
+@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
 
 <MudText Typo="Typo.h5">Payment Auditing and Performance Management</MudText>
 

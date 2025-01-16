@@ -9,4 +9,5 @@ public static class RoleNames
     public const string PerformanceManager = "Performance Manager";
     public const string SMT = "SMT";
     public const string SystemSupport = "System Support";
+    public const string Finance = "Finance";
 }

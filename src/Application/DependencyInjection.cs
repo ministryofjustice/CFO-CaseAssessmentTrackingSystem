@@ -1,4 +1,5 @@
 ﻿
+using Cfo.Cats.Application.Features.ManagementInformation;
 using Cfo.Cats.Application.Pipeline;
 using Cfo.Cats.Application.Pipeline.PreProcessors;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +39,8 @@ public static class DependencyInjection
             };
         });
         
+        services.AddSingleton<ITargetsProvider, InMemoryTargetsProvider>();
+
         services.AddLazyCache();
 
         return services;

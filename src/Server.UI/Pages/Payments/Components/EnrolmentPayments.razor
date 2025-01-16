@@ -1,5 +1,18 @@
 ﻿@inherits CatsComponentBase
 
+<style type="text/css">
+
+    .centered {
+    text-align: center;
+    }
+
+    .mud-table-head th {
+    text-align: center;
+    font-weight: bold;
+    }
+
+</style>
+
 
 <MudGrid>
     <MudItem xs="12">
@@ -12,9 +25,9 @@
         <MudItem xs="12">
 
             <MudTable Items="@Payments" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
-                      GroupBy="_groupDefinition"
-                      GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-                      GroupFooterClass="mb-4">
+            GroupBy="_groupDefinition"
+            GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+            GroupFooterClass="mb-4">
                 <HeaderContent>
                     <MudTh>Created</MudTh>
                     <MudTh>Approved</MudTh>
@@ -56,40 +69,66 @@
     else
     {
         <MudItem xs="12" md="6">
-           <ApexChart TItem="SummaryDataModel"
-                      Title="Enrolments By Location">
-               <ApexPointSeries TItem="SummaryDataModel"
-                                Items="SummaryData"
-                                Name="Custody"
-                                SeriesType="SeriesType.Bar"
-                                XValue="e => e.Contract"
-                                YValue="e => e.Custody" />
+            <ApexChart TItem="SummaryDataModel" 
+                       Title="Enrolments By Contract">
+                <ApexPointSeries TItem="SummaryDataModel"
+                                 Items="SummaryData"
+                                 Name="Custody"
+                                 SeriesType="SeriesType.Bar"
+                                 XValue="e => e.Contract"
+                                 YValue="e => e.Custody"
+                                 ShowDataLabels="true" />
 
-               <ApexPointSeries TItem="SummaryDataModel"
-                                Items="SummaryData"
-                                Name="Community"
-                                SeriesType="SeriesType.Bar"
-                                XValue="e => e.Contract"
-                                YValue="e => e.Community" />
-           </ApexChart>
+                <ApexPointSeries TItem="SummaryDataModel"
+                                 Items="SummaryData"
+                                 Name="Community"
+                                 SeriesType="SeriesType.Bar"
+                                 XValue="e => e.Contract"
+                                 YValue="e => e.Community"
+                                 ShowDataLabels="true" />
+            </ApexChart>
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudTable Items="@SummaryData" Hover="true" Breakpoint="Breakpoint.Sm" Loading="_loading" LoadingProgressColor="Color.Info">
+            <MudTable Items="@SummaryData" 
+                      Hover="true" 
+                      Breakpoint="Breakpoint.Sm" 
+                      Loading="_loading" 
+                      LoadingProgressColor="Color.Info"
+                      Striped="true" 
+                      Bordered="true"
+                      HeaderClass="table-head-bordered"
+                      CustomHeader="true">
                 <HeaderContent>
-                    <MudTh>
-                        Contract
-                    </MudTh>
-                    <MudTh>
-                        Custody
-                    </MudTh>
-                    <MudTh>
-                        Community
-                    </MudTh>
+                    <MudTHeadRow Class="centered">
+                        <MudTh>
+
+                        </MudTh>
+                        <MudTh colspan="3">
+                            Custody
+                        </MudTh>
+                        <MudTh colspan="3">
+                            Community
+                        </MudTh>
+                    </MudTHeadRow>
+                    <MudTHeadRow Class="centered">
+                        <MudTh>Contract</MudTh>
+                        <MudTh>Ach</MudTh>
+                        <MudTh>Tgt</MudTh>
+                        <MudTh>%</MudTh>
+                        <MudTh>Ach</MudTh>
+                        <MudTh>Tgt</MudTh>
+                        <MudTh>%</MudTh>
+                    </MudTHeadRow>
                 </HeaderContent>
+
                 <RowTemplate>
                     <MudTd DataLabel="Contract">@context.Contract</MudTd>
-                    <MudTd DataLabel="Custody">@context.Custody</MudTd>
-                    <MudTd DataLabel="Community">@context.Community</MudTd>
+                    <MudTd Class="centered">@context.Custody</MudTd>
+                    <MudTd Class="centered">@context.CustodyTarget</MudTd>
+                    <MudTd Class="centered">@context.CustodyPercentage</MudTd>
+                    <MudTd Class="centered">@context.Community</MudTd>
+                    <MudTd Class="centered">@context.CommunityTarget</MudTd>
+                    <MudTd Class="centered">@context.CommunityPercentage</MudTd>
                 </RowTemplate>
             </MudTable>    
         </MudItem>
@@ -106,7 +145,7 @@
     private bool _loading = true;
 
     private bool DataView { get; set; }
-    
+
     [Parameter]
     public int Month { get; set; }
 
@@ -133,25 +172,24 @@
     {
         var unitOfWork = GetNewUnitOfWork();
 
-
         var query = from ep in unitOfWork.DbContext.EnrolmentPayments
                     join dd in unitOfWork.DbContext.DateDimensions on ep.Approved equals dd.TheDate
                     join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id 
                     join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id   
-        where dd.TheMonth == Month && dd.TheYear == Year
-            select new
-            {
-                ep.CreatedOn,
-                ep.Approved,
-                ep.ParticipantId,
-                ep.EligibleForPayment,
-                Contract = c.Description,
-                ContractId = c.Id,
-                ep.LocationType,
-                Location = l.Name,
-                ep.IneligibilityReason,
-                TenantId = c!.Tenant!.Id!
-            };
+                    where dd.TheMonth == Month && dd.TheYear == Year
+                    select new
+                    {
+                        ep.CreatedOn,
+                        ep.Approved,
+                        ep.ParticipantId,
+                        ep.EligibleForPayment,
+                        Contract = c.Description,
+                        ContractId = c.Id,
+                        ep.LocationType,
+                        Location = l.Name,
+                        ep.IneligibilityReason,
+                        TenantId = c!.Tenant!.Id!
+                    };
 
         query = Contract is null 
             ? query.Where(q => q.TenantId.StartsWith(CurrentUser.TenantId!)) 
@@ -181,7 +219,9 @@
             {
                 Contract = x.Key,
                 Custody = x.Count(g => g.IsCustody()),
-                Community = x.Count(g => g.IsCustody() == false)
+                Community = x.Count(g => g.IsCustody() == false),
+                CustodyTarget = TargetProvider.GetTarget(x.Key, Month, Year).Prison,
+                CommunityTarget = TargetProvider.GetTarget(x.Key, Month, Year).Community
             })
             .OrderBy(c => c.Contract)
             .ToList();
@@ -205,7 +245,7 @@
 
         public bool IsCustody() 
         {
-            Cfo.Cats.Domain.Common.Enums.LocationType type = SmartEnum<Cfo.Cats.Domain.Common.Enums.LocationType>.FromName(this.LocationType);
+            var type = SmartEnum<LocationType>.FromName(LocationType);
             return type.IsCustody;
         }
     }
@@ -214,9 +254,20 @@
     {
         public required string Contract {get; set;}
         public int Custody {get;set;}
+
+        public int CustodyTarget {get;set;}
+
+        public decimal CustodyPercentage => Custody.CalculateCappedPercentage(CustodyTarget);
+
         public int Community {get;set;}
+
+        public int CommunityTarget {get;set;}
+
+        public decimal CommunityPercentage => Community.CalculateCappedPercentage(CommunityTarget);
     }
 
 
+   
+
 }    
-    
+

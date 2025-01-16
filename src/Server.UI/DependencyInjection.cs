@@ -112,7 +112,19 @@ public static class DependencyInjection
             .AddScoped<IUserPreferencesService, UserPreferencesService>()
             .AddScoped<IMenuService, MenuService>();
 
-        services.AddApexCharts();
+        services.AddApexCharts(e =>
+        {
+            e.GlobalOptions = new ApexChartBaseOptions()
+            {
+                Theme = new Theme
+                {
+                    //Palette = new Palette
+                    //{
+                        
+                    //}
+                }
+            };
+        });
         
         services.Configure<ForwardedHeadersOptions>(options =>
         {
