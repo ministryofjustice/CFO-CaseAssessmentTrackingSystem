@@ -18,7 +18,7 @@
     </MudItem>
     @if (DataView)
     {
-        <MudItem xs="12" md="6">
+        <MudItem xs="12">
             <MudTable Items="@Payments" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
                       GroupBy="_groupDefinition"
                       GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
