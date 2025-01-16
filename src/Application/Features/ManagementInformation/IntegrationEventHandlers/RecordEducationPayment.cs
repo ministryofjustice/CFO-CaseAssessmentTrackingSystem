@@ -72,7 +72,7 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
         {
             ineligibilityReason = IneligibilityReasons.NotYetApproved;
         }       
-        
+
         var payment = new EducationPaymentBuilder()
             .WithActivity(activity.Id)
             .WithParticipantId(activity.ParticipantId)
