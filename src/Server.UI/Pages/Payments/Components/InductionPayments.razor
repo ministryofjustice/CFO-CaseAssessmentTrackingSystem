@@ -213,7 +213,7 @@
                 Wings = x.Count(g => g.LocationType == "Wing"),
                 Hubs = x.Count(g => g.LocationType == "Hub"),
                 WingsTarget = TargetProvider.GetTarget(x.Key, Month, Year).Wings, 
-                HubsTarget = TargetProvider.GetTarget(x.Key, Month, Year).Wings,
+                HubsTarget = TargetProvider.GetTarget(x.Key, Month, Year).Hubs,
             })
             .OrderBy(c => c.Contract)
             .ToList();
