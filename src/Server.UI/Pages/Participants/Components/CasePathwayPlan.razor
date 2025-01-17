@@ -62,15 +62,11 @@
         </MudList>
     </MudPaper>
 }
-else
+
+@if(loading)
 {
     <MudPaper>
-        <MudContainer Class="py-4 d-flex flex-column gap-2">
-            <MudText Typo="Typo.caption">No pathway plan found. Would you like to create one now?</MudText>
-            <div>
-                <MudLoadingButton Loading="loading" Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddBox" OnClick="AddPathwayPlan">Pathway Plan</MudLoadingButton>
-            </div>
-        </MudContainer>
+        <MudText>@ConstantString.Loading</MudText>
     </MudPaper>
 }
 
@@ -119,21 +115,6 @@ else
         finally
         {
             loading = false;
-        }
-    }
-
-    public async Task AddPathwayPlan()
-    {
-        var command = new AddPathwayPlan.Command()
-        {
-            ParticipantId = ParticipantId
-        };
-
-        var result = await GetNewMediator().Send(command);
-
-        if(result.Succeeded)
-        {
-            await OnRefresh();
         }
     }
 
