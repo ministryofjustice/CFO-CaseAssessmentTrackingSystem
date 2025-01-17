@@ -300,4 +300,57 @@
             </MudCardContent>
         </MudCard>
     </MudItem>
+    <MudItem xs="12" md="4">
+        <MudCard Style="Height: 100%;">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Latest PRI</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent Class="d-flex justify-space-between align-center">
+
+                @if (_latestPRI is null)
+                {
+                    <MudText Typo="Typo.body2">No PRI has been created.</MudText>
+                }
+                else
+                {
+                    <div>
+                        <dl class="description-list">
+                            <div class="description-pair">
+                                <dt>
+                                    <MudText Typo="Typo.subtitle2">Date Created</MudText>
+                                </dt>
+                                <dd>
+                                    <MudText Typo="Typo.body2"></MudText>
+                                </dd>
+                            </div>
+                            <div class="description-pair">
+                                <dt>
+                                    <MudText Typo="Typo.subtitle2">Created By</MudText>
+                                </dt>
+                                <dd>
+                                    <MudText Typo="Typo.body2"></MudText>
+                                </dd>
+                            </div>
+
+                        </dl>
+
+
+                    </div>
+
+                }
+            </MudCardContent>
+            <MudCardActions>
+
+                @if (CanAddPRI())
+                {
+                    <MudTooltip Text="Create PRI">
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginPRI" />
+                    </MudTooltip>
+
+                }
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
 </MudGrid>
