@@ -1,0 +1,50 @@
+﻿@using Cfo.Cats.Domain.Common.Enums
+@using Humanizer
+
+@inherits CatsComponentBase
+
+<style>
+    .mud-list-item-child:hover,
+    .mud-list-item-child:focus {
+    background-color: initial !important;
+    }
+</style>
+@if (_notFound)
+{
+    <MudAlert>
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No PRI found.</MudAlert>
+    </MudAlert>
+}
+@if (_model is not null)
+{
+    <MudPaper>
+    </MudPaper>
+}
+
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string ParticipantId { get; set; } = default!;
+
+    private Object? _model;//will be replaced with PRIDto
+    private bool _notFound = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _model = null;
+        try
+        {
+            _notFound = true;
+        }
+        catch (NotFoundException)
+        {
+            _notFound = true;
+        }
+        finally
+        {
+            await base.OnInitializedAsync();
+        }
+
+    }
+}
