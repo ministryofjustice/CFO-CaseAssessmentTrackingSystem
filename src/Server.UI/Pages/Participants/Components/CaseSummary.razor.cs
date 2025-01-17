@@ -14,6 +14,7 @@ public partial class CaseSummary
 {
     private AssessmentSummaryDto? _latestAssessment;
     private BioSummaryDto? _bio;
+    private Object? _latestPRI;//replace with the PriDTO when its added
     [Inject] 
     private IUserService UserService { get; set; } = default!;
 
@@ -285,4 +286,10 @@ public partial class CaseSummary
     
     private bool HasPathwayPlan => ParticipantSummaryDto.PathwayPlan is not null;
     private bool HasPathwayBeenReviewed => HasPathwayPlan && ParticipantSummaryDto.PathwayPlan?.LastReviewed is not null;
+
+    private bool CanAddPRI() => true;//for now anyone can add PRI
+    public void BeginPRI()
+    {
+        Snackbar.Add($" Coming Soon...", Severity.Error);
+    }
 }
