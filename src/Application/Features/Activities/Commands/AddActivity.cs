@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Activities.DTOs;
@@ -7,6 +8,8 @@ using Cfo.Cats.Domain.Entities.Activities;
 using Cfo.Cats.Domain.Entities.Documents;
 using Humanizer.Bytes;
 using Microsoft.AspNetCore.Components.Forms;
+using System.Linq.Dynamic.Core.Tokenizer;
+using System.Threading;
 
 namespace Cfo.Cats.Application.Features.Activities.Commands;
 
@@ -236,7 +239,11 @@ public static class AddActivity
                 .NotNull()
                 .WithMessage("You must provide the date the activity took place")
                 .Must(NotBeCompletedInTheFuture)
-                .WithMessage("The date the activity took place cannot be in the future");
+                .WithMessage("The date the activity took place cannot be in the future")
+                .GreaterThanOrEqualTo(DateTime.Today.AddMonths(-3))
+                .WithMessage("The activity must have taken place within the last three months")
+                .MustAsync((command, commencedOn, token) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId, commencedOn, token))
+                .WithMessage("The activity cannot take place before the participant gave consent");
 
             RuleFor(c => c.AdditionalInformation)
                 .MaximumLength(ValidationConstants.NotesLength)
@@ -305,5 +312,19 @@ public static class AddActivity
         }
 
         bool NotBeCompletedInTheFuture(DateTime? completed) => completed < DateTime.UtcNow;
+        private async Task<bool> HaveOccurredOnOrAfterConsentWasGranted(string participantId, DateTime? commencedOn, CancellationToken cancellationToken)
+        {
+            if(commencedOn is null)
+            {
+                return false;
+            }
+
+            var consentDate = await unitOfWork.DbContext
+                .Participants.AsNoTracking().Where(x => x.Id == participantId)
+                .Select(c => c.Consents.Max(d => d.Lifetime.StartDate))
+                .FirstAsync(cancellationToken).ConfigureAwait(false);
+
+            return commencedOn >= consentDate;
+        }
     }
 }

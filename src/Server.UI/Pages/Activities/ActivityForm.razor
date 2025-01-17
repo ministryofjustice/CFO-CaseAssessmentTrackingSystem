@@ -73,6 +73,7 @@
         <MudDatePicker @bind-Date="Model.CommencedOn"
         For="() => Model.CommencedOn"
         MaxDate="DateTime.UtcNow"
+        MinDate="DateTime.Today.AddMonths(-3)"
         Label="@Model.GetMemberDescription(x => x.CommencedOn)"
         PickerVariant="PickerVariant.Dialog"
         ImmediateText="true"
