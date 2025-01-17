@@ -22,12 +22,12 @@ public class AddMandatoryObjectiveAndTasks(IUnitOfWork unitOfWork) : INotificati
             month: notification.ExpectedReleaseDate.Month,
             day: 1);
 
-        var objective = Objective.Create($"Through the Gate support: {notification.ExpectedReleaseDate.ToShortDateString()}", pathwayPlan.Id);
+        var objective = Objective.Create($"Through the Gate support: {notification.ExpectedReleaseDate.ToShortDateString()}", pathwayPlan.Id, isMandatory: true);
 
         List<ObjectiveTask> tasks =
         [
-            ObjectiveTask.Create("Community Support Worker to contact the participant prior to release", monthOfRelease),
-            ObjectiveTask.Create("Community Support Worker to meet the participant after release to ensure continued support", monthOfRelease)
+            ObjectiveTask.Create("Community Support Worker to contact the participant prior to release", monthOfRelease, isMandatory: true),
+            ObjectiveTask.Create("Community Support Worker to meet the participant after release to ensure continued support", monthOfRelease, isMandatory: true)
         ];
 
         tasks.ForEach(task => objective.AddTask(task));
