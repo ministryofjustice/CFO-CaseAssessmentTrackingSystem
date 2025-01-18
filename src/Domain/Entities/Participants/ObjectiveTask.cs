@@ -22,12 +22,13 @@ public class ObjectiveTask : BaseAuditableEntity<Guid>
         AddDomainEvent(new ObjectiveTaskCompletedDomainEvent(this));
     }
 
-    public static ObjectiveTask Create(string description, DateTime due)
+    public static ObjectiveTask Create(string description, DateTime due, bool isMandatory = false)
     {
         ObjectiveTask task = new()
         {
             Description = description,
-            Due = due
+            Due = due,
+            IsMandatory = isMandatory
         };
 
         task.AddDomainEvent(new ObjectiveTaskCreatedDomainEvent(task));
@@ -59,6 +60,7 @@ public class ObjectiveTask : BaseAuditableEntity<Guid>
     public Guid ObjectiveId { get; private set; }
     public string Description { get; private set; }
 
+    public bool IsMandatory { get; private set; }
     public bool IsCompleted => Completed is not null;
 
     public virtual ApplicationUser? CompletedByUser { get; set; }

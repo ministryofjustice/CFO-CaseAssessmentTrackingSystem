@@ -21,7 +21,7 @@ public static class AddObjective
             public Mapping()
             {
                 CreateMap<Command, Objective>(MemberList.None)
-                    .ConstructUsing(dto => Objective.Create(dto.Description!, dto.PathwayPlanId));
+                    .ConstructUsing(dto => Objective.Create(dto.Description!, dto.PathwayPlanId, false));
             }
         }
     }

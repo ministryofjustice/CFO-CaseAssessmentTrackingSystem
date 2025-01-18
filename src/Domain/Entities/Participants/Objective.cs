@@ -31,6 +31,8 @@ public class Objective : BaseAuditableEntity<Guid>
 
     public bool IsCompleted => Completed is not null;
 
+    public bool IsMandatory { get; private set; }
+
     public Objective AddTask(ObjectiveTask task)
     {
         _tasks.Add(task.AtIndex(_tasks.Count + 1));
@@ -63,12 +65,13 @@ public class Objective : BaseAuditableEntity<Guid>
         AddDomainEvent(new ObjectiveCompletedDomainEvent(this));
     }
 
-    public static Objective Create(string description, Guid pathwayPlanId)
+    public static Objective Create(string description, Guid pathwayPlanId, bool isMandatory = false)
     {
         Objective objective = new()
         {
             Description = description,
-            PathwayPlanId = pathwayPlanId
+            PathwayPlanId = pathwayPlanId,
+            IsMandatory = isMandatory
         };
 
         objective.AddDomainEvent(new ObjectiveCreatedDomainEvent(objective));

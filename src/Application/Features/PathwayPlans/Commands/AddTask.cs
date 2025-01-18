@@ -26,7 +26,7 @@ public static class AddTask
             public Mapping()
             {
                 CreateMap<Command, ObjectiveTask>(MemberList.None)
-                    .ConstructUsing(dto => ObjectiveTask.Create(dto.Description!, dto.Due!.Value));
+                    .ConstructUsing(dto => ObjectiveTask.Create(dto.Description!, dto.Due!.Value, false));
             }
         }
     }
