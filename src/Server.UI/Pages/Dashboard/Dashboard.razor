@@ -14,21 +14,27 @@
         <MudGrid Class="mt-2">
 
             @if(UserProfile?.AssignedRoles?.Length == 0)
-            {
-                <MyParticipantsComponent />
-            }
-            else
-            {
-                <MyTeamsParticipantsComponent />
-            }
+    {
+        <MyParticipantsComponent />
+    }
+    else
+    {
+        <MyTeamsParticipantsComponent />
+    }
 
-            <MyNotifications />
+    <MyNotifications />
 
-            @if(UserProfile?.AssignedRoles.Contains(RoleNames.SystemSupport) == true)
-            {
-                <JobManagement />
-            }
-        </MudGrid>
+    @if(UserProfile?.AssignedRoles!.Contains(RoleNames.SystemSupport) == true)
+    {
+        <JobManagement />
+    }
+
+    @if (ShowQaPots())
+    {
+        <QaPots />
+    }
+
+</MudGrid>
 
 @code {
 
@@ -37,7 +43,20 @@
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; }
 
+    private bool ShowQaPots()
+    {
+        var allowedRoles = new[]
+        {
+            RoleNames.QAManager,
+            RoleNames.QAOfficer,
+            RoleNames.SMT,
+            RoleNames.QASupportManager,
+            RoleNames.SystemSupport,
+        };
 
-    private void GotoNotification() => Navigation.NavigateTo("/pages/notifications/");
+        return UserProfile!.AssignedRoles!.Any(e => allowedRoles.Contains(e));
+
+    }
+
 
 }
