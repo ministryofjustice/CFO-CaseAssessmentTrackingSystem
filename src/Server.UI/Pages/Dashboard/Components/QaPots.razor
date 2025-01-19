@@ -1,0 +1,120 @@
+@inherits CatsComponentBase
+
+
+<MudItem xs="12" lg="3" md="6">
+    @if (_loading)
+    {
+        <LoadingCard Title="QA Pots" />
+    }
+    else
+    {
+        <MudCard style="height:100%">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">QA Pots</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudList T="string">
+                    <MudListSubheader>
+                        Enrolments
+                    </MudListSubheader>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">PQA</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_enrolmentPqa == 0 ? Color.Success : Color.Secondary)">@_enrolmentPqa</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">First Pass</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_enrolmentQa1 == 0 ? Color.Success : Color.Secondary)">@_enrolmentQa1</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">Second Pass</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_enrolmentQa2 == 0 ? Color.Success : Color.Secondary)">@_enrolmentQa2</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">Escalation</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_enrolmentEscalation == 0 ? Color.Success : Color.Secondary)">@_enrolmentEscalation</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudDivider/>
+                    <MudListSubheader>
+                        Activities
+                    </MudListSubheader>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">PQA</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_activityPqa == 0 ? Color.Success : Color.Secondary)">@_activityPqa</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">First Pass</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_activityQa1 == 0 ? Color.Success : Color.Secondary)">@_activityQa1</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">Second Pass</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_activityQa2 == 0 ? Color.Success : Color.Secondary)">@_activityQa2</MudText>
+                        </div>
+                    </MudListItem>
+                    <MudListItem T="string" OnClickPreventDefault="true">
+                        <div class="d-flex justify-space-between align-center width-100">
+                            <MudText Typo="Typo.body1">Escalation</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_activityEscalation == 0 ? Color.Success : Color.Secondary)">@_activityEscalation</MudText>
+                        </div>
+                    </MudListItem>
+                </MudList>
+            </MudCardContent>
+        </MudCard>
+    }
+</MudItem>
+
+
+
+@code {
+    private bool _loading;
+    private int _enrolmentPqa;
+    private int _enrolmentQa1;
+    private int _enrolmentQa2;
+    private int _enrolmentEscalation;
+    private int _activityPqa;
+    private int _activityQa1;
+    private int _activityQa2;
+    private int _activityEscalation;
+
+
+    [CascadingParameter] 
+    public UserProfile UserProfile { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+
+        var unitOfWork = GetNewUnitOfWork();
+
+        var context = unitOfWork.DbContext;
+        // pqa, first pass, second pass, escalation
+        _enrolmentPqa = await context.EnrolmentPqaQueue.CountAsync(e => e.IsCompleted == false);
+        _enrolmentQa1 = await context.EnrolmentQa1Queue.CountAsync(e => e.IsCompleted == false);
+        _enrolmentQa2 = await context.EnrolmentQa2Queue.CountAsync(e => e.IsCompleted == false);
+        _enrolmentEscalation = await context.EnrolmentEscalationQueue.CountAsync(e => e.IsCompleted == false);
+
+        // pqa, first pass, second pass, escalation
+        _activityPqa = await context.ActivityPqaQueue.CountAsync(e => e.IsCompleted == false);
+        _activityQa1 = await context.ActivityQa1Queue.CountAsync(e => e.IsCompleted == false);
+        _activityQa2 = await context.ActivityQa2Queue.CountAsync(e => e.IsCompleted == false);
+        _activityEscalation = await context.ActivityEscalationQueue.CountAsync(e => e.IsCompleted == false);
+
+        _loading = false;
+
+    }
+
+} 
