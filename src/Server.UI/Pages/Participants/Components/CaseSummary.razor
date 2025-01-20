@@ -350,6 +350,12 @@
                     </MudTooltip>
 
                 }
+                @if (CanContinuePRI())
+                {
+                    <MudTooltip Text="Continue PRI">
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinuePRI" />
+                    </MudTooltip>
+                }
             </MudCardActions>
         </MudCard>
     </MudItem>
