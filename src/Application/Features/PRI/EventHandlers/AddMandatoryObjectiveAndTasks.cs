@@ -27,7 +27,7 @@ public class AddMandatoryObjectiveAndTasks(IUnitOfWork unitOfWork) : INotificati
         List<ObjectiveTask> tasks =
         [
             ObjectiveTask.Create("Community Support Worker to contact the participant prior to release", monthOfRelease, isMandatory: true),
-            ObjectiveTask.Create("Community Support Worker to meet the participant after release to ensure continued support", monthOfRelease, isMandatory: true)
+            ObjectiveTask.Create("Community Support Worker to meet the participant after release to ensure continued support", monthOfRelease.AddMonths(1), isMandatory: true)
         ];
 
         tasks.ForEach(task => objective.AddTask(task));
