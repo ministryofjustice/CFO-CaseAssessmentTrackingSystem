@@ -79,11 +79,21 @@ public static class DependencyInjection
 
             x.AddConsumers(typeof(RecordEnrolmentPaymentConsumer).Assembly); // Automatically add all consumers
 
-            x.UsingRabbitMq((context, cfg) =>
+            if(configuration.GetConnectionString("rabbit")!.Equals("InMemory", StringComparison.CurrentCultureIgnoreCase))
             {
-                cfg.Host(configuration.GetConnectionString("rabbit"));
-                cfg.ConfigureEndpoints(context);
-            });
+                    x.UsingInMemory((context, cfg) =>
+                    {
+                        cfg.ConfigureEndpoints(context);
+                    });   
+            }
+            else
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(configuration.GetConnectionString("rabbit"));
+                    cfg.ConfigureEndpoints(context);
+                });
+            }
         });
 
         return services;
