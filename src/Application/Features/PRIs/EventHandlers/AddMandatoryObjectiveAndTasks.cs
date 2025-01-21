@@ -1,7 +1,7 @@
 ﻿using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Events;
 
-namespace Cfo.Cats.Application.Features.PRI.EventHandlers;
+namespace Cfo.Cats.Application.Features.PRIs.EventHandlers;
 
 public class AddMandatoryObjectiveAndTasks(IUnitOfWork unitOfWork) : INotificationHandler<PRICreatedDomainEvent>
 {
@@ -9,20 +9,20 @@ public class AddMandatoryObjectiveAndTasks(IUnitOfWork unitOfWork) : INotificati
     {
         var pathwayPlan = await unitOfWork.DbContext.PathwayPlans
             .OrderByDescending(p => p.Created)
-            .FirstOrDefaultAsync(p => p.ParticipantId == notification.ParticipantId, cancellationToken);
+            .FirstOrDefaultAsync(p => p.ParticipantId == notification.Entity.ParticipantId, cancellationToken);
 
         if (pathwayPlan is null)
         {
-            throw new NotFoundException($"No Pathway Plan found for {notification.ParticipantId}");
+            throw new NotFoundException($"No Pathway Plan found for {notification.Entity.ParticipantId}");
         }
 
         // Used exclusively to give indication of which month a task is due
         var monthOfRelease = new DateTime(
-            year: notification.ExpectedReleaseDate.Year,
-            month: notification.ExpectedReleaseDate.Month,
+            year: notification.Entity.ExpectedReleaseDate.Year,
+            month: notification.Entity.ExpectedReleaseDate.Month,
             day: 1);
 
-        var objective = Objective.Create($"Through the Gate support: {notification.ExpectedReleaseDate.ToShortDateString()}", pathwayPlan.Id, isMandatory: true);
+        var objective = Objective.Create($"Through the Gate support: {notification.Entity.ExpectedReleaseDate.ToShortDateString()}", pathwayPlan.Id, isMandatory: true);
 
         List<ObjectiveTask> tasks =
         [
