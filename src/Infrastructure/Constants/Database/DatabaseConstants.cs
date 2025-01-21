@@ -71,6 +71,8 @@ internal static class DatabaseConstants
         public const string ActivityQa1Queue = nameof(ActivityQa1Queue);
         public const string ActivityQa2Queue = nameof(ActivityQa2Queue);
         public const string ActivityEscalationQueue = nameof(ActivityEscalationQueue);
+
+        public const string PRI = nameof(PRI);
     }
     public static class Schemas
     {
@@ -84,6 +86,7 @@ internal static class DatabaseConstants
         public const string Induction = nameof(Induction);
         public const string Activities = nameof(Activities);
         public const string Mi = nameof(Mi);
+        public const string PRI = nameof(PRI);
     }
 
     public static class FieldLengths
