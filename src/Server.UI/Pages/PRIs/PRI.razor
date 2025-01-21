@@ -1,0 +1,72 @@
+﻿@inherits CatsComponentBase
+
+@page "/pages/participants/{Upci}/PRI"
+
+@using Cfo.Cats.Application.Features.PRIs.DTOs
+@using Cfo.Cats.Server.UI.Components.Stepper
+
+<MudContainer Class="d-flex align-center">
+    <CatsMudStepper Color="Color.Primary" Variant="Variant.Filled"
+    MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All" Style="width: 100%; max-width: 1024px">
+        <ChildContent>
+            <MudForm>
+                <MudCard Class="px-8 pt-4 pb-8">
+                    <CatsMudStep Title="PRI" Optional Icon="@Icons.Material.Filled.Key">
+                        <MudText Typo="Typo.body1">Already have a PRI Code? Enter it below</MudText>
+                        <MudTextField @bind-Value="code" Label="Code" MaxLength="6" Disabled="selfAssign" />
+
+                        <MudCheckBox @bind-Value="selfAssign" 
+                        @bind-Value:after="ClearCode"
+                        Label="Alternatively, I would like to self-assign the PRI, as I will be working with this participant through the gate"
+                        Class="mt-2" />
+
+                        <MudAlert Class="mt-4" Severity="Severity.Info">You can skip this step for now, and choose at a later date</MudAlert>
+                    </CatsMudStep>
+                    <CatsMudStep Title="Release" Icon="@Icons.Material.Filled.Map">
+                        <MudTextField T="string" Label="Expected Release Region" />
+                        <MudDatePicker Class="mt-2" Label="Expected Release Date" MinDate="DateTime.Today" />
+                        @*<MudDatePicker Label="Actual Release Date" />*@
+                    </CatsMudStep>
+                    <CatsMudStep Title="Meeting" Icon="@Icons.Material.Filled.MeetingRoom">
+                        <MudDatePicker Label="Date meeting took place between Custody Support Worker, Community Support Worker, and Participant" MaxDate="DateTime.Today" />
+
+                        <MudText Typo="Typo.body1" Class="mt-4">Did everyone attend this meeting in person?</MudText>
+                        <MudToggleGroup @bind-Value="attendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
+                            <MudToggleItem Value="true">Yes</MudToggleItem>
+                            <MudToggleItem Value="false">No</MudToggleItem>
+                        </MudToggleGroup>
+                        
+                        @if (attendedInPerson is false)
+                        {
+                            <MudTextField T="string" Label="Justification for not attending meeting in person" Lines="5" Class="mt-2" />
+                        }
+
+                        @* Justification if meeting not attended in person *@
+                    </CatsMudStep>
+                    <StatusResultStep Upci="Upci" Processing="false" SubmissionSuccess="true" />
+                </MudCard>
+            </MudForm>
+        </ChildContent>
+    </CatsMudStepper>
+</MudContainer>
+
+@code {
+    bool selfAssign = false;
+    string code = string.Empty;
+    bool attendedInPerson = true;
+
+    [Parameter, EditorRequired]
+    public required string Upci { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    async Task SubmitPRI()
+    {
+        await Task.CompletedTask;
+    }
+
+    void ClearCode() => code = string.Empty;
+}
