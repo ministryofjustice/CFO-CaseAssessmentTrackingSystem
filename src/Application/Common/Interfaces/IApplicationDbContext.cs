@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.Notifications;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
+using Cfo.Cats.Domain.Entities.PRIs;
 
 namespace Cfo.Cats.Application.Common.Interfaces;
 
@@ -90,6 +91,8 @@ public interface IApplicationDbContext
     DbSet<EducationPayment> EducationPayments { get; }
 
     DbSet<EmploymentPayment> EmploymentPayments { get; }
+
+    DbSet<PRI> PRIs { get; }
 
     DbSet<DateDimension> DateDimensions { get; }
 
