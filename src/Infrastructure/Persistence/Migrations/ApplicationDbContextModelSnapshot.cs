@@ -2194,7 +2194,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.HasKey("ParticipantId", "CreatedBy");
 
-                    b.ToTable("PriCode", "Participant");
+                    b.ToTable("PriCode", "PRI");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Risk", b =>
