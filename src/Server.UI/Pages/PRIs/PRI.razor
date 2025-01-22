@@ -2,71 +2,184 @@
 
 @page "/pages/participants/{Upci}/PRI"
 
+@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Locations.Queries.GetAll
+@using Cfo.Cats.Application.Features.PRIs.Commands
 @using Cfo.Cats.Application.Features.PRIs.DTOs
+@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Components.Stepper
 
-<MudContainer Class="d-flex align-center">
-    <CatsMudStepper Color="Color.Primary" Variant="Variant.Filled"
-    MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All" Style="width: 100%; max-width: 1024px">
-        <ChildContent>
-            <MudForm>
-                <MudCard Class="px-8 pt-4 pb-8">
-                    <CatsMudStep Title="PRI" Optional Icon="@Icons.Material.Filled.Key">
-                        <MudText Typo="Typo.body1">Already have a PRI Code? Enter it below</MudText>
-                        <MudTextField @bind-Value="code" Label="Code" MaxLength="6" Disabled="selfAssign" />
+@if(model is not null)
+{
+    <MudContainer Class="d-flex align-center">
+        <CatsMudStepper @ref="stepper" Color="Color.Primary" Variant="Variant.Filled"
+        MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All" 
+        Style="width: 100%; max-width: 1024px" ActiveStepChanged="OnStepChange">
+            <ChildContent>
+                <MudForm Model="model">
+                    <MudCard Class="px-8 pt-4 pb-8">
+                        <CatsMudStep Title="PRI" Optional Icon="@Icons.Material.Filled.Key" Condition="() => IsValid(codeForm)">
+                            <ChildContent>
+                                <MudForm @ref="codeForm" Model="model.Code" Validation="Validator.ValidateValue(model.Code)">
+                                    <MudAlert Class="mb-4" Severity="Severity.Info">You can skip this step for now, and choose at a later date</MudAlert>
 
-                        <MudCheckBox @bind-Value="selfAssign" 
-                        @bind-Value:after="ClearCode"
-                        Label="Alternatively, I would like to self-assign the PRI, as I will be working with this participant through the gate"
-                        Class="mt-2" />
+                                    <MudText Typo="Typo.body1">Already have a PRI Code? Enter it below</MudText>
+                                    <MudTextField @bind-Value="model.Code.Value"
+                                    For="() => model.Code.Value"
+                                    Label="Code"
+                                    MaxLength="6"
+                                    Immediate
+                                    Disabled="model.Code.SelfAssign"
+                                    Class="mb-2" />
 
-                        <MudAlert Class="mt-4" Severity="Severity.Info">You can skip this step for now, and choose at a later date</MudAlert>
-                    </CatsMudStep>
-                    <CatsMudStep Title="Release" Icon="@Icons.Material.Filled.Map">
-                        <MudTextField T="string" Label="Expected Release Region" />
-                        <MudDatePicker Class="mt-2" Label="Expected Release Date" MinDate="DateTime.Today" />
-                        @*<MudDatePicker Label="Actual Release Date" />*@
-                    </CatsMudStep>
-                    <CatsMudStep Title="Meeting" Icon="@Icons.Material.Filled.MeetingRoom">
-                        <MudDatePicker Label="Date meeting took place between Custody Support Worker, Community Support Worker, and Participant" MaxDate="DateTime.Today" />
+                                    <MudCheckBox @bind-Value="model.Code.SelfAssign"
+                                    @bind-Value:after="() => model.Code.Value = string.Empty"
+                                    For="() => model.Code.SelfAssign"
+                                    Label="Alternatively, I would like to self-assign the PRI, as I will be working with this participant through the gate" />
+                                </MudForm>
+                            </ChildContent>
+                        </CatsMudStep>
+                        <CatsMudStep Title="Release" Icon="@Icons.Material.Filled.Map" Condition="() => IsValid(releaseForm)">
+                            <ChildContent>
+                                <MudForm @ref="releaseForm" Model="model.Release" Validation="Validator.ValidateValue(model.Release)">
+                                    <MudSelect @bind-Value="model.Release.ExpectedRegion"
+                                    @bind-Value:after="LocationChanged"
+                                    Label="Expected release region"
+                                    For="() => model.Release.ExpectedRegion"
+                                    Clearable="true"
+                                    ToStringFunc="location => location?.Name">
+                                        @foreach (var location in locations.OrderBy(l => l.Name))
+                                        {
+                                            <MudSelectItem Value="location">@location.Name</MudSelectItem>
+                                        }
+                                    </MudSelect>
 
-                        <MudText Typo="Typo.body1" Class="mt-4">Did everyone attend this meeting in person?</MudText>
-                        <MudToggleGroup @bind-Value="attendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
-                            <MudToggleItem Value="true">Yes</MudToggleItem>
-                            <MudToggleItem Value="false">No</MudToggleItem>
-                        </MudToggleGroup>
-                        
-                        @if (attendedInPerson is false)
-                        {
-                            <MudTextField T="string" Label="Justification for not attending meeting in person" Lines="5" Class="mt-2" />
-                        }
+                                    <MudDatePicker @bind-Date="model.Release.ExpectedOn"
+                                    For="() => model.Release.ExpectedOn"
+                                    Label="Expected Release Date"
+                                    MinDate="DateTime.Today"
+                                    Class="mt-2" />
 
-                        @* Justification if meeting not attended in person *@
-                    </CatsMudStep>
-                    <StatusResultStep Upci="Upci" Processing="false" SubmissionSuccess="true" />
-                </MudCard>
-            </MudForm>
-        </ChildContent>
-    </CatsMudStepper>
-</MudContainer>
+                                    @*<MudDatePicker Label="Actual Release Date" />*@
+                                </MudForm>
+                            </ChildContent>
+                        </CatsMudStep>
+                        <CatsMudStep Title="Meeting" Icon="@Icons.Material.Filled.MeetingRoom" Condition="() => IsValid(meetingForm)">
+                            <ChildContent>
+                                <MudForm @ref="meetingForm" Model="model.Meeting" Validation="Validator.ValidateValue(model.Meeting)">
+                                    <MudDatePicker @bind-Date="model.Meeting.AttendedOn"
+                                    For="() => model.Meeting.AttendedOn"
+                                    Label="Date meeting took place between Custody Support Worker, Community Support Worker, and Participant"
+                                    MaxDate="DateTime.Today"
+                                    Class="mb-6" />
+
+                                    <MudText Typo="Typo.body1">Did everyone attend this meeting in person?</MudText>
+                                    <MudToggleGroup @bind-Value="model.Meeting.AttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
+                                        <MudToggleItem Value="true">Yes</MudToggleItem>
+                                        <MudToggleItem Value="false">No</MudToggleItem>
+                                    </MudToggleGroup>
+                                    <MudTextField ReadOnly Underline="false" For="() => model.Meeting.AttendedInPerson" hidden />
+
+                                    @if (model.Meeting.AttendedInPerson is false)
+                                    {
+                                        <MudTextField @bind-Value="model.Meeting.NotAttendedInPersonJustification"
+                                        For="() => model.Meeting.NotAttendedInPersonJustification"
+                                        Label="Justification for not attending meeting in person"
+                                        Lines="5"
+                                        Class="mt-2" />
+                                    }
+                                </MudForm>
+                            </ChildContent>
+                        </CatsMudStep>
+                        <StatusResultStep Upci="@Upci" Processing="@Processing" SubmissionSuccess="@SubmissionSuccess" SuccessText="PRI Submitted" FailureText="PRI failed to submit" />
+                    </MudCard>
+                </MudForm>
+            </ChildContent>
+        </CatsMudStepper>
+    </MudContainer>
+}
 
 @code {
-    bool selfAssign = false;
-    string code = string.Empty;
-    bool attendedInPerson = true;
+    MudForm codeForm = new();
+    MudForm releaseForm = new();
+    MudForm meetingForm = new();
+
+    CatsMudStepper stepper = new();
+
+    AddPRI.Command? model;
+
+    bool Processing { get; set; }
+    bool SubmissionSuccess { get; set; } = false;
+
+    LocationDto[] locations = [];
 
     [Parameter, EditorRequired]
     public required string Upci { get; set; }
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        return base.OnInitializedAsync();
+        model = new AddPRI.Command()
+        {
+            ParticipantId = Upci
+        };
+
+        locations = await GetNewMediator().Send(new GetAllLocationsQuery()
+        {
+            LocationType = LocationType.Community
+        });
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task LocationChanged()
+    {
+        // Present warning if chosen location is different to the location DMS believes they are transferring to
+        await Task.CompletedTask;
     }
 
     async Task SubmitPRI()
     {
-        await Task.CompletedTask;
+        if (stepper.IsAllStepsCompleted())
+        {
+            var validator = new AddPRI.Validator();
+            var result = await validator.ValidateAsync(model!);
+
+            if (result.IsValid)
+            {
+                Processing = true;
+                var response = await GetNewMediator().Send(model!);
+                Processing = false;
+                SubmissionSuccess = response.Succeeded;
+            }
+            else
+            {
+                Snackbar.Add(string.Join(", ", result.Errors), Severity.Error);
+            }
+
+        }
     }
 
-    void ClearCode() => code = string.Empty;
+    async Task OnStepChange(int step)
+    {
+        try
+        {
+            Processing = true;
+
+            if (step == stepper.Steps.Count())
+            {
+                await SubmitPRI();
+            }
+        }
+        finally
+        {
+            Processing = false;
+        }
+    }
+
+    async Task<bool> IsValid(MudForm form)
+    {
+        await form.Validate().ConfigureAwait(false);
+        return form.IsValid;
+    }
 }
