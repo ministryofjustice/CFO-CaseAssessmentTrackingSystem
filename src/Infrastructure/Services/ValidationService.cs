@@ -18,7 +18,7 @@ public class ValidationService : IValidationService
     public Func<object, string, Task<IEnumerable<string>>> ValidateValue<TRequest>()
     {
         return async (model, propertyName) =>
-            await ValidatePropertyAsync((TRequest)model, propertyName);
+            await ValidatePropertyAsync((TRequest)model, propertyName.Split('.').Last());
     }
 
     public Func<object, string, Task<IEnumerable<string>>> ValidateValue<TRequest>(TRequest _)
