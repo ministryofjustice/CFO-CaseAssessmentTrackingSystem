@@ -14,7 +14,7 @@ public partial class CaseSummary
 {
     private AssessmentSummaryDto? _latestAssessment;
     private BioSummaryDto? _bio;
-    private Object? _latestPRI;//replace with the PriDTO when its added
+    private Object? _latestPRI = null;//replace with the PriDTO when its added
     [Inject] 
     private IUserService UserService { get; set; } = default!;
 
@@ -290,9 +290,9 @@ public partial class CaseSummary
     private bool CanAddPRI() => true;//for now anyone can add PRI
     public void BeginPRI()
     {
-        _latestPRI = null;
-        Snackbar.Add($" Coming Soon...", Severity.Error);
+        Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/PRI");
     }
+
     private bool CanContinuePRI() => _latestPRI != null;//TODO implement Only Owner i.e. Custody Suppoprt Worker and the Community Support Worker can Continue working on PRI
     public void ContinuePRI()
     {
