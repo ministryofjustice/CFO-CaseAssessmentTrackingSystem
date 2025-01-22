@@ -11,7 +11,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Participants
         {
             builder.ToTable(
                 DatabaseConstants.Tables.PriCode,
-                DatabaseConstants.Schemas.Participant);
+                DatabaseConstants.Schemas.PRI);
 
             builder.HasKey(l =>new { l.ParticipantId, l.CreatedBy });
 
