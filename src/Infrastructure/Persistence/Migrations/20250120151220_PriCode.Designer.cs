@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250120151220_PriCode")]
+    partial class PriCode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1453,68 +1456,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex(new[] { "NotificationDate" }, "clst_notification"));
 
                     b.ToTable("Notification", "Identity");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.PRIs.PRI", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("AcceptedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateOnly?>("ActualReleaseDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("AssignedTo")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<DateOnly>("ExpectedReleaseDate")
-                        .HasColumnType("date");
-
-                    b.Property<int>("ExpectedReleaseRegionId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<bool>("MeetingAttendedInPerson")
-                        .HasColumnType("bit");
-
-                    b.Property<DateOnly>("MeetingAttendedOn")
-                        .HasColumnType("date");
-
-                    b.Property<string>("MeetingNotAttendedInPersonJustification")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(9)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssignedTo");
-
-                    b.HasIndex("ExpectedReleaseRegionId");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.ToTable("PRI", "PRI");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.ParticipantAccessAuditTrail", b =>
@@ -3660,28 +3601,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Navigation("Editor");
 
                     b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.PRIs.PRI", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("AssignedTo")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "ExpectedReleaseRegion")
-                        .WithMany()
-                        .HasForeignKey("ExpectedReleaseRegionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ExpectedReleaseRegion");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.ParticipantAccessAuditTrail", b =>

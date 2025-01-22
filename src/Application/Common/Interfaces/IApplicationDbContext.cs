@@ -96,5 +96,5 @@ public interface IApplicationDbContext
 
     DbSet<DateDimension> DateDimensions { get; }
 
-
+    DbSet<PriCode> PriCodes { get; }
 }
