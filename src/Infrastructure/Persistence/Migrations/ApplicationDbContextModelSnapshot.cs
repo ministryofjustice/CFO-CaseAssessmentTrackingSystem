@@ -451,6 +451,10 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("nvarchar(36)");
 
+                    b.Property<int>("LocationType")
+                        .HasColumnType("int")
+                        .HasColumnName("LocationTypeId");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -464,10 +468,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<int>("_genderProvisionId")
                         .HasColumnType("int")
                         .HasColumnName("GenderProvisionId");
-
-                    b.Property<int>("_locationTypeId")
-                        .HasColumnType("int")
-                        .HasColumnName("LocationTypeId");
 
                     b.Property<int?>("_parentLocationId")
                         .HasColumnType("int")

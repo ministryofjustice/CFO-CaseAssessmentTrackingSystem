@@ -9,4 +9,6 @@ public class LocationAdvancedFilter
     
     //The Id of the tenant you specifically want to look at.
     public string? TenantId { get; set; }
+
+    public LocationType? LocationType { get; set; }
 }
