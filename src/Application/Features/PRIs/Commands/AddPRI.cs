@@ -17,7 +17,7 @@ public static class AddPRI
         public PriMeetingDto Meeting { get; set; } = new();
     }
 
-    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -25,10 +25,14 @@ public static class AddPRI
                 .Create(request.ParticipantId, DateOnly.FromDateTime(request.Release.ExpectedOn!.Value), request.Release.ExpectedRegion!.Id)
                 .WithMeeting(DateOnly.FromDateTime(request.Meeting.AttendedOn!.Value), request.Meeting.AttendedInPerson, request.Meeting.NotAttendedInPersonJustification);
 
-            if(request.Code.Value is not null)
+            if(request.Code.Value is { Length: > 0 })
             {
                 //await unitOfWork.DbContext.PRICodes.FirstOrDefaultAsync(p => p.Code == request.Code && p.ParticipantId == request.PRI.ParticipantID);
                 //pri.AssignTo(...);
+            }
+            else if(request.Code.SelfAssign)
+            {
+                pri.AssignTo(currentUserService.UserId!);
             }
 
             await unitOfWork.DbContext.PRIs.AddAsync(pri, cancellationToken);
