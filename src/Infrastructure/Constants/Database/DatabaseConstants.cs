@@ -47,6 +47,7 @@ internal static class DatabaseConstants
         public const string EmploymentActivity = nameof(EmploymentActivity);
         public const string IswActivity = nameof(IswActivity);
         public const string NonIsqActivity = nameof(NonIsqActivity);
+        public const string PriCode = nameof(PriCode);
 
         public const string AssessmentPathwayScore = nameof(AssessmentPathwayScore);
 

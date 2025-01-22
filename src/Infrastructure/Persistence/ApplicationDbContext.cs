@@ -103,6 +103,7 @@ public class ApplicationDbContext
     public DbSet<EmploymentPayment> EmploymentPayments => Set<EmploymentPayment>();
 
     public DbSet<PRI> PRIs => Set<PRI>();
+    public DbSet<PriCode> PriCodes => Set<PriCode>();
 
     public DbSet<DateDimension> DateDimensions => Set<DateDimension>();
 
