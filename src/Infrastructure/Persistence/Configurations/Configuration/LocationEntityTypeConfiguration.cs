@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Domain.Entities.Administration;
+﻿using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -26,9 +27,13 @@ public class LocationEntityTypeConfiguration : IEntityTypeConfiguration<Location
             .HasColumnName("GenderProvisionId")
             .IsRequired();
 
-        builder.Property<int>("_locationTypeId")
-            .HasColumnName("LocationTypeId")
-            .IsRequired();
+        builder.Property(a => a.LocationType)
+            .IsRequired()
+            .HasConversion(
+                l => l!.Value,
+                l => LocationType.FromValue(l)
+            )
+            .HasColumnName("LocationTypeId");
 
         // Configure the Lifetime value object
         builder.OwnsOne(l => l.Lifetime, lifetime => {

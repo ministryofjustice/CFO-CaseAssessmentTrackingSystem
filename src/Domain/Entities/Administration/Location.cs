@@ -15,7 +15,6 @@ public class Location : BaseAuditableEntity<int>, ILifetime
     private string _name;
     private string? _contractId;
     private int _genderProvisionId;
-    private int _locationTypeId;
     private Lifetime _lifetime;
     private int? _parentLocationId;
     private readonly List<Location> _childLocations = new();
@@ -28,29 +27,29 @@ public class Location : BaseAuditableEntity<int>, ILifetime
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    private Location(string name, int genderProvisionId, int locationTypeId, string contractId,
+    private Location(string name, int genderProvisionId, LocationType locationType, string contractId,
         DateTime lifetimeStart, DateTime lifetimeEnd)
     {
         _name = name;
         _genderProvisionId = genderProvisionId;
-        _locationTypeId = locationTypeId;
+        LocationType = locationType;
         _contractId = contractId;
         _lifetime = new Lifetime(lifetimeStart, lifetimeEnd);
         
         this.AddDomainEvent(new LocationCreatedDomainEvent(this, contractId));
     }
 
-    public static Location Create(string name, int genderProvisionId, int locationTypeId, string contractId,
+    public static Location Create(string name, int genderProvisionId, LocationType locationType, string contractId,
         DateTime lifetimeStart, DateTime lifetimeEnd)
     {
-        return new(name, genderProvisionId, locationTypeId, contractId, lifetimeStart, lifetimeEnd);
+        return new(name, genderProvisionId, locationType, contractId, lifetimeStart, lifetimeEnd);
     }
 
     public string Name => _name;
 
     public GenderProvision GenderProvision => GenderProvision.FromValue(_genderProvisionId);
 
-    public LocationType LocationType => LocationType.FromValue(_locationTypeId);
+    public LocationType LocationType { get; private set; }
 
     public virtual Contract? Contract { get; private set; }
 
