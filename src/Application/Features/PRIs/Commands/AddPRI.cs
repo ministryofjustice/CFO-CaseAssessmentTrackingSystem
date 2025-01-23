@@ -1,4 +1,4 @@
-using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -93,7 +93,9 @@ public static class AddPRI
                     .NotNull()
                     .WithMessage("You must provide an expected date of release")
                     .GreaterThanOrEqualTo(DateTime.Today)
-                    .WithMessage(ValidationConstants.DateMustBeInFuture);
+                    .WithMessage(ValidationConstants.DateMustBeInFuture)
+                    .LessThanOrEqualTo(DateTime.Today.AddMonths(3))
+                    .WithMessage("Expected date of release must not be more than three months in the future");
             }
         }
     }
