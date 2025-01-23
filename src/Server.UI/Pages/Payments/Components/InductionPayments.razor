@@ -1,4 +1,5 @@
-﻿@inherits CatsComponentBase
+﻿@using Size = MudBlazor.Size
+@inherits CatsComponentBase
 
 <style type="text/css">
 
@@ -14,34 +15,58 @@
 </style>
 
 <MudGrid>
-    <MudItem xs="12">
-        <MudSwitch @bind-Value="DataView" Label="Data View" Color="Color.Info"/>
-    </MudItem>
-
     @if (DataView)
     {
         <MudItem xs="12">
-            <MudTable Items="@Payments" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
-            GroupBy="_groupDefinition"
-            GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-            GroupFooterClass="mb-4">
+            <MudTable
+                Items="@Payments"
+                Hover="true"
+                Breakpoint="Breakpoint.Sm"
+                Loading="@_loading"
+                LoadingProgressColor="Color.Info"
+                Filter="new Func<RawData, bool>(FilterFunc1)">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Inductions</MudText>
+                    <MudSpacer />
+                    <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                </ToolBarContent>
                 <HeaderContent>
+                    @if (Contract is null)
+                    {
+                        <MudTh>Contract</MudTh>
+                    }
                     <MudTh>Created</MudTh>
+                    <MudTh>Induction</MudTh>
                     <MudTh>Approved</MudTh>
-                    <MudTh>Participant Id</MudTh>
+                    <MudTh>Participant</MudTh>
                     <MudTh>Location</MudTh>
-                    <MudTh>Type</MudTh>
                     <MudTh>Payable</MudTh>
                 </HeaderContent>
                 <GroupHeaderTemplate>
                     <MudTh Class="mud-table-cell-custom-group" colspan="6">@context.Key</MudTh>
                 </GroupHeaderTemplate>
                 <RowTemplate>
-                    <MudTd DataLabel="Created">@context.CreatedOn</MudTd>
-                    <MudTd DataLabel="Approved">@(context.Approved.HasValue ? context.Approved.Value.ToShortDateString() : "" )</MudTd>
-                    <MudTd DataLabel="Participant Id">@context.ParticipantId</MudTd>
-                    <MudTd DataLabel="Participant Id">@context.Location</MudTd>
-                    <MudTd DataLabel="Participant Id">@context.LocationType</MudTd>
+                    @if (Contract is null)
+                    {
+                        <MudTd DataLabel="Contract">
+                            @context.Contract
+                        </MudTd>
+                    }
+                    <MudTd DataLabel="Created">@context.CreatedOn.ToShortDateString()</MudTd>
+                    <MudTd DataLabel="Induction">@context.InductionDate.ToShortDateString()</MudTd>
+                    <MudTd DataLabel="Approved">@(context.Approved.HasValue ? context.Approved.Value.ToShortDateString() : "")</MudTd>
+                    <MudTd DataLabel="Participant">
+                        <div class="d-flex flex-column">
+                            <MudText Typo="Typo.body1">@context.ParticipantName</MudText>
+                            <MudText Typo="Typo.body1">@context.ParticipantId</MudText>
+                        </div>
+                    </MudTd>
+                    <MudTd DataLabel="Location">
+                        <div class="d-flex flex-column">
+                            <MudText Typo="Typo.body1">@context.Location</MudText>
+                            <MudText Typo="Typo.body1">@context.LocationType</MudText>
+                        </div>
+                    </MudTd>
                     <MudTd DataLabel="Payable">
                         @if (context.EligibleForPayment)
                         {
@@ -55,6 +80,9 @@
                         }
                     </MudTd>
                 </RowTemplate>
+                <PagerContent>
+                    <MudTablePager/>
+                </PagerContent>
             </MudTable>
         </MudItem>
     }
@@ -136,12 +164,13 @@
 
     private bool _loading = true;
 
-    private bool DataView { get; set; }
+    [Parameter, EditorRequired]
+    public bool DataView { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public int Month { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public int Year { get; set; }
 
     [Parameter]
@@ -152,14 +181,6 @@
 
     private RawData[] Payments { get; set; } = [];
 
-    private TableGroupDefinition<RawData> _groupDefinition = new()
-    {
-        GroupName = "Contract",
-        Indentation = false,
-        Expandable = true,
-        Selector = (e) => e.Contract
-    };
-
     protected override async Task OnInitializedAsync()
     {
         var unitOfWork = GetNewUnitOfWork();
@@ -167,7 +188,8 @@
         var query = from ip in unitOfWork.DbContext.InductionPayments
                     join dd in unitOfWork.DbContext.DateDimensions on ip.Approved equals dd.TheDate
                     join c in unitOfWork.DbContext.Contracts on ip.ContractId equals c.Id 
-                    join l in unitOfWork.DbContext.Locations on ip.LocationId equals l.Id   
+                    join l in unitOfWork.DbContext.Locations on ip.LocationId equals l.Id 
+                    join p in unitOfWork.DbContext.Participants on ip.ParticipantId equals p.Id
                     where dd.TheMonth == Month && dd.TheYear == Year
                     select new
                     {
@@ -180,7 +202,9 @@
                         ip.LocationType,
                         Location = l.Name,
                         ip.IneligibilityReason,
-                        TenantId = c!.Tenant!.Id!
+                        TenantId = c!.Tenant!.Id!, 
+                        ip.Induction,
+                        ParticipantName = p.FirstName + " " + p.LastName
                     };
 
         query = Contract is null 
@@ -198,7 +222,9 @@
                     Contract = x.Contract,
                     Location = x.Location,
                     LocationType = x.LocationType,
-                    IneligibilityReason = x.IneligibilityReason
+                    IneligibilityReason = x.IneligibilityReason,
+                    InductionDate = x.Induction,
+                    ParticipantName = x.ParticipantName
                 })
             .OrderBy(e =>  e.Contract)
             .ThenByDescending(e => e.CreatedOn)
@@ -221,12 +247,14 @@
         _loading = false;
 
     }
-
+    
+    private string _searchString = "";
     private List<SummaryDataModel> SummaryData = [];
 
     private class RawData
     {
         public DateTime CreatedOn { get; set; }
+        public DateTime InductionDate { get; set; }
         public DateTime? Approved { get; set; }
         public string Contract { get; set; } = "";
         public string ParticipantId { get; set; } = "";
@@ -234,6 +262,7 @@
         public string LocationType { get; set; } = "";
         public string Location { get; set; } = "";
         public string? IneligibilityReason { get; set; }
+        public string ParticipantName { get; set; } = "";
     }
 
     private class SummaryDataModel
@@ -246,4 +275,43 @@
         public int HubsTarget { get; set; }
         public decimal HubsPercentage => Hubs.CalculateCappedPercentage(HubsTarget);
     }
+
+    private bool FilterFunc1(RawData data) => FilterFunc(data, _searchString);
+
+    private bool FilterFunc(RawData data, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+        {
+            return true;
+        }
+
+        if (data.ParticipantName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (data.ParticipantId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (data.IneligibilityReason is not null && data.IneligibilityReason.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (data.Location.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (data.LocationType.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+
+        return false;
+    }
+
 }
