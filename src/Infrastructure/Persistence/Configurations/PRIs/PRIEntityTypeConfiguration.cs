@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Domain.Entities.Participants;
+﻿using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Entities.PRIs;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants.Database;
@@ -31,6 +32,10 @@ public class PRIEntityTypeConfiguration : IEntityTypeConfiguration<PRI>
             .WithMany()
             .HasForeignKey(p => p.AssignedTo)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(x => x.ReasonCommunityDidNotAttendInPerson).HasMaxLength(ValidationConstants.NotesLength);
+        builder.Property(x => x.ReasonCustodyDidNotAttendInPerson).HasMaxLength(ValidationConstants.NotesLength);
+        builder.Property(x => x.ReasonParticipantDidNotAttendInPerson).HasMaxLength(ValidationConstants.NotesLength);
 
         builder.Property(x => x.CreatedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
         builder.Property(x => x.LastModifiedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);

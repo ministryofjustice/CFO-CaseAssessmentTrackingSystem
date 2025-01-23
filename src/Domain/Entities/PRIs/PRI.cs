@@ -21,8 +21,12 @@ public class PRI : BaseAuditableEntity<Guid>
     public string? AssignedTo { get; private set; }
     public bool IsCompleted { get; private set; }
     public DateOnly MeetingAttendedOn { get; private set; }
-    public bool MeetingAttendedInPerson { get; private set; }
-    public string? MeetingNotAttendedInPersonJustification { get; private set; }
+    public bool CustodyAttendedInPerson => ReasonCustodyDidNotAttendInPerson is null;
+    public bool CommunityAttendedInPerson => ReasonCommunityDidNotAttendInPerson is null;
+    public bool ParticipantAttendedInPerson => ReasonParticipantDidNotAttendInPerson is null;
+    public string? ReasonCustodyDidNotAttendInPerson { get; private set; }
+    public string? ReasonCommunityDidNotAttendInPerson { get; private set; }
+    public string? ReasonParticipantDidNotAttendInPerson { get; private set; }
 
     public static PRI Create(string participantId, DateOnly expectedReleaseDate, int expectedReleaseRegionId)
     {
@@ -41,6 +45,7 @@ public class PRI : BaseAuditableEntity<Guid>
     public PRI AssignTo(string? to)
     {
         AssignedTo = to;
+        // AddDomainEvent(new PRIAssignedDomainEvent(this));
         return this;
     }
 
@@ -63,11 +68,16 @@ public class PRI : BaseAuditableEntity<Guid>
         return this;
     }
 
-    public PRI WithMeeting(DateOnly attendedOn, bool attendedInPerson, string? notAttendedInPersonJustification = null)
+    public PRI WithMeeting(
+        DateOnly attendedOn, 
+        string? reasonCustodyDidNotAttendInPerson = null,
+        string? reasonCommunityDidNotAttendInPerson = null,
+        string? reasonParticipantDidNotAttendInPerson = null)
     {
         MeetingAttendedOn = attendedOn;
-        MeetingAttendedInPerson = attendedInPerson;
-        MeetingNotAttendedInPersonJustification = notAttendedInPersonJustification;
+        ReasonCommunityDidNotAttendInPerson = reasonCommunityDidNotAttendInPerson;
+        ReasonCustodyDidNotAttendInPerson = reasonCustodyDidNotAttendInPerson;
+        ReasonParticipantDidNotAttendInPerson = reasonParticipantDidNotAttendInPerson;
         return this;
     }
 
