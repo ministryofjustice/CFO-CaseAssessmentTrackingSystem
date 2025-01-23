@@ -60,10 +60,18 @@ public static class AddPRI
         {
             public Validator()
             {
-                RuleFor(c => c.Value)
-                    .Length(6)
-                    .When(c => c.Value is { Length: > 0 })
-                    .WithMessage("Invalid format for code");
+                When(c => c.Value is { Length: > 0 }, () =>
+                {
+                    RuleFor(c => c.Value)
+                        .Length(6)
+                        .WithMessage("Invalid format for code");
+                })
+                .Otherwise(() =>
+                {
+                    RuleFor(c => c.SelfAssign)
+                        .Equal(true)
+                        .WithMessage("You must self-assign when no PRI code is provided");
+                });
             }
         }
     }
