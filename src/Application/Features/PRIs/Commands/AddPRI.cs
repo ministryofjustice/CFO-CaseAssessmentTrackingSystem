@@ -23,7 +23,10 @@ public static class AddPRI
         {
             var pri = PRI
                 .Create(request.ParticipantId, DateOnly.FromDateTime(request.Release.ExpectedOn!.Value), request.Release.ExpectedRegion!.Id)
-                .WithMeeting(DateOnly.FromDateTime(request.Meeting.AttendedOn!.Value), request.Meeting.AttendedInPerson, request.Meeting.NotAttendedInPersonJustification);
+                .WithMeeting(DateOnly.FromDateTime(request.Meeting.AttendedOn!.Value), 
+                    reasonCustodyDidNotAttendInPerson: request.Meeting.ReasonCustodyDidNotAttendInPerson, 
+                    reasonCommunityDidNotAttendInPerson: request.Meeting.ReasonCommunityDidNotAttendInPerson,
+                    reasonParticipantDidNotAttendInPerson: request.Meeting.ReasonParticipantDidNotAttendInPerson);
 
             if(request.Code.Value is { Length: > 0 })
             {
@@ -103,8 +106,12 @@ public static class AddPRI
     public class PriMeetingDto
     {
         public DateTime? AttendedOn { get; set; }
-        public bool AttendedInPerson { get; set; } = true;
-        public string? NotAttendedInPersonJustification { get; set; }
+        public ConfirmationStatus? CustodyAttendedInPerson { get; set; }
+        public ConfirmationStatus? CommunityAttendedInPerson { get; set; }
+        public ConfirmationStatus? ParticipantAttendedInPerson { get; set; }
+        public string? ReasonCustodyDidNotAttendInPerson { get; set; }
+        public string? ReasonCommunityDidNotAttendInPerson { get; set; }
+        public string? ReasonParticipantDidNotAttendInPerson { get; set; }
 
         public class Validator : AbstractValidator<PriMeetingDto>
         {
@@ -116,14 +123,32 @@ public static class AddPRI
                     .LessThanOrEqualTo(DateTime.Today)
                     .WithMessage(ValidationConstants.DateMustBeInPast);
 
-                RuleFor(c => c.AttendedInPerson)
+                RuleFor(c => c.CustodyAttendedInPerson)
                     .NotNull()
                     .WithMessage("You must choose");
 
-                RuleFor(c => c.NotAttendedInPersonJustification)
+                RuleFor(c => c.CommunityAttendedInPerson)
+                    .NotNull()
+                    .WithMessage("You must choose");
+
+                RuleFor(c => c.ParticipantAttendedInPerson)
+                    .NotNull()
+                    .WithMessage("You must choose");
+
+                RuleFor(c => c.ReasonCustodyDidNotAttendInPerson)
                     .NotEmpty()
-                    .When(c => c.AttendedInPerson is false)
-                    .WithMessage("You must provide a justification");
+                    .When(c => c.CustodyAttendedInPerson == ConfirmationStatus.No)
+                    .WithMessage("You must provide a reason");
+
+                RuleFor(c => c.ReasonCommunityDidNotAttendInPerson)
+                    .NotEmpty()
+                    .When(c => c.CommunityAttendedInPerson == ConfirmationStatus.No)
+                    .WithMessage("You must provide a reason");
+
+                RuleFor(c => c.ReasonParticipantDidNotAttendInPerson)
+                    .NotEmpty()
+                    .When(c => c.ParticipantAttendedInPerson == ConfirmationStatus.No)
+                    .WithMessage("You must provide a reason");
             }
         }
     }

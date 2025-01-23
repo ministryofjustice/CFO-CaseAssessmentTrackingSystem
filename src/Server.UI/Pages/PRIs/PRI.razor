@@ -1,12 +1,12 @@
-@inherits CatsComponentBase
+﻿@inherits CatsComponentBase
 
 @page "/pages/participants/{Upci}/PRI"
 
 @using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Locations.Queries.GetAll
 @using Cfo.Cats.Application.Features.PRIs.Commands
-@using Cfo.Cats.Application.Features.PRIs.DTOs
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Components.Stepper
 
@@ -35,13 +35,11 @@
                                     </MudSelect>
 
                                     <MudDatePicker @bind-Date="model.Release.ExpectedOn"
-                                                   For="() => model.Release.ExpectedOn"
-                                                   Label="Expected date of release"
-                                                   MinDate="DateTime.Today"
-                                                   MaxDate="DateTime.Today.AddMonths(3)"
-                                                   Class="mt-2" />
-
-                                    @*<MudDatePicker Label="Actual Release Date" />*@
+                                    For="() => model.Release.ExpectedOn"
+                                    Label="Expected date of release"
+                                    MinDate="DateTime.Today"
+                                    MaxDate="DateTime.Today.AddMonths(3)"
+                                    Class="mt-2" />
                                 </MudForm>
                             </ChildContent>
                         </CatsMudStep>
@@ -69,26 +67,69 @@
                         <CatsMudStep Title="Pre-Release Meeting" Icon="@Icons.Material.Filled.MeetingRoom" Condition="() => IsValid(meetingForm)">
                             <ChildContent>
                                 <MudForm @ref="meetingForm" Model="model.Meeting" Validation="Validator.ValidateValue(model.Meeting)">
+                                    <MudText Class="mb-1" Typo="Typo.body2">Date pre-release meeting took place between the Custody Support Worker, the Community Support Worker, and the Participant</MudText>
                                     <MudDatePicker @bind-Date="model.Meeting.AttendedOn"
                                     For="() => model.Meeting.AttendedOn"
-                                    Label="Date pre-release meeting took place between the Custody Support Worker (potentially yourself), the Community Support Worker, and the Participant"
+                                    Label="Date pre-release meeting took place"
                                     MaxDate="DateTime.Today"
-                                    Class="mb-6" />
-
-                                    <MudText Typo="Typo.body1">Did everyone attend this meeting in person?</MudText>
-                                    <MudToggleGroup @bind-Value="model.Meeting.AttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
-                                        <MudToggleItem Value="true">Yes</MudToggleItem>
-                                        <MudToggleItem Value="false">No</MudToggleItem>
+                                    Class="mb-6"/>
+                                     
+                                    @* Custody *@
+                                    <MudText Typo="Typo.body1">Did the Custody Support Worker attend this meeting in person?</MudText>
+                                    <MudToggleGroup @bind-Value="model.Meeting.CustodyAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
+                                        <MudToggleItem Value="ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
+                                        <MudToggleItem Value="ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
                                     </MudToggleGroup>
-                                    <MudTextField ReadOnly Underline="false" For="() => model.Meeting.AttendedInPerson" hidden />
+                                    <MudTextField ReadOnly Underline="false" For="() => model.Meeting.CustodyAttendedInPerson" hidden />
 
-                                    @if (model.Meeting.AttendedInPerson is false)
+                                    @if (model.Meeting.CustodyAttendedInPerson == ConfirmationStatus.No)
                                     {
-                                        <MudTextField @bind-Value="model.Meeting.NotAttendedInPersonJustification"
-                                        For="() => model.Meeting.NotAttendedInPersonJustification"
-                                        Label="Justification for not attending meeting in person"
-                                        Lines="5"
-                                        Class="mt-2" />
+                                        <MudTextField @bind-Value="model.Meeting.ReasonCustodyDidNotAttendInPerson"
+                                                For="() => model.Meeting.ReasonCustodyDidNotAttendInPerson"
+                                                Label="Reason for not attending the meeting in person"
+                                                MaxLength="@ValidationConstants.NotesLength"
+                                                Lines="5"
+                                                Class="mt-2" />
+                                    }
+
+                                    <MudDivider Class="my-6" />
+
+                                    @* Community *@
+                                    <MudText Typo="Typo.body1">Did the Community Support Worker attend this meeting in person?</MudText>
+                                    <MudToggleGroup @bind-Value="model.Meeting.CommunityAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
+                                        <MudToggleItem Value="ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
+                                        <MudToggleItem Value="ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
+                                    </MudToggleGroup>
+                                    <MudTextField ReadOnly Underline="false" For="() => model.Meeting.CommunityAttendedInPerson" hidden />
+
+                                    @if (model.Meeting.CommunityAttendedInPerson == ConfirmationStatus.No)
+                                    {
+                                        <MudTextField @bind-Value="model.Meeting.ReasonCommunityDidNotAttendInPerson"
+                                                      For="() => model.Meeting.ReasonCommunityDidNotAttendInPerson"
+                                                      Label="Reason for not attending the meeting in person"
+                                                      MaxLength="@ValidationConstants.NotesLength"
+                                                      Lines="5"
+                                                      Class="mt-2" />
+                                    }
+
+                                    <MudDivider Class="my-6" />
+
+                                    @* Participant *@
+                                    <MudText Typo="Typo.body1">Did the Participant attend this meeting in person?</MudText>
+                                    <MudToggleGroup @bind-Value="model.Meeting.ParticipantAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
+                                        <MudToggleItem Value="ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
+                                        <MudToggleItem Value="ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
+                                    </MudToggleGroup>
+                                    <MudTextField ReadOnly Underline="false" For="() => model.Meeting.ParticipantAttendedInPerson" hidden />
+
+                                    @if (model.Meeting.ParticipantAttendedInPerson == ConfirmationStatus.No)
+                                    {
+                                        <MudTextField @bind-Value="model.Meeting.ReasonParticipantDidNotAttendInPerson"
+                                                      For="() => model.Meeting.ReasonParticipantDidNotAttendInPerson"
+                                                      Label="Reason for not attending the meeting in person"
+                                                      MaxLength="@ValidationConstants.NotesLength"
+                                                      Lines="5"
+                                                      Class="mt-2" />
                                     }
                                 </MudForm>
                             </ChildContent>
