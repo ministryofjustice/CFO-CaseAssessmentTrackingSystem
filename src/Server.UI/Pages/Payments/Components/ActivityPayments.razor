@@ -15,9 +15,6 @@
 </style>
 
 <MudGrid>
-    <MudItem xs="12">
-        <MudSwitch @bind-Value="DataView" Label="Data View" Color="Color.Info" />
-    </MudItem>
     @if (DataView)
     {
         <MudItem xs="12">
@@ -208,12 +205,13 @@
 
     private bool _loading = true;
 
-    private bool DataView { get; set; }
+    [Parameter, EditorRequired]
+    public bool DataView { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public int Month { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public int Year { get; set; }
 
     [Parameter]

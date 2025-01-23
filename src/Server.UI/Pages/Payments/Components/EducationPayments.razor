@@ -13,9 +13,6 @@
 </style>
 
 <MudGrid>
-    <MudItem xs="12">
-        <MudSwitch @bind-Value="DataView" Label="Data View" Color="Color.Info" />
-    </MudItem>
     @if (DataView)
     {
         <MudItem xs="12">
@@ -26,7 +23,7 @@
                       LoadingProgressColor="Color.Info"
                       Filter="new Func<RawData, bool>(FilterFunc1)">
                 <ToolBarContent>
-                    <MudText Typo="Typo.h6">Activities</MudText>
+                    <MudText Typo="Typo.h6">Education</MudText>
                     <MudSpacer />
                     <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                 </ToolBarContent>
@@ -42,9 +39,6 @@
                     <MudTh>Location</MudTh>
                     <MudTh>Payable</MudTh>
                 </HeaderContent>
-                <GroupHeaderTemplate>
-                    <MudTh Class="mud-table-cell-custom-group" colspan="6">@context.Key</MudTh>
-                </GroupHeaderTemplate>
                 <RowTemplate>
                     @if (Contract is null)
                     {
@@ -81,6 +75,9 @@
                         }
                     </MudTd>
                 </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
             </MudTable>
         </MudItem>
     }
@@ -143,12 +140,13 @@
     
     private bool _loading = true;
 
-    private bool DataView { get; set; }
+    [Parameter, EditorRequired]
+    public bool DataView { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public int Month { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public int Year { get; set; }
 
     [Parameter]
