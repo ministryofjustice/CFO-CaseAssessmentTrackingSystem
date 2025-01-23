@@ -1,23 +1,19 @@
 ﻿namespace Cfo.Cats.Application.Features.PRI.Specifications;
 
-//Need changing for PRI when created
 public class PRIAdvancedSpecification : Specification<Domain.Entities.PRIs.PRI>
 {
     public PRIAdvancedSpecification(PRIAdvancedFilter filter)
     {
-        //Query.Where(
-        //    p => p.AssignedTo == filter.CurrentUser!.UserId
-        //);
+        Query.Where(p => p.CreatedBy == filter.CurrentUser!.UserId, filter.JustMyCustodyPRIs);
 
-        //need changing for PRI
-        //Query.Where(
-        //c => c.EventType == (filter.ListView == TimelineTrailListView.Participant ? TimelineEventType.Participant :
-        //    filter.ListView == TimelineTrailListView.Enrolment ? TimelineEventType.Enrolment :
-        //    filter.ListView == TimelineTrailListView.Consent ? TimelineEventType.Consent :
-        //    filter.ListView == TimelineTrailListView.Assessment ? TimelineEventType.Assessment : TimelineEventType.Participant),
-        //    filter.ListView != TimelineTrailListView.All
-        //);
+        Query.Where(p => p.AssignedTo == filter.CurrentUser!.UserId, filter.JustMyCommunityPRIs);
 
-        Query.OrderByDescending(t => t.Created);
+        Query.Where(
+                   // if we have passed a filter through, search the surname and current location
+                   p => p.ParticipantId!.Contains(filter.Keyword!)
+                        || p.CreatedBy!.Contains(filter.Keyword!)
+                        || p.AssignedTo!.Contains(filter.Keyword!)
+                        || p.ExpectedReleaseRegion.Name.Contains(filter.Keyword!),
+                   string.IsNullOrEmpty(filter.Keyword) == false);
     }
 }
