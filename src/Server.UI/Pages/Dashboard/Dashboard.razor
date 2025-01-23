@@ -2,7 +2,7 @@
 @using Cfo.Cats.Application.Features.Dashboard.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
-
+@using Cfo.Cats.Server.UI.Pages.Participants.Components
 @inherits CatsComponentBase
 
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
@@ -21,7 +21,7 @@
     {
         <MyTeamsParticipantsComponent />
     }
-
+    <PriGenerateCode />
     <MyNotifications />
 
     @if(UserProfile?.AssignedRoles!.Contains(RoleNames.SystemSupport) == true)

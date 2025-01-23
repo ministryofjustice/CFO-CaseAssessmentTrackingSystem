@@ -1,0 +1,62 @@
+﻿@using Humanizer
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Commands
+
+@inherits CatsComponentBase
+
+<MudItem>
+    <MudCard Style="height:100%">
+        <MudForm @ref="form" Model="model" Validation="Validator.ValidateValue(model)">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">PRI Code</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudItem>
+                    <MudTextField Label="@model.GetMemberDescription(x => x.ParticipantId)"
+                    @bind-Value="model.ParticipantId"
+                    For="() => model.ParticipantId"
+                    Class="mt-4" 
+                    Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem>
+                    <MudText Typo="Typo.body1" Style="align-content:center; font-display:block;font-weight:bold">@_code</MudText>
+                </MudItem>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="GeneratePriCode">Generate</MudButton>
+            </MudCardActions>
+        </MudForm>
+    </MudCard>
+</MudItem>
+
+
+@code {
+    //Add title  and enclose in the MudCard
+    MudForm form = new();
+    string _code = string.Empty;
+
+    UpsertPriCode.Command model = new();
+
+    public async Task GeneratePriCode()
+    {
+        await form.Validate().ConfigureAwait(false);
+
+        if(form.IsValid is false)
+        {
+            return;
+        }
+
+        var result = await GetNewMediator().Send(model);
+
+        if (result.Succeeded)
+        {
+            _code = result.Data.ToString();
+        }
+        else
+        {
+            Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
+        }
+    }
+}

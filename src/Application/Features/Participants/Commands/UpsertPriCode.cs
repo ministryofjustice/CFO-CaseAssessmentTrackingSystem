@@ -1,51 +1,58 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
-using DocumentFormat.OpenXml.InkML;
+
 namespace Cfo.Cats.Application.Features.Participants.Commands;
 
 public static class UpsertPriCode
 {
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
-    public class Command : IRequest<Result>
+    public class Command : IRequest<Result<int>>
     {
-        public required string ParticipantId { get; set; }
-        public required int Code { get; set; }
-
+        [Description("Participant Id")]
+        public string ParticipantId { get; set; } = string.Empty;
     }
     
-    class Handler(IUnitOfWork unitOfWork, ICurrentUserService userService) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService userService) : IRequestHandler<Command, Result<int>>
     {
-        public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Result<int>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var code = await unitOfWork.DbContext.PriCodes.FindAsync(
+            var priCode = await unitOfWork.DbContext.PriCodes.FindAsync(
                 [request.ParticipantId, userService.UserId], 
                 cancellationToken);
 
-            if(code is not null)
+            if(priCode is not null)
             {
-                unitOfWork.DbContext.PriCodes.Remove(code);
+                unitOfWork.DbContext.PriCodes.Remove(priCode);
             }
 
-            code = PriCode.Create(request.ParticipantId, userService.UserId!);
+            priCode = PriCode.Create(request.ParticipantId, userService.UserId!);
+            await unitOfWork.DbContext.PriCodes.AddAsync(priCode, cancellationToken);
 
-            await unitOfWork.DbContext.PriCodes.AddAsync(code, cancellationToken);
-
-            return Result.Success();
+            return Result<int>.Success(priCode.Code);
         }
 
     }
+
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        readonly IUnitOfWork unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
         {
+            this.unitOfWork = unitOfWork;
+
             RuleFor(x => x.ParticipantId)
-                .NotNull()
-                .MinimumLength(9)
-                .MaximumLength(9)
-                .Matches(ValidationConstants.AlphaNumeric);
+                .NotEmpty()
+                .Length(9)
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
+                .MustAsync(Exist)
+                .WithMessage("Participant not found");
+
         }
+        async Task<bool> Exist(string participantId, CancellationToken cancellationToken)
+            => await unitOfWork.DbContext.Participants.AnyAsync(p => p.Id == participantId, cancellationToken);
     }
 }
