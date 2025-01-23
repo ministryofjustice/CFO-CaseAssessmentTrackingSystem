@@ -1,0 +1,76 @@
+﻿@page "/pages/participants/activePRIs"
+
+@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Features.PRI.DTOs
+@using Cfo.Cats.Application.Features.PRI.Queries
+@using Cfo.Cats.Application.SecurityConstants
+
+@inject IStringLocalizer<ActivePRIs> L
+@inject ICurrentUserService CurrentUser;
+
+@inherits CatsComponentBase
+
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+<PageTitle>@Title</PageTitle>
+<style>
+    .mud-table-toolbar {
+        height: 120px !important;
+    }
+</style>
+
+
+<h3>ActivePRIs</h3>
+
+@code {
+    [CascadingParameter] private UserProfile? UserProfile { get; set; }
+    // [SupplyParameterFromQuery(Name = "ListView")]
+    // public string? ListView { get; set; }
+
+    public string? Title { get; private set; }
+    //private int _defaultPageSize = 15;
+
+
+    // private HashSet<PRIPaginationDto> _selectedItems = new();
+
+    //private MudDataGrid<PRIPaginationDto> _table = default!;
+    // private bool _loading;
+
+    //private PRIPaginationDto _currentDto = new() { PRIId = default };
+
+    private GetActivePRIsByUserId.Query? Query { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Title = L["PRIs"];
+        //var x = CurrentUser.UserId;
+         Query = new GetActivePRIsByUserId.Query()
+         {
+                CurrentUser = UserProfile,
+                // Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Id";
+                OrderBy = "Id",
+                // Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
+                SortDirection = SortDirection.Descending.ToString(),
+                // Query.PageNumber = state.Page + 1;
+                PageNumber = 1,
+                // Query.PageSize = state.PageSize;
+                PageSize = 10
+         };
+        
+        
+         var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
+        // return new GridData<PRIPaginationDto> { TotalItems = result.TotalItems, Items = result.Items };
+
+
+        // Query = new ParticipantsWithPagination.Query()
+        //     {
+        //         JustMyCases = UserProfile!.AssignedRoles.Length == 0,
+        //         ListView = selectedListView,
+        //     };
+
+        // Locations = LocationService.GetVisibleLocations(UserProfile!.TenantId!)
+        //     .OrderByDescending(l => l.LocationType.IsCustody)
+        //     .ThenBy(l => l.Name).ToArray();
+        await Task.CompletedTask;
+    }
+}
