@@ -273,14 +273,14 @@ public static class AddActivity
         
         async Task<bool> BeInPendingStatus(Guid? activityId, CancellationToken cancellationToken)
         {
-            var activity = await unitOfWork.DbContext.Activities.SingleAsync(a => a.Id == activityId, cancellationToken);
+            var activity = await unitOfWork.DbContext.Activities.SingleAsync(a => a.Id == activityId, cancellationToken).ConfigureAwait(false);
             return activity.Status == ActivityStatus.PendingStatus;
         }
 
         async Task<bool> HaveAHubInduction(string participantId, LocationDto location, CancellationToken cancellationToken)
         {
             return await unitOfWork.DbContext.HubInductions.AnyAsync(induction => 
-                induction.ParticipantId == participantId && induction.LocationId == location.Id, cancellationToken);
+                induction.ParticipantId == participantId && induction.LocationId == location.Id, cancellationToken).ConfigureAwait(false);
         }
 
         private static bool NotExceedMaximumFileSize(IBrowserFile? file, double maxSizeMB)
