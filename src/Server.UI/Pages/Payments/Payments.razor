@@ -54,7 +54,7 @@
     <MudTabPanel Text="Education & Training">
         <EducationPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Education")" Contract="@SelectedContract" DataView="DataView" />
     </MudTabPanel>
-    <MudTabPanel Text="Employments">
+    <MudTabPanel Text="Employment">
         <EmploymentPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Employment")" Contract="@SelectedContract" DataView="DataView" />
     </MudTabPanel>
 </MudTabs>
