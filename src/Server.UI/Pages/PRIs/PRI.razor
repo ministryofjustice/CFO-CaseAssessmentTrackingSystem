@@ -66,12 +66,12 @@
                                 </MudForm>
                             </ChildContent>
                         </CatsMudStep>
-                        <CatsMudStep Title="Meeting" Icon="@Icons.Material.Filled.MeetingRoom" Condition="() => IsValid(meetingForm)">
+                        <CatsMudStep Title="Pre-Release Meeting" Icon="@Icons.Material.Filled.MeetingRoom" Condition="() => IsValid(meetingForm)">
                             <ChildContent>
                                 <MudForm @ref="meetingForm" Model="model.Meeting" Validation="Validator.ValidateValue(model.Meeting)">
                                     <MudDatePicker @bind-Date="model.Meeting.AttendedOn"
                                     For="() => model.Meeting.AttendedOn"
-                                    Label="Date meeting took place between Custody Support Worker, Community Support Worker, and Participant"
+                                    Label="Date pre-release meeting took place between the Custody Support Worker (potentially yourself), the Community Support Worker, and the Participant"
                                     MaxDate="DateTime.Today"
                                     Class="mb-6" />
 
@@ -94,7 +94,7 @@
                             </ChildContent>
                         </CatsMudStep>
                         <StatusResultStep Upci="@Upci" Processing="@Processing" SubmissionSuccess="@SubmissionSuccess" SuccessText="PRI Created" FailureText="PRI failed to submit">
-                            <MudText Typo="Typo.body1">A new objective (#2) has been automatically created in the pathway plan. Please visit the pathway plan to add any additional tasks identified in the meeting</MudText>
+                            <MudText Typo="Typo.body1">A new objective has been automatically created in the Pathway Plan. Please visit the Pathway Plan to add any additional tasks identified in the meeting</MudText>
                         </StatusResultStep>
                     </MudCard>
                 </MudForm>
