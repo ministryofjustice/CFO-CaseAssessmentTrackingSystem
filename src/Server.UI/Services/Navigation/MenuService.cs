@@ -53,6 +53,12 @@ public class MenuService : IMenuService
                                 PageStatus = PageStatus.Completed,
                                 Roles = [RoleNames.QAFinance, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
                             },
+                            new()
+                            {
+                                Title = "Active PRI's",
+                                Href = "/pages/participants/activePRIs",
+                                PageStatus = PageStatus.Completed                                
+                            },
                         }
                     },
                     new()
