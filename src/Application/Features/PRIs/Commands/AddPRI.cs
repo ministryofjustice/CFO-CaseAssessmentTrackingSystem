@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -83,7 +83,7 @@ public static class AddPRI
 
                 RuleFor(c => c.ExpectedOn)
                     .NotNull()
-                    .WithMessage("You must provide an expected release date")
+                    .WithMessage("You must provide an expected date of release")
                     .GreaterThanOrEqualTo(DateTime.Today)
                     .WithMessage(ValidationConstants.DateMustBeInFuture);
             }

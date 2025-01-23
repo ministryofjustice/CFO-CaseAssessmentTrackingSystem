@@ -1,4 +1,4 @@
-﻿@inherits CatsComponentBase
+@inherits CatsComponentBase
 
 @page "/pages/participants/{Upci}/PRI"
 
@@ -19,27 +19,6 @@
             <ChildContent>
                 <MudForm Model="model">
                     <MudCard Class="px-8 pt-4 pb-8">
-                        <CatsMudStep Title="PRI" Optional Icon="@Icons.Material.Filled.Key" Condition="() => IsValid(codeForm)">
-                            <ChildContent>
-                                <MudForm @ref="codeForm" Model="model.Code" Validation="Validator.ValidateValue(model.Code)">
-                                    <MudAlert Class="mb-4" Severity="Severity.Info">You can skip this step for now, and choose at a later date</MudAlert>
-
-                                    <MudText Typo="Typo.body1">Already have a PRI Code? Enter it below</MudText>
-                                    <MudTextField @bind-Value="model.Code.Value"
-                                    For="() => model.Code.Value"
-                                    Label="Code"
-                                    MaxLength="6"
-                                    Immediate
-                                    Disabled="model.Code.SelfAssign"
-                                    Class="mb-2" />
-
-                                    <MudCheckBox @bind-Value="model.Code.SelfAssign"
-                                    @bind-Value:after="() => model.Code.Value = string.Empty"
-                                    For="() => model.Code.SelfAssign"
-                                    Label="Alternatively, I would like to self-assign the PRI, as I will be working with this participant through the gate" />
-                                </MudForm>
-                            </ChildContent>
-                        </CatsMudStep>
                         <CatsMudStep Title="Release" Icon="@Icons.Material.Filled.Map" Condition="() => IsValid(releaseForm)">
                             <ChildContent>
                                 <MudForm @ref="releaseForm" Model="model.Release" Validation="Validator.ValidateValue(model.Release)">
@@ -56,12 +35,33 @@
                                     </MudSelect>
 
                                     <MudDatePicker @bind-Date="model.Release.ExpectedOn"
-                                    For="() => model.Release.ExpectedOn"
-                                    Label="Expected Release Date"
-                                    MinDate="DateTime.Today"
-                                    Class="mt-2" />
+                                                   For="() => model.Release.ExpectedOn"
+                                                   Label="Expected date of release"
+                                                   MinDate="DateTime.Today"
+                                                   Class="mt-2" />
 
                                     @*<MudDatePicker Label="Actual Release Date" />*@
+                                </MudForm>
+                            </ChildContent>
+                        </CatsMudStep>
+                        <CatsMudStep Title="Assignment" Icon="@Icons.Material.Filled.Person" Condition="() => IsValid(codeForm)">
+                            <ChildContent>
+                                <MudForm @ref="codeForm" Model="model.Code" Validation="Validator.ValidateValue(model.Code)">
+                                    <MudAlert Class="mb-4" Severity="Severity.Info">If not self-assigning, the community support worker will need to generate and provide you with a PRI code</MudAlert>
+
+                                    <MudText Typo="Typo.body1">Already have a PRI Code? Enter it below</MudText>
+                                    <MudTextField @bind-Value="model.Code.Value"
+                                    For="() => model.Code.Value"
+                                    Label="Code"
+                                    MaxLength="6"
+                                    Immediate
+                                    Disabled="model.Code.SelfAssign"
+                                    Class="mb-2" />
+
+                                    <MudCheckBox @bind-Value="model.Code.SelfAssign"
+                                    @bind-Value:after="() => model.Code.Value = string.Empty"
+                                    For="() => model.Code.SelfAssign"
+                                    Label="Alternatively, I would like to self-assign the PRI, as I will be working with this participant Through the Gate" />
                                 </MudForm>
                             </ChildContent>
                         </CatsMudStep>
@@ -92,7 +92,9 @@
                                 </MudForm>
                             </ChildContent>
                         </CatsMudStep>
-                        <StatusResultStep Upci="@Upci" Processing="@Processing" SubmissionSuccess="@SubmissionSuccess" SuccessText="PRI Submitted" FailureText="PRI failed to submit" />
+                        <StatusResultStep Upci="@Upci" Processing="@Processing" SubmissionSuccess="@SubmissionSuccess" SuccessText="PRI Created" FailureText="PRI failed to submit">
+                            <MudText Typo="Typo.body1">A new objective (#2) has been automatically created in the pathway plan. Please visit the pathway plan to add any additional tasks identified in the meeting</MudText>
+                        </StatusResultStep>
                     </MudCard>
                 </MudForm>
             </ChildContent>
