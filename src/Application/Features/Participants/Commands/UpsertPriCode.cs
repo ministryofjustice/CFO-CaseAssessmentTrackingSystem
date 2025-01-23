@@ -18,16 +18,11 @@ public static class UpsertPriCode
     {
         public async Task<Result<int>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var priCode = await unitOfWork.DbContext.PriCodes.FindAsync(
-                [request.ParticipantId, userService.UserId], 
-                cancellationToken);
+            //Because only one Community support worker should be able to work with the participant on a PRI at a any one point in time
+            //Remove all Codes for a participant id 
+            await unitOfWork.DbContext.PriCodes.Where(p => p.ParticipantId == request.ParticipantId).ExecuteDeleteAsync();
 
-            if(priCode is not null)
-            {
-                unitOfWork.DbContext.PriCodes.Remove(priCode);
-            }
-
-            priCode = PriCode.Create(request.ParticipantId, userService.UserId!);
+            var priCode = PriCode.Create(request.ParticipantId, userService.UserId!);
             await unitOfWork.DbContext.PriCodes.AddAsync(priCode, cancellationToken);
 
             return Result<int>.Success(priCode.Code);
