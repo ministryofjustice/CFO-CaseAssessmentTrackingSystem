@@ -29,8 +29,7 @@ public class PriCode : BaseAuditableEntity<int>
 
     PriCode GenerateCode()
     {
-        var seed = (ParticipantId + CreatedBy).GetHashCode();
-        Code = new Random(seed).Next(100000, 999999);
+        Code = new Random().Next(100000, 999999);
         return this;
     }
 }
