@@ -1,14 +1,15 @@
-﻿@inherits CatsComponentBase
+﻿@using Size = MudBlazor.Size
+@inherits CatsComponentBase
 
 <style type="text/css">
 
     .centered {
-        text-align: center;
+    text-align: center;
     }
 
     .mud-table-head th {
-        text-align: center;
-        font-weight: bold;
+    text-align: center;
+    font-weight: bold;
     }
 
 </style>
@@ -19,62 +20,97 @@
     </MudItem>
     @if (DataView)
     {
-        <MudTable Items="@Payments" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
-                  GroupBy="_groupDefinition"
-                  GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-                  GroupFooterClass="mb-4">
-            <HeaderContent>
-                <MudTh>Created</MudTh>
-                <MudTh>Approved</MudTh>
-                <MudTh>Participant Id</MudTh>
-                <MudTh>Location</MudTh>
-                <MudTh>Type</MudTh>
-                <MudTh>Category</MudTh>
-                <MudTh>Activity Type</MudTh>
-                <MudTh>Payable</MudTh>
-            </HeaderContent>
-            <GroupHeaderTemplate>
-                <MudTh Class="mud-table-cell-custom-group" colspan="8">@context.Key</MudTh>
-            </GroupHeaderTemplate>
-            <RowTemplate>
-                <MudTd DataLabel="Created">@context.CreatedOn</MudTd>
-                <MudTd DataLabel="Approved">@context.ActivityApproved.ToShortDateString()</MudTd>
-                <MudTd DataLabel="Participant Id">@context.ParticipantId</MudTd>
-                <MudTd DataLabel="Participant Id">@context.Location</MudTd>
-                <MudTd DataLabel="Participant Id">@context.LocationType</MudTd>
-                <MudTd DataLabel="Participant Id">@context.Category</MudTd>
-                <MudTd DataLabel="Participant Id">@context.Type</MudTd>
-                <MudTd DataLabel="Payable">
+        <MudItem xs="12">
+            <MudTable Items="@Payments"
+                      Hover="true"
+                      Breakpoint="Breakpoint.Sm"
+                      Loading="@_loading"
+                      LoadingProgressColor="Color.Info"
+                      Filter="new Func<RawData, bool>(FilterFunc1)">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Activities</MudText>
+                    <MudSpacer />
+                    <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                </ToolBarContent>
+                <HeaderContent>
 
-                    @if (context.EligibleForPayment)
+                    @if (Contract is null)
                     {
-                        @("Yes")
-                    }
-                    else
-                    {
-                        <MudTooltip Text="@context.IneligibilityReason">
-                            No
-                        </MudTooltip>
+                        <MudTh>Contract</MudTh>
                     }
 
+                    <MudTh>Created</MudTh>
+                    <MudTh>Commenced On</MudTh>
+                    <MudTh>Approved</MudTh>
+                    <MudTh>Participant</MudTh>
+                    <MudTh>Location</MudTh>
+                    <MudTd>Activity</MudTd>
+                    <MudTh>Payable</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    @if (Contract is null)
+                    {
+                        <MudTd DataLabel="Contract">
+                            @context.Contract
+                        </MudTd>
+                    }
+                    <MudTd DataLabel="Created">@context.CreatedOn.ToShortDateString()</MudTd>
+                    <MudTd DataLabel="Commenced On">@context.CommencedOn.ToShortDateString()</MudTd>
+                    <MudTd DataLabel="Approved">@context.ActivityApproved.ToShortDateString()</MudTd>
+                    <MudTd DataLabel="Participant">
+                        <div class="d-flex flex-column">
+                            <MudText Typo="Typo.body1">@context.ParticipantName</MudText>
+                            <MudText Typo="Typo.body1">@context.ParticipantId</MudText>
+                        </div>
+                    </MudTd>
+                    <MudTd DataLabel="Location">
+                        <div class="d-flex flex-column">
+                            <MudText Typo="Typo.body1">@context.Location</MudText>
+                            <MudText Typo="Typo.body1">@context.LocationType</MudText>
+                        </div>
+                    </MudTd>
+                    <MudTd DataLabel="">
+                        <div class="d-flex flex-column">
+                            <MudText Typo="Typo.body1">@context.Type</MudText>
+                            <MudText Typo="Typo.body1">@context.Category</MudText>
+                        </div>
+                    </MudTd>
+                    <MudTd DataLabel="Payable">
 
-                </MudTd>
-            </RowTemplate>
-        </MudTable>
+                        @if (context.EligibleForPayment)
+                        {
+                            @("Yes")
+                        }
+                        else
+                        {
+                            <MudTooltip Text="@context.IneligibilityReason">
+                                No
+                            </MudTooltip>
+                        }
+
+
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </MudItem>
+        
     }
     else
     {
-     
+
         <MudItem xs="12">
             <MudTable Items="@SummaryData" 
-                      Hover="true" 
-                      Breakpoint="Breakpoint.Sm" 
-                      Loading="_loading" 
-                      LoadingProgressColor="Color.Info"
-                      Striped="true"
-                      Bordered="true"
-                      HeaderClass="table-head-bordered"
-                      CustomHeader="true">
+            Hover="true" 
+            Breakpoint="Breakpoint.Sm" 
+            Loading="_loading" 
+            LoadingProgressColor="Color.Info"
+            Striped="true"
+            Bordered="true"
+            HeaderClass="table-head-bordered"
+            CustomHeader="true">
                 <HeaderContent>
                     <MudTHeadRow>
                         <MudTh>
@@ -128,37 +164,37 @@
                 </RowTemplate>
             </MudTable>    
         </MudItem>
-           <MudItem xs="12" md="6">
-             <ApexChart TItem="SummaryDataModel"
-                       Title="Activities By Contract">
+        <MudItem xs="12" md="6">
+            <ApexChart TItem="SummaryDataModel"
+            Title="Activities By Contract">
                 <ApexPointSeries TItem="SummaryDataModel"
-                                 Items="SummaryData"
-                                 Name="@ActivityType.SupportWork.Name"
-                                 SeriesType="SeriesType.Bar"
-                                 XValue="e => e.Contract"
-                                 YValue="e => e.SupportWork"
-                                  />
+                Items="SummaryData"
+                Name="@ActivityType.SupportWork.Name"
+                SeriesType="SeriesType.Bar"
+                XValue="e => e.Contract"
+                YValue="e => e.SupportWork"
+                />
                 <ApexPointSeries TItem="SummaryDataModel"
-                                 Items="SummaryData"
-                                 Name="@ActivityType.HumanCitizenship.Name"
-                                 SeriesType="SeriesType.Bar"
-                                 XValue="e => e.Contract"
-                                 YValue="e => e.HumanCitizenship"
-                              />
+                Items="SummaryData"
+                Name="@ActivityType.HumanCitizenship.Name"
+                SeriesType="SeriesType.Bar"
+                XValue="e => e.Contract"
+                YValue="e => e.HumanCitizenship"
+                />
                 <ApexPointSeries TItem="SummaryDataModel"
-                                 Items="SummaryData"
-                                 Name="@ActivityType.CommunityAndSocial.Name"
-                                 SeriesType="SeriesType.Bar"
-                                 XValue="e => e.Contract"
-                                 YValue="e => e.CommunityAndSocial"
-                                 />
+                Items="SummaryData"
+                Name="@ActivityType.CommunityAndSocial.Name"
+                SeriesType="SeriesType.Bar"
+                XValue="e => e.Contract"
+                YValue="e => e.CommunityAndSocial"
+                />
                 <ApexPointSeries TItem="SummaryDataModel"
-                                 Items="SummaryData"
-                                 Name="@ActivityType.InterventionsAndServicesWraparoundSupport.Name"
-                                 SeriesType="SeriesType.Bar"
-                                 XValue="e => e.Contract"
-                                 YValue="e => e.ISWSupport"
-                                 />
+                Items="SummaryData"
+                Name="@ActivityType.InterventionsAndServicesWraparoundSupport.Name"
+                SeriesType="SeriesType.Bar"
+                XValue="e => e.Contract"
+                YValue="e => e.ISWSupport"
+                />
             </ApexChart> 
         </MudItem>
     }
@@ -173,7 +209,7 @@
     private bool _loading = true;
 
     private bool DataView { get; set; }
-    
+
     [Parameter]
     public int Month { get; set; }
 
@@ -188,14 +224,6 @@
 
     private RawData[] Payments { get; set; } = [];
 
-    private TableGroupDefinition<RawData> _groupDefinition = new()
-    {
-        GroupName = "Contract",
-        Indentation = false,
-        Expandable = true,
-        Selector = (e) => e.Contract
-    };
-
     protected override async Task OnInitializedAsync()
     {
         var unitOfWork = GetNewUnitOfWork();
@@ -203,11 +231,13 @@
         var query = from ep in unitOfWork.DbContext.ActivityPayments
                     join dd in unitOfWork.DbContext.DateDimensions on ep.ActivityApproved equals dd.TheDate
                     join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
-                    join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id
+                    join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id 
+                    join a in unitOfWork.DbContext.Activities on ep.ActivityId equals a.Id
                     where dd.TheMonth == Month && dd.TheYear == Year
                     select new
                     {
                         ep.CreatedOn,
+                        a.CommencedOn,
                         ep.ActivityApproved,
                         ep.ParticipantId,
                         ep.EligibleForPayment,
@@ -218,7 +248,8 @@
                         ep.LocationType,
                         Location = l.Name,
                         ep.IneligibilityReason,
-                        TenantId = c!.Tenant!.Id!
+                        TenantId = c!.Tenant!.Id!,
+                        ParticipantName = a.Participant!.FirstName + " " + a.Participant!.LastName
                     };
 
         query = Contract is null 
@@ -230,6 +261,7 @@
             .Select(x => new RawData 
                 { 
                     CreatedOn = x.CreatedOn,
+                    CommencedOn = x.CommencedOn,
                     ActivityApproved = x.ActivityApproved,
                     ParticipantId = x.ParticipantId,
                     EligibleForPayment = x.EligibleForPayment,
@@ -238,7 +270,8 @@
                     Type = x.ActivityType,
                     Location = x.Location,
                     LocationType = x.LocationType,
-                    IneligibilityReason = x.IneligibilityReason
+                    IneligibilityReason = x.IneligibilityReason,
+                    ParticipantName = x.ParticipantName
                 })
             .OrderBy(e => e.Contract)
             .ThenByDescending(e => e.CreatedOn)
@@ -266,11 +299,13 @@
 
     }
 
+    private string _searchString = "";
     private List<SummaryDataModel> SummaryData = [];
 
     private class RawData
     {
         public DateTime CreatedOn { get; set; }
+        public DateTime CommencedOn { get;set; }
         public DateTime ActivityApproved { get; set; }
         public string Contract { get; set; } = "";
         public string ParticipantId { get; set; } = "";
@@ -280,6 +315,7 @@
         public string LocationType { get; set; } = "";
         public string Location { get; set; } = "";
         public string? IneligibilityReason { get; set; }
+        public string ParticipantName { get; set; } = "";
     }
 
     private class SummaryDataModel
@@ -298,5 +334,49 @@
         public int ISWSupportTarget { get;set; }
         public decimal ISWSupportPercentage => ISWSupport.CalculateCappedPercentage(ISWSupportTarget);
     }
+
+    private bool FilterFunc1(RawData data) => FilterFunc(data, _searchString);
+
+    private bool FilterFunc(RawData data, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+        {
+            return true;
+        }
+
+        if (data.ParticipantName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (data.ParticipantId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (data.IneligibilityReason is not null && data.IneligibilityReason.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (data.Category.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (data.Location.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (data.LocationType.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+
+        return false;
+    }
+    
 
 }
