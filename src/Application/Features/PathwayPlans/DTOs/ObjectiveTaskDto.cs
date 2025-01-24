@@ -24,6 +24,10 @@ public class ObjectiveTaskDto
         && (ToFirstDayOfMonth(DateTime.UtcNow).Equals(ToFirstDayOfMonth(Due))
         || IsOverdue is false && (DateTime.UtcNow.AddDays(14) > ToFirstDayOfMonth(Due)));
 
+    public required bool IsMandatory { get; set; }
+    public bool CanBeRenamed => IsMandatory is false;
+    public bool CanAddActivity => IsMandatory is false;
+
     public class Mapping : Profile
     {
         public Mapping()
