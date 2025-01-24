@@ -437,15 +437,9 @@
     private Expression<Func<ApplicationUser, bool>> CreateSearchPredicate()
     {
         return x =>
-            (x.UserName!.Contains(_searchString) ||
-             x.Email!.Contains(_searchString) ||
-             x.DisplayName!.Contains(_searchString) ||
-             x.PhoneNumber!.Contains(_searchString) &&
-            (_searchRole == null || (_searchRole != null && x.UserRoles.Any(x => x.Role.Name == _searchRole))) &&
-            (_selectedTenantId == " " 
-            || (_selectedTenantId != " " 
-            && x.TenantId == _selectedTenantId)            
-            ));
+            (x.UserName!.Contains(_searchString) || x.Email!.Contains(_searchString) || x.DisplayName!.Contains(_searchString) || x.PhoneNumber!.Contains(_searchString)) 
+            && (_searchRole == null || (_searchRole != null && x.UserRoles.Any(x => x.Role.Name == _searchRole))) 
+            && (_selectedTenantId == " " || (_selectedTenantId != " " && x.TenantId == _selectedTenantId));
     }
 
     private async Task<GridData<ApplicationUserDto>> ServerReload(GridState<ApplicationUserDto> state)
