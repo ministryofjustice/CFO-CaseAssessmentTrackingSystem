@@ -59,9 +59,12 @@
                 <MudTooltip Text="Complete">
                     <MudIconButton OnClick="Complete" Icon="@Icons.Material.Filled.Lock" Disabled="Model.IsCompleted" />
                 </MudTooltip>
-                <MudTooltip Text="Rename">
-                    <MudIconButton OnClick="Rename" Icon="@Icons.Material.Filled.EditNote" Disabled="Model.IsCompleted" />
-                </MudTooltip>
+                @if(Model.CanBeRenamed)
+                {
+                    <MudTooltip Text="Rename">
+                        <MudIconButton OnClick="Rename" Icon="@Icons.Material.Filled.EditNote" Disabled="Model.IsCompleted" />
+                    </MudTooltip>
+                }
             }
 
             <MudTooltip Text="Expand">

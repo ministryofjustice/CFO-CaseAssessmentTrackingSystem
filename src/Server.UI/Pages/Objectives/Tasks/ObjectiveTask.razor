@@ -79,21 +79,30 @@
                 <MudTooltip Text="Actions">
                     <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Disabled="Model.IsCompleted" Size="Size.Small" Dense>
                         <MudMenuItem OnClick="AdjustDate">Adjust date</MudMenuItem>
-                        <MudMenuItem OnClick="Rename">Rename</MudMenuItem>
+                        @if(Model.CanBeRenamed)
+                        {
+                            <MudMenuItem OnClick="Rename">Rename</MudMenuItem>
+                        }
                     </MudMenu>
                 </MudTooltip>
                 <MudTooltip Text="Record">
                     <MudMenu Icon="@Icons.Material.Filled.LibraryAdd" Variant="Variant.Filled" Disabled="Model.IsCompleted" Size="Size.Small" Dense>
-                        <MudMenuItem OnClick="AddActivity">Add Activity/ETE</MudMenuItem>
+                        @if(Model.CanAddActivity)
+                        {
+                            <MudMenuItem OnClick="AddActivity">Add Activity/ETE</MudMenuItem>
+                        }
                         <MudMenuItem Disabled>Add PSF (Coming Soon)</MudMenuItem>
                     </MudMenu>
                 </MudTooltip>
                 <MudTooltip Text="Expand">
                     <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="Expand" Variant="Variant.Filled" Size="Size.Small" />
                 </MudTooltip>
-                <MudTooltip Text="Activity/ETE History">
-                    <MudIconButton Icon="@Icons.Material.Filled.LibraryBooks" OnClick="ShowActivityHistory" Variant="Variant.Filled" Size="Size.Small" />
-                </MudTooltip>
+                @if(Model.CanAddActivity)
+                {
+                    <MudTooltip Text="Activity/ETE History">
+                        <MudIconButton Icon="@Icons.Material.Filled.LibraryBooks" OnClick="ShowActivityHistory" Variant="Variant.Filled" Size="Size.Small" />
+                    </MudTooltip>
+                }
                 <MudTooltip>
                     <TooltipContent>
                         Added @Model.Created.Humanize()
