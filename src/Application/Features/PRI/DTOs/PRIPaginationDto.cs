@@ -9,7 +9,10 @@ public class PRIPaginationDto
     public required Guid Id { get; set; } = default!;
 
     [Description("Participant Id")]
-    public string? ParticipantId { get; set; }
+    public required string ParticipantId { get; set; }
+
+    [Description("Participant Name")]
+    public required string ParticipantName { get; set; }
 
     [Description("Actual Date Of Release")]
     public DateOnly? ActualReleaseDate { get; set; }
@@ -24,17 +27,13 @@ public class PRIPaginationDto
     public string? CreatedBy { get; set; }
 
     public LocationDto? ExpectedReleaseRegion { get; set; }
-
-    //public bool IsCompleted { get; }
-    //public DateOnly MeetingAttendedOn { get; set; }
-    //public bool MeetingAttendedInPerson { get; set; }
-    //public string? MeetingNotAttendedInPersonJustification { get; set; }
-
+        
     private class Mapping : Profile
     {
         public Mapping()
         {
-            CreateMap<Domain.Entities.PRIs.PRI, PRIPaginationDto>();                
+            CreateMap<Domain.Entities.PRIs.PRI, PRIPaginationDto>()
+                .ForMember(dest => dest.ParticipantName, opt => opt.MapFrom(src => src.Participant!.FullName));                
         }
     }
 }

@@ -18,7 +18,7 @@ public class PRIEntityTypeConfiguration : IEntityTypeConfiguration<PRI>
 
         builder.HasKey(p => p.Id);
 
-        builder.HasOne<Participant>()
+        builder.HasOne(p => p.Participant)
             .WithMany()
             .HasForeignKey(p => p.ParticipantId)
             .OnDelete(DeleteBehavior.Restrict);

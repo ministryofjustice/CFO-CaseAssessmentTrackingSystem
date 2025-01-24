@@ -3679,13 +3679,15 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
+                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", "Participant")
                         .WithMany()
                         .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ExpectedReleaseRegion");
+
+                    b.Navigation("Participant");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.ParticipantAccessAuditTrail", b =>
