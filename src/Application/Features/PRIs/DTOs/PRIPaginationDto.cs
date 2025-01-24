@@ -1,6 +1,6 @@
 ﻿using Cfo.Cats.Application.Features.Locations.DTOs;
 
-namespace Cfo.Cats.Application.Features.PRI.DTOs;
+namespace Cfo.Cats.Application.Features.PRIs.DTOs;
 
 [Description("PRIs")]
 public class PRIPaginationDto
@@ -27,13 +27,13 @@ public class PRIPaginationDto
     public string? CreatedBy { get; set; }
 
     public LocationDto? ExpectedReleaseRegion { get; set; }
-        
+
     private class Mapping : Profile
     {
         public Mapping()
         {
             CreateMap<Domain.Entities.PRIs.PRI, PRIPaginationDto>()
-                .ForMember(dest => dest.ParticipantName, opt => opt.MapFrom(src => src.Participant!.FullName));                
+                .ForMember(dest => dest.ParticipantName, opt => opt.MapFrom(src => src.Participant!.FullName));
         }
     }
 }

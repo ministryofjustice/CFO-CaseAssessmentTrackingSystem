@@ -1,4 +1,4 @@
-﻿namespace Cfo.Cats.Application.Features.PRI.Specifications;
+﻿namespace Cfo.Cats.Application.Features.PRIs.Specifications;
 
 public class PRIAdvancedSpecification : Specification<Domain.Entities.PRIs.PRI>
 {
