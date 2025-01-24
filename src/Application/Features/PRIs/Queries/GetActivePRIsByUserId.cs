@@ -1,14 +1,14 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Application.Features.PRI.DTOs;
-using Cfo.Cats.Application.Features.PRI.Specifications;
+using Cfo.Cats.Application.Features.PRIs.DTOs;
+using Cfo.Cats.Application.Features.PRIs.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
 
-namespace Cfo.Cats.Application.Features.PRI.Queries;
+namespace Cfo.Cats.Application.Features.PRIs.Queries;
 
 public static class GetActivePRIsByUserId
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]   
+    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
 
     public class Query : PRIAdvancedFilter, IRequest<PaginatedData<PRIPaginationDto>>
     {
@@ -22,11 +22,11 @@ public static class GetActivePRIsByUserId
             await Task.CompletedTask;
 
             var data = await unitOfWork.DbContext.PRIs
-                .Where(x => x.AssignedTo == request.CurrentUser!.UserId 
-                        || x.CreatedBy == request.CurrentUser!.UserId 
+                .Where(x => x.AssignedTo == request.CurrentUser!.UserId
+                        || x.CreatedBy == request.CurrentUser!.UserId
                         && x.IsCompleted == false)
-                .OrderBy($"{request.OrderBy} {request.SortDirection}")            
-                .ProjectToPaginatedDataAsync<Domain.Entities.PRIs.PRI, PRIPaginationDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);                                
+                .OrderBy($"{request.OrderBy} {request.SortDirection}")
+                .ProjectToPaginatedDataAsync<Domain.Entities.PRIs.PRI, PRIPaginationDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
 
             return data;
         }

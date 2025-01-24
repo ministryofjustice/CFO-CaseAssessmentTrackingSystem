@@ -1,6 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 
-namespace Cfo.Cats.Application.Features.PRI.Specifications;
+namespace Cfo.Cats.Application.Features.PRIs.Specifications;
 
 public class PRIAdvancedFilter : PaginationFilter
 {

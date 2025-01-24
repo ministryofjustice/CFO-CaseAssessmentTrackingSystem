@@ -1,15 +1,15 @@
-﻿@page "/pages/participants/activePris"
+﻿@page "/pages/participants/pre-release-inventory"
 
 @using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Application.Common.Interfaces.Locations
-@using Cfo.Cats.Application.Features.PRI.DTOs
-@using Cfo.Cats.Application.Features.PRI.Queries
-@using Cfo.Cats.Application.Features.PRI.Specifications
+@using Cfo.Cats.Application.Features.PRIs.DTOs
+@using Cfo.Cats.Application.Features.PRIs.Queries
+@using Cfo.Cats.Application.Features.PRIs.Specifications
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Infrastructure.Services.Identity
 @using Humanizer
 
-@inject IStringLocalizer<ActivePris> L
+@inject IStringLocalizer<ActivePRIs> L
 @inject ICurrentUserService CurrentUser
 @inject IUserService UserService
 
@@ -46,7 +46,7 @@
             <div class="d-flex gap-4">
                 <MudIcon Icon="@Icons.Material.Filled.Inventory" Size="Size.Large" />
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption">Active Pre Release Inventory</MudText>
+                    <MudText Typo="Typo.caption">Active Pre-Release Inventory</MudText>
                 </div>
             </div>
             
@@ -142,13 +142,19 @@
         <PropertyColumn Property="x => x.ActualReleaseDate" Title="@L["Actual Release Date"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-
-                    <MudText Typo="Typo.body2">
-                        @context.Item.ActualReleaseDate
-                    </MudText>
-                    <MudText Typo="Typo.body2">
-                        @context.Item.ActualReleaseDate.Humanize()
-                    </MudText>
+                    @if(context.Item.ActualReleaseDate is not null)
+                    {
+                        <MudText Typo="Typo.body2">
+                            @context.Item.ActualReleaseDate
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            @context.Item.ActualReleaseDate.Humanize()
+                        </MudText>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.body2">Not set</MudText>
+                    }
                 </div>
             </CellTemplate>
         </PropertyColumn>
