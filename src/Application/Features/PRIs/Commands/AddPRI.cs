@@ -9,10 +9,9 @@ namespace Cfo.Cats.Application.Features.PRIs.Commands;
 public static class AddPRI
 {
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
-    public class Command : IRequest<Result>
+    public record class Command(string ParticipantId) : IRequest<Result>
     {
-        public required string ParticipantId { get; set; }
-        public PriCodeDto Code { get; set; } = new();
+        public PriCodeDto Code { get; set; } = new() { ParticipantId = ParticipantId };
         public PriReleaseDto Release { get; set; } = new();
         public PriMeetingDto Meeting { get; set; } = new();
     }
@@ -28,15 +27,21 @@ public static class AddPRI
                     reasonCommunityDidNotAttendInPerson: request.Meeting.ReasonCommunityDidNotAttendInPerson,
                     reasonParticipantDidNotAttendInPerson: request.Meeting.ReasonParticipantDidNotAttendInPerson);
 
-            if(request.Code.Value is { Length: > 0 })
+            string? assignee = null;
+
+            if(request.Code.Value is not null)
             {
-                //await unitOfWork.DbContext.PRICodes.FirstOrDefaultAsync(p => p.Code == request.Code && p.ParticipantId == request.PRI.ParticipantID);
-                //pri.AssignTo(...);
+                assignee = await unitOfWork.DbContext.PriCodes
+                    .Where(p => p.Code == request.Code.Value && p.ParticipantId == request.ParticipantId)
+                    .Select(p => p.CreatedBy)
+                    .SingleAsync(cancellationToken);
             }
             else if(request.Code.SelfAssign)
             {
-                pri.AssignTo(currentUserService.UserId!);
+                assignee = currentUserService.UserId;
             }
+
+            pri.AssignTo(assignee);
 
             await unitOfWork.DbContext.PRIs.AddAsync(pri, cancellationToken);
 
@@ -46,34 +51,50 @@ public static class AddPRI
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        public Validator(IValidator<PriCodeDto> priCodeValidator, IValidator<PriReleaseDto> priReleaseValidator, IValidator<PriMeetingDto> priMeetingValidator)
         {
-            RuleFor(c => c.Code).SetValidator(new PriCodeDto.Validator());
-            RuleFor(c => c.Release).SetValidator(new PriReleaseDto.Validator());
-            RuleFor(c => c.Meeting).SetValidator(new PriMeetingDto.Validator());
+            RuleFor(c => c.Code).SetValidator(priCodeValidator);
+            RuleFor(c => c.Release).SetValidator(priReleaseValidator);
+            RuleFor(c => c.Meeting).SetValidator(priMeetingValidator);
         }
     }
 
     public class PriCodeDto
     {
-        public string? Value { get; set; }
+        public int? Value { get; set; }
         public bool SelfAssign { get; set; }
         public bool IsSelfAssignmentAllowed { get; set; }
+        public required string ParticipantId { get; set; }
 
         public class Validator : AbstractValidator<PriCodeDto>
         {
-            public Validator()
+            readonly IUnitOfWork unitOfWork;
+
+            public Validator(IUnitOfWork unitOfWork)
             {
-                RuleFor(c => c.Value)
-                    .Length(6)
-                    .When(c => c.Value is { Length: > 0 })
-                    .WithMessage("Invalid format for code");
+                this.unitOfWork = unitOfWork;
+
+                RuleFor(c => c.ParticipantId)
+                    .NotNull();
+
+                When(c => c.Value is not null, () =>
+                {
+                    RuleFor(c => c.Value)
+                        .InclusiveBetween(100_000, 999_999)
+                        .WithMessage("Invalid format for code")
+                        .DependentRules(() =>
+                        {
+                            RuleFor(c => c.Value)
+                                .MustAsync(async (command, code, context, canc) => await BeValid(command.ParticipantId, code!.Value, canc))
+                                .WithMessage("Invalid code");
+                        });
+                });
 
                 When(c => c.IsSelfAssignmentAllowed, () =>
                 {
                     RuleFor(c => c.SelfAssign)
                         .Equal(true)
-                        .When(c => c.Value is not { Length: > 0 })
+                        .When(c => c.Value is not not null)
                         .WithMessage("You must self-assign when no PRI code is provided");
                 })
                 .Otherwise(() =>
@@ -84,6 +105,9 @@ public static class AddPRI
                         .WithMessage("You must provide a code");
                 });
             }
+
+            async Task<bool> BeValid(string participantId, int code, CancellationToken cancellationToken)
+                => await unitOfWork.DbContext.PriCodes.AnyAsync(pc => pc.Code == code && pc.ParticipantId == participantId, cancellationToken);
         }
     }
 

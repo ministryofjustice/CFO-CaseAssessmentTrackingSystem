@@ -12,6 +12,7 @@
 
 @inject ILocationService locationService
 @inject ICurrentUserService currentUserService
+@inject IValidator<AddPRI.Command> validator
 
 @if(model is not null)
 {
@@ -38,11 +39,11 @@
                                     </MudSelect>
 
                                     <MudDatePicker @bind-Date="model.Release.ExpectedOn"
-                                                    For="() => model.Release.ExpectedOn"
-                                                    Label="Expected date of release"
-                                                    MinDate="DateTime.Today"
-                                                    MaxDate="DateTime.Today.AddMonths(3)"
-                                                    Class="mt-2" />
+                                    For="() => model.Release.ExpectedOn"
+                                    Label="Expected date of release"
+                                    MinDate="DateTime.Today"
+                                    MaxDate="DateTime.Today.AddMonths(3)"
+                                    Class="mt-2" />
                                 </MudForm>
                             </ChildContent>
                         </CatsMudStep>
@@ -60,19 +61,20 @@
 
                                     <MudText Typo="Typo.body1">Enter PRI code below</MudText>
                                     <MudTextField @bind-Value="model.Code.Value"
-                                        For="() => model.Code.Value"
-                                        Label="Code"
-                                        MaxLength="6"
-                                        Immediate
-                                        Disabled="model.Code.SelfAssign && model.Code.IsSelfAssignmentAllowed"
-                                        Class="mb-2" />
+                                    For="() => model.Code.Value"
+                                    Label="Code"
+                                    MaxLength="6"
+                                    Immediate
+                                    InputMode="InputMode.numeric"
+                                    Disabled="model.Code.SelfAssign && model.Code.IsSelfAssignmentAllowed"
+                                    Class="mb-2" />
 
                                     @if(model.Code.IsSelfAssignmentAllowed)
                                     {
                                         <MudCheckBox @bind-Value="model.Code.SelfAssign"
-                                                     @bind-Value:after="() => model.Code.Value = string.Empty"
-                                                     For="() => model.Code.SelfAssign"
-                                                     Label="Alternatively, I would like to self-assign the PRI, as I will be working with this participant Through the Gate" />
+                                        @bind-Value:after="() => model.Code.Value = null"
+                                        For="() => model.Code.SelfAssign"
+                                        Label="Alternatively, I would like to self-assign the PRI, as I will be working with this participant Through the Gate" />
                                     }
                                 </MudForm>
                             </ChildContent>
@@ -176,10 +178,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        model = new AddPRI.Command()
-        {
-            ParticipantId = Upci
-        };
+        model = new AddPRI.Command(Upci);
 
         locations = await GetNewMediator().Send(new GetAllLocationsQuery()
         {
@@ -211,7 +210,6 @@
     {
         if (stepper.IsAllStepsCompleted())
         {
-            var validator = new AddPRI.Validator();
             var result = await validator.ValidateAsync(model!);
 
             if (result.IsValid)
