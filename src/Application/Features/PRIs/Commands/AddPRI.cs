@@ -58,22 +58,30 @@ public static class AddPRI
     {
         public string? Value { get; set; }
         public bool SelfAssign { get; set; }
+        public bool IsSelfAssignmentAllowed { get; set; }
 
         public class Validator : AbstractValidator<PriCodeDto>
         {
             public Validator()
             {
-                When(c => c.Value is { Length: > 0 }, () =>
-                {
-                    RuleFor(c => c.Value)
-                        .Length(6)
-                        .WithMessage("Invalid format for code");
-                })
-                .Otherwise(() =>
+                RuleFor(c => c.Value)
+                    .Length(6)
+                    .When(c => c.Value is { Length: > 0 })
+                    .WithMessage("Invalid format for code");
+
+                When(c => c.IsSelfAssignmentAllowed, () =>
                 {
                     RuleFor(c => c.SelfAssign)
                         .Equal(true)
+                        .When(c => c.Value is not { Length: > 0 })
                         .WithMessage("You must self-assign when no PRI code is provided");
+                })
+                .Otherwise(() =>
+                {
+                    // Self assignment is not allowed
+                    RuleFor(c => c.Value)
+                        .NotEmpty()
+                        .WithMessage("You must provide a code");
                 });
             }
         }
