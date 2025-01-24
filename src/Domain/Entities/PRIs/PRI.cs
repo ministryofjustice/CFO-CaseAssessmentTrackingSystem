@@ -1,5 +1,6 @@
-﻿using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.PRIs;
@@ -27,6 +28,7 @@ public class PRI : BaseAuditableEntity<Guid>
     public string? ReasonCustodyDidNotAttendInPerson { get; private set; }
     public string? ReasonCommunityDidNotAttendInPerson { get; private set; }
     public string? ReasonParticipantDidNotAttendInPerson { get; private set; }
+    public virtual Participant? Participant { get; private set; }
 
     public static PRI Create(string participantId, DateOnly expectedReleaseDate, int expectedReleaseRegionId)
     {

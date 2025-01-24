@@ -56,7 +56,7 @@ public class MenuService : IMenuService
                             new()
                             {
                                 Title = "Active PRI's",
-                                Href = "/pages/participants/activePRIs",
+                                Href = "/pages/participants/activePris",
                                 PageStatus = PageStatus.Completed                                
                             },
                         }

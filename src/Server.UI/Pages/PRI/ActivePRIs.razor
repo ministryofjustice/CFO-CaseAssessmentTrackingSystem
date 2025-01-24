@@ -1,5 +1,6 @@
-﻿@page "/pages/participants/activePRIs"
+﻿@page "/pages/participants/activePris"
 
+@using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Application.Common.Interfaces.Locations
 @using Cfo.Cats.Application.Features.PRI.DTOs
 @using Cfo.Cats.Application.Features.PRI.Queries
@@ -8,16 +9,15 @@
 @using Cfo.Cats.Infrastructure.Services.Identity
 @using Humanizer
 
-@inject IStringLocalizer<ActivePRIs> L
-@inject ICurrentUserService CurrentUser;
+@inject IStringLocalizer<ActivePris> L
+@inject ICurrentUserService CurrentUser
+@inject IUserService UserService
 
 @inherits CatsComponentBase
 
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 <PageTitle>@Title</PageTitle>
-
-<h3>ActivePRIs</h3>
 
 <style>
     .mud-table-toolbar {
@@ -38,25 +38,28 @@
                  Loading="@_loading"
                  MultiSelection="true"
                  @bind-SelectedItems="_selectedItems"
-                 @bind-SelectedItem="_currentDto"
                  Hover="true"
                  @ref="_table"
                  Breakpoint="Breakpoint.Sm">
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
             <div class="d-flex gap-4">
-                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
+                <MudIcon Icon="@Icons.Material.Filled.Inventory" Size="Size.Large" />
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption">Active PRI's</MudText>
+                    <MudText Typo="Typo.caption">Active Pre Release Inventory</MudText>
                 </div>
             </div>
+            
             <div class="d-flex flex-column">
-                <MudSwitch T="bool" Class="mt-10" Value="@Query!.JustMyCustodyPRIs" Label="Just My Custody PRI's'" Color="Color.Primary" ValueChanged="OnShowCustodyPRIChanged"></MudSwitch>
+                <MudSwitch T="bool" Class="mt-10" Value="@Query!.JustMyCustodyPRIs" Label="Just My Custody PRI's" Color="Color.Primary" ValueChanged="OnShowCustodyPRIChanged"></MudSwitch>
             </div>
+            
             <div class="d-flex flex-column">
-                <MudSwitch T="bool" Class="mt-10" Value="@Query.JustMyCommunityPRIs" Label="Just My Community PRI's'" Color="Color.Primary" ValueChanged="OnShowCommunityPRIChanged"></MudSwitch>
+                <MudSwitch T="bool" Class="mt-10" Value="@Query.JustMyCommunityPRIs" Label="Just My Community PRI's" Color="Color.Primary" ValueChanged="OnShowCommunityPRIChanged"></MudSwitch>
             </div>
+            
             <div class="flex-grow-1"></div>
+
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
@@ -93,42 +96,31 @@
                 </MudMenu>
             </CellTemplate>
         </TemplateColumn>
-        <PropertyColumn Property="x => x.ParticipantId" Title="@L["Participant"]">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    @* <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText> *@
-                    <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
-                </div>
-            </CellTemplate>
-        </PropertyColumn>
-        @* <PropertyColumn Property="x => x.ParticipantName" Title="@L["Participant"]">
+        <PropertyColumn Property="x => x.ParticipantName" Title="@L["Participant"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>
                     <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
                 </div>
             </CellTemplate>
-        </PropertyColumn> *@
+        </PropertyColumn>
         <PropertyColumn Property="x => x.CreatedBy" Title="@L["Custody Support Worker"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    @* <MudText Typo="Typo.body2"> @UserService.GetDisplayName(@context.Item.CreatedBy!)</MudText> *@
-                    <MudText Typo="Typo.body2"> @context.Item.CreatedBy</MudText>
+                    <MudText Typo="Typo.body2">@UserService.GetDisplayName(@context.Item.CreatedBy!)</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Property="x => x.AssignedTo" Title="@L["Community Support Worker"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    @* <MudText Typo="Typo.body2"> @UserService.GetDisplayName(@context.Item.CreatedBy!)</MudText> *@
-                    <MudText Typo="Typo.body2"> @context.Item.AssignedTo</MudText>
+                    <MudText Typo="Typo.body2">@UserService.GetDisplayName(@context.Item.AssignedTo!)</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.ExpectedReleaseRegion" Title="@L["Release Region"]">
+        <PropertyColumn Property="x => x.ExpectedReleaseRegion" Title="@L["Expected Release Region"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    @* <MudText Typo="Typo.body2"> @UserService.GetDisplayName(@context.Item.CreatedBy!)</MudText> *@
                     <MudText Typo="Typo.body2"> @context.Item.ExpectedReleaseRegion!.Name</MudText>
                 </div>
             </CellTemplate>
@@ -183,17 +175,11 @@
 
     public string? Title { get; private set; }
     private int _defaultPageSize = 15;
-
-
     private HashSet<PRIPaginationDto> _selectedItems = new();
-
     private MudDataGrid<PRIPaginationDto> _table = default!;
     private bool _loading;
 
-    private PRIPaginationDto _currentDto = new() { Id = default };
-
     private GetActivePRIsByUserId.Query? Query { get; set; }
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -206,7 +192,6 @@
 
         await Task.CompletedTask;
     }
-
 
     private async Task<GridData<PRIPaginationDto>> ServerReload(GridState<PRIPaginationDto> state)
     {
@@ -267,6 +252,6 @@
 
     private void Edit(PRIPaginationDto PRI)
     {
-        Navigation.NavigateTo($"/pages/PRI/{PRI.Id}");
+        Navigation.NavigateTo($"/pages/Participants/{PRI.ParticipantId}");
     }
 }
