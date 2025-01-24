@@ -126,7 +126,7 @@
             </CellTemplate>
         </PropertyColumn>
         
-        <PropertyColumn Property="x => x.ExpectedReleaseDate" Title="@L["Expected Release Date"]">
+        <PropertyColumn Property="x => x.ExpectedReleaseDate" Title="@L["Expected Date of Release"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
 
@@ -134,7 +134,7 @@
                         @context.Item.ExpectedReleaseDate
                     </MudText>
                     <MudText Typo="Typo.body2">
-                        @context.Item.ExpectedReleaseDate.Humanize()
+                        @(context.Item.ExpectedReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : context.Item.ExpectedReleaseDate.Humanize())
                     </MudText>
                 </div>
             </CellTemplate>
@@ -148,7 +148,7 @@
                             @context.Item.ActualReleaseDate
                         </MudText>
                         <MudText Typo="Typo.body2">
-                            @context.Item.ActualReleaseDate.Humanize()
+                            @(context.Item.ActualReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : context.Item.ActualReleaseDate.Humanize())
                         </MudText>
                     }
                     else
