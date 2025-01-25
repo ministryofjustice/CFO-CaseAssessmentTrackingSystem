@@ -45,6 +45,8 @@ public class ParticipantSummaryDto
     /// </summary>
     public ConsentStatus ConsentStatus { get; set; } = ConsentStatus.PendingStatus;
 
+    public DateOnly? DateOfFirstConsent { get; set; }
+
 
     /// <summary>
     /// The person who "owns" this participant's case. Usually the support worker.
@@ -68,6 +70,8 @@ public class ParticipantSummaryDto
         {
             CreateMap<Participant, ParticipantSummaryDto>(MemberList.None)
                 .ForMember(target => target.Id, options => options.MapFrom(source => source.Id))
+                .ForMember(target => target.DateOfFirstConsent,
+                    options => options.MapFrom(source => source.DateOfFirstConsent))
                 .ForMember(target => target.Location, options => options.MapFrom(source => source.CurrentLocation.Name))
  #pragma warning disable CS8602 // Dereference of a possibly null reference.
                 .ForMember(target => target.EnrolmentLocation, options => options.MapFrom(source => source.EnrolmentLocation.Name))

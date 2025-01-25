@@ -64,6 +64,9 @@ public class Participant : OwnerPropertyEntity<string>
     public string? Gender { get; private set; }
     public DateOnly DateOfBirth { get; private set; }
     public DateTime? RiskDue { get; private set; }
+
+    public DateOnly? DateOfFirstConsent { get; private set; }
+
     public int? RiskDueInDays() => (RiskDue.HasValue ? (RiskDue!.Value.Date - DateTime.UtcNow.Date).Days:null);
     public string? Nationality { get; set; }
     /// <summary>
@@ -92,7 +95,7 @@ public class Participant : OwnerPropertyEntity<string>
     public string? EnrolmentLocationJustification { get; private set; }
 
     /// <summary>
-    /// The justifcation for Archiving participant
+    /// The justification for Archiving participant
     /// </summary>
     public string? ArchiveJustification { get; private set; }
 
@@ -285,6 +288,13 @@ public class Participant : OwnerPropertyEntity<string>
         if(ConsentStatus == ConsentStatus.PendingStatus)
         {
             ConsentStatus = ConsentStatus.GrantedStatus;
+            if (DateOfFirstConsent is null)
+            {
+                var latestConsent = Consents
+                    .OrderBy(c => c.Created)
+                    .Last();
+                DateOfFirstConsent = DateOnly.FromDateTime(latestConsent.Lifetime.StartDate);
+            }
         }
         return this;
     }

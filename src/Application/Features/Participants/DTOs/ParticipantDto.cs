@@ -22,6 +22,9 @@ public class ParticipantDto
     [Description("Consent Status")]
     public ConsentStatus? ConsentStatus { get;set; }
 
+    [Description("Date Of First Consent")]
+    public DateOnly? DateOfFirstConsent { get; set; }
+
     [Description("Current Location")]
     public LocationDto CurrentLocation { get; set; } = default!;
     
@@ -55,6 +58,8 @@ public class ParticipantDto
             CreateMap<Participant, ParticipantDto>()
                 .ForMember(target => target.CurrentLocation,
                     options => options.MapFrom(source => source.CurrentLocation))
+                .ForMember(target => target.DateOfFirstConsent,
+                    options => options.MapFrom(source => source.DateOfFirstConsent))
                 .ForMember(target => target.Consents,
                     options => options.MapFrom(source => source.Consents.ToArray()))
                 .ForMember(target => target.RightToWorks,
