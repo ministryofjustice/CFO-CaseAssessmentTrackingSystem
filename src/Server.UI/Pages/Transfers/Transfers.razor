@@ -11,11 +11,18 @@
 @attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
 
 
-<MudTable Items="@incomingTransfers" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@isLoadingIncomingTransfers" LoadingProgressColor="Color.Info" Class="mb-8 pa-4" >
+<MudTable Items="@incomingTransfers" 
+          Hover="true" 
+          Breakpoint="Breakpoint.Sm" 
+          Loading="@isLoadingIncomingTransfers" 
+          LoadingProgressColor="Color.Info" 
+          Class="mb-8 pa-4"
+          Filter="new Func<IncomingTransferDto, bool>(FilterIncoming1)">
     <ToolBarContent>
         <MudIcon Icon="@Icons.Material.Filled.Input" Size="Size.Large" Class="mr-2" />
         <MudText Typo="Typo.h6">Incoming Transfers</MudText>
         <MudSpacer />
+        <MudTextField @bind-Value="_searchIncomingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
             <MudTh>Participant</MudTh>
@@ -27,10 +34,10 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Participant">
-             <div class="d-flex flex-column">
+            <div class="d-flex flex-column">
                 <MudText Typo="Typo.body2">@context.ParticipantFullName</MudText>
                 <MudText Typo="Typo.body2">@context.ParticipantId</MudText>
-             </div>
+            </div>
         </MudTd>
         <MudTd DataLabel="Occurred">
             @context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
@@ -39,7 +46,7 @@
             @context.FromLocation.Name (@context.FromLocation.LocationType.Name)
         </MudTd>
         <MudTd>
-             @context.ToLocation.Name (@context.ToLocation.LocationType.Name)
+            @context.ToLocation.Name (@context.ToLocation.LocationType.Name)
         </MudTd>
         <MudTd>
             @context.TransferType.Name
@@ -48,13 +55,23 @@
             <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="async() => await Process(context)">Process</MudButton>
         </MudTd>
     </RowTemplate>
+    <PagerContent>
+        <MudTablePager/>
+    </PagerContent>
 </MudTable>
 
-<MudTable Items="@outgoingTransfers" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@isLoadingOutgoingTransfers" LoadingProgressColor="Color.Info" Class="mb-8 pa-4" >
+<MudTable Items="@outgoingTransfers" 
+          Hover="true" 
+          Breakpoint="Breakpoint.Sm" 
+          Loading="@isLoadingOutgoingTransfers" 
+          LoadingProgressColor="Color.Info" 
+          Class="mb-8 pa-4"
+          Filter="new Func<OutgoingTransferDto, bool>(FilterOutgoing1)">
     <ToolBarContent>
         <MudIcon Icon="@Icons.Material.Filled.Output" Size="Size.Large" Class="mr-2" />
         <MudText Typo="Typo.h6">Outgoing Transfers</MudText>
         <MudSpacer />
+        <MudTextField @bind-Value="_searchOutgoingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
             <MudTh>Participant</MudTh>
@@ -66,10 +83,10 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Participant">
-             <div class="d-flex flex-column">
+            <div class="d-flex flex-column">
                 <MudText Typo="Typo.body2">@context.ParticipantFullName</MudText>
                 <MudText Typo="Typo.body2">@context.ParticipantId</MudText>
-             </div>
+            </div>
         </MudTd>
         <MudTd DataLabel="Occurred">
             @context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
@@ -78,7 +95,7 @@
             @context.FromLocation.Name (@context.FromLocation.LocationType.Name)
         </MudTd>
         <MudTd>
-             @context.ToLocation.Name (@context.ToLocation.LocationType.Name)
+            @context.ToLocation.Name (@context.ToLocation.LocationType.Name)
         </MudTd>
         <MudTd>
             @context.TransferType.Name
@@ -87,6 +104,9 @@
             <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="() => View(context)">View</MudButton>
         </MudTd>
     </RowTemplate>
+    <PagerContent>
+        <MudTablePager/>
+    </PagerContent>
 </MudTable>
 
 
@@ -98,6 +118,9 @@
 
     private List<IncomingTransferDto> incomingTransfers = [];
     private List<OutgoingTransferDto> outgoingTransfers = [];
+
+    private string _searchIncomingString = "";
+    private string _searchOutgoingString = "";
 
     protected async override Task OnInitializedAsync()
     {
@@ -155,5 +178,69 @@
     }
 
     private void View(OutgoingTransferDto transfer) => Navigation.NavigateTo($"/pages/participants/{transfer.ParticipantId}");
+
+    private bool FilterIncoming1(IncomingTransferDto arg)
+        => FilterIncoming(arg, _searchIncomingString);
+
+    private bool FilterIncoming(IncomingTransferDto arg, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+        {
+            return true;
+        }
+
+        if (arg.ParticipantId.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return true;
+        }
+
+        if (arg.ParticipantFullName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return true;
+        }
+
+        if (arg.FromLocation.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return true;
+        }
+
+        if (arg.ToLocation.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private bool FilterOutgoing1(OutgoingTransferDto arg)
+        => FilterOutgoing(arg, _searchOutgoingString);
+
+    private bool FilterOutgoing(OutgoingTransferDto arg, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+        {
+            return true;
+        }
+
+        if (arg.ParticipantId.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return true;
+        }
+
+        if (arg.ParticipantFullName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return true;
+        }
+
+        if (arg.FromLocation.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return true;
+        }
+
+        if (arg.ToLocation.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return true;
+        }
+        return false;
+    }
 
 }
