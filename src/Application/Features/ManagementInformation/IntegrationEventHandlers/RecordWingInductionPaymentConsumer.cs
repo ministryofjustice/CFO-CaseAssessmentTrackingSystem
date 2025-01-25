@@ -13,6 +13,7 @@ public class RecordWingInductionPaymentConsumer(IUnitOfWork unitOfWork) : IConsu
     {
         public const string AlreadyPaid = "A wing induction has already been claimed under this contract";
         public const string NotYetApproved = "The enrolment for this participant has not yet been approved";
+        public const string BeforeConsent = "This occurred before the consent date";
     }
 
     public async Task Consume(ConsumeContext<WingInductionCreatedIntegrationEvent> context)
@@ -58,6 +59,21 @@ public class RecordWingInductionPaymentConsumer(IUnitOfWork unitOfWork) : IConsu
         if (firstApproval.HasValue == false)
         {
             ineligibilityReason = IneligibilityReasons.NotYetApproved;
+        }
+
+        if (ineligibilityReason is null)
+        {
+            var consentDate = await unitOfWork.DbContext
+                .Participants
+                .AsNoTracking()
+                .Where(p => p.Id == inductionData.ParticipantId)
+                .Select(p => p.DateOfFirstConsent)
+                .FirstAsync();
+
+            if (consentDate!.Value > DateOnly.FromDateTime(inductionData.InductionDate))
+            {
+                ineligibilityReason = IneligibilityReasons.BeforeConsent;
+            }
         }
 
         var payment = new InductionPaymentBuilder()

@@ -11,6 +11,7 @@ public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<A
     {
         public const string AlreadyPaidThisMonth = "An activity of this type has already been paid to this contract, for this participant, this month.";
         public const string NotYetApproved = "The enrolment for this participant has not yet been approved";
+        public const string BeforeConsent = "This occurred before the consent date";
     }
 
     public async Task Consume(ConsumeContext<ActivityApprovedIntegrationEvent> context)
@@ -69,6 +70,21 @@ public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<A
         if (firstApproval.HasValue == false)
         {
             ineligibilityReason = IneligibilityReasons.NotYetApproved;
+        }
+
+        if (ineligibilityReason is null)
+        {
+            var consentDate = await unitOfWork.DbContext
+                .Participants
+                .AsNoTracking()
+                .Where(p => p.Id == activity.ParticipantId)
+                .Select(p => p.DateOfFirstConsent)
+                .FirstAsync();
+
+            if (consentDate!.Value > DateOnly.FromDateTime(activity.CommencedOn))
+            {
+                ineligibilityReason = IneligibilityReasons.BeforeConsent;
+            }
         }
 
         var payment = new ActivityPaymentBuilder()

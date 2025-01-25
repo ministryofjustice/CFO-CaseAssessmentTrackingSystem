@@ -71,7 +71,22 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
         if (firstApproval.HasValue == false)
         {
             ineligibilityReason = IneligibilityReasons.NotYetApproved;
-        }       
+        }
+
+        if (ineligibilityReason is null)
+        {
+            var consentDate = await unitOfWork.DbContext
+                .Participants
+                .AsNoTracking()
+                .Where(p => p.Id == activity.ParticipantId)
+                .Select(p => p.DateOfFirstConsent)
+                .FirstAsync();
+
+            if (consentDate!.Value > DateOnly.FromDateTime(activity.CommencedOn))
+            {
+                ineligibilityReason = IneligibilityReasons.BeforeConsent;
+            }
+        }
 
         var payment = new EducationPaymentBuilder()
             .WithActivity(activity.Id)
@@ -95,5 +110,6 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
     {
         public const string AlreadyPaidThisMonth = "This education activity has already been paid to this contract, for this participant, this month.";
         public const string NotYetApproved = "The enrolment for this participant has not yet been approved";
+        public const string BeforeConsent = "This occurred before the consent date";
     }
 }
