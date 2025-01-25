@@ -47,7 +47,7 @@ public class PRI : BaseAuditableEntity<Guid>
     public PRI AssignTo(string? to)
     {
         AssignedTo = to;
-        // AddDomainEvent(new PRIAssignedDomainEvent(this));
+        AddDomainEvent(new PRIAssignedDomainEvent(this, to));
         return this;
     }
 
