@@ -1,7 +1,6 @@
 @page "/pages/qa/enrolments/qa1/"
 
 @using Cfo.Cats.Application.Common.Validators
-@using Cfo.Cats.Application.Features.Documents.Queries
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
@@ -9,11 +8,12 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components
-@using Cfo.Cats.Server.UI.Pages.Participants.Components
 
 @inherits CatsComponentBase
 
 @attribute [Authorize(Policy = SecurityPolicies.Qa1)]
+
+@inject IRightToWorkSettings RightToWorkSettings;
 
 <style>
     .document-container {
@@ -35,7 +35,7 @@
     }
 </style>
 
-<QaExternalMessageWarning @ref="warningMessage" />
+<QaExternalMessageWarning @ref="_warningMessage" />
 
 <MudContainer Style="width: 100%; min-width: 480px;" MaxWidth="MaxWidth.ExtraLarge">
     <MudText Typo="Typo.h5" Class="mb-5">
@@ -45,7 +45,7 @@
     @if (_participantDto is null)
     {
         <MudButton OnClick="GetQueueItem" ButtonType="ButtonType.Button" StartIcon="@Icons.Material.Filled.QueuePlayNext"
-            Variant="Variant.Outlined" Color="Color.Primary">
+        Variant="Variant.Outlined" Color="Color.Primary">
             Get Next
         </MudButton>
     }
@@ -59,16 +59,16 @@
             </MudAlert>
         }
 
-        @if(_participantDto.ConsentStatus == ConsentStatus.GrantedStatus)
+        @if (RightToWorkSettings.NationalitiesExempted.Contains(_participantDto.Nationality!) == false) 
         {
             <MudAlert Severity="Severity.Info">
-                Consent has been granted for this participant. Right to work needs confirming.
+                This participant requires right to work.
             </MudAlert>
         }
 
         <MudGrid Style="height: 100vh; width: 100%;">
             <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
-                <ParticipantQaDetails Participant="_participantDto" />
+                <ParticipantQaDetails Participant="_participantDto" ShowNationality="true" />
             </MudItem>
             <MudItem xs="8" Style="height: 100%; width: 100%;">
                 <MudTabs>
@@ -108,8 +108,8 @@
 
                                 <MudGrid Class="py-4">
                                     <MudItem xs="12">
-                                            <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
-                                            <MudText Class="ml-2">Characters: @characterCount / 1000</MudText>
+                                        <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
+                                        <MudText Class="ml-2">Characters: @CharacterCount / 1000</MudText>
                                     </MudItem>
                                 </MudGrid>
                             </MudForm>
@@ -133,11 +133,12 @@
 </MudContainer>
 
 @code {
-    private QaExternalMessageWarning? warningMessage;
+
+    private int CharacterCount => Command.Message?.Length ?? 0;
+    private QaExternalMessageWarning? _warningMessage;
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry = null;
     private ParticipantDto? _participantDto = null;
-    
 
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; } = null!;
@@ -215,7 +216,7 @@
         });
     }
 
-    private int characterCount => Command.Message?.Length ?? 0;
+   
 
     private void UpdateCharacterCount(ChangeEventArgs args)
     {
