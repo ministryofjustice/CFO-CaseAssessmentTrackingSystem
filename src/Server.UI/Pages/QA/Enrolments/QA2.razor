@@ -8,12 +8,14 @@
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
+@using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components
 
 @inherits CatsComponentBase
 
 @attribute [Authorize(Policy = SecurityPolicies.Qa2)]
+
+@inject IRightToWorkSettings RightToWorkSettings;
 
 <style>
     .document-container {
@@ -60,16 +62,16 @@
             </MudAlert>
         }
 
-        @if(_participantDto.ConsentStatus == ConsentStatus.GrantedStatus)
+        @if (RightToWorkSettings.NationalitiesExempted.Contains(_participantDto.Nationality!) == false)
         {
             <MudAlert Severity="Severity.Info">
-                Consent has been granted for this participant. Right to work needs confirming.
+                This participant requires right to work.
             </MudAlert>
         }
 
         <MudGrid Style="height: 100vh; width: 100%;">
             <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
-                <ParticipantQaDetails Participant="_participantDto" />
+                <ParticipantQaDetails Participant="_participantDto" ShowNationality="true" />
             </MudItem>
             <MudItem xs="8" Style="height: 100%; width: 100%;">
                 <MudTabs>
