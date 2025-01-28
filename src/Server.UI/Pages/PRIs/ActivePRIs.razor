@@ -1,14 +1,15 @@
-﻿@page "/pages/participants/pre-release-inventory"
+@page "/pages/participants/pre-release-inventory"
 
 @using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Features.PRIs.Commands
 @using Cfo.Cats.Application.Features.PRIs.DTOs
 @using Cfo.Cats.Application.Features.PRIs.Queries
 @using Cfo.Cats.Application.Features.PRIs.Specifications
 @using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Infrastructure.Services.Identity
-@using Cfo.Cats.Server.UI.Pages.Participants.Components
+@using Cfo.Cats.Server.UI.Pages.PRIs.Components
 @using Humanizer
 
 @inject IStringLocalizer<ActivePRIs> L
@@ -51,10 +52,11 @@
             <div class="d-flex flex-column">                
                 <MudSwitch T="bool" Class="mt-10" Value="@Query!.JustMyCustodyPRIs" Label="Just My Custody PRI's" Color="Color.Primary" ValueChanged="OnShowCustodyPRIChanged"></MudSwitch>
             </div>
-            
+
             <div class="d-flex flex-column">
                 <MudSwitch T="bool" Class="mt-10" Value="@Query.JustMyCommunityPRIs" Label="Just My Community PRI's" Color="Color.Primary" ValueChanged="OnShowCommunityPRIChanged"></MudSwitch>
             </div>
+
             <div class="flex-grow-1"></div>
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
@@ -94,12 +96,29 @@
                 <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                          Dense="true"
                          EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">              
-                        <MudMenuItem OnClick="@(()=> Edit(context.Item))">
-                            @ConstantString.Edit
-                        </MudMenuItem>              
+
+                        <MudMenuItem OnClick="@(()=> ViewParticipant(context.Item))">
+                            @ConstantString.ViewParticipant
+                        </MudMenuItem>
+
+                        @if (context.Item.ActualReleaseDate == null)
+                        {
+                            <MudMenuItem OnClick="@(()=> AddActualReleaseDate(context.Item))">
+                                @ConstantString.AddActualReleaseDate
+                            </MudMenuItem>
+                        }
+
+                        <MudMenuItem OnClick="@(()=> CompletePRI(context.Item))">
+                               @ConstantString.CompletePRI
+                        </MudMenuItem>
+
+                        <MudMenuItem OnClick="@(()=> AbandonPRI(context.Item))">
+                            @ConstantString.AbandonPRI
+                        </MudMenuItem>
                 </MudMenu>
             </CellTemplate>
         </TemplateColumn>
+
         <PropertyColumn Property="x => x.ParticipantName" Title="@L["Participant"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
@@ -129,11 +148,10 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        
+
         <PropertyColumn Property="x => x.ExpectedReleaseDate" Title="@L["Expected Date of Release"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-
                     <MudText Typo="Typo.body2">
                         @context.Item.ExpectedReleaseDate
                     </MudText>
@@ -260,7 +278,7 @@
         await _table.ReloadServerData();
     }
 
-    private void Edit(PRIPaginationDto PRI)
+    private void ViewParticipant(PRIPaginationDto PRI)
     {
         Navigation.NavigateTo($"/pages/Participants/{PRI.ParticipantId}");
     }
@@ -285,5 +303,40 @@
         {
             await OnRefresh();
         }
+    }
+
+    private async Task AddActualReleaseDate(PRIPaginationDto PRI)
+    {
+        var parameters = new DialogParameters<AddActualReleaseDateDialog>()
+        {
+            { x => x.Model, new  AddActualReleaseDate.Command()
+            {
+                ParticipantId = PRI.ParticipantId,
+                ActualReleaseDate= DateTime.Now
+            } }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, BackdropClick = false };
+
+        var dialog = DialogService.Show<AddActualReleaseDateDialog>("Add Actual Release Date", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            await OnRefresh();
+        }
+    }
+
+    private async Task CompletePRI(PRIPaginationDto PRI)
+    {
+        //Todo
+        await Task.CompletedTask;
+    }
+
+    private async Task AbandonPRI(PRIPaginationDto PRI)
+    {
+        //Todo
+        await Task.CompletedTask;
     }
 }

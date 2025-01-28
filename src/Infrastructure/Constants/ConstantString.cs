@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Resources;
-using System.Threading;
 
 namespace Cfo.Cats.Infrastructure.Constants;
 
@@ -142,4 +141,12 @@ public static class ConstantString
     Localize("Show Read Notification");
     public static string ShowUnreadNotification =>
     Localize("Show Unread Notification");
+
+    public static string AddActualReleaseDate =>
+    Localize("Add Actual Release Date");
+    public static string CompletePRI =>
+    Localize("Complete PRI");
+    public static string AbandonPRI =>
+    Localize("Abandon PRI");
+    public static string ViewParticipant => Localize("View Participant");
 }

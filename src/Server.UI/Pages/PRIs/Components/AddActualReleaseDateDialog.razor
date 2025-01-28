@@ -1,0 +1,81 @@
+﻿@using Cfo.Cats.Application.Features.PRIs.Commands
+@using Humanizer
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Commands
+
+@inherits CatsComponentBase
+@inject IStringLocalizer<AddActualReleaseDateDialog> L
+
+<MudDialog>
+    <DialogContent>
+        <MudPaper Height="300px" Elevation="0">
+            @if (Model is not null)
+            {
+                <MudForm @ref="form" Model="Model" Validation="Validator.ValidateValue(Model)">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudDatePicker Label="@Model.GetMemberDescription(x => x.ActualReleaseDate)" PickerVariant="PickerVariant.Dialog"
+                            @bind-Date="Model.ActualReleaseDate"
+                            For="(() => Model.ActualReleaseDate)"
+                            ImmediateText="true" Editable="false" MaxDate="DateTime.Today" MinDate="DateTime.Today.AddMonths(-3)" />
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+            }
+        </MudPaper>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    MudForm? form = new();
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [EditorRequired]
+    [Parameter]
+    public AddActualReleaseDate.Command? Model { get; set; }
+
+    bool saving;
+
+    public async Task Submit()
+    {
+        try
+        {
+            saving = true;
+            await form!.Validate().ConfigureAwait(false);
+
+            if (form.IsValid is false)
+            {
+                saving = false;
+                return;
+            }
+
+            var result = await GetNewMediator().Send(Model!);
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"{L["Actual Release Date successfully saved"]}", Severity.Info);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
+            }
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
