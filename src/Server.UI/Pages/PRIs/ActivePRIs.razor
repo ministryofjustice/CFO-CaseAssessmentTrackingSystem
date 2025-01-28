@@ -10,6 +10,7 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Infrastructure.Services.Identity
 @using Cfo.Cats.Server.UI.Pages.PRIs.Components
+@using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Humanizer
 
 @inject IStringLocalizer<ActivePRIs> L
@@ -309,11 +310,12 @@
     {
         var parameters = new DialogParameters<AddActualReleaseDateDialog>()
         {
-            { x => x.Model, new  AddActualReleaseDate.Command()
-            {
-                ParticipantId = PRI.ParticipantId,
-                ActualReleaseDate= DateTime.Now
-            } }
+            { 
+                x => x.Model, new  AddActualReleaseDate.Command()
+                {
+                    ParticipantId = PRI.ParticipantId
+                } 
+            }
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, BackdropClick = false };
