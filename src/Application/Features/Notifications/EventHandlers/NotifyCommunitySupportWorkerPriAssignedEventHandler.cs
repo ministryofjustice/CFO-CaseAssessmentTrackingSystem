@@ -9,7 +9,7 @@ public class NotifyCommunitySupportWorkerPriAssignedEventHandler(IUnitOfWork uni
 {
     public async Task Handle(PRIAssignedDomainEvent pri, CancellationToken cancellationToken)
     {
-        if (pri.Entity.AssignedTo!.Length > 0 && pri.Entity.CreatedBy != pri.Entity.AssignedTo)
+        if (pri.Item is { AssignedTo.Length: > 0 } && pri.Item.CreatedBy != pri.Item.AssignedTo)
         {
             const string heading = "PRI assigned";
 
@@ -17,7 +17,7 @@ public class NotifyCommunitySupportWorkerPriAssignedEventHandler(IUnitOfWork uni
 
             Notification? previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
                 n => n.Heading == heading
-                && n.OwnerId == pri.Entity.AssignedTo
+                && n.OwnerId == pri.Item.AssignedTo
                 && n.ReadDate == null
             );
 
@@ -25,8 +25,7 @@ public class NotifyCommunitySupportWorkerPriAssignedEventHandler(IUnitOfWork uni
 
             if (previous is null)
             {
-                var n = Notification.Create(heading, details, pri.Entity.AssignedTo);
-                //n.SetLink($"/pages/participants/{pri.Entity.ParticipantId}");
+                var n = Notification.Create(heading, details, pri.Item.AssignedTo);
                 n.SetLink($"pages/participants/pre-release-inventory");
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }

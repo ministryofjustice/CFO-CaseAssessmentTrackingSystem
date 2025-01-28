@@ -21,7 +21,7 @@ public static class AddPRI
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var pri = PRI
-                .Create(request.ParticipantId, DateOnly.FromDateTime(request.Release.ExpectedOn!.Value), request.Release.ExpectedRegion!.Id)
+                .Create(request.ParticipantId, DateOnly.FromDateTime(request.Release.ExpectedOn!.Value), request.Release.ExpectedRegion!.Id, currentUserService.UserId!)
                 .WithMeeting(DateOnly.FromDateTime(request.Meeting.AttendedOn!.Value), 
                     reasonCustodyDidNotAttendInPerson: request.Meeting.ReasonCustodyDidNotAttendInPerson, 
                     reasonCommunityDidNotAttendInPerson: request.Meeting.ReasonCommunityDidNotAttendInPerson,

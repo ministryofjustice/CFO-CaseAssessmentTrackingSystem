@@ -30,13 +30,14 @@ public class PRI : BaseAuditableEntity<Guid>
     public string? ReasonParticipantDidNotAttendInPerson { get; private set; }
     public virtual Participant? Participant { get; private set; }
 
-    public static PRI Create(string participantId, DateOnly expectedReleaseDate, int expectedReleaseRegionId)
+    public static PRI Create(string participantId, DateOnly expectedReleaseDate, int expectedReleaseRegionId, string createdBy)
     {
         var pri = new PRI()
         {
             ParticipantId = participantId,
             ExpectedReleaseDate = expectedReleaseDate,
-            ExpectedReleaseRegionId = expectedReleaseRegionId
+            ExpectedReleaseRegionId = expectedReleaseRegionId,
+            CreatedBy = createdBy
         };
 
         pri.AddDomainEvent(new PRICreatedDomainEvent(pri));
