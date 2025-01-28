@@ -51,12 +51,29 @@ public static class AddPRI
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator(IValidator<PriCodeDto> priCodeValidator, IValidator<PriReleaseDto> priReleaseValidator, IValidator<PriMeetingDto> priMeetingValidator)
+        readonly IUnitOfWork unitOfWork;
+
+        public Validator(
+            IUnitOfWork unitOfWork, 
+            IValidator<PriCodeDto> priCodeValidator, 
+            IValidator<PriReleaseDto> priReleaseValidator, 
+            IValidator<PriMeetingDto> priMeetingValidator)
         {
-            RuleFor(c => c.Code).SetValidator(priCodeValidator);
-            RuleFor(c => c.Release).SetValidator(priReleaseValidator);
-            RuleFor(c => c.Meeting).SetValidator(priMeetingValidator);
+            this.unitOfWork = unitOfWork;
+
+            RuleFor(c => c.ParticipantId)
+                .MustAsync(NotAlreadyHavePRI)
+                .WithMessage("A PRI has already been created for this participant")
+                .DependentRules(() =>
+                {
+                    RuleFor(c => c.Code).SetValidator(priCodeValidator);
+                    RuleFor(c => c.Release).SetValidator(priReleaseValidator);
+                    RuleFor(c => c.Meeting).SetValidator(priMeetingValidator);
+                });
         }
+
+        async Task<bool> NotAlreadyHavePRI(string participantId, CancellationToken cancellationToken)
+            => await unitOfWork.DbContext.PRIs.AnyAsync(p => p.ParticipantId == participantId, cancellationToken) is false;
     }
 
     public class PriCodeDto
