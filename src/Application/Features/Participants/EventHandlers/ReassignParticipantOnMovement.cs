@@ -23,7 +23,10 @@ public class ReassignParticipantOnMovement(
         if(notification.From.LocationType.IsCustody && notification.To.LocationType.IsCommunity)
         {
             var priAssignee = await GetActivePRIAssignee(notification.Item.Id, notification.To, cancellationToken);
-            newAssignee = priAssignee;
+
+            newAssignee = priAssignee is not null 
+                ? priAssignee 
+                : newAssignee;
         }
 
         if (await AssigneeHasAccessToNewLocation(newAssignee, notification.To) is false)
