@@ -10,18 +10,20 @@ public class ReassignParticipantOnMovement(
 {
     public async Task Handle(ParticipantMovedDomainEvent notification, CancellationToken cancellationToken)
     {
-        string? newAssignee = await GetNewAssignee(notification);
+        string? newAssignee = await GetNewAssignee(notification, cancellationToken);
         notification.Item.AssignTo(newAssignee);
     }
 
-    private async Task<string?> GetNewAssignee(ParticipantMovedDomainEvent notification)
+    private async Task<string?> GetNewAssignee(ParticipantMovedDomainEvent notification, CancellationToken cancellationToken)
     {
+        // Assume current assignee
         var newAssignee = notification.Item.OwnerId;
 
-        // Todo: Get PRI Assignee
-        if (notification.Item.HasActivePRI())
+        // Transferring from Custody -> Community
+        if(notification.From.LocationType.IsCustody && notification.To.LocationType.IsCommunity)
         {
-            newAssignee = string.Empty;
+            var priAssignee = await GetActivePRIAssignee(notification.Item.Id, notification.To, cancellationToken);
+            newAssignee = priAssignee;
         }
 
         if (await AssigneeHasAccessToNewLocation(newAssignee, notification.To) is false)
@@ -30,6 +32,18 @@ public class ReassignParticipantOnMovement(
         }
 
         return newAssignee;
+    }
+
+    private async Task<string?> GetActivePRIAssignee(string participantId, Location to, CancellationToken cancellationToken)
+    {
+        var pri = await unitOfWork.DbContext.PRIs
+            .OrderByDescending(p => p.Created)
+            .FirstOrDefaultAsync(
+                p => p.ParticipantId == participantId 
+                && p.ExpectedReleaseRegionId == to.Id
+                && p.IsCompleted == false, cancellationToken);
+
+        return pri?.AssignedTo;
     }
 
     private async Task<bool> AssigneeHasAccessToNewLocation(string? assigneeId, Location to)
