@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Common.Events;
+using Cfo.Cats.Domain.Common.Events;
 using Cfo.Cats.Domain.Entities.PRIs;
 
 namespace Cfo.Cats.Domain.Events;
