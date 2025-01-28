@@ -5,8 +5,10 @@
 @using Cfo.Cats.Application.Features.PRIs.DTOs
 @using Cfo.Cats.Application.Features.PRIs.Queries
 @using Cfo.Cats.Application.Features.PRIs.Specifications
+@using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Infrastructure.Services.Identity
+@using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Humanizer
 
 @inject IStringLocalizer<ActivePRIs> L
@@ -42,27 +44,31 @@
                  @ref="_table"
                  Breakpoint="Breakpoint.Sm">
     <ToolBarContent>
-        <div class="d-flex align-start flex-grow-1">
-            <div class="d-flex gap-4">
+        <div class="d-flex align-start flex-grow-1">                                     
                 <MudIcon Icon="@Icons.Material.Filled.Inventory" Size="Size.Large" />
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption">Active Pre-Release Inventory</MudText>
-                </div>
-            </div>
+            <MudText Typo="Typo.caption">@L["Active Pre - Release Inventory"]</MudText>
             
-            <div class="d-flex flex-column">
+            <div class="d-flex flex-column">                
                 <MudSwitch T="bool" Class="mt-10" Value="@Query!.JustMyCustodyPRIs" Label="Just My Custody PRI's" Color="Color.Primary" ValueChanged="OnShowCustodyPRIChanged"></MudSwitch>
             </div>
             
             <div class="d-flex flex-column">
                 <MudSwitch T="bool" Class="mt-10" Value="@Query.JustMyCommunityPRIs" Label="Just My Community PRI's" Color="Color.Primary" ValueChanged="OnShowCommunityPRIChanged"></MudSwitch>
             </div>
-            
             <div class="flex-grow-1"></div>
-
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                            <MudButton Variant="Variant.Outlined"
+                                       Size="Size.Small"
+                                       Disabled="@_loading"
+                                       OnClick="@(() => CreatePriCode())"
+                                       StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface" Color="Color.Primary"
+                                       Style="margin-right: 4px; margin-bottom:4px">
+                                Generate PRI code
+                            </MudButton>
+                        </MudHidden>
                         <MudButton Variant="Variant.Outlined"
                                    Size="Size.Small"
                                    Disabled="@_loading"
@@ -70,17 +76,16 @@
                                    StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
                                    Style="margin-right: 4px; margin-bottom:4px">
                             @ConstantString.Refresh
-                        </MudButton>
+                        </MudButton>             
                     </MudHidden>
                     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
 
                     </MudHidden>
                 </div>
-       
                 <MudTextField T="string" ValueChanged="@(OnSearch)" Value="@Query!.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
                               AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
-                </MudTextField>
-            </div>
+                </MudTextField>               
+            </div>            
         </div>
     </ToolBarContent>
     <Columns>
@@ -91,8 +96,7 @@
                          EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">              
                         <MudMenuItem OnClick="@(()=> Edit(context.Item))">
                             @ConstantString.Edit
-                        </MudMenuItem>
-              
+                        </MudMenuItem>              
                 </MudMenu>
             </CellTemplate>
         </TemplateColumn>
@@ -170,7 +174,7 @@
     </PagerContent>
 </MudDataGrid>
 
-
+ 
 @code {
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
 
@@ -189,7 +193,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Title = L["PRIs"];      
+        Title = L["Active Pre-Release Inventory"];
 
         Query = new GetActivePRIsByUserId.Query()
             {
@@ -259,5 +263,27 @@
     private void Edit(PRIPaginationDto PRI)
     {
         Navigation.NavigateTo($"/pages/Participants/{PRI.ParticipantId}");
+    }
+
+    public async Task CreatePriCode()
+    {        
+        var parameters = new DialogParameters<PriGenerateCodeDialog>()
+        {
+            { x => x.Model, new UpsertPriCode.Command()
+            {
+                ParticipantId = ""
+            } }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, BackdropClick = false };
+
+        var dialog = DialogService.Show<PriGenerateCodeDialog>("Generate PRI Code", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            await OnRefresh();
+        }
     }
 }

@@ -1,0 +1,87 @@
+﻿@using Humanizer
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Commands
+
+@inherits CatsComponentBase
+@inject IStringLocalizer<PriGenerateCodeDialog> L
+
+<MudDialog>
+    <DialogContent>
+        <MudPaper Height="300px" Elevation="0">
+            @if (Model is not null)
+            {
+                <MudForm @ref="form" Model="Model" Validation="Validator.ValidateValue(Model)">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudTextField Label="@Model.GetMemberDescription(x => x.ParticipantId)"
+                            @bind-Value="Model.ParticipantId"
+                            For="() => Model.ParticipantId"
+                            Class="mt-4"
+                            Variant="Variant.Outlined" />
+                        </MudItem>
+                        @if (PRICodeGenerated)
+                        {
+                            <MudItem xs="12">
+                                <MudItem xs="4">
+                                    <MudText Typo="Typo.h6" Style="align-content:center; font-display:block;font-weight:bold">Code: @_code</MudText>                                    
+                                </MudItem>
+                            </MudItem>
+                        }
+                    </MudGrid>                        
+                </MudForm>
+            }
+        </MudPaper>
+    </DialogContent>
+
+    <DialogActions>        
+        <MudButton Color="Color.Primary" OnClick="GeneratePriCode" Variant="Variant.Filled" Disabled="PRICodeGenerated">Generate</MudButton>
+        <MudSpacer />
+        <MudButton OnClick="Cancel" Disabled="PRICodeGenerated">@ConstantString.Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Close" Disabled="!PRICodeGenerated">@ConstantString.Continue</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    MudForm? form = new();
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [EditorRequired]
+    [Parameter]
+    public UpsertPriCode.Command? Model { get; set; }
+
+    bool PRICodeGenerated = false;
+
+    string _code = string.Empty;
+    
+    public async Task GeneratePriCode()
+    {
+        await form!.Validate().ConfigureAwait(false);
+
+        if(form.IsValid is false)
+        {
+            return;
+        }
+
+        var result = await GetNewMediator().Send(Model!);
+        
+        if (result.Succeeded)
+        {
+            _code = result.Data.ToString();            
+            PRICodeGenerated = true;
+            Snackbar.Add($"{L["PRI code: " + _code + " successfully generated"]}", Severity.Info);
+        }
+        else
+        {
+            Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void Close() => MudDialog.Close(DialogResult.Ok(true));    
+}

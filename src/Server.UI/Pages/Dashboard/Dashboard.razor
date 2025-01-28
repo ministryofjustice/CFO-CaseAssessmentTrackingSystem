@@ -11,33 +11,31 @@
         Dashboard
     </MudText>
 
-        <MudGrid Class="mt-2">
+    <MudGrid Class="mt-2">
 
-            @if(UserProfile?.AssignedRoles?.Length == 0)
-    {
-        <MyParticipantsComponent />
-    }
-    else
-    {
-        <MyTeamsParticipantsComponent />
-    }
-    <PriGenerateCode />
-    <MyNotifications />
+        @if(UserProfile?.AssignedRoles?.Length == 0)
+        {
+            <MyParticipantsComponent />
+        }
+        else
+        {
+            <MyTeamsParticipantsComponent />
+        }
+        <MyNotifications />
 
-    @if(UserProfile?.AssignedRoles!.Contains(RoleNames.SystemSupport) == true)
-    {
-        <JobManagement />
-    }
+        @if(UserProfile?.AssignedRoles!.Contains(RoleNames.SystemSupport) == true)
+        {
+            <JobManagement />
+        }
 
-    @if (ShowQaPots())
-    {
-        <QaPots />
-    }
+        @if (ShowQaPots())
+        {
+            <QaPots />
+        }
 
-</MudGrid>
+    </MudGrid>
 
 @code {
-
     public string Title { get; } = "Dashboard";
 
     [CascadingParameter]
@@ -55,8 +53,5 @@
         };
 
         return UserProfile!.AssignedRoles!.Any(e => allowedRoles.Contains(e));
-
     }
-
-
 }
