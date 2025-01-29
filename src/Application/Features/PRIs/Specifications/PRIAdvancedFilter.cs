@@ -18,13 +18,13 @@ public class PRIAdvancedFilter : PaginationFilter
     public UserProfile? CurrentUser { get; set; }
 
     /// <summary>    
-    /// Flag to indicate that you only want to see your own cases.
+    /// Flag to indicate that you only want to see your incoming PRI's.
     /// </summary>
     [Description("Incoming PRIs")]
     public bool IncludeIncoming { get; set; } = false;
 
     /// <summary>    
-    /// Flag to indicate that you only want to see your own cases.
+    /// Flag to indicate that you only want to see your outgoing PRI's.
     /// </summary>
     [Description("Outgoing PRIs")]
     public bool IncludeOutgoing { get; set; } = false;
