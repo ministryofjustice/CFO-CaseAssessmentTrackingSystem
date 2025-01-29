@@ -51,6 +51,7 @@ public class SupportAndReferralBuilder
     private string? _tenantId;
     private bool? _eligibleForPayment;
     private string? _ineligibilityReason;
+    private string? _userId;
 
     public SupportAndReferralBuilder WithPri(Guid priId)
     {
@@ -112,6 +113,12 @@ public class SupportAndReferralBuilder
         return this;
     }
 
+    public SupportAndReferralBuilder WithSupportWorker(string userId)
+    {
+        _userId = userId;
+        return this;
+    }
+
     public SupportAndReferralPayment Build()
     {
         var payment = new SupportAndReferralPayment()
@@ -128,6 +135,7 @@ public class SupportAndReferralBuilder
             LocationType = _locationType ?? throw new ApplicationException("LocationType must be set before calling build"),
             ParticipantId = _participantId ?? throw new ApplicationException("ParticipantId must be set before calling build"),
             TenantId = _tenantId ?? throw new ApplicationException("TenantId must be set before calling build"),
+            SupportWorker = _userId ?? throw new ApplicationException("Support Worker must be set before calling build")
         };
         return payment;
     }

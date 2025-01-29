@@ -8,5 +8,4 @@ public sealed class PRIAssignedDomainEvent(PRI pri, string? to) : DomainEvent
 {
     public PRI Item { get; set; } = pri;
     public string? To { get; set; } = to;
-
 }

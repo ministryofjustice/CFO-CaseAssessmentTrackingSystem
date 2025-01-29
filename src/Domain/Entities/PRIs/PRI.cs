@@ -41,7 +41,8 @@ public class PRI : BaseAuditableEntity<Guid>
             ParticipantId = participantId,
             ExpectedReleaseDate = expectedReleaseDate,
             CreatedBy = createdBy,
-            ExpectedReleaseRegionId = expectedReleaseRegionId
+            ExpectedReleaseRegionId = expectedReleaseRegionId,
+            CustodyLocationId = custodyLocationId
         };
 
         pri.AddDomainEvent(new PRICreatedDomainEvent(pri));

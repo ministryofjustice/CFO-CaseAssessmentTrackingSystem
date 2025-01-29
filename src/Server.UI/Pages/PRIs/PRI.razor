@@ -220,7 +220,7 @@
         await Task.CompletedTask;
     }
 
-    async Task SubmitPRI()
+    private async Task SubmitPRI()
     {
         if (stepper.IsAllStepsCompleted())
         {
@@ -241,7 +241,7 @@
         }
     }
 
-    async Task OnStepChange(int step)
+    private async Task OnStepChange(int step)
     {
         try
         {
