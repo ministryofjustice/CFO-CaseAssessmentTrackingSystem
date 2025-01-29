@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
 using Cfo.Cats.Application.Features.Inductions.IntegrationEvents;
 using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
+using Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
 using MassTransit;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
@@ -33,10 +34,17 @@ public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork) : IConsu
                 .Select(e => new { e.Id, e.ApprovedOn })
                 .ToArrayAsync();
 
+            var pris = await unitOfWork.DbContext.PRIs.Where(e => e.ParticipantId == context.Message.ParticipantId)
+                .Where(e => e.AssignedTo != null)
+                .Select(e => e)
+                .ToArrayAsync();
+            
             events.AddRange(wings.Select(wi => new WingInductionCreatedIntegrationEvent(wi, DateTime.UtcNow)));
             events.AddRange(hubs.Select(hi => new HubInductionCreatedIntegrationEvent(hi, DateTime.UtcNow)));
             events.AddRange(activities.Select(e =>
                 new ActivityApprovedIntegrationEvent(e.Id, e.ApprovedOn!.Value)));
+
+            events.AddRange(pris.Select(e => new PRIAssignedIntegrationEvent(e.Id, e.MeetingAttendedOn.ToDateTime(TimeOnly.MinValue) ) ));
 
             await context.PublishBatch(events);
         }
