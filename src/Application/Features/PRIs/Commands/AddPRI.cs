@@ -1,6 +1,7 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Locations.DTOs;
+using Cfo.Cats.Application.Features.PRIs.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.PRIs;
 
@@ -155,6 +156,18 @@ public static class AddPRI
                     .WithMessage("Expected date of release must not be more than three months in the future");
             }
         }
+        private class Mapper : Profile
+        {
+            public Mapper()
+            {
+                CreateMap<PRIDto, PriReleaseDto>(MemberList.None)
+                 .ForMember(target => target.ExpectedRegion,
+                    options => options.MapFrom(source => source.ExpectedReleaseRegion))
+                 .ForMember(target => target.ExpectedOn,
+                    options => options.MapFrom(source => source.ExpectedReleaseDate.ToDateTime(TimeOnly.MinValue)))
+    ;
+            }
+        }
     }
 
     public class PriMeetingDto
@@ -203,6 +216,22 @@ public static class AddPRI
                     .NotEmpty()
                     .When(c => c.ParticipantAttendedInPerson == ConfirmationStatus.No)
                     .WithMessage("You must provide a reason");
+            }
+        }
+        private class Mapper : Profile
+        {
+            public Mapper()
+            {
+                CreateMap<PRIDto, PriMeetingDto>(MemberList.None)
+                 .ForMember(target => target.AttendedOn,
+                    options => options.MapFrom(source => source.MeetingAttendedOn.ToDateTime(TimeOnly.MinValue)))
+                 .ForMember(target => target.CustodyAttendedInPerson,
+                    options => options.MapFrom(source => (source.CustodyAttendedInPerson ? ConfirmationStatus.Yes : ConfirmationStatus.No)))
+                 .ForMember(target => target.CommunityAttendedInPerson,
+                    options => options.MapFrom(source => (source.CommunityAttendedInPerson ? ConfirmationStatus.Yes : ConfirmationStatus.No)))
+                 .ForMember(target => target.ParticipantAttendedInPerson,
+                    options => options.MapFrom(source => (source.ParticipantAttendedInPerson ? ConfirmationStatus.Yes : ConfirmationStatus.No)));
+
             }
         }
     }

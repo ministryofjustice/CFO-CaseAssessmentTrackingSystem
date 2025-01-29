@@ -150,6 +150,9 @@
                         <MudTabPanel Text="Assessments">
                             <CaseAssessment ParticipantId="@Id" />
                         </MudTabPanel>
+                        <MudTabPanel Text="PRI">
+                            <CasePRI ParticipantId="@Id" OnUpdate="Refresh" />
+                        </MudTabPanel>
                         <MudTabPanel Text="Bio">
                             <CaseBio ParticipantId="@Id" />
                         </MudTabPanel>
@@ -158,9 +161,6 @@
                         </MudTabPanel>
                         <MudTabPanel Text="Pathway Plan">
                             <CasePathwayPlan ParticipantId="@Id" OnUpdate="Refresh" />
-                        </MudTabPanel>
-                        <MudTabPanel Text="PRI">
-                            <CasePRI ParticipantId="@Id" OnUpdate="Refresh" />
                         </MudTabPanel>
                         <MudTabPanel Text="Notes">
                             <CaseNotes ParticipantId="@Id" />
