@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250129121540_PRI_ObjectiveId")]
+    partial class PRI_ObjectiveId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4636,6 +4639,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.OwnsMany("Cfo.Cats.Domain.Entities.Participants.Objective", "Objectives", b1 =>
                         {
                             b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<DateTime?>("Completed")
@@ -4696,6 +4700,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                             b1.OwnsMany("Cfo.Cats.Domain.Entities.Participants.ObjectiveTask", "Tasks", b2 =>
                                 {
                                     b2.Property<Guid>("Id")
+                                        .ValueGeneratedOnAdd()
                                         .HasColumnType("uniqueidentifier");
 
                                     b2.Property<DateTime?>("Completed")
