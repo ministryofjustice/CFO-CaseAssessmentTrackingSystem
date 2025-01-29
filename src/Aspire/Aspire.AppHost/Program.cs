@@ -14,6 +14,7 @@ var catsDb = sql.AddDatabase("CatsDb");
 var rabbit = builder.AddRabbitMQ("rabbit",
         userName: rabbitUser,
         password: rabbitPassword)
+    .WithDataVolume("cats-aspire-rabbit")
     .WithManagementPlugin()
     .WithLifetime(ContainerLifetime.Persistent);
 
