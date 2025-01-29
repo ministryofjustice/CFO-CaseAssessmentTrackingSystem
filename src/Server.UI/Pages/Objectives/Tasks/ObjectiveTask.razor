@@ -153,13 +153,20 @@
 
         if (state!.Canceled is false)
         {
-            var result = await GetNewMediator().Send(command);
 
-            if (result.Succeeded)
+            try
             {
-                await OnChange.InvokeAsync();
-            }
+                var result = await GetNewMediator().Send(command);
 
+                if (result.Succeeded)
+                {
+                    await OnChange.InvokeAsync();
+                }
+            }
+            catch(ApplicationException ae)
+            {
+                Snackbar.Add(ae.Message, Severity.Error);
+            }
         }
     }
 
