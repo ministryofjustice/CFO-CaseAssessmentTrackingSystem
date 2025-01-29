@@ -107,6 +107,8 @@ public class ApplicationDbContext
 
     public DbSet<DateDimension> DateDimensions => Set<DateDimension>();
 
+    public DbSet<SupportAndReferralPayment> SupportAndReferralPayments => Set<SupportAndReferralPayment>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

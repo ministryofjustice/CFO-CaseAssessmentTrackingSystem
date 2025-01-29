@@ -30,14 +30,18 @@ public class PRI : BaseAuditableEntity<Guid>
     public string? ReasonParticipantDidNotAttendInPerson { get; private set; }
     public virtual Participant? Participant { get; private set; }
 
-    public static PRI Create(string participantId, DateOnly expectedReleaseDate, int expectedReleaseRegionId, string createdBy)
+    public int CustodyLocationId { get; private set; }
+
+    public virtual Location CustodyLocation { get; private set; }
+
+    public static PRI Create(string participantId, DateOnly expectedReleaseDate, int expectedReleaseRegionId, string createdBy, int custodyLocationId)
     {
         var pri = new PRI()
         {
             ParticipantId = participantId,
             ExpectedReleaseDate = expectedReleaseDate,
-            ExpectedReleaseRegionId = expectedReleaseRegionId,
-            CreatedBy = createdBy
+            CreatedBy = createdBy,
+            ExpectedReleaseRegionId = expectedReleaseRegionId
         };
 
         pri.AddDomainEvent(new PRICreatedDomainEvent(pri));
@@ -48,6 +52,7 @@ public class PRI : BaseAuditableEntity<Guid>
     public PRI AssignTo(string? to)
     {
         AssignedTo = to;
+        AcceptedOn = DateTime.UtcNow;
         AddDomainEvent(new PRIAssignedDomainEvent(this, to));
         return this;
     }

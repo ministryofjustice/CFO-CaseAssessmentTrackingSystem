@@ -8,7 +8,6 @@ namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHa
 
 public class RecordWingInductionPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<WingInductionCreatedIntegrationEvent>
 {
-
     private static class IneligibilityReasons
     {
         public const string AlreadyPaid = "A wing induction has already been claimed under this contract";
