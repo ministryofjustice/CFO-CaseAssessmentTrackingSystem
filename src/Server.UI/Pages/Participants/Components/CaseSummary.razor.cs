@@ -310,19 +310,19 @@ public partial class CaseSummary
     {
         if(_latestPRI is null)
         {
-            string _noPriInfo = ParticipantSummaryDto.LocationType switch
+            _noPriInfo = ParticipantSummaryDto.LocationType switch
             {
-                { IsCustody: true } => "No PRI has been created.",
-                { IsCommunity: true } => "Pre-Release Inventory is not available in the community.",
-                _ => string.Empty
+                { IsCustody: true, IsMapped: true} => "No PRI has been created.",
+                { IsCommunity: true } => "Not available in the community.",
+                _ => "Not available in this location."
             };
         }
         else if (_latestPRI.ActualReleaseDate.HasValue)
         {
 
-            DateOnly _priTTGDueDate = _latestPRI.ActualReleaseDate.Value.AddDays(28);
+            DateOnly _priTTGDueDate = _latestPRI.ActualReleaseDate.Value.AddMonths(1);
             _priDueInfo = _priTTGDueDate.Humanize();
-            _priDueTooltipText = String.Format("Due {0}", _priTTGDueDate);
+            _priDueTooltipText = String.Format("Through the Gate (TTG) Due {0}", _priTTGDueDate);
 
             int _priTTGDueInDays = _priTTGDueDate.DayNumber - DateOnly.FromDateTime(DateTime.UtcNow.Date).DayNumber;
             switch (_priTTGDueInDays)
@@ -339,7 +339,7 @@ public partial class CaseSummary
         }
         else
         {
-            _priDueInfo = "Actual Release date not provided yet.[Or in this case, should we calculate based on Expected Release date]";
+            _priDueInfo = "No Actual Release date provided.";
         }
     }
 

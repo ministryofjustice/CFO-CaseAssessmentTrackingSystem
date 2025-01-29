@@ -66,7 +66,6 @@ public static class GetParticipantSummary
 
             summary.IsRightToWorkRequired = rtwSettings.NationalitiesExempted.Any(s => s.Equals(summary.Nationality!, StringComparison.OrdinalIgnoreCase)) == false;
             
-            //Should it retrieve for logged in User(Custody SW or Community SW)?
             summary.Pris = await unitOfWork.DbContext.PRIs
                 .Where(pa => pa.ParticipantId == request.ParticipantId)
                 .ProjectTo<PriSummaryDto>(mapper.ConfigurationProvider)
