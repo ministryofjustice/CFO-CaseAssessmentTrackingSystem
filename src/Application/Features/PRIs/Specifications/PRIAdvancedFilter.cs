@@ -20,14 +20,14 @@ public class PRIAdvancedFilter : PaginationFilter
     /// <summary>    
     /// Flag to indicate that you only want to see your own cases.
     /// </summary>
-    [Description("Just My Community PRI's")]
-    public bool JustMyCommunityPRIs { get; set; } = false;
+    [Description("Incoming PRIs")]
+    public bool IncludeIncoming { get; set; } = false;
 
     /// <summary>    
     /// Flag to indicate that you only want to see your own cases.
     /// </summary>
-    [Description("Just My Custody PRI's")]
-    public bool JustMyCustodyPRIs { get; set; } = false;
+    [Description("Outgoing PRIs")]
+    public bool IncludeOutgoing { get; set; } = false;
 }
 
 //Leave in if they want a list at some point

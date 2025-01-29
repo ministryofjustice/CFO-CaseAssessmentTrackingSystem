@@ -4,9 +4,9 @@ public class PRIAdvancedSpecification : Specification<Domain.Entities.PRIs.PRI>
 {
     public PRIAdvancedSpecification(PRIAdvancedFilter filter)
     {
-        Query.Where(p => p.CreatedBy == filter.CurrentUser!.UserId, filter.JustMyCustodyPRIs);
+        Query.Where(p => p.CreatedBy == filter.CurrentUser!.UserId, filter.IncludeOutgoing);
 
-        Query.Where(p => p.AssignedTo == filter.CurrentUser!.UserId, filter.JustMyCommunityPRIs);
+        Query.Where(p => p.AssignedTo == filter.CurrentUser!.UserId, filter.IncludeIncoming);
 
         Query.Where(
                    // if we have passed a filter through, search the surname and current location
