@@ -33,6 +33,7 @@ public class PRI : BaseAuditableEntity<Guid>
     public int CustodyLocationId { get; private set; }
 
     public virtual Location CustodyLocation { get; private set; }
+    public Guid ObjectiveId { get; private set; }
 
     public static PRI Create(string participantId, DateOnly expectedReleaseDate, int expectedReleaseRegionId, string createdBy, int custodyLocationId)
     {
@@ -74,6 +75,12 @@ public class PRI : BaseAuditableEntity<Guid>
     public PRI SetActualReleaseDate(DateOnly actualReleaseDate)
     {
         ActualReleaseDate = actualReleaseDate;
+        return this;
+    }
+
+    public PRI SetObjective(Objective objective)
+    {
+        ObjectiveId = objective.Id;
         return this;
     }
 

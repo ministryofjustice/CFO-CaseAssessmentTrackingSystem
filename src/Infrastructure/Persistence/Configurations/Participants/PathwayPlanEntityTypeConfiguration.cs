@@ -63,6 +63,9 @@ public class PathwayPlanEntityTypeConfiguration
 
             objective.HasKey(objective => objective.Id);
 
+            objective.Property(objective => objective.Id)
+                .ValueGeneratedNever();
+
             objective.Property(objective => objective.CreatedBy)
                 .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
@@ -92,6 +95,9 @@ public class PathwayPlanEntityTypeConfiguration
                     .HasForeignKey(task => task.ObjectiveId);
 
                 task.HasKey(task => task.Id);
+
+                task.Property(task => task.Id)
+                    .ValueGeneratedNever();
 
                 task.Property(task => task.CreatedBy)
                     .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);

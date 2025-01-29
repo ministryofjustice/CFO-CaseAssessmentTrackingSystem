@@ -37,5 +37,7 @@ public class AddMandatoryObjectiveAndTasks(IUnitOfWork unitOfWork, ICurrentUserS
         tasks.ForEach(task => objective.AddTask(task));
 
         pathwayPlan.AddObjective(objective);
+
+        notification.Entity.SetObjective(objective);
     }
 }
