@@ -21,7 +21,7 @@ public static class AddPRI
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var pri = PRI
-                .Create(request.ParticipantId, DateOnly.FromDateTime(request.Release.ExpectedOn!.Value), request.Release.ExpectedRegion!.Id, currentUserService.UserId!)
+                .Create(request.ParticipantId, DateOnly.FromDateTime(request.Release.ExpectedOn!.Value), request.Release.ExpectedRegion!.Id, currentUserService.UserId!, request.Release.CustodyLocation!.Id)
                 .WithMeeting(DateOnly.FromDateTime(request.Meeting.AttendedOn!.Value), 
                     reasonCustodyDidNotAttendInPerson: request.Meeting.ReasonCustodyDidNotAttendInPerson, 
                     reasonCommunityDidNotAttendInPerson: request.Meeting.ReasonCommunityDidNotAttendInPerson,
@@ -130,6 +130,7 @@ public static class AddPRI
 
     public class PriReleaseDto
     {
+        public LocationDto? CustodyLocation { get; set; }
         public LocationDto? ExpectedRegion { get; set; }
         public DateTime? ExpectedOn { get; set; }
 
@@ -137,6 +138,10 @@ public static class AddPRI
         {
             public Validator()
             {
+                RuleFor(c => c.CustodyLocation)
+                    .NotNull()
+                    .WithMessage("You must choose a discharge location");
+
                 RuleFor(c => c.ExpectedRegion)
                     .NotNull()
                     .WithMessage("You must choose an expected release region");

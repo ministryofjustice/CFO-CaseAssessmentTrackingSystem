@@ -28,10 +28,18 @@ public class PRIEntityTypeConfiguration : IEntityTypeConfiguration<PRI>
             .HasForeignKey(p => p.ExpectedReleaseRegionId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(p => p.CustodyLocation)
+            .WithMany()
+            .HasForeignKey(p => p.CustodyLocationId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne<ApplicationUser>()
             .WithMany()
             .HasForeignKey(p => p.AssignedTo)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(x => x.AssignedTo)
+            .HasMaxLength(36);
 
         builder.Property(x => x.ReasonCommunityDidNotAttendInPerson).HasMaxLength(ValidationConstants.NotesLength);
         builder.Property(x => x.ReasonCustodyDidNotAttendInPerson).HasMaxLength(ValidationConstants.NotesLength);

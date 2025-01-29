@@ -26,24 +26,23 @@
                         <CatsMudStep Title="Release" Icon="@Icons.Material.Filled.Map" Condition="() => IsValid(releaseForm)">
                             <ChildContent>
                                 <MudForm @ref="releaseForm" Model="model.Release" Validation="Validator.ValidateValue(model.Release)">
-                                    <MudSelect @bind-Value="model.Release.ExpectedRegion"
-                                    @bind-Value:after="LocationChanged"
-                                    Label="Expected release region"
-                                    For="() => model.Release.ExpectedRegion"
-                                    Clearable="true"
-                                    ToStringFunc="location => location?.Name">
-                                        @foreach (var location in locations.OrderBy(l => l.Name))
-                                        {
-                                            <MudSelectItem Value="location">@location.Name</MudSelectItem>
-                                        }
-                                    </MudSelect>
+                                    <FilterLocationAutoComplete Locations="custodyLocations" 
+                                                                @bind-Value="model.Release.CustodyLocation"
+                                                                Label="Discharge Location"/>
 
+                                    <FilterLocationAutoComplete Locations="communityLocations" 
+                                                                @bind-Value="model.Release.ExpectedRegion"
+                                                                Label="Expected release region"
+                                                                @bind-Value:after="LocationChanged" />
+                                    
                                     <MudDatePicker @bind-Date="model.Release.ExpectedOn"
-                                    For="() => model.Release.ExpectedOn"
-                                    Label="Expected date of release"
-                                    MinDate="DateTime.Today"
-                                    MaxDate="DateTime.Today.AddMonths(3)"
-                                    Class="mt-2" />
+                                                   For="() => model.Release.ExpectedOn"
+                                                   Label="Expected date of release"
+                                                   MinDate="DateTime.Today"
+                                                   MaxDate="DateTime.Today.AddMonths(3)"
+                                                   PickerVariant="PickerVariant.Dialog"
+                                                   Editable="true"
+                                                   Class="mt-2" />
                                 </MudForm>
                             </ChildContent>
                         </CatsMudStep>
@@ -171,24 +170,39 @@
     bool Processing { get; set; }
     bool SubmissionSuccess { get; set; } = false;
 
-    LocationDto[] locations = [];
+    LocationDto[] communityLocations = [];
+    LocationDto[] custodyLocations = [];
+
+    [CascadingParameter]
+    public UserProfile? CurrentUser { get; set; }
 
     [Parameter, EditorRequired]
     public required string Upci { get; set; }
+
+    [Parameter, EditorRequired]
+    public required LocationDto CurrentLocation { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         model = new AddPRI.Command(Upci);
 
-        locations = await GetNewMediator().Send(new GetAllLocationsQuery()
+        communityLocations = await GetNewMediator().Send(new GetAllLocationsQuery()
         {
             LocationType = LocationType.Community
         });
 
-        await base.OnInitializedAsync();
+        var all = await GetNewMediator().Send(new GetAllLocationsQuery()
+            {
+                TenantId = CurrentUser!.TenantId
+            });
+
+        custodyLocations = all.Data!.Where(e => e.LocationType.IsCustody).ToArray();
+
+        model.Release.CustodyLocation = CurrentLocation;
+
     }
 
-    async Task LocationChanged()
+    private async Task LocationChanged()
     {
         if(model is { Release.ExpectedRegion: not null} )
         {
