@@ -4,6 +4,7 @@ using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.Entities.PRIs;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
 
@@ -64,6 +65,12 @@ public static class GetParticipantSummary
                 .AnyAsync(x => x.Lifetime.EndDate >= DateTime.Now.Date, cancellationToken);
 
             summary.IsRightToWorkRequired = rtwSettings.NationalitiesExempted.Any(s => s.Equals(summary.Nationality!, StringComparison.OrdinalIgnoreCase)) == false;
+            
+            //Should it retrieve for logged in User(Custody SW or Community SW)?
+            summary.Pris = await unitOfWork.DbContext.PRIs
+                .Where(pa => pa.ParticipantId == request.ParticipantId)
+                .ProjectTo<PriSummaryDto>(mapper.ConfigurationProvider)
+                .ToArrayAsync(cancellationToken);
 
             return Result<ParticipantSummaryDto>.Success(summary);
         }

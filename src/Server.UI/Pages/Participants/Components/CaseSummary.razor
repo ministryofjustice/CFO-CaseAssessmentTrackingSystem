@@ -11,7 +11,7 @@
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent Class="d-flex justify-space-between align-center">
-                
+
                 @if (_latestAssessment is null)
                 {
                     <MudText Typo="Typo.body2">No assessment has been created.</MudText>
@@ -36,22 +36,22 @@
                                     <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == _latestAssessment.AssessmentCreator).DisplayName</MudText>
                                 </dd>
                             </div>
-                            
+
                         </dl>
-                       
+
 
                     </div>
-                    
+
                 }
             </MudCardContent>
             <MudCardActions>
-                
+
                 @if (CanBeginAssessment())
                 {
                     <MudTooltip Text="Create Assessment">
                         <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginAssessment"/>    
                     </MudTooltip>
-                    
+
                 }
                 @if (CanContinueAssessment())
                 {
@@ -311,7 +311,7 @@
 
                 @if (_latestPRI is null)
                 {
-                    <MudText Typo="Typo.body2">No PRI has been created.</MudText>
+                        <MudText Typo="Typo.body2">@_noPriInfo</MudText>
                 }
                 else
                 {
@@ -322,23 +322,25 @@
                                     <MudText Typo="Typo.subtitle2">Date Created</MudText>
                                 </dt>
                                 <dd>
-                                    <MudText Typo="Typo.body2"></MudText>
+                                    <MudText Typo="Typo.body2">@_latestPRI.Created.ToString("dd/MM/yyyy")</MudText>
                                 </dd>
                             </div>
                             <div class="description-pair">
                                 <dt>
-                                    <MudText Typo="Typo.subtitle2">Created By</MudText>
+                                    <MudText Typo="Typo.subtitle2">Due</MudText>
                                 </dt>
                                 <dd>
-                                    <MudText Typo="Typo.body2"></MudText>
+                                    <MudTooltip Text="@_priDueTooltipText">
+                                        <MudIcon Icon="@_priDueIcon" Size="@Size.Small" Color="@_priDueIconColor" />
+                                        <MudText Typo="Typo.body2">
+                                            @_priDueInfo
+                                        </MudText>
+                                    </MudTooltip>
                                 </dd>
                             </div>
 
                         </dl>
-
-
                     </div>
-
                 }
             </MudCardContent>
             <MudCardActions>
@@ -350,12 +352,7 @@
                     </MudTooltip>
 
                 }
-                @if (CanContinuePRI())
-                {
-                    <MudTooltip Text="Continue PRI">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinuePRI" />
-                    </MudTooltip>
-                }
+
             </MudCardActions>
         </MudCard>
     </MudItem>

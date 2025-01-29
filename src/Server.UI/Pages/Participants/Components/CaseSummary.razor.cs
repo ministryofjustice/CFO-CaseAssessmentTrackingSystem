@@ -6,6 +6,7 @@ using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Pages.Risk;
+using DocumentFormat.OpenXml.Bibliography;
 using Humanizer;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
@@ -14,7 +15,7 @@ public partial class CaseSummary
 {
     private AssessmentSummaryDto? _latestAssessment;
     private BioSummaryDto? _bio;
-    private Object? _latestPRI = null;//replace with the PriDTO when its added
+    private PriSummaryDto? _latestPRI = null;//replace with the PriDTO when its added
     [Inject] 
     private IUserService UserService { get; set; } = default!;
 
@@ -26,6 +27,12 @@ public partial class CaseSummary
     private string _riskIcon = String.Empty;
     private Color _riskIconColor = Color.Transparent;
 
+    private string _noPriInfo = String.Empty;
+    private string _priDueInfo = String.Empty;
+    private string _priDueTooltipText = String.Empty;
+    private string _priDueIcon = String.Empty;
+    private Color _priDueIconColor = Color.Transparent;
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -34,7 +41,14 @@ public partial class CaseSummary
             : ParticipantSummaryDto.Assessments.OrderByDescending(a => a.AssessmentDate)
                 .First();
         _bio = ParticipantSummaryDto.BioSummary;
+
+        _latestPRI = ParticipantSummaryDto.Pris is []
+            ? null
+            : ParticipantSummaryDto.Pris.OrderByDescending(p => p.Created)
+                .First();
+
         SetRiskDueWarning();
+        SetPriDueWarning();
     }
 
     void SetRiskDueWarning()
@@ -287,16 +301,46 @@ public partial class CaseSummary
     private bool HasPathwayPlan => ParticipantSummaryDto.PathwayPlan is not null;
     private bool HasPathwayBeenReviewed => HasPathwayPlan && ParticipantSummaryDto.PathwayPlan?.LastReviewed is not null;
 
-    private bool CanAddPRI() => true;//for now anyone can add PRI
+    private bool CanAddPRI() => _latestPRI == null && ParticipantSummaryDto.LocationType.IsCustody && ParticipantSummaryDto.LocationType.IsMapped;
     public void BeginPRI()
     {
         Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/PRI");
     }
-
-    private bool CanContinuePRI() => _latestPRI != null;//TODO implement Only Owner i.e. Custody Suppoprt Worker and the Community Support Worker can Continue working on PRI
-    public void ContinuePRI()
+    void SetPriDueWarning()
     {
-        Snackbar.Add($" Coming Soon...", Severity.Error);
+        if(_latestPRI is null)
+        {
+            string _noPriInfo = ParticipantSummaryDto.LocationType switch
+            {
+                { IsCustody: true } => "No PRI has been created.",
+                { IsCommunity: true } => "Pre-Release Inventory is not available in the community.",
+                _ => string.Empty
+            };
+        }
+        else if (_latestPRI.ActualReleaseDate.HasValue)
+        {
+
+            DateOnly _priTTGDueDate = _latestPRI.ActualReleaseDate.Value.AddDays(28);
+            _priDueInfo = _priTTGDueDate.Humanize();
+            _priDueTooltipText = String.Format("Due {0}", _priTTGDueDate);
+
+            int _priTTGDueInDays = _priTTGDueDate.DayNumber - DateOnly.FromDateTime(DateTime.UtcNow.Date).DayNumber;
+            switch (_priTTGDueInDays)
+            {
+                case var _ when _priTTGDueInDays <= 7:
+                    _priDueIcon = Icons.Material.Filled.Error;
+                    _priDueIconColor = Color.Error;
+                    break;
+                case var _ when _priTTGDueInDays >= 0 && _priTTGDueInDays <= 14:
+                    _priDueIcon = Icons.Material.Filled.Warning;
+                    _priDueIconColor = Color.Warning;
+                    break;
+            }
+        }
+        else
+        {
+            _priDueInfo = "Actual Release date not provided yet.[Or in this case, should we calculate based on Expected Release date]";
+        }
     }
 
 }
