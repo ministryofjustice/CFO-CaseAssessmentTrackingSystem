@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.PRIs.EventHandlers;
 
-public class AddMandatoryObjectiveAndTasks(IUnitOfWork unitOfWork) : INotificationHandler<PRICreatedDomainEvent>
+public class AddMandatoryObjectiveAndTasks(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : INotificationHandler<PRICreatedDomainEvent>
 {
     public async Task Handle(PRICreatedDomainEvent notification, CancellationToken cancellationToken)
     {
@@ -26,8 +26,12 @@ public class AddMandatoryObjectiveAndTasks(IUnitOfWork unitOfWork) : INotificati
 
         List<ObjectiveTask> tasks =
         [
-            ObjectiveTask.Create("Community Support Worker to engage with the participant prior to release", monthOfRelease, isMandatory: true),
-            ObjectiveTask.Create("Community Support Worker to meet the participant after release to ensure continued support", monthOfRelease.AddMonths(1), isMandatory: true)
+            ObjectiveTask
+                .Create("Community Support Worker to engage with the participant prior to release", monthOfRelease, isMandatory: true)
+                .Complete(CompletionStatus.Done, currentUserService.UserId!),
+
+            ObjectiveTask
+                .Create("Community Support Worker to meet the participant after release to ensure continued support", monthOfRelease.AddMonths(1), isMandatory: true)
         ];
 
         tasks.ForEach(task => objective.AddTask(task));

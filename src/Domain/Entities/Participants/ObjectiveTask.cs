@@ -13,13 +13,14 @@ public class ObjectiveTask : BaseAuditableEntity<Guid>
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public void Complete(CompletionStatus status, string completedBy, string? justification = null)
+    public ObjectiveTask Complete(CompletionStatus status, string completedBy, string? justification = null)
     {
         Completed = DateTime.UtcNow;
         Justification = justification;
         CompletedStatus = status;
         CompletedBy = completedBy;
         AddDomainEvent(new ObjectiveTaskCompletedDomainEvent(this));
+        return this;
     }
 
     public static ObjectiveTask Create(string description, DateTime due, bool isMandatory = false)
