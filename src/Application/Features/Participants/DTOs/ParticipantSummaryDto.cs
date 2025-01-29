@@ -22,7 +22,9 @@ public class ParticipantSummaryDto
     /// The current location of the participant
     /// </summary>
     public required string Location { get; set; }
-    
+
+    public required LocationType LocationType { get; set; }
+
     public string? EnrolmentLocation { get; set; }
     
     /// <summary>
@@ -61,6 +63,8 @@ public class ParticipantSummaryDto
     
     public PathwayPlanSummaryDto? PathwayPlan { get; set; }
 
+    public PriSummaryDto[] Pris { get; set; } = [];
+
     public bool HasActiveRightToWork { get; set; }
     public bool IsRightToWorkRequired{ get; set; }
 
@@ -73,9 +77,10 @@ public class ParticipantSummaryDto
                 .ForMember(target => target.DateOfFirstConsent,
                     options => options.MapFrom(source => source.DateOfFirstConsent))
                 .ForMember(target => target.Location, options => options.MapFrom(source => source.CurrentLocation.Name))
- #pragma warning disable CS8602 // Dereference of a possibly null reference.
+                .ForMember(target => target.LocationType, options => options.MapFrom(source => source.CurrentLocation.LocationType))
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 .ForMember(target => target.EnrolmentLocation, options => options.MapFrom(source => source.EnrolmentLocation.Name))
- #pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
                 .ForMember(target => target.OwnerName, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.ParticipantName, options => options.MapFrom(source => source.FirstName + ' ' + source.LastName))
                 .ForMember(dest => dest.RiskDue, opt => opt.MapFrom(src => src.RiskDue))
