@@ -338,7 +338,25 @@
 
     private async Task AbandonPRI(PRIPaginationDto PRI)
     {
-        //Todo
-        await Task.CompletedTask;
+        var parameters = new DialogParameters<AbandonPriDialog>()
+        {
+            { x => x.Model, new AbandonPRI.Command()
+            {
+                ParticipantId = PRI.ParticipantId,
+                ReasonAbandoned="",
+                AbandonedBy=CurrentUser.UserId
+            } }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, BackdropClick = false };
+
+        var dialog = DialogService.Show<AbandonPriDialog>("Abandon PRI", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            await OnRefresh();
+        } 
     }
 }
