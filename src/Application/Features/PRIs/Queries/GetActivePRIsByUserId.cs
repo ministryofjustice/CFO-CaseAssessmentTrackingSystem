@@ -24,13 +24,14 @@ public static class GetActivePRIsByUserId
             var data = await unitOfWork.DbContext.PRIs
                 .Where(x => x.AssignedTo == request.CurrentUser!.UserId
                         || x.CreatedBy == request.CurrentUser!.UserId
-                        && x.IsCompleted == false)
+                        && (x.Status == PriStatus.Accepted || x.Status == PriStatus.Created))                        
                 .OrderBy($"{request.OrderBy} {request.SortDirection}")
                 .ProjectToPaginatedDataAsync<Domain.Entities.PRIs.PRI, PRIPaginationDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
 
             return data;
         }
     }
+
     public class Validator : AbstractValidator<Query>
     {
         public Validator()
@@ -58,5 +59,4 @@ public static class GetActivePRIsByUserId
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "OrderBy"));
         }
     }
-
 }
