@@ -43,7 +43,6 @@ public class PRIDto
                 options => options.MapFrom(source => source.ExpectedReleaseRegion))
              .ForMember(target => target.CustodyLocation,
                 options => options.MapFrom(source => source.CustodyLocation))
-;
           .ForMember(target => target.Status,
               options => options.MapFrom(source => source.Status));
         }
