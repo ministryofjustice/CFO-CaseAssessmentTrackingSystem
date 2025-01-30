@@ -145,6 +145,12 @@
                                         Lines="5"
                                         Class="mt-2" />
                                     }
+                                    <MudTextField @bind-Value="model.Meeting.PostReleaseCommunitySupportInformation"
+                                                  For="() => model.Meeting.PostReleaseCommunitySupportInformation"
+                                                  Label="Post release community support information"
+                                                  MaxLength="@ValidationConstants.NotesLength"
+                                                  Lines="5"
+                                                  Class="mt-2" />
                                 </MudForm>
                             </ChildContent>
                         </CatsMudStep>

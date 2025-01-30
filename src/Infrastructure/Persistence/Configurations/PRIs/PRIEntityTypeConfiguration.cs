@@ -44,6 +44,8 @@ public class PRIEntityTypeConfiguration : IEntityTypeConfiguration<PRI>
         builder.Property(x => x.ReasonCommunityDidNotAttendInPerson).HasMaxLength(ValidationConstants.NotesLength);
         builder.Property(x => x.ReasonCustodyDidNotAttendInPerson).HasMaxLength(ValidationConstants.NotesLength);
         builder.Property(x => x.ReasonParticipantDidNotAttendInPerson).HasMaxLength(ValidationConstants.NotesLength);
+        builder.Property(x => x.PostReleaseCommunitySupportInformation).HasMaxLength(ValidationConstants.NotesLength);
+        
 
         builder.Property(x => x.CreatedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
         builder.Property(x => x.LastModifiedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
