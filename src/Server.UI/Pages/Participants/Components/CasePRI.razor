@@ -1,0 +1,193 @@
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Infrastructure.Services.Identity
+@using Humanizer
+@using Cfo.Cats.Application.Features.PRIs.DTOs;
+@using Cfo.Cats.Application.Features.PRIs.Queries;
+@using static Cfo.Cats.Application.Features.PRIs.Commands.AddPRI
+
+@inherits CatsComponentBase
+@inject UserService userService;
+
+<style>
+    .mud-list-item-child:hover,
+    .mud-list-item-child:focus {
+    background-color: initial !important;
+    }
+</style>
+
+@if (_notFound)
+{
+    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No PRI found.</MudAlert>
+}
+@if (_model is not null)
+{
+    <MudExpansionPanels MultiExpansion="true">
+
+        <MudExpansionPanel>
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Map" Color="Color.Primary" class="mr-3"/>
+                    <MudText>Release</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudForm Model="priRelease!" Validation="@(Validator.ValidateValue(priRelease!))" ReadOnly Disabled>
+                    <MudSelect @bind-Value="priRelease!.CustodyLocation"
+                               Label="Discharge Location"
+                               For="() => priRelease!.CustodyLocation">
+                        <MudSelectItem Value="@priRelease!.CustodyLocation">@priRelease!.CustodyLocation!.Name</MudSelectItem>
+                    </MudSelect>
+                    <MudSelect @bind-Value="priRelease!.ExpectedRegion"
+                                    Label="Expected release region"
+                                    For="() => priRelease!.ExpectedRegion">
+                                            <MudSelectItem Value="@priRelease!.ExpectedRegion">@priRelease!.ExpectedRegion!.Name</MudSelectItem>
+                                    </MudSelect>
+                    <MudDatePicker @bind-Date="priRelease!.ExpectedOn"
+                    For="() => priRelease!.ExpectedOn"
+                    Label="Expected date of release"
+                    MinDate="DateTime.Today"
+                    MaxDate="DateTime.Today.AddMonths(3)"
+                    Class="mt-2" />
+                </MudForm>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <MudExpansionPanel>
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Primary" class="mr-3"/>
+                    <MudText>Assignment</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudForm ReadOnly Disabled>
+                    <MudTextField Value="userService.GetDisplayName(_model!.AssignedTo!)"
+                    For="() => _model!.AssignedTo"
+                    Label="Community Support Worker"
+                    MaxLength="6"
+                    Class="mb-2" />
+                </MudForm>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <MudExpansionPanel>
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.MeetingRoom" Color="Color.Primary" class="mr-3"/>
+                    <MudText>Pre-Release Meeting</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudForm Model="preMeeting" Validation="Validator.ValidateValue(preMeeting)"  ReadOnly Disabled>
+                    <MudText Class="mb-1" Typo="Typo.body2">Date pre-release meeting took place between the Custody Support Worker, the Community Support Worker (potentially yourself), and the Participant</MudText>
+                    <MudDatePicker @bind-Date="preMeeting!.AttendedOn"
+                    For="() => preMeeting!.AttendedOn"
+                    Label="Date pre-release meeting took place"
+                    Class="mb-6"/>
+
+                    @* Custody *@
+                    <MudText Typo="Typo.body1">Did the Custody Support Worker attend this meeting in person?</MudText>
+                    <MudToggleGroup @bind-Value="preMeeting!.CustodyAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
+                        <MudToggleItem Value="ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
+                        <MudToggleItem Value="ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
+                    </MudToggleGroup>
+                    <MudTextField ReadOnly Underline="false" For="() => preMeeting!.CustodyAttendedInPerson" hidden />
+
+                    @if (preMeeting!.CustodyAttendedInPerson == ConfirmationStatus.No)
+                    {
+                        <MudTextField @bind-Value="preMeeting!.ReasonCustodyDidNotAttendInPerson"
+                        For="() => preMeeting!.ReasonCustodyDidNotAttendInPerson"
+                        Label="Reason for not attending the meeting in person"
+                        Lines="5"
+                        Class="mt-2" />
+                    }
+
+                    <MudDivider Class="my-6" />
+
+                    @* Community *@
+                    <MudText Typo="Typo.body1">Did the Community Support Worker attend this meeting in person?</MudText>
+                    <MudToggleGroup @bind-Value="preMeeting!.CommunityAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
+                        <MudToggleItem Value="ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
+                        <MudToggleItem Value="ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
+                    </MudToggleGroup>
+                    <MudTextField ReadOnly Underline="false" For="() => preMeeting!.CommunityAttendedInPerson" hidden />
+
+                    @if (preMeeting!.CommunityAttendedInPerson == ConfirmationStatus.No)
+                    {
+                        <MudTextField @bind-Value="preMeeting!.ReasonCommunityDidNotAttendInPerson"
+                        For="() => preMeeting!.ReasonCommunityDidNotAttendInPerson"
+                        Label="Reason for not attending the meeting in person"
+                        Lines="5"
+                        Class="mt-2" />
+                    }
+
+                    <MudDivider Class="my-6" />
+
+                    @* Participant *@
+                    <MudText Typo="Typo.body1">Did the Participant attend this meeting in person?</MudText>
+                    <MudToggleGroup @bind-Value="preMeeting!.ParticipantAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
+                        <MudToggleItem Value="ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
+                        <MudToggleItem Value="ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
+                    </MudToggleGroup>
+                    <MudTextField ReadOnly Underline="false" For="() => preMeeting!.ParticipantAttendedInPerson" hidden />
+
+                    @if (preMeeting!.ParticipantAttendedInPerson == ConfirmationStatus.No)
+                    {
+                        <MudTextField @bind-Value="preMeeting!.ReasonParticipantDidNotAttendInPerson"
+                        For="() => preMeeting!.ReasonParticipantDidNotAttendInPerson"
+                        Label="Reason for not attending the meeting in person"
+                        Lines="5"
+                        Class="mt-2" />
+                    }
+                </MudForm>
+            </ChildContent>
+        </MudExpansionPanel>
+
+    </MudExpansionPanels>
+
+}
+
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string ParticipantId { get; set; } = default!;
+
+    private PRIDto? _model;
+    private PriReleaseDto? priRelease;
+    private PriMeetingDto? preMeeting;
+
+    private bool _notFound = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _model = null;
+        try
+        {
+            var result = await GetNewMediator().Send(new GetParticipantPRI.Query()
+                {
+                    ParticipantId = ParticipantId
+                });
+
+            if (result.Succeeded && result.Data is not null)
+            {
+                _model = result.Data;
+                priRelease = Mapper.Map<PriReleaseDto>(_model);
+                preMeeting = Mapper.Map<PriMeetingDto>(_model);
+            }
+            else
+            {
+                _notFound = true;
+            }
+        }
+        catch (NotFoundException)
+        {
+            _notFound = true;
+        }
+        finally
+        {
+            await base.OnInitializedAsync();
+        }
+
+    }
+}
