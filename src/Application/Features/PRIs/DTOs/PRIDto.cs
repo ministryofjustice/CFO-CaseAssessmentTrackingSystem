@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Features.Locations.DTOs;
+using Cfo.Cats.Application.Features.Locations.DTOs;
 
 namespace Cfo.Cats.Application.Features.PRIs.DTOs;
 
@@ -24,7 +24,7 @@ public class PRIDto
 
     public string? AssignedTo { get; set; }
 
-    public bool IsCompleted { get; }
+    public PriStatus? Status { get; }
     public DateOnly MeetingAttendedOn { get; set; }
     public string? ReasonParticipantDidNotAttendInPerson { get; set; }
     public string? ReasonCommunityDidNotAttendInPerson { get; set; }
@@ -44,6 +44,8 @@ public class PRIDto
              .ForMember(target => target.CustodyLocation,
                 options => options.MapFrom(source => source.CustodyLocation))
 ;
+          .ForMember(target => target.Status,
+              options => options.MapFrom(source => source.Status));
         }
     }
 }
