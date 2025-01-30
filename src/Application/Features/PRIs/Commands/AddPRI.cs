@@ -1,9 +1,11 @@
+using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.PRIs.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.PRIs;
+using FluentValidation;
 
 namespace Cfo.Cats.Application.Features.PRIs.Commands;
 
@@ -54,14 +56,20 @@ public static class AddPRI
     public class Validator : AbstractValidator<Command>
     {
         readonly IUnitOfWork unitOfWork;
+        readonly ICurrentUserService currentUserService;
+        readonly ILocationService locationService;
 
         public Validator(
             IUnitOfWork unitOfWork, 
+            ICurrentUserService currentUserService,
+            ILocationService locationService,
             IValidator<PriCodeDto> priCodeValidator, 
             IValidator<PriReleaseDto> priReleaseValidator, 
             IValidator<PriMeetingDto> priMeetingValidator)
         {
             this.unitOfWork = unitOfWork;
+            this.currentUserService = currentUserService;
+            this.locationService = locationService;
 
             RuleFor(c => c.ParticipantId)
                 .MustAsync(NotAlreadyHavePRI)
@@ -71,11 +79,43 @@ public static class AddPRI
                     RuleFor(c => c.Code).SetValidator(priCodeValidator);
                     RuleFor(c => c.Release).SetValidator(priReleaseValidator);
                     RuleFor(c => c.Meeting).SetValidator(priMeetingValidator);
+
+                    RuleFor(c => c)
+                        .MustAsync(BeAuthorised)
+                        .WithMessage("Community Support Worker does not have access to the expected release region");
                 });
         }
 
         async Task<bool> NotAlreadyHavePRI(string participantId, CancellationToken cancellationToken)
             => await unitOfWork.DbContext.PRIs.AnyAsync(p => p.ParticipantId == participantId, cancellationToken) is false;
+
+        async Task<bool> BeAuthorised(Command command, CancellationToken cancellationToken)
+        {
+            string? assigneeTenantId;
+
+            if(command.Code.SelfAssign)
+            {
+                assigneeTenantId = currentUserService.TenantId;
+            }
+            else
+            {
+                var createdBy = await unitOfWork.DbContext.PriCodes
+                    .Where(p => p.ParticipantId == command.ParticipantId && p.Code == command.Code.Value)
+                    .Select(p => p.CreatedBy)
+                    .SingleAsync(cancellationToken);
+
+                var tenantId = await unitOfWork.DbContext.Users.Where(u => u.Id == createdBy)
+                    .Select(u => u.TenantId)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                assigneeTenantId = tenantId;
+            }
+
+            return locationService
+                .GetVisibleLocations(assigneeTenantId!)
+                .Select(l => l.Id)
+                .Contains(command.Release.ExpectedRegion!.Id);
+        }
     }
 
     public class PriCodeDto
