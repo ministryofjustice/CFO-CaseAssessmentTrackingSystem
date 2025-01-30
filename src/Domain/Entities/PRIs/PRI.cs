@@ -1,4 +1,5 @@
 using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Events;
@@ -19,8 +20,7 @@ public class PRI : BaseAuditableEntity<Guid>
     public DateTime? AcceptedOn { get; private set; }
     public int ExpectedReleaseRegionId { get; private set; }
     public virtual Location ExpectedReleaseRegion { get; private set; }
-    public string? AssignedTo { get; private set; }
-    public bool IsCompleted { get; private set; }
+    public string? AssignedTo { get; private set; }    
     public DateOnly MeetingAttendedOn { get; private set; }
     public bool CustodyAttendedInPerson => ReasonCustodyDidNotAttendInPerson is null;
     public bool CommunityAttendedInPerson => ReasonCommunityDidNotAttendInPerson is null;
@@ -38,6 +38,11 @@ public class PRI : BaseAuditableEntity<Guid>
     public virtual Location CustodyLocation { get; private set; }
     public Guid ObjectiveId { get; private set; }
 
+    public PriStatus Status { get; private set; }
+    public DateTime? AbandonedOn { get; private set; }
+    public string? ReasonAbandoned { get; private set; }
+    public string? AbandonedBy { get; private set; }
+  
     public static PRI Create(string participantId, DateOnly expectedReleaseDate, int expectedReleaseRegionId, string createdBy, int custodyLocationId)
     {
         var pri = new PRI()
@@ -46,7 +51,8 @@ public class PRI : BaseAuditableEntity<Guid>
             ExpectedReleaseDate = expectedReleaseDate,
             CreatedBy = createdBy,
             ExpectedReleaseRegionId = expectedReleaseRegionId,
-            CustodyLocationId = custodyLocationId
+            CustodyLocationId = custodyLocationId,
+            Status = PriStatus.Created
         };
 
         pri.AddDomainEvent(new PRICreatedDomainEvent(pri));
@@ -64,14 +70,24 @@ public class PRI : BaseAuditableEntity<Guid>
 
     public PRI Complete()
     {
-        IsCompleted = true;
+        Status = PriStatus.Completed;
         //AddDomainEvent(new PRICompletedDomainEvent(this));
         return this;
     }
 
     public PRI Accept(DateTime acceptedOn)
     {
+        Status = PriStatus.Accepted;
         AcceptedOn = acceptedOn;
+        return this;
+    }
+
+    public PRI Abandon(DateTime abandonedOn, string? reasonAbandoned, string? abandonedBy)
+    {
+        Status = PriStatus.Abandoned;
+        AbandonedOn = abandonedOn;
+        ReasonAbandoned = reasonAbandoned;
+        AbandonedBy = abandonedBy;
         return this;
     }
 
