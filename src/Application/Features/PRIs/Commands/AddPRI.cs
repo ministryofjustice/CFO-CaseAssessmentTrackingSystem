@@ -25,7 +25,8 @@ public static class AddPRI
                 .WithMeeting(DateOnly.FromDateTime(request.Meeting.AttendedOn!.Value), 
                     reasonCustodyDidNotAttendInPerson: request.Meeting.ReasonCustodyDidNotAttendInPerson, 
                     reasonCommunityDidNotAttendInPerson: request.Meeting.ReasonCommunityDidNotAttendInPerson,
-                    reasonParticipantDidNotAttendInPerson: request.Meeting.ReasonParticipantDidNotAttendInPerson);
+                    reasonParticipantDidNotAttendInPerson: request.Meeting.ReasonParticipantDidNotAttendInPerson,
+                    postReleaseCommunitySupportInformation: request.Meeting.PostReleaseCommunitySupportInformation);
 
             string? assignee = null;
 
@@ -166,6 +167,8 @@ public static class AddPRI
         public string? ReasonCustodyDidNotAttendInPerson { get; set; }
         public string? ReasonCommunityDidNotAttendInPerson { get; set; }
         public string? ReasonParticipantDidNotAttendInPerson { get; set; }
+        public string? PostReleaseCommunitySupportInformation { get; set; }
+
 
         public class Validator : AbstractValidator<PriMeetingDto>
         {
