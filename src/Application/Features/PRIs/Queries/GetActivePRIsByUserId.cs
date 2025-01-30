@@ -22,8 +22,8 @@ public static class GetActivePRIsByUserId
             await Task.CompletedTask;
 
             var data = await unitOfWork.DbContext.PRIs
-                .Where(x => x.AssignedTo == request.CurrentUser!.UserId
-                        || x.CreatedBy == request.CurrentUser!.UserId
+                .Where(x => (x.AssignedTo == request.CurrentUser!.UserId
+                        || x.CreatedBy == request.CurrentUser!.UserId)
                         && (x.Status == PriStatus.Accepted || x.Status == PriStatus.Created))                        
                 .OrderBy($"{request.OrderBy} {request.SortDirection}")
                 .ProjectToPaginatedDataAsync<Domain.Entities.PRIs.PRI, PRIPaginationDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
