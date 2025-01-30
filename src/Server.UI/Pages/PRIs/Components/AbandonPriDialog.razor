@@ -2,30 +2,38 @@
 @using Humanizer
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Domain.Common.Enums
 
 @inherits CatsComponentBase
 @inject IStringLocalizer<AbandonPriDialog> L
 
 <MudDialog>
-    <DialogContent>
-        <MudPaper Height="300px" Elevation="0">
-            @if (Model is not null)
-            {               
 
-                <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
-                    <MudTextField @bind-Value="Model.ReasonAbandoned"
-                                  Label="@Model.GetMemberDescription(x => x.ReasonAbandoned)"
-                                  For="@(() => Model.ReasonAbandoned)"
-                                  Lines="4" />
-                </MudForm>
-            }
-        </MudPaper>
+    <DialogContent>
+        @if (Model is not null)
+        {
+            <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                <MudSelect @bind-Value="Model.AbandonReason"
+                               Label="@Model.GetMemberDescription(x => x.AbandonReason)"
+                               For="@(() => Model.AbandonReason)">
+                    <MudSelectItem Value="PriAbandonReason.CreatedByAccident">@PriAbandonReason.CreatedByAccident.Name</MudSelectItem>
+                    <MudSelectItem Value="PriAbandonReason.Other">@PriAbandonReason.Other.Name</MudSelectItem>
+
+            </MudSelect>
+                <MudTextField @bind-Value="Model.AbandonJustification"
+                              Label="@Model.GetMemberDescription(x => x.AbandonJustification)"
+                              For="@(() => Model.AbandonJustification)"
+                          Lines="5"
+                          Class="mt-4" />
+            </MudForm>        
+        }
     </DialogContent>
 
     <DialogActions>
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
         <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.AbandonPRI</MudLoadingButton>
     </DialogActions>
+
 </MudDialog>
 
 @code {

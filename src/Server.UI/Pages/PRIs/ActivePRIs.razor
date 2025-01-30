@@ -8,6 +8,7 @@
 @using Cfo.Cats.Application.Features.PRIs.Specifications
 @using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Infrastructure.Services.Identity
 @using Cfo.Cats.Server.UI.Pages.PRIs.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
@@ -343,7 +344,8 @@
             { x => x.Model, new AbandonPRI.Command()
             {
                 ParticipantId = PRI.ParticipantId,
-                ReasonAbandoned="",
+                AbandonJustification="",
+                AbandonReason=PriAbandonReason.Other,
                 AbandonedBy=CurrentUser.UserId
             } }
         };
