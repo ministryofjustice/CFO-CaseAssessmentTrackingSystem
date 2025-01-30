@@ -29,6 +29,7 @@ public class PRIDto
     public string? ReasonParticipantDidNotAttendInPerson { get; set; }
     public string? ReasonCommunityDidNotAttendInPerson { get; set; }
     public string? ReasonCustodyDidNotAttendInPerson { get; set; }
+    public string? PostReleaseCommunitySupportInformation { get; set; }
     public bool CustodyAttendedInPerson => string.IsNullOrEmpty(ReasonCustodyDidNotAttendInPerson);
     public bool CommunityAttendedInPerson => string.IsNullOrEmpty(ReasonCommunityDidNotAttendInPerson);
     public bool ParticipantAttendedInPerson => string.IsNullOrEmpty(ReasonParticipantDidNotAttendInPerson);
