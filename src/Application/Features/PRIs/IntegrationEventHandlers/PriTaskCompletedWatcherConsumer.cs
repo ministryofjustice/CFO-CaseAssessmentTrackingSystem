@@ -14,7 +14,7 @@ public class PriTaskCompletedWatcherConsumer(IUnitOfWork unitOfWork, ILogger<Pri
             return;
         }
 
-        if (context.Message.Index == 2)
+        if (context.Message.Index != 2)
         {
             logger.LogDebug("Ignoring mandatory task that is not index 2");
             return;

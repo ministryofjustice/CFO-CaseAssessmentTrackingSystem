@@ -49,19 +49,22 @@ public class RecordPreReleaseSupportPayment(IUnitOfWork unitOfWork) : IConsumer<
             ineligibilityReason = IneligibilityReasons.AlreadyPaid;
         }
 
-        var history = await unitOfWork.DbContext.ParticipantEnrolmentHistories
-            .AsNoTracking()
-            .Where(h => h.ParticipantId == pri.ParticipantId)
-            .ToListAsync();
-
-        var firstApproval = history.Where(h => h.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
-            .Min(x => x.Created);
-
-        if (firstApproval.HasValue == false)
+        if (ineligibilityReason == null)
         {
-            ineligibilityReason = IneligibilityReasons.NotYetApproved;
-        }
+            var history = await unitOfWork.DbContext.ParticipantEnrolmentHistories
+                .AsNoTracking()
+                .Where(h => h.ParticipantId == pri.ParticipantId)
+                .ToListAsync();
 
+            var firstApproval = history.Where(h => h.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
+                .Min(x => x.Created);
+
+            if (firstApproval.HasValue == false)
+            {
+                ineligibilityReason = IneligibilityReasons.NotYetApproved;
+            }
+        }
+        
         if (ineligibilityReason is null)
         {
             var consentDate = await unitOfWork.DbContext
@@ -92,11 +95,6 @@ public class RecordPreReleaseSupportPayment(IUnitOfWork unitOfWork) : IConsumer<
             .Build();
 
         unitOfWork.DbContext.SupportAndReferralPayments.Add(payment);
-
         await unitOfWork.SaveChangesAsync();
-            
-
-        await Task.CompletedTask;
-
     }
 }
