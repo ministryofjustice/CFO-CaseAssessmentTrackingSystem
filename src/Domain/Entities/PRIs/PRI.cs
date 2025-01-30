@@ -96,7 +96,7 @@ public class PRI : BaseAuditableEntity<Guid>
     public PRI Complete()
     {
         Status = PriStatus.Completed;
-        //AddDomainEvent(new PRICompletedDomainEvent(this));
+        AddDomainEvent(new PRICompletedDomainEvent(this));
         return this;
     }
 
@@ -114,7 +114,7 @@ public class PRI : BaseAuditableEntity<Guid>
         AbandonReason = abandonReason;
         AbandonJustification= abandonJustification;
         AbandonedBy = abandonedBy;
-        //AddDomainEvent(new PRIAbandonedDomainEvent(this));
+        AddDomainEvent(new PRIAbandonedDomainEvent(this));
         return this;
     }
 
