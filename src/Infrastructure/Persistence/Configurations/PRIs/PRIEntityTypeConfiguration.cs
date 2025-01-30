@@ -46,7 +46,6 @@ public class PRIEntityTypeConfiguration : IEntityTypeConfiguration<PRI>
         builder.Property(x => x.ReasonParticipantDidNotAttendInPerson).HasMaxLength(ValidationConstants.NotesLength);
         builder.Property(x => x.PostReleaseCommunitySupportInformation).HasMaxLength(ValidationConstants.NotesLength);
         
-
         builder.Property(x => x.CreatedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
         builder.Property(x => x.LastModifiedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
@@ -61,6 +60,12 @@ public class PRIEntityTypeConfiguration : IEntityTypeConfiguration<PRI>
             .HasForeignKey(p => p.AbandonedBy)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(x => x.ReasonAbandoned).HasMaxLength(ValidationConstants.NotesLength);
+        builder.Property(e => e.AbandonReason)
+           .HasConversion(
+                ar => ar!.Value,
+                ar => PriAbandonReason.FromValue(ar));
+
+        builder.Property(p => p.AbandonJustification)
+            .HasMaxLength(ValidationConstants.NotesLength);
     }
 }

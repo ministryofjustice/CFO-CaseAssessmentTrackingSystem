@@ -38,11 +38,36 @@ public class PRI : BaseAuditableEntity<Guid>
     public virtual Location CustodyLocation { get; private set; }
     public Guid ObjectiveId { get; private set; }
 
+    /// <summary>
+    /// Status of the  Pri
+    /// </summary>
     public PriStatus Status { get; private set; }
+
+    /// <summary>
+    /// When the Pri was Abandoned
+    /// </summary>
     public DateTime? AbandonedOn { get; private set; }
-    public string? ReasonAbandoned { get; private set; }
+
+    /// <summary>
+    /// The justification for Abandoning Pri
+    /// </summary>
+    public string? AbandonJustification { get; private set; }
+
+    /// <summary>
+    /// The reason for Abandoning Pri
+    /// </summary>
+    public PriAbandonReason? AbandonReason { get; private set; }
+
+    /// <summary>
+    /// Who Abandoned the Pri
+    /// </summary>
     public string? AbandonedBy { get; private set; }
-  
+
+    /// <summary>
+    /// When the Pri was Completed
+    /// </summary>
+    public DateTime? CompletedOn { get; private set; }
+
     public static PRI Create(string participantId, DateOnly expectedReleaseDate, int expectedReleaseRegionId, string createdBy, int custodyLocationId)
     {
         var pri = new PRI()
@@ -82,12 +107,14 @@ public class PRI : BaseAuditableEntity<Guid>
         return this;
     }
 
-    public PRI Abandon(string? reasonAbandoned, string? abandonedBy)
+    public PRI Abandon(PriAbandonReason? abandonReason, string? abandonJustification, string? abandonedBy)
     {
         Status = PriStatus.Abandoned;
         AbandonedOn = DateTime.UtcNow;
-        ReasonAbandoned = reasonAbandoned;
+        AbandonReason = abandonReason;
+        AbandonJustification= abandonJustification;
         AbandonedBy = abandonedBy;
+        //AddDomainEvent(new PRIAbandonedDomainEvent(this));
         return this;
     }
 
