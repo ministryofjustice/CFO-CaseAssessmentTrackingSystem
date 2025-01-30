@@ -28,6 +28,9 @@ public class PRI : BaseAuditableEntity<Guid>
     public string? ReasonCustodyDidNotAttendInPerson { get; private set; }
     public string? ReasonCommunityDidNotAttendInPerson { get; private set; }
     public string? ReasonParticipantDidNotAttendInPerson { get; private set; }
+    public string? PostReleaseCommunitySupportInformation { get; private set; }
+
+
     public virtual Participant? Participant { get; private set; }
 
     public int CustodyLocationId { get; private set; }
@@ -88,12 +91,14 @@ public class PRI : BaseAuditableEntity<Guid>
         DateOnly attendedOn, 
         string? reasonCustodyDidNotAttendInPerson = null,
         string? reasonCommunityDidNotAttendInPerson = null,
-        string? reasonParticipantDidNotAttendInPerson = null)
+        string? reasonParticipantDidNotAttendInPerson = null,
+        string? postReleaseCommunitySupportInformation = null)
     {
         MeetingAttendedOn = attendedOn;
         ReasonCommunityDidNotAttendInPerson = reasonCommunityDidNotAttendInPerson;
         ReasonCustodyDidNotAttendInPerson = reasonCustodyDidNotAttendInPerson;
         ReasonParticipantDidNotAttendInPerson = reasonParticipantDidNotAttendInPerson;
+        PostReleaseCommunitySupportInformation = postReleaseCommunitySupportInformation;
         return this;
     }
 }
