@@ -96,6 +96,7 @@ public class PRI : BaseAuditableEntity<Guid>
     public PRI Complete()
     {
         Status = PriStatus.Completed;
+        CompletedOn = DateTime.UtcNow;
         AddDomainEvent(new PRICompletedDomainEvent(this));
         return this;
     }
