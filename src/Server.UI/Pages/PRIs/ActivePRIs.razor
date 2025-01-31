@@ -109,11 +109,11 @@
                         </MudMenuItem>
                     }
 
-                    <MudMenuItem OnClick="@(()=> CompletePRI(context.Item))">
+                    <MudMenuItem OnClick="@(()=> CompletePRI(context.Item))" Disabled="true">
                         @ConstantString.CompletePRI
                     </MudMenuItem>
 
-                    <MudMenuItem OnClick="@(()=> AbandonPRI(context.Item))">
+                    <MudMenuItem OnClick="@(()=> AbandonPRI(context.Item))" Disabled="true">
                         @ConstantString.AbandonPRI
                     </MudMenuItem>
                 </MudMenu>
