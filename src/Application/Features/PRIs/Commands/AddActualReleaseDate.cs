@@ -24,8 +24,7 @@ public static class AddActualReleaseDate
             var pri = await unitOfWork.DbContext.PRIs
                 .SingleOrDefaultAsync(p => p.ParticipantId == request.ParticipantId 
                 && p.ActualReleaseDate == null 
-                && (p.Status == PriStatus.Accepted  || p.Status == PriStatus.Created), cancellationToken);
-            
+                && PriStatus.ActiveList.Contains(p.Status), cancellationToken);
 
             if (pri == null)
             {
