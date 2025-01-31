@@ -19,12 +19,10 @@ public static class GetActivePRIsByUserId
     {
         public async Task<PaginatedData<PRIPaginationDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            await Task.CompletedTask;
-
             var data = await unitOfWork.DbContext.PRIs
                 .Where(x => (x.AssignedTo == request.CurrentUser!.UserId
                         || x.CreatedBy == request.CurrentUser!.UserId)
-                        && (x.Status == PriStatus.Accepted || x.Status == PriStatus.Created))                        
+                        && PriStatus.ActiveList.Contains(x.Status))                        
                 .OrderBy($"{request.OrderBy} {request.SortDirection}")
                 .ProjectToPaginatedDataAsync<Domain.Entities.PRIs.PRI, PRIPaginationDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
 

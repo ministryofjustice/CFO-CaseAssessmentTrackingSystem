@@ -29,7 +29,7 @@ public static class AbandonPRI
         {
             var pri = await unitOfWork.DbContext.PRIs
                 .SingleOrDefaultAsync(p => p.ParticipantId == request.ParticipantId
-                && p.Status != PriStatus.Abandoned, cancellationToken);
+                && PriStatus.ActiveList.Contains(p.Status), cancellationToken);
 
             if (pri == null)
             {
