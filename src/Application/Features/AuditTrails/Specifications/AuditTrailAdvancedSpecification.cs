@@ -19,6 +19,7 @@ public class AuditTrailAdvancedSpecification : Specification<AuditTrail>
         );
 
         Query
+            .Where(p => p.PrimaryKey == filter.PrimaryKey, filter.PrimaryKey is not null)
             .Where(p => p.AuditType == filter.AuditType, filter.AuditType is not null)
             .Where(
                 p => p.UserId == filter.CurrentUser!.UserId,

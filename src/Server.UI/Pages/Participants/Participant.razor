@@ -1,6 +1,7 @@
 @page "/pages/participants/{id}"
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Humanizer
@@ -168,6 +169,14 @@
                         <MudTabPanel Text="Timeline">
                             <CaseTimeline />
                         </MudTabPanel>
+                        
+                        @if (UserProfile.AssignedRoles.Any(r =>
+                             r is RoleNames.SystemSupport or RoleNames.SMT or RoleNames.QAManager))
+                        {
+                            <MudTabPanel Text="Audit">
+                                <ParticipantAudit Id="@Id"/>
+                            </MudTabPanel>
+                        }
                         @*
                         <MudTabPanel Text="Contact Log" Disabled></MudTabPanel>
                         <MudTabPanel Text="PSF" Disabled></MudTabPanel>

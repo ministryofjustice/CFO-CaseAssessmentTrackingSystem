@@ -50,4 +50,9 @@ public static class SecurityPolicies
     /// The used anywhere any user > support worker can do it
     /// </summary>
     public const string UserHasAdditionalRoles = nameof(UserHasAdditionalRoles);
+
+    /// <summary>
+    /// Used to allow users to view the audits
+    /// </summary>
+    public const string ViewAudit = nameof(ViewAudit);
 }

@@ -324,6 +324,17 @@ public static class DependencyInjection
                         RoleNames.QAOfficer,
                         RoleNames.QASupportManager);
                 });
+
+                options.AddPolicy(SecurityPolicies.ViewAudit, policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+                    policy.RequireRole(RoleNames.SystemSupport, 
+                        RoleNames.SMT, 
+                        RoleNames.QAManager 
+                        );
+                });
+
+
             })
             .AddAuthentication(options => {
                 options.DefaultScheme = IdentityConstants.ApplicationScheme;
