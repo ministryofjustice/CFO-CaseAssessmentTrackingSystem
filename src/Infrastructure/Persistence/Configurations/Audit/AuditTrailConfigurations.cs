@@ -22,6 +22,12 @@ public class AuditTrailConfiguration : IEntityTypeConfiguration<AuditTrail>
         builder.Property(u => u.OldValues).HasJsonConversion();
         builder.Property(u => u.NewValues).HasJsonConversion();
         builder.Property(u => u.PrimaryKey).HasJsonConversion();
+
+        builder.Property(u => u.PrimaryKey)
+            .HasMaxLength(150);
+
+        builder.HasIndex(x => x.PrimaryKey);
+
         builder.Ignore(x => x.TemporaryProperties);
         builder.Ignore(x => x.HasTemporaryProperties);
     }

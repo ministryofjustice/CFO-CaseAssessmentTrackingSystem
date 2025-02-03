@@ -7,5 +7,6 @@ public class ParticipantByIdSpecification : Specification<Participant>
     public ParticipantByIdSpecification(string id)
     {
         Query.Where(p => p.Id == id);
+        Query.AsSplitQuery();
     }
 }

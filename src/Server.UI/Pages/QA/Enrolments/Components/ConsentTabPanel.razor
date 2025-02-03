@@ -1,6 +1,14 @@
 ﻿@using Cfo.Cats.Application.Features.Documents.Queries
 @using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Domain.Common.Enums
 
+
+    @if(ParticipantDto.ConsentStatus == ConsentStatus.GrantedStatus)
+    {
+        <MudAlert Severity="Severity.Info">
+            Consent has already been granted for this participant.
+        </MudAlert>
+    }
 
     <MudRadioGroup T="Guid" @bind-Value="_selectedDocument">
         
@@ -15,11 +23,7 @@
     @if (_selectedDocument != Guid.Empty)
     {
         <DocumentDisplay DocumentId="_selectedDocument" />
-
     }
-
-
-
 
 @code {
 
@@ -39,6 +43,4 @@
             }
         }
     }
-
-
 }

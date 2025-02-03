@@ -59,7 +59,7 @@ Task("Publish")
 
 Task("Script")
     .Description("Generates a migration script.")
-    .IsDependentOn("Build")
+    //.IsDependentOn("Build")
     .Does(() =>{
 
         var migrationProject = "src/Infrastructure/Infrastructure.csproj";

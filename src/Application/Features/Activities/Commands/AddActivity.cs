@@ -212,7 +212,7 @@ public static class AddActivity
             When(c => c.ActivityId is not null, () =>
             {
                 RuleFor(c => c.ActivityId)
-                    .MustAsync(BeInPendingStatus);
+                    .Must(BeInPendingStatus);
             });
 
             RuleFor(c => c.ParticipantId)
@@ -224,7 +224,7 @@ public static class AddActivity
                 .WithMessage("You must choose a location");
 
             RuleFor(c => c.Location)
-                .MustAsync(async (command, location, token) => await HaveAHubInduction(command.ParticipantId, location!, token))
+                .Must((command, location, token) => HaveAHubInduction(command.ParticipantId, location!))
                 .When(c => c.Location is { LocationType.IsHub: true })
                 .WithMessage("A hub induction is required for the selected location");
 
@@ -242,7 +242,7 @@ public static class AddActivity
                 .WithMessage("The date the activity took place cannot be in the future")
                 .GreaterThanOrEqualTo(DateTime.Today.AddMonths(-3))
                 .WithMessage("The activity must have taken place within the last three months")
-                .MustAsync((command, commencedOn, token) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId, commencedOn, token))
+                .Must((command, commencedOn, token) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId, commencedOn))
                 .WithMessage("The activity cannot take place before the participant gave consent");
 
             RuleFor(c => c.AdditionalInformation)
@@ -271,16 +271,16 @@ public static class AddActivity
             });
         }
         
-        async Task<bool> BeInPendingStatus(Guid? activityId, CancellationToken cancellationToken)
+        private bool BeInPendingStatus(Guid? activityId)
         {
-            var activity = await unitOfWork.DbContext.Activities.SingleAsync(a => a.Id == activityId, cancellationToken).ConfigureAwait(false);
+            var activity = unitOfWork.DbContext.Activities.Single(a => a.Id == activityId);
             return activity.Status == ActivityStatus.PendingStatus;
         }
 
-        async Task<bool> HaveAHubInduction(string participantId, LocationDto location, CancellationToken cancellationToken)
+        private bool HaveAHubInduction(string participantId, LocationDto location)
         {
-            return await unitOfWork.DbContext.HubInductions.AnyAsync(induction => 
-                induction.ParticipantId == participantId && induction.LocationId == location.Id, cancellationToken).ConfigureAwait(false);
+            return unitOfWork.DbContext.HubInductions.Any(induction => 
+                induction.ParticipantId == participantId && induction.LocationId == location.Id);
         }
 
         private static bool NotExceedMaximumFileSize(IBrowserFile? file, double maxSizeMB)
@@ -289,40 +289,46 @@ public static class AddActivity
         private async Task<bool> BePdfFile(IBrowserFile? file, CancellationToken cancellationToken)
         {
             if (file is null)
+            {
                 return false;
+            }
 
             // Check file extension
             if (!Path.GetExtension(file.Name).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+            {
                 return false;
+            }
 
             // Check MIME type
             if (file.ContentType != "application/pdf")
+            {
                 return false;
+            }
 
             long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.ActivityTemplate.MaximumSizeInMegabytes).Bytes);
 
             // Check file signature (magic numbers)
-            using (var stream = file.OpenReadStream(maxSizeBytes, cancellationToken))
-            {
-                byte[] buffer = new byte[4];
-                await stream.ReadExactlyAsync(buffer.AsMemory(0, 4), cancellationToken);
-                string header = System.Text.Encoding.ASCII.GetString(buffer);
-                return header == "%PDF";
-            }
+            await using var stream = file.OpenReadStream(maxSizeBytes, cancellationToken);
+            byte[] buffer = new byte[4];
+            await stream.ReadExactlyAsync(buffer.AsMemory(0, 4), cancellationToken);
+            string header = System.Text.Encoding.ASCII.GetString(buffer);
+            return header == "%PDF";
         }
 
         bool NotBeCompletedInTheFuture(DateTime? completed) => completed < DateTime.UtcNow;
-        private async Task<bool> HaveOccurredOnOrAfterConsentWasGranted(string participantId, DateTime? commencedOn, CancellationToken cancellationToken)
+        private bool HaveOccurredOnOrAfterConsentWasGranted(string participantId, DateTime? commencedOn)
         {
             if(commencedOn is null)
             {
                 return false;
             }
 
-            var consentDate = await unitOfWork.DbContext
-                .Participants.AsNoTracking().Where(x => x.Id == participantId)
+            var consentDate = unitOfWork.DbContext
+                .Participants
+                .AsNoTracking()
+                .Where(x => x.Id == participantId)
                 .Select(c => c.Consents.Max(d => d.Lifetime.StartDate))
-                .FirstAsync(cancellationToken).ConfigureAwait(false);
+                .First();
 
             return commencedOn >= consentDate;
         }

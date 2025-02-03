@@ -7,7 +7,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Cfo.Cats.Application.Features.AuditTrails.Queries.PaginationQuery;
 
-[RequestAuthorize(Roles = RoleNames.SystemSupport)]
+[RequestAuthorize(Policy = SecurityPolicies.ViewAudit)]
 public class AuditTrailsWithPaginationQuery
     : AuditTrailAdvancedFilter,
         ICacheableRequest<PaginatedData<AuditTrailDto>>
