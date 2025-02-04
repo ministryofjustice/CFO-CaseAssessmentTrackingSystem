@@ -1526,19 +1526,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AbandonJustification")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int?>("AbandonReason")
-                        .HasColumnType("int");
-
-                    b.Property<string>("AbandonedBy")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<DateTime?>("AbandonedOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime?>("AcceptedOn")
                         .HasColumnType("datetime2");
 
@@ -1548,9 +1535,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<string>("AssignedTo")
                         .HasMaxLength(36)
                         .HasColumnType("nvarchar(36)");
-
-                    b.Property<DateTime?>("CompletedOn")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("Created")
                         .HasColumnType("datetime2");
@@ -1567,6 +1551,9 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.Property<int>("ExpectedReleaseRegionId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -1601,12 +1588,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("AbandonedBy");
 
                     b.HasIndex("AssignedTo");
 
@@ -3767,11 +3749,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.PRIs.PRI", b =>
                 {
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("AbandonedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("AssignedTo")

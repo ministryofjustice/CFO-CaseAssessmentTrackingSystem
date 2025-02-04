@@ -1,5 +1,4 @@
 using Cfo.Cats.Domain.Common.Entities;
-using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Events;
@@ -20,7 +19,8 @@ public class PRI : BaseAuditableEntity<Guid>
     public DateTime? AcceptedOn { get; private set; }
     public int ExpectedReleaseRegionId { get; private set; }
     public virtual Location ExpectedReleaseRegion { get; private set; }
-    public string? AssignedTo { get; private set; }    
+    public string? AssignedTo { get; private set; }
+    public bool IsCompleted { get; private set; }
     public DateOnly MeetingAttendedOn { get; private set; }
     public bool CustodyAttendedInPerson => ReasonCustodyDidNotAttendInPerson is null;
     public bool CommunityAttendedInPerson => ReasonCommunityDidNotAttendInPerson is null;
@@ -38,36 +38,6 @@ public class PRI : BaseAuditableEntity<Guid>
     public virtual Location CustodyLocation { get; private set; }
     public Guid ObjectiveId { get; private set; }
 
-    /// <summary>
-    /// Status of the  Pri
-    /// </summary>
-    public PriStatus Status { get; private set; }
-
-    /// <summary>
-    /// When the Pri was Abandoned
-    /// </summary>
-    public DateTime? AbandonedOn { get; private set; }
-
-    /// <summary>
-    /// The justification for Abandoning Pri
-    /// </summary>
-    public string? AbandonJustification { get; private set; }
-
-    /// <summary>
-    /// The reason for Abandoning Pri
-    /// </summary>
-    public PriAbandonReason? AbandonReason { get; private set; }
-
-    /// <summary>
-    /// Who Abandoned the Pri
-    /// </summary>
-    public string? AbandonedBy { get; private set; }
-
-    /// <summary>
-    /// When the Pri was Completed
-    /// </summary>
-    public DateTime? CompletedOn { get; private set; }
-
     public static PRI Create(string participantId, DateOnly expectedReleaseDate, int expectedReleaseRegionId, string createdBy, int custodyLocationId)
     {
         var pri = new PRI()
@@ -76,8 +46,7 @@ public class PRI : BaseAuditableEntity<Guid>
             ExpectedReleaseDate = expectedReleaseDate,
             CreatedBy = createdBy,
             ExpectedReleaseRegionId = expectedReleaseRegionId,
-            CustodyLocationId = custodyLocationId,
-            Status = PriStatus.Created
+            CustodyLocationId = custodyLocationId
         };
 
         pri.AddDomainEvent(new PRICreatedDomainEvent(pri));
@@ -95,27 +64,14 @@ public class PRI : BaseAuditableEntity<Guid>
 
     public PRI Complete()
     {
-        Status = PriStatus.Completed;
-        CompletedOn = DateTime.UtcNow;
-        AddDomainEvent(new PRICompletedDomainEvent(this));
+        IsCompleted = true;
+        //AddDomainEvent(new PRICompletedDomainEvent(this));
         return this;
     }
 
     public PRI Accept(DateTime acceptedOn)
     {
-        Status = PriStatus.Accepted;
         AcceptedOn = acceptedOn;
-        return this;
-    }
-
-    public PRI Abandon(PriAbandonReason? abandonReason, string? abandonJustification, string? abandonedBy)
-    {
-        Status = PriStatus.Abandoned;
-        AbandonedOn = DateTime.UtcNow;
-        AbandonReason = abandonReason;
-        AbandonJustification= abandonJustification;
-        AbandonedBy = abandonedBy;
-        AddDomainEvent(new PRIAbandonedDomainEvent(this));
         return this;
     }
 

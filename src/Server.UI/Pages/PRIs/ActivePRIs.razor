@@ -1,4 +1,3 @@
-
 @page "/pages/participants/pre-release-inventory"
 
 @using Cfo.Cats.Application.Common.Interfaces.Identity
@@ -9,7 +8,6 @@
 @using Cfo.Cats.Application.Features.PRIs.Specifications
 @using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Infrastructure.Services.Identity
 @using Cfo.Cats.Server.UI.Pages.PRIs.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
@@ -213,7 +211,7 @@
     private GetActivePRIsByUserId.Query? Query { get; set; }
 
     protected override async Task OnInitializedAsync()
-    {        
+    {
         Title = L["Active Pre-Release Inventory"];
 
         Query = new GetActivePRIsByUserId.Query()
@@ -334,46 +332,13 @@
 
     private async Task CompletePRI(PRIPaginationDto PRI)
     {
-         var completePRICommand = new CompletePRI.Command()
-         {
-             ParticipantId = PRI.ParticipantId
-         };
-        
-        var result = await GetNewMediator().Send(completePRICommand);
-
-        if (result.Succeeded)
-        {
-            Snackbar.Add($"{L["PRI successfully completed"]}", Severity.Info);      
-            await OnRefresh();
-        }
-        else
-        {
-            Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
-        }
+        //Todo
+        await Task.CompletedTask;
     }
 
     private async Task AbandonPRI(PRIPaginationDto PRI)
     {
-        var parameters = new DialogParameters<AbandonPriDialog>()
-        {
-            { x => x.Model, new AbandonPRI.Command()
-            {
-                ParticipantId = PRI.ParticipantId,
-                AbandonJustification="",
-                AbandonReason=PriAbandonReason.Other,
-                AbandonedBy=CurrentUser.UserId
-            } }
-        };
-
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, BackdropClick = false };
-
-        var dialog = DialogService.Show<AbandonPriDialog>("Abandon PRI", parameters, options);
-
-        var state = await dialog.Result;
-
-        if (!state!.Canceled)
-        {
-            await OnRefresh();
-        } 
+        //Todo
+        await Task.CompletedTask;
     }
 }

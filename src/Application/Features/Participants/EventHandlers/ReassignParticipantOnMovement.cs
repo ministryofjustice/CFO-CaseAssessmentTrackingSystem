@@ -44,7 +44,7 @@ public class ReassignParticipantOnMovement(
             .FirstOrDefaultAsync(
                 p => p.ParticipantId == participantId 
                 && p.ExpectedReleaseRegionId == to.Id
-                && PriStatus.ActiveList.Contains(p.Status), cancellationToken);
+                && p.IsCompleted == false, cancellationToken);
 
         return pri?.AssignedTo;
     }
