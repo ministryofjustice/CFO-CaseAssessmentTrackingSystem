@@ -5,6 +5,7 @@
 @using Cfo.Cats.Application.Features.Transfers.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.Transfers.Components
+@using Humanizer
 
 @inherits CatsComponentBase
 
@@ -19,20 +20,33 @@
           Class="mb-8 pa-4"
           Filter="new Func<IncomingTransferDto, bool>(FilterIncoming1)">
     <ToolBarContent>
-        <MudIcon Icon="@Icons.Material.Filled.Input" Size="Size.Large" Class="mr-2" />
-        <MudText Typo="Typo.h6">Incoming Transfers</MudText>
-        <MudSpacer />
-        <MudTextField @bind-Value="_searchIncomingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        <div class="d-flex align-start flex-grow-1">
+            <div class="d-flex gap-4">
+                <MudIcon Icon="@Icons.Material.Filled.Input" Size="Size.Large" />
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.caption">Incoming Transfers</MudText>
+                    <MudText Typo="Typo.body1">Entered your contract/region</MudText>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex flex-column justify-end">
+            <MudTextField @bind-Value="_searchIncomingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </div>
     </ToolBarContent>
     <HeaderContent>
+            <MudTh>@ConstantString.Actions</MudTh>
             <MudTh>Participant</MudTh>
             <MudTh>Occurred</MudTh>
             <MudTh>From</MudTh>
             <MudTh>To</MudTh>
             <MudTh>Type</MudTh>
-            <MudTh>Action</MudTh>
     </HeaderContent>
     <RowTemplate>
+        <MudTd DataLabel="@ConstantString.Actions">
+            <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                <MudMenuItem OnClick="async() => await Process(context)">Process and Assign</MudMenuItem>
+            </MudMenu>
+        </MudTd>
         <MudTd DataLabel="Participant">
             <div class="d-flex flex-column">
                 <MudText Typo="Typo.body2">@context.ParticipantFullName</MudText>
@@ -40,19 +54,31 @@
             </div>
         </MudTd>
         <MudTd DataLabel="Occurred">
-            @context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+                <MudText Typo="Typo.body2">@context.MoveOccured.Humanize()</MudText>
+            </div>
         </MudTd>
         <MudTd DataLabel="From">
-            @context.FromLocation.Name (@context.FromLocation.LocationType.Name)
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.FromLocation.Name</MudText>
+                @if(context.FromContract is not null)
+                {
+                    <MudText Typo="Typo.body2">@context.FromContract</MudText>
+                }
+            </div>
         </MudTd>
-        <MudTd>
-            @context.ToLocation.Name (@context.ToLocation.LocationType.Name)
+        <MudTd DataLabel="To">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.ToLocation.Name</MudText>
+                @if(context.ToContract is not null)
+                {
+                    <MudText Typo="Typo.body2">@context.ToContract</MudText>
+                }
+            </div>
         </MudTd>
         <MudTd>
             @context.TransferType.Name
-        </MudTd>
-        <MudTd>
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="async() => await Process(context)">Process</MudButton>
         </MudTd>
     </RowTemplate>
     <PagerContent>
@@ -68,20 +94,33 @@
           Class="mb-8 pa-4"
           Filter="new Func<OutgoingTransferDto, bool>(FilterOutgoing1)">
     <ToolBarContent>
-        <MudIcon Icon="@Icons.Material.Filled.Output" Size="Size.Large" Class="mr-2" />
-        <MudText Typo="Typo.h6">Outgoing Transfers</MudText>
-        <MudSpacer />
-        <MudTextField @bind-Value="_searchOutgoingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        <div class="d-flex align-start flex-grow-1">
+            <div class="d-flex gap-4">
+                <MudIcon Icon="@Icons.Material.Filled.Output" Size="Size.Large" />
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.caption">Outgoing Transfers</MudText>
+                    <MudText Typo="Typo.body1">Left your contract/region</MudText>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex flex-column justify-end">
+            <MudTextField @bind-Value="_searchOutgoingString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </div>
     </ToolBarContent>
     <HeaderContent>
+            <MudTh>Actions</MudTh>
             <MudTh>Participant</MudTh>
             <MudTh>Occurred</MudTh>
             <MudTh>From</MudTh>
             <MudTh>To</MudTh>
             <MudTh>Type</MudTh>
-            <MudTh>Action</MudTh>
     </HeaderContent>
     <RowTemplate>
+        <MudTd DataLabel="@ConstantString.Actions">
+            <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                <MudMenuItem OnClick="() => View(context)">View Participant</MudMenuItem>
+            </MudMenu>
+        </MudTd>
         <MudTd DataLabel="Participant">
             <div class="d-flex flex-column">
                 <MudText Typo="Typo.body2">@context.ParticipantFullName</MudText>
@@ -89,19 +128,29 @@
             </div>
         </MudTd>
         <MudTd DataLabel="Occurred">
-            @context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+            <MudText Typo="Typo.body2">@context.MoveOccured.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+            <MudText Typo="Typo.body2">@context.MoveOccured.Humanize()</MudText>
         </MudTd>
         <MudTd DataLabel="From">
-            @context.FromLocation.Name (@context.FromLocation.LocationType.Name)
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.FromLocation.Name</MudText>
+                @if(context.FromContract is not null)
+                {
+                    <MudText Typo="Typo.body2">@context.FromContract</MudText>
+                }
+            </div>
         </MudTd>
-        <MudTd>
-            @context.ToLocation.Name (@context.ToLocation.LocationType.Name)
+        <MudTd DataLabel="To">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.ToLocation.Name</MudText>
+                @if(context.ToContract is not null)
+                {
+                    <MudText Typo="Typo.body2">@context.ToContract</MudText>
+                }
+            </div>
         </MudTd>
         <MudTd>
             @context.TransferType.Name
-        </MudTd>
-        <MudTd>
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="() => View(context)">View</MudButton>
         </MudTd>
     </RowTemplate>
     <PagerContent>
