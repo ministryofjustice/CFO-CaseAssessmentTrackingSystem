@@ -45,10 +45,6 @@ public static class AddActivity
         {
             public Mapping()
             {
-                //CreateMap<EmploymentActivity, EmploymentDto>();
-                //CreateMap<EducationTrainingActivity, EducationTrainingDto>();
-                //CreateMap<ISWActivity, IswDto>();
-
                 CreateMap<Activity, Command>()
                     .ForMember(dest => dest.ActivityId, opt => opt.MapFrom(src => src.Id))
                     .ForMember(dest => dest.Document, opt => opt.Ignore())
@@ -60,9 +56,26 @@ public static class AddActivity
                 // Self-mapping for updates
                 CreateMap<Activity, Activity>()
                     .ForMember(dest => dest.Id, opt => opt.Ignore())
-                    .ForMember(dest => dest.DomainEvents, opt => opt.Ignore())
                     .ForMember(dest => dest.Created, opt => opt.Ignore())
-                    .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
+                    .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
+                    .ForMember(dest => dest.DomainEvents, opt => opt.Ignore())
+                    .ForMember(dest => dest.OwnerId, opt => opt.Ignore())
+                    .ForMember(dest => dest.Owner, opt => opt.Ignore())
+                    .ForMember(dest => dest.Participant, opt => opt.Ignore())
+                    .AfterMap((_, destination) => destination.ClearDomainEvents());
+
+                CreateMap<ActivityWithTemplate, ActivityWithTemplate>()
+                    .IncludeBase<Activity, Activity>()
+                    .ForMember(dest => dest.Document, opt =>
+                    {
+                        opt.PreCondition((source, destination, context) => source.Document is not null);
+                        opt.MapFrom(source => source.Document);
+                    });
+
+                CreateMap<EducationTrainingActivity, EducationTrainingActivity>().IncludeBase<Activity, Activity>();
+                CreateMap<EmploymentActivity, EmploymentActivity>().IncludeBase<Activity, Activity>();
+                CreateMap<ISWActivity, ISWActivity>().IncludeBase<Activity, Activity>();
+                CreateMap<NonISWActivity, NonISWActivity>().IncludeBase<Activity, Activity>();
             }
         }
     }
@@ -183,18 +196,16 @@ public static class AddActivity
 
             if (request.ActivityId is null)
             {
-                activity.OwnerId = currentUserService.UserId;
                 await unitOfWork.DbContext.Activities.AddAsync(activity, cancellationToken);
             }
             else
             {
-                activity.ClearDomainEvents(); // Suppress "create" domain events
-                var entity = await unitOfWork.DbContext.Activities.SingleAsync(a => a.Id == request.ActivityId, cancellationToken);
-                mapper.Map(activity, entity); // Map activity with new values
+                var entity = await unitOfWork.DbContext.Activities
+                    .Include(a => a.Owner)
+                    .SingleAsync(a => a.Id == request.ActivityId, cancellationToken);
+
+                mapper.Map(activity, entity);
                 entity.TransitionTo(ActivityStatus.SubmittedToProviderStatus);
-                unitOfWork.DbContext.Activities.Entry(entity).State = EntityState.Modified;
-                entity.OwnerId = currentUserService.UserId;
-                unitOfWork.DbContext.Activities.Update(entity);
             }
 
             return Result.Success();
