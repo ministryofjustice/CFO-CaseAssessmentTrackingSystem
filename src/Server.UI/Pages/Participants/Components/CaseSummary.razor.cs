@@ -5,6 +5,8 @@ using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Infrastructure.Constants;
+using Cfo.Cats.Infrastructure.Persistence;
 using Cfo.Cats.Server.UI.Pages.Risk;
 using DocumentFormat.OpenXml.Bibliography;
 using Humanizer;
@@ -15,7 +17,7 @@ public partial class CaseSummary
 {
     private AssessmentSummaryDto? _latestAssessment;
     private BioSummaryDto? _bio;
-    private PriSummaryDto? _latestPRI = null;//replace with the PriDTO when its added
+    private PriSummaryDto? _latestPRI = null;
     [Inject] 
     private IUserService UserService { get; set; } = default!;
 
@@ -27,6 +29,7 @@ public partial class CaseSummary
     private string _riskIcon = String.Empty;
     private Color _riskIconColor = Color.Transparent;
 
+    private bool _showTTGDue;
     private string _noPriInfo = String.Empty;
     private string _priDueInfo = String.Empty;
     private string _priDueTooltipText = String.Empty;
@@ -42,10 +45,7 @@ public partial class CaseSummary
                 .First();
         _bio = ParticipantSummaryDto.BioSummary;
 
-        _latestPRI = ParticipantSummaryDto.Pris is []
-            ? null
-            : ParticipantSummaryDto.Pris.OrderByDescending(p => p.Created)
-                .First();
+        _latestPRI = ParticipantSummaryDto.LatestPri;
 
         SetRiskDueWarning();
         SetPriDueWarning();
@@ -308,7 +308,8 @@ public partial class CaseSummary
     }
     void SetPriDueWarning()
     {
-        if(_latestPRI is null)
+
+        if (_latestPRI is null)
         {
             _noPriInfo = ParticipantSummaryDto.LocationType switch
             {
@@ -317,29 +318,27 @@ public partial class CaseSummary
                 _ => "Not available in this location."
             };
         }
-        else if (_latestPRI.ActualReleaseDate.HasValue)
+        else if (_latestPRI.TTGDueDate.HasValue)
         {
+            _showTTGDue = true;
+            _priDueInfo = _latestPRI.TTGDueDate.Value.Humanize();
+            _priDueTooltipText = String.Format(ConstantString.PriTTGDueWarningToolTip, _latestPRI.TTGDueDate.Value);
 
-            DateOnly _priTTGDueDate = _latestPRI.ActualReleaseDate.Value.AddMonths(1);
-            _priDueInfo = _priTTGDueDate.Humanize();
-            _priDueTooltipText = String.Format("Through the Gate (TTG) Due {0}", _priTTGDueDate);
-
-            int _priTTGDueInDays = _priTTGDueDate.DayNumber - DateOnly.FromDateTime(DateTime.UtcNow.Date).DayNumber;
-            switch (_priTTGDueInDays)
+            if (_latestPRI.IsFinalTTGWarningApplicable)
             {
-                case var _ when _priTTGDueInDays <= 7:
-                    _priDueIcon = Icons.Material.Filled.Error;
-                    _priDueIconColor = Color.Error;
-                    break;
-                case var _ when _priTTGDueInDays >= 0 && _priTTGDueInDays <= 14:
-                    _priDueIcon = Icons.Material.Filled.Warning;
-                    _priDueIconColor = Color.Warning;
-                    break;
+                _priDueIcon = Icons.Material.Filled.Error;
+                _priDueIconColor = Color.Error;
+            }
+            else if (_latestPRI.IsFirstTTGWarningApplicable)
+            {
+                _priDueIcon = Icons.Material.Filled.Warning;
+                _priDueIconColor = Color.Warning;
             }
         }
-        else
+        else if(ParticipantSummaryDto.LocationType.IsCommunity)
         {
-            _priDueInfo = "No Actual Release date provided.";
+            _priDueInfo = ConstantString.PriNoActualReleaseDateWarning;
+            _showTTGDue = true;
         }
     }
 
