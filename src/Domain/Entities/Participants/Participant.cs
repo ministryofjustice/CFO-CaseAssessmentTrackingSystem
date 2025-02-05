@@ -285,16 +285,13 @@ public class Participant : OwnerPropertyEntity<string>
 
     public Participant ApproveConsent()
     {
-        if(ConsentStatus == ConsentStatus.PendingStatus)
+        ConsentStatus = ConsentStatus.GrantedStatus;
+        if (DateOfFirstConsent is null)
         {
-            ConsentStatus = ConsentStatus.GrantedStatus;
-            if (DateOfFirstConsent is null)
-            {
-                var latestConsent = Consents
-                    .OrderBy(c => c.Created)
-                    .Last();
-                DateOfFirstConsent = DateOnly.FromDateTime(latestConsent.Lifetime.StartDate);
-            }
+            var latestConsent = Consents
+                .OrderBy(c => c.Created)
+                .Last();
+            DateOfFirstConsent = DateOnly.FromDateTime(latestConsent.Lifetime.StartDate);
         }
         return this;
     }
