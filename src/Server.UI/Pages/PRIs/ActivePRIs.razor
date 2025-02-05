@@ -1,4 +1,3 @@
-
 @page "/pages/participants/pre-release-inventory"
 
 @using Cfo.Cats.Application.Common.Interfaces.Identity
@@ -334,9 +333,10 @@
 
     private async Task CompletePRI(PRIPaginationDto PRI)
     {
-         var completePRICommand = new CompletePRI.Command()
+        var completePRICommand = new CompletePRI.Command()
          {
-             ParticipantId = PRI.ParticipantId
+             ParticipantId = PRI.ParticipantId,
+             CompletedBy = CurrentUser.UserId
          };
         
         var result = await GetNewMediator().Send(completePRICommand);
