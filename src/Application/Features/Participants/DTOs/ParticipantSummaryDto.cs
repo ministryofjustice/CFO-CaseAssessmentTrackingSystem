@@ -63,7 +63,7 @@ public class ParticipantSummaryDto
     
     public PathwayPlanSummaryDto? PathwayPlan { get; set; }
 
-    public PriSummaryDto[] Pris { get; set; } = [];
+    public PriSummaryDto? LatestPri { get; set; }
 
     public bool HasActiveRightToWork { get; set; }
     public bool IsRightToWorkRequired{ get; set; }
