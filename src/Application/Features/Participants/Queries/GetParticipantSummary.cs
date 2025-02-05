@@ -1,10 +1,14 @@
+using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.Entities.Bios;
+using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Entities.PRIs;
+using System;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
 
@@ -65,11 +69,20 @@ public static class GetParticipantSummary
                 .AnyAsync(x => x.Lifetime.EndDate >= DateTime.Now.Date, cancellationToken);
 
             summary.IsRightToWorkRequired = rtwSettings.NationalitiesExempted.Any(s => s.Equals(summary.Nationality!, StringComparison.OrdinalIgnoreCase)) == false;
-            
-            summary.Pris = await unitOfWork.DbContext.PRIs
-                .Where(pa => pa.ParticipantId == request.ParticipantId)
+
+            summary.LatestPri = await unitOfWork.DbContext.PRIs
+                .Where(x => x.IsCompleted == false)
+                .OrderByDescending(x => x.Created)
                 .ProjectTo<PriSummaryDto>(mapper.ConfigurationProvider)
-                .ToArrayAsync(cancellationToken);
+                .FirstOrDefaultAsync(x => x.ParticipantId == request.ParticipantId, cancellationToken);
+
+            summary.LatestPri!.ObjectiveTasks = await unitOfWork.DbContext.PathwayPlans
+                    .AsNoTracking()
+                    .SelectMany(p => p.Objectives)
+                    .SelectMany(o => o.Tasks)
+                    .Where(t => t.ObjectiveId == summary.LatestPri!.ObjectiveId)
+                    .ProjectTo<ObjectiveTaskDto>(mapper.ConfigurationProvider)
+                    .ToArrayAsync(cancellationToken);
 
             return Result<ParticipantSummaryDto>.Success(summary);
         }
