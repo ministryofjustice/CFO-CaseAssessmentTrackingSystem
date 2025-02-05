@@ -57,7 +57,7 @@ public class PRIEntityTypeConfiguration : IEntityTypeConfiguration<PRI>
 
         builder.HasOne<ApplicationUser>()
             .WithMany()
-            .HasForeignKey(p => p.AbandonedBy)
+            .HasForeignKey(p => p.CompletedBy)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(e => e.AbandonReason)
