@@ -44,11 +44,6 @@ public class PRI : BaseAuditableEntity<Guid>
     public PriStatus Status { get; private set; }
 
     /// <summary>
-    /// When the Pri was Abandoned
-    /// </summary>
-    public DateTime? AbandonedOn { get; private set; }
-
-    /// <summary>
     /// The justification for Abandoning Pri
     /// </summary>
     public string? AbandonJustification { get; private set; }
@@ -59,9 +54,9 @@ public class PRI : BaseAuditableEntity<Guid>
     public PriAbandonReason? AbandonReason { get; private set; }
 
     /// <summary>
-    /// Who Abandoned the Pri
+    /// Who completed the Pri
     /// </summary>
-    public string? AbandonedBy { get; private set; }
+    public string? CompletedBy { get; private set; }
 
     /// <summary>
     /// When the Pri was Completed
@@ -89,32 +84,27 @@ public class PRI : BaseAuditableEntity<Guid>
     {
         AssignedTo = to;
         AcceptedOn = DateTime.UtcNow;
+        Status = PriStatus.Accepted;
         AddDomainEvent(new PRIAssignedDomainEvent(this, to));
         return this;
     }
 
-    public PRI Complete()
+    public PRI Complete(string? completedBy)
     {
         Status = PriStatus.Completed;
         CompletedOn = DateTime.UtcNow;
+        CompletedBy = completedBy;
         AddDomainEvent(new PRICompletedDomainEvent(this));
-        return this;
-    }
-
-    public PRI Accept(DateTime acceptedOn)
-    {
-        Status = PriStatus.Accepted;
-        AcceptedOn = acceptedOn;
         return this;
     }
 
     public PRI Abandon(PriAbandonReason? abandonReason, string? abandonJustification, string? abandonedBy)
     {
         Status = PriStatus.Abandoned;
-        AbandonedOn = DateTime.UtcNow;
+        CompletedOn = DateTime.UtcNow;
         AbandonReason = abandonReason;
         AbandonJustification= abandonJustification;
-        AbandonedBy = abandonedBy;
+        CompletedBy = abandonedBy;
         AddDomainEvent(new PRIAbandonedDomainEvent(this));
         return this;
     }

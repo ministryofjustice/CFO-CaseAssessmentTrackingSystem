@@ -11,7 +11,10 @@ public static class CompletePRI
     public class Command : IRequest<Result>
     {
         [Description("Participant Id")]
-        public required string ParticipantId { get; set; }      
+        public required string ParticipantId { get; set; }
+
+        [Description("Completed By")]
+        public required string? CompletedBy { get; set; }
     }
 
     class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
@@ -27,7 +30,7 @@ public static class CompletePRI
                 throw new NotFoundException("Cannot find PRI", request.ParticipantId);
             }
 
-            pri.Complete();
+            pri.Complete(request.CompletedBy);
 
             return Result.Success();
         }
@@ -41,6 +44,11 @@ public static class CompletePRI
                 .Length(9)
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+
+
+            RuleFor(c => c.CompletedBy)
+                    .NotNull()
+                    .MinimumLength(36);
         }
     }
 
