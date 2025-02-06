@@ -249,24 +249,23 @@
     }
     void SetPriDueWarning()
     {
-        PriSummaryDto? _latestPRI = _participant!.LatestPri;
-        if (_latestPRI is null)
+        PriSummaryDto? latestPRI = _participant!.LatestPri;
+        if (latestPRI is null)
         {
             return;
         }
 
-        if (_latestPRI.TTGDueDate.HasValue)
+        if (latestPRI.TTGDueDate.HasValue)
         {
-            DateOnly _priTTGDueDate = _latestPRI.TTGDueDate.Value;
-            _priDueToolTip = String.Format(ConstantString.PriTTGDueWarningToolTip, _priTTGDueDate.Humanize());
+            DateOnly priTTGDueDate = latestPRI.TTGDueDate.Value;
+            _priDueToolTip = String.Format(ConstantString.PriTTGDueWarningToolTip, priTTGDueDate.Humanize());
 
-            int _priTTGDueInDays = _latestPRI.DaysUntilTTGDueDate!.Value;
-            if (_latestPRI.IsFinalTTGWarningApplicable)
+            if (latestPRI.IsFinalTTGWarningApplicable)
             {
                 _priDueIcon = Icons.Material.Filled.Error;
                 _priDueIconColor = Color.Error;
             }
-            else if (_latestPRI.IsFirstTTGWarningApplicable)
+            else if (latestPRI.IsFirstTTGWarningApplicable)
             {
                 _priDueIcon = Icons.Material.Filled.Warning;
                 _priDueIconColor = Color.Warning;
