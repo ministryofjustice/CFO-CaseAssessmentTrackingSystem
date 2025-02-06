@@ -17,7 +17,8 @@
         Label="@Model.GetMemberDescription(x => x.Location)"
         For="() => Model.Location"
         Clearable="true"
-        ToStringFunc="location => location?.Name">
+        ToStringFunc="location => location?.Name"
+        Disabled="Model.CanChangeLocation is false">
             @foreach (var location in locations)
             {
                 <MudSelectItem Value="location">@location.Name</MudSelectItem>
@@ -26,7 +27,7 @@
     </MudItem>
     <MudItem xs="12">
         <MudChipSet @bind-SelectedValues="filteredTypes"
-        Disabled="Disabled"
+                    Disabled="Disabled || Model.CanChangeActivityDefinition is false"
         SelectionMode="SelectionMode.MultiSelection">
             @foreach (var type in ActivityType.List)
             {
@@ -37,13 +38,12 @@
                 Disabled="IsAvailableAtSelectedLocation(type) is false" />
             }
         </MudChipSet>
-    </MudItem>
+    </MudItem> 
     <MudItem xs="12">
         <MudAutocomplete @ref="activityDropdown"
                          T="ActivityDefinition"
                          @bind-Value="Model.Definition"
                          @bind-Value:after="ActivityChanged"
-                         Disabled="Disabled"
                          Label="@Model.GetMemberDescription(x => x.Definition)"
                          For="() => Model.Definition"
                          SearchFunc="@SearchActivities"

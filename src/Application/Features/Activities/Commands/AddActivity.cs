@@ -41,6 +41,9 @@ public static class AddActivity
         [Description("Upload Template")]
         public IBrowserFile? Document { get; set; }
 
+        public bool CanChangeLocation => ActivityId is null;
+        public bool CanChangeActivityDefinition => ActivityId is null;
+
         class Mapping : Profile
         {
             public Mapping()
@@ -225,6 +228,11 @@ public static class AddActivity
             {
                 RuleFor(c => c.ActivityId)
                     .Must(BeInPendingStatus);
+
+                RuleFor(c => c.Definition)
+                    .Must((command, definition) => NotBeDifferentFromTheOriginal(command.ActivityId!.Value, definition!))
+                    .When(c => c.Definition is not null)
+                    .WithMessage("Changing activity type is not permitted");
             });
 
             RuleFor(c => c.ParticipantId)
@@ -282,7 +290,14 @@ public static class AddActivity
 
             });
         }
-        
+
+        private bool NotBeDifferentFromTheOriginal(Guid activityId, ActivityDefinition definition)
+        {
+            var activity = unitOfWork.DbContext.Activities.Single(a => a.Id == activityId);
+            return activity.Definition == definition;
+        }
+
+
         private bool BeInPendingStatus(Guid? activityId)
         {
             var activity = unitOfWork.DbContext.Activities.Single(a => a.Id == activityId);
