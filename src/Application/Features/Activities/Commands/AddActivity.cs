@@ -129,6 +129,7 @@ public static class AddActivity
                 ParticipantStatus: participant.EnrolmentStatus!,
                 CommencedOn: request.CommencedOn!.Value,
                 currentUserService.TenantId!,
+                currentUserService.UserId!,
                 AdditionalInformation: request.AdditionalInformation);
 
             var classification = request.Definition!.Classification;
