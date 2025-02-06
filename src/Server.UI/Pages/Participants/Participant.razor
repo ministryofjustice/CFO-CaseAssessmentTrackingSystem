@@ -22,7 +22,7 @@
         <CascadingValue Value="_participant">
             <MudPaper Class="pa-2 ma-2" Style="height: 100%; min-height: calc(100vh - 300px);" Elevation="3">
                 <MudGrid Spacing="1" Class="pa-3">
-                      <MudItem md="3">
+                    <MudItem md="3">
                         <MudText Typo="Typo.h6" Color="Color.Primary">
                             <b>
                                 Case Ref
@@ -35,7 +35,7 @@
                         </MudText>
                     </MudItem>
                     <MudSpacer/>
-                     <MudItem md="3">
+                    <MudItem md="3">
                         <MudText Typo="Typo.h6" Color="Color.Primary">
                             <b>
                                 Participant
@@ -48,7 +48,7 @@
                         </MudText>
                     </MudItem>
                     <MudSpacer/>
-                    
+
                     <MudItem md="3">
                         <MudText Typo="Typo.h6" Color="Color.Primary">
                             <b>
@@ -151,7 +151,7 @@
                         <MudTabPanel Text="Assessments">
                             <CaseAssessment ParticipantId="@Id" />
                         </MudTabPanel>
-                        <MudTabPanel Text="PRI">
+                        <MudTabPanel Text="PRI" Icon="@_priDueIcon" IconColor="@_priDueIconColor" ToolTip="@_priDueToolTip">
                             <CasePRI ParticipantId="@Id" OnUpdate="Refresh" />
                         </MudTabPanel>
                         <MudTabPanel Text="Bio">
@@ -169,9 +169,9 @@
                         <MudTabPanel Text="Timeline">
                             <CaseTimeline />
                         </MudTabPanel>
-                        
+
                         @if (UserProfile.AssignedRoles.Any(r =>
-                             r is RoleNames.SystemSupport or RoleNames.SMT or RoleNames.QAManager))
+                   r is RoleNames.SystemSupport or RoleNames.SMT or RoleNames.QAManager))
                         {
                             <MudTabPanel Text="Audit">
                                 <ParticipantAudit Id="@Id"/>
@@ -201,6 +201,11 @@
     private string _riskInfo = String.Empty;
     private string _riskIcon = String.Empty;
     private Color _riskIconColor = Color.Transparent;
+
+    private string _priDueToolTip = String.Empty;
+    private string _priDueIcon = String.Empty;
+    private Color _priDueIconColor = Color.Transparent;
+
     private bool _showRightToWorkWarning = false;
     private string _rightToWorkAlertMessage = ConstantString.RightToWorkIsRequiredMessage;
 
@@ -210,6 +215,7 @@
         await base.OnInitializedAsync();
         SetRiskDueWarning();
         ShowRightToWorkWarning();
+        SetPriDueWarning();
     }
 
     void ShowRightToWorkWarning()
@@ -241,6 +247,38 @@
             }
         }
     }
+    void SetPriDueWarning()
+    {
+        PriSummaryDto? latestPRI = _participant!.LatestPri;
+        if (latestPRI is null)
+        {
+            return;
+        }
+
+        if (latestPRI.TTGDueDate.HasValue)
+        {
+            DateOnly priTTGDueDate = latestPRI.TTGDueDate.Value;
+            _priDueToolTip = String.Format(ConstantString.PriTTGDueWarningToolTip, priTTGDueDate.Humanize());
+
+            if (latestPRI.IsFinalTTGWarningApplicable)
+            {
+                _priDueIcon = Icons.Material.Filled.Error;
+                _priDueIconColor = Color.Error;
+            }
+            else if (latestPRI.IsFirstTTGWarningApplicable)
+            {
+                _priDueIcon = Icons.Material.Filled.Warning;
+                _priDueIconColor = Color.Warning;
+            }
+        }
+        if (_participant.LocationType.IsCommunity)
+        {
+            _priDueToolTip = ConstantString.PriNoActualReleaseDateWarning;
+            _priDueIcon = Icons.Material.Outlined.Info;
+            _priDueIconColor = Color.Warning;
+        }
+    }
+
     private async Task Refresh()
     {
         _participant = await GetNewMediator().Send(new GetParticipantSummary.Query()
