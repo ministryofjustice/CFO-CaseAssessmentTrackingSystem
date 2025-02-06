@@ -44,6 +44,7 @@
                          T="ActivityDefinition"
                          @bind-Value="Model.Definition"
                          @bind-Value:after="ActivityChanged"
+                         Disabled="Disabled || Model.CanChangeActivityDefinition is false"
                          Label="@Model.GetMemberDescription(x => x.Definition)"
                          For="() => Model.Definition"
                          SearchFunc="@SearchActivities"
