@@ -20,6 +20,7 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
         EnrolmentStatus ParticipantStatus,
         DateTime CommencedOn,
         string TenantId,
+        string OwnerId,
         string? AdditionalInformation = null);
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -46,6 +47,7 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
         ObjectiveId = context.Task.ObjectiveId;
         AdditionalInformation = context.AdditionalInformation;
         Status = ActivityStatus.PendingStatus;
+        OwnerId = context.OwnerId;
 
         AddDomainEvent(new ActivityCreatedDomainEvent(this));
     }
