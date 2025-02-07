@@ -156,7 +156,7 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 var entry = _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Activity)
                     .FirstOrDefault(a => a.Id == c.QueueEntryId);
 
-                return entry != null && entry.Activity!.OwnerId!.Equals(c.CurrentUser!.UserId) == false;
+                return entry != null && c.CurrentUser!.UserId.Equals(entry.Activity!.OwnerId) == false;
             }
         }
 
