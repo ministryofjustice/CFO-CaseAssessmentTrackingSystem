@@ -39,7 +39,7 @@
     bool saving = false;
     MudForm? form;
 
-    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public required ArchiveCase.Command Model { get; set; }

@@ -23,11 +23,11 @@ public class PicklistAutoComplete : MudAutocomplete<string>
     {
         InvokeAsync(StateHasChanged);
     }
-    
-    protected override void Dispose(bool disposing)
+
+    protected override ValueTask DisposeAsyncCore()
     {
         PicklistService.OnChange -= PicklistService_OnChange;
-        base.Dispose(disposing);
+        return base.DisposeAsyncCore();
     }
     
     public override Task SetParametersAsync(ParameterView parameters)
@@ -39,7 +39,7 @@ public class PicklistAutoComplete : MudAutocomplete<string>
         return base.SetParametersAsync(parameters);
     }
     
-    private Task<IEnumerable<string>> SearchKeyValues(string value, CancellationToken cancellation=default)
+    private Task<IEnumerable<string>> SearchKeyValues(string? value, CancellationToken cancellation=default)
     {
         // if text is null or empty, show complete list
         return string.IsNullOrEmpty(value)

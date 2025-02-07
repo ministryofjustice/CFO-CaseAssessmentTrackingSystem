@@ -11,12 +11,8 @@
 
 
 <MudMenu Icon="@Icons.Material.Filled.Add" AriaLabel="Add Induction" AnchorOrigin="Origin.BottomLeft">
-    <MudMenuItem OnClick="AddHubInduction">
-        Hub Induction
-    </MudMenuItem>
-    <MudMenuItem OnClick="AddWingInduction">
-        Wing Induction
-    </MudMenuItem>
+    <MudMenuItem OnClick="AddHubInduction" Label="Hub Induction" />
+    <MudMenuItem OnClick="AddWingInduction" Label="Wing Induction" />
 </MudMenu>
 
 <MudExpansionPanels MultiExpansion="true">
@@ -153,7 +149,7 @@
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
-        var dialog = DialogService.Show<AddHubInductionDialog>
+        var dialog = await DialogService.ShowAsync<AddHubInductionDialog>
             ("Add a Hub Induction", parameters, options);
 
         var state = await dialog.Result;
@@ -179,7 +175,7 @@
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
-        var dialog = DialogService.Show<AddWingInductionDialog>
+        var dialog = await DialogService.ShowAsync<AddWingInductionDialog>
             ("Add a Wing Induction", parameters, options);
 
         var state = await dialog.Result;
@@ -214,7 +210,7 @@
             MaxWidth = MaxWidth.Small,
             FullWidth = true
         };
-        var dialog = DialogService.Show<AddInductionPhaseDialog>
+        var dialog = await DialogService.ShowAsync<AddInductionPhaseDialog>
             ("Add a Wing Phase", parameters, options);
 
         var state = await dialog.Result;
@@ -252,7 +248,7 @@
             MaxWidth = MaxWidth.Small,
             FullWidth = true
         };
-        var dialog = DialogService.Show<CompletePhaseDialog>
+        var dialog = await DialogService.ShowAsync<CompletePhaseDialog>
             ("Complete Wing Phase", parameters, options);
 
         var state = await dialog.Result;

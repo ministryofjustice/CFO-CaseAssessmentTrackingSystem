@@ -284,7 +284,7 @@
         var model = new ApplicationRoleDto { Id = "", Name = "" };
         var parameters = new DialogParameters<RoleFormDialog> { { x => x.Model, model } };
         var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = DialogService.Show<RoleFormDialog>(L["Create a new role"], parameters, options);
+        var dialog = await DialogService.ShowAsync<RoleFormDialog>(L["Create a new role"], parameters, options);
         var result = await dialog.Result;
 
         if (!result!.Canceled)
@@ -316,7 +316,7 @@
             { x => x.Model, item }
         };
         var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = DialogService.Show<RoleFormDialog>(L["Edit the role"], parameters, options);
+        var dialog = await DialogService.ShowAsync<RoleFormDialog>(L["Edit the role"], parameters, options);
         var result = await dialog.Result;
         if (!result!.Canceled)
         {
@@ -448,7 +448,7 @@
             { x => x.ContentText, string.Format(deleteContent, dto.Name) }
         };
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
-        var dialog = DialogService.Show<ConfirmationDialog>(ConstantString.DeleteConfirmationTitle, parameters, options);
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>(ConstantString.DeleteConfirmationTitle, parameters, options);
         var result = await dialog.Result;
         if (!result!.Canceled)
         {
@@ -476,7 +476,7 @@
             { x => x.ContentText, string.Format(deleteContent, _selectedItems.Count) }
         };
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
-        var dialog = DialogService.Show<ConfirmationDialog>(ConstantString.DeleteConfirmationTitle, parameters, options);
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>(ConstantString.DeleteConfirmationTitle, parameters, options);
         var result = await dialog.Result;
         if (!result!.Canceled)
         {

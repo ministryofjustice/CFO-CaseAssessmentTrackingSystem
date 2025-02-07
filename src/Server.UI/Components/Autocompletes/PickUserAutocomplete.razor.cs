@@ -23,10 +23,10 @@ public class PickUserAutocomplete : MudAutocomplete<string>
         InvokeAsync(StateHasChanged);
     }
 
-    protected override void Dispose(bool disposing)
+    protected override ValueTask DisposeAsyncCore()
     {
         UserService.OnChange -= TenantsService_OnChange;
-        base.Dispose(disposing);
+        return base.DisposeAsyncCore();
     }
 
     public override Task SetParametersAsync(ParameterView parameters)
@@ -43,7 +43,7 @@ public class PickUserAutocomplete : MudAutocomplete<string>
         return base.SetParametersAsync(parameters);
     }
 
-    private Task<IEnumerable<string>> SearchKeyValues(string value, CancellationToken cancellation)
+    private Task<IEnumerable<string>> SearchKeyValues(string? value, CancellationToken cancellation)
     {
         var result = string.IsNullOrEmpty(value)
             ? userList?.Select(x => x.UserName)

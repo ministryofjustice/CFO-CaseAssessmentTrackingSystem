@@ -52,7 +52,7 @@
     private MudForm? form;
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; } = default!;
+    private IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public required AddOrUpdateSupervisor.Command Model { get; set; }

@@ -51,7 +51,7 @@
     [Parameter]
     public ReassignParticipants.Command? Model { get ; set; }
 
-    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
     [Parameter] public UserProfile? UserProfile { get; set; }
 
 

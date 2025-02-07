@@ -147,7 +147,7 @@
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
-        var dialog = DialogService.Show<CompleteTaskDialog>("Complete task", parameters, options);
+        var dialog = await DialogService.ShowAsync<CompleteTaskDialog>("Complete task", parameters, options);
 
         var state = await dialog.Result;
 
@@ -203,7 +203,7 @@
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
-        var dialog = DialogService.Show<AdjustDateTaskDialog>("Adjust date", parameters, options);
+        var dialog = await DialogService.ShowAsync<AdjustDateTaskDialog>("Adjust date", parameters, options);
 
         var state = await dialog.Result;
 
@@ -236,7 +236,7 @@
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
-        var dialog = DialogService.Show<RenameTaskDialog>("Rename task", parameters, options);
+        var dialog = await DialogService.ShowAsync<RenameTaskDialog>("Rename task", parameters, options);
 
         var state = await dialog.Result;
 
@@ -265,7 +265,7 @@
             }
         };
 
-        var dialog = DialogService.Show<AddActivityDialog>("Add Activity/ETE", parameters, new DialogOptions
+        var dialog = await DialogService.ShowAsync<AddActivityDialog>("Add Activity/ETE", parameters, new DialogOptions
             {
                 MaxWidth = MaxWidth.Small,
                 FullWidth = true,
@@ -294,7 +294,7 @@
             { x => x.Objective, Objective }
         };
 
-        var dialog = DialogService.Show<ActivitiesDialog>("Activity/ETE history for task", parameters, new DialogOptions
+        var dialog = await DialogService.ShowAsync<ActivitiesDialog>("Activity/ETE history for task", parameters, new DialogOptions
         {
             MaxWidth = MaxWidth.Small,
             FullWidth = true,

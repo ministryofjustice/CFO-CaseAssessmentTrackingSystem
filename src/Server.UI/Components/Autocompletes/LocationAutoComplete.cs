@@ -22,10 +22,10 @@ namespace Cfo.Cats.Server.UI.Components.Autocompletes
             InvokeAsync(StateHasChanged);
         }
 
-        protected override void Dispose(bool disposing)
+        protected override ValueTask DisposeAsyncCore()
         {
             LocationService.OnChange -= LocationService_OnChange;
-            base.Dispose(disposing);
+            return base.DisposeAsyncCore();
         }
 
         public override Task SetParametersAsync(ParameterView parameters)
@@ -38,7 +38,7 @@ namespace Cfo.Cats.Server.UI.Components.Autocompletes
             return base.SetParametersAsync(parameters);
         }
 
-        private async Task<IEnumerable<LocationDto>> SearchLocations(string arg1, CancellationToken token)
+        private async Task<IEnumerable<LocationDto>> SearchLocations(string? arg1, CancellationToken token)
         {
             if (string.IsNullOrEmpty(arg1)) 
             {

@@ -22,7 +22,7 @@ public class DialogServiceHelper
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = _dialogService.Show<DeleteConfirmation>(title, parameters, options);
+        var dialog = await _dialogService.ShowAsync<DeleteConfirmation>(title, parameters, options);
         var result = await dialog.Result;
         if (!result!.Canceled)
         {
@@ -42,7 +42,7 @@ public class DialogServiceHelper
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = _dialogService.Show<ConfirmationDialog>(title, parameters, options);
+        var dialog = await _dialogService.ShowAsync<ConfirmationDialog>(title, parameters, options);
         var result = await dialog.Result;
 
         if (!result!.Canceled)

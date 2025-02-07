@@ -129,10 +129,10 @@
                         <NestedList>
                             <MudListItem>
                                 <MudTextField Label="@activity.GetMemberDescription(x => x.AdditionalInformation)"
-                                              Value="@activity.AdditionalInformation"
-                                              Lines="5"
-                                              Class="mt-0"
-                                              Disabled />
+                                Value="@activity.AdditionalInformation"
+                                Lines="5"
+                                Class="mt-0"
+                                Disabled />
                             </MudListItem>
                         </NestedList>
                     </MudListItem>
@@ -161,7 +161,7 @@
     public required ObjectiveDto Objective { get; set; }
 
     [CascadingParameter]
-    public required MudDialogInstance Dialog { get; set; }
+    public required IMudDialogInstance Dialog { get; set; }
 
     [Parameter]
     public ObjectiveTaskDto? Task { get; set; }
@@ -233,14 +233,16 @@
             }
         };
 
-        var dialog = DialogService.Show<EditActivityDialog>("Edit Activity/ETE", parameters, new DialogOptions
+        var dialog = await DialogService.ShowAsync<EditActivityDialog>("Edit Activity/ETE", parameters, new DialogOptions
         {
             MaxWidth = MaxWidth.Small,
             FullWidth = true,
             CloseButton = true
         });
 
-        if (await dialog.Result is not { Canceled: true })
+        var result = await dialog.Result;
+
+        if (result!.Canceled == false)
         {
             // await OnChange.InvokeAsync();
         }
