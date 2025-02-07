@@ -13,18 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "src\Domain\Domain
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "src\Infrastructure\Infrastructure.csproj", "{CCB27164-7A05-4DD6-9D42-403C1D23429C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_SolutionItems", "{1B26F38D-22D1-4A00-B3D3-D77C5979281B}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-		.gitignore = .gitignore
-		docker-compose.yml = docker-compose.yml
-		.config\dotnet-tools.json = .config\dotnet-tools.json
-		LICENSE = LICENSE
-		ModifyDatabase.ps1 = ModifyDatabase.ps1
-		NuGet.config = NuGet.config
-		README.md = README.md
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{62ABFE2F-D4F3-4E44-AA07-20D679B04CF3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.UnitTests", "test\Application.UnitTests\Application.UnitTests.csproj", "{2FC2E6B9-5186-4A39-A2CC-0975ED2AEC1E}"
