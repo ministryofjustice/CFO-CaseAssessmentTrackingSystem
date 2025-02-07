@@ -75,15 +75,16 @@ public static class GetParticipantSummary
                 .OrderByDescending(x => x.Created)
                 .ProjectTo<PriSummaryDto>(mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(x => x.ParticipantId == request.ParticipantId, cancellationToken);
-
-            summary.LatestPri!.ObjectiveTasks = await unitOfWork.DbContext.PathwayPlans
-                    .AsNoTracking()
-                    .SelectMany(p => p.Objectives)
-                    .SelectMany(o => o.Tasks)
-                    .Where(t => t.ObjectiveId == summary.LatestPri!.ObjectiveId)
-                    .ProjectTo<ObjectiveTaskDto>(mapper.ConfigurationProvider)
-                    .ToArrayAsync(cancellationToken);
-
+            if (summary.LatestPri is not null)
+            {
+                summary.LatestPri.ObjectiveTasks = await unitOfWork.DbContext.PathwayPlans
+                        .AsNoTracking()
+                        .SelectMany(p => p.Objectives)
+                        .SelectMany(o => o.Tasks)
+                        .Where(t => t.ObjectiveId == summary.LatestPri.ObjectiveId)
+                        .ProjectTo<ObjectiveTaskDto>(mapper.ConfigurationProvider)
+                        .ToArrayAsync(cancellationToken);
+            }
             return Result<ParticipantSummaryDto>.Success(summary);
         }
     }
