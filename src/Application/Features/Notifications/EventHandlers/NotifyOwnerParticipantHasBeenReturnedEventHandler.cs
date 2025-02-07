@@ -7,6 +7,11 @@ public class NotifyOwnerParticipantHasBeenReturnedEventHandler(IUnitOfWork unitO
 {
     public async Task Handle(ParticipantTransitionedDomainEvent notification, CancellationToken cancellationToken)
     {
+        if (notification.Item.OwnerId is null)
+        {
+            return;
+        }
+
         if (notification.From == EnrolmentStatus.SubmittedToProviderStatus && notification.To == EnrolmentStatus.EnrollingStatus)
         {
             const string heading = "Enrolment returned";
@@ -23,7 +28,7 @@ public class NotifyOwnerParticipantHasBeenReturnedEventHandler(IUnitOfWork unitO
 
             if(previous is null)
             {
-                var n = Notification.Create(heading, details, notification.Item.OwnerId!);
+                var n = Notification.Create(heading, details, notification.Item.OwnerId);
                 n.SetLink($"/pages/participants/?listView=Enrolling");
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }
