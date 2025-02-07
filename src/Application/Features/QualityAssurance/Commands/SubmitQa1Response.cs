@@ -148,7 +148,7 @@ public static class SubmitQa1Response
             var entry = await _unitOfWork.DbContext.EnrolmentQa1Queue.Include(c => c.Participant)
                 .FirstOrDefaultAsync(a => a.Id == c.QueueEntryId, cancellationToken: cancellationToken);
 
-            return entry != null && entry.Participant!.OwnerId!.Equals(c.CurrentUser!.UserId) == false;
+            return entry != null && c.CurrentUser!.UserId.Equals(entry.Participant!.OwnerId) == false;
         }
     }
 }
