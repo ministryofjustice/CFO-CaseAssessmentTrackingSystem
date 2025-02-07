@@ -7,6 +7,11 @@ public class NotifyOwnerParticipantHasBeenApproved(IUnitOfWork unitOfWork) : INo
 {
     public async Task Handle(ParticipantTransitionedDomainEvent notification, CancellationToken cancellationToken)
     {
+        if (notification.Item.OwnerId is null)
+        {
+            return;
+        }
+
         if (notification.To == EnrolmentStatus.ApprovedStatus)
         {
             const string heading = "Enrolment approved";
@@ -23,7 +28,7 @@ public class NotifyOwnerParticipantHasBeenApproved(IUnitOfWork unitOfWork) : INo
 
             if (previous is null)
             {
-                var n = Notification.Create(heading, details, notification.Item.OwnerId!);
+                var n = Notification.Create(heading, details, notification.Item.OwnerId);
                 n.SetLink($"/pages/participants/?listView=Approved");
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }
