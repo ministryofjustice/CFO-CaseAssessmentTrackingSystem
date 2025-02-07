@@ -155,7 +155,7 @@ public static class SubmitPqaResponse
             var entry = _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
                 .FirstOrDefault(a => a.Id == c.QueueEntryId);
 
-            return entry != null && entry.Participant!.OwnerId!.Equals(c.CurrentUser!.UserId) == false;
+            return entry != null && c.CurrentUser!.UserId.Equals(entry.Participant!.OwnerId) == false;
         }
     }
 
