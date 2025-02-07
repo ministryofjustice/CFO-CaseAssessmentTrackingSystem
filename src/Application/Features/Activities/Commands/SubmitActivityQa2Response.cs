@@ -157,7 +157,7 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 var entry = await _unitOfWork.DbContext.ActivityQa2Queue.Include(c => c.Activity)
                     .FirstOrDefaultAsync(a => a.Id == c.ActivityQueueEntryId, cancellationToken: cancellationToken);
 
-                return entry != null && entry.Activity!.OwnerId!.Equals(c.CurrentUser!.UserId) == false;
+                return entry != null && c.CurrentUser!.UserId.Equals(entry.Activity!.OwnerId) == false;
             }
         }
     }
