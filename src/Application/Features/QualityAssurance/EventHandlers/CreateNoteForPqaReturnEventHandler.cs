@@ -15,8 +15,7 @@ public class CreateNoteForPqaReturnEventHandler : INotificationHandler<Enrolment
             var n = returned.Notes.First();
             returned.Participant!.AddNote(new Note
             {
-                Message = n.Message,
-                TenantId = notification.Entry!.Participant!.Owner!.TenantId!
+                Message = n.Message
             });
         }
 

@@ -14,8 +14,7 @@ namespace Cfo.Cats.Application.Features.Activities.EventHandlers
                 var n = returned.Notes.First();
                 returned.Participant!.AddNote(new Note
                 {
-                    Message = n.Message,
-                    TenantId = notification.Entry!.Activity!.TenantId!
+                    Message = n.Message
                 });
             }
 

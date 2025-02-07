@@ -46,7 +46,6 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHave
         {
             _notes.Add(new EnrolmentQueueEntryNote()
             {
-                TenantId = TenantId,
                 Message = message,
                 IsExternal = isExternal
             });
