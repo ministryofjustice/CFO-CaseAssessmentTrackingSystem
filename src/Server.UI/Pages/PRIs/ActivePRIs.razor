@@ -99,24 +99,29 @@
                          Dense="true"
                          EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">              
 
-                        <MudMenuItem OnClick="@(()=> ViewParticipant(context.Item))">
-                            @ConstantString.ViewParticipant
-                        </MudMenuItem>
+                    <MudMenuItem OnClick="@(()=> ViewParticipant(context.Item))">
+                        @ConstantString.ViewParticipant
+                    </MudMenuItem>
 
-                        @if (context.Item.ActualReleaseDate == null)
+                    @if (context.Item.ActualReleaseDate == null)
                     {
                         <MudMenuItem OnClick="@(()=> AddActualReleaseDate(context.Item))">
                             @ConstantString.AddActualReleaseDate
                         </MudMenuItem>
                     }
-
-                    <MudMenuItem OnClick="@(()=> CompletePRI(context.Item))" Disabled="true">
-                        @ConstantString.CompletePRI
-                    </MudMenuItem>
-
-                    <MudMenuItem OnClick="@(()=> AbandonPRI(context.Item))" Disabled="true">
+                    else
+                    {
+                        if (CurrentUser.UserId == context.Item.AssignedTo)
+                        {
+                            <MudMenuItem OnClick="@(()=> CompletePRI(context.Item))">
+                                @ConstantString.CompletePRI
+                            </MudMenuItem>
+                        }
+                    }
+                    <MudMenuItem OnClick="@(()=> AbandonPRI(context.Item))">
                         @ConstantString.AbandonPRI
                     </MudMenuItem>
+
                 </MudMenu>
             </CellTemplate>
         </TemplateColumn>
@@ -361,7 +366,7 @@
                 ParticipantId = PRI.ParticipantId,
                 AbandonJustification="",
                 AbandonReason=PriAbandonReason.Other,
-                AbandonedBy=CurrentUser.UserId
+                AbandonedBy=CurrentUser.UserId!
             } }
         };
 

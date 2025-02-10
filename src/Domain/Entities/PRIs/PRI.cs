@@ -98,7 +98,7 @@ public class PRI : BaseAuditableEntity<Guid>
         return this;
     }
 
-    public PRI Abandon(PriAbandonReason? abandonReason, string? abandonJustification, string? abandonedBy)
+    public PRI Abandon(PriAbandonReason abandonReason, string? abandonJustification, string abandonedBy)
     {
         Status = PriStatus.Abandoned;
         CompletedOn = DateTime.UtcNow;
