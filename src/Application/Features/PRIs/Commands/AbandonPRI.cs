@@ -14,13 +14,13 @@ public static class AbandonPRI
         public required string ParticipantId { get; set; }
 
         [Description("Reason Abandoned")]
-        public PriAbandonReason AbandonReason { get; set; } = PriAbandonReason.Other;
+        public required PriAbandonReason AbandonReason { get; set; } = PriAbandonReason.Other;
 
         [Description("Abandoned Justification")]
         public string? AbandonJustification { get; set; }
 
         [Description("Abandoned By")]
-        public string? AbandonedBy { get; set; }
+        public required string AbandonedBy { get; set; }
     }
 
     class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
@@ -31,12 +31,7 @@ public static class AbandonPRI
                 .SingleOrDefaultAsync(p => p.ParticipantId == request.ParticipantId
                 && PriStatus.ActiveList.Contains(p.Status), cancellationToken);
 
-            if (pri == null)
-            {
-                throw new NotFoundException("Cannot find PRI", request.ParticipantId);
-            }
-
-            pri.Abandon(request.AbandonReason, request.AbandonJustification, request.AbandonedBy);
+            pri!.Abandon(request.AbandonReason, request.AbandonJustification, request.AbandonedBy);
 
             return Result.Success();
         }
@@ -62,5 +57,47 @@ public static class AbandonPRI
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
         }
+    }
+
+    public class A_PRIExists : AbstractValidator<Command>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public A_PRIExists(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(p => p.ParticipantId)
+                .NotNull()
+                .Length(9)
+                .WithMessage("Invalid Participant Id")
+                .Must(Exist)
+                .WithMessage("PRI does not exist")
+                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+        }
+
+        // Check if the PRI exists in the database
+        private bool Exist(string participantId)
+            =>  _unitOfWork.DbContext.PRIs.Any(p => p.ParticipantId == participantId);
+    }
+
+    public class B_PRIMustNotAlreadyBeCompletedRejected : AbstractValidator<Command>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public B_PRIMustNotAlreadyBeCompletedRejected(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(p => p.ParticipantId)
+                .Must(NotBeCompletedRejected)
+                .WithMessage("PRI has already been abandoned/rejected")
+                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+        }
+
+        // Check if the participant exists in the database
+        private bool NotBeCompletedRejected(string participantId)
+            => _unitOfWork.DbContext.PRIs.Any(p => p.ParticipantId == participantId
+                    && PriStatus.ActiveList.Contains(p.Status));                        
     }
 }
