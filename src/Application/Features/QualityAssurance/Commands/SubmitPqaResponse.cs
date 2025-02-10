@@ -170,7 +170,7 @@ public static class SubmitPqaResponse
 
             RuleFor(c => c)
                 .MustAsync(ParticipantMustHaveOwner)
-                .WithMessage("Participant must have an owner on approval")
+                .WithMessage("Participant must have an owner on approval. Please return and reassign")
                 .When(c => c.Response is PqaResponse.Accept);
         }
 
