@@ -141,5 +141,27 @@ public static class SubmitEscalationResponse
             return entry != null && entry.Participant!.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus;
         }
     }
-    
+
+    public class E_ParticipantMustHaveOwner : AbstractValidator<Command>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        public E_ParticipantMustHaveOwner(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c)
+                .MustAsync(ParticipantMustHaveOwner)
+                .WithMessage("Participant must have an owner on approval. Please return and reassign")
+                .When(c => c.Response is EscalationResponse.Accept);
+        }
+
+        private async Task<bool> ParticipantMustHaveOwner(Command command, CancellationToken cancellationToken)
+        {
+            var entry = await _unitOfWork.DbContext.EnrolmentEscalationQueue.Include(c => c.Participant)
+                .FirstAsync(a => a.Id == command.QueueEntryId, cancellationToken: cancellationToken);
+
+            return await _unitOfWork.DbContext.Participants.AnyAsync(p => p.Id == entry.ParticipantId && p.OwnerId != null, cancellationToken);
+        }
+    }
+
 }
