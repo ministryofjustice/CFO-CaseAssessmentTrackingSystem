@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
+using System.Threading;
 
 namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
 
@@ -157,6 +158,28 @@ public static class SubmitPqaResponse
                 .FirstOrDefaultAsync(a => a.Id == c.QueueEntryId, cancellationToken: cancellationToken);
 
             return entry != null && c.CurrentUser!.UserId.Equals(entry.Participant!.OwnerId) == false;
+        }
+    }
+
+    public class F_ParticipantMustHaveOwner : AbstractValidator<Command>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        public F_ParticipantMustHaveOwner(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c)
+                .MustAsync(ParticipantMustHaveOwner)
+                .WithMessage("Participant must have an owner on approval")
+                .When(c => c.Response is PqaResponse.Accept);
+        }
+
+        private async Task<bool> ParticipantMustHaveOwner(Command command, CancellationToken cancellationToken)
+        {
+            var entry = await _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
+                .FirstAsync(a => a.Id == command.QueueEntryId, cancellationToken: cancellationToken);
+
+            return await _unitOfWork.DbContext.Participants.AnyAsync(p => p.Id == entry.ParticipantId && p.OwnerId != null, cancellationToken);
         }
     }
 }

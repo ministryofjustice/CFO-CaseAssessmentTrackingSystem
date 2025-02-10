@@ -151,4 +151,26 @@ public static class SubmitQa1Response
             return entry != null && c.CurrentUser!.UserId.Equals(entry.Participant!.OwnerId) == false;
         }
     }
+
+    public class F_ParticipantMustHaveOwner : AbstractValidator<Command>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        public F_ParticipantMustHaveOwner(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c)
+                .MustAsync(ParticipantMustHaveOwner)
+                .WithMessage("Participant must have an owner on approval")
+                .When(c => c.Accept is true);
+        }
+
+        private async Task<bool> ParticipantMustHaveOwner(Command command, CancellationToken cancellationToken)
+        {
+            var entry = await _unitOfWork.DbContext.EnrolmentQa1Queue.Include(c => c.Participant)
+                .FirstAsync(a => a.Id == command.QueueEntryId, cancellationToken: cancellationToken);
+
+            return await _unitOfWork.DbContext.Participants.AnyAsync(p => p.Id == entry.ParticipantId && p.OwnerId != null, cancellationToken);
+        }
+    }
 }
