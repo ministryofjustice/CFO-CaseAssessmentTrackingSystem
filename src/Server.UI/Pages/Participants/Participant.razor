@@ -11,8 +11,7 @@
 @attribute [Authorize]
 
 <style>
-    .primary-tabs .mud-tabs-toolbar .mud-tooltip-root .mud-tab-active{
-
+    .primary-tabs .mud-tabs-toolbar .mud-tooltip-root .mud-tab-active {
     }
 </style>
 
@@ -61,7 +60,7 @@
                             @_participant.Location
                         </MudText>
                     </MudItem>
-                    <MudSpacer/>
+                    <MudSpacer />
                     <MudItem md="3">
                         <MudText Typo="Typo.h6" Color="Color.Primary">
                             <b>
@@ -139,14 +138,14 @@
                     </MudItem>
                 </MudGrid>
 
-                @if(_participant.EnrolmentStatus != EnrolmentStatus.IdentifiedStatus)
+                @if (_participant.EnrolmentStatus != EnrolmentStatus.IdentifiedStatus)
                 {
                     <RagBar ParticipantId="@Id" />
                     <ParticipantActionMenu OnUpdate="Refresh" />
                     @if (_showRightToWorkWarning)
                     {
                         <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Square="true" Class="my-2">@_rightToWorkAlertMessage</MudAlert>
-                    }                    
+                    }
                     <MudTabs Class="primary-tabs mt-2" Outlined="true" Color="Color.Info" Border="true">
                         <MudTabPanel Text="Case Summary">
                             <CaseSummary />
@@ -160,7 +159,7 @@
                         <MudTabPanel Text="Risk" ID="@Id" Icon="@_riskIcon" IconColor="@_riskIconColor" ToolTip="@_riskInfo">
                             <CaseRisk ParticipantId="@Id" />
                         </MudTabPanel>
-                        <MudTabPanel Text="Assessments">
+                        <MudTabPanel Text="Assessments" Icon="@_assessmentIcon" IconColor="@_assessmentIconColor" ToolTip="@_assessmentInfo">
                             <CaseAssessment ParticipantId="@Id" />
                         </MudTabPanel>
                         <MudTabPanel Text="PRI" Icon="@_priDueIcon" IconColor="@_priDueIconColor" ToolTip="@_priDueToolTip">
@@ -186,7 +185,7 @@
                    r is RoleNames.SystemSupport or RoleNames.SMT or RoleNames.QAManager))
                         {
                             <MudTabPanel Text="Audit">
-                                <ParticipantAudit Id="@Id"/>
+                                <ParticipantAudit Id="@Id" />
                             </MudTabPanel>
                         }
                         @*
@@ -205,7 +204,7 @@
 @code {
     [Parameter] public string Id { get; set; } = default!;
 
-    [CascadingParameter] 
+    [CascadingParameter]
     public UserProfile UserProfile { get; set; } = default!;
 
     private ParticipantSummaryDto? _participant = null;
@@ -221,6 +220,10 @@
     private bool _showRightToWorkWarning = false;
     private string _rightToWorkAlertMessage = ConstantString.RightToWorkIsRequiredMessage;
 
+    private string _assessmentInfo = String.Empty;
+    private string _assessmentIcon = String.Empty;
+    private Color _assessmentIconColor = Color.Transparent;
+
     protected override async Task OnInitializedAsync()
     {
         await Refresh();
@@ -228,6 +231,7 @@
         SetRiskDueWarning();
         ShowRightToWorkWarning();
         SetPriDueWarning();
+        SetAssessmentDueWarning();        
     }
 
     void ShowRightToWorkWarning()
@@ -294,10 +298,45 @@
     private async Task Refresh()
     {
         _participant = await GetNewMediator().Send(new GetParticipantSummary.Query()
-        {
-            ParticipantId = Id,
-            CurrentUser = UserProfile
-        });
+            {
+                ParticipantId = Id,
+                CurrentUser = UserProfile
+            });
     }
 
+    void SetAssessmentDueWarning()
+    {
+        var _latestAssessment = _participant!.Assessments is []
+            ? null
+            : _participant.Assessments.OrderByDescending(a => a.AssessmentDate)
+                .First();
+
+        if (_latestAssessment is not null)
+        {
+            if (_latestAssessment.Completed is null)
+            {
+                    _assessmentInfo = "Assessment not completed";
+                    _assessmentIcon = Icons.Material.Filled.Warning;
+                    _assessmentIconColor = Color.Warning;             
+            }
+            else
+            {
+                DateOnly _assessmentDueDate = DateOnly.FromDateTime(_latestAssessment.Completed.Value.AddMonths(3));
+                _assessmentInfo = $"Due {_assessmentDueDate.Humanize()}";
+
+                int _assessmentDueInDays = _assessmentDueDate.DayNumber - DateOnly.FromDateTime(DateTime.UtcNow.Date).DayNumber;
+                switch (_assessmentDueInDays)
+                {
+                    case var _ when _assessmentDueInDays <= 7:
+                        _assessmentIcon = Icons.Material.Filled.Error;
+                        _assessmentIconColor = Color.Error;
+                        break;
+                    case var _ when _assessmentDueInDays >= 0 && _assessmentDueInDays <= 14:
+                        _assessmentIcon = Icons.Material.Filled.Warning;
+                        _assessmentIconColor = Color.Warning;
+                        break;
+                }
+            }
+        }
+    }
 }

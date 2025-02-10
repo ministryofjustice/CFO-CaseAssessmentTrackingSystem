@@ -3,12 +3,10 @@ using Cfo.Cats.Application.Features.Assessments.Commands;
 using Cfo.Cats.Application.Features.Bios.Commands;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
-using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Infrastructure.Persistence;
 using Cfo.Cats.Server.UI.Pages.Risk;
-using DocumentFormat.OpenXml.Bibliography;
 using Humanizer;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
@@ -36,6 +34,13 @@ public partial class CaseSummary
     private string _priDueIcon = String.Empty;
     private Color _priDueIconColor = Color.Transparent;
 
+    private string _noAssessmentInfo = String.Empty;
+    private string _AssessmentNotCompletedInfo = String.Empty;
+    private string _assessmentDueInfo = String.Empty;
+    private string _assessmentDueTooltipText = String.Empty;
+    private string _assessmentDueIcon = String.Empty;
+    private Color _assessmentDueIconColor = Color.Transparent;
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -49,6 +54,7 @@ public partial class CaseSummary
 
         SetRiskDueWarning();
         SetPriDueWarning();
+        SetAssessmentDueWarning();
     }
 
     void SetRiskDueWarning()
@@ -93,17 +99,17 @@ public partial class CaseSummary
             Snackbar.Add(result.ErrorMessage, Severity.Error);
         }
     }
-    
+
     public void ContinueAssessment()
     {
         Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessment/{_latestAssessment!.AssessmentId}");
     }
-    
+
     /// <summary>
     /// If true, indicates we are creating our first ever assessment. 
     /// </summary>
     private bool CanBeginAssessment() => _latestAssessment == null;
-    
+
     /// <summary>
     /// If true indicates we have an assessment that is continuable
     /// (i.e. not scored)
@@ -115,9 +121,9 @@ public partial class CaseSummary
         return _latestAssessment is
         {
             AssessmentScored: false
-        } ;
+        };
     }
-    
+
     /// <summary>
     /// If true indicates we have an assessment that is recreatable
     /// (i.e. we have a scored assessment and are not in QA)
@@ -125,17 +131,15 @@ public partial class CaseSummary
     private bool CanReassess()
     {
         return _latestAssessment is
-               {
-                   AssessmentScored: true
-               } &&
+        {
+            AssessmentScored: true
+        } &&
                ParticipantSummaryDto.EnrolmentStatus.SupportsReassessment();
-
     }
 
     private bool HasRiskInformation() => ParticipantSummaryDto.LatestRisk is not null;
     private bool CanAddRiskInformation() => HasRiskInformation() is false;
     private bool CanReviewRiskInformation() => HasRiskInformation();
-
 
     public async Task ReviewRiskInformation()
     {
@@ -195,12 +199,12 @@ public partial class CaseSummary
 
         var result = await GetNewMediator().Send(command);
 
-        if(result.Succeeded is false)
+        if (result.Succeeded is false)
         {
             return;
         }
 
-        if(command.ReviewReason.RequiresFurtherInformation)
+        if (command.ReviewReason.RequiresFurtherInformation)
         {
             Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/risk/{result.Data}");
         }
@@ -208,7 +212,6 @@ public partial class CaseSummary
         {
             Navigation.Refresh(true);
         }
-
     }
 
     public async Task ExpandRiskInformation()
@@ -250,7 +253,7 @@ public partial class CaseSummary
     }
     public async Task SkipBioForNow()
     {
-        var command = new SkipBioForNow.Command() 
+        var command = new SkipBioForNow.Command()
         {
             ParticipantId = ParticipantSummaryDto.Id
         };
@@ -297,7 +300,7 @@ public partial class CaseSummary
     {
         return _bio is null || _bio!.BioStatus == BioStatus.NotStarted;
     }
-    
+
     private bool HasPathwayPlan => ParticipantSummaryDto.PathwayPlan is not null;
     private bool HasPathwayBeenReviewed => HasPathwayPlan && ParticipantSummaryDto.PathwayPlan?.LastReviewed is not null;
 
@@ -313,7 +316,7 @@ public partial class CaseSummary
         {
             _noPriInfo = ParticipantSummaryDto.LocationType switch
             {
-                { IsCustody: true, IsMapped: true} => "No PRI has been created.",
+                { IsCustody: true, IsMapped: true } => "No PRI has been created.",
                 { IsCommunity: true } => "Not available in the community.",
                 _ => "Not available in this location."
             };
@@ -342,4 +345,36 @@ public partial class CaseSummary
         }
     }
 
+    void SetAssessmentDueWarning()
+    {
+        if (_latestAssessment is null)
+        {
+            _noAssessmentInfo = "No assessment has been created.";
+        }
+        else if (_latestAssessment.Completed.HasValue)
+        {
+            DateOnly _assessmentDueDate = DateOnly.FromDateTime(_latestAssessment.Completed.Value.AddMonths(3));
+            _assessmentDueInfo = _assessmentDueDate.Humanize();
+            _assessmentDueTooltipText = String.Format("New Assessment is Due {0}", _assessmentDueDate);
+
+            int _assessmentDueInDays = _assessmentDueDate.DayNumber - DateOnly.FromDateTime(DateTime.UtcNow.Date).DayNumber;
+            switch (_assessmentDueInDays)
+            {
+                case var _ when _assessmentDueInDays <= 7:
+                    _assessmentDueIcon = Icons.Material.Filled.Error;
+                    _assessmentDueIconColor = Color.Error;
+                    break;
+                case var _ when _assessmentDueInDays >= 0 && _assessmentDueInDays <= 14:
+                    _assessmentDueIcon = Icons.Material.Filled.Warning;
+                    _assessmentDueIconColor = Color.Warning;
+                    break;
+            }
+        }
+        else
+        {
+            _assessmentDueIcon = Icons.Material.Filled.Warning;
+            _assessmentDueIconColor = Color.Warning;
+            _AssessmentNotCompletedInfo = "Assessment not completed.";
+        }
+    }
 }

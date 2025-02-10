@@ -8,14 +8,14 @@ namespace Cfo.Cats.Application.Features.Participants.DTOs;
 /// Represents the initial dashboard 
 /// </summary>
 public class ParticipantSummaryDto
-{    
+{
     public required string Id { get; set; }
-    
+
     /// <summary>
     /// The full name of the participant
     /// </summary>
     public required string ParticipantName { get; set; }
-    
+
     /// <summary>
     /// The current location of the participant
     /// </summary>
@@ -24,7 +24,7 @@ public class ParticipantSummaryDto
     public required LocationType LocationType { get; set; }
 
     public string? EnrolmentLocation { get; set; }
-    
+
     /// <summary>
     /// The participant's date of birth
     /// </summary>
@@ -62,13 +62,13 @@ public class ParticipantSummaryDto
     public RiskSummaryDto? LatestRisk { get; set; }
 
     public BioSummaryDto? BioSummary { get; set; }
-    
+
     public PathwayPlanSummaryDto? PathwayPlan { get; set; }
 
     public PriSummaryDto? LatestPri { get; set; }
 
     public bool HasActiveRightToWork { get; set; }
-    public bool IsRightToWorkRequired{ get; set; }
+    public bool IsRightToWorkRequired { get; set; }
 
 
     private class Mapping : Profile
@@ -96,7 +96,8 @@ public class ParticipantSummaryDto
                 .ForMember(target => target.AssessmentId, options => options.MapFrom(source => source.Id))
                 .ForMember(target => target.AssessmentDate, options => options.MapFrom(source => source.Created))
                 .ForMember(target => target.AssessmentCreator, options => options.MapFrom(source => source.CreatedBy))
-                .ForMember(target => target.AssessmentScored, options => options.MapFrom(source => source.Scores.All(s => s.Score >= 0)));
+                .ForMember(target => target.AssessmentScored, options => options.MapFrom(source => source.Scores.All(s => s.Score >= 0)))
+                .ForMember(target => target.Completed, options => options.MapFrom(source => source.Completed));
 
             CreateMap<Domain.Entities.Bios.ParticipantBio, BioSummaryDto>()
                 .ForMember(target => target.BioId, options => options.MapFrom(source => source.Id))
@@ -113,22 +114,27 @@ public class AssessmentSummaryDto
     /// The id of the latest assessment
     /// </summary>
     public Guid? AssessmentId { get; set; }
-        
+
     /// <summary>
     /// If there are any assessments these are the dates they latest one was created.
     /// </summary>
     public DateTime? AssessmentDate { get; set; }
-    
+
     /// <summary>
     /// Who created the most recent assessment (if available)
     /// </summary>
     public string? AssessmentCreator { get; set; }
-    
+
     /// <summary>
     /// Has the latest assessment been scored? This can be a surrogate for
     /// submitted and should make the assessment read-only
     /// </summary>
     public bool? AssessmentScored { get; set; }
+
+    /// <summary>
+    /// Date the latest assessment has been complted
+    /// </summary>
+    public DateTime? Completed { get; private set; }
 }
 
 public class BioSummaryDto
@@ -137,7 +143,6 @@ public class BioSummaryDto
     /// The id of the one and only Bio, atleast for now
     /// </summary>
     public Guid? BioId { get; set; }
-
 
     /// <summary>
     /// The date when Bio was created.
