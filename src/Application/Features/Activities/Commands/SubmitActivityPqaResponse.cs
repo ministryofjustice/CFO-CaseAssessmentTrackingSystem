@@ -3,7 +3,7 @@ using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Activities.Commands
-{    
+{
     public static class SubmitActivityPqaResponse
     {
         [RequestAuthorize(Policy = SecurityPolicies.Pqa)]
@@ -61,16 +61,16 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
         {
             public A_IsValidRequest()
             {
-                RuleFor(x => x.Response)
+                RuleFor(a => a.Response)
                     .NotNull()
                     .WithMessage("You must select a response");
 
-                RuleFor(x => x.Message)
+                RuleFor(a => a.Message)
                     .MaximumLength(ValidationConstants.NotesLength);
 
-                When(x => x.Response is PqaResponse.Return or PqaResponse.Comment, () =>
+                When(a => a.Response is PqaResponse.Return or PqaResponse.Comment, () =>
                 {
-                    RuleFor(x => x.Message)
+                    RuleFor(a => a.Message)
                         .NotEmpty()
                         .WithMessage("A message is required for this response.")
                         .MaximumLength(ValidationConstants.NotesLength)
@@ -87,12 +87,12 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
             {
                 _unitOfWork = unitOfWork;
 
-                RuleFor(c => c.QueueEntryId)
-                    .MustAsync(MustExist)
+                RuleFor(b => b.QueueEntryId)
+                    .Must(MustExist)
                     .WithMessage("Activity queue item does not exist");
             }
-            private async Task<bool> MustExist(Guid identifier, CancellationToken cancellationToken)
-                => await _unitOfWork.DbContext.ActivityPqaQueue.AnyAsync(e => e.Id == identifier, cancellationToken);
+            private bool MustExist(Guid identifier)
+                => _unitOfWork.DbContext.ActivityPqaQueue.Any(e => e.Id == identifier);
         }
 
         public class C_ShouldNotBeComplete : AbstractValidator<Command>
@@ -104,14 +104,14 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 _unitOfWork = unitOfWork;
 
                 RuleFor(c => c.QueueEntryId)
-                    .MustAsync(MustBeOpen)
+                    .Must(MustBeOpen)
                     .WithMessage("Activity queue item is already completed.");
             }
 
-            private async Task<bool> MustBeOpen(Guid id, CancellationToken cancellationToken)
+            private bool MustBeOpen(Guid id)
             {
-                var entry = await _unitOfWork.DbContext.ActivityPqaQueue
-                    .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
+                var entry = _unitOfWork.DbContext.ActivityPqaQueue
+                    .FirstOrDefault(a => a.Id == id);
 
                 return entry is { IsCompleted: false };
             }
@@ -125,15 +125,15 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
             {
                 _unitOfWork = unitOfWork;
 
-                RuleFor(c => c.QueueEntryId)
-                    .MustAsync(MustBeAtPqA)
+                RuleFor(d => d.QueueEntryId)
+                    .Must(MustBeAtPqA)
                     .WithMessage("Activity queue item is not at PQA stage");
             }
 
-            private async Task<bool> MustBeAtPqA(Guid id, CancellationToken cancellationToken)
+            private bool MustBeAtPqA(Guid id)
             {
-                var entry = await _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Activity)
-                    .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
+                var entry = _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Activity)
+                    .FirstOrDefault(a => a.Id == id);
 
                 return entry != null && entry.Activity!.Status == ActivityStatus.SubmittedToProviderStatus;
             }
@@ -146,17 +146,43 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
             {
                 _unitOfWork = unitOfWork;
 
-                RuleFor(c => c)
-                    .MustAsync(OwnerMustNotBeApprover)
+                RuleFor(e => e)
+                    .Must(OwnerMustNotBeApprover)
                     .WithMessage("This activity is created by you hence must not be processed at PQA stage by you");
             }
 
-            private async Task<bool> OwnerMustNotBeApprover(Command c, CancellationToken cancellationToken)
+            private bool OwnerMustNotBeApprover(Command c)
             {
-                var entry = await _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Activity)
-                    .FirstOrDefaultAsync(a => a.Id == c.QueueEntryId, cancellationToken: cancellationToken);
+                var entry = _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Activity)
+                    .FirstOrDefault(a => a.Id == c.QueueEntryId);
 
                 return entry != null && entry.Activity!.OwnerId!.Equals(c.CurrentUser!.UserId) == false;
+            }
+        }
+
+        public class G_ActivityOccurredWithin3Months : AbstractValidator<Command>
+        {
+            private readonly IUnitOfWork _unitOfWork;
+            public G_ActivityOccurredWithin3Months(IUnitOfWork unitOfWork)
+            {
+                _unitOfWork = unitOfWork;
+
+                RuleFor(g => g)
+                    .Must(ActivityOccurredWithin3Months)
+                    .WithMessage("This activity took place over 3 months ago")
+                    .When(g => g.Response == PqaResponse.Accept);
+            }
+
+            private bool ActivityOccurredWithin3Months(Command c)
+            {
+                if (c.Response == PqaResponse.Accept)
+                {
+                    var entry = _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Activity)
+                        .FirstOrDefault(a => a.Id == c.QueueEntryId);
+
+                    return entry != null && entry.Activity!.CommencedOn >= DateTime.Now.AddDays(-90);                    
+                }
+                return false;
             }
         }
     }
