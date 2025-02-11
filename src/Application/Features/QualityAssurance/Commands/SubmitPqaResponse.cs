@@ -13,9 +13,9 @@ public static class SubmitPqaResponse
         
         public PqaResponse? Response { get; set; }
 
-        public string Message { get; set; } = default!;
+        public string Message { get; set; } = default
+            !;
         public UserProfile? CurrentUser { get; set; }
-
     }
 
     public enum PqaResponse
@@ -89,11 +89,11 @@ public static class SubmitPqaResponse
             _unitOfWork = unitOfWork;
 
             RuleFor(c => c.QueueEntryId)
-                .MustAsync(MustExist)
+                .Must(MustExist)
                 .WithMessage("Queue item does not exist");
         }
-        private async Task<bool> MustExist(Guid identifier, CancellationToken cancellationToken)
-            => await _unitOfWork.DbContext.EnrolmentPqaQueue.AnyAsync(e => e.Id == identifier, cancellationToken);
+        private bool MustExist(Guid identifier)
+            =>  _unitOfWork.DbContext.EnrolmentPqaQueue.Any(e => e.Id == identifier);
     }
 
     public class C_ShouldNotBeComplete : AbstractValidator<Command>
@@ -105,14 +105,14 @@ public static class SubmitPqaResponse
             _unitOfWork = unitOfWork;
 
             RuleFor(c => c.QueueEntryId)
-                .MustAsync(MustBeOpen)
+                .Must(MustBeOpen)
                 .WithMessage("Queue item is already completed.");
         }
 
-        private async Task<bool> MustBeOpen(Guid id, CancellationToken cancellationToken)
+        private bool MustBeOpen(Guid id)
         {
-            var entry = await _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
-                .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
+            var entry = _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
+                .FirstOrDefault(a => a.Id == id);
 
             return entry is { IsCompleted: false };
         }
@@ -127,14 +127,14 @@ public static class SubmitPqaResponse
             _unitOfWork = unitOfWork;
 
             RuleFor(c => c.QueueEntryId)
-                .MustAsync(MustBeAtPqA)
+                .Must(MustBeAtPqA)
                 .WithMessage("Queue item is not a PQA stage");
         }
 
-        private async Task<bool> MustBeAtPqA(Guid id, CancellationToken cancellationToken)
+        private bool MustBeAtPqA(Guid id)
         {
-            var entry = await _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
-                .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
+            var entry = _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
+                .FirstOrDefault(a => a.Id == id);
 
             return entry != null && entry.Participant!.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus;
         }
@@ -147,16 +147,45 @@ public static class SubmitPqaResponse
             _unitOfWork = unitOfWork;
 
             RuleFor(c => c)
-                .MustAsync(OwnerMustNotBeApprover)
+                .Must(OwnerMustNotBeApprover)
                 .WithMessage("This assessment is created by you hence must not be processed at PQA stage by you");
         }
 
-        private async Task<bool> OwnerMustNotBeApprover(Command c, CancellationToken cancellationToken)
+        private bool OwnerMustNotBeApprover(Command c)
         {
-            var entry = await _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
-                .FirstOrDefaultAsync(a => a.Id == c.QueueEntryId, cancellationToken: cancellationToken);
+            var entry = _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
+                .FirstOrDefault(a => a.Id == c.QueueEntryId);
 
             return entry != null && entry.Participant!.OwnerId!.Equals(c.CurrentUser!.UserId) == false;
+        }
+    }
+
+    public class G_EnrolmentOccurredWithin3Months : AbstractValidator<Command>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        public G_EnrolmentOccurredWithin3Months(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(g => g)
+                .Must(EnrolmentOccurredWithin3Months)
+                .WithMessage("The enrolment consent date is over 3 months ago")
+                .When(g => g.Response == PqaResponse.Accept);
+        }
+
+        private bool EnrolmentOccurredWithin3Months(Command c)
+        {
+            if (c.Response == PqaResponse.Accept)
+            {
+                var entry = _unitOfWork.DbContext.EnrolmentPqaQueue
+                    .Include(c => c.Participant)
+                    .Include(d => d.Participant!.Consents)
+                    .FirstOrDefault(a => a.Id == c.QueueEntryId);
+
+                return entry != null && entry.Participant!.Consents.Max(a =>a.Lifetime.StartDate) >= DateTime.UtcNow.AddDays(-90);                
+            }
+
+            return false;
         }
     }
 }
