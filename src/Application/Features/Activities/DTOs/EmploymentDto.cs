@@ -40,13 +40,14 @@ public class EmploymentDto
                 .NotNull()
                 .WithMessage("You must enter Company Name");
 
-            RuleFor(c => c.JobTitle)
-                .NotNull()
-                .WithMessage("You must choose a valid Job title");
-
             When(c => c.JobTitle is not null, () =>
             {
                 RuleFor(c => c.JobTitleCode)
+                    .NotNull()
+                    .WithMessage("You must choose a valid Job title");
+            }).Otherwise(() =>
+            {
+                RuleFor(c => c.JobTitle)
                     .NotNull()
                     .WithMessage("You must choose a valid Job title");
             });

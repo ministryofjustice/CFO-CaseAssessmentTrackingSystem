@@ -34,6 +34,8 @@
                     SearchFunc="@SearchJobTitles"
                     ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
                     AdornmentColor="Color.Primary" MaxItems="null"/>
+
+                <MudTextField ReadOnly Underline="false" For="@(() => Model.JobTitleCode)" hidden />
             </MudItem>
             <MudItem xs="12">
                 <MudItem xs="12">
