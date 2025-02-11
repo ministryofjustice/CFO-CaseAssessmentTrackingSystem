@@ -13,8 +13,7 @@ public static class SubmitPqaResponse
         
         public PqaResponse? Response { get; set; }
 
-        public string Message { get; set; } = default
-            !;
+        public string Message { get; set; } = default!;
         public UserProfile? CurrentUser { get; set; }
     }
 
