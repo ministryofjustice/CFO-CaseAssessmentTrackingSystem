@@ -174,17 +174,12 @@ public static class SubmitPqaResponse
 
         private bool EnrolmentOccurredWithin3Months(Command c)
         {
-            if (c.Response == PqaResponse.Accept)
-            {
-                var entry = _unitOfWork.DbContext.EnrolmentPqaQueue
-                    .Include(c => c.Participant)
-                    .Include(d => d.Participant!.Consents)
-                    .FirstOrDefault(a => a.Id == c.QueueEntryId);
-
-                return entry != null && entry.Participant!.Consents.Max(a =>a.Lifetime.StartDate) >= DateTime.UtcNow.AddDays(-90);                
-            }
-
-            return false;
+           var entry = _unitOfWork.DbContext.EnrolmentPqaQueue
+                      .Include(c => c.Participant)
+                      .Include(d => d.Participant!.Consents)
+                      .FirstOrDefault(a => a.Id == c.QueueEntryId);
+                      
+                      return entry != null && entry.Participant!.Consents.Max(a =>a.Lifetime.StartDate) >= DateTime.UtcNow.AddDays(-90);                
         }
     }
 }
