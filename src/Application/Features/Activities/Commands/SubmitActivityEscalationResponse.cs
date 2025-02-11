@@ -140,5 +140,27 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 return entry != null && entry.Activity!.Status== ActivityStatus.SubmittedToAuthorityStatus;
             }
         }
+
+        public class E_ParticipantMustHaveOwner : AbstractValidator<Command>
+        {
+            private readonly IUnitOfWork _unitOfWork;
+            public E_ParticipantMustHaveOwner(IUnitOfWork unitOfWork)
+            {
+                _unitOfWork = unitOfWork;
+
+                RuleFor(c => c)
+                    .MustAsync(ParticipantMustHaveOwner)
+                    .WithMessage("Participant must have an owner on approval")
+                    .When(c => c.Response is EscalationResponse.Accept);
+            }
+
+            private async Task<bool> ParticipantMustHaveOwner(Command command, CancellationToken cancellationToken)
+            {
+                var entry = await _unitOfWork.DbContext.ActivityEscalationQueue.Include(c => c.Participant)
+                    .FirstAsync(a => a.Id == command.ActivityQueueEntryId, cancellationToken: cancellationToken);
+
+                return await _unitOfWork.DbContext.Participants.AnyAsync(p => p.Id == entry.ParticipantId && p.OwnerId != null, cancellationToken);
+            }
+        }
     }
 }
