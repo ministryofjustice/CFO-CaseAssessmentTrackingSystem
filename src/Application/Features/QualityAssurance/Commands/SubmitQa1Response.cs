@@ -161,7 +161,7 @@ public static class SubmitQa1Response
 
             RuleFor(c => c)
                 .MustAsync(ParticipantMustHaveOwner)
-                .WithMessage("Participant must have an owner on approval. Please return and reassign")
+                .WithMessage("Participant must have an owner on approval. Please return for reassignment")
                 .When(c => c.Accept is true);
         }
 

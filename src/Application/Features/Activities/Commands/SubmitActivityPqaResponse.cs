@@ -169,7 +169,7 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
 
                 RuleFor(c => c)
                     .MustAsync(ParticipantMustHaveOwner)
-                    .WithMessage("Participant must have an owner on approval")
+                    .WithMessage("Participant must have an owner on approval. Please return for reassignment")
                     .When(c => c.Response is PqaResponse.Accept);
             }
 

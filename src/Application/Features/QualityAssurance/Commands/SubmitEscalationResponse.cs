@@ -151,7 +151,7 @@ public static class SubmitEscalationResponse
 
             RuleFor(c => c)
                 .MustAsync(ParticipantMustHaveOwner)
-                .WithMessage("Participant must have an owner on approval. Please return and reassign")
+                .WithMessage("Participant must have an owner on approval. Please return for reassignment")
                 .When(c => c.Response is EscalationResponse.Accept);
         }
 
