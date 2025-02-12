@@ -360,7 +360,7 @@ public partial class CaseSummary
             int _assessmentDueInDays = _assessmentDueDate.DayNumber - DateOnly.FromDateTime(DateTime.UtcNow.Date).DayNumber;
             switch (_assessmentDueInDays)
             {
-                case var _ when _assessmentDueInDays <= 7:
+                case var _ when _assessmentDueInDays <= 0:
                     _assessmentDueIcon = Icons.Material.Filled.Error;
                     _assessmentDueIconColor = Color.Error;
                     break;
