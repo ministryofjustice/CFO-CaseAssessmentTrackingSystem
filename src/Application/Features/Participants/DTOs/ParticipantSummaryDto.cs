@@ -1,5 +1,4 @@
 using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
-using Cfo.Cats.Application.Features.Bios.DTOs;
 using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.Participants;
 
@@ -9,8 +8,7 @@ namespace Cfo.Cats.Application.Features.Participants.DTOs;
 /// Represents the initial dashboard 
 /// </summary>
 public class ParticipantSummaryDto
-{
-    
+{    
     public required string Id { get; set; }
     
     /// <summary>
@@ -49,11 +47,15 @@ public class ParticipantSummaryDto
 
     public DateOnly? DateOfFirstConsent { get; set; }
 
-
     /// <summary>
     /// The person who "owns" this participant's case. Usually the support worker.
     /// </summary>
     public required string OwnerName { get; set; }
+
+    /// <summary>
+    /// The Tenant who "owns" this participant's case. 
+    /// </summary>
+    public required string TenantName { get; set; }
 
     public AssessmentSummaryDto[] Assessments { get; set; } = [];
 
@@ -67,6 +69,7 @@ public class ParticipantSummaryDto
 
     public bool HasActiveRightToWork { get; set; }
     public bool IsRightToWorkRequired{ get; set; }
+
 
     private class Mapping : Profile
     {
@@ -82,6 +85,7 @@ public class ParticipantSummaryDto
                 .ForMember(target => target.EnrolmentLocation, options => options.MapFrom(source => source.EnrolmentLocation.Name))
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 .ForMember(target => target.OwnerName, options => options.MapFrom(source => source.Owner!.DisplayName))
+                .ForMember(target => target.TenantName, options => options.MapFrom(source => source.Owner!.TenantName))
                 .ForMember(target => target.ParticipantName, options => options.MapFrom(source => source.FirstName + ' ' + source.LastName))
                 .ForMember(dest => dest.RiskDue, opt => opt.MapFrom(src => src.RiskDue))
                 .ForMember(dest => dest.RiskDueInDays, opt => opt.MapFrom(src => src.RiskDueInDays()))
@@ -101,8 +105,6 @@ public class ParticipantSummaryDto
                 .ForMember(target => target.BioCreator, options => options.MapFrom(source => source.CreatedBy));
         }
     }
-
-
 }
 
 public class AssessmentSummaryDto
@@ -111,8 +113,7 @@ public class AssessmentSummaryDto
     /// The id of the latest assessment
     /// </summary>
     public Guid? AssessmentId { get; set; }
-    
-    
+        
     /// <summary>
     /// If there are any assessments these are the dates they latest one was created.
     /// </summary>
@@ -152,5 +153,4 @@ public class BioSummaryDto
     /// Status of the Bio
     /// </summary>
     public BioStatus BioStatus { get; set; } = BioStatus.NotStarted;
-
 }
