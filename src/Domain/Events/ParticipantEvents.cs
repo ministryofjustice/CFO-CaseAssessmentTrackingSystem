@@ -88,3 +88,8 @@ public sealed class ParticipantRegistrationDetailsChangedDomainEvent(Participant
 {
     public Participant Item { get; } = item;
 }
+
+public sealed class ParticipantEnrolmentApprovedDomainEvent(Participant item) : DomainEvent
+{
+    public Participant Item { get; } = item;
+}
