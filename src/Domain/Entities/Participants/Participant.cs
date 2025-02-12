@@ -283,7 +283,14 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
-    public Participant ApproveConsent()
+    public Participant ApproveEnrolment()
+    {
+        ApproveConsent();
+        AddDomainEvent(new ParticipantEnrolmentApprovedDomainEvent(this));
+        return this;
+    }
+
+    private Participant ApproveConsent()
     {
         ConsentStatus = ConsentStatus.GrantedStatus;
         if (DateOfFirstConsent is null)

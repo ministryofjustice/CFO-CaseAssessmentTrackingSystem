@@ -11,8 +11,7 @@ public class TransitionParticipantAfterEscalationSubmissionEventHandler
         {
             notification.Entry
                 .Participant!
-                .TransitionTo(EnrolmentStatus.ApprovedStatus)
-                .ApproveConsent();
+                .ApproveEnrolment();
         }
         else
         {
