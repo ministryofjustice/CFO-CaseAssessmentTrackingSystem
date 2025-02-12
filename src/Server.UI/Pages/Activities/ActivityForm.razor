@@ -43,7 +43,7 @@
         <MudAutocomplete @ref="activityDropdown"
                          T="ActivityDefinition"
                          @bind-Value="Model.Definition"
-                         @bind-Value:after="ActivityChanged"
+                         @bind-Value:after="OnActivityOrDateChanged"
                          Disabled="Disabled || Model.CanChangeActivityDefinition is false"
                          Label="@Model.GetMemberDescription(x => x.Definition)"
                          For="() => Model.Definition"
@@ -61,17 +61,17 @@
         </MudAutocomplete>
     </MudItem>
 
-    @if (hasSelectedActivityAlreadyBeenAddedToday)
+    @if (hasSelectedActivityAlreadyBeenAddedOnThisDate && Model.CommencedOn is not null)
     {
         <MudItem xs="12">
             <MudAlert Severity="Severity.Warning">
-                This activity was added recently. Did you mean to choose a different activity?
+                The selected activity has already been added on this date (@Model.CommencedOn.Value.Date.ToShortDateString()). Did you mean to choose a different activity/date?
             </MudAlert>
         </MudItem>
     }
 
     <MudItem xs="12">
-        <MudDatePicker @bind-Date="Model.CommencedOn"
+        <MudDatePicker @bind-Date="Model.CommencedOn" @bind-Date:after="OnActivityOrDateChanged"
         For="() => Model.CommencedOn"
         MaxDate="DateTime.UtcNow"
         MinDate="DateTime.Today.AddMonths(-3)"
@@ -163,7 +163,7 @@
     IReadOnlyCollection<ActivityType> filteredTypes = [];
     IEnumerable<LocationDto> locations = [];
 
-    bool hasSelectedActivityAlreadyBeenAddedToday;
+    bool hasSelectedActivityAlreadyBeenAddedOnThisDate;
     bool Disabled => Model.Location is null;
 
     [Parameter, EditorRequired]
@@ -189,13 +189,13 @@
         ClearSelectedActivity();
     }
 
-    async Task ActivityChanged()
+    async Task OnActivityOrDateChanged()
     {
-        hasSelectedActivityAlreadyBeenAddedToday = Model.Definition is not null && await GetNewMediator().Send(new ExistsByCategory.Query()
+        hasSelectedActivityAlreadyBeenAddedOnThisDate = Model.Definition is not null && await GetNewMediator().Send(new ExistsByCategory.Query()
         {
             Category = Model.Definition.Category,
             ParticipantId = Model.ParticipantId,
-            AddedOn = DateTime.UtcNow.Date
+            CommencedOn = Model.CommencedOn
         });
 
         ClearTemplates();
