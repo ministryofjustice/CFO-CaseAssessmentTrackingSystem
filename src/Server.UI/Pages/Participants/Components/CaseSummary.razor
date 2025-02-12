@@ -36,16 +36,18 @@
                                     <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == _latestAssessment.AssessmentCreator).DisplayName</MudText>
                                 </dd>
                             </div>
-                            <div class="description-pair">
-                                <dt>
-                                    <MudText Typo="Typo.subtitle2">Date Completed</MudText>
-                                </dt>
-                                <dd>
-                                    <MudText Typo="Typo.body2">@_latestAssessment.Completed!.Value.ToString("dd/MM/yyyy")</MudText>
-                                </dd>
-                            </div>
+                            
                             @if (_latestAssessment.Completed.HasValue)
                             {
+                                <div class="description-pair">
+                                    <dt>
+                                        <MudText Typo="Typo.subtitle2">Date Completed</MudText>
+                                    </dt>
+                                    <dd>
+                                        <MudText Typo="Typo.body2">@_latestAssessment.Completed!.Value.ToString("dd/MM/yyyy")</MudText>
+                                    </dd>
+                                </div>
+
                                 <div class="description-pair">
                                     <dt>
                                         <MudText Typo="Typo.subtitle2">Due</MudText>
