@@ -71,10 +71,10 @@ public static class GetParticipantSummary
             summary.IsRightToWorkRequired = rtwSettings.NationalitiesExempted.Any(s => s.Equals(summary.Nationality!, StringComparison.OrdinalIgnoreCase)) == false;
 
             summary.LatestPri = await unitOfWork.DbContext.PRIs
-                .Where(x => x.IsCompleted == false)
                 .OrderByDescending(x => x.Created)
                 .ProjectTo<PriSummaryDto>(mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(x => x.ParticipantId == request.ParticipantId, cancellationToken);
+
             if (summary.LatestPri is not null)
             {
                 summary.LatestPri.ObjectiveTasks = await unitOfWork.DbContext.PathwayPlans
