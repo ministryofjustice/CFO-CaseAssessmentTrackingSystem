@@ -10,7 +10,7 @@ public static class ExistsByCategory
     {
         public required string ParticipantId { get; set; }
         public required ActivityCategory Category { get; set; }
-        public DateTime? AddedOn { get; set; }
+        public DateTime? CommencedOn { get; set; }
     }
 
     class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, bool>
@@ -20,7 +20,7 @@ public static class ExistsByCategory
             return await unitOfWork.DbContext.Activities
                 .AnyAsync(a => a.ParticipantId == request.ParticipantId 
                     && a.Category == request.Category
-                    && (request.AddedOn == null || request.AddedOn.Value.Date == a.Created!.Value.Date), cancellationToken); 
+                    && (request.CommencedOn == null || request.CommencedOn.Value.Date == a.CommencedOn.Date), cancellationToken); 
         }
     }
 
