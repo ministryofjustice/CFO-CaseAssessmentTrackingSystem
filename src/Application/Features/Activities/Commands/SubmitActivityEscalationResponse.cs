@@ -90,11 +90,11 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 _unitOfWork = unitOfWork;
 
                 RuleFor(c => c.ActivityQueueEntryId)
-                    .MustAsync(MustExist)
+                    .Must(Exist)
                     .WithMessage("Activity Queue item does not exist");
             }
-            private async Task<bool> MustExist(Guid identifier, CancellationToken cancellationToken)
-                => await _unitOfWork.DbContext.ActivityEscalationQueue.AnyAsync(e => e.Id == identifier, cancellationToken);
+
+            private bool Exist(Guid identifier) => _unitOfWork.DbContext.ActivityEscalationQueue.Any(e => e.Id == identifier);
         }
 
         public class C_ShouldNotBeComplete : AbstractValidator<Command>
@@ -106,14 +106,14 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 _unitOfWork = unitOfWork;
 
                 RuleFor(c => c.ActivityQueueEntryId)
-                    .MustAsync(MustBeOpen)
+                    .Must(BeOpen)
                     .WithMessage("Activity Queue item is already completed.");
             }
 
-            private async Task<bool> MustBeOpen(Guid id, CancellationToken cancellationToken)
+            private bool BeOpen(Guid id)
             {
-                var entry = await _unitOfWork.DbContext.ActivityEscalationQueue
-                    .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
+                var entry = _unitOfWork.DbContext.ActivityEscalationQueue
+                    .FirstOrDefault(a => a.Id == id);
 
                 return entry is { IsCompleted: false };
             }
@@ -128,16 +128,16 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 _unitOfWork = unitOfWork;
 
                 RuleFor(c => c.ActivityQueueEntryId)
-                    .MustAsync(MustBeAtSubmittedToAuthority)
+                    .Must(BeAtSubmittedToAuthority)
                     .WithMessage("Activity Queue item is not at Submitted to Authority stage");
             }
 
-            private async Task<bool> MustBeAtSubmittedToAuthority(Guid id, CancellationToken cancellationToken)
+            private bool BeAtSubmittedToAuthority(Guid id)
             {
-                var entry = await _unitOfWork.DbContext.ActivityEscalationQueue.Include(c => c.Activity)
-                    .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
+                var entry = _unitOfWork.DbContext.ActivityEscalationQueue.Include(c => c.Activity)
+                    .FirstOrDefault(a => a.Id == id);
 
-                return entry != null && entry.Activity!.Status== ActivityStatus.SubmittedToAuthorityStatus;
+                return entry != null && entry.Activity!.Status == ActivityStatus.SubmittedToAuthorityStatus;
             }
         }
 
@@ -149,17 +149,17 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 _unitOfWork = unitOfWork;
 
                 RuleFor(c => c)
-                    .MustAsync(ParticipantMustHaveOwner)
+                    .Must(ParticipantMustHaveOwner)
                     .WithMessage("Participant must have an owner on approval. Please return for reassignment")
                     .When(c => c.Response is EscalationResponse.Accept);
             }
 
-            private async Task<bool> ParticipantMustHaveOwner(Command command, CancellationToken cancellationToken)
+            private bool ParticipantMustHaveOwner(Command command)
             {
-                var entry = await _unitOfWork.DbContext.ActivityEscalationQueue.Include(c => c.Participant)
-                    .FirstAsync(a => a.Id == command.ActivityQueueEntryId, cancellationToken: cancellationToken);
+                var entry = _unitOfWork.DbContext.ActivityEscalationQueue.Include(c => c.Participant)
+                    .First(a => a.Id == command.ActivityQueueEntryId);
 
-                return await _unitOfWork.DbContext.Participants.AnyAsync(p => p.Id == entry.ParticipantId && p.OwnerId != null, cancellationToken);
+                return entry.Participant?.OwnerId is not null;
             }
         }
     }

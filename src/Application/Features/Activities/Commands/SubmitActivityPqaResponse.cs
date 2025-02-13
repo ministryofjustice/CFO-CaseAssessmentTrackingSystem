@@ -88,10 +88,11 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 _unitOfWork = unitOfWork;
 
                 RuleFor(b => b.QueueEntryId)
-                    .Must(MustExist)
+                    .Must(Exist)
                     .WithMessage("Activity queue item does not exist");
             }
-            private bool MustExist(Guid identifier)
+
+            private bool Exist(Guid identifier)
                 => _unitOfWork.DbContext.ActivityPqaQueue.Any(e => e.Id == identifier);
         }
 
@@ -104,11 +105,11 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 _unitOfWork = unitOfWork;
 
                 RuleFor(c => c.QueueEntryId)
-                    .Must(MustBeOpen)
+                    .Must(BeOpen)
                     .WithMessage("Activity queue item is already completed.");
             }
 
-            private bool MustBeOpen(Guid id)
+            private bool BeOpen(Guid id)
             {
                 var entry = _unitOfWork.DbContext.ActivityPqaQueue
                     .FirstOrDefault(a => a.Id == id);
@@ -126,11 +127,11 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 _unitOfWork = unitOfWork;
 
                 RuleFor(d => d.QueueEntryId)
-                    .Must(MustBeAtPqA)
+                    .Must(BeAtPqa)
                     .WithMessage("Activity queue item is not at PQA stage");
             }
 
-            private bool MustBeAtPqA(Guid id)
+            private bool BeAtPqa(Guid id)
             {
                 var entry = _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Activity)
                     .FirstOrDefault(a => a.Id == id);
@@ -168,17 +169,17 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 _unitOfWork = unitOfWork;
 
                 RuleFor(c => c)
-                    .MustAsync(ParticipantMustHaveOwner)
+                    .Must(ParticipantMustHaveOwner)
                     .WithMessage("Participant must have an owner on approval. Please return for reassignment")
                     .When(c => c.Response is PqaResponse.Accept);
             }
 
-            private async Task<bool> ParticipantMustHaveOwner(Command command, CancellationToken cancellationToken)
+            private bool ParticipantMustHaveOwner(Command command)
             {
-                var entry = await _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Participant)
-                    .FirstAsync(a => a.Id == command.QueueEntryId, cancellationToken: cancellationToken);
+                var entry = _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Participant)
+                    .First(a => a.Id == command.QueueEntryId);
 
-                return await _unitOfWork.DbContext.Participants.AnyAsync(p => p.Id == entry.ParticipantId && p.OwnerId != null, cancellationToken);
+                return entry.Participant?.OwnerId is not null;
             }
         }
 
