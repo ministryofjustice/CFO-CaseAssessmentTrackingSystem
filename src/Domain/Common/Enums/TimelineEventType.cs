@@ -12,6 +12,7 @@ public class TimelineEventType : SmartEnum<TimelineEventType>
     public static readonly TimelineEventType PathwayPlan = new(nameof(PathwayPlan), 4);
     public static readonly TimelineEventType Bio = new(nameof(Bio), 5);
     public static readonly TimelineEventType Dms = new(nameof(Dms), 6);
+    public static readonly TimelineEventType PRI = new(nameof(PRI), 7);
 
     private TimelineEventType(string name, int value) : base(name, value)
     {
