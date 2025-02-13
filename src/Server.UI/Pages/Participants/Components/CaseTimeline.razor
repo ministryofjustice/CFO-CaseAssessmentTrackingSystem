@@ -1,6 +1,7 @@
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Timelines.DTOs
 @using Cfo.Cats.Application.Features.Timelines.PaginationQuery
+@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 @using Humanizer
 
@@ -12,7 +13,7 @@
         foreach (var model in _model.Items)
         {
             Color color = GetColour(model);
-            
+
             <MudTimeline TimelinePosition="TimelinePosition.Start" Modifiers="true">
                 <MudTimelineItem Size="Size.Medium" Color="@color" Elevation="25">
                     <MudTooltip Text="@model.OccurredOn.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
@@ -28,7 +29,15 @@
                                     <MudText Typo="Typo.body2">@model.Line3</MudText>
                                 }
 
-                                @model.User @model.OccurredOn.Humanize()
+                                @if (model.Line1 == "Enrolment transitioned to Submitted to provider" && hideUser)
+                                {
+                                    <MudText Typo="Typo.body2">CFO QA @model.OccurredOn.Humanize()</MudText>
+                                }
+                                else
+                                {
+                                    <MudText Typo="Typo.body2">@model.User @model.OccurredOn.Humanize()</MudText>                                    
+                                }
+
                             </MudCardContent>
                         </MudCard> </MudTooltip>
                 </MudTimelineItem>
@@ -47,6 +56,8 @@
 
     private PaginatedData<TimelineDto>? _model = null;
 
+    private bool hideUser = true;
+
     protected override async Task OnInitializedAsync()
     {
         if (_model is null)
@@ -56,6 +67,12 @@
                 ParticipantId = ParticipantSummaryDto.Id,
                 CurrentUser = UserProfile
             });
+        }
+
+        string[] allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
+        if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+        {
+            hideUser = false;
         }
     }
 
@@ -73,5 +90,4 @@
             _ => Color.Primary
         };
     }
-
 }
