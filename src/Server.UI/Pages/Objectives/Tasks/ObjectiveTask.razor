@@ -289,7 +289,7 @@
 
         var options = SetDialogOptions();
 
-        var dialog = DialogService.Show<AddActivityDialog>("Activity/ETE history for task", parameters, options);
+        var dialog = DialogService.Show<ActivitiesDialog>("Activity/ETE history for task", parameters, options);
                 
         if (await dialog.Result is not { Canceled: true })
         {
