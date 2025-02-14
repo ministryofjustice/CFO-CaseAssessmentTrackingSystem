@@ -111,7 +111,7 @@
             { x => x.Model, command }
         };
 
-        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+        var options = SetDialogOptions();
         var dialog = DialogService.Show<CompleteObjectiveDialog>("Complete objective", parameters, options);
 
         var state = await dialog.Result;
@@ -124,7 +124,6 @@
             {
                 await OnChange.InvokeAsync();
             }
-
         }
     }
 
@@ -141,7 +140,7 @@
             { x => x.Model, command }
         };
 
-        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+        var options = SetDialogOptions();        
         var dialog = DialogService.Show<AddTaskDialog>("Add task to objective", parameters, options);
 
         var state = await dialog.Result;
@@ -154,24 +153,20 @@
             {
                 await OnChange.InvokeAsync();
             }
-
         }
     }
 
     public async Task Expand()
     {
+        var options = SetDialogOptions();
         await DialogService.ShowAsync<ExpandObjectiveDialog>(
             Model.Description,
             new DialogParameters<ExpandObjectiveDialog>()
             {
                 { x => x.Model, Model }
             },
-            new DialogOptions
-            {
-                MaxWidth = MaxWidth.Small,
-                FullWidth = true,
-                CloseButton = true
-            });
+            options
+            );
     }
 
     public async Task Rename()
@@ -187,8 +182,8 @@
         {
             { x => x.Model, command }
         };
-
-        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+                
+        var options = SetDialogOptions();
         var dialog = DialogService.Show<RenameObjectiveDialog>("Rename objective", parameters, options);
 
         var state = await dialog.Result;
@@ -201,7 +196,6 @@
             {
                 await OnChange.InvokeAsync();
             }
-
         }
     }
 
@@ -219,12 +213,8 @@
             { x => x.Objective, Model }
         };
 
-        var dialog = DialogService.Show<ActivitiesDialog>("Activity/ETE history for objective", parameters, new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small,
-            FullWidth = true,
-            CloseButton = true
-        });
+        var options = SetDialogOptions();
+        var dialog = DialogService.Show<ActivitiesDialog>("Activity/ETE history for objective", parameters, options);
 
         if (await dialog.Result is not { Canceled: true })
         {
@@ -232,4 +222,14 @@
         }
     }
 
+    private DialogOptions SetDialogOptions()
+    {
+        return new DialogOptions
+            {
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true,
+                CloseButton = true,
+                BackdropClick = false
+            };
+    }
 }
