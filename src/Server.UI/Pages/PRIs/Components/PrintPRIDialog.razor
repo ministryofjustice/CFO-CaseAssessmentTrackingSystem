@@ -23,6 +23,10 @@
 
 <style>
     @@media print {
+        /* Set margins */
+        @@page {
+            margin: 2cm;
+        }
         /* Hide navigation and other non-printable elements */
         .mud-appbar,
         .mud-drawer,
@@ -47,11 +51,6 @@
         /* Avoid page breaks inside elements */
         .keep-together {
             page-break-inside: avoid;
-        }
-
-        /* Set margins */
-        @@page {
-            margin: 2cm;
         }
 
         /* Ensure links show their URLs */
@@ -361,12 +360,7 @@
     }
     private void PrintPRI()
     {
-        //JS.InvokeVoidAsync("hideToolbar", "[role='toolbar']");
-        // string script = "document.querySelector('.mud-toolbar.mud-toolbar-gutters.mud-toolbar-appbar').style.display = 'none';";
-        // JS.InvokeVoidAsync("eval", script);
-
         JS.InvokeVoidAsync("window.print");
-
     }
 
 }
