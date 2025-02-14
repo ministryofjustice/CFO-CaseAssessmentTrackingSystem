@@ -24,7 +24,8 @@ namespace Cfo.Cats.Application.Features.Activities.Queries
             public async Task<PaginatedData<ActivityQueueEntryDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var query = unitOfWork.DbContext
-                    .ActivityPqaQueue                    
+                    .ActivityPqaQueue          
+                    .Include(a => a.Activity)
                     .AsNoTracking();
 
                 var sortExpression = GetSortExpression(request);
@@ -57,6 +58,10 @@ namespace Cfo.Cats.Application.Features.Activities.Queries
                         break;
                     case "AssignedTo":
                         sortExpression = (x => x.OwnerId == null ? null : x.Owner!.DisplayName);
+                        break;
+                    case "CommencedOn":
+                    case "Expiry":
+                        sortExpression = (x => x.Activity == null ? null : x.Activity.CommencedOn);
                         break;
                     default:
                         sortExpression = (x => x.Created!);
