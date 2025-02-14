@@ -7,7 +7,7 @@ public class LocationType : SmartEnum<LocationType>
     public static readonly LocationType Wing = new(nameof(Wing), 0, isCustody: true);
     public static readonly LocationType Feeder = new(nameof(Feeder), 1, isCustody: true);
     public static readonly LocationType Outlying = new(nameof(Outlying), 2, isCustody: true);
-    public static readonly LocationType Unspecified = new(nameof(Unspecified), 3, isCustody: true);
+    public static readonly LocationType Female = new(nameof(Female), 3, isCustody: true);
     public static readonly LocationType Community = new(nameof(Community), 4, isCommunity: true);
     public static readonly LocationType Hub = new(nameof(Hub), 5, isCommunity: true, isHub: true);
     public static readonly LocationType Satellite = new(nameof(Satellite), 6, isCommunity: true, isHub: true);
