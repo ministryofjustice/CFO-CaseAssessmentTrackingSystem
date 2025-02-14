@@ -24,41 +24,41 @@
 <style>
     @@media print {
         /* Hide navigation and other non-printable elements */
-        ::deep .mud-appbar,
-        ::deep .mud-drawer,
-        ::deep .mud-button,
-        ::deep .no-print {
+        .mud-appbar,
+        .mud-drawer,
+        .mud-button,
+        .no-print {
             display: none !important;
         }
 
         /* Ensure white background and black text */
-        ::deep body {
+        body {
             background-color: white !important;
             color: black !important;
         }
 
         /* Force page breaks before specific elements */
-        ::deep .page-break-before {
+        .page-break-before {
             page-break-before: always;
         }
 
         /* Avoid page breaks inside elements */
-        ::deep .keep-together {
+        .keep-together {
             page-break-inside: avoid;
         }
 
         /* Ensure tables span across pages properly */
-        ::deep .mud-table {
+        .mud-table {
             page-break-inside: auto;
         }
 
         /* Keep table headers on each page */
-        ::deep .mud-table-head {
+        .mud-table-head {
             display: table-header-group;
         }
 
         /* Allow row breaks */
-        ::deep .mud-table-row {
+        .mud-table-row {
             page-break-inside: avoid;
         }
 
@@ -68,14 +68,23 @@
         }
 
         /* Ensure links show their URLs */
-        ::deep a[href]:after {
+        a[href]:after {
             content: " (" attr(href) ")";
         }
 
         /* Handle MudPaper components */
-        ::deep .mud-paper {
+        .mud-paper {
             box-shadow: none !important;
             border: 1px solid #ddd;
+        }
+
+        .mud-expansion-panel {
+            page-break-inside: avoid; /* Prevents splitting panels across pages */
+            break-inside: avoid; /* Modern browsers */
+        }
+
+        .mud-expansion-panels {
+            page-break-before: auto;
         }
     }
 
@@ -106,7 +115,7 @@
     <MudPaper Width="100%">
         <MudGrid >
             <MudItem xs="4" class="logo-container">
-                <MudImage Src="/img/hmpps-black-logo.png" alt="logo_hmpps" class="logo" />
+                <img src="/img/hmpps-logo-black.svg" alt="hmpps logo black" style="width:100%; height:auto;" />
             </MudItem>
             <MudItem xs="4" class="text-container" style="text-align: center;">
                 <MudText Typo="Typo.h5" Color="Color.Primary" Align="Align.Center">
@@ -114,7 +123,7 @@
                 </MudText>
             </MudItem>
             <MudItem xs="4" class="logo-container">
-                <MudImage Src="/img/cfo-black-logo.png" alt="logo_hmpps" class="logo" />
+                <img src="/img/cfo-black-logo.svg" alt="cfo logo black" style="width:100%; height:auto;" />
             </MudItem>
         </MudGrid>
         @* <MudGrid Spacing="1" Class="pa-3">
@@ -280,7 +289,7 @@
                 </MudExpansionPanel>
 
                 <!--Useful Info-->
-                <MudExpansionPanel Expanded>
+            <MudExpansionPanel Expanded Class="keep-together">
                     <TitleContent>
                         <div class="d-flex">
                             <MudIcon Icon="@Icons.Material.Filled.Web" Color="Color.Primary" class="mr-3" />
