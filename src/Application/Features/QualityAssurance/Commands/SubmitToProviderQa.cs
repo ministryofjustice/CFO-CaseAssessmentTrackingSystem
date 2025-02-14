@@ -189,4 +189,23 @@ public static class SubmitToProviderQa
             return consentDate > DateTime.Today.AddMonths(-3);
         }
     }
+
+    public class G_ParticipantMustHaveOwner : AbstractValidator<Command>
+    {
+        private IUnitOfWork _unitOfWork;
+
+        public G_ParticipantMustHaveOwner(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c.ParticipantId)
+                .MustAsync(HaveOwner)
+                .WithMessage("Participant must have an owner");
+        }
+
+        private async Task<bool> HaveOwner(string participantId, CancellationToken cancellationToken)
+        {
+            return await _unitOfWork.DbContext.Participants.AnyAsync(p => p.Id == participantId && p.OwnerId != null, cancellationToken);
+        }
+    }
 }

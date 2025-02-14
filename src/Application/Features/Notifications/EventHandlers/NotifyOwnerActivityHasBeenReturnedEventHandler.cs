@@ -7,6 +7,11 @@ public class NotifyOwnerActivityHasBeenReturnedEventHandler(IUnitOfWork unitOfWo
 {
     public async Task Handle(ActivityTransitionedDomainEvent notification, CancellationToken cancellationToken)
     {
+        if (notification.Item.OwnerId is null)
+        {
+            return;
+        }
+
         if (notification.From == ActivityStatus.SubmittedToProviderStatus && notification.To == ActivityStatus.PendingStatus)
         {
             const string heading = "Activity returned";
@@ -23,7 +28,7 @@ public class NotifyOwnerActivityHasBeenReturnedEventHandler(IUnitOfWork unitOfWo
 
             if(previous is null)
             {
-                var n = Notification.Create(heading, details, notification.Item.OwnerId!);
+                var n = Notification.Create(heading, details, notification.Item.OwnerId);
                 n.SetLink($"/pages/participants/" + notification.Item.ParticipantId);                
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }

@@ -237,7 +237,10 @@ public static class AddActivity
 
             RuleFor(c => c.ParticipantId)
                 .NotNull()
-                .Length(9);
+                .Length(9)
+                .WithMessage("Invalid participant id")
+                .Must(HaveOwner)
+                .WithMessage("Participant must have an owner to submit activity");
 
             RuleFor(c => c.Location)
                 .NotNull()
@@ -359,5 +362,7 @@ public static class AddActivity
 
             return commencedOn >= consentDate;
         }
+
+        bool HaveOwner(string participantId) => unitOfWork.DbContext.Participants.Any(p => p.Id == participantId && p.OwnerId != null);
     }
 }

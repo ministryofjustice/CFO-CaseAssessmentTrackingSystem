@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250207153633_Note_RemoveTenantId")]
+    partial class Note_RemoveTenantId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1526,13 +1529,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AbandonJustification")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int?>("AbandonReason")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("AcceptedOn")
                         .HasColumnType("datetime2");
 
@@ -1542,12 +1538,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<string>("AssignedTo")
                         .HasMaxLength(36)
                         .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("CompletedBy")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<DateTime?>("CompletedOn")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("Created")
                         .HasColumnType("datetime2");
@@ -1564,6 +1554,9 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.Property<int>("ExpectedReleaseRegionId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -1598,14 +1591,9 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AssignedTo");
-
-                    b.HasIndex("CompletedBy");
 
                     b.HasIndex("CustodyLocationId");
 
@@ -3751,11 +3739,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("AssignedTo")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("CompletedBy")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", "CustodyLocation")
