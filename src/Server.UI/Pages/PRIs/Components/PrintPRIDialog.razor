@@ -27,6 +27,8 @@
         .mud-appbar,
         .mud-drawer,
         .mud-button,
+        .mud-tooltip-root,
+        .mud-tooltip-inline,
         .no-print {
             display: none !important;
         }
@@ -44,21 +46,6 @@
 
         /* Avoid page breaks inside elements */
         .keep-together {
-            page-break-inside: avoid;
-        }
-
-        /* Ensure tables span across pages properly */
-        .mud-table {
-            page-break-inside: auto;
-        }
-
-        /* Keep table headers on each page */
-        .mud-table-head {
-            display: table-header-group;
-        }
-
-        /* Allow row breaks */
-        .mud-table-row {
             page-break-inside: avoid;
         }
 
@@ -104,14 +91,11 @@
         height: auto;
     }
 
-    .title {
-        font-size: 24px; /* Adjust title size */
-    }
 </style>
 
 <MudContainer Class="pa-6" Style="height: 100%; width: 100%; min-width: 480px" MaxWidth="MaxWidth.Large">
     <!-- Header section -->
-@*     <MudAppBar Class="" Elevation="0"> *@
+    @* <MudAppBar Class="" Elevation="0"> *@
     <MudPaper Width="100%">
         <MudGrid >
             <MudItem xs="4" class="logo-container">
@@ -126,21 +110,8 @@
                 <img src="/img/cfo-black-logo.svg" alt="cfo logo black" style="width:100%; height:auto;" />
             </MudItem>
         </MudGrid>
-        @* <MudGrid Spacing="1" Class="pa-3">
-            <MudItem md="3">
-                <MudImage Src="/img/hmpps-black-logo.png" alt="logo_cfo" style="max-width: 108px;" />
-            </MudItem>
-            <MudItem md="2">
-                <MudText Typo="Typo.body2" Color="Color.Primary" Align="Align.Center">
-                    @ConstantString.PRILabel
-                </MudText>
-            </MudItem>
-            <MudItem md="3">
-                <MudImage Src="/img/cfo-black-logo.png" alt="logo_hmpps" style="max-width: 108px;" />
-            </MudItem>
-        </MudGrid> *@
     </MudPaper>
-@*     </MudAppBar> *@
+    @* </MudAppBar> *@
     <!-- Content section with forced page break -->
         @if (_notFound)
         {
@@ -312,10 +283,6 @@
         }
 
 </MudContainer>
-<script>
-    console.log("Print PRI script area")
-    document.querySelector('.mud-toolbar.mud-toolbar-gutters.mud-toolbar-appbar').style.display = 'none';
-</script>
 @code
 {
     [Parameter, EditorRequired]
@@ -395,39 +362,10 @@
     private void PrintPRI()
     {
         //JS.InvokeVoidAsync("hideToolbar", "[role='toolbar']");
-        string script = "document.querySelector('.mud-toolbar.mud-toolbar-gutters.mud-toolbar-appbar').style.display = 'none';";
-        JS.InvokeVoidAsync("eval", script);
+        // string script = "document.querySelector('.mud-toolbar.mud-toolbar-gutters.mud-toolbar-appbar').style.display = 'none';";
+        // JS.InvokeVoidAsync("eval", script);
 
         JS.InvokeVoidAsync("window.print");
-        //JS.InvokeVoidAsync("document.querySelector('[role=\"toolbar\"]').style.display = 'block';");
-
-        //JS.InvokeVoidAsync("window.print");
-
-
-        //JS.InvokeVoidAsync("printDialog");
-        // string printScript = @"
-        //     var printContents = document.getElementsByClassName('printable-content')[0].innerHTML;
-        //     var printWindow = window.open('', '', 'height=600,width=800');
-        //     printWindow.document.write('<html><head><title>Print</title></head><body>' + printContents + '</body></html>');
-        //     printWindow.document.close();
-        //     printWindow.focus();
-        //     printWindow.print();
-        //     printWindow.close();
-        // ";
-        // JS.InvokeVoidAsync("eval", printScript);
-
-        //JS.InvokeVoidAsync("window.print");
-        //JS.InvokeVoidAsync("var printWindow = window.open('', '_blank');var content = getElementsByClassName('printable-content')[0];printWindow.document.write('<html><head><title>Print</title></head><body>' + content + '</body></html>');printWindow.document.close();       printWindow.focus();        printWindow.print();        printWindow.close();");
-        //JS.InvokeVoidAsync("window.open('', '_blank').document.write('<html><head><title>Print</title></head><body>' + document.getElementsByClassName('printable-content')[0].innerHTML + '</body></html>'); window.open('', '_blank').document.close(); window.open('', '_blank').focus(); window.open('', '_blank').print(); window.open('', '_blank').close();");
-        // JS.InvokeVoidAsync("",
-        // "var printWindow = window.open('', '_blank');" +
-        // "var content = document.getElementsByClassName('printable-content')[0].innerHTML;" +
-        // "printWindow.document.write('<html><head><title>Print</title></head><body>' + content + '</body></html>');" +
-        // "printWindow.document.close();" +
-        // "printWindow.focus();" +
-        // "printWindow.print();" +
-        // "printWindow.close();"
-        // );
 
     }
 
