@@ -31,19 +31,19 @@
                 </div>
             </TitleContent>
             <ChildContent>
-                <MudForm Model="priRelease!" Validation="@(Validator.ValidateValue(priRelease!))" ReadOnly Disabled>
-                    <MudSelect @bind-Value="priRelease!.CustodyLocation"
+                <MudForm Model="_priRelease!" Validation="@(Validator.ValidateValue(_priRelease!))" ReadOnly Disabled>
+                    <MudSelect @bind-Value="_priRelease!.CustodyLocation"
                                Label="Discharge Location"
-                               For="() => priRelease!.CustodyLocation">
-                        <MudSelectItem Value="@priRelease!.CustodyLocation">@priRelease!.CustodyLocation!.Name</MudSelectItem>
+                               For="() => _priRelease!.CustodyLocation">
+                        <MudSelectItem Value="@_priRelease!.CustodyLocation">@_priRelease!.CustodyLocation!.Name</MudSelectItem>
                     </MudSelect>
-                    <MudSelect @bind-Value="priRelease!.ExpectedRegion"
+                    <MudSelect @bind-Value="_priRelease!.ExpectedRegion"
                                     Label="Expected release region"
-                                    For="() => priRelease!.ExpectedRegion">
-                                            <MudSelectItem Value="@priRelease!.ExpectedRegion">@priRelease!.ExpectedRegion!.Name</MudSelectItem>
+                                    For="() => _priRelease!.ExpectedRegion">
+                                            <MudSelectItem Value="@_priRelease!.ExpectedRegion">@_priRelease!.ExpectedRegion!.Name</MudSelectItem>
                                     </MudSelect>
-                    <MudDatePicker @bind-Date="priRelease!.ExpectedOn"
-                    For="() => priRelease!.ExpectedOn"
+                    <MudDatePicker @bind-Date="_priRelease!.ExpectedOn"
+                    For="() => _priRelease!.ExpectedOn"
                     Label="Expected date of release"
                     MinDate="DateTime.Today"
                     MaxDate="DateTime.Today.AddMonths(3)"
@@ -78,25 +78,25 @@
                 </div>
             </TitleContent>
             <ChildContent>
-                <MudForm Model="preMeeting" Validation="Validator.ValidateValue(preMeeting)"  ReadOnly Disabled>
+                <MudForm Model="_preMeeting" Validation="Validator.ValidateValue(_preMeeting)"  ReadOnly Disabled>
                     <MudText Class="mb-1" Typo="Typo.body2">Date pre-release meeting took place between the Custody Support Worker, the Community Support Worker (potentially yourself), and the Participant</MudText>
-                    <MudDatePicker @bind-Date="preMeeting!.AttendedOn"
-                    For="() => preMeeting!.AttendedOn"
+                    <MudDatePicker @bind-Date="_preMeeting!.AttendedOn"
+                    For="() => _preMeeting!.AttendedOn"
                     Label="Date pre-release meeting took place"
                     Class="mb-6"/>
 
                     @* Custody *@
                     <MudText Typo="Typo.body1">Did the Custody Support Worker attend this meeting in person?</MudText>
-                    <MudToggleGroup @bind-Value="preMeeting!.CustodyAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
+                    <MudToggleGroup @bind-Value="_preMeeting!.CustodyAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
                         <MudToggleItem Value="ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
                         <MudToggleItem Value="ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
                     </MudToggleGroup>
-                    <MudTextField ReadOnly Underline="false" For="() => preMeeting!.CustodyAttendedInPerson" hidden />
+                    <MudTextField ReadOnly Underline="false" For="() => _preMeeting!.CustodyAttendedInPerson" hidden />
 
-                    @if (preMeeting!.CustodyAttendedInPerson == ConfirmationStatus.No)
+                    @if (_preMeeting!.CustodyAttendedInPerson == ConfirmationStatus.No)
                     {
-                        <MudTextField @bind-Value="preMeeting!.ReasonCustodyDidNotAttendInPerson"
-                        For="() => preMeeting!.ReasonCustodyDidNotAttendInPerson"
+                        <MudTextField @bind-Value="_preMeeting!.ReasonCustodyDidNotAttendInPerson"
+                        For="() => _preMeeting!.ReasonCustodyDidNotAttendInPerson"
                         Label="Reason for not attending the meeting in person"
                         Lines="5"
                         Class="mt-2" />
@@ -106,16 +106,16 @@
 
                     @* Community *@
                     <MudText Typo="Typo.body1">Did the Community Support Worker attend this meeting in person?</MudText>
-                    <MudToggleGroup @bind-Value="preMeeting!.CommunityAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
+                    <MudToggleGroup @bind-Value="_preMeeting!.CommunityAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
                         <MudToggleItem Value="ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
                         <MudToggleItem Value="ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
                     </MudToggleGroup>
-                    <MudTextField ReadOnly Underline="false" For="() => preMeeting!.CommunityAttendedInPerson" hidden />
+                    <MudTextField ReadOnly Underline="false" For="() => _preMeeting!.CommunityAttendedInPerson" hidden />
 
-                    @if (preMeeting!.CommunityAttendedInPerson == ConfirmationStatus.No)
+                    @if (_preMeeting!.CommunityAttendedInPerson == ConfirmationStatus.No)
                     {
-                        <MudTextField @bind-Value="preMeeting!.ReasonCommunityDidNotAttendInPerson"
-                        For="() => preMeeting!.ReasonCommunityDidNotAttendInPerson"
+                        <MudTextField @bind-Value="_preMeeting!.ReasonCommunityDidNotAttendInPerson"
+                        For="() => _preMeeting!.ReasonCommunityDidNotAttendInPerson"
                         Label="Reason for not attending the meeting in person"
                         Lines="5"
                         Class="mt-2" />
@@ -125,22 +125,22 @@
 
                     @* Participant *@
                     <MudText Typo="Typo.body1">Did the Participant attend this meeting in person?</MudText>
-                    <MudToggleGroup @bind-Value="preMeeting!.ParticipantAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
+                    <MudToggleGroup @bind-Value="_preMeeting!.ParticipantAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
                         <MudToggleItem Value="ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
                         <MudToggleItem Value="ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
                     </MudToggleGroup>
-                    <MudTextField ReadOnly Underline="false" For="() => preMeeting!.ParticipantAttendedInPerson" hidden />
+                    <MudTextField ReadOnly Underline="false" For="() => _preMeeting!.ParticipantAttendedInPerson" hidden />
 
-                    @if (preMeeting!.ParticipantAttendedInPerson == ConfirmationStatus.No)
+                    @if (_preMeeting!.ParticipantAttendedInPerson == ConfirmationStatus.No)
                     {
-                        <MudTextField @bind-Value="preMeeting!.ReasonParticipantDidNotAttendInPerson"
-                        For="() => preMeeting!.ReasonParticipantDidNotAttendInPerson"
+                        <MudTextField @bind-Value="_preMeeting!.ReasonParticipantDidNotAttendInPerson"
+                        For="() => _preMeeting!.ReasonParticipantDidNotAttendInPerson"
                         Label="Reason for not attending the meeting in person"
                         Lines="5"
                         Class="mt-2" />
                     }
-                    <MudTextField @bind-Value="preMeeting!.PostReleaseCommunitySupportInformation"
-                                  For="() => preMeeting!.PostReleaseCommunitySupportInformation"
+                    <MudTextField @bind-Value="_preMeeting!.PostReleaseCommunitySupportInformation"
+                                  For="() => _preMeeting!.PostReleaseCommunitySupportInformation"
                                   Label="Post release community support information"
                                   Lines="5"
                                   Class="mt-2" />
@@ -159,8 +159,8 @@
     public string ParticipantId { get; set; } = default!;
 
     private PRIDto? _model;
-    private PriReleaseDto? priRelease;
-    private PriMeetingDto? preMeeting;
+    private PriReleaseDto? _priRelease;
+    private PriMeetingDto? _preMeeting;
 
     private bool _notFound = false;
 
@@ -177,8 +177,8 @@
             if (result.Succeeded && result.Data is not null)
             {
                 _model = result.Data;
-                priRelease = Mapper.Map<PriReleaseDto>(_model);
-                preMeeting = Mapper.Map<PriMeetingDto>(_model);
+                _priRelease = Mapper.Map<PriReleaseDto>(_model);
+                _preMeeting = Mapper.Map<PriMeetingDto>(_model);
             }
             else
             {
