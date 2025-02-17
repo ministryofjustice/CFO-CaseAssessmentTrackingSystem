@@ -148,7 +148,12 @@ public static class ConstantString
     Localize("Complete PRI");
     public static string AbandonPRI =>
     Localize("Abandon PRI");
+    public static string PrintPRI =>
+    Localize("Print PRI");
     public static string ViewParticipant => Localize("View Participant");
+    public static string PRILabel => Localize("HMPPS CFO Pre-Release Inventory(PRI)");
+
+    
     public static string PriNoActualReleaseDateWarning => Localize("No Actual Release date provided.");
     public static string PriTTGDueWarningToolTip => Localize("Through the Gate(TTG) Due {0}");
 }

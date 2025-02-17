@@ -1,0 +1,361 @@
+﻿@page "/pages/PrintPri/{PriId:guid}"
+
+@attribute [Authorize(Policy = SecurityPolicies.Enrol)]
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Application.Features.PRIs.Commands
+@using Cfo.Cats.Infrastructure.Services.Identity
+@using Cfo.Cats.Application.Features.PRIs.DTOs
+@using Cfo.Cats.Application.Features.PRIs.Queries
+@using Cfo.Cats.Domain.Common.Enums
+@using Humanizer
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Application.Features.PathwayPlans.Commands
+@using Cfo.Cats.Application.Features.PathwayPlans.DTOs
+@using Cfo.Cats.Application.Features.PathwayPlans.Queries
+@using Cfo.Cats.Server.UI.Pages.Objectives
+@using static Cfo.Cats.Application.Features.PRIs.Commands.AddPRI
+
+@inherits CatsComponentBase
+@inject UserService userService;
+
+<PageTitle>@ConstantString.PRILabel</PageTitle>
+
+<style>
+    @@media print {
+        /* Set margins */
+        @@page {
+            margin: 2cm;
+        }
+        /* Hide navigation and other non-printable elements */
+        .mud-appbar,
+        .mud-drawer,
+        .mud-button,
+        .mud-tooltip-root,
+        .mud-tooltip-inline,
+        .no-print {
+            display: none !important;
+        }
+        /* Ensure white background and black text */
+        body {
+            background-color: white !important;
+            color: black !important;
+        }
+        /* Force page breaks before specific elements */
+        .page-break-before {
+            page-break-before: always;
+        }
+        /* Avoid page breaks inside elements */
+        .keep-together {
+            page-break-inside: avoid;
+        }
+        /* Ensure links show their URLs */
+        a[href]:after {
+            content: " (" attr(href) ")";
+        }
+        /* Handle MudPaper components */
+        .mud-paper {
+            box-shadow: none !important;
+            border: 1px solid #ddd;
+        }
+
+        .mud-expansion-panel {
+            page-break-inside: avoid; /* Prevents splitting panels across pages */
+            break-inside: avoid; /* Modern browsers */
+        }
+
+        .mud-expansion-panels {
+            page-break-before: auto;
+        }
+    }
+
+    .logo-container {
+        display: flex;
+        justify-content: flex-start; /* Align logos to the left of the grid cell */
+    }
+
+    .text-container {
+        display: flex;
+        justify-content: center; /* Center the title */
+        align-items: center; /* Vertically center the title */
+    }
+
+    .logo {
+        width: 50px; /* Adjust logo size */
+        height: auto;
+    }
+
+</style>
+
+<MudContainer Class="pa-6" Style="height: 100%; width: 100%; min-width: 480px" MaxWidth="MaxWidth.Large">
+    <!-- Header section -->
+    @* <MudAppBar Class="" Elevation="0"> *@
+    <MudPaper Width="100%">
+        <MudGrid>
+            <MudItem xs="4" class="logo-container">
+                <img src="/img/hmpps-black-logo.svg" alt="hmpps logo black" style="width:100%; height:auto;" />
+            </MudItem>
+            <MudItem xs="4" class="text-container" style="text-align: center;">
+                <MudText Typo="Typo.h5" Color="Color.Primary" Align="Align.Center">
+                    @ConstantString.PRILabel
+                </MudText>
+            </MudItem>
+            <MudItem xs="4" class="logo-container">
+                <img src="/img/cfo-black-logo.svg" alt="cfo logo black" style="width:100%; height:auto;" />
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+    @* </MudAppBar> *@
+    <!-- Content section with forced page break -->
+    @if (_notFound)
+    {
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No PRI found.</MudAlert>
+    }
+    @if (_model is not null)
+    {
+        <MudPaper>
+            <MudGrid Spacing="1" Class="pa-3">
+                <MudItem md="2">
+                    <MudText Typo="Typo.h6" Color="Color.Primary">
+                        <b>
+                            Case Ref
+                        </b>
+                    </MudText>
+                </MudItem>
+                <MudItem md="2">
+                    <MudText Typo="Typo.h6">
+                        @_priDto!.ParticipantId
+                    </MudText>
+                </MudItem>
+                <MudSpacer />
+                <MudItem md="2">
+                    <MudText Typo="Typo.h6" Color="Color.Primary">
+                        <b>
+                            Participant
+                        </b>
+                    </MudText>
+                </MudItem>
+                <MudItem md="2">
+                    <MudText Typo="Typo.h6">
+                        @_model!.ParticipantFullName
+                    </MudText>
+                </MudItem>
+                <MudSpacer />
+            </MudGrid>
+        </MudPaper>
+
+        <MudExpansionPanels MultiExpansion="true">
+            <!--Release Info-->
+            <MudExpansionPanel Expanded>
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudIcon Icon="@Icons.Material.Filled.Map" Color="Color.Primary" class="mr-3" />
+                        <MudText>Release</MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <MudForm Model="_priRelease!" Validation="@(Validator.ValidateValue(_priRelease!))" Disabled>
+                        <MudSelect @bind-Value="_priRelease!.CustodyLocation"
+                                   Label="Discharge Location"
+                                   For="() => _priRelease!.CustodyLocation">
+                            <MudSelectItem Value="@_priRelease!.CustodyLocation">@_priRelease!.CustodyLocation!.Name</MudSelectItem>
+                        </MudSelect>
+                        <MudSelect @bind-Value="_priRelease!.ExpectedRegion"
+                                   Label="Expected release region"
+                                   For="() => _priRelease!.ExpectedRegion">
+                            <MudSelectItem Value="@_priRelease!.ExpectedRegion">@_priRelease!.ExpectedRegion!.Name</MudSelectItem>
+                        </MudSelect>
+                        <MudDatePicker @bind-Date="_priRelease!.ExpectedOn"
+                                       For="() => _priRelease!.ExpectedOn"
+                                       Label="Expected date of release"
+                                       MinDate="DateTime.Today"
+                                       MaxDate="DateTime.Today.AddMonths(3)"
+                                       Class="mt-2" />
+                    </MudForm>
+                </ChildContent>
+            </MudExpansionPanel>
+
+            <!--Assigment-->
+            <MudExpansionPanel Expanded>
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Primary" class="mr-3" />
+                        <MudText>Assignment</MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <MudForm ReadOnly Disabled>
+                        <MudTextField Value="userService.GetDisplayName(_model!.CreatedBy)"
+                                      For="() => _model!.CreatedBy"
+                                      Label="Custody Support Worker"
+                                      MaxLength="6"
+                                      Class="mb-2" />
+                        <MudTextField Value="userService.GetDisplayName(_priDto!.AssignedTo!)"
+                                      For="() => _priDto!.AssignedTo"
+                                      Label="Community Support Worker"
+                                      MaxLength="6"
+                                      Class="mb-2" />
+                    </MudForm>
+                </ChildContent>
+            </MudExpansionPanel>
+
+            <!--Post-Release Meeting-->
+            <MudExpansionPanel Expanded>
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudIcon Icon="@Icons.Material.Filled.MeetingRoom" Color="Color.Primary" class="mr-3" />
+                        <MudText>Post-Release</MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <MudForm Model="_preMeeting" Validation="Validator.ValidateValue(_preMeeting)" ReadOnly Disabled>
+                        <MudTextField @bind-Value="_preMeeting!.PostReleaseCommunitySupportInformation"
+                                      For="() => _preMeeting!.PostReleaseCommunitySupportInformation"
+                                      Label="Post release community support information"
+                                      Lines="5"
+                                      Class="mt-2" />
+                    </MudForm>
+                </ChildContent>
+            </MudExpansionPanel>
+
+            <!--Objective and Tasks-->
+            <MudExpansionPanel Expanded Class="page-break-before keep-together">
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudIcon Icon="@Icons.Material.Filled.Checklist" Color="Color.Primary" class="mr-3" />
+                        <MudText>Objectives/Tasks</MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <MudForm ReadOnly Disabled>
+                        @if (_pathwayPlanDto is not null)
+                        {
+                            <MudList T="ObjectiveTaskDto">
+                                @foreach (var objective in _pathwayPlanDto.Objectives
+                               .Where(objective => (objective.IsCompleted is false || _hideCompletedObjectives is false))
+                               .OrderByDirection(_sortDirection, selectors[selector]))
+                                {
+                                    @* <ObjectivePrintVersion Model="objective" HideCompletedTasks="_hideCompletedTasks" PrintVersion="_printVersion" OnChange="async() => await OnRefresh()" /> *@
+                                    <Objective Model="objective" HideCompletedTasks="_hideCompletedTasks" OnChange="async() => await OnRefresh()" />
+                                    <MudDivider />
+                                }
+                                @if (_pathwayPlanDto.Objectives.Count() == 0)
+                                {
+                                    <MudText>No Objectives/Tasks found</MudText>
+                                }
+                            </MudList>
+                        }
+                        @if (_loading)
+                        {
+                            <MudText>@ConstantString.Loading</MudText>
+                        }
+                    </MudForm>
+                </ChildContent>
+            </MudExpansionPanel>
+
+            <!--Useful Info-->
+            <MudExpansionPanel Expanded Class="keep-together">
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudIcon Icon="@Icons.Material.Filled.Web" Color="Color.Primary" class="mr-3" />
+                        <MudText>Useful Information</MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <MudText>
+                        If anything changes upon your release, or you need our support then please get in touch with your nearest CFO team. For specific information on our regional community delivery, including addresses and contact information, please see our website - https://www.creatingfutureopportunities.gov.uk/regional-delivery/
+                    </MudText>
+                </ChildContent>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+
+
+        <MudButton Color="Color.Primary" Variant="Variant.Filled"
+                   OnClick="PrintMe" Class="mt-4 no-print">
+            @ConstantString.PrintPRI
+        </MudButton>
+    }
+
+</MudContainer>
+@code
+{
+    [Parameter, EditorRequired]
+    public Guid PriId { get; set; } = default!;
+
+    private bool _loading = false;
+    private bool _notFound = false;
+    private bool _hideCompletedObjectives = false;
+    private bool _hideCompletedTasks = false;
+
+    private PRIPrintVersionDto? _model;
+    private PRIDto? _priDto;
+    private PathwayPlanDto? _pathwayPlanDto;
+    private PriReleaseDto? _priRelease;
+    private PriMeetingDto? _preMeeting;
+
+    private SortDirection _sortDirection = SortDirection.Ascending;
+
+    private string selector = "Created";
+    private Dictionary<string, Func<ObjectiveDto, dynamic>> selectors = new()
+    {
+        { "Created", (objective) => objective.Created },
+        { "Title", (objective) => objective.Description },
+        { "Outstanding", (objective) => objective.Tasks.Where(task => task.IsCompleted is false).Count() },
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await OnRefresh(firstRender: true);
+        await base.OnInitializedAsync();
+    }
+    private async Task OnRefresh(bool firstRender = false)
+    {
+        _loading = true;
+
+        try
+        {
+            var result = await GetNewMediator().Send(new GetPRIPrintVersion.Query()
+                {
+                    Id = PriId
+                });
+
+            if (result.Succeeded && result.Data is not null)
+            {
+                _model = result.Data;
+
+                _priDto = _model._priDto;
+                _pathwayPlanDto = _model._pathwayPlanDto;
+                _priRelease = Mapper.Map<PriReleaseDto>(_priDto);
+                _preMeeting = Mapper.Map<PriMeetingDto>(_priDto);
+            }
+            else
+            {
+                _notFound = true;
+            }
+
+            if (firstRender is false)
+            {
+                await OnUpdate.InvokeAsync(); // Bubble update, refreshing participant information
+            }
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Add a small delay to ensure content is fully rendered
+            await Task.Delay(1000);
+            PrintMe();
+        }
+    }
+    private void PrintMe()
+    {
+        JS.InvokeVoidAsync("window.print");
+    }
+
+}

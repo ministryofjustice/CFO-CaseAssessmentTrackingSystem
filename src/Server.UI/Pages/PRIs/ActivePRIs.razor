@@ -122,6 +122,9 @@
                         @ConstantString.AbandonPRI
                     </MudMenuItem>
 
+                    <MudMenuItem OnClick="@(()=> PrintPRI(context.Item))" >
+                        @ConstantString.PrintPRI
+                    </MudMenuItem>
                 </MudMenu>
             </CellTemplate>
         </TemplateColumn>
@@ -380,5 +383,9 @@
         {
             await OnRefresh();
         } 
+    }
+    private void PrintPRI(PRIPaginationDto PRI)
+    {
+        JS.InvokeVoidAsync("open", $"/pages/PrintPri/{PRI.Id}", "_blank");
     }
 }
