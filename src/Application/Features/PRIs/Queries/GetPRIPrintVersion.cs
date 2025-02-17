@@ -36,7 +36,7 @@ public class GetPRIPrintVersion
             else
             {
                 priPrintVersionDto = mapper.Map<PRIPrintVersionDto>(pri);
-                priPrintVersionDto._priDto = mapper.Map<PRIDto>(pri);
+                priPrintVersionDto.PriDto = mapper.Map<PRIDto>(pri);
 
                 //Future proofing, in case there are multiple Pathway plans per Participant
                 var mandatoryObjective = await unitOfWork.DbContext.PathwayPlans
@@ -57,7 +57,7 @@ public class GetPRIPrintVersion
 
                     if (priRelevantPathwayPlan is not null)
                     {
-                        priPrintVersionDto._pathwayPlanDto = mapper.Map<PathwayPlanDto>(priRelevantPathwayPlan);
+                        priPrintVersionDto.PathwayPlanDto = mapper.Map<PathwayPlanDto>(priRelevantPathwayPlan);
                     }
                 }
             }

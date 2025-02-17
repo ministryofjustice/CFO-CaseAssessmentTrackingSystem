@@ -323,8 +323,8 @@
             {
                 _model = result.Data;
 
-                _priDto = _model._priDto;
-                _pathwayPlanDto = _model._pathwayPlanDto;
+                _priDto = _model.PriDto;
+                _pathwayPlanDto = _model.PathwayPlanDto;
                 _priRelease = Mapper.Map<PriReleaseDto>(_priDto);
                 _preMeeting = Mapper.Map<PriMeetingDto>(_priDto);
             }
