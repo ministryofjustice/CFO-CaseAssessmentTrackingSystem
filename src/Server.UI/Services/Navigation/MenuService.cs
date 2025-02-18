@@ -51,7 +51,7 @@ public class MenuService : IMenuService
                                 Title = "Transfers",
                                 Href = "/pages/participants/transfers",
                                 PageStatus = PageStatus.Completed,
-                                Roles = [RoleNames.QAFinance, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
+                                Roles = [RoleNames.QAFinance, RoleNames.QAOfficer, RoleNames.PerformanceManager, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport ]
                             },
                             new()
                             {
