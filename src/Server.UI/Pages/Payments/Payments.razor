@@ -48,6 +48,9 @@
     <MudTabPanel Text="Inductions">
         <InductionPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Inductions")" Contract="@SelectedContract" DataView="DataView" />
     </MudTabPanel>
+    <MudTabPanel Text="Support &amp; Referral">
+        <SupportAndReferral Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-SupportAndReferral")" Contract="@SelectedContract" DataView="DataView" />
+    </MudTabPanel>
     <MudTabPanel Text="Activities">
         <ActivityPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Activities")" Contract="@SelectedContract" DataView="DataView" />
     </MudTabPanel>
