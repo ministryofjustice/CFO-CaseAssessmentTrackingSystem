@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Domain.Entities.Activities;
+using Microsoft.Extensions.Options;
 
 namespace Cfo.Cats.Application.Features.Activities.DTOs
 {
@@ -20,6 +21,12 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
         public bool IsCompleted { get; set; }
         public bool IsAccepted { get; set; }
 
+        public ActivitySummaryDto Activity { get; set; } = default!;
+
+        public DateTime CommencedOn => Activity.CommencedOn;
+
+        public DateTime Expiry => Activity.CommencedOn.AddMonths(3);
+
         public NoteDto[] Notes { get; set; } = [];
 
         private class Mapping : Profile
@@ -35,7 +42,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
                     options => options.MapFrom(source => source.TenantId))
                     .ForMember(target => target.TenantName,
                     options => options.MapFrom(source => source.Tenant!.Name))
-                    .ForMember(target => target.ParticipantName, options => {
+                    .ForMember(target => target.ParticipantName, options =>
+                    {
                         options.MapFrom(target => target.Participant!.FirstName + " " + target.Participant.LastName);
                     })
                     .ForMember(target => target.ParticipantId,
@@ -46,7 +54,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
                     .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                     .ForMember(target => target.IsCompleted, options => options.MapFrom(source => source.IsCompleted))
                     .ForMember(target => target.IsAccepted, options => options.MapFrom(source => source.IsAccepted))
-                    .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName));
+                    .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
+                    .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity));
 
                 CreateMap<ActivityQa1QueueEntry, ActivityQueueEntryDto>()
                      .ForMember(target => target.ActivityId,
@@ -67,7 +76,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
                      source => source.Participant!.Owner!.DisplayName
                      ))
                      .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
-                      .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName));
+                      .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
+                    .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity));
 
                 CreateMap<ActivityQa2QueueEntry, ActivityQueueEntryDto>()
                     .ForMember(target => target.ActivityId,
@@ -88,7 +98,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
                     source => source.Participant!.Owner!.DisplayName
                     ))
                     .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
-                    .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName));
+                    .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
+                    .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity));
 
                 CreateMap<ActivityEscalationQueueEntry, ActivityQueueEntryDto>()
                     .ForMember(target => target.ActivityId,
@@ -109,7 +120,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
                         source => source.Participant!.Owner!.DisplayName
                     ))
                     .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
-                    .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName));
+                    .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
+                    .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity));
             }
         }
     }
