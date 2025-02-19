@@ -48,14 +48,14 @@
                     {
                         <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
                             
-                            <MudRadioGroup @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
-                                <MudRadio Value="SubmitActivityPqaResponse.PqaResponse.Accept" Color="Color.Primary">
+                            <MudRadioGroup T="SubmitActivityPqaResponse.PqaResponse?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
+                                <MudRadio T="SubmitActivityPqaResponse.PqaResponse?"  Value="SubmitActivityPqaResponse.PqaResponse.Accept" Color="Color.Primary">
                                     Accept
                                 </MudRadio>
-                                <MudRadio Value="SubmitActivityPqaResponse.PqaResponse.Return" Color="Color.Secondary">
+                                <MudRadio  T="SubmitActivityPqaResponse.PqaResponse?"  Value="SubmitActivityPqaResponse.PqaResponse.Return" Color="Color.Secondary">
                                     Return
                                 </MudRadio>
-                                <MudRadio Value="SubmitActivityPqaResponse.PqaResponse.Comment" Color="Color.Secondary">
+                                <MudRadio  T="SubmitActivityPqaResponse.PqaResponse?"  Value="SubmitActivityPqaResponse.PqaResponse.Comment" Color="Color.Secondary">
                                     Comment / Defer
                                 </MudRadio>
                             </MudRadioGroup>
