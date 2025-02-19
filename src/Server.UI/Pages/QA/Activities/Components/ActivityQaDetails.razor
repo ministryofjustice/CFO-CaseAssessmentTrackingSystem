@@ -10,21 +10,37 @@
             </ChildContent>
         </MudListSubheader>
         <MudDivider />
-        <MudListItem>
+        <MudListItem Href="@($"/pages/participants/{Activity.Participant!.Id}")">
             <MudText Typo="Typo.body1">Case Ref</MudText>
             <MudText Typo="Typo.body2">@Activity.Participant!.Id</MudText>
         </MudListItem>
         <MudListItem>
             <MudText Typo="Typo.body1">Participant</MudText>
-            <MudText Typo="Typo.body2">@Activity.Participant!.FirstName @Activity.Participant!.LastName</MudText>
+            <MudText Typo="Typo.body2">@Activity.Participant!.FullName</MudText>
         </MudListItem>
         <MudListItem>
-            <MudText Typo="Typo.body1">Location</MudText>
-            <MudText Typo="Typo.body2">@Activity.Location!.Name</MudText>
+            <MudText Typo="Typo.body1">
+                Date Of Birth
+            </MudText>
+            <MudText Typo="Typo.body2">
+                @Activity.Participant!.DateOfBirth
+            </MudText>
         </MudListItem>
+        @foreach (var item in Activity.Participant!.ExternalIdentifiers)
+        {
+            <MudListItem>
+                <MudText Typo="Typo.body1">@item.Type</MudText>
+                <MudText Typo="Typo.body2">@item.Value</MudText>
+            </MudListItem>
+        }
+        <MudDivider />
         <MudListItem>
-            <MudText Typo="Typo.body1">Activity </MudText>
+            <MudText Typo="Typo.body1">Activity</MudText>
             <MudText Typo="Typo.body2">@Activity.Definition!.Name</MudText>
+        </MudListItem>
+        <MudListItem>
+            <MudText Typo="Typo.body1">Activity Location</MudText>
+            <MudText Typo="Typo.body2">@Activity.Location!.Name</MudText>
         </MudListItem>
         <MudListItem>            
             <MudText Typo="Typo.body1">Date activity took place</MudText>

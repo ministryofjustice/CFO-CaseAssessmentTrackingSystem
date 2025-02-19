@@ -8,28 +8,14 @@
             </ChildContent>
         </MudListSubheader>
         <MudDivider />
-        @foreach (var item in Participant.ExternalIdentifiers)
-        {
-            <MudListItem>
-                <MudText Typo="Typo.body1">@item.Type</MudText>
-                <MudText Typo="Typo.body2">@item.Value</MudText>
-            </MudListItem>
-        }
-        <MudListItem>
-            <MudText Typo="Typo.body1">First Name</MudText>
-            <MudText Typo="Typo.body2">@Participant.FirstName</MudText>
+        <MudListItem Href="@($"/pages/participants/{Participant.Id}")">
+            <MudText Typo="Typo.body1">Case Ref</MudText>
+            <MudText Typo="Typo.body2">@Participant.Id</MudText>
         </MudListItem>
         <MudListItem>
-            <MudText Typo="Typo.body1">Last Name</MudText>
-            <MudText Typo="Typo.body2">@Participant.LastName</MudText>
+            <MudText Typo="Typo.body1">Participant</MudText>
+            <MudText Typo="Typo.body2">@Participant.FullName</MudText>
         </MudListItem>
-        @if (ShowNationality)
-        {
-            <MudListItem>
-                <MudText Typo="Typo.body1">Nationality</MudText>
-                <MudText Typo="Typo.body2">@(Participant.Nationality ?? "Unknown")</MudText>
-            </MudListItem>
-        }
         <MudListItem>
             <MudText Typo="Typo.body1">
                 Date Of Birth
@@ -37,8 +23,21 @@
             <MudText Typo="Typo.body2">
                 @Participant.DateOfBirth
             </MudText>
-
         </MudListItem>
+        @foreach (var item in Participant.ExternalIdentifiers)
+        {
+            <MudListItem>
+                <MudText Typo="Typo.body1">@item.Type</MudText>
+                <MudText Typo="Typo.body2">@item.Value</MudText>
+            </MudListItem>
+        }
+        @if (ShowNationality)
+        {
+            <MudListItem>
+                <MudText Typo="Typo.body1">Nationality</MudText>
+                <MudText Typo="Typo.body2">@(Participant.Nationality ?? "Unknown")</MudText>
+            </MudListItem>
+        }
         <MudListItem>
             <MudText Typo="Typo.body1">Delivery Location</MudText>
             <MudText Typo="Typo.body2">@Participant.EnrolmentLocation?.Name</MudText>
