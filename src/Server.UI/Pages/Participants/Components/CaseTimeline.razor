@@ -20,6 +20,7 @@
                         <MudCard Outlined="false" Elevation="25">
                             <MudCardContent>
                                 <MudText Typo="Typo.h6">@model.Line1</MudText>
+                                
                                 @if (model.Line2 is not null)
                                 {
                                     <MudText Typo="Typo.body2">@model.Line2</MudText>
@@ -29,9 +30,9 @@
                                     <MudText Typo="Typo.body2">@model.Line3</MudText>
                                 }
 
-                                @if (model.Line1 == "Enrolment transitioned to Submitted to provider" && hideUser)
+                                @if (hideUser && CFOTenantIds.Contains(model.UserTenantId))
                                 {
-                                    <MudText Typo="Typo.body2">CFO QA @model.OccurredOn.Humanize()</MudText>
+                                    <MudText Typo="Typo.body2">CFO User @model.OccurredOn.Humanize()</MudText>
                                 }
                                 else
                                 {
@@ -56,7 +57,10 @@
 
     private PaginatedData<TimelineDto>? _model = null;
 
+    //Hide CFO Users from providers on time line
     private bool hideUser = true;
+    private HashSet<string> CFOTenantIds = new HashSet<string> { "1.", "1.1." };
+    private string[] allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
 
     protected override async Task OnInitializedAsync()
     {
@@ -68,10 +72,9 @@
                 CurrentUser = UserProfile
             });
         }
-
-        string[] allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
+        
         if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
-        {
+        {            
             hideUser = false;
         }
     }
