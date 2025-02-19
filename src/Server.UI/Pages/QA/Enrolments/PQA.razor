@@ -37,14 +37,14 @@
 {
     @if (_queueEntry!.IsAccepted || _queueEntry.IsCompleted)
     {
-        <MudAlert Severity="Severity.Warning">
+        <MudAlert Severity="Severity.Warning" Class="mb-2">
             This entry has already been processed
         </MudAlert>
     }
 
     @if(_showRightToWorkWarning)
     {
-        <MudAlert Severity="Severity.Warning">
+        <MudAlert Severity="Severity.Warning" Class="mb-2">
             Consent has been granted for this participant, but they require right to work to proceed.
         </MudAlert>
     }
