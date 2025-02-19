@@ -32,7 +32,7 @@
 
     NotesModelValidator _modelValidator = new(true);
 
-    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter] public string? ContentText { get; set; }
 

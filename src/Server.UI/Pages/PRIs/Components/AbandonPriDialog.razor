@@ -40,7 +40,7 @@
     MudForm? form = new();
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; } = default!;
+    private IMudDialogInstance MudDialog { get; set; } = default!;
 
     [EditorRequired]
     [Parameter]

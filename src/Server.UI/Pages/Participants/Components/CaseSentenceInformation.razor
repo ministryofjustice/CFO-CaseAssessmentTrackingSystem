@@ -128,7 +128,7 @@
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
-        var dialog = DialogService.Show<EditSupervisorDialog>
+        var dialog = await DialogService.ShowAsync<EditSupervisorDialog>
             ("Edit Supervisor", parameters, options);
 
         var state = await dialog.Result;

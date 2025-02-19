@@ -154,7 +154,7 @@ public partial class CaseSummary
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = DialogService.Show<ReviewRiskDialog>("Review risk information for a participant", parameters, options);
+        var dialog = await DialogService.ShowAsync<ReviewRiskDialog>("Review risk information for a participant", parameters, options);
 
         var state = await dialog.Result;
 
@@ -179,7 +179,7 @@ public partial class CaseSummary
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = DialogService.Show<ReviewRiskDialog>("Add risk information for a participant", parameters, options);
+        var dialog = await DialogService.ShowAsync<ReviewRiskDialog>("Add risk information for a participant", parameters, options);
 
         var state = await dialog.Result;
 
@@ -228,7 +228,7 @@ public partial class CaseSummary
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
-        var dialog = DialogService.Show<ExpandedRiskDialog>("Risk Summary", parameters, options);
+        var dialog = await DialogService.ShowAsync<ExpandedRiskDialog>("Risk Summary", parameters, options);
 
         var result = await dialog.Result;
     }

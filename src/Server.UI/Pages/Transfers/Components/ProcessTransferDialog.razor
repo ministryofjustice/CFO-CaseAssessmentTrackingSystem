@@ -41,7 +41,7 @@
     private IEnumerable<ApplicationUserDto> users = [];
 
     [CascadingParameter] 
-    MudDialogInstance MudDialog { get; set; } = default!;
+    IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter, EditorRequired] 
     public required ProcessIncomingTransfer.Command Model { get; set; }

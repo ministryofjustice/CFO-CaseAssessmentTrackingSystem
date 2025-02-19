@@ -208,7 +208,7 @@
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
-        var dialog = DialogService.Show<ProcessTransferDialog>("Process and Assign", parameters, options);
+        var dialog = await DialogService.ShowAsync<ProcessTransferDialog>("Process and Assign", parameters, options);
 
         var state = await dialog.Result;
 
