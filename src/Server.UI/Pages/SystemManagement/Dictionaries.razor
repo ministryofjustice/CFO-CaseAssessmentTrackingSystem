@@ -183,12 +183,6 @@
     </PagerContent>
 </MudDataGrid>
 
-<style>
-    .mud-table-toolbar {
-        height: 120px !important;
-    }
-</style>
-
 @code {
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
 
@@ -309,7 +303,7 @@
             MaxWidth = MaxWidth.ExtraSmall,
             FullWidth = true
         };
-        var dialog = DialogService.Show<DeleteConfirmation>(ConstantString.DeleteConfirmationTitle, parameters, options);
+        var dialog = await DialogService.ShowAsync<DeleteConfirmation>(ConstantString.DeleteConfirmationTitle, parameters, options);
         var state = await dialog.Result;
         if (!state!.Canceled)
         {
@@ -332,7 +326,7 @@
             MaxWidth = MaxWidth.ExtraSmall,
             FullWidth = true
         };
-        var dialog = DialogService.Show<DeleteConfirmation>(ConstantString.DeleteConfirmationTitle, parameters, options);
+        var dialog = await DialogService.ShowAsync<DeleteConfirmation>(ConstantString.DeleteConfirmationTitle, parameters, options);
         var state = await dialog.Result;
         if (!state!.Canceled)
         {
@@ -362,7 +356,7 @@
             MaxWidth = MaxWidth.Small,
             FullWidth = true
         };
-        var dialog = DialogService.Show<CreatePicklistDialog>
+        var dialog = await DialogService.ShowAsync<CreatePicklistDialog>
             (L["Create a new picklist"], parameters, options);
         var state = await dialog.Result;
         if (!state!.Canceled)

@@ -35,7 +35,7 @@ public class PickSuperiorIdAutocomplete : MudAutocomplete<string>
         return Task.CompletedTask;
     }
 
-    private Task<IEnumerable<string>> SearchKeyValues(string value, CancellationToken cancellation)
+    private Task<IEnumerable<string>> SearchKeyValues(string? value, CancellationToken cancellation)
     {
         if (_userList == null)
         {
@@ -60,7 +60,7 @@ public class PickSuperiorIdAutocomplete : MudAutocomplete<string>
         return Task.FromResult(result.AsEnumerable());
     }
 
-    private string ConvertIdToUserName(string id)
+    private string ConvertIdToUserName(string? id)
     {
         return _userList?.FirstOrDefault(x => x.Id.Equals(id, StringComparison.OrdinalIgnoreCase))?.UserName ?? string.Empty;
     }
