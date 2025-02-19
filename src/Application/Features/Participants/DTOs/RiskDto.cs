@@ -150,6 +150,8 @@ public class RiskDto
         public RiskLevel? RiskToKnownAdult { get; set; }
         [Description("Risk to Staff")]
         public RiskLevel? RiskToStaff { get; set; }
+        [Description("Risk to Self(Old)")]
+        public RiskLevel? RiskToSelf { get; set; }
         [Description("Risk to Self")]
         public RiskLevel? RiskToSelf { get; set; }
         [Description("Risk to Self")]
