@@ -65,22 +65,24 @@
         {
             @* Risk to Other Prisoners *@
             <MudDivider Class="mt-6" />
-        <MudItem xs="4">
-            @Model.GetMemberDescription(x => x.RiskToOtherPrisoners)
-        </MudItem>
-        <MudItem xs="8">
-            <MudToggleGroup @bind-Value="@Model.RiskToOtherPrisoners" Class="readonly-toggle" CheckMark>
-                <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
-            </MudToggleGroup>
-            <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToOtherPrisoners)" hidden />
-        </MudItem>
+            <MudItem xs="4">
+                @Model.GetMemberDescription(x => x.RiskToOtherPrisoners)
+            </MudItem>
+            <MudItem xs="8">
+                <MudToggleGroup @bind-Value="@Model.RiskToOtherPrisoners" Class="readonly-toggle" CheckMark>
+                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+                </MudToggleGroup>
+                <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToOtherPrisoners)" hidden />
+            </MudItem>
         }
         @* Risk to Self *@
         <MudDivider Class="mt-6" />
+        @if (ReadOnly && Model.RiskToSelf is not null)
+        {
         <MudItem xs="4">
             @Model.GetMemberDescription(x => x.RiskToSelf)
         </MudItem>
@@ -94,6 +96,20 @@
             </MudToggleGroup>
             <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToSelf)" hidden />
         </MudItem>
+        }
+        else
+        {
+        <MudItem xs="4">
+            @Model.GetMemberDescription(x => x.RiskToSelfNew)
+        </MudItem>
+        <MudItem xs="8">
+            <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.RiskToSelfNew" CheckMark Style="grid-template-columns: repeat(2, minmax(0, 1fr))!important">
+                    <MudToggleItem Value="false">@ConfirmationStatus.No.Name</MudToggleItem>
+                    <MudToggleItem Value="true">@ConfirmationStatus.Yes.Name</MudToggleItem>
+            </MudToggleGroup>
+            <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToSelfNew)" hidden />
+        </MudItem>
+        }
     </MudGrid>
 </MudForm>
 
@@ -102,5 +118,19 @@
     public required RiskDto.RiskDetail Model { get; set; }
     [Parameter]
     public bool Community { get; set; } = false;
+    
+    [CascadingParameter]
+    public MudForm? Form { get; set; }
 
+    public bool ReadOnly { get; private set; } = false;
+
+    protected override Task OnInitializedAsync()
+    {
+        if (Form is not null)
+        {
+            ReadOnly = Form.ReadOnly;
+        }
+
+        return base.OnInitializedAsync();
+    }
 }
