@@ -97,7 +97,7 @@
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
-        var dialog = DialogService.Show<AddNoteDialog>
+        var dialog = await DialogService.ShowAsync<AddNoteDialog>
             ("Add a note", parameters, options);
 
         var state = await dialog.Result;

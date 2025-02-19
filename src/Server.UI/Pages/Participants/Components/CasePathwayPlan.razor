@@ -131,7 +131,7 @@
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true, BackdropClick = false};
-        var dialog = DialogService.Show<AddObjectiveDialog>("Add thematic objective", parameters, options);
+        var dialog = await DialogService.ShowAsync<AddObjectiveDialog>("Add thematic objective", parameters, options);
                 
         var state = await dialog.Result;
 

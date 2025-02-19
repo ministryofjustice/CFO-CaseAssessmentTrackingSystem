@@ -25,7 +25,7 @@
     bool saving;
 
     [CascadingParameter]
-    public required MudDialogInstance Dialog { get; set; }
+    public required IMudDialogInstance Dialog { get; set; }
 
     [Parameter, EditorRequired]
     public required AddActivity.Command Model { get; set; }

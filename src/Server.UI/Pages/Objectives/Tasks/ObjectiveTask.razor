@@ -147,7 +147,7 @@
         };
 
         var options = SetDialogOptions();            
-        var dialog = DialogService.Show<CompleteTaskDialog>("Complete task", parameters, options);
+        var dialog = await DialogService.ShowAsync<CompleteTaskDialog>("Complete task", parameters, options);
 
         var state = await dialog.Result;
 
@@ -200,8 +200,7 @@
         };
 
         var options = SetDialogOptions();
-     
-        var dialog = DialogService.Show<AdjustDateTaskDialog>("Adjust date", parameters, options);
+        var dialog = await DialogService.ShowAsync<AdjustDateTaskDialog>("Adjust date", parameters, options);
 
         var state = await dialog.Result;
 
@@ -233,8 +232,7 @@
         };
 
         var options = SetDialogOptions();
-            
-        var dialog = DialogService.Show<RenameTaskDialog>("Rename task", parameters, options);
+        var dialog = await DialogService.ShowAsync<RenameTaskDialog>("Rename task", parameters, options);
 
         var state = await dialog.Result;
 
@@ -264,7 +262,7 @@
 
         var options = SetDialogOptions();
 
-        var dialog = DialogService.Show<AddActivityDialog>("Add Activity/ETE", parameters, options);
+        var dialog = await DialogService.ShowAsync<AddActivityDialog>("Add Activity/ETE", parameters, options);
                 
         if (await dialog.Result is not { Canceled: true })
         {
@@ -289,7 +287,7 @@
 
         var options = SetDialogOptions();
 
-        var dialog = DialogService.Show<ActivitiesDialog>("Activity/ETE history for task", parameters, options);
+        var dialog = await DialogService.ShowAsync<ActivitiesDialog>("Activity/ETE history for task", parameters, options);
                 
         if (await dialog.Result is not { Canceled: true })
         {

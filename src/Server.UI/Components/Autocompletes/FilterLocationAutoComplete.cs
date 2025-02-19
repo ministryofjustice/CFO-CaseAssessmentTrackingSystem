@@ -23,7 +23,7 @@ namespace Cfo.Cats.Server.UI.Components.Autocompletes
             return base.SetParametersAsync(parameters);
         }
 
-        private Task<IEnumerable<LocationDto>> SearchLocations(string arg1, CancellationToken token)
+        private Task<IEnumerable<LocationDto>> SearchLocations(string? arg1, CancellationToken token)
         {
             var results = string.IsNullOrEmpty(arg1) 
                 ? Locations.AsEnumerable() 

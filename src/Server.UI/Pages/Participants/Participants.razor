@@ -16,11 +16,6 @@
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
 <PageTitle>@Title</PageTitle>
-<style>
-    .mud-table-toolbar {
-        height: 120px !important;
-    }
-</style>
 
 @if (Query is not null)
 {

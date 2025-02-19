@@ -35,7 +35,7 @@
     private bool saving;
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; } = default!;
+    private IMudDialogInstance MudDialog { get; set; } = default!;
     
     [EditorRequired]
     [Parameter]

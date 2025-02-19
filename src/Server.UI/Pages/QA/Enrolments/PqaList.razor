@@ -10,17 +10,6 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.Pqa)]
 
-<style>
-    .mud-table-toolbar {
-        height: 120px !important;
-    }
-    
-    .pointer-cursor {
-        cursor: pointer;
-    }
-    
-</style>
-
 <MudDataGrid ServerData="@(ServerReload)"
              T="EnrolmentQueueEntryDto"
              FixedHeader="true"

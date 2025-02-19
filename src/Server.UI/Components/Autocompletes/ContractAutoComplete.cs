@@ -6,11 +6,9 @@ namespace Cfo.Cats.Server.UI.Components.Autocompletes
 {
     public class ContractAutoComplete : MudAutocomplete<ContractDto>
     {
-        [Inject] 
-        private IContractService ContractService { get; set; } = default!;
+        [Inject] private IContractService ContractService { get; set; } = default!;
 
-        [Parameter, EditorRequired] 
-        public string TenantId { get; set; } = default!;
+        [Parameter, EditorRequired] public string TenantId { get; set; } = default!;
 
         protected override void OnInitialized()
         {
@@ -22,10 +20,10 @@ namespace Cfo.Cats.Server.UI.Components.Autocompletes
             InvokeAsync(StateHasChanged);
         }
 
-        protected override void Dispose(bool disposing)
+        protected override ValueTask DisposeAsyncCore()
         {
             ContractService.OnChange -= ContractService_OnChange;
-            base.Dispose(disposing);
+            return base.DisposeAsyncCore();
         }
 
         public override Task SetParametersAsync(ParameterView parameters)
@@ -39,7 +37,7 @@ namespace Cfo.Cats.Server.UI.Components.Autocompletes
             return base.SetParametersAsync(parameters);
         }
 
-        private async Task<IEnumerable<ContractDto>> SearchLocations(string arg1, CancellationToken token)
+        private async Task<IEnumerable<ContractDto>> SearchLocations(string? arg1, CancellationToken token)
         {
             if (string.IsNullOrEmpty(arg1))
             {

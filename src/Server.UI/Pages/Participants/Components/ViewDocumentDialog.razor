@@ -9,13 +9,6 @@
 
 @inject IValidationService Validator
 
-<style>
-    .full-size-object {
-        width: 100%;
-        height: 100%;
-    }
-</style>
-
 @if (Model is not null)
 {
     <MudDialog Style="height: 100%">
@@ -52,7 +45,7 @@
 
 
 @code {
-    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public required DocumentDto Model { get; set; }

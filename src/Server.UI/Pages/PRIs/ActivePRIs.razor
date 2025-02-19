@@ -24,17 +24,7 @@
 
 <PageTitle>@Title</PageTitle>
 
-<style>
-    .mud-table-toolbar {
-        height: 120px !important;
-    }
-
-    .pointer-cursor {
-        cursor: pointer;
-    }
-</style>
-
- <MudDataGrid ServerData="@(ServerReload)"
+<MudDataGrid ServerData="@(ServerReload)"
                  FixedHeader="true"
                  FixedFooter="true"
                  Virtualize="true"
@@ -302,7 +292,7 @@
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, BackdropClick = false };
 
-        var dialog = DialogService.Show<PriGenerateCodeDialog>("Generate PRI Code", parameters, options);
+        var dialog = await DialogService.ShowAsync<PriGenerateCodeDialog>("Generate PRI Code", parameters, options);
 
         var state = await dialog.Result;
 
@@ -326,7 +316,7 @@
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, BackdropClick = false };
 
-        var dialog = DialogService.Show<AddActualReleaseDateDialog>("Add Actual Release Date", parameters, options);
+        var dialog = await DialogService.ShowAsync<AddActualReleaseDateDialog>("Add Actual Release Date", parameters, options);
 
         var state = await dialog.Result;
 
@@ -372,7 +362,7 @@
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, BackdropClick = false };
 
-        var dialog = DialogService.Show<AbandonPriDialog>("Abandon PRI", parameters, options);
+        var dialog = await DialogService.ShowAsync<AbandonPriDialog>("Abandon PRI", parameters, options);
 
         var state = await dialog.Result;
 

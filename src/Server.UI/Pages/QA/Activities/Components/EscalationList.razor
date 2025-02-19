@@ -7,16 +7,6 @@
 
 @inject IStringLocalizer<PQA> L
 
-<style>
-    .mud-table-toolbar {
-        height: 120px !important;
-    }
-
-    .pointer-cursor {
-        cursor: pointer;
-    }
-</style>
-
 <MudDataGrid ServerData="@(ServerReload)"
              T="ActivityQueueEntryDto"
              FixedHeader="true"

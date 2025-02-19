@@ -8,12 +8,6 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.Qa2)]
 
-<style>
-    .mud-table-toolbar {
-        height: 120px !important;
-    }
-</style>
-
 <MudDataGrid ServerData="@(ServerReload)"
              FixedHeader="true"
              FixedFooter="true"

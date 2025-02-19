@@ -7,11 +7,6 @@
 @inject IStringLocalizer<PQA> L
 
 @attribute [Authorize(Policy = SecurityPolicies.Qa1)]
-<style>
-    .mud-table-toolbar {
-        height: 120px !important;
-    }
-</style>
 
 <MudDataGrid ServerData="@(ServerReload)"
              FixedHeader="true"
