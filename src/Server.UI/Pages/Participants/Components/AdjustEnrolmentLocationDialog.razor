@@ -57,7 +57,7 @@
     [Inject] public ILocationService LocationService { get; set; } = default!;
 
     [CascadingParameter] 
-    private MudDialogInstance MudDialog { get; set; } = default!;
+    private IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter] public UserProfile UserProfile { get; set; } = default!;
 

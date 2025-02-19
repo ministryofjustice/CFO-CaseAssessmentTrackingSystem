@@ -79,7 +79,7 @@
             };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = DialogService.Show<ArchiveCaseDialog>("Archive Case", parameters, options);
+        var dialog = await DialogService.ShowAsync<ArchiveCaseDialog>("Archive Case", parameters, options);
 
         var state = await dialog.Result;
 
@@ -177,7 +177,7 @@
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
 
-        var dialog = DialogService.Show<RightToWorkDialog>
+        var dialog = await DialogService.ShowAsync<RightToWorkDialog>
         (ConstantString.RightToWork, parameters, options);
 
         var state = await dialog.Result;
@@ -219,7 +219,7 @@
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
 
-        var dialog = DialogService.Show<ConsentDialog>("Consent", parameters, options);
+        var dialog = await DialogService.ShowAsync<ConsentDialog>("Consent", parameters, options);
 
         var state = await dialog.Result;
 

@@ -26,7 +26,7 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public required ObjectiveTaskDto Model { get; set; }

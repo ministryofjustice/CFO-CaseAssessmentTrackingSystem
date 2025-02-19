@@ -16,11 +16,6 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-<style>
-    .mud-table-toolbar {
-        height: 120px !important;
-    }
-</style>
     <MudDataGrid T="DocumentDto" FixedHeader="true" Loading="_loading"
                  FixedFooter="true"
                  Virtualize="true"

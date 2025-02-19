@@ -18,17 +18,7 @@
         justify-content: center;
         align-items: center;
     }
-
-    .full-size-object {
-        width: 100%;
-        height: 100%;
-    }
-
-    .mud-radio {
-        display: block;
-        margin-bottom: 0.5rem; 
-    }
-
+   
 </style>
 
 @if (_activityQaDetailsDto is not null && _activityQaDetailsDto.Status == ActivityStatus.SubmittedToProviderStatus)
@@ -57,20 +47,19 @@
                     @if (_queueEntry.IsCompleted == false)
                     {
                         <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
-                            <MudItem xs="12">
-                                <MudRadioGroup T="SubmitActivityPqaResponse.PqaResponse?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
-                                    <MudRadio T="SubmitActivityPqaResponse.PqaResponse?" Value="SubmitActivityPqaResponse.PqaResponse.Accept" Color="Color.Primary">
-                                        Accept
-                                    </MudRadio>
-                                    <MudRadio T="SubmitActivityPqaResponse.PqaResponse?" Value="SubmitActivityPqaResponse.PqaResponse.Return" Color="Color.Secondary">
-                                        Return
-                                    </MudRadio>
-                                    <MudRadio T="SubmitActivityPqaResponse.PqaResponse?" Value="SubmitActivityPqaResponse.PqaResponse.Comment" Color="Color.Secondary">
-                                        Comment / Defer
-                                    </MudRadio>
-                                </MudRadioGroup>
-                            </MudItem>
-
+                            
+                            <MudRadioGroup @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
+                                <MudRadio Value="SubmitActivityPqaResponse.PqaResponse.Accept" Color="Color.Primary">
+                                    Accept
+                                </MudRadio>
+                                <MudRadio Value="SubmitActivityPqaResponse.PqaResponse.Return" Color="Color.Secondary">
+                                    Return
+                                </MudRadio>
+                                <MudRadio Value="SubmitActivityPqaResponse.PqaResponse.Comment" Color="Color.Secondary">
+                                    Comment / Defer
+                                </MudRadio>
+                            </MudRadioGroup>
+                            
                             <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" Class="mt-4" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
                             <MudText Class="ml-2">Characters: @CharacterCount / 1000</MudText>
                         </MudForm>

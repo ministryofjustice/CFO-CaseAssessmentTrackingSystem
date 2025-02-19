@@ -163,7 +163,7 @@
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
-        var dialog = DialogService.Show<AddDomainDialog>
+        var dialog = await DialogService.ShowAsync<AddDomainDialog>
             (L["Add a domain to tenant allowlist"], parameters, options);
 
         var state = await dialog.Result;
@@ -189,7 +189,7 @@
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
-        var dialog = DialogService.Show<DeleteConfirmation>(L["Delete the Domain"], parameters, options);
+        var dialog = await DialogService.ShowAsync<DeleteConfirmation>(L["Delete the Domain"], parameters, options);
 
         var state = await dialog.Result;
 
@@ -208,7 +208,7 @@
             { x => x.Model, command }
         };
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = DialogService.Show<RenameTenantDialog>
+        var dialog = await DialogService.ShowAsync<RenameTenantDialog>
             (L["Rename the Tenant"], parameters, options);
         var state = await dialog.Result;
         if (!state!.Canceled)

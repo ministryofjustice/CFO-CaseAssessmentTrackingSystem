@@ -31,7 +31,7 @@
     RightToWork? RightToWork { get; set; }
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; } = default!;
+    private IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public required AddRightToWork.Command Model { get; set; }

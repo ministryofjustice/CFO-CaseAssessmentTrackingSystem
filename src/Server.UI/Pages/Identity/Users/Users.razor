@@ -328,11 +328,6 @@
 
 <PermissionsDrawer OnAssignAllChanged="OnAssignAllChangedHandler" Waiting="@_processing" OnOpenChanged="OnOpenChangedHandler" Open="_showPermissionsDrawer" Permissions="_permissions" OnAssignChanged="OnAssignChangedHandler"></PermissionsDrawer>
 
-<style>
-    .mud-table-toolbar {
-        height: 120px !important;
-    }
-</style>
 
 @code {
     [CascadingParameter] 
@@ -504,7 +499,7 @@
             { x => x.Model, model }
         };
         var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var dialog = DialogService.Show<UserFormDialog>(title, parameters, options);
+        var dialog = await DialogService.ShowAsync<UserFormDialog>(title, parameters, options);
         var result = await dialog.Result;
 
         if (!result!.Canceled)
@@ -534,7 +529,7 @@
             { x => x.Model, model }
         };
         var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var dialog = DialogService.Show<UserFormDialog>(title, parameters, options);
+        var dialog = await DialogService.ShowAsync<UserFormDialog>(title, parameters, options);
         var result = await dialog.Result;
 
         if (!result!.Canceled)
@@ -742,7 +737,7 @@
         };
 
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.Small };
-        var dialog = DialogService.Show<ResetPasswordDialog>(L[$"Reset Password for {item.DisplayName}"], parameters, options);
+        var dialog = await DialogService.ShowAsync<ResetPasswordDialog>(L[$"Reset Password for {item.DisplayName}"], parameters, options);
 
         var result = await dialog.Result;
 
