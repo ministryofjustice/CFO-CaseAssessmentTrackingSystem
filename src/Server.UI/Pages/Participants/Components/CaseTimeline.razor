@@ -1,6 +1,7 @@
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Timelines.DTOs
 @using Cfo.Cats.Application.Features.Timelines.PaginationQuery
+@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 @using Humanizer
 
@@ -12,13 +13,14 @@
         foreach (var model in _model.Items)
         {
             Color color = GetColour(model);
-            
+
             <MudTimeline TimelinePosition="TimelinePosition.Start" Modifiers="true">
                 <MudTimelineItem Size="Size.Medium" Color="@color" Elevation="25">
                     <MudTooltip Text="@model.OccurredOn.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
                         <MudCard Outlined="false" Elevation="25">
                             <MudCardContent>
                                 <MudText Typo="Typo.h6">@model.Line1</MudText>
+                                
                                 @if (model.Line2 is not null)
                                 {
                                     <MudText Typo="Typo.body2">@model.Line2</MudText>
@@ -28,7 +30,15 @@
                                     <MudText Typo="Typo.body2">@model.Line3</MudText>
                                 }
 
-                                @model.User @model.OccurredOn.Humanize()
+                                @if (hideUser && CFOTenantIds.Contains(model.UserTenantId))
+                                {
+                                    <MudText Typo="Typo.body2">CFO User @model.OccurredOn.Humanize()</MudText>
+                                }
+                                else
+                                {
+                                    <MudText Typo="Typo.body2">@model.User @model.OccurredOn.Humanize()</MudText>                                    
+                                }
+
                             </MudCardContent>
                         </MudCard> </MudTooltip>
                 </MudTimelineItem>
@@ -47,6 +57,11 @@
 
     private PaginatedData<TimelineDto>? _model = null;
 
+    //Hide CFO Users from providers on time line
+    private bool hideUser = true;
+    private HashSet<string> CFOTenantIds = new HashSet<string> { "1.", "1.1." };
+    private string[] allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
+
     protected override async Task OnInitializedAsync()
     {
         if (_model is null)
@@ -56,6 +71,11 @@
                 ParticipantId = ParticipantSummaryDto.Id,
                 CurrentUser = UserProfile
             });
+        }
+        
+        if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+        {            
+            hideUser = false;
         }
     }
 
@@ -73,5 +93,4 @@
             _ => Color.Primary
         };
     }
-
 }
