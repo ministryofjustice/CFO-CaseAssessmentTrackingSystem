@@ -47,7 +47,6 @@ namespace Cfo.Cats.Domain.Entities.Activities
             {
                 _notes.Add(new ActivityQueueEntryNote()
                 {
-                    TenantId = TenantId,
                     Message = message,
                     IsExternal = isExternal
                 });

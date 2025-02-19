@@ -3,7 +3,7 @@ using Cfo.Cats.Domain.Identity;
 
 namespace Cfo.Cats.Domain.ValueObjects;
 
-public class Note : ValueObject, IAuditable, IMustHaveTenant
+public class Note : ValueObject, IAuditable
 {
     public required string Message { get; set; }
     public string? CallReference { get; set; }
@@ -20,7 +20,4 @@ public class Note : ValueObject, IAuditable, IMustHaveTenant
         yield return CreatedBy ?? Guid.CreateVersion7().ToString();
         yield return Created ?? DateTime.Now;
     }
-    public string TenantId { get; set; } = default!;
 }
-
-

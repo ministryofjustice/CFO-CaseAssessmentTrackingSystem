@@ -76,11 +76,11 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 _unitOfWork = unitOfWork;
 
                 RuleFor(c => c.ActivityQueueEntryId)
-                    .MustAsync(MustExist)
+                    .Must(Exist)
                     .WithMessage("Queue item does not exist");
             }
-            private async Task<bool> MustExist(Guid identifier, CancellationToken cancellationToken)
-                => await _unitOfWork.DbContext.ActivityQa1Queue.AnyAsync(e => e.Id == identifier, cancellationToken);
+            private bool Exist(Guid identifier)
+                => _unitOfWork.DbContext.ActivityQa1Queue.Any(e => e.Id == identifier);
         }
 
         public class C_ShouldNotBeComplete : AbstractValidator<Command>
@@ -92,14 +92,14 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 _unitOfWork = unitOfWork;
 
                 RuleFor(c => c.ActivityQueueEntryId)
-                    .MustAsync(MustBeOpen)
+                    .Must(BeOpen)
                     .WithMessage("Queue item is already completed.");
             }
 
-            private async Task<bool> MustBeOpen(Guid id, CancellationToken cancellationToken)
+            private bool BeOpen(Guid id)
             {
-                var entry = await _unitOfWork.DbContext.ActivityQa1Queue
-                    .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
+                var entry = _unitOfWork.DbContext.ActivityQa1Queue
+                    .FirstOrDefault(a => a.Id == id);
 
                 return entry is { IsCompleted: false };
             }
@@ -114,14 +114,14 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 _unitOfWork = unitOfWork;
 
                 RuleFor(c => c.ActivityQueueEntryId)
-                    .MustAsync(MustBeAtQa)
+                    .Must(BeAtQa)
                     .WithMessage("Activity queue item is not a PQA stage");
             }
 
-            private async Task<bool> MustBeAtQa(Guid id, CancellationToken cancellationToken)
+            private bool BeAtQa(Guid id)
             {
-                var entry = await _unitOfWork.DbContext.ActivityQa1Queue.Include(c => c.Activity)
-                    .FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
+                var entry = _unitOfWork.DbContext.ActivityQa1Queue.Include(c => c.Activity)
+                    .FirstOrDefault(a => a.Id == id);
 
                 return entry != null && entry.Activity!.Status== ActivityStatus.SubmittedToAuthorityStatus;
 
@@ -135,17 +135,40 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 _unitOfWork = unitOfWork;
 
                 RuleFor(c => c)
-                    .MustAsync(OwnerMustNotBeApprover)
+                    .Must(OwnerMustNotBeApprover)
                     .WithMessage("This Activity is created by you hence must not be processed at QA1 stage by you");
             }
 
-            private async Task<bool> OwnerMustNotBeApprover(Command c, CancellationToken cancellationToken)
+            private bool OwnerMustNotBeApprover(Command c)
             {
-                var entry = await _unitOfWork.DbContext.ActivityQa1Queue.Include(c => c.Activity)
-                    .FirstOrDefaultAsync(a => a.Id == c.ActivityQueueEntryId, cancellationToken: cancellationToken);
+                var entry = _unitOfWork.DbContext.ActivityQa1Queue.Include(c => c.Activity)
+                    .FirstOrDefault(a => a.Id == c.ActivityQueueEntryId);
 
-                return entry != null && entry.Activity!.OwnerId!.Equals(c.CurrentUser!.UserId) == false;
+                return entry != null && c.CurrentUser!.UserId.Equals(entry.Activity!.OwnerId) == false;
             }
+        }
+
+        public class F_ParticipantMustHaveOwner : AbstractValidator<Command>
+        {
+            private readonly IUnitOfWork _unitOfWork;
+            public F_ParticipantMustHaveOwner(IUnitOfWork unitOfWork)
+            {
+                _unitOfWork = unitOfWork;
+
+                RuleFor(c => c)
+                    .Must(ParticipantMustHaveOwner)
+                    .WithMessage("Participant must have an owner on approval. Please return for reassignment")
+                    .When(c => c.Accept is true);
+            }
+
+            private bool ParticipantMustHaveOwner(Command command)
+            {
+                var entry = _unitOfWork.DbContext.ActivityQa1Queue.Include(c => c.Participant)
+                    .First(a => a.Id == command.ActivityQueueEntryId);
+
+                return entry.Participant?.OwnerId is not null;
+            }
+
         }
     }
 }
