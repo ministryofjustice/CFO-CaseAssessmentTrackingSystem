@@ -10,7 +10,8 @@ public class TimelineDto
     public string? Line2 { get; set; } 
     public string? Line3 { get; set; } 
     public DateTime OccurredOn { get; set; }
-    
+    public string UserTenantId { get; set; } = default!;
+
     private class Mapper : Profile
     {
         public Mapper()
@@ -30,6 +31,8 @@ public class TimelineDto
                     options.MapFrom(source => source.Line3);
                 }).ForMember(t => t.OccurredOn, options => {
                     options.MapFrom(source => source.Created);
+                }).ForMember(t => t.UserTenantId, options => {
+                    options.MapFrom(source => source.CreatedByUser!.TenantId);
                 });
         }
     }
