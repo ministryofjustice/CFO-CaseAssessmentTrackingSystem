@@ -43,7 +43,7 @@ public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork) : IConsu
             var mandatoryTasks = (await unitOfWork.DbContext.PathwayPlans
                 .AsNoTracking()
                 .SelectMany(p => p.Objectives.Where(o => pris.Select(p => p.ObjectiveId).Contains(o.Id)))
-                .SelectMany(o => o.Tasks.Where(t => t.Index == 2))
+                .SelectMany(o => o.Tasks.Where(t => t.Completed != null && t.Index == 2))
                 .ToArrayAsync())
                 .Select(task => new { task, PRI = pris.First(p => p.ObjectiveId == task.ObjectiveId) });
 
