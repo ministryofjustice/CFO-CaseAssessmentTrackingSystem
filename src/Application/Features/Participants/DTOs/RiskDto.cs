@@ -182,9 +182,9 @@ public class RiskDto
                     .NotNull()
                     .WithMessage("This option is mandatory");
 
-                //RuleFor(x => x.RiskToSelfNew)
-                //    .NotNull()
-                //    .WithMessage("This option is mandatory");
+                RuleFor(x => x.RiskToSelfNew)
+                    .NotNull()
+                    .WithMessage("This option is mandatory");
             }
         }
     }
