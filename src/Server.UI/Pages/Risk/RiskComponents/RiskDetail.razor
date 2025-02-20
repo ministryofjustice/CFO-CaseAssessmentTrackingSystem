@@ -103,9 +103,9 @@
             @Model.GetMemberDescription(x => x.RiskToSelfNew)
         </MudItem>
         <MudItem xs="8">
-            <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.RiskToSelfNew" CheckMark Style="grid-template-columns: repeat(2, minmax(0, 1fr))!important">
-                    <MudToggleItem Value="false">@ConfirmationStatus.No.Name</MudToggleItem>
-                    <MudToggleItem Value="true">@ConfirmationStatus.Yes.Name</MudToggleItem>
+            <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.RiskToSelfNew" CheckMark>
+                <MudToggleItem T="bool?" Value="false">@ConfirmationStatus.No.Name</MudToggleItem>
+                <MudToggleItem T="bool?" Value="true">@ConfirmationStatus.Yes.Name</MudToggleItem>
             </MudToggleGroup>
             <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToSelfNew)" hidden />
         </MudItem>
