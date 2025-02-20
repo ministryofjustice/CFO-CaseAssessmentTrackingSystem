@@ -30,10 +30,12 @@ public class EducationTrainingDto
         public Validator()
         {
             RuleFor(c => c.CourseTitle)
+                .MaximumLength(200)
                 .NotNull()
                 .WithMessage("You must enter a Course Title");
 
             RuleFor(c => c.CourseLevel)
+                .MaximumLength(100)
                 .NotNull()
                 .WithMessage("You must choose a Course Level");
 
@@ -49,7 +51,9 @@ public class EducationTrainingDto
             RuleFor(v => v.CourseCompletionStatus)
                 .NotNull()
                 .WithMessage("You must choose a value for Passed");
-        }
 
+            RuleFor(c => c.CourseUrl)                
+                .MaximumLength(2000);
+        }
     }
 }
