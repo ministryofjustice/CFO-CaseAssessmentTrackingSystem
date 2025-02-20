@@ -325,7 +325,7 @@ public partial class CaseSummary
         {
             _showTTGDue = true;
             _priDueInfo = _latestPRI.TTGDueDate.Value.Humanize();
-            _priDueTooltipText = String.Format(ConstantString.PriTTGDueWarningToolTip, _latestPRI.TTGDueDate.Value);
+            _priDueTooltipText = String.Format(ConstantString.PriTTGDueWarningToolTip, $"on {_latestPRI.TTGDueDate.Value}");
 
             if (_latestPRI.IsFinalTTGWarningApplicable)
             {

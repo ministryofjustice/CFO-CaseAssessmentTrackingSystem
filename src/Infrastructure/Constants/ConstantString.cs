@@ -150,5 +150,5 @@ public static class ConstantString
     Localize("Abandon PRI");
     public static string ViewParticipant => Localize("View Participant");
     public static string PriNoActualReleaseDateWarning => Localize("No Actual Release date provided.");
-    public static string PriTTGDueWarningToolTip => Localize("Through the Gate(TTG) Due {0}");
+    public static string PriTTGDueWarningToolTip => Localize("Through the Gate (TTG) is due {0}");
 }
