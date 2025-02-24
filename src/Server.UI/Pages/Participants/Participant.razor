@@ -311,18 +311,22 @@
             : _participant.Assessments.OrderByDescending(a => a.AssessmentDate)
                 .First();
 
-        if (_latestAssessment is not null)
+        if (_latestAssessment is null)
         {
-            if (_latestAssessment.Completed is null)
-            {
-                    _assessmentInfo = "Assessment not completed";
-                    _assessmentIcon = Icons.Material.Filled.Warning;
-                    _assessmentIconColor = Color.Warning;             
-            }
+            _assessmentInfo = "No assessment has been created.";
+            _assessmentIcon = String.Empty;
+            _assessmentIconColor = Color.Transparent;
+        }
+        else if (_latestAssessment.Completed is null)
+        {
+            _assessmentInfo = "Assessment not completed";
+            _assessmentIcon = Icons.Material.Filled.Warning;
+            _assessmentIconColor = Color.Warning;
+        }
             else
             {
                 DateOnly _assessmentDueDate = DateOnly.FromDateTime(_latestAssessment.Completed.Value.AddMonths(3));
-                _assessmentInfo = $"Due {_assessmentDueDate.Humanize()}";
+                _assessmentInfo = $"Due {_latestAssessment.Completed.Value.AddMonths(3).Humanize()}";
 
                 int _assessmentDueInDays = _assessmentDueDate.DayNumber - DateOnly.FromDateTime(DateTime.UtcNow.Date).DayNumber;
                 switch (_assessmentDueInDays)
