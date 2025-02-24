@@ -354,8 +354,9 @@ public partial class CaseSummary
         else if (_latestAssessment.Completed.HasValue)
         {
             DateOnly _assessmentDueDate = DateOnly.FromDateTime(_latestAssessment.Completed.Value.AddMonths(3));
-            _assessmentDueInfo = _assessmentDueDate.Humanize();
-            _assessmentDueTooltipText = String.Format("New Assessment is Due {0}", _assessmentDueDate);
+             
+            _assessmentDueInfo = $"Due {_latestAssessment.Completed.Value.AddMonths(3).Humanize()}";
+            _assessmentDueTooltipText = String.Format("New Assessment is due {0}", _assessmentDueDate);
 
             int _assessmentDueInDays = _assessmentDueDate.DayNumber - DateOnly.FromDateTime(DateTime.UtcNow.Date).DayNumber;
             switch (_assessmentDueInDays)
