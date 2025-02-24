@@ -304,7 +304,7 @@ public static class DependencyInjection
                 {
                     policy.RequireAuthenticatedUser();
                     policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAFinance);
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAFinance, RoleNames.PerformanceManager);
                 });
 
                 options.AddPolicy(SecurityPolicies.SeniorInternal, policy => {
