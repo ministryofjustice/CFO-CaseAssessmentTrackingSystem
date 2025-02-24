@@ -14,7 +14,15 @@ public class EnrolmentPqaQueueEntry : EnrolmentQueueEntry
         : base(participantId) =>
         AddDomainEvent(new EnrolmentPqaQueueCreatedDomainEvent(this));
 
-    public static EnrolmentPqaQueueEntry Create(string participantId) => new(participantId);
+    public static EnrolmentPqaQueueEntry Create(string participantId, string supportWorkerId, DateTime consentDate)
+    {
+        var q = new EnrolmentPqaQueueEntry(participantId)
+        {
+            SupportWorkerId = supportWorkerId,
+            ConsentDate = consentDate
+        };
+        return q;
+    }
 
     public override EnrolmentQueueEntry Accept()
     {

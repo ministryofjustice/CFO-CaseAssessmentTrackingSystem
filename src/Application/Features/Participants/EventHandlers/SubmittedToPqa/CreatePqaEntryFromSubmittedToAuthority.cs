@@ -1,19 +1,16 @@
 ﻿using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Events;
 
-namespace Cfo.Cats.Application.Features.Participants.EventHandlers.SubmittedToQa;
+namespace Cfo.Cats.Application.Features.Participants.EventHandlers.SubmittedToPqa;
 
-public class CreateQa1QueueEntry(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantTransitionedDomainEvent>
+public class CreatePqaEntryFromSubmittedToAuthority(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantTransitionedDomainEvent>
 {
-
     public async Task Handle(ParticipantTransitionedDomainEvent notification, CancellationToken cancellationToken)
     {
-        if (notification.To == EnrolmentStatus.SubmittedToAuthorityStatus)
+        if (notification.To == EnrolmentStatus.SubmittedToProviderStatus && notification.From == EnrolmentStatus.SubmittedToAuthorityStatus)
         {
-            var qa1 = EnrolmentQa1QueueEntry.Create(notification.Item.Id);
-
-            // get the most recent PQA entry
-            var pqa = await unitOfWork
+            //get the values from the LAST PQA
+            var lastPqa = await unitOfWork
                 .DbContext.EnrolmentPqaQueue
                 .AsNoTracking()
                 .Where(q => q.ParticipantId == notification.Item.Id)
@@ -27,11 +24,8 @@ public class CreateQa1QueueEntry(IUnitOfWork unitOfWork) : INotificationHandler<
                 })
                 .FirstAsync(cancellationToken);
             
-            qa1.TenantId = pqa.TenantId;
-            qa1.SupportWorkerId = pqa.SupportWorkerId;
-            qa1.ConsentDate = pqa.ConsentDate;
-            
-            await unitOfWork.DbContext.EnrolmentQa1Queue.AddAsync(qa1, cancellationToken);    
+            var queueEntry = EnrolmentPqaQueueEntry.Create(notification.Item.Id, lastPqa.SupportWorkerId, lastPqa.ConsentDate);
+            await unitOfWork.DbContext.EnrolmentPqaQueue.AddAsync(queueEntry, cancellationToken);
         }
     }
 }

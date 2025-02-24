@@ -59,6 +59,14 @@ public class EnrolmentEscalationQueueEntityTypeConfiguration : IEntityTypeConfig
 
         builder.Property(e => e.TenantId)
             .IsRequired()
-            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);        
+            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
+
+        builder.Property(e => e.SupportWorkerId)
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId)
+            .IsRequired();
+
+        builder.Property(e => e.ConsentDate)
+            .IsRequired()
+            .HasColumnType("date");
     }
 }
