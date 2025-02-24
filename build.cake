@@ -1,14 +1,20 @@
 #addin nuget:?package=SharpZipLib&version=1.4.2
 #addin nuget:?package=Cake.Compression&version=0.3.0
 
+#r "Spectre.Console"
+
+using Spectre.Console
+
 var target = Argument("target", "Test");
 var configuration = Argument("configuration", "Release");
 var fromVersion = Argument("fromVersion", "");
 var migrationName = Argument("migrationName", "");
+var rebuild = HasArgument("rebuild");
 
 Task("Clean")
     .Description("Cleans all the bin and obj folders for the solution")
     .Does(() =>{
+        LogInformation("Cleaning the solution");
         CleanDirectories($"./src/**/bin/");
         CleanDirectories($"./src/**/obj/");
     });
@@ -18,6 +24,7 @@ Task("Build")
     .IsDependentOn("Clean")
     .Does(() =>
 {
+    LogInformation("Building the solution");
     DotNetBuild("./cats.sln", new DotNetBuildSettings
     {
         Configuration = configuration,
@@ -29,6 +36,7 @@ Task("Test")
     .IsDependentOn("Build")
     .Does(() =>
 {
+    LogInformation("Running all unit tests");
     DotNetTest("./cats.sln", new DotNetTestSettings
     {
         Configuration = configuration,
@@ -40,12 +48,16 @@ Task("Publish")
     .Description("Publishes the Server.UI project, and compresses the output as ./publish/build-artifacts.zip")
     .IsDependentOn("Test")
     .Does(() => {
+
+        LogInformation("Publishing the solution");
+
         CleanDirectory("./publish");
 
         var settings = new DotNetPublishSettings
             {
                 Configuration = configuration,
-                OutputDirectory = "./publish/workspace/"
+                OutputDirectory = "./publish/workspace/",
+                NoBuild = true,
             };
 
         DotNetPublish("./cats.sln", settings);
@@ -55,12 +67,24 @@ Task("Publish")
             Force = true,
             Recursive = true
         });
+
+
+        LogInformation("Publishing complete");
     });
 
 Task("Script")
     .Description("Generates a migration script.")
-    //.IsDependentOn("Build")
     .Does(() =>{
+
+        if(rebuild)
+        {
+            LogInformation("Generating a script with a clean build");
+            RunTarget("Build");
+        }
+        else
+        {
+            LogWarning("Generating a script without rebuild. This may result in an outdated build being used");
+        }
 
         var migrationProject = "src/Infrastructure/Infrastructure.csproj";
         var startupProject = "src/Server.UI/Server.UI.csproj";
@@ -75,8 +99,18 @@ Task("Script")
 
 Task("AddMigration")
     .Description("Adds a new migration")
-    .IsDependentOn("Build")
     .Does(() => {
+
+        
+        if(rebuild)
+        {
+            LogInformation("Generating a migration with a clean build");
+            RunTarget("Build");
+        }
+        else
+        {
+            LogWarning("Generating a migration without rebuild. This may result in an outdated build being used");
+        }
         
         if(string.IsNullOrEmpty(migrationName))
         {
@@ -94,5 +128,16 @@ Task("AddMigration")
         }
 
     });
+
+
+void LogWarning(string message)
+{
+    AnsiConsole.MarkupLine($"[bold red1]:face_with_monocle: {message}[/]");
+}
+
+void LogInformation(string message)
+{
+    AnsiConsole.MarkupLine($"[bold green1]:thinking_face: {message}[/]");
+}
 
 RunTarget(target);

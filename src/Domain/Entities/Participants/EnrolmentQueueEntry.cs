@@ -55,4 +55,8 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHave
     }
 
     public string TenantId { get; set; } = default!;
+
+    public string SupportWorkerId { get; set; } = default!;
+
+    public DateTime ConsentDate { get; set; } = default!;
 }
