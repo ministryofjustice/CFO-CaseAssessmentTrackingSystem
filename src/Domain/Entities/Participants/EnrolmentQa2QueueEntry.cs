@@ -5,18 +5,20 @@ namespace Cfo.Cats.Domain.Entities.Participants;
 
 public class EnrolmentQa2QueueEntry : EnrolmentQueueEntry
 {
-    private EnrolmentQa2QueueEntry() : this(string.Empty)
+    private EnrolmentQa2QueueEntry() 
+        : base()
     {
         
     }
     
     public bool IsEscalated { get; private set; }
 
-    private EnrolmentQa2QueueEntry(string participantId) : base(participantId) 
-        => AddDomainEvent(new EnrolmentQa2QueueCreatedDomainEvent(this));
+    public EnrolmentQa2QueueEntry(string participantId, string tenantId, string supportWorkerId, DateTime consentDate) 
+        : base(participantId, tenantId, supportWorkerId, consentDate)
+    {
+        AddDomainEvent(new EnrolmentQa2QueueCreatedDomainEvent(this));
+    }
 
-    public static EnrolmentQa2QueueEntry Create(string participantId) 
-        => new(participantId);
 
     public override EnrolmentQueueEntry Accept()
     {

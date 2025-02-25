@@ -4,18 +4,16 @@ namespace Cfo.Cats.Domain.Entities.Participants;
 
 public class EnrolmentEscalationQueueEntry : EnrolmentQueueEntry
 {
-    private EnrolmentEscalationQueueEntry() : this(string.Empty)
+    private EnrolmentEscalationQueueEntry() 
+        : base()
     {
         
     }
-    private EnrolmentEscalationQueueEntry(string participantId) : base(participantId)
+    public EnrolmentEscalationQueueEntry(string participantId, string tenantId, string supportWorkerId, DateTime consentDate) 
+        : base(participantId, tenantId, supportWorkerId, consentDate)
     {
     }
     
-    public static EnrolmentEscalationQueueEntry Create(string participantId)
-    {
-        return new EnrolmentEscalationQueueEntry(participantId);
-    }
 
     public override EnrolmentQueueEntry Accept()
     {

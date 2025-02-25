@@ -10,8 +10,6 @@ public class CreateQa1QueueEntry(IUnitOfWork unitOfWork) : INotificationHandler<
     {
         if (notification.To == EnrolmentStatus.SubmittedToAuthorityStatus)
         {
-            var qa1 = EnrolmentQa1QueueEntry.Create(notification.Item.Id);
-
             // get the most recent PQA entry
             var pqa = await unitOfWork
                 .DbContext.EnrolmentPqaQueue
@@ -26,11 +24,11 @@ public class CreateQa1QueueEntry(IUnitOfWork unitOfWork) : INotificationHandler<
                     q.ConsentDate
                 })
                 .FirstAsync(cancellationToken);
-            
-            qa1.TenantId = pqa.TenantId;
-            qa1.SupportWorkerId = pqa.SupportWorkerId;
-            qa1.ConsentDate = pqa.ConsentDate;
-            
+
+            var qa1 = new EnrolmentQa1QueueEntry(notification.Item.Id, pqa.TenantId, pqa.SupportWorkerId,
+                pqa.ConsentDate);
+
+
             await unitOfWork.DbContext.EnrolmentQa1Queue.AddAsync(qa1, cancellationToken);    
         }
     }
