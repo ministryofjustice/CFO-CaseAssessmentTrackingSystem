@@ -5,23 +5,14 @@ namespace Cfo.Cats.Domain.Entities.Participants;
 
 public class EnrolmentPqaQueueEntry : EnrolmentQueueEntry
 {
-    private EnrolmentPqaQueueEntry() 
-        : this(string.Empty)
+    private EnrolmentPqaQueueEntry() : base()
     {
     }
-    
-    private EnrolmentPqaQueueEntry(string participantId)
-        : base(participantId) =>
-        AddDomainEvent(new EnrolmentPqaQueueCreatedDomainEvent(this));
 
-    public static EnrolmentPqaQueueEntry Create(string participantId, string supportWorkerId, DateTime consentDate)
+    public EnrolmentPqaQueueEntry(string participantId, string tenantId, string supportWorkerId, DateTime consentDate)
+        : base(participantId, tenantId, supportWorkerId, consentDate)
     {
-        var q = new EnrolmentPqaQueueEntry(participantId)
-        {
-            SupportWorkerId = supportWorkerId,
-            ConsentDate = consentDate
-        };
-        return q;
+        AddDomainEvent(new EnrolmentPqaQueueCreatedDomainEvent(this));
     }
 
     public override EnrolmentQueueEntry Accept()
@@ -39,6 +30,5 @@ public class EnrolmentPqaQueueEntry : EnrolmentQueueEntry
         AddDomainEvent(new EnrolmentPqaEntryCompletedDomainEvent(this));
         return this;
     }
-
 
 }
