@@ -25,6 +25,7 @@ public class CreatePqaEntryFromSubmittedToAuthority(IUnitOfWork unitOfWork) : IN
                 .FirstAsync(cancellationToken);
             
             var queueEntry = EnrolmentPqaQueueEntry.Create(notification.Item.Id, lastPqa.SupportWorkerId, lastPqa.ConsentDate);
+            queueEntry.TenantId = lastPqa.TenantId;
             await unitOfWork.DbContext.EnrolmentPqaQueue.AddAsync(queueEntry, cancellationToken);
         }
     }
