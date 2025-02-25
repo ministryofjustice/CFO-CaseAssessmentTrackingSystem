@@ -1,8 +1,52 @@
+@using System.Globalization
 @using Cfo.Cats.Domain.Common.Enums
 @using Humanizer
 @inherits CatsComponentBase
 
 <MudGrid Class="pa-3" Spacing="4">
+    <MudItem xs="12" md="4">
+        <MudCard Style="height: 100%">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Details</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack Row="true" Wrap="Wrap.Wrap" Justify="Justify.FlexStart" Spacing="2">
+                    <MudText>
+                        <strong>DOB</strong>
+                    </MudText>
+                    <MudText>
+                        @ParticipantSummaryDto.DateOfBirth (@ParticipantSummaryDto.DateOfBirth.CalculateAge())
+                    </MudText>
+                    <MudFlexBreak />
+                    <MudText>
+                        <strong>Enrolment Location</strong>
+                    </MudText>
+                    <MudText>@ParticipantSummaryDto.EnrolmentLocation</MudText>
+                    <MudFlexBreak />
+                    <MudText>
+                        <strong>Nationality</strong>
+                    </MudText>
+                    <MudText>@(ParticipantSummaryDto.Nationality ?? "Not Set")</MudText>
+                    <MudFlexBreak />
+                    <MudText>
+                        <strong>Consent Date</strong>
+                    </MudText>
+                    <MudText>@ParticipantSummaryDto.DateOfFirstConsent</MudText>
+                    <MudFlexBreak />
+                    <MudText>
+                        <strong>Last Data Sync</strong>
+                    </MudText>
+                    <MudTooltip Text="@ParticipantSummaryDto.LastSync.ToString(CultureInfo.CurrentCulture)">
+                        <MudText>
+                            @ParticipantSummaryDto.LastSync.Humanize()
+                        </MudText>
+                    </MudTooltip> 
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
     <MudItem xs="12" md="4">
         <MudCard Style="Height: 100%;">
             <MudCardHeader>
@@ -36,7 +80,7 @@
                                     <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == _latestAssessment.AssessmentCreator).DisplayName</MudText>
                                 </dd>
                             </div>
-                            
+
                             @if (_latestAssessment.Completed.HasValue)
                             {
                                 <div class="description-pair">
@@ -54,7 +98,7 @@
                                     </dt>
                                     <dd>
                                         <MudTooltip Text="@_assessmentDueTooltipText">
-                                            <MudIcon Icon="@_assessmentDueIcon" Size="@Size.Small" Color="@_assessmentDueIconColor" />
+                                            <MudIcon Icon="@_assessmentDueIcon" Size="@Size.Small" Color="@_assessmentDueIconColor"/>
                                             <MudText Typo="Typo.body2">
                                                 @_assessmentDueInfo
                                             </MudText>
@@ -65,7 +109,7 @@
                             else
                             {
                                 <MudTooltip Text="@_AssessmentNotCompletedInfo">
-                                    <MudIcon Icon="@_assessmentDueIcon" Size="@Size.Small" Color="@_assessmentDueIconColor" />
+                                    <MudIcon Icon="@_assessmentDueIcon" Size="@Size.Small" Color="@_assessmentDueIconColor"/>
                                     <MudText Typo="Typo.body2">
                                         @_AssessmentNotCompletedInfo
                                     </MudText>
@@ -80,20 +124,20 @@
                 @if (CanBeginAssessment())
                 {
                     <MudTooltip Text="Create Assessment">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginAssessment" />
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginAssessment"/>
                     </MudTooltip>
 
                 }
                 @if (CanContinueAssessment())
                 {
                     <MudTooltip Text="Continue Assessment">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinueAssessment" />
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinueAssessment"/>
                     </MudTooltip>
                 }
                 @if (CanReassess())
                 {
                     <MudTooltip Text="Reassess">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginAssessment" />
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginAssessment"/>
                     </MudTooltip>
                 }
             </MudCardActions>
@@ -108,7 +152,7 @@
                             Risk Information
                         </MudText>
                         <MudTooltip Text="Expand">
-                            <MudIconButton OnClick="ExpandRiskInformation" Icon="@Icons.Material.Outlined.OpenInNew" />
+                            <MudIconButton OnClick="ExpandRiskInformation" Icon="@Icons.Material.Outlined.OpenInNew"/>
                         </MudTooltip>
                     </div>
                 </CardHeaderContent>
@@ -144,7 +188,7 @@
                                 </dt>
                                 <dd>
                                     <MudTooltip Text="@_riskTooltipText">
-                                        <MudIcon Icon="@_riskIcon" Size="@Size.Small" Color="@_riskIconColor" />
+                                        <MudIcon Icon="@_riskIcon" Size="@Size.Small" Color="@_riskIconColor"/>
                                         <MudText Typo="Typo.body2">
                                             @_riskInfo
                                         </MudText>
@@ -159,7 +203,7 @@
                     <MudText Typo="Typo.body2">No risk information provided.</MudText>
 
                     <MudTooltip Text="@_riskTooltipText">
-                        <MudIcon Icon="@_riskIcon" Size="@Size.Small" Color="@_riskIconColor" />
+                        <MudIcon Icon="@_riskIcon" Size="@Size.Small" Color="@_riskIconColor"/>
                         <MudText Typo="Typo.body2">
                             @String.Format("Due {0}", _riskInfo)
                         </MudText>
@@ -170,13 +214,13 @@
                 @if (CanAddRiskInformation())
                 {
                     <MudTooltip Text="Add Information">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="OnClickAddRiskInformation" />
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="OnClickAddRiskInformation"/>
                     </MudTooltip>
                 }
                 @if (CanReviewRiskInformation())
                 {
                     <MudTooltip Text="Review Information">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="ReviewRiskInformation" />
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="ReviewRiskInformation"/>
                     </MudTooltip>
                 }
             </MudCardActions>
@@ -232,25 +276,25 @@
                 @if (CanBeginBio())
                 {
                     <MudTooltip Text="Create Bio">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginBio" />
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginBio"/>
                     </MudTooltip>
                 }
                 @if (CanContinueBio())
                 {
                     <MudTooltip Text="Continue Bio">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinueBio" />
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinueBio"/>
                     </MudTooltip>
                 }
                 @if (CanSkipBio())
                 {
                     <MudTooltip Text="Skip Bio For Now">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.NoMeetingRoom" Variant="Variant.Outlined" OnClick="SkipBioForNow" />
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.NoMeetingRoom" Variant="Variant.Outlined" OnClick="SkipBioForNow"/>
                     </MudTooltip>
                 }
                 @if (CanRestartBio())
                 {
                     <MudTooltip Text="Restart Bio">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginBio" />
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginBio"/>
                     </MudTooltip>
                 }
             </MudCardActions>
@@ -361,14 +405,14 @@
                                     </dt>
                                     <dd>
                                         <MudTooltip Text="@_priDueTooltipText">
-                                            <MudIcon Icon="@_priDueIcon" Size="@Size.Small" Color="@_priDueIconColor" />
+                                            <MudIcon Icon="@_priDueIcon" Size="@Size.Small" Color="@_priDueIconColor"/>
                                             <MudText Typo="Typo.body2">
                                                 @_priDueInfo
                                             </MudText>
                                         </MudTooltip>
                                     </dd>
                                 </div>
-                           }
+                            }
                         </dl>
                     </div>
                 }
@@ -378,7 +422,7 @@
                 @if (CanAddPRI())
                 {
                     <MudTooltip Text="Create PRI">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginPRI" />
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginPRI"/>
                     </MudTooltip>
                 }
 

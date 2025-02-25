@@ -1,4 +1,5 @@
 @page "/pages/participants/{id}"
+@using System.Globalization
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Application.SecurityConstants
@@ -19,173 +20,84 @@
     @if (_participant is not null)
     {
         <CascadingValue Value="_participant">
-            <MudPaper Class="pa-2 ma-2" Style="height: 100%; min-height: calc(100vh - 300px);" Elevation="3">
-                <MudGrid Spacing="1" Class="pa-3">
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6" Color="Color.Primary">
-                            <b>
-                                Case Ref
-                            </b>
-                        </MudText>
-                    </MudItem>
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6">
-                            @_participant.Id
-                        </MudText>
-                    </MudItem>
-                    <MudSpacer/>
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6" Color="Color.Primary">
-                            <b>
-                                Participant
-                            </b>
-                        </MudText>
-                    </MudItem>
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6">
-                            @_participant.ParticipantName (@_participant.DateOfBirth)
-                        </MudText>
-                    </MudItem>
-                    <MudSpacer/>
 
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6" Color="Color.Primary">
-                            <b>
-                                Location
-                            </b>
-                        </MudText>
-                    </MudItem>
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6">
-                            @_participant.Location
-                        </MudText>
-                    </MudItem>
-                    <MudSpacer />
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6" Color="Color.Primary">
-                            <b>
-                                Status
-                            </b>
-                        </MudText>
-                    </MudItem>
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6">
-                            @_participant.EnrolmentStatus!.Name.Humanize()
-                        </MudText>
-                    </MudItem>
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6" Color="Color.Primary">
-                            <b>
-                                Enrolment Location
-                            </b>
-                        </MudText>
-                    </MudItem>
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6">
-                            @_participant.EnrolmentLocation
-                        </MudText>
-                    </MudItem>
-                    @if (_participant.ConsentStatus == ConsentStatus.GrantedStatus)
-                    {
-                        <MudItem md="3">
-                            <MudText Typo="Typo.h6" Color="Color.Primary">
-                                <b>
-                                    Nationality
-                                </b>
-                            </MudText>
-                        </MudItem>
-                        <MudItem md="3">
-                            <MudText Typo="Typo.h6">
-                                @_participant.Nationality
-                            </MudText>
-                        </MudItem>
-                    }
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6" Color="Color.Primary">
-                            <b>
-                                Support Worker
-                            </b>
-                        </MudText>
-                    </MudItem>
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6">
-                            @_participant.OwnerName
-                        </MudText>
-                    </MudItem>
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6" Color="Color.Primary">
-                            <b>
-                                Consent Date
-                            </b>
-                        </MudText>
-                    </MudItem>
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6">
-                            @_participant.DateOfFirstConsent
-                        </MudText>
-                    </MudItem>
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6" Color="Color.Primary">
-                            <b>
-                                Tenant
-                            </b>
-                        </MudText>
-                    </MudItem>
-                    <MudItem md="3">
-                        <MudText Typo="Typo.h6">
-                            @_participant.TenantName
-                        </MudText>
+
+            <MudPaper Class="pa-2 ma-2" Style="min-height: 90vh;" Elevation="3">
+
+                <MudGrid Class="pa-1" Justify="Justify.FlexStart">
+                    <MudItem xs="12">
+
+                        <MudStack Row="true" Spacing="2" Reverse="false" Breakpoint="Breakpoint.SmAndDown" AlignItems="AlignItems.Start" Justify="Justify.FlexStart" Wrap="Wrap.Wrap"  >
+                            <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Participant</strong></MudText>
+                            <MudText Typo="Typo.subtitle1">@_participant.ParticipantName</MudText>
+                            <MudDivider Vertical="true" FlexItem="true"/>
+                            <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Ref</strong></MudText>
+                            <MudText Typo="Typo.subtitle1">@_participant.Id</MudText>
+                            <MudDivider Vertical="true" FlexItem="true"/>
+                            <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Status</strong></MudText>
+                            <MudText Typo="Typo.subtitle1">@_participant.EnrolmentStatus.Name</MudText>
+                            <MudDivider Vertical="true" FlexItem="true"/>
+                            <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Assigned To</strong></MudText>
+                            <MudText Typo="Typo.subtitle1">@($"{_participant.OwnerName} ({_participant.TenantName}) ")</MudText>
+                            <MudDivider Vertical="true" FlexItem="true"/>
+                            <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Location</strong></MudText>
+                            <MudText Typo="Typo.subtitle1">@_participant.Location</MudText>
+                        </MudStack>
+
+                                    
+
                     </MudItem>
                 </MudGrid>
 
                 @if (_participant.EnrolmentStatus != EnrolmentStatus.IdentifiedStatus)
                 {
-                    <RagBar ParticipantId="@Id" />
-                    <ParticipantActionMenu OnUpdate="Refresh" />
+                    <RagBar ParticipantId="@Id"/>
+                    <ParticipantActionMenu OnUpdate="Refresh"/>
                     @if (_showRightToWorkWarning)
                     {
                         <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Square="true" Class="my-2">@_rightToWorkAlertMessage</MudAlert>
                     }
-                    <MudTabs Class="primary-tabs mt-2" Outlined="true" Color="Color.Info" Border="true">
+
+                    <MudTabs Class="primary-tabs mt-2" Outlined="true" Color="Color.Info" Border="true" Style="height: 100%;">
                         <MudTabPanel Text="Case Summary">
-                            <CaseSummary />
+                            <CaseSummary/>
                         </MudTabPanel>
                         <MudTabPanel Text="Inductions">
-                            <Inductions ParticipantId="@_participant.Id" />
+                            <Inductions ParticipantId="@_participant.Id"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Sentence Information">
-                            <CaseSentenceInformation ParticipantId="@Id" />
+                            <CaseSentenceInformation ParticipantId="@Id"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Risk" ID="@Id" Icon="@_riskIcon" IconColor="@_riskIconColor" ToolTip="@_riskInfo">
-                            <CaseRisk ParticipantId="@Id" />
+                            <CaseRisk ParticipantId="@Id"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Assessments" Icon="@_assessmentIcon" IconColor="@_assessmentIconColor" ToolTip="@_assessmentInfo">
-                            <CaseAssessment ParticipantId="@Id" />
+                            <CaseAssessment ParticipantId="@Id"/>
                         </MudTabPanel>
                         <MudTabPanel Text="PRI" Icon="@_priDueIcon" IconColor="@_priDueIconColor" ToolTip="@_priDueToolTip">
-                            <CasePRI ParticipantId="@Id" OnUpdate="Refresh" />
+                            <CasePRI ParticipantId="@Id" OnUpdate="Refresh"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Bio">
-                            <CaseBio ParticipantId="@Id" />
+                            <CaseBio ParticipantId="@Id"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Documents">
-                            <CaseDocuments ParticipantId="@Id" />
+                            <CaseDocuments ParticipantId="@Id"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Pathway Plan">
-                            <CasePathwayPlan ParticipantId="@Id" OnUpdate="Refresh" />
+                            <CasePathwayPlan ParticipantId="@Id" OnUpdate="Refresh"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Notes">
-                            <CaseNotes ParticipantId="@Id" />
+                            <CaseNotes ParticipantId="@Id"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Timeline">
-                            <CaseTimeline />
+                            <CaseTimeline/>
                         </MudTabPanel>
 
                         @if (UserProfile.AssignedRoles.Any(r =>
-                   r is RoleNames.SystemSupport or RoleNames.SMT or RoleNames.QAManager))
+                                 r is RoleNames.SystemSupport or RoleNames.SMT or RoleNames.QAManager))
                         {
                             <MudTabPanel Text="Audit">
-                                <ParticipantAudit Id="@Id" />
+                                <ParticipantAudit Id="@Id"/>
                             </MudTabPanel>
                         }
                         @*
@@ -204,10 +116,10 @@
 @code {
     [Parameter] public string Id { get; set; } = default!;
 
-    [CascadingParameter]
-    public UserProfile UserProfile { get; set; } = default!;
+    [CascadingParameter] public UserProfile UserProfile { get; set; } = default!;
 
     private ParticipantSummaryDto? _participant = null;
+
 
     private string _riskInfo = String.Empty;
     private string _riskIcon = String.Empty;
@@ -231,14 +143,14 @@
         SetRiskDueWarning();
         ShowRightToWorkWarning();
         SetPriDueWarning();
-        SetAssessmentDueWarning();        
+        SetAssessmentDueWarning();
     }
 
     void ShowRightToWorkWarning()
     {
         _showRightToWorkWarning = _participant!.IsRightToWorkRequired
-                                && _participant!.ConsentStatus == ConsentStatus.GrantedStatus
-                                && _participant.HasActiveRightToWork == false;
+                                  && _participant!.ConsentStatus == ConsentStatus.GrantedStatus
+                                  && _participant.HasActiveRightToWork == false;
     }
 
     void SetRiskDueWarning()
@@ -263,6 +175,7 @@
             }
         }
     }
+
     void SetPriDueWarning()
     {
         PriSummaryDto? latestPRI = _participant!.LatestPri;
@@ -298,10 +211,10 @@
     private async Task Refresh()
     {
         _participant = await GetNewMediator().Send(new GetParticipantSummary.Query()
-            {
-                ParticipantId = Id,
-                CurrentUser = UserProfile
-            });
+        {
+            ParticipantId = Id,
+            CurrentUser = UserProfile
+        });
     }
 
     void SetAssessmentDueWarning()
@@ -323,24 +236,24 @@
             _assessmentIcon = Icons.Material.Filled.Warning;
             _assessmentIconColor = Color.Warning;
         }
-            else
-            {
-                DateOnly _assessmentDueDate = DateOnly.FromDateTime(_latestAssessment.Completed.Value.AddMonths(3));
-                _assessmentInfo = $"Due {_latestAssessment.Completed.Value.AddMonths(3).Humanize()}";
+        else
+        {
+            DateOnly _assessmentDueDate = DateOnly.FromDateTime(_latestAssessment.Completed.Value.AddMonths(3));
+            _assessmentInfo = $"Due {_latestAssessment.Completed.Value.AddMonths(3).Humanize()}";
 
-                int _assessmentDueInDays = _assessmentDueDate.DayNumber - DateOnly.FromDateTime(DateTime.UtcNow.Date).DayNumber;
-                switch (_assessmentDueInDays)
-                {
-                    case var _ when _assessmentDueInDays <= 0:
-                        _assessmentIcon = Icons.Material.Filled.Error;
-                        _assessmentIconColor = Color.Error;
-                        break;
-                    case var _ when _assessmentDueInDays >= 0 && _assessmentDueInDays <= 14:
-                        _assessmentIcon = Icons.Material.Filled.Warning;
-                        _assessmentIconColor = Color.Warning;
-                        break;
-                }
+            int _assessmentDueInDays = _assessmentDueDate.DayNumber - DateOnly.FromDateTime(DateTime.UtcNow.Date).DayNumber;
+            switch (_assessmentDueInDays)
+            {
+                case var _ when _assessmentDueInDays <= 0:
+                    _assessmentIcon = Icons.Material.Filled.Error;
+                    _assessmentIconColor = Color.Error;
+                    break;
+                case var _ when _assessmentDueInDays >= 0 && _assessmentDueInDays <= 14:
+                    _assessmentIcon = Icons.Material.Filled.Warning;
+                    _assessmentIconColor = Color.Warning;
+                    break;
             }
         }
     }
+
 }

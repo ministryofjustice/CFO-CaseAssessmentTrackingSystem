@@ -51,6 +51,8 @@ public class ParticipantDto
 
     public string? FullName => string.Join(' ', [FirstName, MiddleName, LastName]);
 
+    public DateTime? LastSync { get; set; }
+
     private class Mapping : Profile
     {
         public Mapping()
@@ -72,7 +74,8 @@ public class ParticipantDto
                 .ForMember(target => target.SupportWorker, options => options.MapFrom(source => source.Owner.DisplayName))
                 .ForMember(dest => dest.RiskDue, opt => opt.MapFrom(src => src.RiskDue))
                 .ForMember(dest => dest.RiskDueInDays, opt => opt.MapFrom(src => src.RiskDueInDays()))
-                .ForMember(dest => dest.Nationality, opt => opt.MapFrom(src => src.Nationality));
+                .ForMember(dest => dest.Nationality, opt => opt.MapFrom(src => src.Nationality))
+                .ForMember(dest => dest.LastSync, options => options.MapFrom(src => src.LastSyncDate ?? src.Created));
         }
     }
 }
