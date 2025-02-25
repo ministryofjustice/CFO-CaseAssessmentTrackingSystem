@@ -62,61 +62,38 @@
                 }
                 else
                 {
-                    <div>
-                        <dl class="description-list">
-                            <div class="description-pair">
-                                <dt>
-                                    <MudText Typo="Typo.subtitle2">Date Created</MudText>
-                                </dt>
-                                <dd>
-                                    <MudText Typo="Typo.body2">@_latestAssessment.AssessmentDate!.Value.ToString("dd/MM/yyyy")</MudText>
-                                </dd>
-                            </div>
-                            <div class="description-pair">
-                                <dt>
-                                    <MudText Typo="Typo.subtitle2">Created By</MudText>
-                                </dt>
-                                <dd>
-                                    <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == _latestAssessment.AssessmentCreator).DisplayName</MudText>
-                                </dd>
-                            </div>
+                    <MudStack Row="true" Wrap="Wrap.Wrap" Justify="Justify.FlexStart" Spacing="2">
+                        <MudText><strong>Date Created</strong></MudText>
+                        <MudText>@_latestAssessment.AssessmentDate!.Value.ToString("dd/MM/yyyy")</MudText>
+                        <MudFlexBreak />
+                        <MudText><strong>Created By</strong></MudText>
+                        <MudText>@UserService.DataSource.First(u => u.Id == _latestAssessment.AssessmentCreator).DisplayName</MudText>
+                        <MudFlexBreak />
 
-                            @if (_latestAssessment.Completed.HasValue)
-                            {
-                                <div class="description-pair">
-                                    <dt>
-                                        <MudText Typo="Typo.subtitle2">Date Completed</MudText>
-                                    </dt>
-                                    <dd>
-                                        <MudText Typo="Typo.body2">@_latestAssessment.Completed!.Value.ToString("dd/MM/yyyy")</MudText>
-                                    </dd>
-                                </div>
+                        @if (_latestAssessment.Completed.HasValue)
+                        {
+                            <MudText><strong>Date Completed</strong></MudText>
+                            <MudText>@_latestAssessment.Completed!.Value.ToString("dd/MM/yyyy")</MudText>
+                            <MudFlexBreak />
+                            <MudText><strong>Due</strong></MudText>
+                            <MudTooltip Text="@_assessmentDueTooltipText">
+                                <MudIcon Icon="@_assessmentDueIcon" Size="@Size.Small" Color="@_assessmentDueIconColor" Class="mr-2"/>
+                                <MudText Typo="Typo.body2">
+                                    @_assessmentDueInfo
+                                </MudText>
+                            </MudTooltip>
+                        }
+                        else
+                        {
+                            <MudTooltip Text="@_AssessmentNotCompletedInfo">
+                                <MudIcon Icon="@_assessmentDueIcon" Size="@Size.Small" Color="@_assessmentDueIconColor" Class="mr-2" />
+                                <MudText>
+                                    @_AssessmentNotCompletedInfo
+                                </MudText>
+                            </MudTooltip>
+                        }
 
-                                <div class="description-pair">
-                                    <dt>
-                                        <MudText Typo="Typo.subtitle2">Due</MudText>
-                                    </dt>
-                                    <dd>
-                                        <MudTooltip Text="@_assessmentDueTooltipText">
-                                            <MudIcon Icon="@_assessmentDueIcon" Size="@Size.Small" Color="@_assessmentDueIconColor"/>
-                                            <MudText Typo="Typo.body2">
-                                                @_assessmentDueInfo
-                                            </MudText>
-                                        </MudTooltip>
-                                    </dd>
-                                </div>
-                            }
-                            else
-                            {
-                                <MudTooltip Text="@_AssessmentNotCompletedInfo">
-                                    <MudIcon Icon="@_assessmentDueIcon" Size="@Size.Small" Color="@_assessmentDueIconColor"/>
-                                    <MudText Typo="Typo.body2">
-                                        @_AssessmentNotCompletedInfo
-                                    </MudText>
-                                </MudTooltip>
-                            }
-                        </dl>
-                    </div>
+                    </MudStack>
                 }
             </MudCardContent>
             <MudCardActions>
