@@ -8,7 +8,7 @@ namespace Cfo.Cats.Domain.Entities.Participants;
 
 /* ef core does not support the same type being in two tables. need explicit types */
 
-public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHaveTenant
+public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>
 {
     private readonly List<EnrolmentQueueEntryNote> _notes = [];
     
@@ -17,16 +17,19 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHave
     public string ParticipantId { get; private set; }
     
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    private EnrolmentQueueEntry()
+    protected EnrolmentQueueEntry()
     {
         
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.    
 
-    protected EnrolmentQueueEntry(string participantId)
+    protected EnrolmentQueueEntry(string participantId, string tenantId, string supportWorkerId, DateTime consentDate)
     {
         Id = Guid.CreateVersion7();
         ParticipantId = participantId;
+        TenantId = tenantId;
+        SupportWorkerId = supportWorkerId;
+        ConsentDate = consentDate;
     }
 
     public virtual Participant? Participant { get; private set; }
@@ -36,10 +39,8 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHave
 
     public abstract EnrolmentQueueEntry Accept();
 
-
     public abstract EnrolmentQueueEntry Return();
     
-
     public EnrolmentQueueEntry AddNote(string? message, bool isExternal = false)
     {
         if (string.IsNullOrWhiteSpace(message) == false)
@@ -54,9 +55,9 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>, IMustHave
         return this;
     }
 
-    public string TenantId { get; set; } = default!;
+    public string TenantId { get;  private set; }
 
-    public string SupportWorkerId { get; set; } = default!;
+    public string SupportWorkerId { get; private set; }
 
-    public DateTime ConsentDate { get; set; } = default!;
+    public DateTime ConsentDate { get; private set; }
 }

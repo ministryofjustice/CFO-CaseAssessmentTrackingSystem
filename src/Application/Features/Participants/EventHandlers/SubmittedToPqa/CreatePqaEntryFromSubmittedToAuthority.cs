@@ -9,6 +9,17 @@ public class CreatePqaEntryFromSubmittedToAuthority(IUnitOfWork unitOfWork) : IN
     {
         if (notification.To == EnrolmentStatus.SubmittedToProviderStatus && notification.From == EnrolmentStatus.SubmittedToAuthorityStatus)
         {
+            if (notification.Item.Owner is null)
+            {
+                throw new ApplicationException("Owner must be set");
+            }
+
+            if (notification.Item.Owner.TenantId is null)
+            {
+                throw new ApplicationException("Owner tenant id must be set");
+            }
+
+
             //get the values from the LAST PQA
             var lastPqa = await unitOfWork
                 .DbContext.EnrolmentPqaQueue
@@ -24,8 +35,8 @@ public class CreatePqaEntryFromSubmittedToAuthority(IUnitOfWork unitOfWork) : IN
                 })
                 .FirstAsync(cancellationToken);
             
-            var queueEntry = EnrolmentPqaQueueEntry.Create(notification.Item.Id, lastPqa.SupportWorkerId, lastPqa.ConsentDate);
-            queueEntry.TenantId = lastPqa.TenantId;
+            var queueEntry = new EnrolmentPqaQueueEntry(notification.Item.Id, lastPqa.TenantId ,lastPqa.SupportWorkerId, lastPqa.ConsentDate);
+
             await unitOfWork.DbContext.EnrolmentPqaQueue.AddAsync(queueEntry, cancellationToken);
         }
     }

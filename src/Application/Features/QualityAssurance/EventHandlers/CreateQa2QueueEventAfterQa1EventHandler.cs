@@ -8,7 +8,6 @@ public class CreateQa2QueueEventAfterQa1EventHandler(IUnitOfWork unitOfWork)
 {
     public async Task Handle(EnrolmentQa1EntryCompletedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var qa2 = EnrolmentQa2QueueEntry.Create(notification.Entry.ParticipantId);
 
         // get the most recent PQA entry
         var pqa = await unitOfWork
@@ -25,10 +24,8 @@ public class CreateQa2QueueEventAfterQa1EventHandler(IUnitOfWork unitOfWork)
             })
             .FirstAsync(cancellationToken);
 
-        qa2.TenantId = pqa.TenantId;
-        qa2.SupportWorkerId = pqa.SupportWorkerId;
-        qa2.ConsentDate = pqa.ConsentDate;
-
+        var qa2 = new EnrolmentQa2QueueEntry(notification.Entry.ParticipantId, pqa.TenantId, pqa.SupportWorkerId, pqa.ConsentDate);
+        
         await unitOfWork.DbContext.EnrolmentQa2Queue.AddAsync(qa2, cancellationToken);
     }
 }

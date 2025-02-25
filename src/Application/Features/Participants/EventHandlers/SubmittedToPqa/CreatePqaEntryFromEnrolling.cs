@@ -7,11 +7,24 @@ public class CreatePqaEntryFromEnrolling(IUnitOfWork unitOfWork) : INotification
 {
     public  async Task Handle(ParticipantTransitionedDomainEvent notification, CancellationToken cancellationToken)
     {
-        if (notification.To == EnrolmentStatus.SubmittedToProviderStatus && notification.From == EnrolmentStatus.EnrollingStatus)
+        if (notification.To == EnrolmentStatus.SubmittedToProviderStatus &&
+            notification.From == EnrolmentStatus.EnrollingStatus)
         {
-            var queueEntry = EnrolmentPqaQueueEntry.Create(notification.Item.Id, notification.Item.OwnerId!, notification.Item.Consents.MaxBy(c => c.Created)!.Lifetime.StartDate);
-            queueEntry.TenantId = notification.Item.Owner!.TenantId!;
-            await unitOfWork.DbContext.EnrolmentPqaQueue.AddAsync(queueEntry, cancellationToken);    
+            if (notification.Item.Owner is null)
+            {
+                throw new ApplicationException("Owner must be set");
+            }
+
+            if (notification.Item.Owner.TenantId is null)
+            {
+                throw new ApplicationException("Owner tenant id must be set");
+            }
+
+
+            var queueEntry = new EnrolmentPqaQueueEntry(notification.Item.Id, notification.Item.Owner.TenantId,
+                notification.Item.Owner.Id, notification.Item.Consents.MaxBy(c => c.Created)!.Lifetime.StartDate);
+  
+            await unitOfWork.DbContext.EnrolmentPqaQueue.AddAsync(queueEntry, cancellationToken);
         }
     }
 }

@@ -7,9 +7,7 @@ internal class Qa2EscalatedEventHandler(IUnitOfWork unitOfWork) : INotificationH
 {
     public async Task Handle(EnrolmentQa2EntryEscalatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var entry = EnrolmentEscalationQueueEntry.Create(notification.Entry.ParticipantId);
-        entry.TenantId = notification.Entry!.Participant!.Owner!.TenantId!;
-        entry.SupportWorkerId = notification.Entry!.Participant!.Owner.Id!;
+        var entry = new EnrolmentEscalationQueueEntry(notification.Entry.ParticipantId, notification.Entry.TenantId, notification.Entry.SupportWorkerId, notification.Entry.ConsentDate);
         await unitOfWork.DbContext.EnrolmentEscalationQueue.AddAsync(entry, cancellationToken);
     }
 }
