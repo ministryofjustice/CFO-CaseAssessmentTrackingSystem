@@ -62,6 +62,9 @@
                         <MudTabPanel Text="Case Summary">
                             <CaseSummary/>
                         </MudTabPanel>
+                        <MudTabPanel Text="About">
+                            <CaseAbout ParticipantId="@_participant.Id" />
+                        </MudTabPanel>
                         <MudTabPanel Text="Inductions">
                             <Inductions ParticipantId="@_participant.Id"/>
                         </MudTabPanel>
