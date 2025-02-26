@@ -180,7 +180,7 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                     var entry = _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Activity)
                         .FirstOrDefault(a => a.Id == c.QueueEntryId);
 
-                    return entry != null && entry.Activity!.CommencedOn >= DateTime.Now.AddDays(-90);                    
+                    return entry != null && entry.Activity!.CommencedOn >= DateTime.Today.AddMonths(-3);
                 }
                 return false;
             }
