@@ -113,7 +113,7 @@
         <PropertyColumn Property="x => x.Expiry" Title="@L["Expiry"]">
             <CellTemplate>
                 <MudTooltip Text="Must be processed up to 3 months after commenced date">
-                    @if (context.Item.Expiry < DateTime.Now)
+                    @if (context.Item.Expiry < DateTime.Today)
                     {
                         <MudText Typo="Typo.body2">Expired</MudText>
                     }
@@ -124,7 +124,14 @@
                                 @context.Item.Expiry.Date.ToString("d")
                             </MudText>
                             <MudText Typo="Typo.body2">
-                                @context.Item.Expiry.Humanize()
+                                @if (context.Item.Expiry == DateTime.Today)
+                                {
+                                        @("Today")
+                                }
+                                else
+                                {
+                                    @context.Item.Expiry.Humanize()
+                                }
                             </MudText>
                         </div>
                     }
