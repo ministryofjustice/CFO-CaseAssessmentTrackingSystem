@@ -12,18 +12,21 @@ using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Configurations;
 using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
 using Cfo.Cats.Infrastructure.Constants.Database;
+using Cfo.Cats.Infrastructure.Handlers;
 using Cfo.Cats.Infrastructure.Jobs;
 using Cfo.Cats.Infrastructure.Persistence.Interceptors;
 using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.Contracts;
 using Cfo.Cats.Infrastructure.Services.Locations;
 using Cfo.Cats.Infrastructure.Services.MultiTenant;
+using Cfo.Cats.Infrastructure.Services.Ordnance;
 using Cfo.Cats.Infrastructure.Services.Serialization;
 using MassTransit;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using Quartz.AspNetCore;
 using ZiggyCreatures.Caching.Fusion;
@@ -222,6 +225,11 @@ public static class DependencyInjection
             client.DefaultRequestHeaders.Add("X-API-KEY", configuration.GetRequiredValue("DMS:ApiKey"));
             client.BaseAddress = new Uri(configuration.GetRequiredValue("DMS:ApplicationUrl"));
         });
+
+        services.AddHttpClient<IAddressLookupService, AddressLookupService>((provider, client) =>
+        {
+            client.BaseAddress = new Uri(configuration.GetRequiredValue("Ordnance:Places:ApplicationUrl"));
+        }).AddHttpMessageHandler(() => new ApiKeyHandler(configuration.GetRequiredValue("Ordnance:Places:ApiKey")));
 
         services.AddQuartzJobsAndTriggers(configuration);
         

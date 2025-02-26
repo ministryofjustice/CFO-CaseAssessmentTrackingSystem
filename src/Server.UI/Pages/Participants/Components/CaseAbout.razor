@@ -1,0 +1,100 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Infrastructure.Services.Ordnance
+
+@inherits CatsComponentBase
+
+@inject IAddressLookupService AddressLookupService
+
+<MudGrid Class="pa-3" Spacing="4">
+    @if(participant is not null)
+    {
+        <MudItem sm="12" md="6">
+            <MudCard Style="Height: 100%">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Personal Details</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderAvatar>
+                        <MudAvatar Color="Color.Primary">
+                            <MudIcon Icon="@Icons.Material.Filled.Person" />
+                        </MudAvatar>
+                    </CardHeaderAvatar>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTextField ReadOnly Class="mb-2" Value="participant.FullName" Label="Full Name" />
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    }
+    <MudItem sm="12" md="6">
+        <MudCard Style="Height: 100%">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Contact</MudText>
+                </CardHeaderContent>
+                <CardHeaderAvatar>
+                    <MudAvatar Color="Color.Primary">
+                        <MudIcon Icon="@Icons.Material.Filled.Person" />
+                    </MudAvatar>
+                </CardHeaderAvatar>
+            </MudCardHeader>
+            <MudCardContent>
+                @*
+                <MudTextField ReadOnly Class="mb-2" Label="Address Line 1" Value="@("")" />
+                <MudTextField ReadOnly Class="mb-2" Label="Address Line 2" Value="@("")" />
+                <MudTextField ReadOnly Class="mb-2" Label="Address Line 3" Value="@("")"/>
+                <MudTextField ReadOnly Class="mb-2" Label="Address Line 4" Value="@("")"/>
+                <MudTextField ReadOnly Class="mb-2" Label="Town" Value="@("")"/>
+                <MudTextField ReadOnly Class="mb-2" Label="Postcode" Value="@("")" />
+                *@
+
+                <MudAutocomplete Class="mb-2" Label="Address Line 1" @bind-Value="Value" SearchFunc="Search" DebounceInterval="500"></MudAutocomplete>
+
+                <MudTextField Class="mb-2" Label="Address Line 2" Value="@("")" />
+                <MudTextField Class="mb-2" Label="Address Line 3" Value="@("")"/>
+                <MudTextField Class="mb-2" Label="Address Line 4" Value="@("")"/>
+                <MudTextField Class="mb-2" Label="Town" Value="@("")"/>
+                <MudTextField Class="mb-2" Label="Postcode" Value="@("")" />
+
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter, EditorRequired]
+    public required string ParticipantId { get; set; }
+
+    public string Value { get; set; } = string.Empty;
+
+    ParticipantDto? participant;
+
+    async Task<IEnumerable<string>> Search(string searchText, CancellationToken cancellationToken)
+    {
+        if(string.IsNullOrWhiteSpace(searchText))
+        {
+            return [];
+        }
+
+        var response = await AddressLookupService.SearchAsync(searchText, CancellationToken.None);
+
+        if(response.Succeeded && response.Data is not null)
+        {
+            return response.Data.Select(x => x.Address);
+        }
+
+        return [];
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        participant = await GetNewMediator().Send(new GetParticipantById.Query()
+        {
+            Id = ParticipantId
+        });
+
+        await base.OnInitializedAsync();
+    }
+
+}
