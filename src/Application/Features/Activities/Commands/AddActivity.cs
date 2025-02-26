@@ -260,7 +260,7 @@ public static class AddActivity
                 .WithMessage("You must provide the date the activity took place")
                 .Must(NotBeCompletedInTheFuture)
                 .WithMessage("The date the activity took place cannot be in the future")
-                .GreaterThan(DateTime.Today.AddMonths(-3))
+                .GreaterThanOrEqualTo(DateTime.Today.AddMonths(-3))
                 .WithMessage("The activity must have taken place within the last three months")
                 .Must((command, commencedOn, token) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId, commencedOn))
                 .WithMessage("The activity cannot take place before the participant gave consent");
