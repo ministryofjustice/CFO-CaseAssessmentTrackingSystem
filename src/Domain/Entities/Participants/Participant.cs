@@ -107,6 +107,8 @@ public class Participant : OwnerPropertyEntity<string>
 
     public string? FullName => string.Join(' ', [FirstName, MiddleName, LastName]);
 
+    public DateTime? LastSyncDate { get; private set; } 
+
     public Supervisor? Supervisor { get; private set; }
 
     public IReadOnlyCollection<Consent> Consents => _consents.AsReadOnly();
@@ -192,7 +194,7 @@ public class Participant : OwnerPropertyEntity<string>
         }
         return this;
     }
-
+    
     public Participant AddNote(Note note)
     {
         if (_notes.Contains(note) is false)
@@ -353,6 +355,12 @@ public class Participant : OwnerPropertyEntity<string>
         ArchiveJustification = justificationReason;
         ArchiveReason = archiveReason;
 
+        return this;
+    }
+
+    public Participant UpdateSync()
+    {
+        LastSyncDate = DateTime.UtcNow;
         return this;
     }
 }
