@@ -42,7 +42,7 @@ public static class Theme
             },
             Typography = new Typography
             {
-                Body1 = new Body1Typography() { FontFamily = default, FontSize = "14px" },
+                Body1 = new Body1Typography() { FontFamily = default, FontSize = "16px" },
                 Body2 = new Body2Typography() //Custom body 2 typography with 16px size.
                 {
                     FontFamily = default

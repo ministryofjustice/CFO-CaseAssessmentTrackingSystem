@@ -44,7 +44,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="MudBlazor" Version="8.2.0" />
+        <PackageReference Include="MudBlazor" Version="8.3.0" />
         <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>
