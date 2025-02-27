@@ -59,17 +59,14 @@
                     {                
                             <EducationTraining Model="Activity.EducationTrainingTemplate"/>                
                     }
-                    else 
+                    else if (Activity.Definition.Classification == ClassificationType.Employment)
                     {                
-                            @if (Activity.Definition.Classification == ClassificationType.Employment)
-                            {                
-                                    <Employment Model="Activity.EmploymentTemplate" />                    
-                            }
-                            else if (Activity.Definition.Classification == ClassificationType.ISWActivity)
-                            {                    
-                                    <Isw Model="Activity.ISWTemplate" />                    
-                            }                                
-                    }   
+                            <Employment Model="Activity.EmploymentTemplate" />                    
+                    }
+                    else if (Activity.Definition.Classification == ClassificationType.ISWActivity)
+                    {                    
+                            <Isw Model="Activity.ISWTemplate" />                    
+                    }                                                    
                 </MudListItem>
             }
         </MudForm>
