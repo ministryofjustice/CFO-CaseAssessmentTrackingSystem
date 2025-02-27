@@ -1,26 +1,26 @@
-﻿@using System.Text
-@using Cfo.Cats.Application.Features.Participants.Commands
+﻿@using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.MessageBus
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
 @using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Server.UI.Pages.Participants.Components
+@using MassTransit
 
 @inherits CatsComponentBase
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
+@inject IBus Bus;
 
 <MudMenu ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft">
     <ActivatorContent>
         <MudChip T="string" Icon="@Icons.Material.Filled.CallToAction">@ConstantString.Actions</MudChip>
     </ActivatorContent>
     <ChildContent>
-        
+
         @if (Participant.EnrolmentStatus.AllowArchive())
         {
             <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error" OnClick="Archive">Archive</MudMenuItem>
         }
-        
+
         @* @if (Participant.EnrolmentStatus.AllowSuspend())
         {
             <MudMenuItem Icon="@Icons.Material.Filled.HideSource" IconColor="Color.Error" OnClick="Suspend">Suspend</MudMenuItem>
@@ -36,7 +36,7 @@
             <MudMenuItem Icon="@Icons.Material.Filled.HomeWork" IconColor="Color.Primary" OnClick="OpenRightToWorkDialog">@ConstantString.AddRightToWork</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Filled.Approval" IconColor="Color.Primary" OnClick="OpenConsentDialog">@ConstantString.AddConsent</MudMenuItem>
         }
-        
+
         @if (Participant.EnrolmentStatus.AllowEnrolmentLocationChange())
         {
             <MudMenuItem Icon="@Icons.Material.Filled.Map" IconColor="Color.Primary" OnClick="OpenAdjustLocationDialog">
@@ -44,26 +44,33 @@
             </MudMenuItem>            
         }
 
+        @if (_canForceUpdate)
+        {
+            <MudMenuItem Icon="@Icons.Material.Filled.Sync" IconColor="Color.Primary" OnClick="SyncRecord">
+                @ConstantString.ForceDataSync
+            </MudMenuItem>    
+        }
+
     </ChildContent>
 </MudMenu>
 
 @code {
 
-    private bool _canSubmitToQA;
+    private bool _canForceUpdate;
 
     [CascadingParameter]
     protected ParticipantSummaryDto Participant { get; set; } = default!;
 
-    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
+    [CascadingParameter] 
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
 
-    [CascadingParameter] public UserProfile UserProfile { get; set; } = default!;
+    [CascadingParameter] 
+    public UserProfile UserProfile { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
-
-        // only provider QA can submit to QA
-        _canSubmitToQA = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Pqa)).Succeeded;
+        _canForceUpdate = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SeniorInternal)).Succeeded;
     }
 
     protected async Task Archive()
@@ -208,6 +215,26 @@
             await OnUpdate.InvokeAsync();
         }
     }
+
+    protected async Task SyncRecord()
+    {
+        var parameters = new DialogParameters
+        {
+            { nameof(ConfirmationDialog.ContentText), "Are you sure you wish to force a data sync. Depending on system load, this may take a moment to show and you may need to refresh the page to see" }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Force data sync", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result!.Canceled)
+        {
+            var sync = new SyncParticipantCommand(Participant.Id);
+            await Bus.Publish(sync);
+            await OnUpdate.InvokeAsync();
+        }
+    }
+
 
     protected async Task OpenConsentDialog()
     {
