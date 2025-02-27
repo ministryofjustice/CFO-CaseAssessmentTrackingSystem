@@ -124,6 +124,8 @@ public static class ConstantString
     public static string ChangeEnrolmentLocation =>
         Localize("Change enrolment location");
 
+    public static string ForceDataSync => Localize("Force data sync");
+
     public static string RightToWork =>
     Localize("Right To Work");
     public static string RightToWorkIsRequiredMessage =>
