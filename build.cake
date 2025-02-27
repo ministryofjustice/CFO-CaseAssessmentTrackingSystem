@@ -9,7 +9,7 @@ var target = Argument("target", "Test");
 var configuration = Argument("configuration", "Release");
 var fromVersion = Argument("fromVersion", "");
 var migrationName = Argument("migrationName", "");
-var rebuild = HasArgument("rebuild");
+
 
 Task("Clean")
     .Description("Cleans all the bin and obj folders for the solution")
@@ -76,6 +76,8 @@ Task("Script")
     .Description("Generates a migration script.")
     .Does(() =>{
 
+        bool rebuild = GetYesNoResponse("Would you like to perform a clean build?");
+
         if(rebuild)
         {
             LogInformation("Generating a script with a clean build");
@@ -101,6 +103,8 @@ Task("AddMigration")
     .Description("Adds a new migration")
     .Does(() => {
 
+
+        bool rebuild = GetYesNoResponse("Would you like to perform a clean build?");
         
         if(rebuild)
         {
@@ -138,6 +142,29 @@ void LogWarning(string message)
 void LogInformation(string message)
 {
     AnsiConsole.MarkupLine($"[bold green1]:thinking_face: {message}[/]");
+}
+
+bool GetYesNoResponse(string question, bool defaultAnswer = true)
+{
+    string defaultText = defaultAnswer ? "[Y/n]" : "[y/N]";
+    
+    while (true)
+    {
+        Console.Write($"{question} {defaultText}: ");
+        string input = Console.ReadLine()?.Trim().ToLower();
+        
+        // Accept default on empty input
+        if (string.IsNullOrEmpty(input))
+            return defaultAnswer;
+            
+        if (input == "y" || input == "yes")
+            return true;
+        if (input == "n" || input == "no")
+            return false;
+            
+        // Invalid input - prompt again
+        Console.WriteLine("Please answer with 'y' or 'n'.");
+    }
 }
 
 RunTarget(target);
