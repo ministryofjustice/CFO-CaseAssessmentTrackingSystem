@@ -14,7 +14,6 @@
                 @bind-Value="Model.CourseTitle"
                 For="() => Model.CourseTitle"
                 Class="wrap-text"
-                ReadOnly=ReadOnlyFlag
                 Lines="4"                
                 Style="overflow-y: auto; max-height: 100px;" />
             </MudItem>
@@ -24,15 +23,13 @@
                 @bind-Value="Model.CourseUrl"
                 For="() => Model.CourseUrl"
                 Class="wrap-text"
-                ReadOnly=ReadOnlyFlag
                 Lines="4"
                 Style="overflow-y: auto; max-height: 100px;" />
             </MudItem>
             <MudItem xs="12">
                 <MudSelect @bind-Value="Model.CourseLevel"
                 For="() => Model.CourseLevel"
-                Label="@Model.GetMemberDescription(x => x.CourseLevel)"
-                ReadOnly=ReadOnlyFlag>
+                Label="@Model.GetMemberDescription(x => x.CourseLevel)">
                     @foreach (var courseLevel in PicklistService.DataSource
                     .Where(c => c.Name == Picklist.EducationLevel)
                     .OrderBy(c => c.Text))
@@ -47,8 +44,7 @@
                 Label="@Model.GetMemberDescription(x => x.CourseCommencedOn)"
                 Editable="true"
                 PickerVariant="PickerVariant.Dialog"
-                MaxDate="@MinCourseCommencedDate" Disabled="@(MinCourseCommencedDate is null)" 
-                ReadOnly=ReadOnlyFlag />
+                MaxDate="@MinCourseCommencedDate" Disabled="@(MinCourseCommencedDate is null)"/>
             </MudItem>
             <MudItem xs="12">
                 <MudDatePicker @bind-Date="Model.CourseCompletedOn"
@@ -56,14 +52,12 @@
                 Label="@Model.GetMemberDescription(x => x.CourseCompletedOn)"
                 MinDate="@Model.CourseCommencedOn" Disabled="@(Model.CourseCommencedOn is null)"
                 Editable="true"
-                PickerVariant="PickerVariant.Dialog"
-                ReadOnly=ReadOnlyFlag />
+                PickerVariant="PickerVariant.Dialog"/>
             </MudItem>
             <MudItem xs="12">
                 <MudSelect @bind-Value="Model.CourseCompletionStatus" 
                 For="() => Model.CourseCompletionStatus"
-                Label="@Model.GetMemberDescription(x => x.CourseCompletionStatus)"
-                ReadOnly=ReadOnlyFlag>
+                Label="@Model.GetMemberDescription(x => x.CourseCompletionStatus)">
                     <MudSelectItem Value="CourseCompletionStatus.Yes">@CourseCompletionStatus.Yes.Name</MudSelectItem>
                     <MudSelectItem Value="CourseCompletionStatus.No">@CourseCompletionStatus.No.Name</MudSelectItem>
                     <MudSelectItem Value="CourseCompletionStatus.NotApplicable">@CourseCompletionStatus.NotApplicable.Name</MudSelectItem>
@@ -81,7 +75,4 @@
 
     [Parameter]
     public DateTime? MinCourseCommencedDate { get; set; }
-
-    [Parameter]
-    public bool ReadOnlyFlag { get; set; } = false;
 }

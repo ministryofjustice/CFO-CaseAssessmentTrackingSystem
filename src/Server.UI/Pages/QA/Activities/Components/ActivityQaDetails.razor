@@ -51,28 +51,28 @@
             <MudText Typo="Typo.body2">@Activity.AdditionalInformation</MudText>
         </MudListItem>
 
-        @if (Activity.Definition is { Classification.RequiresFurtherInformation: true })
-        {
-            @if (Activity.Definition.Classification == ClassificationType.EducationAndTraining)
+        <MudForm ReadOnly>
+            @if (Activity.Definition is { Classification.RequiresFurtherInformation: true })
             {
                 <MudListItem>
-                    <EducationTraining Model="Activity.EducationTrainingTemplate" ReadOnlyFlag="true" />
-                </MudListItem>
-            }
-            else 
-            {
-                <MudListItem Disabled="true">                
-                    @if (Activity.Definition.Classification == ClassificationType.Employment)
+                    @if (Activity.Definition.Classification == ClassificationType.EducationAndTraining)
                     {                
-                            <Employment Model="Activity.EmploymentTemplate" />                    
+                            <EducationTraining Model="Activity.EducationTrainingTemplate"/>                
                     }
-                    else if (Activity.Definition.Classification == ClassificationType.ISWActivity)
-                    {                    
-                            <Isw Model="Activity.ISWTemplate" />                    
-                    }                
+                    else 
+                    {                
+                            @if (Activity.Definition.Classification == ClassificationType.Employment)
+                            {                
+                                    <Employment Model="Activity.EmploymentTemplate" />                    
+                            }
+                            else if (Activity.Definition.Classification == ClassificationType.ISWActivity)
+                            {                    
+                                    <Isw Model="Activity.ISWTemplate" />                    
+                            }                                
+                    }   
                 </MudListItem>
             }
-        }
+        </MudForm>
     </MudList>        
 </MudForm>        
 
