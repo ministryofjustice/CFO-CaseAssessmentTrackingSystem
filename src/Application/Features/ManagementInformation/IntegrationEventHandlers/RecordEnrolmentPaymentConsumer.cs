@@ -46,11 +46,11 @@ public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<
             var supportWorker = await unitOfWork.DbContext.EnrolmentPqaQueue
                 .Where(q => q.ParticipantId == context.Message.ParticipantId)
                 .OrderByDescending(q => q.Created)
-                .Select(p => new
+                .Select(pqa => new
                 {
-                    SupportWorkerId = p.CreatedBy!,
-                    p.TenantId,
-                    SubmissionToPqa = p.Created
+                    SupportWorkerId = pqa.SupportWorkerId!,
+                    pqa.TenantId,
+                    SubmissionToPqa = pqa.Created
                 })
                 .FirstAsync();
 
