@@ -103,6 +103,16 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
                 x => x!.Value,
                 x => ConfirmationStatus.FromValue(x)
             );
+        builder.Property(x => x.RiskToSelfInCommunityNew)
+            .HasConversion(
+                x => x!.Value,
+                x => ConfirmationStatus.FromValue(x)
+            );
+        builder.Property(x => x.RiskToSelfInCustodyNew)
+            .HasConversion(
+                x => x!.Value,
+                x => ConfirmationStatus.FromValue(x)
+            );
 
         builder.Property(x => x.CreatedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
