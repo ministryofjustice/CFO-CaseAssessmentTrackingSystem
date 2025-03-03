@@ -88,32 +88,25 @@ public partial class CaseSummary
 
     void SetbBioDueWarning()
     {
-        _bio = ParticipantSummaryDto.BioSummary;
-        if (_bio==null || _bio.BioStatus!=BioStatus.Complete)
+        if (ParticipantSummaryDto.BioDue.HasValue)
         {
-            // todo:  need to find enrolment date
-            var enrolmentDate = DateTime.Now;
-
-            _bioInfo = String.Format("Enrolment was {0}", enrolmentDate.Humanize()); ;            
-
-            TimeSpan difference = DateTime.Now - enrolmentDate;
-
-            int differenceInDays = difference.Days;
-            
-            switch (differenceInDays)
+            var datePart = ParticipantSummaryDto.BioDue.Value.Date;
+              
+            _bioInfo = datePart.Humanize();
+            _bioTooltipText = String.Format("Due {0}", DateOnly.FromDateTime(datePart));
+     
+            int _dueInDays = ParticipantSummaryDto.BioDueInDays!.Value!;
+            switch (_dueInDays)
             {
-                //�overdue� when 4 weeks is hit
-                case var _ when differenceInDays >28:
-                    _bioIcon = Icons.Material.Filled.Error;                    
+                case var _ when _dueInDays <= 0:
+                    _bioIcon = Icons.Material.Filled.Error;
                     _bioIconColor = Color.Error;
-                    _bioTooltipText = "Overdue";
+                    _bioTooltipText = String.Format("Overdue {0}", DateOnly.FromDateTime(datePart));              
                     break;
-
-                //�due soon� (within 14 days of the 4 weeks being reached) 
-                case var _ when differenceInDays >= 14 && differenceInDays <= 28:
+                case var _ when _dueInDays >= 0 && _dueInDays <= 14:
                     _bioIcon = Icons.Material.Filled.Warning;
                     _bioIconColor = Color.Warning;
-                    _bioTooltipText = "Due Soon";
+                    _bioTooltipText = String.Format("Due Soon {0}", DateOnly.FromDateTime(datePart));                    
                     break;
             }
         }
@@ -331,24 +324,26 @@ public partial class CaseSummary
     /// (i.e. Id is not null or do we need a status (Complete or Incomplete etc.))
     /// </summary>
     /// <returns></returns>
-    private bool CanContinueBio() => _bio?.BioStatus == BioStatus.InProgress;
+    private bool CanContinueBio() => _bio is not null && (_bio.BioStatus == BioStatus.InProgress || _bio.BioStatus == BioStatus.SkippedForNow);
 
     /// <summary>
     /// If true, indicates that either the bio doesn't exist OR No step is completed yet  
     /// </summary>
-    private bool CanSkipBio()
-    {
-        return _bio is null || _bio!.BioStatus == BioStatus.NotStarted;
-    }
+    private bool CanSkipBio() => _bio is not null && (_bio.BioStatus == BioStatus.InProgress || _bio.BioStatus == BioStatus.SkippedForNow || _bio.BioStatus == BioStatus.NotStarted);
+    //{
+    //    return _bio is null || _bio!.BioStatus == BioStatus.NotStarted;
+    //}
 
     private bool HasPathwayPlan => ParticipantSummaryDto.PathwayPlan is not null;
     private bool HasPathwayBeenReviewed => HasPathwayPlan && ParticipantSummaryDto.PathwayPlan?.LastReviewed is not null;
 
     private bool CanAddPRI() => _latestPRI == null && ParticipantSummaryDto.LocationType.IsCustody && ParticipantSummaryDto.LocationType.IsMapped;
+
     public void BeginPRI()
     {
         Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/PRI");
     }
+
     void SetPriDueWarning()
     {
         _priDueIcon = String.Empty;

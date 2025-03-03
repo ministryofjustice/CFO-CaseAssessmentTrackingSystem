@@ -72,6 +72,8 @@ public class ParticipantSummaryDto
 
     public DateTime LastSync { get; set; }
 
+    public DateTime? BioDue { get; set; }
+    public int? BioDueInDays { get; set; }
 
     private class Mapping : Profile
     {
@@ -93,7 +95,9 @@ public class ParticipantSummaryDto
                 .ForMember(dest => dest.RiskDueInDays, opt => opt.MapFrom(src => src.RiskDueInDays()))
                 .ForMember(dest => dest.Nationality, opt => opt.MapFrom(src => src.Nationality))
                 .ForMember(dest => dest.EnrolmentLocationJustification, opt => opt.MapFrom(src => src.EnrolmentLocationJustification))
-                .ForMember(dest => dest.LastSync, options => options.MapFrom(src => src.LastSyncDate ?? src.Created)); ;
+                .ForMember(dest => dest.LastSync, options => options.MapFrom(src => src.LastSyncDate ?? src.Created))
+                .ForMember(dest => dest.BioDue, opt => opt.MapFrom(src => src.BioDue))
+                .ForMember(dest => dest.BioDueInDays, opt => opt.MapFrom(src => src.BioDueInDays()));
 
             CreateMap<ParticipantAssessment, AssessmentSummaryDto>()
                 .ForMember(target => target.AssessmentId, options => options.MapFrom(source => source.Id))
