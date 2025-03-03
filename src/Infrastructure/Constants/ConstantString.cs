@@ -126,6 +126,8 @@ public static class ConstantString
 
     public static string ForceDataSync => Localize("Force data sync");
 
+    public static string SetStickyLocation => Localize("Set Sticky Community Location");
+
     public static string RightToWork =>
     Localize("Right To Work");
     public static string RightToWorkIsRequiredMessage =>

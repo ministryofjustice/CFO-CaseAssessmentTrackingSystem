@@ -19,7 +19,7 @@ public  class LocationMappingEntityTypeConfiguration : IEntityTypeConfiguration<
 
         // Configure properties
         builder.Property(c => c.Code)
-            .HasMaxLength(3);
+            .HasMaxLength(4);
 
         builder.Property(c => c.CodeType)
             .HasMaxLength(9);
