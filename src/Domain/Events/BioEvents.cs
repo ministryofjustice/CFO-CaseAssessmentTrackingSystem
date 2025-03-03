@@ -11,3 +11,7 @@ public sealed class BioSubmittedDomainEvent(ParticipantBio entity)
 {
     public ParticipantBio Item { get; set; } = entity;
 }
+
+public sealed class BioSkippedDomainEvent(ParticipantBio entity)
+    : CreatedDomainEvent<ParticipantBio>(entity);
+

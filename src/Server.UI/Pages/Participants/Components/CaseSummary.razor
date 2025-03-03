@@ -248,13 +248,21 @@
                 }
                 <div>
                     @if (_bioInfo!=string.Empty)
-                    {                        
-                        <MudTooltip Text="@_bioTooltipText">
-                            <MudIcon Icon="@_bioIcon" Size="@Size.Small" Color="@_bioIconColor" />
-                            <MudText Typo="Typo.body2">
-                                @String.Format(_bioInfo)
-                            </MudText>
-                        </MudTooltip>
+                    {
+
+                        <div class="description-pair">
+                            <dt>
+                                <MudText Typo="Typo.subtitle2">Due</MudText>
+                            </dt>
+                            <dd>
+                                <MudTooltip Text="@_bioTooltipText">
+                                    <MudIcon Icon="@_bioIcon" Size="@Size.Small" Color="@_bioIconColor" />
+                                    <MudText Typo="Typo.body2">
+                                        @String.Format(_bioInfo)
+                                    </MudText>
+                                </MudTooltip>
+                            </dd>
+                        </div>                  
                     }
                 </div>
 
