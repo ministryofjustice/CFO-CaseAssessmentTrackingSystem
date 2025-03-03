@@ -30,15 +30,17 @@ public class CandidateService(
         {
             // 1. Primary record is a prison record (excluding OUT)
             // 2. Primary record is a community record
+            //  2a. Use Sticky Location if present
+            //  2b. Use Org code if not
             // 3. Primary record is a prison record but shown as "OUT" (outside)...
-            //  3a. Use probation if an organisation code is present
+            //  3a. Use Sticky Location or Org Code probation if an organisation code is present
             //  3b. Use prison if an organisation code is not present
             // 4. Unknown
             var locationMapping = candidate switch
             {
                 /* 1  */ { Primary: "NOMIS", EstCode: not "OUT" } => (Code: candidate.EstCode, Type: "Prison"),
-                /* 2  */ { Primary: "DELIUS" } => (Code: candidate.OrgCode, Type: "Probation"),
-                /* 3a */ { Primary: "NOMIS", EstCode: "OUT", OrgCode: not null } => (Code: candidate.OrgCode, Type: "Probation"),
+                /* 2  */ { Primary: "DELIUS" } => (Code: candidate.StickyLocation ?? candidate.OrgCode, Type: "Probation"),
+                /* 3a */ { Primary: "NOMIS", EstCode: "OUT", OrgCode: not null } => (Code: candidate.StickyLocation ?? candidate.OrgCode, Type: "Probation"),
                 /* 3b */ { Primary: "NOMIS", EstCode: "OUT", OrgCode: null } => (Code: candidate.EstCode, Type: "Prison"),
                 /* 4  */ _ => (null, null)
             };
@@ -81,5 +83,11 @@ public class CandidateService(
         }
 
         return candidate;
+    }
+
+    public async Task<bool> SetStickyLocation(string upci, string location)
+    {
+        var result = await client.PostAsync($"/reference/{upci}/{location}", null);
+        return result.IsSuccessStatusCode;
     }
 }
