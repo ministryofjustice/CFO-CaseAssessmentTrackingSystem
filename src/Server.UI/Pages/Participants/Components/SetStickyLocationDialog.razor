@@ -1,0 +1,96 @@
+﻿@using Cfo.Cats.Application.Features.Candidates.Commands
+
+
+@inject ICandidateService CandidateService
+
+@if (Model is not null)
+{
+    <MudDialog>
+        <DialogContent>
+            <MudPaper Height="300px" Elevation="0">
+                <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudSelect @bind-Value="Model.Region" Label="Select Sticky Region" For="() => Model.Region" Immediate="true">
+                                <MudSelectItem T="string" Value="@("CAT1")">North West</MudSelectItem>
+                                <MudSelectItem T="string" Value="@("CAT2")">North East</MudSelectItem>
+                                <MudSelectItem T="string" Value="@("CAT3")">Yorkshire and Humberside</MudSelectItem>
+                                <MudSelectItem T="string" Value="@("CAT4")">West Midlands</MudSelectItem>
+                                <MudSelectItem T="string" Value="@("CAT5")">East Midlands</MudSelectItem>
+                                <MudSelectItem T="string" Value="@("CAT6")">East Of England</MudSelectItem>
+                                <MudSelectItem T="string" Value="@("CAT7")">London</MudSelectItem>
+                                <MudSelectItem T="string" Value="@("CAT8")">South West</MudSelectItem>
+                                <MudSelectItem T="string" Value="@("CAT9")">South East</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+            </MudPaper>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+            <MudLoadingButton Loading="@_saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+        </DialogActions>
+    </MudDialog>
+}
+
+@code {
+
+    private SetCandidateStickyLocation.Command? Model { get; set; }
+
+    private MudForm? _form;
+    private bool _saving;
+
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+
+
+    [EditorRequired] [Parameter] public string ParticipantId { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        Model = new SetCandidateStickyLocation.Command()
+        {
+            ParticipantId = ParticipantId
+        };
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            _saving = true;
+
+            await _form!.Validate().ConfigureAwait(false);
+
+            if (_form!.IsValid == false)
+            {
+                return;
+            }
+
+            var result = await CandidateService.SetStickyLocation(Model!.ParticipantId!, Model!.Region!); //await GetNewMediator().Send(Model!);
+            if (result)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add("Failed to set sticky location", Severity.Error);
+            }
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void Cancel()
+    { 
+        MudDialog.Cancel();
+    }
+
+    
+
+}
