@@ -70,7 +70,14 @@
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>
-                     <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
+                    <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Activity" Title="@L["Activity"]" Sortable="false">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.Activity.Definition.Category.Name</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
@@ -78,6 +85,7 @@
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">@context.Item.SupportWorker</MudText>
+
                 </div>
             </CellTemplate>
         </PropertyColumn>
@@ -89,10 +97,15 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.AssignedTo" Title="@L["AssignedTo"]">
+        <PropertyColumn Property="x => x.CommencedOn" Title="@L["Commenced on"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.AssignedTo</MudText>
+                    <MudText Typo="Typo.body2">
+                        @context.Item.CommencedOn.Date.ToString("d")
+                    </MudText>
+                    <MudText Typo="Typo.body2">
+                        @context.Item.CommencedOn.Date.Humanize()
+                    </MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
@@ -105,6 +118,41 @@
                     <MudText Typo="Typo.body2">
                         @context.Item.Created.Humanize()
                     </MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Expiry" Title="@L["Expiry"]">
+            <CellTemplate>
+                <MudTooltip Text="Must be processed up to 3 months after commenced date">
+                    @if (context.Item.Expiry < DateTime.Today)
+                    {
+                        <MudText Typo="Typo.body2">Expired</MudText>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-column">
+                            <MudText Typo="Typo.body2">
+                                @context.Item.Expiry.Date.ToString("d")
+                            </MudText>
+                            <MudText Typo="Typo.body2">
+                                @if (context.Item.Expiry == DateTime.Today)
+                                {
+                                    @("Today")
+                                }
+                                else
+                                {
+                                    @context.Item.Expiry.Humanize()
+                                }
+                            </MudText>
+                        </div>
+                    }
+                </MudTooltip>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.AssignedTo" Title="@L["AssignedTo"]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.AssignedTo</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
