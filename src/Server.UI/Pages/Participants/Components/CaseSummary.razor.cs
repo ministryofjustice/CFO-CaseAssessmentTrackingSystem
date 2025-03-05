@@ -5,7 +5,6 @@ using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
-using Cfo.Cats.Infrastructure.Persistence;
 using Cfo.Cats.Server.UI.Pages.Risk;
 using Humanizer;
 
@@ -251,6 +250,7 @@ public partial class CaseSummary
             Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
         }
     }
+
     public async Task SkipBioForNow()
     {
         var command = new SkipBioForNow.Command()
@@ -274,6 +274,7 @@ public partial class CaseSummary
             Snackbar.Add($"Skipping bio failed", Severity.Error);
         }
     }
+
     public void ContinueBio()
     {
         Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/bio/{_bio!.BioId}");
@@ -311,6 +312,8 @@ public partial class CaseSummary
     }
     void SetPriDueWarning()
     {
+        _priDueIcon = String.Empty;
+        _priDueIconColor = Color.Transparent;
 
         if (_latestPRI is null)
         {
@@ -321,27 +324,41 @@ public partial class CaseSummary
                 _ => "Not available in this location."
             };
         }
-        else if (_latestPRI.TTGDueDate.HasValue)
+        else
         {
-            _showTTGDue = true;
-            _priDueInfo = _latestPRI.TTGDueDate.Value.Humanize();
-            _priDueTooltipText = String.Format(ConstantString.PriTTGDueWarningToolTip, $"on {_latestPRI.TTGDueDate.Value}");
+            if (_latestPRI.Status == PriStatus.Abandoned)
+            {
+                _priDueTooltipText = "Pre-Release Inventory has been Abandoned.";
+            }
+            else if (_latestPRI.Status == PriStatus.Completed)
+            {
+                _priDueTooltipText = "Pre-Release Inventory has been Completed.";
+            }
+            else
+            {
+                if (_latestPRI.TTGDueDate.HasValue)
+                {
+                    _showTTGDue = true;
+                    _priDueInfo = _latestPRI.TTGDueDate.Value.Humanize();
+                    _priDueTooltipText = String.Format(ConstantString.PriTTGDueWarningToolTip, $"on {_latestPRI.TTGDueDate.Value}");
 
-            if (_latestPRI.IsFinalTTGWarningApplicable)
-            {
-                _priDueIcon = Icons.Material.Filled.Error;
-                _priDueIconColor = Color.Error;
+                    if (_latestPRI.IsFinalTTGWarningApplicable)
+                    {
+                        _priDueIcon = Icons.Material.Filled.Error;
+                        _priDueIconColor = Color.Error;
+                    }
+                    else if (_latestPRI.IsFirstTTGWarningApplicable)
+                    {
+                        _priDueIcon = Icons.Material.Filled.Warning;
+                        _priDueIconColor = Color.Warning;
+                    }
+                }
+                else if (ParticipantSummaryDto.LocationType.IsCommunity)
+                {
+                    _priDueInfo = ConstantString.PriNoActualReleaseDateWarning;
+                    _showTTGDue = true;
+                }
             }
-            else if (_latestPRI.IsFirstTTGWarningApplicable)
-            {
-                _priDueIcon = Icons.Material.Filled.Warning;
-                _priDueIconColor = Color.Warning;
-            }
-        }
-        else if(ParticipantSummaryDto.LocationType.IsCommunity)
-        {
-            _priDueInfo = ConstantString.PriNoActualReleaseDateWarning;
-            _showTTGDue = true;
         }
     }
 
