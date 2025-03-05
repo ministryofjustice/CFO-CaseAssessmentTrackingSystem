@@ -1,0 +1,45 @@
+﻿@inherits CatsComponentBase
+
+<MudDialog>
+    <DialogContent>
+        <MudPaper Height="300px" Elevation="0">
+            @if (Model is not null)
+            {
+                <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudTextField Class="mb-2" Label="Description" @bind-Value="Model.Description" For="() => Model.Description" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudAutocomplete Class="mb-2" Label="Address" 
+                                @bind-Value="Model.Address" 
+                                ToStringFunc="x => x is not null ? x.Address : null" 
+                                SearchFunc="Search" DebounceInterval="500" 
+                                For="() => Model.Address"
+                                ResetValueOnEmptyText="true" 
+                                CoerceText="true" 
+                                CoerceValue="true" 
+                                Adornment="Adornment.End" 
+                                AdornmentIcon="@Icons.Material.Filled.Search"
+                                AdornmentColor="Color.Primary" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField Class="mb-2" Label="Mobile Number" @bind-Value="Model.MobileNumber" For="() => Model.MobileNumber" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField Class="mb-2" Label="Email Address" @bind-Value="Model.EmailAddress"  For="() => Model.EmailAddress" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudCheckBox @bind-Value="Model.Primary" Label="Set as primary contact information" For="() => Model.Primary" />
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+            }
+        </MudPaper>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Dialog.Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
