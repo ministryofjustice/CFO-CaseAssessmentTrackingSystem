@@ -2,8 +2,7 @@
 
 public class ParticipantAddressDto
 {
-    public required string Address { get; set; }
-    public required string UPRN { get; set; }
-    public required double X_COORDINATE { get; set; }
-    public required double Y_COORDINATE { get; set; }
+    public string Address { get; set; } = string.Empty;
+    public string PostCode { get; set; } = string.Empty;
+    public string UPRN { get; set; } = string.Empty;
 }

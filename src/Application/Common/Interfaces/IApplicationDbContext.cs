@@ -44,6 +44,8 @@ public interface IApplicationDbContext
     DbSet<ParticipantLocationHistory> ParticipantLocationHistories { get; }
     DbSet<ParticipantOwnershipHistory> ParticipantOwnershipHistories { get; }
 
+    DbSet<ParticipantContactDetail> ParticipantContactDetails { get; }
+
     DbSet<Timeline> Timelines { get; }
 
     DbSet<ApplicationUser> Users { get; }

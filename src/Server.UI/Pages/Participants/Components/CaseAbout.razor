@@ -1,100 +1,111 @@
-﻿@using Cfo.Cats.Application.Features.Participants.DTOs
-@using Cfo.Cats.Application.Features.Participants.Queries
-@using Cfo.Cats.Infrastructure.Services.Ordnance
+﻿@inherits CatsComponentBase
 
-@inherits CatsComponentBase
+<MudForm ReadOnly>
+    <MudGrid Class="pa-3" Spacing="4">
+            @if (participant is not null)
+            {
+                <MudItem sm="12" md="5">
+                    <MudCard Style="Height: 100%">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Personal Details</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudTooltip Text="Edit">
+                                    <MudIconButton OnClick="Edit" Icon="@Icons.Material.Filled.Edit" />
+                                </MudTooltip>
+                            </CardHeaderActions>
+                            <CardHeaderAvatar>
+                                <MudAvatar Color="Color.Primary">
+                                    <MudIcon Icon="@Icons.Material.Filled.Person" />
+                                </MudAvatar>
+                            </CardHeaderAvatar>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudTextField ReadOnly Class="mb-2" Value="@("")" Label="Preferred Name(s)" />
+                            <MudTextField ReadOnly Class="mb-2" Value="@("")" Label="Preferred Pronouns" />
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+            @*
+            <MudItem sm="12" md="6">
+                <MudCard Style="Height: 100%">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Primary Contact Details</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderAvatar>
+                            <MudAvatar Color="Color.Primary">
+                                <MudIcon Icon="@Icons.Material.Filled.ContactPage" />
+                            </MudAvatar>
+                        </CardHeaderAvatar>
+                    </MudCardHeader>
+                    <MudCardContent>
+                            <MudTextField T="string"
+                                          Label="Description"
+                                          Placeholder="Workplace details"
+                                          Class="mb-2" />
 
-@inject IAddressLookupService AddressLookupService
+                            <MudTextField T="string"
+                                          Label="Mobile Number"
+                                          Class="mb-2" />
 
-<MudGrid Class="pa-3" Spacing="4">
-    @if(participant is not null)
-    {
-        <MudItem sm="12" md="6">
-            <MudCard Style="Height: 100%">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">Personal Details</MudText>
-                    </CardHeaderContent>
-                    <CardHeaderAvatar>
-                        <MudAvatar Color="Color.Primary">
-                            <MudIcon Icon="@Icons.Material.Filled.Person" />
-                        </MudAvatar>
-                    </CardHeaderAvatar>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudTextField ReadOnly Class="mb-2" Value="participant.FullName" Label="Full Name" />
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-    }
-    <MudItem sm="12" md="6">
-        <MudCard Style="Height: 100%">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Contact</MudText>
-                </CardHeaderContent>
-                <CardHeaderAvatar>
-                    <MudAvatar Color="Color.Primary">
-                        <MudIcon Icon="@Icons.Material.Filled.Person" />
-                    </MudAvatar>
-                </CardHeaderAvatar>
-            </MudCardHeader>
-            <MudCardContent>
-                @*
-                <MudTextField ReadOnly Class="mb-2" Label="Address Line 1" Value="@("")" />
-                <MudTextField ReadOnly Class="mb-2" Label="Address Line 2" Value="@("")" />
-                <MudTextField ReadOnly Class="mb-2" Label="Address Line 3" Value="@("")"/>
-                <MudTextField ReadOnly Class="mb-2" Label="Address Line 4" Value="@("")"/>
-                <MudTextField ReadOnly Class="mb-2" Label="Town" Value="@("")"/>
-                <MudTextField ReadOnly Class="mb-2" Label="Postcode" Value="@("")" />
-                *@
+                            <MudTextField T="string"
+                                          Label="Email Address"
+                                          Class="mb-2" />
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            *@
+            <MudItem sm="12" md="7">
+                <MudCard Style="Height: 100%">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Address Book</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderAvatar>
+                            <MudAvatar Color="Color.Primary">
+                                <MudIcon Icon="@Icons.Material.Filled.ViewList" />
+                            </MudAvatar>
+                        </CardHeaderAvatar>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudExpansionPanels>
+                            @foreach(var detail in contactDetails.OrderByDescending(d => d.Primary).ThenBy(d => d.Created))
+                            {
+                                <MudExpansionPanel>
+                                    <TitleContent>
+                                        <div class="d-flex align-center gap-2">
+                                            <MudText>@detail.Description</MudText>
+                                            @if(detail.Primary)
+                                            {
+                                                <MudChip T="string" Size="Size.Small" Variant="Variant.Text" Color="Color.Primary">Primary</MudChip>
+                                            }
+                                        </div>
+                                    </TitleContent>
+                                    <ChildContent>
+                                        <MudTextField Value="detail.Address"
+                                                      Label="Address"
+                                                      Class="mb-2" />
+                                        <MudTextField Value="detail.EmailAddress"
+                                                      Label="Email Address"
+                                                      Class="mb-2" />
+                                        <MudTextField Value="detail.PhoneNumber"
+                                                      Label="Phone Number"
+                                                      Class="mb-2" />
+                                    </ChildContent>
 
-                <MudAutocomplete Class="mb-2" Label="Address Line 1" @bind-Value="Value" SearchFunc="Search" DebounceInterval="500"></MudAutocomplete>
-
-                <MudTextField Class="mb-2" Label="Address Line 2" Value="@("")" />
-                <MudTextField Class="mb-2" Label="Address Line 3" Value="@("")"/>
-                <MudTextField Class="mb-2" Label="Address Line 4" Value="@("")"/>
-                <MudTextField Class="mb-2" Label="Town" Value="@("")"/>
-                <MudTextField Class="mb-2" Label="Postcode" Value="@("")" />
-
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-</MudGrid>
-
-@code {
-    [Parameter, EditorRequired]
-    public required string ParticipantId { get; set; }
-
-    public string Value { get; set; } = string.Empty;
-
-    ParticipantDto? participant;
-
-    async Task<IEnumerable<string>> Search(string searchText, CancellationToken cancellationToken)
-    {
-        if(string.IsNullOrWhiteSpace(searchText))
-        {
-            return [];
-        }
-
-        var response = await AddressLookupService.SearchAsync(searchText, CancellationToken.None);
-
-        if(response.Succeeded && response.Data is not null)
-        {
-            return response.Data.Select(x => x.Address);
-        }
-
-        return [];
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        participant = await GetNewMediator().Send(new GetParticipantById.Query()
-        {
-            Id = ParticipantId
-        });
-
-        await base.OnInitializedAsync();
-    }
-
-}
+                                </MudExpansionPanel>
+                            }
+                        </MudExpansionPanels>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudTooltip Text="Add Contact Information">
+                            <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="AddContact" />
+                        </MudTooltip>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+    </MudGrid>
+</MudForm>
