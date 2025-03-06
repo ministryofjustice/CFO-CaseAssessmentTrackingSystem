@@ -12,7 +12,6 @@ using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Configurations;
 using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
 using Cfo.Cats.Infrastructure.Constants.Database;
-using Cfo.Cats.Infrastructure.Handlers;
 using Cfo.Cats.Infrastructure.Jobs;
 using Cfo.Cats.Infrastructure.Persistence.Interceptors;
 using Cfo.Cats.Infrastructure.Services.Candidates;
@@ -228,8 +227,9 @@ public static class DependencyInjection
 
         services.AddHttpClient<IAddressLookupService, AddressLookupService>((provider, client) =>
         {
+            client.DefaultRequestHeaders.Add("key", configuration.GetRequiredValue("Ordnance:Places:ApiKey"));
             client.BaseAddress = new Uri(configuration.GetRequiredValue("Ordnance:Places:ApplicationUrl"));
-        }).AddHttpMessageHandler(() => new ApiKeyHandler(configuration.GetRequiredValue("Ordnance:Places:ApiKey")));
+        });
 
         services.AddQuartzJobsAndTriggers(configuration);
         
