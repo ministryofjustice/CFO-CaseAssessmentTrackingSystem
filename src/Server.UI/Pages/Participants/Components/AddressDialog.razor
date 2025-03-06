@@ -2,13 +2,13 @@
 
 <MudDialog>
     <DialogContent>
-        <MudPaper Height="300px" Elevation="0">
+        <MudPaper Elevation="0">
             @if (Model is not null)
             {
                 <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
                     <MudGrid>
                         <MudItem xs="12">
-                            <MudTextField Class="mb-2" Label="Description" @bind-Value="Model.Description" For="() => Model.Description" />
+                            <MudTextField Class="mb-2" Placeholder="Home address" Label="Description" @bind-Value="Model.Description" For="() => Model.Description" MaxLength="100" Counter="100" Immediate />
                         </MudItem>
                         <MudItem xs="12">
                             <MudAutocomplete Class="mb-2" Label="Address" 
@@ -24,10 +24,10 @@
                                 AdornmentColor="Color.Primary" />
                         </MudItem>
                         <MudItem xs="12">
-                            <MudTextField Class="mb-2" Label="Mobile Number" @bind-Value="Model.MobileNumber" For="() => Model.MobileNumber" Clearable />
+                            <MudTextField Class="mb-2" Label="Mobile Number" @bind-Value="Model.MobileNumber" For="() => Model.MobileNumber" Clearable MaxLength="16" Counter="16" Immediate />
                         </MudItem>
                         <MudItem xs="12">
-                            <MudTextField Class="mb-2" Label="Email Address" @bind-Value="Model.EmailAddress"  For="() => Model.EmailAddress" Clearable />
+                            <MudTextField Class="mb-2" Label="Email Address" @bind-Value="Model.EmailAddress" For="() => Model.EmailAddress" Clearable MaxLength="256" Counter="256" Immediate />
                         </MudItem>
                         <MudItem xs="12">
                             <MudCheckBox @bind-Value="Model.Primary" Label="Set as primary contact information" For="() => Model.Primary" />
