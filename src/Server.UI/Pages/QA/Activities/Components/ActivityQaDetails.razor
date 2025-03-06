@@ -2,77 +2,199 @@
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Activities.Components
 
-<MudForm>
-    <MudList T="string">        
-        <MudListSubheader>
-            <ChildContent>
-                <MudText Typo="Typo.h5">Activity Confirmation</MudText>
-            </ChildContent>
-        </MudListSubheader>
+
+<MudStack>
+    <MudText Typo="Typo.h5">
+        Activity Confirmation
+    </MudText>
+    
+    <MudDivider />
+    
+    <MudText Typo="Typo.h6" Color="Color.Primary">
+        Participant Details
+    </MudText>
+    
+    <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+        <MudText Typo="Typo.body1"><strong>Case Ref</strong></MudText>
+        <MudLink Href="@($"/pages/participants/{Activity.ParticipantId}")" Typo="Typo.body1">@Activity.Participant!.Id</MudLink>
+    </MudStack>
+    
+    <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+        <MudText Typo="Typo.body1"><strong>Participant</strong></MudText>
+        <MudText Typo="Typo.body1">@Activity.Participant!.FullName</MudText>
+    </MudStack>
+    
+    <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+        <MudText Typo="Typo.body1"><strong>Date Of Birth</strong></MudText>
+        <MudText Typo="Typo.body1">@Activity.Participant!.DateOfBirth</MudText>
+    </MudStack>
+    
+    <MudDivider />
+    
+    <MudText Typo="Typo.h6" Color="Color.Primary">
+        Identifiers
+    </MudText>
+    
+    @foreach (var item in Activity.Participant!.ExternalIdentifiers)
+    {
+        <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+            <MudText Typo="Typo.body1"><strong>@item.Type</strong></MudText>
+            <MudText Typo="Typo.body1">@item.Value</MudText>
+        </MudStack>
+    }
+    
+    <MudDivider />
+    
+    <MudText Typo="Typo.h6" Color="Color.Primary">
+        Activity
+    </MudText>
+    
+    <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+        <MudText Typo="Typo.body1"><strong>Type</strong></MudText>
+        <MudText Typo="Typo.body1">@Activity.Definition!.Name</MudText>
+    </MudStack>
+    
+    <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+        <MudText Typo="Typo.body1"><strong>Activity Location</strong></MudText>
+        <MudText Typo="Typo.body1">@Activity.Location!.Name</MudText>
+    </MudStack>
+
+    <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+        <MudText Typo="Typo.body1"><strong>Date activity took place</strong></MudText>
+        <MudText Typo="Typo.body1">@Activity.CommencedOn.ToShortDateOrEmptyString()</MudText>
+    </MudStack>
+    
+    <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+        <MudText Typo="Typo.body1"><strong>Additional Information</strong></MudText>
+        <MudText Typo="Typo.body1">@Activity.AdditionalInformation</MudText>
+    </MudStack>
+    
+    @if (Activity.Definition is { Classification.RequiresFurtherInformation: true })
+    {
         <MudDivider />
-        <MudListItem Href="@($"/pages/participants/{Activity.Participant!.Id}")">
-            <MudText Typo="Typo.body1">Case Ref</MudText>
-            <MudText Typo="Typo.body2">@Activity.Participant!.Id</MudText>
-        </MudListItem>
-        <MudListItem>
-            <MudText Typo="Typo.body1">Participant</MudText>
-            <MudText Typo="Typo.body2">@Activity.Participant!.FullName</MudText>
-        </MudListItem>
-        <MudListItem>
-            <MudText Typo="Typo.body1">
-                Date Of Birth
+
+        <MudText Typo="Typo.h5">
+            Further Information
+        </MudText>
+
+        @if (Activity.Definition.Classification == ClassificationType.EducationAndTraining)
+        {           
+            <MudDivider />
+
+            <MudText Typo="Typo.h6" Color="Color.Primary">
+                Course Details
             </MudText>
-            <MudText Typo="Typo.body2">
-                @Activity.Participant!.DateOfBirth
-            </MudText>
-        </MudListItem>
-        @foreach (var item in Activity.Participant!.ExternalIdentifiers)
-        {
-            <MudListItem>
-                <MudText Typo="Typo.body1">@item.Type</MudText>
-                <MudText Typo="Typo.body2">@item.Value</MudText>
-            </MudListItem>
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Title</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.EducationTrainingTemplate.CourseTitle</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Url</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.EducationTrainingTemplate.CourseUrl</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Level</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.EducationTrainingTemplate.CourseLevel</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Commenced</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.EducationTrainingTemplate.CourseCommencedOn.ToShortDateOrEmptyString()</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Completed</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.EducationTrainingTemplate.CourseCompletedOn.ToShortDateOrEmptyString()</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Passed</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.EducationTrainingTemplate.CourseCompletionStatus!.Name</MudText>
+            </MudStack>
+
         }
-        <MudDivider />
-        <MudListItem>
-            <MudText Typo="Typo.body1">Activity</MudText>
-            <MudText Typo="Typo.body2">@Activity.Definition!.Name</MudText>
-        </MudListItem>
-        <MudListItem>
-            <MudText Typo="Typo.body1">Activity Location</MudText>
-            <MudText Typo="Typo.body2">@Activity.Location!.Name</MudText>
-        </MudListItem>
-        <MudListItem>            
-            <MudText Typo="Typo.body1">Date activity took place</MudText>
-            <MudText Typo="Typo.body2">@Activity.CommencedOn</MudText>
-        </MudListItem>
-        <MudListItem>
-            <MudText Typo="Typo.body1">Additional Information</MudText>
-            <MudText Typo="Typo.body2">@Activity.AdditionalInformation</MudText>
-        </MudListItem>
+        else if (Activity.Definition.Classification == ClassificationType.Employment)
+        {                
 
-        <MudForm ReadOnly>
-            @if (Activity.Definition is { Classification.RequiresFurtherInformation: true })
-            {
-                <MudListItem>
-                    @if (Activity.Definition.Classification == ClassificationType.EducationAndTraining)
-                    {                
-                            <EducationTraining Model="Activity.EducationTrainingTemplate"/>                
-                    }
-                    else if (Activity.Definition.Classification == ClassificationType.Employment)
-                    {                
-                            <Employment Model="Activity.EmploymentTemplate" />                    
-                    }
-                    else if (Activity.Definition.Classification == ClassificationType.ISWActivity)
-                    {                    
-                            <Isw Model="Activity.ISWTemplate" />                    
-                    }                                                    
-                </MudListItem>
-            }
-        </MudForm>
-    </MudList>        
-</MudForm>        
+            <MudDivider />
 
+            <MudText Typo="Typo.h6" Color="Color.Primary">
+                Employment Details
+            </MudText>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Type</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.EmploymentTemplate.EmploymentType</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Employer Name</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.EmploymentTemplate.EmployerName</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Job Title</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.EmploymentTemplate.JobTitle</MudText>
+            </MudStack>
+            
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Salary Frequency</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.EmploymentTemplate.SalaryFrequency</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Employment Commenced</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.EmploymentTemplate.EmploymentCommenced.ToShortDateOrEmptyString()</MudText>
+            </MudStack>
+
+        }
+        else if (Activity.Definition.Classification == ClassificationType.ISWActivity)
+        {                    
+            
+            <MudDivider />
+
+            <MudText Typo="Typo.h6" Color="Color.Primary">
+                Additional Details
+            </MudText>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Start Date</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.ISWTemplate.WraparoundSupportStartedOn.ToShortDateOrEmptyString()</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Baseline achieved date</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.ISWTemplate.BaselineAchievedOn.ToShortDateOrEmptyString()</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Total hours performed pre-intervention</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.ISWTemplate.HoursPerformedPre</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Total hours performed during intervention</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.ISWTemplate.HoursPerformedDuring</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Total hours performed post intervention</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.ISWTemplate.HoursPerformedPost</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Total hours </strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.ISWTemplate.TotalHoursInterventionDescription</MudText>
+            </MudStack>
+
+        }                   
+
+    }
+
+</MudStack>
+    
 @code{
     [Parameter, EditorRequired]
     public ActivityQaDetailsDto Activity { get; set; } = default!;
