@@ -12,7 +12,7 @@ public partial class AddressDialog(IAddressLookupService AddressLookupService)
     [CascadingParameter] private IMudDialogInstance Dialog { get; set; } = default!;
 
     [Parameter]
-    public required AddContactDetail.Command Model { get; set; }
+    public required AddOrEditContactDetail.Command Model { get; set; }
 
     string query = string.Empty;
     bool saving = false;
