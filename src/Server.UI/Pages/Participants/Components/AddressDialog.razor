@@ -12,10 +12,10 @@
                         </MudItem>
                         <MudItem xs="12">
                             <MudAutocomplete Class="mb-2" Label="Address" 
-                                @bind-Value="Model.Address" 
+                                @bind-Value="Model.AddressDetails" 
                                 ToStringFunc="x => x is not null ? x.Address : null" 
                                 SearchFunc="Search" DebounceInterval="500" 
-                                For="() => Model.Address"
+                                For="() => Model.AddressDetails"
                                 ResetValueOnEmptyText="true" 
                                 CoerceText="true" 
                                 CoerceValue="true" 
