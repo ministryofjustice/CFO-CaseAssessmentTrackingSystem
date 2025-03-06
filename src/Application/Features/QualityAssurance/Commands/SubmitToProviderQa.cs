@@ -43,8 +43,8 @@ public static class SubmitToProviderQa
             RuleFor(c => c.JustificationReason)
                 .Matches(x => ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification Reason"));
-
         }
+
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
                 => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
     }
@@ -60,12 +60,10 @@ public static class SubmitToProviderQa
             RuleFor(c => c.ParticipantId)
                 .MustAsync(MustExist)
                 .WithMessage($"No assessment found for participant.");
-
         }
 
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
               => await _unitOfWork.DbContext.ParticipantAssessments.AnyAsync(e => e.ParticipantId == identifier, cancellationToken);
-
     }
     
     public class C_ParticipantAssessmentShouldBeSubmitted : AbstractValidator<Command>
@@ -115,7 +113,6 @@ public static class SubmitToProviderQa
                 .Where(pa => pa.ParticipantId == command.ParticipantId)
                 .OrderByDescending(a => a.Created)
                 .FirstOrDefaultAsync(cancellationToken);
-
 
             if (latest is null)
             {
@@ -186,7 +183,7 @@ public static class SubmitToProviderQa
                     .Select(c => c.Consents.Max(d => d.Lifetime.StartDate))
                     .FirstAsync(cancellationToken);
 
-            return consentDate > DateTime.Today.AddMonths(-3);
+            return consentDate >= DateTime.Today.AddMonths(-3);                
         }
     }
 }
