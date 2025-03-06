@@ -79,7 +79,7 @@
             <MudSelect @bind-Value="Model.DocumentVersion" 
                         Label="@Model.GetMemberDescription(x => x.DocumentVersion)" 
                         For="() => Model.DocumentVersion"
-                        AnchorOrigin="Origin.BottomCenter">
+                        AnchorOrigin="Origin.BottomLeft">
                 @foreach (var version in Documents.Consent.Versions)
                 {
                     <MudSelectItem Value="@version">Version @version</MudSelectItem>
