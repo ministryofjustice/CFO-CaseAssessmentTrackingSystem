@@ -179,7 +179,7 @@ public static class SubmitPqaResponse
                       .Include(d => d.Participant!.Consents)
                       .FirstOrDefault(a => a.Id == c.QueueEntryId);
                       
-                      return entry != null && entry.Participant!.Consents.Max(a =>a.Lifetime.StartDate) >= DateTime.UtcNow.AddDays(-90);                
+                      return entry != null && entry.Participant!.Consents.Max(a =>a.Lifetime.StartDate) >= DateTime.Today.AddMonths(-3);                
         }
     }
 }
