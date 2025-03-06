@@ -42,7 +42,6 @@ public static class AddOrEditContactDetail
                         destination.ClearDomainEvents();
                     }
                 });
-                //.ForAllMembers(opt => opt.Ignore());
 
             CreateMap<ParticipantContactDetailDto, Command>()
                 .ForMember(opt => opt.AddressDetails, dest => dest.MapFrom(src => new ParticipantAddressDto 
@@ -95,18 +94,24 @@ public static class AddOrEditContactDetail
                 .MaximumLength(100)
                 .WithMessage("Maximum length of 100 characters exceeded");
 
-            RuleFor(c => c.EmailAddress)
-                .EmailAddress()
-                .MaximumLength(256)
-                .WithMessage("Maximum length of 100 characters exceeded");
+            When(c => string.IsNullOrEmpty(c.EmailAddress) is false, () =>
+            {
+                RuleFor(c => c.EmailAddress)
+                    .EmailAddress()
+                    .MaximumLength(256)
+                    .WithMessage("Maximum length of 100 characters exceeded");
+            });
 
-            RuleFor(c => c.MobileNumber)
-                .MaximumLength(16)
-                .WithMessage("Maximum length of 16 characters exceeded");
+            When(c => string.IsNullOrEmpty(c.MobileNumber) is false, () =>
+            {
+                RuleFor(c => c.MobileNumber)
+                    .MaximumLength(16)
+                    .WithMessage("Maximum length of 16 characters exceeded");
+            });
 
             // Populated fields
             RuleFor(c => c.AddressDetails)
-                .Must(dto => string.IsNullOrEmpty(dto?.Address) is false)
+                .Must(details => string.IsNullOrEmpty(details?.Address) is false)
                 .WithMessage("You must choose a valid address");
         }
 
