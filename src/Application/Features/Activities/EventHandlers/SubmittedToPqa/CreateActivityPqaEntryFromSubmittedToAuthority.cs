@@ -10,17 +10,7 @@ public class CreateActivityPqaEntryFromSubmittedToAuthority(IUnitOfWork unitOfWo
 
         if (notification.To == ActivityStatus.SubmittedToProviderStatus &&
                notification.From == ActivityStatus.SubmittedToAuthorityStatus)
-        {            
-            if (notification.Item.Owner is null)
-            {
-                throw new ApplicationException("Owner must be set");
-            }
-
-            if (notification.Item.Owner.TenantId is null)
-            {
-                throw new ApplicationException("Owner tenant id must be set");
-            }
-
+        {   
             //get the values from the LAST PQA
             var lastPqa = await unitOfWork
                 .DbContext.ActivityPqaQueue

@@ -10,14 +10,14 @@ public class CreateActivityPqaQueueEntry(IUnitOfWork unitOfWork) : INotification
         if (notification.To == ActivityStatus.SubmittedToProviderStatus &&
             notification.From == ActivityStatus.PendingStatus)
         {
-            if (notification.Item.Owner is null)
+            if (notification.Item.OwnerId is null)
             {
-                throw new ApplicationException("Owner must be set");
+                throw new ApplicationException("Owner Id must be set");
             }
 
-            if (notification.Item.Owner.TenantId is null)
+            if (notification.Item.TenantId is null)
             {
-                throw new ApplicationException("Owner tenant id must be set");
+                throw new ApplicationException("Tenant id must be set");
             }
 
             if (notification.Item.ParticipantId is null)
@@ -25,8 +25,8 @@ public class CreateActivityPqaQueueEntry(IUnitOfWork unitOfWork) : INotification
                 throw new ApplicationException("Participant id must be set");
             }
 
-            var queueEntry = new ActivityPqaQueueEntry(notification.Item.Id, notification.Item.Owner.TenantId,
-                notification.Item.Owner.Id, DateTime.UtcNow, notification.Item.ParticipantId);
+            var queueEntry = new ActivityPqaQueueEntry(notification.Item.Id, notification.Item.TenantId,
+                notification.Item.OwnerId, DateTime.UtcNow, notification.Item.ParticipantId);
                             
             await unitOfWork.DbContext.ActivityPqaQueue.AddAsync(queueEntry, cancellationToken);             
         }
