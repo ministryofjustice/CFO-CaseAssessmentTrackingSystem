@@ -11,7 +11,7 @@ public class ParticipantContactDetailDto
     public required string PostCode { get; set; }
     public required string UPRN { get; set; }
     public string? EmailAddress { get; set; }
-    public string? PhoneNumber { get; set; }
+    public string? MobileNumber { get; set; }
     public required bool Primary { get; set; }
     public required DateTime Created { get; set; }
 
