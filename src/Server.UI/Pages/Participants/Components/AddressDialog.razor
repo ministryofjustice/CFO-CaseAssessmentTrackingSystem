@@ -24,10 +24,10 @@
                                 AdornmentColor="Color.Primary" />
                         </MudItem>
                         <MudItem xs="12">
-                            <MudTextField Class="mb-2" Label="Mobile Number" @bind-Value="Model.MobileNumber" For="() => Model.MobileNumber" />
+                            <MudTextField Class="mb-2" Label="Mobile Number" @bind-Value="Model.MobileNumber" For="() => Model.MobileNumber" Clearable />
                         </MudItem>
                         <MudItem xs="12">
-                            <MudTextField Class="mb-2" Label="Email Address" @bind-Value="Model.EmailAddress"  For="() => Model.EmailAddress" />
+                            <MudTextField Class="mb-2" Label="Email Address" @bind-Value="Model.EmailAddress"  For="() => Model.EmailAddress" Clearable />
                         </MudItem>
                         <MudItem xs="12">
                             <MudCheckBox @bind-Value="Model.Primary" Label="Set as primary contact information" For="() => Model.Primary" />
