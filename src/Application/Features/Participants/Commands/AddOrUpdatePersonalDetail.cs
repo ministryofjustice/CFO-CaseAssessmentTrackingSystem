@@ -21,7 +21,8 @@ public class AddOrUpdatePersonalDetail
             CreateMap<Command, PersonalDetail>(MemberList.None)
                 .ConstructUsing(command => PersonalDetail.CreateFrom(
                     command.PersonalDetails.PreferredNames,
-                    command.PersonalDetails.PreferredPronouns)
+                    command.PersonalDetails.PreferredPronouns,
+                    command.PersonalDetails.PreferredTitle)
                 )
                 .AfterMap((_, destination) => destination.ClearDomainEvents());
 
@@ -60,6 +61,10 @@ public class AddOrUpdatePersonalDetail
             RuleFor(c => c.PersonalDetails.PreferredPronouns)
                 .MaximumLength(16)
                 .WithMessage("Maximum length of 16 characters exceeded");
+
+            RuleFor(c => c.PersonalDetails.PreferredTitle)
+                .MaximumLength(6)
+                .WithMessage("Maximum length of 6 characters exceeded");
         }
     }
 

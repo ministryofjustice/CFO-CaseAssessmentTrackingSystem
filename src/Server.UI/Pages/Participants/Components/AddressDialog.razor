@@ -8,7 +8,7 @@
                 <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
                     <MudGrid>
                         <MudItem xs="12">
-                            <MudTextField Class="mb-2" Placeholder="Home address" Label="Description" @bind-Value="Model.Description" For="() => Model.Description" MaxLength="100" Counter="100" Immediate />
+                            <MudTextField Class="mb-2" Placeholder="i.e. home address" Label="Description" @bind-Value="Model.Description" For="() => Model.Description" MaxLength="100" Counter="100" Immediate />
                         </MudItem>
                         <MudItem xs="12">
                             <MudAutocomplete Class="mb-2" Label="Address" 

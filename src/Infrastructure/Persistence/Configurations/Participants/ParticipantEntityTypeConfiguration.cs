@@ -251,6 +251,9 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
 
             personalDetails.Property(s => s.PreferredPronouns)
                 .HasMaxLength(16);
+
+            personalDetails.Property(s => s.PreferredTitle)
+                .HasMaxLength(6);
         });
 
         builder.Navigation(p => p.Consents)
