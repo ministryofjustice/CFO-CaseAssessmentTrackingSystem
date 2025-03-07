@@ -23,7 +23,8 @@
                         </MudCardHeader>
                         <MudCardContent>
                             <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.PreferredNames" Label="@personalDetails?.GetMemberDescription(x => x.PreferredNames)" />
-                            <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.PreferredPronouns" Label="@personalDetails?.GetMemberDescription(x => x.PreferredPronouns)" />
+                            <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.PreferredPronouns" Label="@personalDetails?.GetMemberDescription(x => x.PreferredPronouns)" Placeholder="i.e. he/him, she/her, they/them" />
+                            <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.PreferredTitle" Label="@personalDetails?.GetMemberDescription(x => x.PreferredTitle)" Placeholder="i.e. Mr, Ms, Mx" />
                         </MudCardContent>
                     </MudCard>
                 </MudItem>
