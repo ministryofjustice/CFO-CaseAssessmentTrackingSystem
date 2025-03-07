@@ -14,6 +14,7 @@ public partial class CaseAbout(IMapper mapper)
 
     ParticipantDto? participant;
     IEnumerable<ParticipantContactDetailDto> contactDetails = [];
+    ParticipantPersonalDetailDto? personalDetails;
 
     protected override async Task OnInitializedAsync()
     {
@@ -32,15 +33,20 @@ public partial class CaseAbout(IMapper mapper)
         {
             ParticipantId = ParticipantId
         });
+
+        personalDetails = await GetNewMediator().Send(new GetPersonalDetails.Query()
+        {
+            ParticipantId = ParticipantId
+        });
     }
 
-    async Task AddContact() 
-        => await AddOrEditContact(new AddOrEditContactDetail.Command { ParticipantId = ParticipantId }, "Add Contact Details");
+    async Task AddContact()
+        => await AddOrEditContact(new AddOrUpdateContactDetail.Command { ParticipantId = ParticipantId }, "Add Contact Details");
 
     async Task EditContact(ParticipantContactDetailDto contact) =>
-        await AddOrEditContact(mapper.Map<AddOrEditContactDetail.Command>(contact), "Edit Contact Details");
+        await AddOrEditContact(mapper.Map<AddOrUpdateContactDetail.Command>(contact), "Edit Contact Details");
 
-    async Task AddOrEditContact(AddOrEditContactDetail.Command command, string title)
+    async Task AddOrEditContact(AddOrUpdateContactDetail.Command command, string title)
     {
         var parameters = new DialogParameters<AddressDialog>()
         {
@@ -75,5 +81,22 @@ public partial class CaseAbout(IMapper mapper)
         }
     }
 
-    async Task EditPersonalInformation() => await Task.CompletedTask;
+    async Task EditPersonalInformation()
+    {
+        var command = new AddOrUpdatePersonalDetail.Command { ParticipantId = ParticipantId, PersonalDetails = personalDetails ?? new() };
+
+        var parameters = new DialogParameters<PersonalDetailsDialog>()
+        {
+            { x => x.Model, command }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true, BackdropClick = false };
+
+        var dialog = await DialogService.ShowAsync<PersonalDetailsDialog>("Edit Personal Details", parameters, options);
+
+        if (await dialog.Result is not { Canceled: true })
+        {
+            await Refresh();
+        }
+    }
 }

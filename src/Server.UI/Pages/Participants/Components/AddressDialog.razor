@@ -24,7 +24,7 @@
                                 AdornmentColor="Color.Primary" />
                         </MudItem>
                         <MudItem xs="12">
-                            <MudTextField Class="mb-2" Label="Mobile Number" @bind-Value="Model.MobileNumber" For="() => Model.MobileNumber" Clearable MaxLength="16" Counter="16" Immediate />
+                            <MudNumericField Class="mb-2" Label="Mobile Number" @bind-Value="Model.MobileNumber" For="() => Model.MobileNumber" Clearable MaxLength="16" Counter="16" Immediate />
                         </MudItem>
                         <MudItem xs="12">
                             <MudTextField Class="mb-2" Label="Email Address" @bind-Value="Model.EmailAddress" For="() => Model.EmailAddress" Clearable MaxLength="256" Counter="256" Immediate />
@@ -40,6 +40,6 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Dialog.Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>

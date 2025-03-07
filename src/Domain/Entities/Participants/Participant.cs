@@ -110,6 +110,7 @@ public class Participant : OwnerPropertyEntity<string>
     public DateTime? LastSyncDate { get; private set; } 
 
     public Supervisor? Supervisor { get; private set; }
+    public PersonalDetail? PersonalDetail { get; private set; }
 
     public IReadOnlyCollection<Consent> Consents => _consents.AsReadOnly();
 
@@ -282,6 +283,12 @@ public class Participant : OwnerPropertyEntity<string>
     public Participant UpdateSupervisor(Supervisor? newSupervisor)
     {
         Supervisor = newSupervisor;
+        return this;
+    }
+
+    public Participant UpdatePersonalDetail(PersonalDetail? personalDetail)
+    {
+        PersonalDetail = personalDetail;
         return this;
     }
 

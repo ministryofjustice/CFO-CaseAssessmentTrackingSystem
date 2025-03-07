@@ -1,11 +1,12 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
 
-public static class AddOrEditContactDetail
+public static class AddOrUpdateContactDetail
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
@@ -106,7 +107,9 @@ public static class AddOrEditContactDetail
             {
                 RuleFor(c => c.MobileNumber)
                     .MaximumLength(16)
-                    .WithMessage("Maximum length of 16 characters exceeded");
+                    .WithMessage("Maximum length of 16 characters exceeded")
+                    .Matches(ValidationConstants.Numbers)
+                    .WithMessage(string.Format(ValidationConstants.NumbersMessage, "Mobile number"));
             });
 
             // Populated fields
