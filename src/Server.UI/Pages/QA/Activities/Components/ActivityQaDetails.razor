@@ -2,6 +2,11 @@
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Activities.Components
 
+<style>
+    .force-break {
+        word-break: break-all;
+    }
+</style>
 
 <MudStack>
     <MudText Typo="Typo.h5">
@@ -84,14 +89,14 @@
             <MudText Typo="Typo.h6" Color="Color.Primary">
                 Course Details
             </MudText>
-            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md" Wrap="Wrap.Wrap">
                 <MudText Typo="Typo.body1"><strong>Title</strong></MudText>
-                <MudText Typo="Typo.body1">@Activity.EducationTrainingTemplate.CourseTitle</MudText>
+                <MudText Typo="Typo.body1" Class="force-break">@Activity.EducationTrainingTemplate.CourseTitle</MudText>
             </MudStack>
 
-            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md" Wrap="Wrap.Wrap">
                 <MudText Typo="Typo.body1"><strong>Url</strong></MudText>
-                <MudText Typo="Typo.body1">@Activity.EducationTrainingTemplate.CourseUrl</MudText>
+                <MudText Typo="Typo.body1" Class="force-break">@Activity.EducationTrainingTemplate.CourseUrl</MudText>
             </MudStack>
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
@@ -137,6 +142,11 @@
             <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
                 <MudText Typo="Typo.body1"><strong>Job Title</strong></MudText>
                 <MudText Typo="Typo.body1">@Activity.EmploymentTemplate.JobTitle</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+                <MudText Typo="Typo.body1"><strong>Salary</strong></MudText>
+                <MudText Typo="Typo.body1">@Activity.EmploymentTemplate.Salary</MudText>
             </MudStack>
             
             <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
