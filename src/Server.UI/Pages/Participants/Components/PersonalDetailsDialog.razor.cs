@@ -1,38 +1,18 @@
 ﻿using Cfo.Cats.Application.Features.Participants.Commands;
-using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Infrastructure.Constants;
-using Cfo.Cats.Infrastructure.Services.Ordnance;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
-public partial class AddressDialog(IAddressLookupService AddressLookupService)
+public partial class PersonalDetailsDialog
 {
     MudForm form = new();
 
     [CascadingParameter] private IMudDialogInstance Dialog { get; set; } = default!;
 
     [Parameter]
-    public required AddOrUpdateContactDetail.Command Model { get; set; }
+    public required AddOrUpdatePersonalDetail.Command Model { get; set; }
 
-    string query = string.Empty;
     bool saving = false;
-
-    async Task<IEnumerable<ParticipantAddressDto>> Search(string searchText, CancellationToken cancellationToken)
-    {
-        if (string.IsNullOrWhiteSpace(searchText))
-        {
-            return [];
-        }
-
-        var response = await AddressLookupService.SearchAsync(searchText, CancellationToken.None);
-
-        if (response.Succeeded && response.Data is not null)
-        {
-            return response.Data;
-        }
-
-        return [];
-    }
 
     private async Task Submit()
     {
@@ -42,7 +22,7 @@ public partial class AddressDialog(IAddressLookupService AddressLookupService)
 
             await form.Validate();
 
-            if(form.IsValid is false)
+            if (form.IsValid is false)
             {
                 return;
             }
