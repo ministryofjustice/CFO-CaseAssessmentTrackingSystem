@@ -1,76 +1,93 @@
 ﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Common.Extensions
 
-<MudForm>
-    <MudList T="string">
-        <MudListSubheader>
-            <ChildContent>
-                <MudText Typo="Typo.h5">Participant Confirmation</MudText>
-            </ChildContent>
-        </MudListSubheader>
-        <MudDivider />
-        <MudListItem Href="@($"/pages/participants/{Participant.Id}")">
-            <MudText Typo="Typo.body1">Case Ref</MudText>
-            <MudText Typo="Typo.body2">@Participant.Id</MudText>
-        </MudListItem>
-        <MudListItem>
-            <MudText Typo="Typo.body1">Participant</MudText>
-            <MudText Typo="Typo.body2">@Participant.FullName</MudText>
-        </MudListItem>
-        <MudListItem>
-            <MudText Typo="Typo.body1">
-                Date Of Birth
-            </MudText>
-            <MudText Typo="Typo.body2">
-                @Participant.DateOfBirth
-            </MudText>
-        </MudListItem>
-        @foreach (var item in Participant.ExternalIdentifiers)
-        {
-            <MudListItem>
-                <MudText Typo="Typo.body1">@item.Type</MudText>
-                <MudText Typo="Typo.body2">@item.Value</MudText>
-            </MudListItem>
-        }
-        @if (ShowNationality)
-        {
-            <MudListItem>
-                <MudText Typo="Typo.body1">Nationality</MudText>
-                <MudText Typo="Typo.body2">@(Participant.Nationality ?? "Unknown")</MudText>
-            </MudListItem>
-        }
-        <MudListItem>
-            <MudText Typo="Typo.body1">Delivery Location</MudText>
-            <MudText Typo="Typo.body2">@Participant.EnrolmentLocation?.Name</MudText>
-        </MudListItem>
-        @if (Participant.EnrolmentLocationJustification is not null)
-        {
-            <MudListItem>
-                <MudText Typo="Typo.body1">System Location</MudText>
-                <MudText Typo="Typo.body2"> @Participant.CurrentLocation?.Name</MudText>
-            </MudListItem>
-            <MudListItem>
-                <MudText Typo="Typo.body1">Justification</MudText>
-                <MudText Typo="Typo.body2"> @Participant.EnrolmentLocationJustification</MudText>
-            </MudListItem>
-        }
-        <MudListSubheader>
-            <ChildContent>
-                <MudText Typo="Typo.h5">Staff Member Confirmation</MudText>
-            </ChildContent>
-        </MudListSubheader>
-        <MudDivider />
-        <MudListItem>
-            <MudText Typo="Typo.body1">Staff Member</MudText>
-            <MudText Typo="Typo.body2"> @Participant.SupportWorker</MudText>
-        </MudListItem>
-        <MudListItem>
-            <MudText Typo="Typo.body1">Consent Date</MudText>
-            <MudText Typo="Typo.body2">@Participant.Consents.Max(c => c.ConsentDate).ToShortDateString()</MudText>
-        </MudListItem>
+<style>
+    .force-break {
+        word-break: break-all;
+    }
+</style>
 
-    </MudList>
+<MudStack Class="mr-3 mt-2">
+    
+    <MudText Typo="Typo.h5">
+        Programme Consent Form (@Participant.Id)
+    </MudText>
 
-</MudForm>
+    <MudDivider/>
+    
+    <MudText Typo="Typo.h6" Color="Color.Primary">
+        Potential Participant Confirmation
+    </MudText>
+
+    @foreach (var item in Participant.ExternalIdentifiers)
+    {
+        <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+            <MudText Typo="Typo.body1"><strong>@item.Type</strong></MudText>
+            <MudText Typo="Typo.body1">@item.Value</MudText>
+        </MudStack>
+    }
+
+    <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+        <MudText Typo="Typo.body1"><strong>First Name</strong></MudText>
+        <MudText Typo="Typo.body1">@Participant.FirstName</MudText>
+    </MudStack>
+    <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+        <MudText Typo="Typo.body1"><strong>Last Name</strong></MudText>
+        <MudText Typo="Typo.body1">@Participant.LastName</MudText>
+    </MudStack>
+    <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+        <MudText Typo="Typo.body1"><strong>Date Of Birth</strong></MudText>
+        <MudText Typo="Typo.body1">@Participant.DateOfBirth (Age at consent @Participant.DateOfBirth!.Value.CalculateAge(@Participant.Consents.Max(c => c.ConsentDate)))</MudText>
+    </MudStack>
+
+    <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+        <MudText Typo="Typo.body1"><strong>Delivery Location</strong></MudText>
+        <MudText Typo="Typo.body1">@Participant.EnrolmentLocation?.Name</MudText>
+    </MudStack>
+    
+    @if (Participant.EnrolmentLocationJustification is not null)
+    {
+        <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+            <MudText Typo="Typo.body1"><strong>System Location</strong></MudText>
+            <MudText Typo="Typo.body1">@Participant.CurrentLocation?.Name</MudText>
+        </MudStack>
+        <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+            <MudText Typo="Typo.body1"><strong>Justification</strong></MudText>
+            <MudText Typo="Typo.body1" Class="force-break">@Participant.EnrolmentLocationJustification</MudText>
+        </MudStack>
+    }
+    
+    @if (ShowNationality)
+    {
+        <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+            <MudText Typo="Typo.body1"><strong>Nationality</strong></MudText>
+            <MudText Typo="Typo.body1">@Participant.Nationality</MudText>
+        </MudStack>
+    }
+
+    <MudDivider/>
+
+    <MudText Typo="Typo.h6" Color="Color.Primary">
+        Staff Member Confirmation
+    </MudText>
+    <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+        <MudText Typo="Typo.body1"><strong>Staff Member</strong></MudText>
+        <MudText Typo="Typo.body1">@Participant.SupportWorker</MudText>
+    </MudStack>
+    <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+        <MudText Typo="Typo.body1"><strong>Consent Date</strong></MudText>
+        <MudText Typo="Typo.body1">@Participant.Consents.Max(c => c.ConsentDate).ToShortDateString()</MudText>
+    </MudStack>
+    
+    <MudDivider />
+
+    <MudStack Row="true" AlignItems="AlignItems.End" Breakpoint="Breakpoint.Md">
+        <MudLink Href="@($"/pages/participants/{Participant.Id}")" Color="Color.Primary">View Participant</MudLink>
+    </MudStack>
+
+
+</MudStack>
+
 
 @code{
 

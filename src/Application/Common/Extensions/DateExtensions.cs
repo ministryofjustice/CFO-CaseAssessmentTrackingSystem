@@ -8,6 +8,11 @@ public static class DateExtensions
         return date.CalculateAge(today);
     }
 
+    public static int CalculateAge(this DateOnly date, DateTime asOf)
+    {
+        return date.CalculateAge(DateOnly.FromDateTime(asOf));
+    }
+
     public static int CalculateAge(this DateOnly date, DateOnly asOf)
     {
         var age = asOf.Year - date.Year;
