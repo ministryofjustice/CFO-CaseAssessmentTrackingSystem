@@ -50,7 +50,7 @@
                             <MudText>No contact information recorded.</MudText>
                         }
                         <MudExpansionPanels MultiExpansion>
-                            @foreach(var detail in contactDetails.OrderByDescending(d => d.Primary).ThenBy(d => d.Created))
+                            @foreach(var detail in contactDetails.OrderByDescending(d => d.Primary))
                             {
                                 <MudExpansionPanel>
                                     <TitleContent>
