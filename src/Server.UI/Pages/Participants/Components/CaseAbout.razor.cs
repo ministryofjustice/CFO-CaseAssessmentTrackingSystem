@@ -57,7 +57,7 @@ public partial class CaseAbout(IMapper mapper)
 
         var dialog = await DialogService.ShowAsync<AddressDialog>(title, parameters, options);
 
-        if (await dialog.Result is not { Canceled: true })
+        if (await dialog.Result is not null)
         {
             await Refresh();
         }
@@ -75,7 +75,7 @@ public partial class CaseAbout(IMapper mapper)
 
         var dialog = await DialogService.ShowAsync<DeleteConfirmation>("Delete Confirmation", parameters, options);
 
-        if (await dialog.Result is not { Canceled: true })
+        if (await dialog.Result is not null)
         {
             await Refresh();
         }
@@ -94,7 +94,7 @@ public partial class CaseAbout(IMapper mapper)
 
         var dialog = await DialogService.ShowAsync<PersonalDetailsDialog>("Edit Personal Details", parameters, options);
 
-        if (await dialog.Result is not { Canceled: true })
+        if (await dialog.Result is not null)
         {
             await Refresh();
         }
