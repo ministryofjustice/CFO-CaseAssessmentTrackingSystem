@@ -13,7 +13,6 @@ public class ParticipantContactDetailDto
     [Description("Email Address")] public string? EmailAddress { get; set; }
     [Description("Phone Number")] public string? MobileNumber { get; set; }
     public required bool Primary { get; set; }
-    public required DateTime Created { get; set; }
 
     class Mapping : Profile
     {
