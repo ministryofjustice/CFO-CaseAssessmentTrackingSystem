@@ -7,4 +7,7 @@ public class ParticipantPersonalDetailDto
 
     [Description("Preferred Pronouns")]
     public string? PreferredPronouns { get; set; }
+
+    [Description("Preferred Title")]
+    public string? PreferredTitle { get; set; }
 }
