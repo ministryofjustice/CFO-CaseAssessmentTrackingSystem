@@ -10,7 +10,7 @@
 
 <MudStack>
     <MudText Typo="Typo.h5">
-        Activity Confirmation
+        Activity Confirmation (@Activity.ParticipantId)
     </MudText>
     
     <MudDivider />
@@ -19,34 +19,11 @@
         Participant Details
     </MudText>
     
-    <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
-        <MudText Typo="Typo.body1"><strong>Case Ref</strong></MudText>
-        <MudLink Href="@($"/pages/participants/{Activity.ParticipantId}")" Typo="Typo.body1">@Activity.Participant!.Id</MudLink>
-    </MudStack>
-    
+   
     <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
         <MudText Typo="Typo.body1"><strong>Participant</strong></MudText>
         <MudText Typo="Typo.body1">@Activity.Participant!.FullName</MudText>
     </MudStack>
-    
-    <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
-        <MudText Typo="Typo.body1"><strong>Date Of Birth</strong></MudText>
-        <MudText Typo="Typo.body1">@Activity.Participant!.DateOfBirth</MudText>
-    </MudStack>
-    
-    <MudDivider />
-    
-    <MudText Typo="Typo.h6" Color="Color.Primary">
-        Identifiers
-    </MudText>
-    
-    @foreach (var item in Activity.Participant!.ExternalIdentifiers)
-    {
-        <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
-            <MudText Typo="Typo.body1"><strong>@item.Type</strong></MudText>
-            <MudText Typo="Typo.body1">@item.Value</MudText>
-        </MudStack>
-    }
     
     <MudDivider />
     
@@ -87,30 +64,30 @@
             <MudDivider />
 
             <MudText Typo="Typo.h6" Color="Color.Primary">
-                Course Details
+                Details
             </MudText>
             <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md" Wrap="Wrap.Wrap">
-                <MudText Typo="Typo.body1"><strong>Title</strong></MudText>
+                <MudText Typo="Typo.body1"><strong>Course Title</strong></MudText>
                 <MudText Typo="Typo.body1" Class="force-break">@Activity.EducationTrainingTemplate.CourseTitle</MudText>
             </MudStack>
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md" Wrap="Wrap.Wrap">
-                <MudText Typo="Typo.body1"><strong>Url</strong></MudText>
+                <MudText Typo="Typo.body1"><strong>Course Hyperlink (if applicable)</strong></MudText>
                 <MudText Typo="Typo.body1" Class="force-break">@Activity.EducationTrainingTemplate.CourseUrl</MudText>
             </MudStack>
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
-                <MudText Typo="Typo.body1"><strong>Level</strong></MudText>
+                <MudText Typo="Typo.body1"><strong>Course Level</strong></MudText>
                 <MudText Typo="Typo.body1">@Activity.EducationTrainingTemplate.CourseLevel</MudText>
             </MudStack>
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
-                <MudText Typo="Typo.body1"><strong>Commenced</strong></MudText>
+                <MudText Typo="Typo.body1"><strong>Course Commenced Date</strong></MudText>
                 <MudText Typo="Typo.body1">@Activity.EducationTrainingTemplate.CourseCommencedOn.ToShortDateOrEmptyString()</MudText>
             </MudStack>
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
-                <MudText Typo="Typo.body1"><strong>Completed</strong></MudText>
+                <MudText Typo="Typo.body1"><strong>Course Commenced Date (if applicable)</strong></MudText>
                 <MudText Typo="Typo.body1">@Activity.EducationTrainingTemplate.CourseCompletedOn.ToShortDateOrEmptyString()</MudText>
             </MudStack>
 
@@ -126,16 +103,16 @@
             <MudDivider />
 
             <MudText Typo="Typo.h6" Color="Color.Primary">
-                Employment Details
+                Details
             </MudText>
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
-                <MudText Typo="Typo.body1"><strong>Type</strong></MudText>
+                <MudText Typo="Typo.body1"><strong>Employment Type</strong></MudText>
                 <MudText Typo="Typo.body1">@Activity.EmploymentTemplate.EmploymentType</MudText>
             </MudStack>
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
-                <MudText Typo="Typo.body1"><strong>Employer Name</strong></MudText>
+                <MudText Typo="Typo.body1"><strong>Company Name</strong></MudText>
                 <MudText Typo="Typo.body1">@Activity.EmploymentTemplate.EmployerName</MudText>
             </MudStack>
 
@@ -155,7 +132,7 @@
             </MudStack>
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
-                <MudText Typo="Typo.body1"><strong>Employment Commenced</strong></MudText>
+                <MudText Typo="Typo.body1"><strong>Start Date of emplyoment</strong></MudText>
                 <MudText Typo="Typo.body1">@Activity.EmploymentTemplate.EmploymentCommenced.ToShortDateOrEmptyString()</MudText>
             </MudStack>
 
@@ -166,11 +143,11 @@
             <MudDivider />
 
             <MudText Typo="Typo.h6" Color="Color.Primary">
-                Additional Details
+                Details
             </MudText>
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
-                <MudText Typo="Typo.body1"><strong>Start Date</strong></MudText>
+                <MudText Typo="Typo.body1"><strong>Wraparound Start Date</strong></MudText>
                 <MudText Typo="Typo.body1">@Activity.ISWTemplate.WraparoundSupportStartedOn.ToShortDateOrEmptyString()</MudText>
             </MudStack>
 
@@ -199,7 +176,13 @@
                 <MudText Typo="Typo.body1">@Activity.ISWTemplate.TotalHoursInterventionDescription</MudText>
             </MudStack>
 
-        }                   
+        }      
+
+        <MudDivider />
+
+        <MudStack Row="true" AlignItems="AlignItems.End" Breakpoint="Breakpoint.Md">
+            <MudLink Href="@($"/pages/participants/{Activity.ParticipantId}")" Color="Color.Primary">View Participant</MudLink>
+        </MudStack>
 
     }
 
