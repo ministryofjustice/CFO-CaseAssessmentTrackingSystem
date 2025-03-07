@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250307132723_Participant_PersonalDetails_AdditionalNotes")]
+    partial class Participant_PersonalDetails_AdditionalNotes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -517,8 +520,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.LocationMapping", b =>
                 {
                     b.Property<string>("Code")
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
 
                     b.Property<string>("CodeType")
                         .HasMaxLength(9)
