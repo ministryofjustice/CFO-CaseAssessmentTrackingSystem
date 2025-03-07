@@ -22,8 +22,8 @@
                             </CardHeaderAvatar>
                         </MudCardHeader>
                         <MudCardContent>
-                            <MudTextField ReadOnly Class="mb-2" Value="@("")" Label="Preferred Name(s)" />
-                            <MudTextField ReadOnly Class="mb-2" Value="@("")" Label="Preferred Pronouns" />
+                            <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.PreferredNames" Label="@personalDetails?.GetMemberDescription(x => x.PreferredNames)" />
+                            <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.PreferredPronouns" Label="@personalDetails?.GetMemberDescription(x => x.PreferredPronouns)" />
                         </MudCardContent>
                     </MudCard>
                 </MudItem>
@@ -70,13 +70,13 @@
                                     </TitleContent>
                                     <ChildContent>
                                         <MudTextField Value="detail.Address"
-                                                      Label="Address"
+                                                      Label="@detail.GetMemberDescription(x => x.Address)"
                                                       Class="mb-2" />
                                         <MudTextField Value="detail.EmailAddress"
-                                                      Label="Email Address"
+                                                      Label="@detail.GetMemberDescription(x => x.EmailAddress)"
                                                       Class="mb-2" />
                                         <MudTextField Value="detail.MobileNumber"
-                                                      Label="Phone Number"
+                                                      Label="@detail.GetMemberDescription(x => x.MobileNumber)"
                                                       Class="mb-2" />
                                     </ChildContent>
 

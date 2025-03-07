@@ -236,6 +236,23 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
                 .HasMaxLength(256);
         });
 
+        builder.OwnsOne(p => p.PersonalDetail, personalDetails =>
+        {
+            personalDetails.WithOwner();
+            personalDetails.ToTable(
+                DatabaseConstants.Tables.PersonalDetails,
+                DatabaseConstants.Schemas.Participant
+            );
+
+            personalDetails.HasKey(s => s.Id);
+
+            personalDetails.Property(s => s.PreferredNames)
+                .HasMaxLength(128);
+
+            personalDetails.Property(s => s.PreferredPronouns)
+                .HasMaxLength(16);
+        });
+
         builder.Navigation(p => p.Consents)
             .AutoInclude();
 
