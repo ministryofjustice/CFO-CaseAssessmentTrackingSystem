@@ -13,14 +13,16 @@ public class PersonalDetail : BaseEntity<Guid>
     public string? PreferredNames { get; private set; }
     public string? PreferredPronouns { get; private set; }
     public string? PreferredTitle { get; private set; }
+    public string? AdditionalNotes { get; private set; }
 
-    public static PersonalDetail CreateFrom(string? preferredNames, string? preferredPronouns, string? preferredTitle)
+    public static PersonalDetail CreateFrom(string? preferredNames, string? preferredPronouns, string? preferredTitle, string? additionalNotes)
     {
         PersonalDetail pd = new()
         {
             PreferredNames = preferredNames,
             PreferredPronouns = preferredPronouns,
-            PreferredTitle = preferredTitle
+            PreferredTitle = preferredTitle,
+            AdditionalNotes = additionalNotes
         };
 
         return pd;

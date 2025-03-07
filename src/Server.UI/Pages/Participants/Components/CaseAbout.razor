@@ -25,6 +25,9 @@
                             <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.PreferredNames" Label="@personalDetails?.GetMemberDescription(x => x.PreferredNames)" />
                             <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.PreferredPronouns" Label="@personalDetails?.GetMemberDescription(x => x.PreferredPronouns)" Placeholder="i.e. he/him, she/her, they/them" />
                             <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.PreferredTitle" Label="@personalDetails?.GetMemberDescription(x => x.PreferredTitle)" Placeholder="i.e. Mr, Ms, Mx" />
+                            <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.AdditionalNotes" Label="@personalDetails?.GetMemberDescription(x => x.AdditionalNotes)" 
+                                Placeholder="e.g. Communication preferences, accessibility needs, or important background information"
+                                Lines="4" />
                         </MudCardContent>
                     </MudCard>
                 </MudItem>

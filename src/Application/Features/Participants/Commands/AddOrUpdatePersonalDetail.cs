@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
@@ -22,7 +23,8 @@ public class AddOrUpdatePersonalDetail
                 .ConstructUsing(command => PersonalDetail.CreateFrom(
                     command.PersonalDetails.PreferredNames,
                     command.PersonalDetails.PreferredPronouns,
-                    command.PersonalDetails.PreferredTitle)
+                    command.PersonalDetails.PreferredTitle,
+                    command.PersonalDetails.AdditionalNotes)
                 )
                 .AfterMap((_, destination) => destination.ClearDomainEvents());
 
@@ -65,6 +67,12 @@ public class AddOrUpdatePersonalDetail
             RuleFor(c => c.PersonalDetails.PreferredTitle)
                 .MaximumLength(6)
                 .WithMessage("Maximum length of 6 characters exceeded");
+
+            RuleFor(c => c.PersonalDetails.AdditionalNotes)
+                .MaximumLength(256)
+                .WithMessage("Maximum length of 256 characters exceeded")
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Additional Notes"));
         }
     }
 
