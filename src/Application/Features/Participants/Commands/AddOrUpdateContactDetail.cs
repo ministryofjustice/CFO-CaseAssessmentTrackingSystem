@@ -93,21 +93,21 @@ public static class AddOrUpdateContactDetail
                 .NotEmpty()
                 .WithMessage("Must not be empty")
                 .MaximumLength(100)
-                .WithMessage("Maximum length of 100 characters exceeded");
+                .WithMessage("Maximum length exceeded");
 
             When(c => string.IsNullOrEmpty(c.EmailAddress) is false, () =>
             {
                 RuleFor(c => c.EmailAddress)
                     .EmailAddress()
                     .MaximumLength(256)
-                    .WithMessage("Maximum length of 100 characters exceeded");
+                    .WithMessage("Maximum length exceeded");
             });
 
             When(c => string.IsNullOrEmpty(c.MobileNumber) is false, () =>
             {
                 RuleFor(c => c.MobileNumber)
                     .MaximumLength(16)
-                    .WithMessage("Maximum length of 16 characters exceeded")
+                    .WithMessage("Maximum length exceeded")
                     .Matches(ValidationConstants.Numbers)
                     .WithMessage(string.Format(ValidationConstants.NumbersMessage, "Mobile number"));
             });

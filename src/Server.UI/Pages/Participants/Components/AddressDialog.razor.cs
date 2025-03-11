@@ -14,21 +14,18 @@ public partial class AddressDialog(IAddressLookupService AddressLookupService)
     [Parameter]
     public required AddOrUpdateContactDetail.Command Model { get; set; }
 
-    string query = string.Empty;
     bool saving = false;
 
     async Task<IEnumerable<ParticipantAddressDto>> Search(string searchText, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(searchText))
+        if (string.IsNullOrWhiteSpace(searchText) is false)
         {
-            return [];
-        }
+            var response = await AddressLookupService.SearchAsync(searchText, CancellationToken.None);
 
-        var response = await AddressLookupService.SearchAsync(searchText, CancellationToken.None);
-
-        if (response.Succeeded && response.Data is not null)
-        {
-            return response.Data;
+            if (response.Succeeded && response.Data is not null)
+            {
+                return response.Data;
+            }
         }
 
         return [];

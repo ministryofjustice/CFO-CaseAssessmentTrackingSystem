@@ -37,12 +37,7 @@ public class AddOrUpdatePersonalDetail
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var participant = await unitOfWork.DbContext.Participants
-                .SingleOrDefaultAsync(s => s.Id == request.ParticipantId, cancellationToken);
-
-            if (participant is null)
-            {
-                return Result.Failure("Participant not found");
-            }
+                .SingleAsync(s => s.Id == request.ParticipantId, cancellationToken);
 
             var personalDetail = mapper.Map<PersonalDetail>(request);
 
