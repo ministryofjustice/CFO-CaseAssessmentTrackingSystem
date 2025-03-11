@@ -111,6 +111,10 @@ public class Participant : OwnerPropertyEntity<string>
 
     public Supervisor? Supervisor { get; private set; }
 
+    public DateTime? BioDue { get; private set; }
+        
+    public int? BioDueInDays() => (BioDue.HasValue ? (BioDue!.Value.Date - DateTime.UtcNow.Date).Days : null);
+
     public IReadOnlyCollection<Consent> Consents => _consents.AsReadOnly();
 
     public IReadOnlyCollection<RightToWork> RightToWorks => _rightToWorks.AsReadOnly();
@@ -342,6 +346,12 @@ public class Participant : OwnerPropertyEntity<string>
     {
         RiskDue = riskDueDate;
         return this;   
+    }
+
+    public Participant SetBioDue(DateTime bioDueDate)
+    {
+        BioDue = bioDueDate;
+        return this;
     }
 
     /// <summary>

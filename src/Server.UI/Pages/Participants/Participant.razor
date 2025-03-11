@@ -21,7 +21,6 @@
     {
         <CascadingValue Value="_participant">
 
-
             <MudPaper Class="pa-2 ma-2" Style="min-height: 90vh;" Elevation="3">
 
                 <MudGrid Class="pa-1" Justify="Justify.FlexStart">
@@ -43,8 +42,6 @@
                             <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Location</strong></MudText>
                             <MudText Typo="Typo.subtitle1">@_participant.Location</MudText>
                         </MudStack>
-
-                                    
 
                     </MudItem>
                 </MudGrid>
@@ -77,7 +74,7 @@
                         <MudTabPanel Text="PRI" Icon="@_priDueIcon" IconColor="@_priDueIconColor" ToolTip="@_priDueToolTip">
                             <CasePRI ParticipantId="@Id" OnUpdate="Refresh"/>
                         </MudTabPanel>
-                        <MudTabPanel Text="Bio">
+                        <MudTabPanel Text="Bio" Icon="@_bioIcon" IconColor="@_bioIconColor" ToolTip="@_bioInfo">
                             <CaseBio ParticipantId="@Id"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Documents">
@@ -136,6 +133,11 @@
     private string _assessmentIcon = String.Empty;
     private Color _assessmentIconColor = Color.Transparent;
 
+
+    private string _bioInfo = String.Empty;
+    private string _bioIcon = String.Empty;
+    private Color _bioIconColor = Color.Transparent;
+
     protected override async Task OnInitializedAsync()
     {
         await Refresh();
@@ -144,6 +146,7 @@
         ShowRightToWorkWarning();
         SetPriDueWarning();
         SetAssessmentDueWarning();
+        SetBioDueWarning();
     }
 
     void ShowRightToWorkWarning()
@@ -256,4 +259,26 @@
         }
     }
 
+    void SetBioDueWarning()
+    {
+        if (_participant!.BioDue.HasValue)
+        {
+            var datePart = _participant.BioDue.Value.Date;
+
+            _bioInfo = $"Due {datePart.Humanize()}";
+
+            int _dueInDays = _participant!.BioDueInDays!.Value;
+            switch (_dueInDays)
+            {
+                case var _ when _dueInDays <= 0:
+                    _bioIcon = Icons.Material.Filled.Error;
+                    _bioIconColor = Color.Error;
+                    break;
+                case var _ when _dueInDays >= 0 && _dueInDays <= 14:
+                    _bioIcon = Icons.Material.Filled.Warning;
+                    _bioIconColor = Color.Warning;
+                    break;
+            }
+        }
+    }
 }

@@ -5,7 +5,6 @@ using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
-using Cfo.Cats.Infrastructure.Persistence;
 using Cfo.Cats.Server.UI.Pages.Risk;
 using Humanizer;
 
@@ -41,6 +40,11 @@ public partial class CaseSummary
     private string _assessmentDueIcon = String.Empty;
     private Color _assessmentDueIconColor = Color.Transparent;
 
+    private string _bioInfo = String.Empty;
+    private string _bioTooltipText = String.Empty;
+    private string _bioIcon = String.Empty;
+    private Color _bioIconColor = Color.Transparent;
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -55,6 +59,7 @@ public partial class CaseSummary
         SetRiskDueWarning();
         SetPriDueWarning();
         SetAssessmentDueWarning();
+        SetbBioDueWarning();
     }
 
     void SetRiskDueWarning()
@@ -76,6 +81,32 @@ public partial class CaseSummary
                 case var _ when _dueInDays >= 0 && _dueInDays <= 14:
                     _riskIcon = Icons.Material.Filled.Warning;
                     _riskIconColor = Color.Warning;
+                    break;
+            }
+        }
+    }
+
+    void SetbBioDueWarning()
+    {
+        if (ParticipantSummaryDto.BioDue.HasValue)
+        {
+            var datePart = ParticipantSummaryDto.BioDue.Value.Date;
+              
+            _bioInfo = datePart.Humanize();
+            _bioTooltipText = String.Format("Due {0}", DateOnly.FromDateTime(datePart));
+     
+            int _dueInDays = ParticipantSummaryDto.BioDueInDays!.Value!;
+            switch (_dueInDays)
+            {
+                case var _ when _dueInDays <= 0:
+                    _bioIcon = Icons.Material.Filled.Error;
+                    _bioIconColor = Color.Error;
+                    _bioTooltipText = String.Format("Overdue {0}", DateOnly.FromDateTime(datePart));              
+                    break;
+                case var _ when _dueInDays >= 0 && _dueInDays <= 14:
+                    _bioIcon = Icons.Material.Filled.Warning;
+                    _bioIconColor = Color.Warning;
+                    _bioTooltipText = String.Format("Due Soon {0}", DateOnly.FromDateTime(datePart));                    
                     break;
             }
         }
@@ -251,6 +282,7 @@ public partial class CaseSummary
             Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
         }
     }
+
     public async Task SkipBioForNow()
     {
         var command = new SkipBioForNow.Command()
@@ -274,6 +306,7 @@ public partial class CaseSummary
             Snackbar.Add($"Skipping bio failed", Severity.Error);
         }
     }
+
     public void ContinueBio()
     {
         Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/bio/{_bio!.BioId}");
@@ -291,27 +324,28 @@ public partial class CaseSummary
     /// (i.e. Id is not null or do we need a status (Complete or Incomplete etc.))
     /// </summary>
     /// <returns></returns>
-    private bool CanContinueBio() => _bio?.BioStatus == BioStatus.InProgress;
+    private bool CanContinueBio() => _bio is not null && (_bio.BioStatus == BioStatus.InProgress || _bio.BioStatus == BioStatus.SkippedForNow);
 
     /// <summary>
     /// If true, indicates that either the bio doesn't exist OR No step is completed yet  
     /// </summary>
-    private bool CanSkipBio()
-    {
-        return _bio is null || _bio!.BioStatus == BioStatus.NotStarted;
-    }
+    private bool CanSkipBio() => _bio is not null && (_bio.BioStatus == BioStatus.InProgress || _bio.BioStatus == BioStatus.SkippedForNow || _bio.BioStatus == BioStatus.NotStarted);
+    //{
+    //    return _bio is null || _bio!.BioStatus == BioStatus.NotStarted;
+    //}
 
     private bool HasPathwayPlan => ParticipantSummaryDto.PathwayPlan is not null;
     private bool HasPathwayBeenReviewed => HasPathwayPlan && ParticipantSummaryDto.PathwayPlan?.LastReviewed is not null;
 
     private bool CanAddPRI() => _latestPRI == null && ParticipantSummaryDto.LocationType.IsCustody && ParticipantSummaryDto.LocationType.IsMapped;
+
     public void BeginPRI()
     {
         Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/PRI");
     }
+
     void SetPriDueWarning()
     {
-
         if (_latestPRI is null)
         {
             _noPriInfo = ParticipantSummaryDto.LocationType switch
