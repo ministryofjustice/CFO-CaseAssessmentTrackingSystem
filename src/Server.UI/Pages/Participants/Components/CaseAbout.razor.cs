@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
@@ -15,6 +15,7 @@ public partial class CaseAbout(IMapper mapper)
     ParticipantDto? participant;
     IEnumerable<ParticipantContactDetailDto> contactDetails = [];
     ParticipantPersonalDetailDto? personalDetails;
+    bool loading = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -24,20 +25,29 @@ public partial class CaseAbout(IMapper mapper)
 
     async Task Refresh()
     {
-        participant = await GetNewMediator().Send(new GetParticipantById.Query()
+        try
         {
-            Id = ParticipantId
-        });
+            loading = true;
 
-        contactDetails = await GetNewMediator().Send(new GetContactDetails.Query()
-        {
-            ParticipantId = ParticipantId
-        });
+            participant = await GetNewMediator().Send(new GetParticipantById.Query()
+            {
+                Id = ParticipantId
+            });
 
-        personalDetails = await GetNewMediator().Send(new GetPersonalDetails.Query()
+            contactDetails = await GetNewMediator().Send(new GetContactDetails.Query()
+            {
+                ParticipantId = ParticipantId
+            });
+
+            personalDetails = await GetNewMediator().Send(new GetPersonalDetails.Query()
+            {
+                ParticipantId = ParticipantId
+            });
+        }
+        finally
         {
-            ParticipantId = ParticipantId
-        });
+            loading = false;
+        }
     }
 
     async Task AddContact()
