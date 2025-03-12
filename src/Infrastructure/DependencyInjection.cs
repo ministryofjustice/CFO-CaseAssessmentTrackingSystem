@@ -5,6 +5,8 @@ using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
 using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
+using Cfo.Cats.Application.Features.Participants.MessageBus;
+using Cfo.Cats.Application.Features.PRIs.IntegrationEventHandlers;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Configurations;
@@ -76,24 +78,72 @@ public static class DependencyInjection
 
         services.AddMassTransit(x =>
         {
-
+            
             x.AddConsumers(typeof(RecordEnrolmentPaymentConsumer).Assembly); // Automatically add all consumers
+
+         
 
             if(configuration.GetConnectionString("rabbit")!.Equals("InMemory", StringComparison.CurrentCultureIgnoreCase))
             {
                     x.UsingInMemory((context, cfg) =>
                     {
+                        cfg.UseConcurrencyLimit(1); // all consumers should be limited to 1 unless otherwise specified
+
                         cfg.ConfigureEndpoints(context);
+
+                        // Override for specific consumer with a custom concurrency limit
+                        cfg.ReceiveEndpoint("overnight-service", e =>
+                        {
+                            e.Consumer<SyncParticipantCommandHandler>(context, c =>
+                            {
+                                c.UseConcurrencyLimit(5); // Custom concurrency limit for this consumer
+                            });
+                        });
+
+
                     });   
             }
             else
             {
                 x.UsingRabbitMq((context, cfg) =>
                 {
+
                     cfg.Host(configuration.GetConnectionString("rabbit"));
-                    cfg.ConfigureEndpoints(context);
+
+                    cfg.ReceiveEndpoint("overnight-service", e =>
+                    {
+                        e.PrefetchCount = 64;
+                        e.ConcurrentMessageLimit = 5;
+                        e.ConfigureConsumer<SyncParticipantCommandHandler>(context);
+                    });
+
+                    cfg.ReceiveEndpoint("tasks-service", e =>
+                    {
+                        e.PrefetchCount = 64;
+                        e.ConcurrentMessageLimit = 5;
+
+                        e.ConfigureConsumer<PriTaskCompletedWatcherConsumer>(context);
+                        e.ConfigureConsumer<RaisePaymentsAfterApprovalConsumer>(context);
+                    });
+
+                    cfg.ReceiveEndpoint("payment-service", e =>
+                    {
+                        e.ConcurrentMessageLimit = 1;
+                        
+                        e.ConfigureConsumer<RecordActivityPaymentConsumer>(context);
+                        e.ConfigureConsumer<RecordEducationPayment>(context);
+                        e.ConfigureConsumer<RecordEmploymentPayment>(context);
+                        e.ConfigureConsumer<RecordEnrolmentPaymentConsumer>(context);
+                        e.ConfigureConsumer<RecordHubInductionPaymentConsumer>(context);
+                        e.ConfigureConsumer<RecordPreReleaseSupportPayment>(context);
+                        e.ConfigureConsumer<RecordThroughTheGatePaymentConsumer>(context);
+                        e.ConfigureConsumer<RecordWingInductionPaymentConsumer>(context);
+                        
+                    });
+
                 });
             }
+            
         });
 
         return services;

@@ -30,11 +30,12 @@ public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<A
         IneligibilityReason? ineligibilityReason = null;
 
 
-        var history = unitOfWork.DbContext.ParticipantEnrolmentHistories
+        var history = await unitOfWork.DbContext.ParticipantEnrolmentHistories
             .AsNoTracking()
             .Where(e => e.ParticipantId == activity.ParticipantId &&
-                        e.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
-            .MinBy(e => e.Created);
+                        e.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value)
+            .OrderBy(e => e.Created)
+            .FirstOrDefaultAsync();
 
         if (history == null)
         {
