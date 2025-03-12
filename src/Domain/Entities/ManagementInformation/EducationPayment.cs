@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Entities.Activities;
+using Cfo.Cats.Domain.Entities.Activities;
 using Cfo.Cats.Domain.Exceptions;
 using System.Diagnostics;
 
