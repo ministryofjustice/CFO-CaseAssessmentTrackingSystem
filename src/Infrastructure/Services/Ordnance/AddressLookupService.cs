@@ -15,37 +15,31 @@ public class AddressLookupService(
             "maxresults=15"
         };
 
-        var result = await client.GetFromJsonAsync<OrdnanceResponse>($"find?{string.Join('&', queryParams)}", cancellationToken);
+        IEnumerable<OrdnanceResult> results = [];
 
-        if(result is { Error: not null })
+        try
         {
-            // Error occurred
-            throw new Exception(result.Error.Message);
+            var result = await client.GetFromJsonAsync<OrdnanceResponse>($"find?{string.Join('&', queryParams)}", cancellationToken);
+
+            if (result is { Error: not null })
+            {
+                return Result<IEnumerable<ParticipantAddressDto>>.Failure($"Could not obtain address information ({result.Error.StatusCode})");
+            }
+
+            results = result!.Results ?? [];
+        }
+        catch
+        {
+            return Result<IEnumerable<ParticipantAddressDto>>.Failure("A fatal error occurred while obtaining address information");
         }
 
-        IEnumerable<OrdnanceResult> results = result!.Results ?? [];
-
         return Result<IEnumerable<ParticipantAddressDto>>.Success(results.Select(x => x.DPA));
-    }
-
-    public async Task<Result<IEnumerable<ParticipantAddressDto>>> SearchByPostCodeAsync(string postCode, CancellationToken cancellationToken)
-    {
-        var queryParams = new[]
-        {
-            "lr=EN",
-            $"postcode={postCode}"
-        };
-
-        var result = await client.GetFromJsonAsync<dynamic>($"/postcode?{string.Join('&', queryParams)}", cancellationToken);
-
-        return Result<IEnumerable<ParticipantAddressDto>>.Success([]);
     }
 }
 
 public interface IAddressLookupService
 {
     Task<Result<IEnumerable<ParticipantAddressDto>>> SearchAsync(string query, CancellationToken cancellationToken);
-    Task<Result<IEnumerable<ParticipantAddressDto>>> SearchByPostCodeAsync(string postCode, CancellationToken cancellationToken);
 }
 
 public record class OrdnanceResponse
