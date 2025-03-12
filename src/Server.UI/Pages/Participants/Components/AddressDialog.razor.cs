@@ -26,6 +26,10 @@ public partial class AddressDialog(IAddressLookupService AddressLookupService)
             {
                 return response.Data;
             }
+            else
+            {
+                Snackbar.Add(response.ErrorMessage, Severity.Error);
+            }
         }
 
         return [];
