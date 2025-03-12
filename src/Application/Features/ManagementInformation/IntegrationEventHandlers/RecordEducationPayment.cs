@@ -23,11 +23,12 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
 
         IneligibilityReason? ineligibilityReason = null;
         
-        var history = unitOfWork.DbContext.ParticipantEnrolmentHistories
+        var history = await unitOfWork.DbContext.ParticipantEnrolmentHistories
             .AsNoTracking()
             .Where(e => e.ParticipantId == activity.ParticipantId &&
-                        e.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
-            .MinBy(e => e.Created);
+                        e.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value)
+            .OrderBy(e => e.Created)
+            .FirstOrDefaultAsync();
 
         if (history == null)
         {
@@ -36,15 +37,6 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
 
         if (ineligibilityReason is null)
         {
-            var dates = await unitOfWork.DbContext.DateDimensions
-                .Where(dd => dd.TheDate == activity.CommencedOn.Date)
-                .Select(dd => new
-                {
-                    dd.TheFirstOfMonth,
-                    dd.TheLastOfMonth
-                })
-                .SingleAsync();
-
             var previousPaymentsQuery = from ap in unitOfWork.DbContext.EducationPayments
                 where
                     ap.ParticipantId == activity.ParticipantId
