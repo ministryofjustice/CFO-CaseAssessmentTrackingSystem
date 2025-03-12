@@ -31,7 +31,7 @@ public static class AddActivity
         [Description("Date activity took place")]
         public DateTime? CommencedOn { get; set; }
 
-        [Description("Additional Information (optional)")]
+        [Description("Additional Information")]
         public string? AdditionalInformation { get; set; }
 
         public EmploymentDto EmploymentTemplate { get; set; } = new();
@@ -266,6 +266,8 @@ public static class AddActivity
                 .WithMessage("The activity cannot take place before the participant gave consent");
 
             RuleFor(c => c.AdditionalInformation)
+                .NotEmpty()
+                .WithMessage("Additional Information is required")
                 .MaximumLength(ValidationConstants.NotesLength)
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Additional Information"));

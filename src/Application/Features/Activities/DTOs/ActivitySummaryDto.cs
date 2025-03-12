@@ -12,7 +12,7 @@ public class ActivitySummaryDto
     public required ActivityDefinition Definition { get; set; }
     public required ActivityStatus Status { get; set; }
 
-    [Description("Additional Information (optional)")]
+    [Description("Additional Information")]
     public string? AdditionalInformation { get; set; }
 
     public class Mapping : Profile
