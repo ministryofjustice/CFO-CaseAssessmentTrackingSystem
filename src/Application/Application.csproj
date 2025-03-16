@@ -11,18 +11,18 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Humanizer.Core.uk" Version="2.14.1" />
-        <PackageReference Include="MassTransit.Abstractions" Version="8.3.6" />
-        <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="9.0.2" />
-        <PackageReference Include="Ardalis.Specification" Version="8.0.0" />
-        <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="8.0.0" />
+        <PackageReference Include="MassTransit.Abstractions" Version="8.3.7" />
+        <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="9.0.3" />
+        <PackageReference Include="Ardalis.Specification" Version="9.0.1" />
+        <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="9.0.1" />
         <PackageReference Include="ClosedXML" Version="0.104.2" />
         <PackageReference Include="AutoMapper" Version="14.0.0" />
         <PackageReference Include="FluentValidation" Version="11.11.0" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
         <PackageReference Include="LazyCache" Version="2.4.0" />
         <PackageReference Include="LazyCache.AspNetCore" Version="2.4.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2" />
-        <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="9.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="9.0.3" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.0.2" />
     </ItemGroup>
