@@ -33,16 +33,47 @@
 
                     @if (Contract is null)
                     {
-                        <MudTh>Contract</MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Contract)">
+                                Contract
+                            </MudTableSortLabel>
+                        </MudTh>
                     }
-
-                    <MudTh>Created</MudTh>
-                    <MudTh>Commenced On</MudTh>
-                    <MudTh>Activity Approved</MudTh>
-                    <MudTh>Payment Period</MudTh>
-                    <MudTh>Participant</MudTh>
-                    <MudTh>Location</MudTh>
-                    <MudTd>Activity</MudTd>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.CreatedOn)">
+                            Created
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.CommencedOn)">
+                            Commenced On
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.ActivityApproved)">
+                            Approve
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.PaymentPeriod)">
+                            Payment Period
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.ParticipantName)">
+                            Participant
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Location)">
+                            Location
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Type)">
+                            Activity
+                        </MudTableSortLabel>
+                    </MudTh>
                     <MudTh>Payable</MudTh>
                 </HeaderContent>
                 <RowTemplate>
