@@ -9,55 +9,58 @@ public class RecordEmploymentPayment(IUnitOfWork unitOfWork)
 {
     public async Task Consume(ConsumeContext<ActivityApprovedIntegrationEvent> context)
     {
-        var activity = await unitOfWork.DbContext.Activities
+        var activity = await unitOfWork.DbContext.EmploymentActivities
             .Include(a => a.TookPlaceAtContract)
             .Include(a => a.TookPlaceAtLocation)
             .AsNoTracking()
-            .SingleAsync(activity => activity.Id == context.Message.Id);
+            .SingleOrDefaultAsync(activity => activity.Id == context.Message.Id);
 
-        if (activity.Type != ActivityType.Employment)
+        if (activity is null)
         {
             // we are only interested in Employment
             return;
         }
 
-        var dates = await unitOfWork.DbContext.DateDimensions
-            .Where(dd => dd.TheDate == activity.ApprovedOn!.Value)
-            .Select(dd => new
-            {
-                dd.TheFirstOfMonth,
-                dd.TheLastOfMonth
-            })
-            .SingleAsync();
-
-        var query = from ap in unitOfWork.DbContext.EmploymentPayments
-            where
-                ap.ParticipantId == activity.ParticipantId
-                && ap.ContractId == activity.TookPlaceAtContract.Id
-                && ap.ActivityApproved >= dates.TheFirstOfMonth
-                && ap.ActivityApproved <= dates.TheLastOfMonth
-                && ap.EligibleForPayment
-            select ap;
-
-        var previousPayments = await query.AsNoTracking().ToListAsync();
-
-        string? ineligibilityReason = null;
-
-        if (previousPayments.Count > 0)
-        {
-            ineligibilityReason = IneligibilityReasons.AlreadyPaidThisMonth;
-        }
+        IneligibilityReason? ineligibilityReason = null;
 
         var history = await unitOfWork.DbContext.ParticipantEnrolmentHistories
-            .Where(h => h.ParticipantId == activity.ParticipantId)
-            .ToListAsync();
+            .AsNoTracking()
+            .Where(e => e.ParticipantId == activity.ParticipantId &&
+                        e.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value)
+            .OrderBy(e => e.Created)
+            .FirstOrDefaultAsync();
 
-        var firstApproval = history.Where(h => h.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
-            .Min(x => x.Created);
-
-        if (firstApproval.HasValue == false)
+        if (history == null)
         {
-            ineligibilityReason = IneligibilityReasons.NotYetApproved;
+            ineligibilityReason = IneligibilityReason.NotYetApproved;
+        }
+
+        if (ineligibilityReason is null)
+        {
+            var dates = await unitOfWork.DbContext.DateDimensions
+                .Where(dd => dd.TheDate == activity.CommencedOn.Date)
+                .Select(dd => new
+                {
+                    dd.TheFirstOfMonth,
+                    dd.TheLastOfMonth
+                })
+                .SingleAsync();
+
+            var query = from ap in unitOfWork.DbContext.EmploymentPayments
+                where
+                    ap.ParticipantId == activity.ParticipantId
+                    && ap.ContractId == activity.TookPlaceAtContract.Id
+                    && ap.CommencedDate >= dates.TheFirstOfMonth
+                    && ap.CommencedDate <= dates.TheLastOfMonth
+                    && ap.EligibleForPayment
+                select ap;
+
+            var previousPayments = await query.AsNoTracking().ToListAsync();
+
+            if (previousPayments.Count > 0)
+            {
+                ineligibilityReason = IneligibilityReason.MaximumPaymentLimitReached;
+            }
         }
 
         if (ineligibilityReason is null)
@@ -71,32 +74,19 @@ public class RecordEmploymentPayment(IUnitOfWork unitOfWork)
 
             if (consentDate!.Value > DateOnly.FromDateTime(activity.CommencedOn))
             {
-                ineligibilityReason = IneligibilityReasons.BeforeConsent;
+                ineligibilityReason = IneligibilityReason.BeforeConsent;
             }
         }
 
-
-        var payment = new EmploymentPaymentBuilder()
-            .WithActivity(activity.Id)
-            .WithParticipantId(activity.ParticipantId)
-            .WithContractId(activity.TookPlaceAtContract.Id)
-            .WithApproved(activity.ApprovedOn!.Value)
-            .WithLocationId(activity.TookPlaceAtLocation.Id)
-            .WithLocationType(activity.TookPlaceAtLocation.LocationType.Name)
-            .WithTenantId(activity.TenantId)
-            .WithEligibleForPayment(ineligibilityReason is null)
-            .WithIneligibilityReason(ineligibilityReason)
-            .Build();
+        EmploymentPayment payment = ineligibilityReason switch
+        {
+            not null => EmploymentPayment.CreateNonPayableEmploymentPayment(activity, ineligibilityReason),
+            _ => EmploymentPayment.CreateEmploymentPayment(activity, history!.Created!.Value)
+        };
 
         unitOfWork.DbContext.EmploymentPayments.Add(payment);
         await unitOfWork.SaveChangesAsync(CancellationToken.None);
 
     }
-
-    private static class IneligibilityReasons
-    {
-        public const string AlreadyPaidThisMonth = "An employment activity has already been paid to this contract, for this participant, this month.";
-        public const string NotYetApproved = "The enrolment for this participant has not yet been approved";
-        public const string BeforeConsent = "This occurred before the consent date";
-    }
+    
 }
