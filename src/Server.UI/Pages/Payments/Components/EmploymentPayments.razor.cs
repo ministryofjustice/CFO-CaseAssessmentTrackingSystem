@@ -26,7 +26,7 @@ public partial class EmploymentPayments
 
 
         var query = from ep in unitOfWork.DbContext.EmploymentPayments
-            join dd in unitOfWork.DbContext.DateDimensions on ep.ActivityApproved equals dd.TheDate
+            join dd in unitOfWork.DbContext.DateDimensions on ep.PaymentPeriod equals dd.TheDate
             join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
             join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id
             join a in unitOfWork.DbContext.Activities on ep.ActivityId equals a.Id
@@ -44,7 +44,8 @@ public partial class EmploymentPayments
                 ContractId = c.Id,
                 ep.IneligibilityReason,
                 TenantId = c!.Tenant!.Id!,
-                ParticipantName = a.Participant!.FirstName + " " + a.Participant!.LastName
+                ParticipantName = a.Participant!.FirstName + " " + a.Participant!.LastName,
+                ep.PaymentPeriod
             };
 
         query = Contract is null
@@ -62,13 +63,15 @@ public partial class EmploymentPayments
                 Contract = x.Contract,
                 Location = x.Location,
                 LocationType = x.LocationType,
-                ParticipantName = x.ParticipantName
+                ParticipantName = x.ParticipantName,
+                PaymentPeriod = x.PaymentPeriod,
+                IneligibilityReason = x.IneligibilityReason
             })
             .OrderBy(e => e.Contract)
             .ThenByDescending(e => e.CreatedOn)
             .ToArrayAsync();
 
-        this.SummaryData = Payments
+        this._summaryData = Payments
             .Where(e => e.EligibleForPayment)
             .GroupBy(e => e.Contract)
             .Select(x => new SummaryDataModel
@@ -84,20 +87,21 @@ public partial class EmploymentPayments
     }
 
     private string _searchString = "";
-    private List<SummaryDataModel> SummaryData = [];
+    private List<SummaryDataModel> _summaryData = [];
 
     private record RawData
     {
-        public DateTime CreatedOn { get; set; }
-        public DateTime CommencedOn { get; set; }
-        public DateTime ActivityApproved { get; set; }
-        public string Contract { get; set; } = "";
-        public string LocationType { get; set; } = "";
-        public string Location { get; set; } = "";
-        public string ParticipantId { get; set; } = "";
-        public bool EligibleForPayment { get; set; }
-        public string? IneligibilityReason { get; set; }
-        public string ParticipantName { get; set; } = "";
+        public required DateTime CreatedOn { get; set; }
+        public required DateTime CommencedOn { get; set; }
+        public required DateTime ActivityApproved { get; set; }
+        public required DateTime PaymentPeriod { get; set; }
+        public required string Contract { get; set; } 
+        public required string LocationType { get; set; }
+        public required string Location { get; set; }
+        public required string ParticipantId { get; set; } 
+        public required bool EligibleForPayment { get; set; }
+        public required string? IneligibilityReason { get; set; }
+        public required string ParticipantName { get; set; }
     }
 
     private class SummaryDataModel
