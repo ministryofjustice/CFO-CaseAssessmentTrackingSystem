@@ -31,13 +31,42 @@
                 <HeaderContent>
                     @if (Contract is null)
                     {
-                        <MudTh>Contract</MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Contract)">
+                                Contract
+                            </MudTableSortLabel>
+                        </MudTh>
                     }
-                    <MudTh>Created</MudTh>
-                    <MudTh>Commenced On</MudTh>
-                    <MudTh>Approved</MudTh>
-                    <MudTh>Participant</MudTh>
-                    <MudTh>Location</MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.CreatedOn)">
+                            Created
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.CommencedOn)">
+                            Commenced On
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.ActivityApproved)">
+                            Approved
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.PaymentPeriod)">
+                            Payment Period
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.ParticipantName)">
+                            Participant
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Location)">
+                            Location
+                        </MudTableSortLabel>
+                    </MudTh>
                     <MudTh>Payable</MudTh>
                 </HeaderContent>
                 <RowTemplate>
@@ -50,6 +79,7 @@
                     <MudTd DataLabel="Created">@context.CreatedOn.ToShortDateString()</MudTd>
                     <MudTd DataLabel="Commenced On">@context.CommencedOn.ToShortDateString()</MudTd>
                     <MudTd DataLabel="Approved">@context.ActivityApproved.ToShortDateString()</MudTd>
+                    <MudTd DataLabel="PAyment Period">@context.PaymentPeriod.ToShortDateString()</MudTd>
                     <MudTd DataLabel="Participant">
                         <div class="d-flex flex-column">
                             <MudText Typo="Typo.body1">@context.ParticipantName</MudText>
@@ -89,7 +119,7 @@
             <ApexChart TItem="SummaryDataModel"
             Title="Employment By Contract">
                 <ApexPointSeries TItem="SummaryDataModel"
-                Items="SummaryData"
+                Items="_summaryData"
                 Name="Employments"
                 SeriesType="SeriesType.Bar"
                 XValue="e => e.Contract"
@@ -98,7 +128,7 @@
             </ApexChart>
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudTable Items="@SummaryData"
+            <MudTable Items="@_summaryData"
             Hover="true"
             Breakpoint="Breakpoint.Sm"
             Loading="_loading"
