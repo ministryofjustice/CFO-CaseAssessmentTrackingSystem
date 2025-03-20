@@ -37,7 +37,7 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             .IsRequired();
 
         builder.Property(p => p.Gender)
-            .HasMaxLength(6);
+            .HasMaxLength(29);
 
         builder.Property(p => p.Nationality)
             .HasMaxLength(50);
