@@ -1,4 +1,6 @@
-﻿using Cfo.Cats.Domain.Entities.Inductions;
+﻿using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants.Database;
@@ -67,7 +69,25 @@ public class WingInductionEntityTypeConfiguration : IEntityTypeConfiguration<Win
                 );
             phase.Property(x => x.StartDate).IsRequired();
             phase.Property(x => x.CompletedDate).IsRequired(false);
-        });
 
+            phase.Property(a => a.Status)
+              .IsRequired()
+              .HasConversion(
+                s => s!.Value,
+                s => WingInductionPhaseStatus.FromValue(s));
+
+            phase.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(p => p.CompletedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            phase.Property(e => e.AbandonReason)
+                .HasConversion(
+                ar => ar!.Value,
+                ar => WingInductionPhaseAbandonReason.FromValue(ar));
+
+            phase.Property(p => p.AbandonJustification)
+                .HasMaxLength(ValidationConstants.NotesLength);
+        });
     }
 }
