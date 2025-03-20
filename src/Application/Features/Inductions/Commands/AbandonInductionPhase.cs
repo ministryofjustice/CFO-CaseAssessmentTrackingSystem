@@ -4,7 +4,7 @@ using Cfo.Cats.Domain.Entities.Inductions;
 
 namespace Cfo.Cats.Application.Features.Inductions.Commands;
 
-public static class CompleteInductionPhase
+public static class AbandonInductionPhase
 {
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command : IRequest<Result>
@@ -13,13 +13,19 @@ public static class CompleteInductionPhase
         
         [Description("Date of Completion")]
         public DateTime? CompletionDate { get; set; }
-        
+
+        [Description("Abandoned By")]
         public UserProfile? CurrentUser { get; set; }
+
+        [Description("Abandoned Justification")]
+        public string? AbandonJustification { get; set; }
+
+        [Description("Reason Abandoned")]
+        public WingInductionPhaseAbandonReason? AbandonReason { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
     {
-
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             WingInduction element = await unitOfWork.DbContext.WingInductions
@@ -28,7 +34,7 @@ public static class CompleteInductionPhase
 
             try
             {
-                element.CompleteCurrentPhase(request.CompletionDate!.Value,request.CurrentUser?.UserId);
+                element.AbandonCurrentPhase(request.CompletionDate!.Value, request.AbandonJustification, request.AbandonReason, request.CurrentUser?.UserId!);
             }
             catch (Exception e)
             {
@@ -53,7 +59,7 @@ public static class CompleteInductionPhase
             RuleFor(c => c.CompletionDate)
                 .NotNull()
                 .LessThan(DateTime.Today.AddDays(1).Date)
-                .WithMessage("Phase completion date cannot be in the future");
+                .WithMessage("Phase Abandon date cannot be in the future");
 
             RuleFor(c => c.CurrentUser)
                 .NotNull();
@@ -64,12 +70,11 @@ public static class CompleteInductionPhase
 
             RuleFor(x => x.WingInductionId)
                 .MustAsync(MustHaveOpenPhase)
-                .WithMessage("No open phases to complete.");
+                .WithMessage("No open phases to abandon.");
             
             RuleFor(x => x)
                 .MustAsync(CompletionMustBeAfterStartDate)
-                .WithMessage("Completion must be after the start date");
-
+                .WithMessage("Abandon must be after the start date");
         }
        
         private async Task<bool> MustExist(Guid id, CancellationToken cancellationToken)
@@ -103,9 +108,6 @@ public static class CompleteInductionPhase
             var openPhase = element.GetOpenPhase();
 
             return openPhase.StartDate < command.CompletionDate;
-
-
         }
     }
-
 }

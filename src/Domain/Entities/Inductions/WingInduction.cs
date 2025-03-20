@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Events;
 
@@ -33,7 +34,7 @@ public class WingInduction : OwnerPropertyEntity<Guid>
         
         if(previous is null)
         {
-            _phases.Add(new InductionPhase(1, startDate, null));
+            _phases.Add(new InductionPhase(1, startDate, null, WingInductionPhaseStatus.Commenced, null, null,null));
         }
         else if (previous is { CompletedDate: null })
         {
@@ -45,12 +46,12 @@ public class WingInduction : OwnerPropertyEntity<Guid>
         }
         else
         {
-            _phases.Add(new InductionPhase(previous.Number + 1, startDate, null));
+            _phases.Add(new InductionPhase(previous.Number + 1, startDate, null, WingInductionPhaseStatus.Commenced, null, null, null));
         }
         return this;
     }
 
-    public WingInduction CompleteCurrentPhase(DateTime completionDate)
+    public WingInduction CompleteCurrentPhase(DateTime completionDate, string? completedBy)
     {
         var current = _phases.SingleOrDefault(x => x.CompletedDate is null);
 
@@ -62,13 +63,32 @@ public class WingInduction : OwnerPropertyEntity<Guid>
             }
 
             _phases.Remove(current);
-            var phase = new InductionPhase(current.Number, current.StartDate, completionDate);
+            var phase = new InductionPhase(current.Number, current.StartDate, completionDate, WingInductionPhaseStatus.Completed, null, null, completedBy);
             _phases.Add(phase);
             AddDomainEvent(new InductionPhaseCompletedDomainEvent(Id, phase));
         }
         return this;
     }
-    
+
+    public WingInduction AbandonCurrentPhase(DateTime abandonDate, string? abandonJustification, WingInductionPhaseAbandonReason? abandonReason, string abandonedBy)
+    {
+        var current = _phases.SingleOrDefault(x => x.CompletedDate is null);
+
+        if (current is not null)
+        {
+            if (abandonDate < current.StartDate)
+            {
+                throw new ApplicationException("Cannot abandon phase before the date it commenced");
+            }
+
+            _phases.Remove(current);
+            var phase = new InductionPhase(current.Number, current.StartDate, abandonDate, WingInductionPhaseStatus.Abandoned, abandonJustification, abandonReason, abandonedBy);
+            _phases.Add(phase);
+            AddDomainEvent(new InductionPhaseCompletedDomainEvent(Id, phase));
+        }
+        return this;
+    }
+
     public static WingInduction Create(string participantId, int locationId, DateTime inductionDate, string ownerId)
            => new(participantId, locationId, inductionDate, ownerId);
 

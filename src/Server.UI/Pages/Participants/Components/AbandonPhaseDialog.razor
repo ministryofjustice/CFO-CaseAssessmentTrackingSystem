@@ -1,0 +1,105 @@
+﻿@using Cfo.Cats.Application.Features.Inductions.Commands
+@using Cfo.Cats.Domain.Common.Enums
+@inherits CatsComponentBase
+
+@inject IValidationService Validator
+@inject IStringLocalizer<AbandonPhaseDialog> L
+<MudDialog>
+    <DialogContent>
+        <MudPaper Height="300px;" Elevation="0">
+            @if (Model is not null)
+            {
+                <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+
+                            <MudSelect @bind-Value="Model.AbandonReason"
+                           Label="@Model.GetMemberDescription(x => x.AbandonReason)"
+                           For="@(() => Model.AbandonReason)">
+                        <MudSelectItem Value="WingInductionPhaseAbandonReason.Released">@WingInductionPhaseAbandonReason.Released.Name</MudSelectItem>
+                        <MudSelectItem Value="WingInductionPhaseAbandonReason.TransferredEstablishmentCatD">@WingInductionPhaseAbandonReason.TransferredEstablishmentCatD.Name</MudSelectItem>
+                        <MudSelectItem Value="WingInductionPhaseAbandonReason.TransferredEstablishmentOther">@WingInductionPhaseAbandonReason.TransferredEstablishmentOther.Name</MudSelectItem>
+                        <MudSelectItem Value="WingInductionPhaseAbandonReason.ChangedMindDroppedOut">@WingInductionPhaseAbandonReason.ChangedMindDroppedOut.Name</MudSelectItem>
+                        <MudSelectItem Value="WingInductionPhaseAbandonReason.RemovedFromTheWingSafetySecurity">@WingInductionPhaseAbandonReason.RemovedFromTheWingSafetySecurity.Name</MudSelectItem>
+                        <MudSelectItem Value="WingInductionPhaseAbandonReason.HealthReasons">@WingInductionPhaseAbandonReason.HealthReasons.Name</MudSelectItem>
+                        <MudSelectItem Value="WingInductionPhaseAbandonReason.PoorBehaviour">@WingInductionPhaseAbandonReason.PoorBehaviour.Name</MudSelectItem>
+                        <MudSelectItem Value="WingInductionPhaseAbandonReason.OtherPriorities">@WingInductionPhaseAbandonReason.OtherPriorities.Name</MudSelectItem>
+                        <MudSelectItem Value="WingInductionPhaseAbandonReason.Other">@WingInductionPhaseAbandonReason.Other.Name</MudSelectItem>
+                    </MudSelect>
+
+                    <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                        <MudTextField @bind-Value="Model.AbandonJustification"
+                                      Label="@Model.GetMemberDescription(x => x.AbandonJustification)"
+                                      For="@(() => Model.AbandonJustification)"
+                                      Lines="5"
+                                      Class="mt-4" />
+                    </MudForm>
+
+                    <MudGrid xs="12">
+                        <MudItem xs="12">
+                            <MudDatePicker Label="@Model.GetMemberDescription(x => x.CompletionDate)"
+                                           @bind-Date="Model.CompletionDate"
+                                           For="(() => Model.CompletionDate)"
+                                           ImmediateText="true" Editable="false"
+                                           MinDate="EarliestCompletionDate"
+                                           MaxDate="DateTime.Today.Date" PickerVariant="PickerVariant.Dialog"/>
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+            }
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.AbandonPhase</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {    
+    private MudForm? form;
+    private bool saving;
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+    
+    [EditorRequired]
+    [Parameter]
+    public AbandonInductionPhase.Command? Model { get; set; }
+    
+    [EditorRequired]
+    [Parameter]
+    public DateTime EarliestCompletionDate { get; set; }
+    
+    private void Cancel()
+    { 
+        MudDialog.Cancel();
+    }
+    
+    private async Task Submit()
+    {
+        try
+        {
+            saving = true;
+
+            await form!.Validate().ConfigureAwait(false);
+
+            if(form!.IsValid == false)
+            {
+                return;
+            }
+
+            var result = await GetNewMediator().Send(Model!);
+            if(result.Succeeded)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+        }
+        finally
+        {
+            saving = false;
+        }
+    }    
+}
