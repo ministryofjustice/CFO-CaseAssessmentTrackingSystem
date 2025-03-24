@@ -17,3 +17,9 @@ public sealed class InductionPhaseCompletedDomainEvent(Guid inductionId, Inducti
     public InductionPhase Item { get; } = phase;
     public Guid InductionId { get; } = inductionId;
 }
+
+public sealed class InductionPhaseAbandonedDomainEvent(Guid inductionId, InductionPhase phase) : DomainEvent
+{
+    public InductionPhase Item { get; } = phase;
+    public Guid InductionId { get; } = inductionId;
+}

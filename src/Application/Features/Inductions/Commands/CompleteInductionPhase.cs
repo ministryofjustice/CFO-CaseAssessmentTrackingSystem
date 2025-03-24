@@ -28,7 +28,7 @@ public static class CompleteInductionPhase
 
             try
             {
-                element.CompleteCurrentPhase(request.CompletionDate!.Value);
+                element.CompleteCurrentPhase(request.CompletionDate!.Value,request.CurrentUser?.UserId);
             }
             catch (Exception e)
             {
