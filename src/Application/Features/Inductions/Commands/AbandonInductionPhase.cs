@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Inductions;
 
@@ -11,7 +12,7 @@ public static class AbandonInductionPhase
     {
         public Guid WingInductionId { get; set; }
         
-        [Description("Date of Completion")]
+        [Description("Date Abandoned")]
         public DateTime? CompletionDate { get; set; }
 
         [Description("Abandoned By")]
@@ -75,8 +76,15 @@ public static class AbandonInductionPhase
             RuleFor(x => x)
                 .MustAsync(CompletionMustBeAfterStartDate)
                 .WithMessage("Abandon must be after the start date");
+
+            RuleFor(c => c.AbandonJustification)
+                .NotEmpty()
+                .When(c => c.AbandonReason!.RequiresJustification)
+                .WithMessage("You must provide a justification for the selected abandon reason")
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
         }
-       
+
         private async Task<bool> MustExist(Guid id, CancellationToken cancellationToken)
         {
             var element = await _unitOfWork.DbContext.WingInductions
