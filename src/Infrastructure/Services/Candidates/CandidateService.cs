@@ -63,6 +63,50 @@ public class CandidateService(
                 _ => "Unmapped Location",
             };
 
+            candidate.IsInCustody = location?.Location?.LocationType?.IsCustody ?? false;
+
+            if (candidate.OrgCode is not null)
+            {
+                var community = await (from dl in unitOfWork.DbContext.LocationMappings.AsNoTracking()
+                        where dl.CodeType == "Probation" && dl.Code == candidate.OrgCode
+                        select new
+                        {
+                            dl.Code,
+                            dl.CodeType,
+                            dl.Description,
+                            dl.DeliveryRegion,
+                            dl.Location
+                        }
+                    ).FirstOrDefaultAsync();
+
+                if (community is not null)
+                {
+                    candidate.CommunityLocation = community.Location.Name;
+                }
+            }
+
+            if (candidate.EstCode is not null)
+            {
+                var custody = await (from dl in unitOfWork.DbContext.LocationMappings.AsNoTracking()
+                        where dl.CodeType == "Prison" && dl.Code == candidate.EstCode
+                                       select new
+                        {
+                            dl.Code,
+                            dl.CodeType,
+                            dl.Description,
+                            dl.DeliveryRegion,
+                            dl.Location
+                        }
+                    ).FirstOrDefaultAsync();
+
+                if (custody is not null)
+                {
+                    candidate.CustodyLocation = custody.Location.Name;
+                }
+            }
+
+
+
             if (location is { Location: not null })
             {
                 candidate.MappedLocationId = location.Location.Id;

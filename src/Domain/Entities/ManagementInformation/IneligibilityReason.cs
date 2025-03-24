@@ -18,4 +18,9 @@ public record IneligibilityReason
     public static IneligibilityReason NotYetApproved = new("The enrolment for this participant has not been approved yet.");
     public static IneligibilityReason BeforeConsent = new("Events that take place before the consent date are not eligible for payment.");
 
+    public static IneligibilityReason RequiredTasksNotCompleted = new("The mandatory tasks have not been completed");
+    public static IneligibilityReason RequiredTasksNotCompletedInTime(string timePeriod) => new($"The mandatory tasks have not been completed within {timePeriod}");
+    public static IneligibilityReason NeverInLocation = new("The participant has never been in the specified locations");
+
+
 }
