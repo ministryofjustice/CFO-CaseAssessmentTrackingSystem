@@ -97,7 +97,7 @@ public static class AddInductionPhase
                 return true;
             }
 
-            return element.Phases.Max(e => e.CompletedDate) <= command.StartDate;
+            return element.Phases.Max(e => e.CompletedDate)?.Date <= command.StartDate;
         }
     }
 

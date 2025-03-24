@@ -19,9 +19,9 @@
     <MudExpansionPanel Disabled="@(HubInductions is not { Length: > 0 })">
         <TitleContent>
             <div class="d-flex">
-                    <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Color="Color.Primary" class="mr-3"/>
-                    <MudText>Hub Inductions</MudText>
-                    <MudBadge Content="@(HubInductions?.Length ?? 0)" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto" />
+                <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Color="Color.Primary" class="mr-3"/>
+                <MudText>Hub Inductions</MudText>
+                <MudBadge Content="@(HubInductions?.Length ?? 0)" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto" />
             </div>
         </TitleContent>
         <ChildContent>
@@ -42,7 +42,7 @@
                                 {
                                     <MudText Typo="Typo.caption">@i.InductionDate.Humanize()</MudText>
                                 }
-                                
+
                             </MudTooltip>
                         </ChildContent>
                     </MudListItem>                    
@@ -54,13 +54,13 @@
     <MudExpansionPanel Disabled="@(WingInductions is not { Length: > 0 })">
         <TitleContent>
             <div class="d-flex">
-                    <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Color="Color.Primary" class="mr-3"/>
-                    <MudText>Wing Inductions</MudText>
-                    <MudBadge Content="@(WingInductions?.Length ?? 0)" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto" />
+                <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Color="Color.Primary" class="mr-3"/>
+                <MudText>Wing Inductions</MudText>
+                <MudBadge Content="@(WingInductions?.Length ?? 0)" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto" />
             </div>
         </TitleContent>
         <ChildContent>
-                        
+
             <MudGrid>
                 @foreach (var i in WingInductions.OrderByDescending(wi => wi.InductionDate))
                 {
@@ -82,18 +82,18 @@
                                     <MudTd DataLabel="F">@(context.Status.Name)</MudTd>
                                     <MudTd>
                                         <MudFab Color="Color.Info"
-                                                StartIcon="@Icons.Material.Filled.AssignmentTurnedIn"
-                                                Size="Size.Small"
-                                                Disabled="@(context.CompletedDate is not null)"
-                                                OnClick="() => CompletePhase(i)">
+                                        StartIcon="@Icons.Material.Filled.AssignmentTurnedIn"
+                                        Size="Size.Small"
+                                        Disabled="@(context.CompletedDate is not null)"
+                                        OnClick="() => CompletePhase(i)">
                                         </MudFab>
                                     </MudTd>
                                     <MudTd>
                                         <MudFab Color="Color.Info"
-                                                StartIcon="@Icons.Material.Filled.DeleteForever"
-                                                Size="Size.Small"
-                                                Disabled="@(context.CompletedDate is not null)"
-                                                OnClick="() => AbandonPhase(i)">
+                                        StartIcon="@Icons.Material.Filled.DeleteForever"
+                                        Size="Size.Small"
+                                        Disabled="@(context.CompletedDate is not null)"
+                                        OnClick="() => AbandonPhase(i)">
                                         </MudFab>
                                     </MudTd>
                                 </RowTemplate>
@@ -115,10 +115,10 @@
                                 }
                             </MudTooltip>
                         </MudPaper>
-                   </MudItem>
+                    </MudItem>
                 }
             </MudGrid>
-         </ChildContent>
+        </ChildContent>
     </MudExpansionPanel>
 </MudExpansionPanels>
 
@@ -223,11 +223,11 @@
             await OnRefresh();
         }
     }
-    
+
     private async Task CompletePhase(WingInductionDto induction)
     {
         DateTime earliestCompletionDate = induction.Phases.Max(x => x.StartDate);
-        
+
         var parameters = new DialogParameters<CompletePhaseDialog>()
         {
             {
@@ -313,7 +313,7 @@
         if (results.Succeeded)
         {
             HubInductions = results.Data!.HubInductions;
-            WingInductions = results.Data!.WingInductions;
+            WingInductions = results.Data!.WingInductions;            
         }
         var locations = LocationService.GetVisibleLocations(CurrentUser?.TenantId ?? string.Empty)
             .ToArray();

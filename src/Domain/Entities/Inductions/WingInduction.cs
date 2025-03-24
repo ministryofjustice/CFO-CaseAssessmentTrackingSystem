@@ -26,15 +26,22 @@ public class WingInduction : OwnerPropertyEntity<Guid>
 
     private List<InductionPhase> _phases = new();
 
-    public IReadOnlyCollection<InductionPhase> Phases => _phases.AsReadOnly();
+    public IReadOnlyCollection<InductionPhase> Phases =>
+            _phases.OrderByDescending(p => p.StartDate)
+           .ThenByDescending(p => p.CompletedDate)
+           .ToList()
+           .AsReadOnly();
 
     public WingInduction AddPhase(DateTime startDate)
     {
-        var previous = _phases.MaxBy(x => x.Number);
-        
-        if(previous is null)
+        var previous = _phases
+            .OrderByDescending(x => x.Number)
+            .ThenByDescending(x => x.StartDate)
+            .FirstOrDefault();
+
+        if (previous is null)
         {
-            _phases.Add(new InductionPhase(1, startDate, null, WingInductionPhaseStatus.Commenced, null, null,null));
+            _phases.Add(new InductionPhase(Guid.CreateVersion7(),1, startDate, null, WingInductionPhaseStatus.Commenced, null, null,null));
         }
         else if (previous is { CompletedDate: null })
         {
@@ -44,9 +51,13 @@ public class WingInduction : OwnerPropertyEntity<Guid>
         {
             throw new ApplicationException("Cannot start a new phase before the date of the previous phase");
         }
+        else if(previous.Number==1 && previous.Status==WingInductionPhaseStatus.Abandoned)
+        {
+            _phases.Add(new InductionPhase(Guid.CreateVersion7(), 1, startDate, null, WingInductionPhaseStatus.Commenced, null, null, null));
+        }
         else
         {
-            _phases.Add(new InductionPhase(previous.Number + 1, startDate, null, WingInductionPhaseStatus.Commenced, null, null, null));
+            _phases.Add(new InductionPhase(Guid.CreateVersion7(), previous.Number + 1, startDate, null, WingInductionPhaseStatus.Commenced, null, null, null));
         }
         return this;
     }
@@ -62,10 +73,9 @@ public class WingInduction : OwnerPropertyEntity<Guid>
                 throw new ApplicationException("Cannot start a complete phase before the date it commenced");
             }
 
-            _phases.Remove(current);
-            var phase = new InductionPhase(current.Number, current.StartDate, completionDate, WingInductionPhaseStatus.Completed, null, null, completedBy);
-            _phases.Add(phase);
-            AddDomainEvent(new InductionPhaseCompletedDomainEvent(Id, phase));
+            current.MarkAsCompleted(completionDate, completedBy); 
+
+            AddDomainEvent(new InductionPhaseCompletedDomainEvent(Id, current));
         }
         return this;
     }
@@ -81,10 +91,9 @@ public class WingInduction : OwnerPropertyEntity<Guid>
                 throw new ApplicationException("Cannot abandon phase before the date it commenced");
             }
 
-            _phases.Remove(current);
-            var phase = new InductionPhase(current.Number, current.StartDate, abandonDate, WingInductionPhaseStatus.Abandoned, abandonJustification, abandonReason, abandonedBy);
-            _phases.Add(phase);
-            AddDomainEvent(new InductionPhaseCompletedDomainEvent(Id, phase));
+            current.MarkAsAbandoned(abandonDate, abandonJustification, abandonReason, abandonedBy);
+
+            AddDomainEvent(new InductionPhaseAbandonedDomainEvent(Id, current));
         }
         return this;
     }
