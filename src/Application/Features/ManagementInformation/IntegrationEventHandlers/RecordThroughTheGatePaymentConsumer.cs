@@ -170,7 +170,7 @@ public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
                 }
 
                 DateTime maximumReleaseDate = ActualReleaseDate.ToDateTime(TimeOnly.MinValue).AddDays(28);
-                DateTime completionDate = task2.Completed!.Value;
+                DateTime completionDate = task2.Completed!.Value.Date;
 
                 return completionDate <= maximumReleaseDate;
 
