@@ -51,7 +51,8 @@ public class InductionPayment
         var dates = new[]
         {
             induction.InductionDate,
-            enrolmentApprovalDate.Date
+            enrolmentApprovalDate.Date,
+            new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)
         };
         return new InductionPayment()
         {
@@ -77,7 +78,8 @@ public class InductionPayment
         var dates = new[]
         {
             induction.InductionDate,
-            enrolmentApprovalDate.Date
+            enrolmentApprovalDate.Date,
+            new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)
         };
         return new InductionPayment()
         {
@@ -101,6 +103,14 @@ public class InductionPayment
 
     public static InductionPayment CreateNonPayableInductionPayment(HubInduction induction, IneligibilityReason ineligibilityReason)
     {
+
+        var dates = new[]
+        {
+            induction.InductionDate,
+            new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)
+        };
+
+
         return new InductionPayment()
         {
             Id = Guid.CreateVersion7(),
@@ -114,7 +124,7 @@ public class InductionPayment
             TenantId = induction.Owner!.Tenant!.Id,
             EligibleForPayment = false,
             IneligibilityReason = ineligibilityReason.Value,
-            PaymentPeriod = induction.InductionDate,
+            PaymentPeriod = dates.Max(),
             CommencedDate = induction.InductionDate,
             InductionInput = induction.Created!.Value,
             CreatedOn = DateTime.UtcNow
@@ -122,6 +132,12 @@ public class InductionPayment
     }
     public static InductionPayment CreateNonPayableInductionPayment(WingInduction induction, IneligibilityReason ineligibilityReason)
     {
+        var dates = new[]
+        {
+            induction.InductionDate,
+            new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)
+        };
+
         return new InductionPayment()
         {
             Id = Guid.CreateVersion7(),
@@ -135,7 +151,7 @@ public class InductionPayment
             TenantId = induction.Owner!.Tenant!.Id,
             EligibleForPayment = false,
             IneligibilityReason = ineligibilityReason.Value,
-            PaymentPeriod = induction.InductionDate,
+            PaymentPeriod = dates.Max(),
             CommencedDate = induction.InductionDate,
             InductionInput = induction.Created!.Value,
             CreatedOn = DateTime.UtcNow

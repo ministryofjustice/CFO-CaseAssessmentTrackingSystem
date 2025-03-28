@@ -19,6 +19,12 @@ public class EmploymentPayment
             throw new ArgumentException("Cannot record MI for an unapproved item");
         }
 
+        var dates = new[]
+        {
+            activity.ApprovedOn.Value,
+            new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
+        };
+
         return new EmploymentPayment
         {
             Id = Guid.CreateVersion7(),
@@ -34,7 +40,7 @@ public class EmploymentPayment
             TenantId = activity.TenantId,
             EligibleForPayment = false,
             IneligibilityReason = ineligibilityReason.Value,
-            PaymentPeriod = activity.ApprovedOn.Value.Date
+            PaymentPeriod = dates.Max()
         };
     }
 
@@ -49,7 +55,8 @@ public class EmploymentPayment
         var dates = new[]
         {
             activity.ApprovedOn!.Value.Date,
-            enrolmentApprovalDate.Date
+            enrolmentApprovalDate.Date,
+            new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
         };
 
         return new EmploymentPayment

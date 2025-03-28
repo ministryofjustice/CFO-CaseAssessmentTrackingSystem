@@ -18,6 +18,13 @@ public class EducationPayment
             throw new ArgumentException("Cannot record MI for an unapproved item");
         }
 
+        var dates = new[]
+        {
+            activity.ApprovedOn.Value,
+            new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
+        };
+
+
         return new EducationPayment
         {
             Id = Guid.CreateVersion7(),
@@ -35,8 +42,7 @@ public class EducationPayment
             IneligibilityReason = ineligibilityReason.Value,
             CourseTitle = activity.CourseTitle,
             CourseLevel = activity.CourseLevel,
-            // in this case, an "unapproved payment" the payment period is the approval date
-            PaymentPeriod = activity.ApprovedOn.Value.Date
+            PaymentPeriod = dates.Max()
         };
     }
 
@@ -51,7 +57,8 @@ public class EducationPayment
         var dates = new[]
         {
             activity.ApprovedOn!.Value.Date,
-            enrolmentApprovalDate.Date
+            enrolmentApprovalDate.Date,
+            new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)
         };
 
         return new EducationPayment

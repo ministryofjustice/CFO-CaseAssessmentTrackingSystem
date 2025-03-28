@@ -141,12 +141,17 @@ public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
         {
             get
             {
-                if (DateOfFirstConsent is null)
-                    return DateOnly.FromDateTime(Approved);
+                List<DateOnly> dates =
+                [
+                    DateOnly.FromDateTime(Approved),
+                    new(DateTime.Now.Year, DateTime.Now.Month, 1)
+                ];
 
-                DateOnly approvedDate = DateOnly.FromDateTime(Approved);
-
-                return approvedDate < DateOfFirstConsent ? DateOfFirstConsent.Value : approvedDate;
+                if (DateOfFirstConsent is not null)
+                {
+                    dates.Add(DateOfFirstConsent.Value);
+                }
+                return dates.Max();
             }
         }
 

@@ -12,6 +12,13 @@ public class ActivityPayment
 
     public static ActivityPayment CreateNonPayableActivityPayment(Activity activity, IneligibilityReason ineligibleReason)
     {
+        var dates = new[]
+        {
+            new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
+            activity.ApprovedOn!.Value.Date
+        };
+
+
         return new ActivityPayment
         {
             Id = Guid.CreateVersion7(),
@@ -28,7 +35,7 @@ public class ActivityPayment
             EligibleForPayment = false,
             IneligibilityReason = ineligibleReason.Value,
             // in this case, an "unapproved payment" the payment period is the approval date
-            PaymentPeriod = activity.ApprovedOn!.Value.Date,
+            PaymentPeriod = dates.Max(),
             CommencedDate = activity.CommencedOn,
             ActivityInput = activity.Created!.Value
         };
@@ -39,7 +46,8 @@ public class ActivityPayment
         var dates = new []
         {
             activity.ApprovedOn!.Value.Date, 
-            enrolmentApprovalDate.Date
+            enrolmentApprovalDate.Date,
+            new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
         };
         
         return new ActivityPayment()
