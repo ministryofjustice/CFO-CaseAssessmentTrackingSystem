@@ -1,22 +1,13 @@
 ﻿using Cfo.Cats.Domain.Entities.ManagementInformation;
-using Cfo.Cats.Domain.Entities.Activities;
-using MassTransit;
 using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
+using MassTransit;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
 public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<ActivityApprovedIntegrationEvent>
 {
-    private static class IneligibilityReasons
-    {
-        public const string AlreadyPaidThisMonth = "An activity of this type has already been paid to this contract, for this participant, this month.";
-        public const string NotYetApproved = "The enrolment for this participant has not yet been approved";
-        public const string BeforeConsent = "This occurred before the consent date";
-    }
-
     public async Task Consume(ConsumeContext<ActivityApprovedIntegrationEvent> context)
     {
-
         var activity = await unitOfWork.DbContext.Activities
             .Include(a => a.TookPlaceAtContract)
             .Include(a => a.TookPlaceAtLocation)
@@ -30,50 +21,61 @@ public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<A
             return;
         }
 
-        var dates = await unitOfWork.DbContext.DateDimensions
-            .Where(dd => dd.TheDate == activity.ApprovedOn!.Value)
-            .Select(dd => new
-            {
-                dd.TheFirstOfMonth,
-                dd.TheLastOfMonth
-            })
-            .SingleAsync();
-        
-        var query = from ap in unitOfWork.DbContext.ActivityPayments
-            where
-                  ap.ParticipantId == activity.ParticipantId
-                  && ap.ContractId == activity.TookPlaceAtContract.Id
-                  && ap.ActivityCategory == activity.Category.Name
-                  && ap.ActivityType == activity.Type.Name
-                  && ap.ActivityApproved >= dates.TheFirstOfMonth
-                  && ap.ActivityApproved <= dates.TheLastOfMonth
-                  && ap.EligibleForPayment
-            select ap;
-
-        var previousPayments = await query.AsNoTracking().ToListAsync();
-                                 
-        string? ineligibilityReason = null;
-
-        if(previousPayments.Count > 0)
+        if (activity.ApprovedOn is null)
         {
-            ineligibilityReason = IneligibilityReasons.AlreadyPaidThisMonth;
+            // we do not record "payment" events if the activity is not approved
+            return;
         }
+
+        IneligibilityReason? ineligibilityReason = null;
 
 
         var history = await unitOfWork.DbContext.ParticipantEnrolmentHistories
-            .Where(h => h.ParticipantId == activity.ParticipantId)
-            .ToListAsync();
+            .AsNoTracking()
+            .Where(e => e.ParticipantId == activity.ParticipantId &&
+                        e.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value)
+            .OrderBy(e => e.Created)
+            .FirstOrDefaultAsync();
 
-        var firstApproval = history.Where(h => h.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
-            .Min(x => x.Created);
-
-        if (firstApproval.HasValue == false)
+        if (history == null)
         {
-            ineligibilityReason = IneligibilityReasons.NotYetApproved;
+            ineligibilityReason = IneligibilityReason.NotYetApproved;
         }
 
         if (ineligibilityReason is null)
         {
+            var dates = await unitOfWork.DbContext.DateDimensions
+                .Where(dd => dd.TheDate == activity.CommencedOn.Date)
+                .Select(dd => new
+                {
+                    dd.TheFirstOfMonth,
+                    dd.TheLastOfMonth
+                })
+                .SingleAsync();
+
+            var query = from ap in unitOfWork.DbContext.ActivityPayments
+                where
+                    ap.ParticipantId == activity.ParticipantId
+                    && ap.ContractId == activity.TookPlaceAtContract.Id
+                    && ap.ActivityCategory == activity.Category.Name
+                    && ap.ActivityType == activity.Type.Name
+                    && ap.CommencedDate >= dates.TheFirstOfMonth
+                    && ap.CommencedDate <= dates.TheLastOfMonth
+                    && ap.EligibleForPayment
+                select ap;
+
+            var previousPayments = await query.AsNoTracking().ToListAsync();
+
+
+            if (previousPayments.Count > 0)
+            {
+                ineligibilityReason = IneligibilityReason.MaximumPaymentLimitReached;
+            }
+        }
+
+        if (ineligibilityReason is null)
+        {
+            // if we get to here, we are approved and should have a consent date on the participant
             var consentDate = await unitOfWork.DbContext
                 .Participants
                 .AsNoTracking()
@@ -83,23 +85,15 @@ public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<A
 
             if (consentDate!.Value > DateOnly.FromDateTime(activity.CommencedOn))
             {
-                ineligibilityReason = IneligibilityReasons.BeforeConsent;
+                ineligibilityReason = IneligibilityReason.BeforeConsent;
             }
         }
 
-        var payment = new ActivityPaymentBuilder()
-            .WithActivity(activity.Id)
-            .WithActivityCategory(activity.Category.Name)
-            .WithActivityType(activity.Type.Name)
-            .WithParticipantId(activity.ParticipantId)
-            .WithContractId(activity.TookPlaceAtContract.Id)
-            .WithApproved(activity.ApprovedOn!.Value)
-            .WithLocationId(activity.TookPlaceAtLocation.Id)
-            .WithLocationType(activity.TookPlaceAtLocation.LocationType.Name)
-            .WithTenantId(activity.TenantId)
-            .WithEligibleForPayment(ineligibilityReason is null)
-            .WithIneligibilityReason(ineligibilityReason)
-            .Build();
+        ActivityPayment payment = ineligibilityReason switch
+        {
+            not null => ActivityPayment.CreateNonPayableActivityPayment(activity, ineligibilityReason),
+            _ => ActivityPayment.CreatePayableActivityPayment(activity, history!.Created!.Value)
+        };
 
         unitOfWork.DbContext.ActivityPayments.Add(payment);
         await unitOfWork.SaveChangesAsync(CancellationToken.None);

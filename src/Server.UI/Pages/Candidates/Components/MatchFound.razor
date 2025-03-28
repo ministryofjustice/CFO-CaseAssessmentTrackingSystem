@@ -1,13 +1,48 @@
+@using Microsoft.Identity.Client
 @inherits CatsComponentBase
 
 @if(Model is not null)
 {
     <MudContainer Class="d-flex flex-column align-center justify-center">
-    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
-        We have found a match: @(string.Join(' ', new [] { Candidate.FirstName, Candidate.SecondName, Candidate.LastName})) (@Candidate.Identifier)
-        We have them located at @(Candidate.LocationDescription ?? "Unmapped Location")
-    </MudAlert>
-    <MudForm Model="@Model" @ref="@_form" Validation="@(Validator.ValidateValue(Model))">
+     
+        
+        @if (Candidate is { IsInCustody: true, CommunityLocation: not null })
+        {
+            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                
+                <MudStack>
+                    <MudText Typo="Typo.body1">
+                        We have found a match: @(string.Join(' ', new[] { Candidate.FirstName, Candidate.SecondName, Candidate.LastName })) (@Candidate.Identifier)
+                    </MudText>
+                    <MudText Typo="Typo.body1">
+                        We have them located at @(Candidate.LocationDescription ?? "Unmapped Location")
+                    </MudText>
+                    <MudText Typo="Typo.body1">
+                        When released, the candidate will be allocated to @Candidate.CommunityLocation
+                    </MudText>
+                </MudStack>
+               
+            </MudAlert>
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                We have found a match: @(string.Join(' ', new [] { Candidate.FirstName, Candidate.SecondName, Candidate.LastName})) (@Candidate.Identifier)
+
+                We have them located at @(Candidate.LocationDescription ?? "Unmapped Location")
+            </MudAlert>
+        }
+        
+        @if (Candidate is { IsInCustody: true, CommunityLocation: null })
+        {
+            <MudAlert Class="mt-3" Severity="Severity.Warning" Variant="Variant.Outlined">
+                We do not have a valid release location for this candidate.
+            </MudAlert>
+        }
+        
+        
+
+        <MudForm Model="@Model" @ref="@_form" Validation="@(Validator.ValidateValue(Model))">
         <MudGrid>
             <MudItem xs="12">
                 <CandidateComparisonComponent Comparisons="_comparisons" />

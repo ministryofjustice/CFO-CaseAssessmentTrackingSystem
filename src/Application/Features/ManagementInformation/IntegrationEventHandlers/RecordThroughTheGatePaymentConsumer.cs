@@ -7,188 +7,227 @@ namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHa
 public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
     : IConsumer<PRIThroughTheGateCompletedIntegrationEvent>
 {
-    private const string AlreadyPaid = "A Through The Gate payment has already been claimed for this participant";
-    private const string MandatoryTasksNotCompleted = "The mandatory tasks have not been completed";
-    private const string MandatoryTaskNotCompletedInTime = "The mandatory tasks have not been completed within 4 weeks";
-    private const string NotYetApproved = "The enrolment for this participant has not yet been approved";
-    private const string NeverInLocation = "The participant has never been in the specified locations";
-    private const string BeforeConsent = "This occurred before the consent date";
-    
-    private const string SupportType = "Through the Gate";
-
     public async Task Consume(ConsumeContext<PRIThroughTheGateCompletedIntegrationEvent> context)
     {
-        var query = from p in unitOfWork.DbContext.PRIs
-                    join custodyLocation in unitOfWork.DbContext.Locations on p.CustodyLocationId equals custodyLocation.Id
-                    join communityLocation in unitOfWork.DbContext.Locations on p.ExpectedReleaseRegionId equals communityLocation.Id
-                    join u in unitOfWork.DbContext.Users on p.CreatedBy equals u.Id
-            where p.Id == context.Message.PRIId
-                    select new
-                    {
-                        p.Id,
-                        p.ParticipantId,
-                        CustodyLocationId = p.CustodyLocationId,
-                        CustodyLocationType = custodyLocation.LocationType,
-                        CustodyContractId = custodyLocation.Contract!.Id,
-                        CommunityLocationId = p.ExpectedReleaseRegionId,
-                        CommunityLocationType = communityLocation.LocationType,
-                        CommunityContractId = communityLocation.Contract!.Id,
-                        u.TenantId,
-                        p.CreatedBy,
-                        p.MeetingAttendedOn,
-                        ReleaseDate = p.ActualReleaseDate,
-                        p.ObjectiveId
-                    };
+        var data = await GetData(context.Message.PRIId);
 
-        var pri = await query.FirstAsync();
-
-        var tasks = await unitOfWork.DbContext.PathwayPlans
-            .AsNoTracking()
-            .SelectMany(p => p.Objectives)
-            .SelectMany(o => o.Tasks)
-            .Where(t => t.ObjectiveId == pri.ObjectiveId)
-            .ToArrayAsync();
-
-        
-
-        string? ineligibilityReason = null;
-
-
-        // All mandatory tasks must be complete
-        if (tasks.Where(t => t.IsMandatory).Count(t => t.IsCompleted && t.CompletedStatus == CompletionStatus.Done) != 2)
+        var ineligibilityReason = data switch
         {
-            ineligibilityReason = MandatoryTasksNotCompleted;
-        }
+            { DateOfFirstConsent: null } => IneligibilityReason.NotYetApproved,
+            { CountOfPayments: > 0 } => IneligibilityReason.MaximumPaymentLimitReached,
+            { MeetingTookPlaceOnOrAfterConsent: false } => IneligibilityReason.BeforeConsent,
+            { AllTasksCompleted: false } => IneligibilityReason.RequiredTasksNotCompleted,
+            { TaskTwoCompletedWithin4Weeks: false } => IneligibilityReason.RequiredTasksNotCompletedInTime("4 weeks"),
+            { ParticipantInCommunityLocationAfterCustodyLocation: false } => IneligibilityReason.NeverInLocation,
+            _ => null
+        };
 
-        // 2nd task must be completed within 4 weeks of release
-        if (tasks.First(t => t.Index == 2).Completed! > pri.ReleaseDate!.Value.ToDateTime(TimeOnly.MaxValue).AddDays(4 * 7))
+        var payment = ineligibilityReason switch
         {
-            ineligibilityReason = MandatoryTaskNotCompletedInTime;
-        }
+            null => CreatePayable(data),
+            _ => CreateNonPayable(data, ineligibilityReason)
+        };
 
-        // Enrolment must have been approved.
-        if (ineligibilityReason == null)
-        {
-            var history = await unitOfWork.DbContext.ParticipantEnrolmentHistories
-                .AsNoTracking()
-                .Where(h => h.ParticipantId == pri.ParticipantId)
-                .ToListAsync();
+        unitOfWork.DbContext.SupportAndReferralPayments.Add(payment);
+        await unitOfWork.SaveChangesAsync();
+    }
 
-            var firstApproval = history.Where(h => h.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
-                .Min(x => x.Created);
+    private SupportAndReferralPayment CreatePayable(Data data) =>
+        SupportAndReferralPayment.CreatePayable(
+            priId: data.PriId,
+            participantId: data.ParticipantId,
+            supportType: "Through the Gate",
+            activityInput: DateOnly.FromDateTime(data.ActivityInput),
+            approvedDate: DateOnly.FromDateTime(data.Approved),
+            supportWorker: data.SupportWorker,
+            contractId: data.ContractId,
+            locationType: data.LocationType,
+            locationId: data.CommunityLocationId,
+            tenantId: data.TenantId,
+            paymentPeriod: data.PaymentPeriod
+        );
 
-            if (firstApproval.HasValue == false)
+    private SupportAndReferralPayment CreateNonPayable(Data data, IneligibilityReason reason)
+        => SupportAndReferralPayment.CreateNonPayable(priId: data.PriId,
+            participantId: data.ParticipantId,
+            supportType: "Through the Gate",
+            activityInput: DateOnly.FromDateTime(data.ActivityInput),
+            approvedDate: DateOnly.FromDateTime(data.Approved),
+            supportWorker: data.SupportWorker,
+            contractId: data.ContractId,
+            locationType: data.LocationType,
+            locationId: data.CustodyLocationId,
+            tenantId: data.TenantId,
+            paymentPeriod: data.PaymentPeriod,
+            reason: reason);
+
+
+    private async Task<Data> GetData(Guid priId)
+    {
+        var db = unitOfWork.DbContext;
+
+        var query = from p in db.Participants
+            join pri in db.PRIs on p.Id equals pri.ParticipantId
+            join l in db.Locations on pri.ExpectedReleaseRegionId equals l.Id
+            join u in db.Users on pri.AssignedTo equals u.Id
+            where pri.Id == priId
+            select new Data
             {
-                ineligibilityReason = NotYetApproved;
+                PriId = pri.Id,
+                ActivityInput = pri.Created!.Value,
+                ParticipantId = pri.ParticipantId,
+                Approved = pri.AcceptedOn!.Value,
+                SupportWorker = u!.Id,
+                CommunityLocationId = l.Id,
+                ContractId = l.Contract!.Id,
+                LocationType = l.LocationType.Name,
+                CustodyLocationId = pri.CustodyLocationId,
+                MeetingAttendedOn = pri.MeetingAttendedOn,
+                TenantId = u!.TenantId!,
+                DateOfFirstConsent = p.DateOfFirstConsent,
+                CountOfPayments = (
+                    from sp in db.SupportAndReferralPayments
+                    where sp.ParticipantId == p.Id
+                          && sp.EligibleForPayment
+                          && sp.SupportType == "Through the Gate"
+                    select sp.Id
+                ).Count(),
+                Tasks = (
+                    db.PathwayPlans
+                        .SelectMany(pp => pp.Objectives)
+                        .SelectMany(o => o.Tasks)
+                        .Where(t => t.ObjectiveId == pri.ObjectiveId && t.IsMandatory)
+                        .Select(t => new TaskData {
+                            IsMandatory = t.IsMandatory,
+                            CompletionStatus = t.CompletedStatus!,
+                            Completed = t.Completed,
+                            Index = t.Index
+                        })
+                ).ToArray(),
+                ActualReleaseDate = pri.ActualReleaseDate!.Value,
+                Locations = (
+                    db.ParticipantLocationHistories
+                        .Where(h => h.ParticipantId == p.Id)
+                        .Select(h => new LocationData {
+                                LocationId = h.LocationId,
+                                From = h.From
+                            }
+                        ).ToArray()
+                )
+            };
+        return await query.FirstAsync();
+    }
+
+    /// <summary>
+    /// This record represents the data required to calculate the details
+    /// of a pre-release payment of 
+    /// </summary>
+    public record Data
+    {
+        public required Guid PriId { get; init; }
+        public required DateTime ActivityInput { get; init; }
+        public required string ParticipantId { get; init; }
+        public required DateTime Approved { get; init; }
+        public required string SupportWorker { get; init; }
+        public required int CustodyLocationId { get; init; }
+        public required int CommunityLocationId { get; init; }
+        public required string LocationType { get; init; }
+        public required string ContractId { get; init; }
+        public required DateOnly MeetingAttendedOn { get; init; }
+        public required string TenantId { get; init; }
+        public required DateOnly? DateOfFirstConsent { get; init; }
+        public required int? CountOfPayments { get; init; }
+        public DateOnly PaymentPeriod
+        {
+            get
+            {
+                List<DateOnly> dates =
+                [
+                    DateOnly.FromDateTime(Approved),
+                    new(DateTime.Now.Year, DateTime.Now.Month, 1)
+                ];
+
+                if (DateOfFirstConsent is not null)
+                {
+                    dates.Add(DateOfFirstConsent.Value);
+                }
+                return dates.Max();
             }
         }
 
-        // meeting must be on or after consent date
-        if (ineligibilityReason is null)
-        {
-            var consentDate = await unitOfWork.DbContext
-                .Participants
-                .AsNoTracking()
-                .Where(p => p.Id == pri.ParticipantId)
-                .Select(p => p.DateOfFirstConsent)
-                .FirstAsync();
+        public bool MeetingTookPlaceOnOrAfterConsent => MeetingAttendedOn >= DateOfFirstConsent;
+        public DateOnly ActualReleaseDate { get; init; }
 
-            if (consentDate!.Value > pri.MeetingAttendedOn)
+        public required TaskData[] Tasks { get; init; }
+        public required LocationData[] Locations { get; init; }
+
+        public bool AllTasksCompleted
+            => Tasks.All(t => t.CompletionStatus == CompletionStatus.Done);
+
+        public bool TaskTwoCompletedWithin4Weeks
+        {
+            get
             {
-                ineligibilityReason = BeforeConsent;
+                var task2 = Tasks.First(t => t.Index == 2);
+                if (task2.CompletionStatus != CompletionStatus.Done)
+                {
+                    return false;
+                }
+
+                DateTime maximumReleaseDate = ActualReleaseDate.ToDateTime(TimeOnly.MinValue).AddDays(28);
+                DateTime completionDate = task2.Completed!.Value.Date;
+
+                return completionDate <= maximumReleaseDate;
+
             }
         }
 
-        // Participant must not have had previous TTG payment
-        if (ineligibilityReason is null)
+        public bool ParticipantInCommunityLocationAfterCustodyLocation
         {
-
-            if (await unitOfWork.DbContext
-                    .SupportAndReferralPayments
-                    .AnyAsync(c => c.ParticipantId == pri.ParticipantId
-                                   && c.SupportType == SupportType
-                                   && c.EligibleForPayment))
+            get
             {
-                ineligibilityReason = AlreadyPaid;
-            }
-        }
-
-        // Participant must be in or have been in region after release date
-        if (ineligibilityReason == null)
-        {
-            var currentLocation = await unitOfWork.DbContext.Participants
-                .Where(p => p.Id == pri.ParticipantId)
-                .Select(c => new { 
-                    ContractId = c.CurrentLocation!.Contract!.Id,
-                    LocationType = c.CurrentLocation!.LocationType
-                })
-                .FirstAsync();
-
-            if (currentLocation.ContractId != pri.CommunityContractId || currentLocation.LocationType.IsCustody)
-            {
-                // history query
-                var historyQuery = from h in unitOfWork.DbContext.ParticipantLocationHistories
-                    join l in unitOfWork.DbContext.Locations on h.LocationId equals l.Id
-                    where h.ParticipantId == pri.ParticipantId
-                    select new
-                    {
-                        h.From,
-                        l.Id
-                    };
-
-                var history = await historyQuery.ToListAsync();
+                // we are only interested in the 90 days before the actual release date
 
                 bool beenInCustody = false;
                 bool beenInCommunityAfter = false;
-                
 
-                foreach (var h in history.Where(h => h.From >
-                                                     pri.ReleaseDate!.Value.ToDateTime(TimeOnly.MinValue).AddDays(-90)))
+
+                foreach (var h in Locations.Where(h => h.From >
+                                                ActualReleaseDate!.ToDateTime(TimeOnly.MinValue).AddDays(-90)))
                 {
-                    if (h.Id == pri.CustodyLocationId)
+                    if (h.LocationId == CustodyLocationId)
                     {
                         beenInCustody = true;
                         continue;
                     }
 
-                    if (h.Id == pri.CommunityLocationId && beenInCustody)
+                    if (h.LocationId == CommunityLocationId && beenInCustody)
                     {
                         beenInCommunityAfter = true;
                         break;
                     }
                 }
 
-                if (beenInCommunityAfter == false)
-                {
-                    ineligibilityReason = NeverInLocation;
-                }
+                return beenInCustody && beenInCommunityAfter;
+
             }
         }
-
-
-        DateTime approved = tasks.FirstOrDefault(t => t.Index == 2 && t.CompletedStatus == CompletionStatus.Done) ==
-                            null
-            ? DateTime.Now.Date
-            : tasks.First(t => t.Index == 2).Completed!.Value;
-                
-
-        var payment = new SupportAndReferralBuilder()
-            .WithParticipantId(pri.ParticipantId)
-            .WithPri(pri.Id)
-            .WithApproved(approved)
-            .WithLocationId(pri.CommunityLocationId)
-            .WithContractId(pri.CommunityContractId)
-            .WithSupportType(SupportType)
-            .WithTenantId(pri.TenantId)
-            .WithLocationType(pri.CommunityLocationType.Name)
-            .WithEligibleForPayment(ineligibilityReason == null)
-            .WithIneligibilityReason(ineligibilityReason)
-            .WithSupportWorker(pri.CreatedBy)
-            .Build();
-
-        unitOfWork.DbContext.SupportAndReferralPayments.Add(payment);
-
-        await unitOfWork.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// This record represents task data returned from the query
+    /// </summary>
+    public record TaskData
+    {
+        public required bool IsMandatory { get; init; }
+        public required CompletionStatus CompletionStatus { get; init; } 
+        public required DateTime? Completed { get; init; }
+        public required int Index { get; init; }
+    }
+
+    public record LocationData
+    {
+        public required int LocationId { get; init; }
+        public required DateTime From { get; init; }
+    }
 }

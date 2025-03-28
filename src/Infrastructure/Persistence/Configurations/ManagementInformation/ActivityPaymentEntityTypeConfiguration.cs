@@ -54,7 +54,19 @@ public class ActivityPaymentEntityTypeConfiguration
 
         builder.Property(x => x.ParticipantId)
             .IsRequired()
-            .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId);   
+            .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId);
+
+        builder.Property(x => x.CommencedDate)
+            .IsRequired()
+            .HasColumnType("date");
+
+        builder.Property(x => x.ActivityInput)
+            .IsRequired()
+            .HasColumnType("date");
+
+        builder.Property(x => x.PaymentPeriod)
+            .IsRequired()
+            .HasColumnType("date");
 
         builder.HasIndex(x => new { 
             x.ParticipantId,

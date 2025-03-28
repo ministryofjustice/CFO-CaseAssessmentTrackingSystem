@@ -16,6 +16,8 @@ builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration);
 
+builder.AddServiceDefaults();
+
 var app = builder.Build();
 
 app.ConfigureServer(builder.Configuration);
@@ -26,6 +28,9 @@ if (app.Environment.IsDevelopment())
     var applicationDbContextInitializer = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitializer>();
     await applicationDbContextInitializer.InitialiseAsync();
 }
+
+app.MapDefaultEndpoints();
+
 
 await app.RunAsync();
 

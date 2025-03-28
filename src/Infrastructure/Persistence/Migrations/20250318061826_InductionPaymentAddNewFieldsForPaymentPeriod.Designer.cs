@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250318061826_InductionPaymentAddNewFieldsForPaymentPeriod")]
+    partial class InductionPaymentAddNewFieldsForPaymentPeriod
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1437,9 +1440,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ActivityInput")
-                        .HasColumnType("date");
-
                     b.Property<DateTime>("Approved")
                         .HasColumnType("date");
 
@@ -1470,9 +1470,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(9)
                         .HasColumnType("nvarchar(9)");
-
-                    b.Property<DateTime>("PaymentPeriod")
-                        .HasColumnType("date");
 
                     b.Property<Guid>("PriId")
                         .HasColumnType("uniqueidentifier");

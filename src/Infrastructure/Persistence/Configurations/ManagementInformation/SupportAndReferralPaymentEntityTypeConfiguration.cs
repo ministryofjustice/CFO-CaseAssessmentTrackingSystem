@@ -49,6 +49,14 @@ public class SupportAndReferralPaymentEntityTypeConfiguration
             .IsRequired()
             .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId);
 
+        builder.Property(x => x.ActivityInput)
+            .IsRequired()
+            .HasColumnType("date");
+
+        builder.Property(x => x.PaymentPeriod)
+            .IsRequired()
+            .HasColumnType("date");
+
         builder.HasIndex(x => new {
                 x.ParticipantId,
                 x.ContractId,
@@ -56,6 +64,8 @@ public class SupportAndReferralPaymentEntityTypeConfiguration
                 x.Approved
             })
             .HasDatabaseName("ix_ActivityPayment_ParticipantId");
+
+
 
     }
 }

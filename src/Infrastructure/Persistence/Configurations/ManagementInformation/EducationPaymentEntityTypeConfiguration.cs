@@ -56,10 +56,24 @@ public class EducationPaymentEntityTypeConfiguration
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.Property(x => x.CommencedDate)
+            .IsRequired()
+            .HasColumnType("date");
+
+        builder.Property(x => x.ActivityInput)
+            .IsRequired()
+            .HasColumnType("date");
+
+        builder.Property(x => x.PaymentPeriod)
+            .IsRequired()
+            .HasColumnType("date");
+
         builder.HasIndex(x => new { 
             x.ParticipantId,
             x.ContractId,
-            x.ActivityApproved
+            x.CourseLevel,
+            x.CourseTitle,
+            x.EligibleForPayment
         })
         .HasDatabaseName("ix_ActivityPayment_ParticipantId");
     }

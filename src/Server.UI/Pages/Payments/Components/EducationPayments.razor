@@ -30,13 +30,42 @@
                 <HeaderContent>
                     @if (Contract is null)
                     {
-                        <MudTh>Contract</MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Contract)">
+                                Contract
+                            </MudTableSortLabel>
+                        </MudTh>
                     }
-                    <MudTh>Created</MudTh>
-                    <MudTh>Commenced On</MudTh>
-                    <MudTh>Approved</MudTh>
-                    <MudTh>Participant</MudTh>
-                    <MudTh>Location</MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.CreatedOn)">
+                            Created
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.CommencedOn)">
+                            Commenced On
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.ActivityApproved)">
+                            Approved
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.PaymentPeriod)">
+                            Payment Period
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.ParticipantName)">
+                            Participant
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Location)">
+                            Location
+                        </MudTableSortLabel>
+                    </MudTh>
                     <MudTh>Payable</MudTh>
                 </HeaderContent>
                 <RowTemplate>
@@ -49,6 +78,7 @@
                     <MudTd DataLabel="Created">@context.CreatedOn.ToShortDateString()</MudTd>
                     <MudTd DataLabel="Commenced On">@context.CommencedOn.ToShortDateString()</MudTd>
                     <MudTd DataLabel="Approved">@context.ActivityApproved.ToShortDateString()</MudTd>
+                    <MudTd DataLabel="Payment Period">@context.PaymentPeriod.ToShortDateString()</MudTd>
                     <MudTd DataLabel="Participant">
                         <div class="d-flex flex-column">
                             <MudText Typo="Typo.body1">@context.ParticipantName</MudText>
@@ -131,164 +161,3 @@
         </MudItem>
     }
 </MudGrid>
-
-
-
-
-
-@code {
-    
-    private bool _loading = true;
-
-    [Parameter, EditorRequired]
-    public bool DataView { get; set; }
-
-    [Parameter, EditorRequired]
-    public int Month { get; set; }
-
-    [Parameter, EditorRequired]
-    public int Year { get; set; }
-
-    [Parameter]
-    public ContractDto? Contract { get; set; }
-
-    [CascadingParameter]
-    public UserProfile CurrentUser { get; set; } = default!;
-
-    private RawData[] Payments { get; set; } = [];
-
-    private TableGroupDefinition<RawData> _groupDefinition = new()
-    {
-        GroupName = "Contract",
-        Indentation = false,
-        Expandable = true,
-        Selector = (e) => e.Contract
-    };
-
-    protected override async Task OnInitializedAsync()
-    {
-        var unitOfWork = GetNewUnitOfWork();
-
-
-        var query = from ep in unitOfWork.DbContext.EducationPayments
-            join dd in unitOfWork.DbContext.DateDimensions on ep.ActivityApproved equals dd.TheDate
-            join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
-            join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id
-            join a in unitOfWork.DbContext.Activities on ep.ActivityId equals a.Id
-            where dd.TheMonth == Month && dd.TheYear == Year
-            select new
-            {
-                ep.CreatedOn,
-                a.CommencedOn,
-                ep.ActivityApproved,
-                ep.ParticipantId,
-                ep.EligibleForPayment,
-                Contract = c.Description,
-                ep.LocationType,
-                ContractId = c.Id,
-                Location = l.Name,
-                ep.IneligibilityReason,
-                TenantId = c!.Tenant!.Id!,
-                ParticipantName = a.Participant!.FirstName + " " + a.Participant!.LastName
-            };
-
-        query = Contract is null
-            ? query.Where(q => q.TenantId.StartsWith(CurrentUser.TenantId!))
-            : query.Where(q => q.ContractId == Contract.Id);
-        
-        Payments = await query.AsNoTracking()
-            .Select(x => new RawData 
-                { 
-                    CreatedOn = x.CreatedOn,
-                    CommencedOn = x.CommencedOn,
-                    ActivityApproved = x.ActivityApproved,
-                    ParticipantId = x.ParticipantId,
-                    EligibleForPayment = x.EligibleForPayment,
-                    Contract = x.Contract,
-                    Location = x.Location,
-                    LocationType = x.LocationType,
-                    IneligibilityReason = x.IneligibilityReason,
-                    ParticipantName = x.ParticipantName
-                })
-            .OrderByDescending(e => e.CreatedOn)
-            .ToArrayAsync();
-
-        this.SummaryData = Payments
-            .Where(e => e.EligibleForPayment)
-            .GroupBy(e => e.Contract)
-            .Select(x => new SummaryDataModel
-            {
-                Contract = x.Key,
-                Educations = x.Count(),
-                EducationsTarget = TargetProvider.GetTarget(x.Key, Month, Year).TrainingAndEducation
-            })
-            .OrderBy(c => c.Contract)
-            .ToList();
-
-        _loading = false;
-
-    }
-    
-    private string _searchString = "";
-    private List<SummaryDataModel> SummaryData = [];
-
-    private class RawData
-    {
-        public DateTime CreatedOn { get; set; }
-        public DateTime CommencedOn { get; set; }
-        public DateTime ActivityApproved { get; set; }
-        public string Contract { get; set; } = "";
-        public string ParticipantId { get; set; } = "";
-        public bool EligibleForPayment { get; set; }
-        public string LocationType { get; set; } = "";
-        public string Location { get; set; } = "";
-        public string? IneligibilityReason { get; set; }
-        public string ParticipantName { get; set; } = "";
-    }
-
-    private class SummaryDataModel
-    {
-        public required string Contract { get; set; } 
-        public required int Educations { get; set; } 
-        public required int EducationsTarget { get; set; }
-        public decimal EducationsPercentage => Educations.CalculateCappedPercentage(EducationsTarget);
-    }
-
-    private bool FilterFunc1(RawData data) => FilterFunc(data, _searchString);
-
-    private bool FilterFunc(RawData data, string searchString)
-    {
-        if (string.IsNullOrWhiteSpace(searchString))
-        {
-            return true;
-        }
-
-        if (data.ParticipantName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        if (data.ParticipantId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        if (data.IneligibilityReason is not null && data.IneligibilityReason.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        if (data.Location.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        if (data.LocationType.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-        
-        return false;
-    }
-
-}

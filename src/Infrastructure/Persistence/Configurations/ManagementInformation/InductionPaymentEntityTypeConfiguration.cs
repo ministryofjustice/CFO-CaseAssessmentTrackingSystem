@@ -56,5 +56,18 @@ public class InductionPaymentEntityTypeConfiguration : IEntityTypeConfiguration<
         
         builder.Property(x => x.IneligibilityReason)
             .HasMaxLength(250);
+
+        builder.Property(x => x.CommencedDate)
+            .IsRequired()
+            .HasColumnType("date");
+
+        builder.Property(x => x.InductionInput)
+            .IsRequired()
+            .HasColumnType("date");
+
+        builder.Property(x => x.PaymentPeriod)
+            .IsRequired()
+            .HasColumnType("date");
+
     }
 }

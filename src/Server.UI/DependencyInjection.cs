@@ -1,7 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Reflection;
-using BlazorDownloadFile;
-using Cfo.Cats.Domain.Identity;
+﻿using BlazorDownloadFile;
 using Cfo.Cats.Infrastructure.Constants.Localization;
 using Cfo.Cats.Server.UI.Services;
 using Cfo.Cats.Server.UI.Services.Fusion;
@@ -18,8 +15,6 @@ using ActualLab.Fusion;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using ActualLab.Fusion.Extensions;
 using Cfo.Cats.Server.UI.Middlewares;
-using Cfo.Cats.Infrastructure;
-using Cfo.Cats.Infrastructure.Services;
 using ApexCharts;
 
 namespace Cfo.Cats.Server.UI;
@@ -31,7 +26,7 @@ public static class DependencyInjection
         var services = builder.Services;
         var config = builder.Configuration;
         var environment = builder.Environment;
-        
+
         
         CookieSecurePolicy policy = CookieSecurePolicy.SameAsRequest;
         if(config["IdentitySettings:SecureCookies"] is not null && config["IdentitySettings:SecureCookies"]!.Equals("True", StringComparison.CurrentCultureIgnoreCase))
@@ -99,7 +94,7 @@ public static class DependencyInjection
             });
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
-        services.AddHealthChecks();
+            
         
         services.AddScoped<LocalTimezoneOffset>();
         services.AddHttpContextAccessor();
@@ -148,8 +143,7 @@ public static class DependencyInjection
         }
 
         app.UseStatusCodePagesWithRedirects("/404");
-        app.MapHealthChecks("/health");
-
+        
         app.UseAuthentication();
         app.UseAuthorization();
 

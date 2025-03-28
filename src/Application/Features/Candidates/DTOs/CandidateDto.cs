@@ -83,4 +83,8 @@ public class CandidateDto
     public string? RegistrationDetailsJson { get; set; }
 
     public int MappedLocationId { get; set; } = 0;
+
+    public string? CommunityLocation { get; set; }
+    public string? CustodyLocation { get; set; }
+    public bool IsInCustody { get; set; }
 }

@@ -8,56 +8,71 @@ namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHa
 
 public class RecordWingInductionPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<WingInductionCreatedIntegrationEvent>
 {
-    private static class IneligibilityReasons
-    {
-        public const string AlreadyPaid = "A wing induction has already been claimed under this contract";
-        public const string NotYetApproved = "The enrolment for this participant has not yet been approved";
-        public const string BeforeConsent = "This occurred before the consent date";
-    }
 
     public async Task Consume(ConsumeContext<WingInductionCreatedIntegrationEvent> context)
     {
-        var inductionData = await unitOfWork.DbContext
-            .WingInductions
+        var inductionData = await unitOfWork.DbContext.WingInductions
+            .Include(a => a.Location)
+                .ThenInclude(l => l!.Contract)
+            .Include(a => a.Owner)
             .AsNoTracking()
-            .Where(i => i.Id == context.Message.Id)
-            .Select(x => new
-            {
-                x.ParticipantId,
-                x.CreatedBy,
-                x.LocationId,
-                ContractId = x.Location!.Contract!.Id,
-                x.InductionDate,
-                LocationType = x.Location.LocationType.Name,
-                TenantId = x.Owner!.TenantId!
-            })
-            .SingleAsync();
+            .SingleAsync(i => i.Id == context.Message.Id);
 
-        string? ineligibilityReason = null;
+        IneligibilityReason? ineligibilityReason = null;
 
         // to be eligible for payment your enrolment must have been approved.
         // and we must not have had a payment for the same type of induction
         if (await unitOfWork.DbContext
                 .InductionPayments
                 .AnyAsync(c => c.ParticipantId == inductionData.ParticipantId
-                            && c.ContractId == inductionData.ContractId 
-                            && c.LocationType == inductionData.LocationType 
+                            && c.ContractId == inductionData.Location!.Contract!.Id
+                            && c.LocationType == inductionData.Location!.LocationType.Name
                             && c.EligibleForPayment))
         {
-            ineligibilityReason = IneligibilityReasons.AlreadyPaid;
+            ineligibilityReason = IneligibilityReason.MaximumPaymentLimitReached;
         }
 
         var history = await unitOfWork.DbContext.ParticipantEnrolmentHistories
-                                .AsNoTracking()
-                                .Where(h => h.ParticipantId == inductionData.ParticipantId)
-                                .ToListAsync();
+            .AsNoTracking()
+            .Where(e => e.ParticipantId == inductionData.ParticipantId &&
+                        e.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value)
+            .OrderBy(e => e.Created)
+            .FirstOrDefaultAsync();
 
-        var firstApproval = history.Where(h => h.EnrolmentStatus == EnrolmentStatus.ApprovedStatus)
-                            .Min(x => x.Created);
-
-        if (firstApproval.HasValue == false)
+        if (history == null)
         {
-            ineligibilityReason = IneligibilityReasons.NotYetApproved;
+            ineligibilityReason = IneligibilityReason.NotYetApproved;
+        }
+
+        if (ineligibilityReason is null)
+        {
+            var dates = await unitOfWork.DbContext.DateDimensions
+                .Where(dd => dd.TheDate == inductionData.InductionDate)
+                .Select(dd => new
+                {
+                    dd.TheFirstOfMonth,
+                    dd.TheLastOfMonth
+                })
+                .SingleAsync();
+
+            var query = from hubip in unitOfWork.DbContext.InductionPayments
+                        where
+                            hubip.ParticipantId == inductionData.ParticipantId
+                            && hubip.ContractId == inductionData.Location!.Contract!.Id
+                            && hubip.LocationId == inductionData.LocationId
+                            && hubip.LocationType == inductionData.Location!.Contract!.Id
+                            && hubip.CommencedDate >= dates.TheFirstOfMonth
+                            && hubip.CommencedDate <= dates.TheLastOfMonth
+                            && hubip.EligibleForPayment
+                        select hubip;
+
+            var previousPayments = await query.AsNoTracking().ToListAsync();
+
+
+            if (previousPayments.Count > 0)
+            {
+                ineligibilityReason = IneligibilityReason.MaximumPaymentLimitReached;
+            }
         }
 
         if (ineligibilityReason is null)
@@ -71,22 +86,15 @@ public class RecordWingInductionPaymentConsumer(IUnitOfWork unitOfWork) : IConsu
 
             if (consentDate!.Value > DateOnly.FromDateTime(inductionData.InductionDate))
             {
-                ineligibilityReason = IneligibilityReasons.BeforeConsent;
+                ineligibilityReason = IneligibilityReason.BeforeConsent;
             }
         }
 
-        var payment = new InductionPaymentBuilder()
-                    .WithParticipantId(inductionData.ParticipantId)
-                    .WithSupportWorker(inductionData.CreatedBy!)
-                    .WithContractId(inductionData.ContractId)
-                    .WithApproved(context.Message.OccurredOn.Date)
-                    .WithInduction(inductionData.InductionDate.Date)
-                    .WithLocationId(inductionData.LocationId)
-                    .WithLocationType(inductionData.LocationType)
-                    .WithTenantId(inductionData.TenantId)
-                    .WithEligibleForPayment(ineligibilityReason == null)
-                    .WithIneligibilityReason(ineligibilityReason)
-                    .Build();
+        InductionPayment payment = ineligibilityReason switch
+        {
+            not null => InductionPayment.CreateNonPayableInductionPayment(inductionData, ineligibilityReason),
+            _ => InductionPayment.CreatePayableInductionPayment(inductionData, history!.Created!.Value)
+        };
 
         unitOfWork.DbContext.InductionPayments.Add(payment);
         await unitOfWork.SaveChangesAsync(CancellationToken.None);

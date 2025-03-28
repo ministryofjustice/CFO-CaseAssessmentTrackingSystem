@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250311124726_EducationPayments_PaymentPeriod")]
+    partial class EducationPayments_PaymentPeriod
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1236,12 +1239,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("ActivityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ActivityInput")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime>("CommencedDate")
-                        .HasColumnType("date");
-
                     b.Property<string>("ContractId")
                         .IsRequired()
                         .HasMaxLength(12)
@@ -1270,9 +1267,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasMaxLength(9)
                         .HasColumnType("nvarchar(9)");
 
-                    b.Property<DateTime>("PaymentPeriod")
-                        .HasColumnType("date");
-
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1280,7 +1274,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParticipantId", "ContractId", "CommencedDate", "EligibleForPayment")
+                    b.HasIndex("ParticipantId", "ContractId", "ActivityApproved")
                         .HasDatabaseName("ix_ActivityPayment_ParticipantId");
 
                     b.ToTable("EmploymentPayment", "Mi");
@@ -1371,9 +1365,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("Approved")
                         .HasColumnType("date");
 
-                    b.Property<DateTime>("CommencedDate")
-                        .HasColumnType("date");
-
                     b.Property<string>("ContractId")
                         .IsRequired()
                         .HasMaxLength(12)
@@ -1386,9 +1377,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("Induction")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime>("InductionInput")
                         .HasColumnType("date");
 
                     b.Property<string>("IneligibilityReason")
@@ -1409,9 +1397,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(9)
                         .HasColumnType("nvarchar(9)");
-
-                    b.Property<DateTime>("PaymentPeriod")
-                        .HasColumnType("date");
 
                     b.Property<string>("SupportWorker")
                         .IsRequired()
@@ -1436,9 +1421,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ActivityInput")
-                        .HasColumnType("date");
 
                     b.Property<DateTime>("Approved")
                         .HasColumnType("date");
@@ -1470,9 +1452,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(9)
                         .HasColumnType("nvarchar(9)");
-
-                    b.Property<DateTime>("PaymentPeriod")
-                        .HasColumnType("date");
 
                     b.Property<Guid>("PriId")
                         .HasColumnType("uniqueidentifier");
