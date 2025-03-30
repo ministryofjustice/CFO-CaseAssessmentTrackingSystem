@@ -103,7 +103,6 @@
                     <MudTooltip Text="Create Assessment">
                         <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginAssessment"/>
                     </MudTooltip>
-
                 }
                 @if (CanContinueAssessment())
                 {
@@ -246,9 +245,9 @@
                             </div>
                         </dl>
                     </div>
-
                 }
             </MudCardContent>
+
             <MudCardActions>
                 @if (CanBeginBio())
                 {
@@ -374,6 +373,40 @@
                                     <MudText Typo="Typo.body2">@_latestPRI.Created.ToString("dd/MM/yyyy")</MudText>
                                 </dd>
                             </div>
+
+                            @if (_latestPRI.Status == PriStatus.Completed || _latestPRI.Status == PriStatus.Abandoned)
+                            {                             
+                                <div class="description-pair">
+                                    <dt>
+                                        <MudText Typo="Typo.subtitle2">Date @_latestPRI.Status.Name</MudText>
+                                    </dt>
+                                    <dd>
+                                        <MudText Typo="Typo.body2">@_latestPRI.CompletedOn?.ToString("dd/MM/yyyy")</MudText>
+                                    </dd>
+                                </div>
+
+                                <div class="description-pair">
+                                    <dt>
+                                        <MudText Typo="Typo.subtitle2">@_latestPRI.Status.Name By</MudText>
+                                    </dt>
+                                    <dd>
+                                        <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == _latestPRI.CompletedBy).DisplayName </MudText>
+                                    </dd>
+                                </div>
+
+                                if (_latestPRI.Status == PriStatus.Abandoned)
+                                {
+                                    <div class="description-pair">
+                                        <dt>
+                                            <MudText Typo="Typo.subtitle2">@_latestPRI.Status.Name Reason</MudText>
+                                        </dt>
+                                        <dd>
+                                            <MudText Typo="Typo.body2">@_latestPRI.AbandonReason?</MudText>
+                                        </dd>
+                                    </div>
+                                }
+                            }
+
                             @if (_showTTGDue)
                             {
                                 <div class="description-pair">
