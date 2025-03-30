@@ -1,4 +1,4 @@
-    @inherits CatsComponentBase
+@inherits CatsComponentBase
 
 @using System.Globalization
 @using ActualLab.Fusion.Extensions
@@ -6,7 +6,6 @@
 @using Cfo.Cats.Application.Features.QualityAssurance.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Humanizer
-
 
 @if (_notes is { Length: > 0 })
 {
@@ -20,9 +19,20 @@
                             <MudText Typo="Typo.body1">
                                 @note.Message
                             </MudText>
-                            <MudText Typo="Typo.caption">
-                                @note.CreatedBy (@note.TenantName)  @note.Created.Humanize()    
-                            </MudText>
+
+                            @if (hideUser && CFOTenantNames.Contains(note.TenantName))
+                            {
+                                <MudText Typo="Typo.caption">
+                                    CFO User (@note.TenantName)  @note.Created.Humanize()
+                                </MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.caption">
+                                    @note.CreatedBy (@note.TenantName)  @note.Created.Humanize()
+                                </MudText>
+                            }
+
                         </MudCardContent>
                     </MudCard>
                 </MudTooltip>
@@ -30,7 +40,6 @@
         }
     </MudTimeline>
 }
-
 
 @code{
     private EnrolmentQaNoteDto[]? _notes = null;
@@ -43,6 +52,11 @@
 
     [Parameter, EditorRequired]
     public string ParticipantId { get;set; } = default!;
+
+    //Hide CFO Users from providers on time line
+    private bool hideUser = true;
+    private HashSet<string> CFOTenantNames = new HashSet<string> { "CFO", "CFO Evolution" };
+    private string[] allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
 
     protected override async Task OnInitializedAsync()
     {
@@ -64,6 +78,10 @@
                 _notes = result.Data!.OrderBy(n => n.Created).ToArray();
             }
         }
-    }
 
+        if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+        {
+            hideUser = false;
+        }
+    }
 }
