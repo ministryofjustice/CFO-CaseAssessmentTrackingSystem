@@ -209,7 +209,7 @@
                     <MudText Typo="Typo.h6">Bio Information</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
-            <MudCardContent Class="d-flex justify-space-between align-center">
+            <MudCardContent>
 
                 @if (_bio is null)
                 {
@@ -246,6 +246,26 @@
                         </dl>
                     </div>
                 }
+                <div>
+                    @if (_bioInfo!=string.Empty)
+                    {
+
+                        <div class="description-pair">
+                            <dt>
+                                <MudText Typo="Typo.subtitle2">Due</MudText>
+                            </dt>
+                            <dd>
+                                <MudTooltip Text="@_bioTooltipText">
+                                    <MudIcon Icon="@_bioIcon" Size="@Size.Small" Color="@_bioIconColor" />
+                                    <MudText Typo="Typo.body2">
+                                        @String.Format(_bioInfo)
+                                    </MudText>
+                                </MudTooltip>
+                            </dd>
+                        </div>                  
+                    }
+                </div>
+
             </MudCardContent>
 
             <MudCardActions>
