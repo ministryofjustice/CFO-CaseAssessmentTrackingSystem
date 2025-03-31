@@ -1,7 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
-using Cfo.Cats.Domain.Identity;
 
 namespace Cfo.Cats.Application.Features.Identity.Queries;
 
@@ -39,7 +38,8 @@ public static class GetUsersWithAccessToLocation
             users = users
                 .Where(user => location.Tenants
                     .Any(tenant => tenant.Id.StartsWith(user.TenantId!))
-                ).ToList();
+                ).OrderBy(user => user.DisplayName)
+                .ToList();
 
             return Result<IEnumerable<ApplicationUserDto>>.Success(users);
         }
@@ -63,7 +63,5 @@ public static class GetUsersWithAccessToLocation
             return await unitOfWork.DbContext.Locations
                 .SingleOrDefaultAsync(l => l.Id == locationId, cancellationToken) is not null;
         }
-
     }
-
 }
