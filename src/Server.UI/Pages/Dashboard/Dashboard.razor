@@ -23,6 +23,11 @@
         }
         <MyNotifications />
 
+    @if (UserProfile?.AssignedRoles?.Length > 0)
+    {
+        <CaseWorkload />
+    }
+
         @if(UserProfile?.AssignedRoles!.Contains(RoleNames.SystemSupport) == true)
         {
             <JobManagement />
@@ -32,7 +37,7 @@
         {
             <QaPots />
         }
-
+        
     </MudGrid>
 
 @code {
