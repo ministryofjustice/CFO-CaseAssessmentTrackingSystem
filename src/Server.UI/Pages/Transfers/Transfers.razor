@@ -45,8 +45,9 @@
         <MudTd DataLabel="@ConstantString.Actions">
             <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                 <MudMenuItem OnClick="async() => await Process(context)">Process and Assign</MudMenuItem>
-            </MudMenu>
-        </MudTd>
+                <MudMenuItem OnClick="() => View(context.ParticipantId)">View Participant</MudMenuItem>
+            </MudMenu>            
+        </MudTd>    
         <MudTd DataLabel="Participant">
             <div class="d-flex flex-column">
                 <MudText Typo="Typo.body2">@context.ParticipantFullName</MudText>
@@ -118,7 +119,7 @@
     <RowTemplate>
         <MudTd DataLabel="@ConstantString.Actions">
             <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
-                <MudMenuItem OnClick="() => View(context)">View Participant</MudMenuItem>
+                <MudMenuItem OnClick="() => View(context.ParticipantId)">View Participant</MudMenuItem>
             </MudMenu>
         </MudTd>
         <MudTd DataLabel="Participant">
@@ -226,8 +227,8 @@
         }
     }
 
-    private void View(OutgoingTransferDto transfer) => Navigation.NavigateTo($"/pages/participants/{transfer.ParticipantId}");
-
+    private void View(string participantId) => Navigation.NavigateTo($"/pages/participants/{participantId}");
+        
     private bool FilterIncoming1(IncomingTransferDto arg)
         => FilterIncoming(arg, _searchIncomingString);
 
