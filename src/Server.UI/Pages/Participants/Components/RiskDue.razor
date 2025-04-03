@@ -1,0 +1,117 @@
+﻿
+@using Cfo.Cats.Application.Features.Dashboard.DTOs
+@using Humanizer
+@inherits CatsComponentBase
+
+
+<MudItem xs="12" md="6" lg="3">
+    
+    @if (_loading == false)
+    {
+        <MudList T="string">
+            @foreach (var item in Model)
+            {
+                <MudListItem T="string"
+                             OnClickPreventDefault="true">
+                    <MudStack>
+                        <MudText Typo="Typo.caption" Color="Color.Info">
+                            @($"{item.FirstName} {item.LastName}")
+                        </MudText>
+                        <MudDivider />
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.body1"><strong>Due Date</strong></MudText>
+                            <MudText Typo="Typo.body1">@item.DueDate.ToShortDateString() (@item.DueDate.Humanize())</MudText>
+                        </MudStack>
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.body1"><strong>Last Completed</strong></MudText>
+                            @if (item.LastRiskUpdate.HasValue)
+                            {
+                                <MudText Typo="Typo.body1">@item.LastRiskUpdate.Value.ToShortDateString() (@item.LastRiskUpdate.Humanize())</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body1">Never</MudText>
+                            }
+                        </MudStack>
+                    </MudStack>
+                </MudListItem>
+            }
+        </MudList>
+    }
+
+   
+    
+    
+
+    @*  <MudTable Items="@Model"
+              Hover="true">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Upcoming &amp; Overdue Risks</MudText>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<RiskDueDto, object>(x => x.ParticipantId)">
+                    Id
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<RiskDueDto, object>(x => x.FirstName)">
+                    Participant
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<RiskDueDto, object>(x => x.EnrolmentStatus)">
+                    Status
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<RiskDueDto, object>(x => x.DueDate)">
+                    Due Date
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<RiskDueDto, object?>(x => x.LastRiskUpdate)">
+                    Last Completed
+                </MudTableSortLabel>
+            </MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Id">
+                <MudLink Href="@($"/pages/participants/{context.ParticipantId}")">
+                    @context.ParticipantId
+                </MudLink>
+            </MudTd>
+            <MudTd DataLabel="Participant">
+                @($"{context.FirstName} {context.LastName}")
+            </MudTd>
+            <MudTd DataLabel="Status">
+                @context.EnrolmentStatus
+            </MudTd>
+            <MudTd DataLabel="Due Date">
+                <MudStack>
+                    <MudText Typo="Typo.body1">@context.DueDate.ToShortDateString()</MudText>
+                    <MudText Typo="Typo.body1">@context.DueDate.Humanize()</MudText>
+                </MudStack>
+            </MudTd>
+            <MudTd DataLabel="Last Completed">
+                @if (context.LastRiskUpdate.HasValue)
+                {
+                    <MudStack>
+                        <MudText Typo="Typo.body1">@context.LastRiskUpdate.Value.ToShortDateString()</MudText>
+                        <MudText Typo="Typo.body1">@context.LastRiskUpdate.Value.Humanize()</MudText>
+                    </MudStack>
+                }
+                else
+                {
+                    <MudIcon Icon="@Icons.Material.Outlined.WarningAmber"/>
+                }
+            </MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No data</MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            <MudTablePager/>
+        </PagerContent>
+    </MudTable> *@
+</MudItem>
