@@ -323,6 +323,17 @@ public class ActivityDefinition(
     public static readonly ActivityDefinition EmploymentinCommunityWiderCommunity = new("Employment in Community Wider Community", 287, DeliveryLocationType.WiderCommunity, ClassificationType.Employment, ActivityType.Employment, ActivityCategory.EmploymentInCommunity, ExpectedClaims.MoreThanOne, CheckType.QA);
     public static readonly ActivityDefinition EmploymentinCommunityHub = new("Employment in Community Hub", 288, DeliveryLocationType.Hub, ClassificationType.Employment, ActivityType.Employment, ActivityCategory.EmploymentInCommunity, ExpectedClaims.MoreThanOne, CheckType.QA);
     public static readonly ActivityDefinition EmploymentonROTLCustody = new("Employment on ROTL Custody", 289, DeliveryLocationType.Custody, ClassificationType.Employment, ActivityType.Employment, ActivityCategory.EmploymentOnROTL, ExpectedClaims.MoreThanOne, CheckType.QA);
+
+    public static readonly ActivityDefinition CRSWomenWiderCommunity = new("CRS Women Wider Community", 290, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.CRSWomen, ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition CRSWomenHub = new("CRS Women Hub", 291, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.CRSWomen, ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition CRSFinanceBenefitAndDebtWiderCommunity = new("CRS Finance Benefit And Debt Wider Community", 292, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.CRSFinanceBenefitAndDebt, ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition CRSFinanceBenefitAndDebtHub = new("CRS Finance Benefit And Debt Hub", 293, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.CRSFinanceBenefitAndDebt, ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition CRSAccommodationWiderCommunity = new("CRS Accommodation Wider Community", 294, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.CRSAccommodation, ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition CRSAccommodationHub = new("CRS Accommodation Hub", 295, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.CRSAccommodation, ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition CRSWellbeingWiderCommunity = new("CRS Wellbeing Wider Community", 296, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.CRSWellbeing, ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition CRSWellbeingHub = new("CRS Wellbeing Hub", 297, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.CRSWellbeing, ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition CRSDependencyAndRecoveryWiderCommunity = new("CRS Dependency And Recovery Wider Community", 298, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.CRSDependencyAndRecovery, ExpectedClaims.One, CheckType.QA);
+    public static readonly ActivityDefinition CRSDependencyAndRecoveryHub = new("CRS Dependency And Recovery Hub", 299, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.CRSDependencyAndRecovery, ExpectedClaims.One, CheckType.QA);
 }
 
 public class DeliveryLocationType(string name, int value) : SmartEnum<DeliveryLocationType>(name, value)
@@ -472,4 +483,9 @@ public class ActivityCategory(string name, int value) : SmartEnum<ActivityCatego
     public static readonly ActivityCategory WhereToStartAndIntroductionToEmployability = new("Where to Start and Introduction to Employability", 99);
     public static readonly ActivityCategory WomensWorld = new("Women's World", 100);
     public static readonly ActivityCategory WorkRelatedMentoringInWorkSupport = new("Work-Related Mentoring / In Work Support", 101);
+    public static readonly ActivityCategory CRSWomen = new("CRS Women", 102);
+    public static readonly ActivityCategory CRSFinanceBenefitAndDebt = new("CRS Finance, Benefit and Debt", 103);
+    public static readonly ActivityCategory CRSAccommodation = new("CRS Accommodation", 104);
+    public static readonly ActivityCategory CRSWellbeing = new("CRS Wellbeing", 105);
+    public static readonly ActivityCategory CRSDependencyAndRecovery = new ("CRS Dependency and Recovery", 106);
 }
