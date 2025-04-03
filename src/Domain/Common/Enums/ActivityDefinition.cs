@@ -323,6 +323,7 @@ public class ActivityDefinition(
     public static readonly ActivityDefinition EmploymentinCommunityWiderCommunity = new("Employment in Community Wider Community", 287, DeliveryLocationType.WiderCommunity, ClassificationType.Employment, ActivityType.Employment, ActivityCategory.EmploymentInCommunity, ExpectedClaims.MoreThanOne, CheckType.QA);
     public static readonly ActivityDefinition EmploymentinCommunityHub = new("Employment in Community Hub", 288, DeliveryLocationType.Hub, ClassificationType.Employment, ActivityType.Employment, ActivityCategory.EmploymentInCommunity, ExpectedClaims.MoreThanOne, CheckType.QA);
     public static readonly ActivityDefinition EmploymentonROTLCustody = new("Employment on ROTL Custody", 289, DeliveryLocationType.Custody, ClassificationType.Employment, ActivityType.Employment, ActivityCategory.EmploymentOnROTL, ExpectedClaims.MoreThanOne, CheckType.QA);
+    public static readonly ActivityDefinition EmploymentinCustody = new("Employment in Custody", 290, DeliveryLocationType.Custody, ClassificationType.Employment, ActivityType.Employment, ActivityCategory.EmploymentInCustody, ExpectedClaims.MoreThanOne, CheckType.QA);
 
     public static readonly ActivityDefinition CRSWomenWiderCommunity = new("CRS Women Wider Community", 291, DeliveryLocationType.WiderCommunity, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.CRSWomen, ExpectedClaims.One, CheckType.QA);
     public static readonly ActivityDefinition CRSWomenHub = new("CRS Women Hub", 292, DeliveryLocationType.Hub, ClassificationType.ISWActivity, ActivityType.InterventionsAndServicesWraparoundSupport, ActivityCategory.CRSWomen, ExpectedClaims.One, CheckType.QA);
@@ -488,4 +489,5 @@ public class ActivityCategory(string name, int value) : SmartEnum<ActivityCatego
     public static readonly ActivityCategory CRSAccommodation = new("CRS Accommodation", 104);
     public static readonly ActivityCategory CRSWellbeing = new("CRS Wellbeing", 105);
     public static readonly ActivityCategory CRSDependencyAndRecovery = new ("CRS Dependency and Recovery", 106);
+    public static readonly ActivityCategory EmploymentInCustody = new("Employment in Custody", 107);
 }
