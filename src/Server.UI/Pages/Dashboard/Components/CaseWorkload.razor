@@ -23,10 +23,13 @@
             </MudCardHeader>
             <MudCardContent>
                 <MudTable Items="@Result.Data"
-                          Hover="true">
+                          Hover="true"
+                          Striped="true"
+                          Filter="new Func<CaseSummaryDto,bool>(FilterFunc)">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6">Case Workload</MudText>
                         <MudSpacer />
+                        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0 mr-2" />
                         <MudButton Disabled="@_downloading"
                                    Variant="Variant.Outlined"
                                    Color="Color.Primary"
