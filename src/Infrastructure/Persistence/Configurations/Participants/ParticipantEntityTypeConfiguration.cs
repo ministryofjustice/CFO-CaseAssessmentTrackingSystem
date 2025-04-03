@@ -77,6 +77,10 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
         builder.Property(p => p.ArchiveJustification)
         .HasMaxLength(ValidationConstants.NotesLength);
 
+        builder.Property(p => p.RiskDue)
+            .IsRequired(false)
+            .HasColumnType("date");
+
         builder.HasOne(e => e.CurrentLocation)
             .WithMany()
             .HasForeignKey("_currentLocationId")

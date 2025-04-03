@@ -1,0 +1,102 @@
+﻿@using Cfo.Cats.Application.Features.Dashboard.DTOs
+@using Humanizer
+
+@inherits CatsComponentBase
+
+<MudItem lg="6" md="12">
+    @if (_loading)
+    {
+        <LoadingCard Title="Risk due" />
+    }
+    else
+    {
+        @if (Model is { Succeeded: true, Data: not null  })
+        {
+            <MudCard style="height:100%">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h5">Risk due</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudSwitch T="bool" Value="_approvedOnly" ValueChanged="OnApprovedOnlyChanged" Color="Color.Info">
+                            Approved Only 
+                        </MudSwitch>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTable
+                        Items="Model.Data"
+                        Hover="true"
+                        Striped="true"
+                        Filter="new Func<RiskDueDto,bool>(FilterFunc)">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Details</MudText>
+                            <MudSpacer />
+                            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<RiskDueDto, object>(x => x.ParticipantId)">
+                                    Ref
+                                </MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<RiskDueDto, object>(x => x.FirstName)">
+                                    Participant
+                                </MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<RiskDueDto, object>(x => x.EnrolmentStatus.Name)">
+                                    Status
+                                </MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<RiskDueDto, object>(x => x.DueDate)">
+                                    Due Date
+                                </MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<RiskDueDto, object>(x => x.LastRiskUpdate.GetValueOrDefault())">
+                                    Last Risk Update
+                                </MudTableSortLabel>
+                            </MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Ref">
+                                <MudLink Href=@($"/pages/participants/{context.ParticipantId}")>
+                                    @context.ParticipantId
+                                </MudLink>
+                                
+                            </MudTd>
+                            <MudTd DataLabel="Participant">
+                                @($"{context.FirstName} {context.LastName}")
+                            </MudTd>
+                            <MudTd DataLabel="Status">
+                                @context.EnrolmentStatus.Name
+                            </MudTd>
+                            <MudTd DataLabel="Due Date">
+                                <MudStack>@context.DueDate.ToShortDateString()</MudStack>
+                                <MudStack>@context.DueDate.Humanize()</MudStack>
+                            </MudTd>
+                            <MudTd DataLabel="Last Risk Update">
+                                @if (context.LastRiskUpdate.HasValue)
+                                {
+                                    <MudStack>@context.LastRiskUpdate.Value.ToShortDateString()</MudStack>
+                                    <MudStack>@context.LastRiskUpdate.Value.Humanize()</MudStack>
+                                }
+                            </MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new[] { 5, 10, 50 }"/>
+                        </PagerContent>
+                    </MudTable>
+                </MudCardContent>
+            </MudCard>
+        }
+    }
+    
+    
+
+</MudItem>
+
+
