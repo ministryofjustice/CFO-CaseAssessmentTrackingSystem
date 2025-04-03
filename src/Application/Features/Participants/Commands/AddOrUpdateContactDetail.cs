@@ -20,7 +20,7 @@ public static class AddOrUpdateContactDetail
         public bool Primary { get; set; }
     }
 
-    class Mapping : Profile 
+    private class Mapping : Profile 
     { 
         public Mapping()
         {
@@ -53,9 +53,7 @@ public static class AddOrUpdateContactDetail
                 }));
         }
     }
-
-
-    class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
