@@ -1,4 +1,5 @@
-﻿@using Cfo.Cats.Application.Features.Participants.Commands
+﻿@using Cfo.Cats.Application.Features.Assessments.Queries
+@using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.MessageBus
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
@@ -58,7 +59,6 @@
 </MudMenu>
 
 @code {
-
     private bool _canForceUpdate;
 
     [CascadingParameter]
@@ -79,9 +79,9 @@
     protected async Task Archive()
     {
         var command = new ArchiveCase.Command()
-                {
-                    ParticipantId = Participant.Id
-                };
+            {
+                ParticipantId = Participant.Id
+            };
 
         var parameters = new DialogParameters<ArchiveCaseDialog>()
             {
@@ -139,11 +139,27 @@
 
     protected async Task SubmitToPqa()
     {
-        var parameters = new DialogParameters<ConfirmationWithNotesDialog>()
+        //need to check if 2 or more reds
+        var parameters = new DialogParameters<ConfirmationWithNotesDialog>();
+        var justificationRequried = await AssessmentJustificationRequired();
+
+        if (justificationRequried)
         {
-            { x => x.ContentText, "Are you sure you would like to submit this case to Provider QA?" },
-            { x => x.NoteLabel, "Justification Reason" }
-        };
+            parameters = new DialogParameters<ConfirmationWithNotesDialog>()
+            {
+                { x => x.ContentText, "Are you sure you would like to submit this case to Provider QA?" },
+                { x => x.NoteLabel, "Mandatory Justification Reason" },
+                { x => x.MandatoryNote, true}
+            };
+        }
+        else{
+            parameters = new DialogParameters<ConfirmationWithNotesDialog>()
+            {
+                { x => x.ContentText, "Are you sure you would like to submit this case to Provider QA?" },
+                { x => x.NoteLabel, "Optional Justification Reason" },
+                { x => x.MandatoryNote, false}
+            };
+        }
 
         DialogOptions options = new DialogOptions()
             {
@@ -258,7 +274,6 @@
         }
     }
 
-
     protected async Task OpenConsentDialog()
     {
         // Show Dialog
@@ -291,9 +306,32 @@
                     }
                 </ul>
             </div>
-        , Severity.Error, options => {
-            options.RequireInteraction = true;
-            options.SnackbarVariant = Variant.Text;
-        } );
+            , Severity.Error, options => {
+                options.RequireInteraction = true;
+                options.SnackbarVariant = Variant.Text;
+            } );
     }
-}
+
+    private async Task<bool> AssessmentJustificationRequired()
+    {
+        bool justifcationRequired = false;
+
+        var query = new GetAssessmentScores.Query()
+                {
+                    ParticipantId = Participant.Id
+                };
+
+        var result = await GetNewMediator().Send(query);
+
+        if (result.Succeeded && result.Data != null)
+        {
+            var latestAssessment = result.Data.MaxBy(pa => pa.CreatedDate);
+            var greenYellowCount = latestAssessment!.PathwayScore.Where(x => x.Score >= 10).Count();           
+            if (greenYellowCount >= 2)
+            { 
+                justifcationRequired= true;
+            }            
+        }
+        return justifcationRequired;
+    }            
+ }
