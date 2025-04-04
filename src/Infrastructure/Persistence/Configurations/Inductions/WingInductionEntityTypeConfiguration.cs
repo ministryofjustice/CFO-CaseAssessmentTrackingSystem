@@ -57,6 +57,10 @@ public class WingInductionEntityTypeConfiguration : IEntityTypeConfiguration<Win
         builder.Property(h => h.CreatedBy)
             .IsRequired();
 
+        builder.Property(x => x.InductionDate)
+            .IsRequired()
+            .HasColumnType("date");
+
         builder.OwnsMany(h => h.Phases, phase => 
         {
             phase.WithOwner().HasForeignKey("WingInductionId");

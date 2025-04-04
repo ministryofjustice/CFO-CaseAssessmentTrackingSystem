@@ -52,6 +52,10 @@ public class HubInductionEntityTypeConfiguration : IEntityTypeConfiguration<HubI
 
         builder.Property (h => h.CreatedBy)
             .IsRequired();
+        
+        builder.Property(x => x.InductionDate)
+            .IsRequired()
+            .HasColumnType("date");
 
     }
 }
