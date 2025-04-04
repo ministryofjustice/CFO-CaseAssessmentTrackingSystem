@@ -323,6 +323,7 @@ public class ActivityDefinition(
     public static readonly ActivityDefinition EmploymentinCommunityWiderCommunity = new("Employment in Community Wider Community", 287, DeliveryLocationType.WiderCommunity, ClassificationType.Employment, ActivityType.Employment, ActivityCategory.EmploymentInCommunity, ExpectedClaims.MoreThanOne, CheckType.QA);
     public static readonly ActivityDefinition EmploymentinCommunityHub = new("Employment in Community Hub", 288, DeliveryLocationType.Hub, ClassificationType.Employment, ActivityType.Employment, ActivityCategory.EmploymentInCommunity, ExpectedClaims.MoreThanOne, CheckType.QA);
     public static readonly ActivityDefinition EmploymentonROTLCustody = new("Employment on ROTL Custody", 289, DeliveryLocationType.Custody, ClassificationType.Employment, ActivityType.Employment, ActivityCategory.EmploymentOnROTL, ExpectedClaims.MoreThanOne, CheckType.QA);
+    public static readonly ActivityDefinition EmploymentinCustody = new("Employment in Custody", 290, DeliveryLocationType.Custody, ClassificationType.Employment, ActivityType.Employment, ActivityCategory.EmploymentInCustody, ExpectedClaims.MoreThanOne, CheckType.QA);
 }
 
 public class DeliveryLocationType(string name, int value) : SmartEnum<DeliveryLocationType>(name, value)
@@ -472,4 +473,5 @@ public class ActivityCategory(string name, int value) : SmartEnum<ActivityCatego
     public static readonly ActivityCategory WhereToStartAndIntroductionToEmployability = new("Where to Start and Introduction to Employability", 99);
     public static readonly ActivityCategory WomensWorld = new("Women's World", 100);
     public static readonly ActivityCategory WorkRelatedMentoringInWorkSupport = new("Work-Related Mentoring / In Work Support", 101);
+    public static readonly ActivityCategory EmploymentInCustody = new("Employment in Custody", 102);
 }
