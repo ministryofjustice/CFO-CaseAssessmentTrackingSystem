@@ -12,6 +12,7 @@ public partial class CaseWorkload
 {
 
     private bool _downloading = false;
+    private string _searchString = "";
 
 
     [CascadingParameter] 
@@ -46,5 +47,38 @@ public partial class CaseWorkload
         Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
         _downloading = false;
     }
+
+    private bool FilterFunc(CaseSummaryDto data) => FilterFunc(data, _searchString);
+
+    private bool FilterFunc(CaseSummaryDto data, string searchString)
+    {
+        if (string.IsNullOrEmpty(searchString))
+        {
+            return true;
+        }
+
+        if (data.UserName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return true;
+        }
+
+        if (data.LocationName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return true;
+        }
+
+        if (data.TenantName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return true;
+        }
+
+        if (data.GetEnrolmentStatus().Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
 
 }

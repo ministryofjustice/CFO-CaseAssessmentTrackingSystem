@@ -1,0 +1,77 @@
+﻿@using Cfo.Cats.Application.Features.Dashboard.DTOs
+
+@inherits CatsComponentBase
+
+<MudItem xs="12" lg="4" md="6">
+    @if (_loading)
+    {
+        <LoadingCard Title="Risk due" />
+    }
+    else
+    {
+        @if (Model is { Succeeded: true, Data: not null  })
+        {
+            <MudCard style="height:100%">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h5">Risk due</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudSwitch T="bool" Value="_byPerson"  ValueChanged="OnByPersonChanged" Color="Color.Info">
+                            By Person 
+                        </MudSwitch>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTable
+                        Items="Model.Data"
+                        Hover="true"
+                        Striped="true"
+                        Filter="new Func<RiskDueAggregateDto,bool>(FilterFunc)">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Details</MudText>
+                            <MudSpacer />
+                            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<RiskDueAggregateDto, object>(x => x.Description)">
+                                    Description
+                                </MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<RiskDueAggregateDto, object>(x => x.Overdue)">
+                                    Overdue
+                                </MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<RiskDueAggregateDto, object>(x => x.Upcoming)">
+                                    Upcoming
+                                </MudTableSortLabel>
+                            </MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Description">
+                                @context.Description
+                            </MudTd>
+                            <MudTd DataLabel="Description">
+                                @context.Overdue
+                            </MudTd>
+                            <MudTd DataLabel="Description">
+                                @context.Upcoming
+                            </MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new[] { 5, 10, 50 }"/>
+                        </PagerContent>
+                    </MudTable>
+                </MudCardContent>
+            </MudCard>
+        }
+    }
+    
+    
+
+</MudItem>
+
+
