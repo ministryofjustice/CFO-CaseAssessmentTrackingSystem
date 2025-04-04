@@ -74,6 +74,10 @@ public class ParticipantSummaryDto
 
     public DateTime? BioDue { get; set; }
     public int? BioDueInDays { get; set; }
+    /// <summary>
+    ///  The risk due reason of the participant
+    /// </summary>
+    public RiskDueReason RiskDueReason { get; set; } = RiskDueReason.NoRisk;
 
     private class Mapping : Profile
     {

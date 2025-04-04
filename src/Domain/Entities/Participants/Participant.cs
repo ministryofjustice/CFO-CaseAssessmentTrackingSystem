@@ -39,7 +39,7 @@ public class Participant : OwnerPropertyEntity<string>
         Participant p = new()
         {
             ConsentStatus = ConsentStatus.PendingStatus,
-            EnrolmentStatus = EnrolmentStatus.IdentifiedStatus,
+            EnrolmentStatus = EnrolmentStatus.IdentifiedStatus,            
             Id = id,
             DateOfBirth = DateOnly.FromDateTime(dateOfBirth),
             FirstName = firstName,
@@ -51,7 +51,8 @@ public class Participant : OwnerPropertyEntity<string>
             ReferralSource = referralSource,
             ReferralComments = referralComments,
             _currentLocationId = locationId,
-            Nationality = nationality
+            Nationality = nationality,
+            RiskDueReason = RiskDueReason.NoRisk
         };
 
         p.AddDomainEvent(new ParticipantCreatedDomainEvent(p, locationId));
@@ -64,6 +65,7 @@ public class Participant : OwnerPropertyEntity<string>
     public string? Gender { get; private set; }
     public DateOnly DateOfBirth { get; private set; }
     public DateTime? RiskDue { get; private set; }
+    public RiskDueReason? RiskDueReason { get; private set; }
 
     public DateOnly? DateOfFirstConsent { get; private set; }
 
@@ -349,9 +351,10 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
-    public Participant SetRiskDue(DateTime riskDueDate)
+    public Participant SetRiskDue(DateTime riskDueDate, RiskDueReason riskDueReason)
     {
         RiskDue = riskDueDate;
+        RiskDueReason = riskDueReason;
         return this;   
     }
 
