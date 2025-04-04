@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Inductions;
 
@@ -61,9 +62,9 @@ public static class AddInductionPhase
             RuleFor(x => x)
                 .MustAsync(MustBeAfterPrecedingPhaseClosures)
                 .WithMessage("Phase cannot commence before other phases were completed");
-        }
-        
-        private async Task<bool> MustExist(Guid id, CancellationToken cancellationToken)
+    }
+
+    private async Task<bool> MustExist(Guid id, CancellationToken cancellationToken)
         {
             var element = await _unitOfWork.DbContext.WingInductions
                 .Include(wi => wi.Phases)
@@ -97,7 +98,7 @@ public static class AddInductionPhase
                 return true;
             }
 
-            return element.Phases.Max(e => e.CompletedDate) <= command.StartDate;
+            return element.Phases.Max(e => e.CompletedDate)?.Date <= command.StartDate;
         }
     }
 

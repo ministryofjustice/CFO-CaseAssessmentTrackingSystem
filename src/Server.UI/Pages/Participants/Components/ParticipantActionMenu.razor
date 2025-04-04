@@ -46,9 +46,12 @@
 
         @if (_canForceUpdate)
         {
+            <MudMenuItem Icon="@Icons.Material.Filled.LocationSearching" IconColor="Color.Primary" OnClick="SetStickyLocation">
+                @ConstantString.SetStickyLocation
+            </MudMenuItem>    
             <MudMenuItem Icon="@Icons.Material.Filled.Sync" IconColor="Color.Primary" OnClick="SyncRecord">
                 @ConstantString.ForceDataSync
-            </MudMenuItem>    
+            </MudMenuItem>   
         }
 
     </ChildContent>
@@ -232,6 +235,26 @@
             var sync = new SyncParticipantCommand(Participant.Id);
             await Bus.Publish(sync);
             await OnUpdate.InvokeAsync();
+        }
+    }
+
+    protected async Task SetStickyLocation()
+    {
+        // Show Dialog
+        var parameters = new DialogParameters<SetStickyLocationDialog>
+        {
+            { x => x.ParticipantId,  Participant.Id  }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<SetStickyLocationDialog>("Set Sticky Community Region", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            dialog.Close();
         }
     }
 

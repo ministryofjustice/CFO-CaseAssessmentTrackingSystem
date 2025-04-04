@@ -1,0 +1,34 @@
+﻿@inherits CatsComponentBase
+
+<MudDialog>
+    <DialogContent>
+        <MudPaper Elevation="0">
+            @if (Model is not null)
+            {
+                <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudTextField Class="mb-2" Label="@Model.PersonalDetails.GetMemberDescription(x => x.PreferredNames)" @bind-Value="Model.PersonalDetails.PreferredNames" For="() => Model.PersonalDetails.PreferredNames" Clearable MaxLength="128" Counter="128" Immediate />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField Class="mb-2" Label="@Model.PersonalDetails.GetMemberDescription(x => x.PreferredPronouns)" @bind-Value="Model.PersonalDetails.PreferredPronouns" For="() => Model.PersonalDetails.PreferredPronouns" Clearable MaxLength="16" Counter="16" Immediate Placeholder="i.e. he/him, she/her, they/them" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField Class="mb-2" Label="@Model.PersonalDetails.GetMemberDescription(x => x.PreferredTitle)" @bind-Value="Model.PersonalDetails.PreferredTitle" For="() => Model.PersonalDetails.PreferredTitle" Clearable MaxLength="6" Counter="6" Immediate Placeholder="i.e. Mr, Ms, Mx" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField Class="mb-2" Label="@Model.PersonalDetails.GetMemberDescription(x => x.AdditionalNotes)" @bind-Value="Model.PersonalDetails.AdditionalNotes" For="() => Model.PersonalDetails.AdditionalNotes" Clearable MaxLength="256" Counter="256" Immediate
+                                          Placeholder="e.g. Communication preferences, accessibility needs, or important background information" 
+                                          Lines="4" />
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+            }
+        </MudPaper>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Dialog.Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>

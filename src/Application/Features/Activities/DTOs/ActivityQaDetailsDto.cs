@@ -27,7 +27,7 @@ public class ActivityQaDetailsDto
     [Description("Date activity took place")]
     public DateTime? CommencedOn { get; set; }
 
-    [Description("Additional Information (optional)")]
+    [Description("Additional Information")]
     public string? AdditionalInformation { get; set; }
 
     public EmploymentDto EmploymentTemplate { get; set; } = new();

@@ -126,6 +126,8 @@ public static class ConstantString
 
     public static string ForceDataSync => Localize("Force data sync");
 
+    public static string SetStickyLocation => Localize("Set Sticky Community Location");
+
     public static string RightToWork =>
     Localize("Right To Work");
     public static string RightToWorkIsRequiredMessage =>
@@ -150,6 +152,10 @@ public static class ConstantString
     Localize("Complete PRI");
     public static string AbandonPRI =>
     Localize("Abandon PRI");
+
+    public static string AbandonPhase =>
+    Localize("Abandon Phase");
+
     public static string ViewParticipant => Localize("View Participant");
     public static string PriNoActualReleaseDateWarning => Localize("No Actual Release date provided.");
     public static string PriTTGDueWarningToolTip => Localize("Through the Gate (TTG) is due {0}");

@@ -37,7 +37,7 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             .IsRequired();
 
         builder.Property(p => p.Gender)
-            .HasMaxLength(6);
+            .HasMaxLength(29);
 
         builder.Property(p => p.Nationality)
             .HasMaxLength(50);
@@ -233,6 +233,29 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
                 .HasMaxLength(16);
 
             supervisor.Property(s => s.Address)
+                .HasMaxLength(256);
+        });
+
+        builder.OwnsOne(p => p.PersonalDetail, personalDetails =>
+        {
+            personalDetails.WithOwner();
+            personalDetails.ToTable(
+                DatabaseConstants.Tables.PersonalDetails,
+                DatabaseConstants.Schemas.Participant
+            );
+
+            personalDetails.HasKey(s => s.Id);
+
+            personalDetails.Property(s => s.PreferredNames)
+                .HasMaxLength(128);
+
+            personalDetails.Property(s => s.PreferredPronouns)
+                .HasMaxLength(16);
+
+            personalDetails.Property(s => s.PreferredTitle)
+                .HasMaxLength(6);
+
+            personalDetails.Property(s => s.AdditionalNotes)
                 .HasMaxLength(256);
         });
 

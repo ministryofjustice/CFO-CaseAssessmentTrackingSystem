@@ -58,6 +58,14 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Activities
             builder.Property(e => e.TenantId)
                 .IsRequired()
                 .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
+
+            builder.Property(e => e.SupportWorkerId)
+                .HasMaxLength(DatabaseConstants.FieldLengths.GuidId)
+                .IsRequired();
+
+            builder.Property(e => e.OriginalPQASubmissionDate)
+                .IsRequired()
+                .HasColumnType("date");
         }
     }
 }

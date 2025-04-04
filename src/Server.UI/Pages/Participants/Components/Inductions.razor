@@ -19,9 +19,9 @@
     <MudExpansionPanel Disabled="@(HubInductions is not { Length: > 0 })">
         <TitleContent>
             <div class="d-flex">
-                    <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Color="Color.Primary" class="mr-3"/>
-                    <MudText>Hub Inductions</MudText>
-                    <MudBadge Content="@(HubInductions?.Length ?? 0)" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto" />
+                <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Color="Color.Primary" class="mr-3"/>
+                <MudText>Hub Inductions</MudText>
+                <MudBadge Content="@(HubInductions?.Length ?? 0)" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto" />
             </div>
         </TitleContent>
         <ChildContent>
@@ -42,32 +42,29 @@
                                 {
                                     <MudText Typo="Typo.caption">@i.InductionDate.Humanize()</MudText>
                                 }
-                                
+
                             </MudTooltip>
                         </ChildContent>
-                    </MudListItem>
-                    
+                    </MudListItem>                    
                 }
             </MudList>
-
-
         </ChildContent>
     </MudExpansionPanel>
+
     <MudExpansionPanel Disabled="@(WingInductions is not { Length: > 0 })">
         <TitleContent>
             <div class="d-flex">
-                    <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Color="Color.Primary" class="mr-3"/>
-                    <MudText>Wing Inductions</MudText>
-                    <MudBadge Content="@(WingInductions?.Length ?? 0)" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto" />
+                <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Color="Color.Primary" class="mr-3"/>
+                <MudText>Wing Inductions</MudText>
+                <MudBadge Content="@(WingInductions?.Length ?? 0)" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto" />
             </div>
         </TitleContent>
         <ChildContent>
-                        
+
             <MudGrid>
                 @foreach (var i in WingInductions.OrderByDescending(wi => wi.InductionDate))
                 {
                     <MudItem xs="12" lg="6">
-
                         <MudPaper Class="pa-4 ma-2">
                             <MudText Typo="Typo.body1">@i.WingName</MudText>
                             <MudTable Items="@i.Phases" Hover="true" Breakpoint="Breakpoint.SmAndDown" Class="ma-4 pa-4">
@@ -75,18 +72,28 @@
                                     <MudTh>Phase</MudTh>
                                     <MudTh>Commenced</MudTh>
                                     <MudTh>Completed</MudTh>
+                                    <MudTh>Status</MudTh>
                                     <MudTh></MudTh>
                                 </HeaderContent>
                                 <RowTemplate>
                                     <MudTd DataLabel="P">@context.Number</MudTd>
                                     <MudTd DataLabel="S">@context.StartDate.ToShortDateString()</MudTd>
                                     <MudTd DataLabel="E">@(context.CompletedDate.HasValue ? context.CompletedDate.Value.ToShortDateString() : string.Empty)</MudTd>
+                                    <MudTd DataLabel="F">@(context.Status.Name)</MudTd>
                                     <MudTd>
                                         <MudFab Color="Color.Info"
-                                                StartIcon="@Icons.Material.Filled.AssignmentTurnedIn"
-                                                Size="Size.Small"
-                                                Disabled="@(context.CompletedDate is not null)"
-                                                OnClick="() => CompletePhase(i)">
+                                        StartIcon="@Icons.Material.Filled.AssignmentTurnedIn"
+                                        Size="Size.Small"
+                                        Disabled="@(context.CompletedDate is not null)"
+                                        OnClick="() => CompletePhase(i)">
+                                        </MudFab>
+                                    </MudTd>
+                                    <MudTd>
+                                        <MudFab Color="Color.Info"
+                                        StartIcon="@Icons.Material.Filled.DeleteForever"
+                                        Size="Size.Small"
+                                        Disabled="@(context.CompletedDate is not null)"
+                                        OnClick="() => AbandonPhase(i)">
                                         </MudFab>
                                     </MudTd>
                                 </RowTemplate>
@@ -108,14 +115,12 @@
                                 }
                             </MudTooltip>
                         </MudPaper>
-                   </MudItem>
+                    </MudItem>
                 }
             </MudGrid>
-         </ChildContent>
+        </ChildContent>
     </MudExpansionPanel>
 </MudExpansionPanels>
-
-
 
 @code {
     [Inject]
@@ -158,7 +163,6 @@
         {
             await OnRefresh();
         }
-
     }
 
     public async Task AddWingInduction()
@@ -184,7 +188,6 @@
         {
             await OnRefresh();
         }
-
     }
 
     private async Task AddPhase(WingInductionDto induction)
@@ -219,14 +222,12 @@
         {
             await OnRefresh();
         }
-
     }
-    
+
     private async Task CompletePhase(WingInductionDto induction)
     {
-
         DateTime earliestCompletionDate = induction.Phases.Max(x => x.StartDate);
-        
+
         var parameters = new DialogParameters<CompletePhaseDialog>()
         {
             {
@@ -257,7 +258,46 @@
         {
             await OnRefresh();
         }
+    }
 
+    private async Task AbandonPhase(WingInductionDto induction)
+    {
+        DateTime earliestCompletionDate = induction.Phases.Max(x => x.StartDate);
+
+        var parameters = new DialogParameters<AbandonPhaseDialog>()
+        {
+            {
+                x => x.Model, new AbandonInductionPhase.Command()
+                {
+                    WingInductionId = induction.Id,
+                    CurrentUser = CurrentUser,
+                    CompletionDate=null,
+                    AbandonJustification="",
+                    AbandonReason=WingInductionPhaseAbandonReason.Other,                    
+                }
+            },
+            {
+                x => x.EarliestCompletionDate,
+                earliestCompletionDate
+            }
+        };
+
+        var options = new DialogOptions()
+            {
+                CloseButton = true,
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true
+            };
+
+        var dialog = await DialogService.ShowAsync<AbandonPhaseDialog>
+            ("Abandon Wing Phase", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            await OnRefresh();
+        }
     }
 
     private async Task OnRefresh()
@@ -273,13 +313,11 @@
         if (results.Succeeded)
         {
             HubInductions = results.Data!.HubInductions;
-            WingInductions = results.Data!.WingInductions;
+            WingInductions = results.Data!.WingInductions;            
         }
         var locations = LocationService.GetVisibleLocations(CurrentUser?.TenantId ?? string.Empty)
             .ToArray();
         HubLocations = locations.Where(x => x.LocationType.IsHub).ToArray();
         WingLocations = locations.Where(x => x.LocationType == LocationType.Wing).ToArray();
     }
-
-}
-    
+}   

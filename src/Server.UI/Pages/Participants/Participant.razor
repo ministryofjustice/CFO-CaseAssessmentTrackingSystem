@@ -21,7 +21,6 @@
     {
         <CascadingValue Value="_participant">
 
-
             <MudPaper Class="pa-2 ma-2" Style="min-height: 90vh;" Elevation="3">
 
                 <MudGrid Class="pa-1" Justify="Justify.FlexStart">
@@ -44,8 +43,6 @@
                             <MudText Typo="Typo.subtitle1">@_participant.Location</MudText>
                         </MudStack>
 
-                                    
-
                     </MudItem>
                 </MudGrid>
 
@@ -61,6 +58,9 @@
                     <MudTabs Class="primary-tabs mt-2" Outlined="true" Color="Color.Info" Border="true" Style="height: 100%;">
                         <MudTabPanel Text="Case Summary">
                             <CaseSummary/>
+                        </MudTabPanel>
+                        <MudTabPanel Text="About">
+                            <CaseAbout ParticipantId="@_participant.Id" />
                         </MudTabPanel>
                         <MudTabPanel Text="Inductions">
                             <Inductions ParticipantId="@_participant.Id"/>
@@ -94,7 +94,7 @@
                         </MudTabPanel>
 
                         @if (UserProfile.AssignedRoles.Any(r =>
-                                 r is RoleNames.SystemSupport or RoleNames.SMT or RoleNames.QAManager))
+                       r is RoleNames.SystemSupport or RoleNames.SMT or RoleNames.QAManager))
                         {
                             <MudTabPanel Text="Audit">
                                 <ParticipantAudit Id="@Id"/>
@@ -119,8 +119,7 @@
     [CascadingParameter] public UserProfile UserProfile { get; set; } = default!;
 
     private ParticipantSummaryDto? _participant = null;
-
-
+    
     private string _riskInfo = String.Empty;
     private string _riskIcon = String.Empty;
     private Color _riskIconColor = Color.Transparent;
@@ -179,32 +178,53 @@
     void SetPriDueWarning()
     {
         PriSummaryDto? latestPRI = _participant!.LatestPri;
+        
+        _priDueIcon = String.Empty;
+        _priDueIconColor = Color.Transparent;
         if (latestPRI is null)
         {
-            return;
-        }
-
-        if (latestPRI.TTGDueDate.HasValue)
-        {
-            DateOnly priTTGDueDate = latestPRI.TTGDueDate.Value;
-            _priDueToolTip = String.Format(ConstantString.PriTTGDueWarningToolTip, priTTGDueDate.Humanize());
-
-            if (latestPRI.IsFinalTTGWarningApplicable)
+            _priDueToolTip = _participant.LocationType switch
             {
-                _priDueIcon = Icons.Material.Filled.Error;
-                _priDueIconColor = Color.Error;
-            }
-            else if (latestPRI.IsFirstTTGWarningApplicable)
-            {
-                _priDueIcon = Icons.Material.Filled.Warning;
-                _priDueIconColor = Color.Warning;
-            }
+                { IsCustody: true, IsMapped: true } => "No PRI has been created.",
+                { IsCommunity: true } => "Not available in the community.",
+                _ => "Not available in this location."
+            };
         }
-        else if (_participant.LocationType.IsCommunity)
+        else
         {
-            _priDueToolTip = ConstantString.PriNoActualReleaseDateWarning;
-            _priDueIcon = Icons.Material.Outlined.Info;
-            _priDueIconColor = Color.Warning;
+            if (latestPRI.Status == PriStatus.Abandoned)
+            {
+                _priDueToolTip = "Pre-Release Inventory has been Abandoned.";
+            }
+            else if (latestPRI.Status == PriStatus.Completed)
+            {
+                _priDueToolTip = "Pre-Release Inventory has been Completed.";
+            }
+            else
+            {
+                if (latestPRI.TTGDueDate.HasValue)
+                {
+                    DateOnly priTTGDueDate = latestPRI.TTGDueDate.Value;
+                    _priDueToolTip = String.Format(ConstantString.PriTTGDueWarningToolTip, priTTGDueDate.Humanize());
+
+                    if (latestPRI.IsFinalTTGWarningApplicable)
+                    {
+                        _priDueIcon = Icons.Material.Filled.Error;
+                        _priDueIconColor = Color.Error;
+                    }
+                    else if (latestPRI.IsFirstTTGWarningApplicable)
+                    {
+                        _priDueIcon = Icons.Material.Filled.Warning;
+                        _priDueIconColor = Color.Warning;
+                    }
+                }
+                else if (_participant.LocationType.IsCommunity)
+                {
+                    _priDueToolTip = ConstantString.PriNoActualReleaseDateWarning;
+                    _priDueIcon = Icons.Material.Outlined.Info;
+                    _priDueIconColor = Color.Warning;
+                }
+            }
         }
     }
 
@@ -255,5 +275,4 @@
             }
         }
     }
-
 }
