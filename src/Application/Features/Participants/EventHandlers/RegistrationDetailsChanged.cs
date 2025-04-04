@@ -18,9 +18,8 @@ public class RegistrationDetailsChanged(IUnitOfWork unitOfWork) : INotificationH
         {
             //Only applicable if Risk information exists
             //Set Risk Due date to today, only if it is later than today
-            participant.SetRiskDue(DateTime.UtcNow);
+            participant.SetRiskDue(DateTime.UtcNow, RiskDueReason.DMSUpdated);
             unitOfWork.DbContext.Participants.Update(participant);
         }
-
     }
 }

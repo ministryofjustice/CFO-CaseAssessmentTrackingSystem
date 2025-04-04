@@ -53,6 +53,9 @@ public class ParticipantDto
 
     public DateTime? LastSync { get; set; }
 
+    [Description("Risk Due Reason")]
+    public RiskDueReason? RiskDueReason { get; set; }
+
     private class Mapping : Profile
     {
         public Mapping()

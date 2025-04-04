@@ -12,9 +12,8 @@ public class RiskInformationCompleted(IUnitOfWork unitOfWork) : INotificationHan
 
         if (participant is not null)
         {
-            participant.SetRiskDue(DateTime.UtcNow.AddDays(70));
+            participant.SetRiskDue(DateTime.UtcNow.AddDays(70), RiskDueReason.Completed);
             unitOfWork.DbContext.Participants.Update(participant);
         }
-
     }
 }

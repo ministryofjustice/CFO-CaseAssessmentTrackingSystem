@@ -72,6 +72,10 @@ public class ParticipantSummaryDto
 
     public DateTime LastSync { get; set; }
 
+    /// <summary>
+    ///  The risk due reason of the participant
+    /// </summary>
+    public RiskDueReason RiskDueReason { get; set; } = RiskDueReason.NoRisk;
 
     private class Mapping : Profile
     {

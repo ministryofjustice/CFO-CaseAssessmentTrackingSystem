@@ -66,6 +66,12 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             cs => cs!.Value,
             cs => ConsentStatus.FromValue(cs));
 
+        builder.Property(e => e.RiskDueReason)
+            .IsRequired()
+            .HasConversion(
+            cs => cs!.Value,
+            cs => RiskDueReason.FromValue(cs));
+
         builder.Property(p => p.DateOfFirstConsent)
             .IsRequired(false);
 
