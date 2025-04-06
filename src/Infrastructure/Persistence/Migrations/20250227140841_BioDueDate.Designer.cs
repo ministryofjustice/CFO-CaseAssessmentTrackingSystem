@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250227140841_BioDueDate")]
+    partial class BioDueDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.2")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -186,19 +189,11 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("OriginalPQASubmissionDate")
-                        .HasColumnType("date");
-
                     b.Property<string>("OwnerId")
                         .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("ParticipantId")
                         .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("SupportWorkerId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
@@ -251,19 +246,11 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("OriginalPQASubmissionDate")
-                        .HasColumnType("date");
-
                     b.Property<string>("OwnerId")
                         .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("ParticipantId")
                         .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("SupportWorkerId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
@@ -316,19 +303,11 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("OriginalPQASubmissionDate")
-                        .HasColumnType("date");
-
                     b.Property<string>("OwnerId")
                         .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("ParticipantId")
                         .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("SupportWorkerId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
@@ -384,19 +363,11 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("OriginalPQASubmissionDate")
-                        .HasColumnType("date");
-
                     b.Property<string>("OwnerId")
                         .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("ParticipantId")
                         .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("SupportWorkerId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
@@ -517,8 +488,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Administration.LocationMapping", b =>
                 {
                     b.Property<string>("Code")
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
 
                     b.Property<string>("CodeType")
                         .HasMaxLength(9)
@@ -1004,16 +975,10 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("ActivityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ActivityInput")
-                        .HasColumnType("date");
-
                     b.Property<string>("ActivityType")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("CommencedDate")
-                        .HasColumnType("date");
 
                     b.Property<string>("ContractId")
                         .IsRequired()
@@ -1042,9 +1007,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(9)
                         .HasColumnType("nvarchar(9)");
-
-                    b.Property<DateTime>("PaymentPeriod")
-                        .HasColumnType("date");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
@@ -1196,12 +1158,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("ActivityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ActivityInput")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime>("CommencedDate")
-                        .HasColumnType("date");
-
                     b.Property<string>("ContractId")
                         .IsRequired()
                         .HasMaxLength(12)
@@ -1240,9 +1196,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasMaxLength(9)
                         .HasColumnType("nvarchar(9)");
 
-                    b.Property<DateTime>("PaymentPeriod")
-                        .HasColumnType("date");
-
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1250,7 +1203,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParticipantId", "ContractId", "CourseLevel", "CourseTitle", "EligibleForPayment")
+                    b.HasIndex("ParticipantId", "ContractId", "ActivityApproved")
                         .HasDatabaseName("ix_ActivityPayment_ParticipantId");
 
                     b.ToTable("EducationPayment", "Mi");
@@ -1267,12 +1220,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("ActivityId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ActivityInput")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime>("CommencedDate")
-                        .HasColumnType("date");
 
                     b.Property<string>("ContractId")
                         .IsRequired()
@@ -1302,9 +1249,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasMaxLength(9)
                         .HasColumnType("nvarchar(9)");
 
-                    b.Property<DateTime>("PaymentPeriod")
-                        .HasColumnType("date");
-
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1312,7 +1256,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParticipantId", "ContractId", "CommencedDate", "EligibleForPayment")
+                    b.HasIndex("ParticipantId", "ContractId", "ActivityApproved")
                         .HasDatabaseName("ix_ActivityPayment_ParticipantId");
 
                     b.ToTable("EmploymentPayment", "Mi");
@@ -1403,9 +1347,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("Approved")
                         .HasColumnType("date");
 
-                    b.Property<DateTime>("CommencedDate")
-                        .HasColumnType("date");
-
                     b.Property<string>("ContractId")
                         .IsRequired()
                         .HasMaxLength(12)
@@ -1418,9 +1359,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("Induction")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime>("InductionInput")
                         .HasColumnType("date");
 
                     b.Property<string>("IneligibilityReason")
@@ -1441,9 +1379,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(9)
                         .HasColumnType("nvarchar(9)");
-
-                    b.Property<DateTime>("PaymentPeriod")
-                        .HasColumnType("date");
 
                     b.Property<string>("SupportWorker")
                         .IsRequired()
@@ -1468,9 +1403,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ActivityInput")
-                        .HasColumnType("date");
 
                     b.Property<DateTime>("Approved")
                         .HasColumnType("date");
@@ -1502,9 +1434,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(9)
                         .HasColumnType("nvarchar(9)");
-
-                    b.Property<DateTime>("PaymentPeriod")
-                        .HasColumnType("date");
 
                     b.Property<Guid>("PriId")
                         .HasColumnType("uniqueidentifier");
@@ -2025,8 +1954,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Gender")
-                        .HasMaxLength(29)
-                        .HasColumnType("nvarchar(29)");
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -2089,54 +2018,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.HasIndex("_enrolmentLocationId");
 
                     b.ToTable("Participant", "Participant");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantContactDetail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("EmailAddress")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("MobileNumber")
-                        .HasMaxLength(16)
-                        .HasColumnType("nvarchar(16)");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("PostCode")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
-
-                    b.Property<bool>("Primary")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UPRN")
-                        .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.ToTable("ParticipantContactDetails");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantEnrolmentHistory", b =>
@@ -2572,13 +2453,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<int?>("RiskToSelfInCommunity")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RiskToSelfInCommunityNew")
-                        .HasColumnType("int");
-
                     b.Property<int?>("RiskToSelfInCustody")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RiskToSelfInCustodyNew")
                         .HasColumnType("int");
 
                     b.Property<int?>("RiskToStaffInCommunity")
@@ -3884,38 +3759,15 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                             b1.Property<int>("Number")
                                 .HasColumnType("int");
 
-                            b1.Property<Guid>("Id")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("AbandonJustification")
-                                .HasMaxLength(1000)
-                                .HasColumnType("nvarchar(1000)");
-
-                            b1.Property<int?>("AbandonReason")
-                                .HasColumnType("int");
-
-                            b1.Property<string>("CompletedBy")
-                                .HasColumnType("nvarchar(36)");
-
                             b1.Property<DateTime?>("CompletedDate")
                                 .HasColumnType("datetime2");
 
                             b1.Property<DateTime>("StartDate")
                                 .HasColumnType("datetime2");
 
-                            b1.Property<int>("Status")
-                                .HasColumnType("int");
-
-                            b1.HasKey("WingInductionId", "Number", "Id");
-
-                            b1.HasIndex("CompletedBy");
+                            b1.HasKey("WingInductionId", "Number");
 
                             b1.ToTable("WingInductionPhase", "Induction");
-
-                            b1.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", null)
-                                .WithMany()
-                                .HasForeignKey("CompletedBy")
-                                .OnDelete(DeleteBehavior.Restrict);
 
                             b1.WithOwner()
                                 .HasForeignKey("WingInductionId");
@@ -4577,43 +4429,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                             b1.Navigation("LastModifiedByUser");
                         });
 
-                    b.OwnsOne("Cfo.Cats.Domain.Entities.Participants.PersonalDetail", "PersonalDetail", b1 =>
-                        {
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("AdditionalNotes")
-                                .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
-
-                            b1.Property<string>("ParticipantId")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(9)");
-
-                            b1.Property<string>("PreferredNames")
-                                .HasMaxLength(128)
-                                .HasColumnType("nvarchar(128)");
-
-                            b1.Property<string>("PreferredPronouns")
-                                .HasMaxLength(16)
-                                .HasColumnType("nvarchar(16)");
-
-                            b1.Property<string>("PreferredTitle")
-                                .HasMaxLength(6)
-                                .HasColumnType("nvarchar(6)");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("ParticipantId")
-                                .IsUnique();
-
-                            b1.ToTable("PersonalDetails", "Participant");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ParticipantId");
-                        });
-
                     b.OwnsMany("Cfo.Cats.Domain.Entities.Participants.RightToWork", "RightToWorks", b1 =>
                         {
                             b1.Property<string>("ParticipantId")
@@ -4753,20 +4568,9 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Owner");
 
-                    b.Navigation("PersonalDetail");
-
                     b.Navigation("RightToWorks");
 
                     b.Navigation("Supervisor");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantContactDetail", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantIncomingTransferQueueEntry", b =>

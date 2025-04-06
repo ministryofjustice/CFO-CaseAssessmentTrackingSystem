@@ -14,8 +14,8 @@ public class ConsentCreated(IUnitOfWork unitOfWork):INotificationHandler<Consent
         {
             //Only on first Consent submit
             participant.SetRiskDue(notification.ConsentDate.AddDays(14));
+            participant.SetBioDue(notification.ConsentDate.AddDays(14));
             unitOfWork.DbContext.Participants.Update(participant);
         }
-
     }
 }
