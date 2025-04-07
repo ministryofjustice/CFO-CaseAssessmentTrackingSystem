@@ -94,7 +94,7 @@
                         </MudTabPanel>
 
                         @if (UserProfile.AssignedRoles.Any(r =>
-                       r is RoleNames.SystemSupport or RoleNames.SMT or RoleNames.QAManager))
+                  r is RoleNames.SystemSupport or RoleNames.SMT or RoleNames.QAManager))
                         {
                             <MudTabPanel Text="Audit">
                                 <ParticipantAudit Id="@Id"/>
@@ -119,7 +119,7 @@
     [CascadingParameter] public UserProfile UserProfile { get; set; } = default!;
 
     private ParticipantSummaryDto? _participant = null;
-    
+
     private string _riskInfo = String.Empty;
     private string _riskIcon = String.Empty;
     private Color _riskIconColor = Color.Transparent;
@@ -164,7 +164,7 @@
         {
             var datePart = _participant.RiskDue.Value.Date;
 
-            _riskInfo = $"Due {datePart.Humanize()}";
+            _riskInfo = String.Format("Due {0} because of {1}", datePart.Humanize(), _participant.RiskDueReason);
 
             int _dueInDays = _participant!.RiskDueInDays!.Value;
             switch (_dueInDays)
