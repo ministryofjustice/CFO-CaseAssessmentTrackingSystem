@@ -1,10 +1,12 @@
-﻿using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Domain.Entities.Documents;
+﻿using Cfo.Cats.Domain.Entities.Documents;
+using System.IO.Packaging;
 
 namespace Cfo.Cats.Application.Features.Activities.DTOs;
 
 public class IswDto
 {
+    public required string ParticipantId { get; set; }
+
     [Description("Wraparound support start date")]
     public DateTime? WraparoundSupportStartedOn { get; set; }
 
@@ -27,25 +29,28 @@ public class IswDto
     string TotalMinsDescription => string.Concat((int)(TotalHoursIntervention % 1 * 60), " mins");
     public string TotalHoursInterventionDescription => $"{TotalHoursDescription} {TotalMinsDescription}";
 
-
     [Description("Document")]
     public Document? Document { get; set; }
 
     public class Validator : AbstractValidator<IswDto>
     {
-        public Validator()
+        private readonly IUnitOfWork unitOfWork;
+        public Validator(IUnitOfWork unitOfWork)
         {
+            this.unitOfWork = unitOfWork;
+
             RuleFor(c => c.WraparoundSupportStartedOn)
                 .NotNull()
                 .WithMessage("You must enter Wraparound support start date")
-                .LessThanOrEqualTo(DateTime.UtcNow.Date)
-                .WithMessage(ValidationConstants.DateMustBeInPast);
+                .Must((command, commencedOn) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId!, commencedOn))
+                .WithMessage("Wraparound support start date cannot take place before the participant gave consent");
 
+            // Backdated up to 3 months
             RuleFor(c => c.BaselineAchievedOn)
                 .NotNull()
                 .WithMessage("You must enter Baseline achieved date")
-                .LessThanOrEqualTo(DateTime.UtcNow.Date)
-                .WithMessage(ValidationConstants.DateMustBeInPast);
+                .GreaterThanOrEqualTo(DateTime.Today.AddMonths(-3))
+                .WithMessage("The baseline achieved date must be within the last three months");
 
             RuleFor(x => x.HoursPerformedPre)
                 .Must(BeValidNumber)
@@ -71,6 +76,20 @@ public class IswDto
 
             // Check if the fractional part is not .25, .5, or .75
             return fractionalPart == 0.0 || fractionalPart == 0.25 || fractionalPart == 0.5 || fractionalPart == 0.75;
+        }
+
+        private bool HaveOccurredOnOrAfterConsentWasGranted(string participantId, DateTime? commencedOn)
+        {
+            if (commencedOn is null)
+            {
+                return false;
+            }
+
+            var participant = unitOfWork.DbContext.Participants.Single(p => p.Id == participantId);
+
+            var consentDate = participant.CalculateConsentDate();
+
+            return commencedOn >= consentDate;
         }
 
     }
