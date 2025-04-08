@@ -1,13 +1,12 @@
 ﻿@page "/"
-@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 @inherits CatsComponentBase
 
-@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-    <MudText Typo="Typo.h3">
-        Dashboard
-    </MudText>
+
+<MudText Typo="Typo.h3">
+    Dashboard
+</MudText>
 
     <MudGrid Class="mt-2">
         
