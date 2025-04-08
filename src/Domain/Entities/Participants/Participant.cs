@@ -380,4 +380,13 @@ public class Participant : OwnerPropertyEntity<string>
         LastSyncDate = DateTime.UtcNow;
         return this;
     }
+    public DateTime? CalculateConsentDate()
+    {
+        if (DateOfFirstConsent is null)
+        {
+            var consent = Consents.MaxBy(c => c.Created)?.Lifetime.StartDate;
+            return consent is null ? null : consent.Value;
+        }
+        return DateOfFirstConsent.Value.ToDateTime(TimeOnly.MinValue);
+    }
 }
