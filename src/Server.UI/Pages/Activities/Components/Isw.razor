@@ -23,6 +23,7 @@
                            Label="@Model.GetMemberDescription(x => x.BaselineAchievedOn)"
                            Editable="true"
                            MaxDate="DateTime.Today"
+                           MinDate="DateTime.Today.AddMonths(-3)"
                            PickerVariant="PickerVariant.Dialog" />
             </MudItem>
             <MudItem xs="12">

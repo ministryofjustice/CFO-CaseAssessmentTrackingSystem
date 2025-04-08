@@ -346,15 +346,18 @@ public class DeliveryLocationType(string name, int value) : SmartEnum<DeliveryLo
 
 public class ClassificationType : SmartEnum<ClassificationType>
 {
-    public static readonly ClassificationType EducationAndTraining = new("Education and Training", 0, true);
-    public static readonly ClassificationType Employment = new("Employment", 1, true);
-    public static readonly ClassificationType ISWActivity = new("ISW Activity", 2, true);
-    public static readonly ClassificationType NonISWActivity = new("Non-ISW Activity", 3);
+    public static readonly ClassificationType EducationAndTraining = new("Education and Training", 0, requiresFurtherInformation: true, isClaimableMoreThanThreeMonthsAgo: false);
+    public static readonly ClassificationType Employment = new("Employment", 1, requiresFurtherInformation: true, isClaimableMoreThanThreeMonthsAgo: false);
+    public static readonly ClassificationType ISWActivity = new("ISW Activity", 2, requiresFurtherInformation: true, isClaimableMoreThanThreeMonthsAgo: true);
+    public static readonly ClassificationType NonISWActivity = new("Non-ISW Activity", 3, requiresFurtherInformation: false, isClaimableMoreThanThreeMonthsAgo: false);
 
-    private ClassificationType(string name, int value, bool requiresFurtherInformation = false) : base(name, value) 
+    private ClassificationType(string name, int value, bool requiresFurtherInformation, bool isClaimableMoreThanThreeMonthsAgo = true) : base(name, value) 
     {
         RequiresFurtherInformation = requiresFurtherInformation;
+        IsClaimableMoreThanThreeMonthsAgo = isClaimableMoreThanThreeMonthsAgo;
     }
+
+    public bool IsClaimableMoreThanThreeMonthsAgo { get; private set; }
 
     public bool RequiresFurtherInformation { get; private set; }
 }
