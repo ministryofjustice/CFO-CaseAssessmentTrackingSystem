@@ -32,7 +32,7 @@ public static class GetRiskDueDashboard
                 from risk in risks.DefaultIfEmpty()
                 where 
                         p.OwnerId! == request.UserId && p.RiskDue <= maxDate
-                        && ( request.ApprovedOnly == false || request.ApprovedOnly && p.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value)
+                        && ( request.ApprovedOnly == false || (request.ApprovedOnly && p.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value))
                 orderby p.RiskDue
                 select new RiskDueDto(p.Id, p.FirstName, p.LastName, p.RiskDue!.Value, risk == null ? null : risk.Completed, p.EnrolmentStatus!);
 
