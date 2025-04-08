@@ -1,4 +1,5 @@
 ﻿@layout MainLayout
+@using Cfo.Cats.Server.UI.Services.UserPreferences
 @inherits LayoutComponentBase
 
 @inject LayoutService LayoutService
@@ -11,19 +12,14 @@
         </NotAuthorized>
         <Authorized>
             <HeaderMenu NavigationMenuDrawerOpen="_navigationMenuDrawerOpen"
-                        OpenSearchDialog="OpenSearchDialog"
-                        IsDarkMode="@LayoutService.IsDarkMode"
-                        ToggleNavigationMenuDrawer="ToggleNavigationMenuDrawer"
-                        RightToLeft="false"
-                        RightToLeftToggle="LayoutService.ToggleRightToLeft"
-                        OnSettingClick="@(() => _themingDrawerOpen = true)"/>
+            OpenSearchDialog="OpenSearchDialog"
+            OpenPreferencesDialog="OpenPreferencesDialog"
+            IsDarkMode="@LayoutService.IsDarkMode"
+            ToggleNavigationMenuDrawer="ToggleNavigationMenuDrawer"
+            RightToLeft="false"
+            RightToLeftToggle="LayoutService.ToggleRightToLeft"/>
             <NavigationMenu DrawerOpen="_navigationMenuDrawerOpen" Roles="@_userProfile?.AssignedRoles"
-                            DrawerOpenChanged="NavigationMenuDrawerOpenChangedHandler"/>
-            <ThemesMenu ThemingDrawerOpen="_themingDrawerOpen"
-                        ThemingDrawerOpenChanged="ThemingDrawerOpenChangedHandler"
-                        UserPreferences="@LayoutService.UserPreferences"
-                        UserPreferencesChanged="LayoutService.UpdateUserPreferences"/>
-            <ThemesButton OnClick="@(() => _themingDrawerOpen = true)"/>
+            DrawerOpenChanged="NavigationMenuDrawerOpenChangedHandler"/>
             <MudMainContent>
                 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mb-4 mt-4">
                     <ErrorBoundary @ref="ErrorBoundary">
@@ -38,8 +34,8 @@
                     </ErrorBoundary>
                 </MudContainer>
             </MudMainContent>
-          
-           
+
+
         </Authorized>
     </AuthorizeView>
 </MudLayout>
@@ -49,7 +45,6 @@
 {
     private bool _commandPaletteOpen;
     private bool _navigationMenuDrawerOpen = false;
-    private bool _themingDrawerOpen = false;
     private UserProfile? _userProfile;
     private ErrorBoundary? ErrorBoundary { set; get; }
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
@@ -60,13 +55,13 @@
         _userProfile = state.User.GetUserProfileFromClaim();
     }
 
-   
-    
+
+
     protected override void OnParametersSet()
     {
         ResetBoundary();
     }
-    
+
     private void ResetBoundary()
     {
         // On each page navigation, reset any error state
@@ -78,14 +73,27 @@
         _navigationMenuDrawerOpen = state;
     }
 
-    protected void ThemingDrawerOpenChangedHandler(bool state)
-    {
-        _themingDrawerOpen = state;
-    }
 
     protected void ToggleNavigationMenuDrawer()
     {
         _navigationMenuDrawerOpen = !_navigationMenuDrawerOpen;
+    }
+
+    private async Task OpenPreferencesDialog()
+    {
+        var options = new DialogOptions()
+        {
+            NoHeader = false,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
+
+        var parameters = new DialogParameters<ThemesDialog>
+        {
+            { x => x.UserPreferences, @LayoutService.UserPreferences }
+        };
+
+        await DialogService.ShowAsync<ThemesDialog>("", parameters, options);
     }
 
     private async Task OpenSearchDialog()
