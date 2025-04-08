@@ -7,72 +7,68 @@
 
 @attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
 
-<MudText Typo="Typo.h5">Payment Auditing and Performance Management</MudText>
+<MudText Typo="Typo.h5">Contract Payment Auditing &amp; Management</MudText>
+
+@if (_noAccessToContracts)
+{
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Class="mt-3">
+        <MudStack>
+            Performance based dashboards are coming soon
+        </MudStack>
+    </MudAlert>
+}
+else
+{
+    <MudGrid Class="mt-2">
+        <MudItem xs="12" md="3">
+            <MudSelect T="int" Label="Month" @bind-Value="Month">
+                @foreach (var month in Enumerable.Range(1, 12))
+                {
+                    <MudSelectItem Value="month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MudSelect T="int" Label="Year" @bind-Value="Year">
+                @foreach (var year in Enumerable.Range(2024, DateTime.Now.Year - 2023))
+                {
+                    <MudSelectItem Value="year">@year</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <ContractAutoComplete TenantId="@(CurrentUser?.TenantId ?? "xxx")" @bind-Value="SelectedContract" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MudSwitch @bind-Value="DataView" Label="Data View" Color="Color.Info" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+                These figures are subject to change due data verification checks.
+            </MudAlert>
+        </MudItem>
+    </MudGrid>
 
 
-<MudGrid Class="mt-2">
-    <MudItem xs="12" md="3">
-        <MudSelect T="int" Label="Month" @bind-Value="Month">
-            @foreach (var month in Enumerable.Range(1, 12))
-            {
-                <MudSelectItem Value="month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</MudSelectItem>
-            }
-        </MudSelect>
-    </MudItem>
-    <MudItem xs="12" md="3">
-        <MudSelect T="int" Label="Year" @bind-Value="Year">
-            @foreach (var year in Enumerable.Range(2024, DateTime.Now.Year - 2023)) 
-            {
-                <MudSelectItem Value="year">@year</MudSelectItem>
-            }
-        </MudSelect>
-    </MudItem>
-    <MudItem xs="12" md="3">
-        <ContractAutoComplete TenantId="@(CurrentUser?.TenantId ?? "xxx")" @bind-Value="SelectedContract" />
-    </MudItem>
-    <MudItem xs="12" md="3">
-        <MudSwitch @bind-Value="DataView" Label="Data View" Color="Color.Info"/>
-    </MudItem>
-    <MudItem xs="12">
-        <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
-            These figures are subject to change due data verification checks.
-        </MudAlert>
-    </MudItem>
-</MudGrid>
-
-
-<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-    <MudTabPanel text="Enrolments">
-        <EnrolmentPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Enrolments")" Contract="@SelectedContract" DataView="DataView"/>
-    </MudTabPanel>
-    <MudTabPanel Text="Inductions">
-        <InductionPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Inductions")" Contract="@SelectedContract" DataView="DataView" />
-    </MudTabPanel>
-    <MudTabPanel Text="Support &amp; Referral">
-        <SupportAndReferral Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-SupportAndReferral")" Contract="@SelectedContract" DataView="DataView" />
-    </MudTabPanel>
-    <MudTabPanel Text="Activities">
-        <ActivityPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Activities")" Contract="@SelectedContract" DataView="DataView" />
-    </MudTabPanel>
-    <MudTabPanel Text="Education & Training">
-        <EducationPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Education")" Contract="@SelectedContract" DataView="DataView" />
-    </MudTabPanel>
-    <MudTabPanel Text="Employment">
-        <EmploymentPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Employment")" Contract="@SelectedContract" DataView="DataView" />
-    </MudTabPanel>
-</MudTabs>
-
-
-@code{
-
-    [CascadingParameter]
-    public UserProfile? CurrentUser { get; set; }
-
-    public int Month { get; set; } = DateTime.Now.Month;
-    public int Year { get; set; } = DateTime.Now.Year;
-    public bool DataView { get; set; } = false;
-
-    public ContractDto? SelectedContract { get; set; }
-
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel text="Enrolments">
+            <EnrolmentPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Enrolments")" Contract="@SelectedContract" DataView="DataView" />
+        </MudTabPanel>
+        <MudTabPanel Text="Inductions">
+            <InductionPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Inductions")" Contract="@SelectedContract" DataView="DataView" />
+        </MudTabPanel>
+        <MudTabPanel Text="Support &amp; Referral">
+            <SupportAndReferral Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-SupportAndReferral")" Contract="@SelectedContract" DataView="DataView" />
+        </MudTabPanel>
+        <MudTabPanel Text="Activities">
+            <ActivityPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Activities")" Contract="@SelectedContract" DataView="DataView" />
+        </MudTabPanel>
+        <MudTabPanel Text="Education & Training">
+            <EducationPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Education")" Contract="@SelectedContract" DataView="DataView" />
+        </MudTabPanel>
+        <MudTabPanel Text="Employment">
+            <EmploymentPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Employment")" Contract="@SelectedContract" DataView="DataView" />
+        </MudTabPanel>
+    </MudTabs>
 }
 

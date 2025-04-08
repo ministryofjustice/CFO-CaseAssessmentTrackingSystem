@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Cfo.Cats.Server.UI.Pages.Dashboard;
 
+[Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 public partial class Dashboard
 {
 
@@ -35,4 +36,6 @@ public partial class Dashboard
         _showQaPots = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
         _showJobManagement = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
     }
+
+  
 }

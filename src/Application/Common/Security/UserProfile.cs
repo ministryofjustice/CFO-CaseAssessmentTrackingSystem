@@ -12,6 +12,9 @@ public class UserProfile
     public string? PhoneNumber { get; set; }
     public string? DefaultRole { get; set; }
     public string[] AssignedRoles { get; set; } = [];
+
+    public string[] Contracts { get; set; } = [];
+
     public required string UserId { get; set; } = Guid.CreateVersion7().ToString();
     public bool IsActive { get; set; }
     public string? TenantId { get; set; }

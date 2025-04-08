@@ -12,4 +12,6 @@ public static class ApplicationClaimTypes
     public const string AssignedRoles = nameof(AssignedRoles);
     public const string ProfilePictureDataUrl = nameof(ProfilePictureDataUrl);
     public const string AccountLocked = nameof(AccountLocked);
+    public const string Contract = nameof(Contract);
+    public const string InternalStaff = nameof(InternalStaff);
 }
