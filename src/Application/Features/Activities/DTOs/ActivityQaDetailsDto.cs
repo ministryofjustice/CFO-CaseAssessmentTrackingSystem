@@ -30,9 +30,9 @@ public class ActivityQaDetailsDto
     [Description("Additional Information")]
     public string? AdditionalInformation { get; set; }
 
-    public EmploymentDto EmploymentTemplate { get; set; } = new();
-    public EducationTrainingDto EducationTrainingTemplate { get; set; } = new();
-    public IswDto ISWTemplate { get; set; } = new();
+    public required EmploymentDto EmploymentTemplate { get; set; }
+    public required EducationTrainingDto EducationTrainingTemplate { get; set; }
+    public required IswDto ISWTemplate { get; set; }
 
     [Description("Upload Template")]
     public Document? Document { get; set; }

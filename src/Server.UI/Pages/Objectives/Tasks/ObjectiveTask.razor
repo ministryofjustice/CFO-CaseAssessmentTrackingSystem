@@ -252,9 +252,8 @@
         var parameters = new DialogParameters<AddActivityDialog>()
         {
             { 
-                x => x.Model, new AddActivity.Command() 
+                x => x.Model, new AddActivity.Command(ParticipantSummaryDto.Id)
                 { 
-                    ParticipantId = ParticipantSummaryDto.Id,
                     TaskId = Model.Id
                 } 
             }

@@ -4,6 +4,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs;
 
 public class EducationTrainingDto
 {
+    public required string ParticipantId { get; set; }
+
     [Description("Course Title")]
     public string? CourseTitle { get; set; }
 
