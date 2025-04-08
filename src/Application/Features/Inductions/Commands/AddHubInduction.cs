@@ -79,12 +79,12 @@ public static class AddHubInduction
 
         private async Task<bool> BeOnOrAfterConsentDate(Command command, CancellationToken cancellationToken)
         {
-            var consentDate = await _unitOfWork.DbContext
-                                .Participants.Where(x => x.Id == command.ParticipantId)
-                                .Select(c => c.Consents.Max(d => d.Lifetime.StartDate))
-                                .FirstAsync(cancellationToken);
+            var participant = await _unitOfWork.DbContext
+                .Participants.SingleAsync(x => x.Id == command.ParticipantId, cancellationToken);
 
-            return command.InductionDate >= consentDate;
+            var consentDate = participant.CalculateConsentDate();
+
+            return command.InductionDate >= consentDate!;
         }
 
     }
