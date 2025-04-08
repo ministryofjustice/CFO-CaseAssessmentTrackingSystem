@@ -18,6 +18,7 @@
 @using Cfo.Cats.Server.UI.Services.Fusion
 @using ZiggyCreatures.Caching.Fusion
 
+
 @attribute [Authorize(Policy = SecurityPolicies.SystemFunctionsRead)]
 @inherits CatsComponentBase
 @implements IDisposable
@@ -30,6 +31,7 @@
 @inject IFusionCache FusionCache;
 @inject IExcelService ExcelService
 @inject INetworkIpProvider NetworkIpProvider
+@inject IFusionCache cache;
 
 @inject IStringLocalizer<Users> L
 @inject ILogger<Users> Logger
@@ -39,15 +41,15 @@
 @if(_initialised)
 {
     <MudDataGrid @ref="_table"
-        T="ApplicationUserDto"
-        FixedHeader="true"
-        FixedFooter="false"
-        Height="calc(100vh - 300px)"
-        @bind-RowsPerPage="_defaultPageSize"
-        Hover="true"
-        Loading="@_loading"
-        ServerData="@(ServerReload)"
-        BreakPoint="Breakpoint.Sm">
+    T="ApplicationUserDto"
+    FixedHeader="true"
+    FixedFooter="false"
+    Height="calc(100vh - 300px)"
+    @bind-RowsPerPage="_defaultPageSize"
+    Hover="true"
+    Loading="@_loading"
+    ServerData="@(ServerReload)"
+    BreakPoint="Breakpoint.Sm">
         <ToolBarContent>|
             <div class="d-flex align-start flex-grow-1">
                 <div class="d-flex gap-4">
@@ -68,41 +70,41 @@
                     <div class="d-flex">
                         <MudHidden Breakpoint="Breakpoint.SmAndDown">
                             <MudButton Variant="Variant.Outlined"
-                                       Size="Size.Small"
-                                       Disabled="@_loading"
-                                       OnClick="@(OnRefresh)"
-                                       StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary">
+                            Size="Size.Small"
+                            Disabled="@_loading"
+                            OnClick="@(OnRefresh)"
+                            StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary">
                                 @ConstantString.Refresh
                             </MudButton>
                             @if (_canCreate)
-                                {
+                            {
                                 <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                                           StartIcon="@Icons.Material.Filled.Add"
-                                           Size="Size.Small"
-                                           OnClick="OnCreate"
-                                           IconColor="Color.Surface">
+                                StartIcon="@Icons.Material.Filled.Add"
+                                Size="Size.Small"
+                                OnClick="OnCreate"
+                                IconColor="Color.Surface">
                                     @ConstantString.New
                                 </MudButton>
-                                }
+                            }
                             @if (_canExport)
                             {
-                            <MudLoadingButton Variant="Variant.Outlined" Color="Color.Primary"
-                                              StartIcon="@Icons.Material.Filled.Download"
-                                              Size="Size.Small"
-                                              @bind-Loading="_exporting" LoadingAdornment="Adornment.Start" OnClick="OnExport"
-                                              IconColor="Color.Surface">
-                                @ConstantString.Export
-                            </MudLoadingButton>
+                                <MudLoadingButton Variant="Variant.Outlined" Color="Color.Primary"
+                                StartIcon="@Icons.Material.Filled.Download"
+                                Size="Size.Small"
+                                @bind-Loading="_exporting" LoadingAdornment="Adornment.Start" OnClick="OnExport"
+                                IconColor="Color.Surface">
+                                    @ConstantString.Export
+                                </MudLoadingButton>
                             }
                             @if (_canImport)
                             {
                                 <MudFileUpload T="IBrowserFile" FilesChanged="OnImportData" Accept=".xlsx">
                                     <ActivatorContent>
                                         <MudButton Size="Size.Small"
-                                                   Variant="Variant.Outlined"
-                                                   Color="Color.Primary"
-                                                   Disabled="@_loading"
-                                                   StartIcon="@Icons.Material.Filled.Upload">
+                                        Variant="Variant.Outlined"
+                                        Color="Color.Primary"
+                                        Disabled="@_loading"
+                                        StartIcon="@Icons.Material.Filled.Upload">
                                             @if (_uploading)
                                             {
                                                 <MudProgressCircular Size="Size.Small" Indeterminate="true"/>
@@ -121,10 +123,10 @@
                             @if (_canCreate)
                             {
                                 <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                                           StartIcon="@Icons.Material.Filled.Add"
-                                           Size="Size.Small"
-                                           OnClick="OnCreate"
-                                           IconColor="Color.Surface">
+                                StartIcon="@Icons.Material.Filled.Add"
+                                Size="Size.Small"
+                                OnClick="OnCreate"
+                                IconColor="Color.Surface">
                                     @ConstantString.New
                                 </MudButton>
                             }
@@ -141,7 +143,7 @@
                             </MudSelect>
                             <MudHidden Breakpoint="Breakpoint.SmAndDown">
                                 <MudTextField T="string" Immediate="false" ValueChanged="@(OnSearch)" Value="@_searchString" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
-                                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                                AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
                                 </MudTextField>
                             </MudHidden>
                         </MudStack>
@@ -157,15 +159,15 @@
                     @if (_canEdit || _canArchive || _canManageRoles || _canResetPassword || _canToggleActiveStatus || _canManagePermissions || _canUnlock)
                     {
                         <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
-                                 Dense="true"
-                                 EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
-                            
+                        Dense="true"
+                        EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+
                             <MudMenuItem OnClick="@(() => ShowIdentityAuditDialog(context.Item, "History"))">Audit</MudMenuItem>
                             @if (_canEdit)
                             {
                                 <MudMenuItem OnClick="@(() => OnEdit(context.Item))">@ConstantString.Edit</MudMenuItem>
                             }
-                            
+
                             @if (_canToggleActiveStatus)
                             {
                                 @if (context.Item.IsActive)
@@ -193,8 +195,8 @@
                     else
                     {
                         <MudButton Variant="Variant.Filled"
-                                   StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary" Size="Size.Small"
-                                   Color="Color.Surface">
+                        StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary" Size="Size.Small"
+                        Color="Color.Surface">
                             @ConstantString.NoAllowed
                         </MudButton>
                     }
@@ -215,11 +217,11 @@
                             <MudAvatar>
                                 @if (string.IsNullOrEmpty(context.Item.ProfilePictureDataUrl))
                                 {
-                                @context.Item.UserName.First()
+                                    @context.Item.UserName.First()
                                 }
                                 else
                                 {
-                                <MudImage Src="@context.Item.ProfilePictureDataUrl"></MudImage>
+                                    <MudImage Src="@context.Item.ProfilePictureDataUrl"></MudImage>
                                 }
                             </MudAvatar>
                         </MudBadge>
@@ -247,33 +249,33 @@
                 <CellTemplate>
                     @if (context.Item.AssignedRoles is not null)
                     {
-                    foreach (var str in context.Item.AssignedRoles)
-                    {
-                    <MudChip Size="Size.Small" Variant="Variant.Text">@str</MudChip>
-                    }
+                        foreach (var str in context.Item.AssignedRoles)
+                        {
+                            <MudChip Size="Size.Small" Variant="Variant.Text">@str</MudChip>
+                        }
                     }
                 </CellTemplate>
             </PropertyColumn>
             <PropertyColumn Property="x => x.IsActive" Title="@L[_currentDto.GetMemberDescription(x => x.IsActive)]">
                 <CellTemplate>                    
-                        <div>
+                    <div>
                         @if (context.Item.IsActive)
                         {
-                        <MudChip Color="Color.Success" Size="Size.Small" Icon="@Icons.Material.Filled.CheckCircleOutline">@L["Active"]</MudChip>                        
+                            <MudChip Color="Color.Success" Size="Size.Small" Icon="@Icons.Material.Filled.CheckCircleOutline">@L["Active"]</MudChip>                        
                         }
                         else
                         {
-                        <MudChip Class="flex-grow-0" Color="Color.Surface" Size="Size.Small" Icon="@Icons.Material.Filled.HighlightOff">@L["Inactive"]</MudChip>
-             
+                            <MudChip Class="flex-grow-0" Color="Color.Surface" Size="Size.Small" Icon="@Icons.Material.Filled.HighlightOff">@L["Inactive"]</MudChip>
+
                         }
+                    </div>
+
+                    @if (context.Item.LockoutEnd is not null)
+                    {
+                        <div>
+                            <MudChip OnClick="@(() => OnUnlock(context.Item))" Class="flex-grow-0" Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.HighlightOff">@L["Locked"]</MudChip>
                         </div>
-                        
-                        @if (context.Item.LockoutEnd is not null)
-                        {
-                            <div>
-                                <MudChip OnClick="@(() => OnUnlock(context.Item))" Class="flex-grow-0" Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.HighlightOff">@L["Locked"]</MudChip>
-                            </div>
-                        }
+                    }
                 </CellTemplate>
             </PropertyColumn>
         </Columns>
@@ -335,6 +337,9 @@
 
     private UserManager<ApplicationUser> UserManager = null!;
     private RoleManager<ApplicationRole> RoleManager = null!;
+
+
+
 
     [CascadingParameter] 
     public UserProfile UserProfile { get; set; } = default!;
@@ -607,6 +612,10 @@
                 UserPresence.Available);
 
             await OnlineUserTracker.UpdateUser(userInfo);
+
+            await cache.RemoveAsync(ApplicationUserClaimsPrincipalFactory.GetCacheKey(user.Id));
+
+
         }
         else
         {

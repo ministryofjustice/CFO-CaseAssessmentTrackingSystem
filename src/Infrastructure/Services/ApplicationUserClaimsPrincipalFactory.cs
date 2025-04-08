@@ -1,60 +1,76 @@
-using System.Security.Claims;
+using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
+using Claim = System.Security.Claims.Claim;
 
 namespace Cfo.Cats.Infrastructure.Services;
 
-#nullable disable
-public class ApplicationUserClaimsPrincipalFactory
-    : UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>
-{
-    public ApplicationUserClaimsPrincipalFactory(
-        UserManager<ApplicationUser> userManager,
-        RoleManager<ApplicationRole> roleManager,
-        IOptions<IdentityOptions> optionsAccessor
-    )
-        : base(userManager, roleManager, optionsAccessor) { }
 
+public class ApplicationUserClaimsPrincipalFactory(
+    UserManager<ApplicationUser> userManager,
+    RoleManager<ApplicationRole> roleManager,
+    IOptions<IdentityOptions> optionsAccessor,
+    IContractService contractService,
+    IFusionCache fusionCache)
+    : UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>(userManager, roleManager, optionsAccessor)
+{
+
+    public static string GetCacheKey(string userId)
+        => $"ClaimsPrincipal-{userId}";
+    
     public override async Task<ClaimsPrincipal> CreateAsync(ApplicationUser user)
     {
-        var principal = await base.CreateAsync(user);
-        ClaimsIdentity claimsIdentity = principal.Identity as ClaimsIdentity;
+        var cacheKey = GetCacheKey(user.Id);
 
-        if(claimsIdentity is not null)
+        var principal = await fusionCache.GetOrSetAsync(cacheKey,
+            _ => GetPrincipleFromDatabase(user),
+            new FusionCacheEntryOptions(TimeSpan.FromHours(8)));
+
+        return principal;
+    }
+
+    private async Task<ClaimsPrincipal> GetPrincipleFromDatabase(ApplicationUser user)
+    {
+        var principal = await base.CreateAsync(user);
+
+        if(principal.Identity is ClaimsIdentity claimsIdentity)
         {
-            claimsIdentity.AddClaims(
-                [
-                    new Claim(ApplicationClaimTypes.TenantId, user.TenantId!),
-                    new Claim(ApplicationClaimTypes.TenantName, user.TenantName),
-                    new Claim(ClaimTypes.GivenName, user.DisplayName),
-                ]);
-            
+            if (user.DisplayName is not null)
+            {
+                claimsIdentity.AddClaim(new Claim(ClaimTypes.GivenName, user.DisplayName));
+            }
+
+            if (user.TenantId is not null)
+            {
+                claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.TenantId, user.TenantId));
+                var contracts = contractService.GetVisibleContracts(user.TenantId);
+
+                foreach (var contract in contracts)
+                {
+                    claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.Contract, contract.Id));
+                }
+            }
+
+            if (user.TenantName is not null)
+            {
+                claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.TenantName, user.TenantName));
+            }
+
             if (string.IsNullOrEmpty(user.ProfilePictureDataUrl) == false)
             {
                 claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.ProfilePictureDataUrl, user.ProfilePictureDataUrl));
             }
 
-            if (user.LockoutEnd is not null)
+            if (user.UserName!.EndsWith("@justice.gov.uk", StringComparison.CurrentCultureIgnoreCase))
             {
-                claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.AccountLocked, "True"));
-            }
-            else
-            {
-                claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.AccountLocked, "False"));
+                claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.InternalStaff, "True"));
             }
 
-            var appUser = await UserManager.Users.Where(u => u.Id == user.Id).FirstAsync(); // 
-            var roles = await UserManager.GetRolesAsync(appUser!);
-            if (roles.Count > 0)
-            {
-                var rolesStr = string.Join(",", roles);
-                claimsIdentity.AddClaim(new Claim(ApplicationClaimTypes.AssignedRoles, rolesStr));
-            }
+            claimsIdentity.AddClaim(user.LockoutEnd is not null
+                ? new Claim(ApplicationClaimTypes.AccountLocked, "True")
+                : new Claim(ApplicationClaimTypes.AccountLocked, "False"));
         }
-
-        
 
         return principal;
     }

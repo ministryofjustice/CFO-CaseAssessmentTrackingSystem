@@ -29,6 +29,7 @@ public static class ClaimsPrincipalExtensions
             profile.DefaultRole = profile.AssignedRoles.Any() ? profile.AssignedRoles.First() : "";
             profile.ProfilePictureDataUrl = claimsPrincipal.GetProfilePictureDataUrl();
             profile.IsActive = true;
+            profile.Contracts = claimsPrincipal.GetContracts();
         }
 
         return profile;
@@ -94,11 +95,6 @@ public static class ClaimsPrincipalExtensions
         return Convert.ToBoolean(claimsPrincipal.FindFirstValue(ApplicationClaimTypes.Status));
     }
 
-    public static string? GetAssignRoles(this ClaimsPrincipal claimsPrincipal)
-    {
-        return claimsPrincipal.FindFirstValue(ApplicationClaimTypes.AssignedRoles);
-    }
-
     public static string[] GetRoles(this ClaimsPrincipal claimsPrincipal)
     {
         return claimsPrincipal
@@ -106,6 +102,13 @@ public static class ClaimsPrincipalExtensions
             .Select(x => x.Value)
             .ToArray();
     }
+
+    public static string[] GetContracts(this ClaimsPrincipal claimsPrincipal) =>
+        claimsPrincipal
+            .Claims
+            .Where(x => x.Type == ApplicationClaimTypes.Contract)
+            .Select(x => x.Value)
+            .ToArray();
 
     private static int? GetNullableIntValue(this ClaimsPrincipal claimsPrincipal, string claimType)
     {
