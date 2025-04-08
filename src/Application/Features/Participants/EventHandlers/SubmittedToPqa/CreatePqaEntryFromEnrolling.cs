@@ -20,9 +20,8 @@ public class CreatePqaEntryFromEnrolling(IUnitOfWork unitOfWork) : INotification
                 throw new ApplicationException("Owner tenant id must be set");
             }
 
-
             var queueEntry = new EnrolmentPqaQueueEntry(notification.Item.Id, notification.Item.Owner.TenantId,
-                notification.Item.Owner.Id, notification.Item.Consents.MaxBy(c => c.Created)!.Lifetime.StartDate);
+                notification.Item.Owner.Id, notification.Item.CalculateConsentDate()!.Value);
   
             await unitOfWork.DbContext.EnrolmentPqaQueue.AddAsync(queueEntry, cancellationToken);
         }

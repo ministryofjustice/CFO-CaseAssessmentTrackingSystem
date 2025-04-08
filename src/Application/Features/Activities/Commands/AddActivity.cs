@@ -351,13 +351,11 @@ public static class AddActivity
             {
                 return false;
             }
+            
+            var participant = unitOfWork.DbContext
+                                .Participants.Single(x => x.Id == participantId);
 
-            var consentDate = unitOfWork.DbContext
-                .Participants
-                .AsNoTracking()
-                .Where(x => x.Id == participantId)
-                .Select(c => c.Consents.Max(d => d.Lifetime.StartDate))
-                .First();
+            var consentDate = participant.CalculateConsentDate();
 
             return commencedOn >= consentDate;
         }
