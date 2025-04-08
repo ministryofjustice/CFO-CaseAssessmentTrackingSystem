@@ -1,20 +1,21 @@
 ﻿@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Common.Extensions
+@inherits CatsComponentBase
 
 <style>
     .force-break {
-        word-break: break-all;
+    word-break: break-all;
     }
 </style>
 
 <MudStack Class="mr-3 mt-2">
-    
+
     <MudText Typo="Typo.h5">
         Programme Consent Form (@Participant.Id)
     </MudText>
 
     <MudDivider/>
-    
+
     <MudText Typo="Typo.h6" Color="Color.Primary">
         Potential Participant Confirmation
     </MudText>
@@ -37,14 +38,14 @@
     </MudStack>
     <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
         <MudText Typo="Typo.body1"><strong>Date Of Birth</strong></MudText>
-        <MudText Typo="Typo.body1">@Participant.DateOfBirth (Age at consent @Participant.DateOfBirth!.Value.CalculateAge(@Participant.Consents.Max(c => c.ConsentDate)))</MudText>
+        <MudText Typo="Typo.body1">@Participant.DateOfBirth (Age at consent @Participant.DateOfBirth!.Value.CalculateAge(DateOnly.FromDateTime(Participant.CalculatedConsentDate!.Value)))</MudText>
     </MudStack>
 
     <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
         <MudText Typo="Typo.body1"><strong>Delivery Location</strong></MudText>
         <MudText Typo="Typo.body1">@Participant.EnrolmentLocation?.Name</MudText>
     </MudStack>
-    
+
     @if (Participant.EnrolmentLocationJustification is not null)
     {
         <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
@@ -56,7 +57,7 @@
             <MudText Typo="Typo.body1" Class="force-break">@Participant.EnrolmentLocationJustification</MudText>
         </MudStack>
     }
-    
+
     @if (ShowNationality)
     {
         <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
@@ -76,9 +77,9 @@
     </MudStack>
     <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
         <MudText Typo="Typo.body1"><strong>Consent Date</strong></MudText>
-        <MudText Typo="Typo.body1">@Participant.Consents.Max(c => c.ConsentDate).ToShortDateString()</MudText>
+        <MudText Typo="Typo.body1">@Participant.CalculatedConsentDate!.Value.ToShortDateString()</MudText>
     </MudStack>
-    
+
     <MudDivider />
 
     <MudStack Row="true" AlignItems="AlignItems.End" Breakpoint="Breakpoint.Md">
@@ -97,4 +98,14 @@
     [Parameter, EditorRequired] 
     public bool ShowNationality { get; set; } = false;
 
+    // DateTime ConsentDate { get; set; }
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     var unitOfWork = GetNewUnitOfWork();
+    //     var participant = await unitOfWork.DbContext
+    //         .Participants.SingleAsync(x => x.Id == Participant!.Id);
+
+    //     ConsentDate = participant.CalculateConsentDate()!.Value;
+    // }
 } 
