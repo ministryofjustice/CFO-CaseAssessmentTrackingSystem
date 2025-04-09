@@ -44,8 +44,9 @@ public class EnrolmentQueueEntryDto
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                 .ForMember(target => target.IsCompleted, options => options.MapFrom(source=> source.IsCompleted))
                 .ForMember(target => target.IsAccepted, options => options.MapFrom(source=> source.IsAccepted))
-                .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName));
-            
+                .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
+                .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore());
+
             CreateMap<EnrolmentQa1QueueEntry, EnrolmentQueueEntryDto>()
                 .ForMember(target => target.ParticipantId,
                 options => options.MapFrom(source => source.ParticipantId))
@@ -62,8 +63,9 @@ public class EnrolmentQueueEntryDto
                 source => source.Participant!.Owner!.DisplayName
                 ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
-                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName));
-            
+                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
+                .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore());
+
             CreateMap<EnrolmentQa2QueueEntry, EnrolmentQueueEntryDto>()
                 .ForMember(target => target.ParticipantId,
                 options => options.MapFrom(source => source.ParticipantId))
@@ -80,7 +82,8 @@ public class EnrolmentQueueEntryDto
                 source => source.Participant!.Owner!.DisplayName
                 ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
-                .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName));
+                .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
+                .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore());
 
             CreateMap<EnrolmentEscalationQueueEntry, EnrolmentQueueEntryDto>()
                 .ForMember(target => target.ParticipantId,
@@ -98,7 +101,8 @@ public class EnrolmentQueueEntryDto
                     source => source.Participant!.Owner!.DisplayName
                 ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
-                .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName));
+                .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
+                .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore());
 
         }
     }
