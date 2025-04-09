@@ -27,6 +27,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
 
         public DateTime Expiry => Activity.CommencedOn.AddMonths(3);
 
+        public int NoOfPreviousSubmissions { get; set; }
+
         public NoteDto[] Notes { get; set; } = [];
 
         private class Mapping : Profile

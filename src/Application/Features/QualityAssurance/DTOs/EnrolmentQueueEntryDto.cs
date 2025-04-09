@@ -20,6 +20,8 @@ public class EnrolmentQueueEntryDto
     
     public NoteDto[] Notes { get; set; } = [];
 
+    public int NoOfPreviousSubmissions { get; set; }
+
     private class Mapping : Profile
     {
         public Mapping()
