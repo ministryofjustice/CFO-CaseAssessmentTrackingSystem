@@ -82,9 +82,7 @@ public static class AddHubInduction
             var participant = await _unitOfWork.DbContext
                 .Participants.SingleAsync(x => x.Id == command.ParticipantId, cancellationToken);
 
-            var consentDate = participant.CalculateConsentDate();
-
-            return command.InductionDate >= consentDate!;
+            return command.InductionDate >= participant.CalculateConsentDate();
         }
 
     }
