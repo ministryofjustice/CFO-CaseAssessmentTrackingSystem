@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -36,6 +36,23 @@ namespace Cfo.Cats.Application.Features.Activities.Queries
 
                 var data = await ordered
                     .ProjectToPaginatedDataAsync<ActivityPqaQueueEntry, ActivityQueueEntryDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
+
+                var submissionCounts = await
+                (
+                    from q in query
+                    where data.Items.Select(c => c.ActivityId).Contains(q.ActivityId)
+                    group q by q.ActivityId into g
+                    select new
+                    {
+                        ActivityId = g.Key,
+                        PreviousSubmissions = g.Count() - 1 // Exclude current submission
+                    }
+                ).ToDictionaryAsync(x => x.ActivityId, cancellationToken);
+
+                foreach (var item in data.Items)
+                {
+                    item.NoOfPreviousSubmissions = submissionCounts[item.ActivityId].PreviousSubmissions;
+                }
 
                 return data;
             }
