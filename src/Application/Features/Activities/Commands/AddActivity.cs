@@ -355,9 +355,7 @@ public static class AddActivity
             var participant = unitOfWork.DbContext
                                 .Participants.Single(x => x.Id == participantId);
 
-            var consentDate = participant.CalculateConsentDate();
-
-            return commencedOn >= consentDate;
+            return commencedOn >= participant.CalculateConsentDate();
         }
     }
 }
