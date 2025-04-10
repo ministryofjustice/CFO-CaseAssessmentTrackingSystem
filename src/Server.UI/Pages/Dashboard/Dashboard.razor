@@ -25,7 +25,21 @@
 
     @if (UserProfile?.AssignedRoles?.Length > 0)
     {
-        <CaseWorkload />
+        <ErrorBoundary>
+            <ChildContent>
+                <CaseWorkload />
+            </ChildContent>
+            <ErrorContent>
+                <MudItem xs="12">
+                    <MudAlert Severity="Severity.Warning">
+                        <MudText>
+                            Error loading Case Workload.
+                        </MudText>
+                    </MudAlert>
+                </MudItem>
+            </ErrorContent>
+        </ErrorBoundary>
+        
     }
 
         @if(UserProfile?.AssignedRoles!.Contains(RoleNames.SystemSupport) == true)
