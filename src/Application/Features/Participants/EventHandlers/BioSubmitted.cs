@@ -12,7 +12,7 @@ public class BioSubmitted(IUnitOfWork unitOfWork) : INotificationHandler<BioSubm
 
         if (participant is not null)
         {
-            participant.SetBioDue(DateTime.UtcNow.AddDays(70));
+            participant.SetBioDue(DateTime.MaxValue);
             unitOfWork.DbContext.Participants.Update(participant);
         }
     }
