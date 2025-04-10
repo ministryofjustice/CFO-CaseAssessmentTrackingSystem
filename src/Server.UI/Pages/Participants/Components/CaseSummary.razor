@@ -177,13 +177,15 @@
                 else
                 {
                     <MudText Typo="Typo.body2">No risk information provided.</MudText>
-
-                    <MudTooltip Text="@_riskTooltipText">
-                        <MudIcon Icon="@_riskIcon" Size="@Size.Small" Color="@_riskIconColor"/>
-                        <MudText Typo="Typo.body2">
-                            @String.Format("Due {0}", _riskInfo)
-                        </MudText>
-                    </MudTooltip>
+                    @if(_riskInfo!="")
+                    {
+                        <MudTooltip Text="@_riskTooltipText">
+                            <MudIcon Icon="@_riskIcon" Size="@Size.Small" Color="@_riskIconColor"/>
+                            <MudText Typo="Typo.body2">
+                                @String.Format("Due {0}", _riskInfo)
+                            </MudText>
+                        </MudTooltip>
+                    }
                 }
             </MudCardContent>
             <MudCardActions>
