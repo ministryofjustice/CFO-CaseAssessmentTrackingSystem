@@ -19,9 +19,19 @@ public class ReassessmentPaymentEntityTypeConfiguration
         builder.Property(x => x.AssessmentCompleted)
             .IsRequired();
 
+        builder.Property(x => x.AssessmentCreated)
+            .IsRequired();
+
         builder.Property(x => x.ContractId)
             .IsRequired()
             .HasMaxLength(12);
+
+        builder.Property(x => x.LocationId)
+            .IsRequired();
+
+        builder.Property(x => x.LocationType)
+            .IsRequired()
+            .HasMaxLength(25);
 
         builder.Property(x => x.TenantId)
             .IsRequired()

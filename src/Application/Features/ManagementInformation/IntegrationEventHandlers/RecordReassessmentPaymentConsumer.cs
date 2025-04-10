@@ -35,11 +35,11 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
         await unitOfWork.SaveChangesAsync();
     }
 
-    ReassessmentPayment CreatePayable(Data data)
-        => ReassessmentPayment.CreatePayable(data.Assessment, data.ContractId);
+    static ReassessmentPayment CreatePayable(Data data)
+        => ReassessmentPayment.CreatePayable(data.Assessment, data.ContractId, data.LocationId, data.LocationType);
 
-    ReassessmentPayment CreateNonPayable(Data data, IneligibilityReason ineligibilityReason)
-        => ReassessmentPayment.CreateNonPayable(data.Assessment, data.ContractId, ineligibilityReason);
+    static ReassessmentPayment CreateNonPayable(Data data, IneligibilityReason ineligibilityReason)
+        => ReassessmentPayment.CreateNonPayable(data.Assessment, data.ContractId, data.LocationId, data.LocationType, ineligibilityReason);
     
     async Task<Data> GetData(ConsumeContext<AssessmentScoredIntegrationEvent> context)
     {
@@ -64,6 +64,8 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
                             select 1
                         ).Count(),
                         ContractId = p.CurrentLocation.Contract!.Id, // What if the participant is in an unmapped location?
+                        LocationId = p.CurrentLocation.Id,
+                        LocationType = p.CurrentLocation.LocationType.Name,
                         DateOfFirstConsent = p.DateOfFirstConsent,
                         InitialAssessmentCompletedInLastTwoMonths = (
                             from a in db.ParticipantAssessments
@@ -83,6 +85,8 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
         public required int? CountOfPaymentsInLastTwoMonths { get; init; }
         public required bool InitialAssessmentCompletedInLastTwoMonths { get; init; }
         public required string ContractId { get; set; }
+        public required int LocationId { get; set; }
+        public required string LocationType { get; set; }
         public required DateOnly? DateOfFirstConsent { get; init; }
 
     }
