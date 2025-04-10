@@ -78,7 +78,7 @@
                                     <MudText>@context.DueDate.ToShortDateString()</MudText>
                                     @if (context.DueDate == DateTime.Today)
                                     {
-                                        <MudText>Today</MudText>
+                                        <MudText Typo="Typo.body2">Today</MudText>
                                     }
                                     else
                                     {
@@ -96,8 +96,10 @@
                             <MudTd DataLabel="Last Risk Update">
                                 @if (context.LastRiskUpdate.HasValue)
                                 {
-                                    <MudStack>@context.LastRiskUpdate.Value.ToShortDateString()</MudStack>
-                                    <MudStack Typo="Typo.body2">@context.LastRiskUpdate.Value.Humanize()</MudStack>
+                                    <MudStack>
+                                        <MudText>@context.LastRiskUpdate.Value.ToShortDateString()</MudText>
+                                        <MudText Typo="Typo.body2">@context.LastRiskUpdate.Value.Humanize()</MudText>
+                                    </MudStack>
                                 }
                             </MudTd>
                         </RowTemplate>
