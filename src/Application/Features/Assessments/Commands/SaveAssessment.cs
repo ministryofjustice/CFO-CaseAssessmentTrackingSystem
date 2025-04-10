@@ -52,7 +52,11 @@ public static class SaveAssessment
                         }
                     ).FirstAsync(cancellationToken);
 
-                Sex sex = Sex.FromName(details.Gender);
+                if(Sex.TryFromName(details.Gender, out Sex sex) is false)
+                {
+                    sex = Sex.UnknownSex;
+                }
+
                 AssessmentLocation location = AssessmentLocation.FromValue(details.LotNumber);
                 var age = details.DateOfBirth.CalculateAge();
                 
