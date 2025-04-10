@@ -19,20 +19,18 @@ public partial class RiskDue
 
     [Inject] private IUserService UserService { get; set; } = default!;
 
-
-    private string? _selectedUser;
-
     protected override Task OnInitializedAsync()
     {
         return Refresh();
     }
+
     private async Task Refresh()
     {
         _loading = true;
 
         var query = new GetRiskDueDashboard.Query()
         {
-            UserId = _selectedUser ?? CurrentUser.UserId,
+            UserId = CurrentUser.UserId,
             FuturesDays = 14,
             ApprovedOnly = _approvedOnly
         };
@@ -44,5 +42,5 @@ public partial class RiskDue
         _loading = false;
 
     }
-
+    
 }
