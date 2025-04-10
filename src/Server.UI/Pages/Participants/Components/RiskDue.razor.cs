@@ -26,7 +26,6 @@ public partial class RiskDue
     {
         return Refresh();
     }
-
     private async Task Refresh()
     {
         _loading = true;
@@ -44,19 +43,6 @@ public partial class RiskDue
 
         _loading = false;
 
-    }
-
-
-    private Task OnSelectedUserChanged(string arg)
-    {
-        _selectedUser = arg;
-        return Refresh();
-    }
-
-    private Task OnApprovedToggle(bool obj)
-    {
-        _approvedOnly = obj;
-        return Refresh();
     }
 
 }
