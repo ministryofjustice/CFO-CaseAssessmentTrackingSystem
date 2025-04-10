@@ -34,7 +34,7 @@ public static class GetRiskDueDashboard
                         p.OwnerId! == request.UserId && p.RiskDue <= maxDate
                         && ( request.ApprovedOnly == false || (request.ApprovedOnly && p.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value))
                 orderby p.RiskDue
-                select new RiskDueDto(p.Id, p.FirstName, p.LastName, p.RiskDue!.Value, risk == null ? null : risk.Completed, p.EnrolmentStatus!);
+                select new RiskDueDto(p.Id, p.FirstName, p.LastName, p.RiskDue!.Value, risk == null ? null : risk.Completed, p.EnrolmentStatus!, p.RiskDueReason!);
 
 
             return await query.ToArrayAsync(cancellationToken);
