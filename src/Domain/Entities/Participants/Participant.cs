@@ -52,7 +52,7 @@ public class Participant : OwnerPropertyEntity<string>
             ReferralComments = referralComments,
             _currentLocationId = locationId,
             Nationality = nationality,
-            RiskDueReason = RiskDueReason.NoRisk
+            RiskDueReason = RiskDueReason.NewEntry
         };
 
         p.AddDomainEvent(new ParticipantCreatedDomainEvent(p, locationId));
