@@ -4,11 +4,11 @@ namespace Cfo.Cats.Domain.Common.Enums;
 
 public class RiskDueReason : SmartEnum<RiskDueReason>
 {
-    public static readonly RiskDueReason NoRisk = new("No Risk", 0);
-    public static readonly RiskDueReason NewConsent = new("New Consent", 1);
-    public static readonly RiskDueReason DMSUpdated = new("Update From DMS Feed", 2);
-    public static readonly RiskDueReason Reviewed = new("Risk Reviewed", 3);
-    public static readonly RiskDueReason Completed = new("Completed", 4);
+    public static readonly RiskDueReason Unknown = new("No Reason Specified", 0);
+    public static readonly RiskDueReason NewEntry = new("New Entry", 1);
+    public static readonly RiskDueReason InitialReview = new("Initial Review", 2);
+    public static readonly RiskDueReason DataFeedUpdated = new("Data Feed Updated", 3);
+    public static readonly RiskDueReason TenWeekReview = new("Ten Week Review", 4);
         
     private RiskDueReason(string name, int value)
         : base(name, value) { }

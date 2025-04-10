@@ -12,7 +12,7 @@ public class RiskInformationReviewed(IUnitOfWork unitOfWork) : INotificationHand
 
         if (participant is not null)
         {
-            participant.SetRiskDue(DateTime.UtcNow.AddDays(70), RiskDueReason.Reviewed);
+            participant.SetRiskDue(DateTime.UtcNow.AddDays(70), RiskDueReason.TenWeekReview);
         }
     }
 }
