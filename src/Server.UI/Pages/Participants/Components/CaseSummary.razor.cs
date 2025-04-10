@@ -283,30 +283,6 @@ public partial class CaseSummary
         }
     }
 
-    public async Task SkipBioForNow()
-    {
-        var command = new SkipBioForNow.Command()
-        {
-            ParticipantId = ParticipantSummaryDto.Id
-        };
-
-        var result = await GetNewMediator().Send(command);
-        if (result.Succeeded)
-        {
-            Snackbar.Add($"Bio skipped for now, you can add bio information at any time by clicking Continue Bio button", Severity.Info,
-            config => {
-                config.ShowTransitionDuration = 500;
-                config.HideTransitionDuration = 500;
-                config.ShowCloseIcon = false;
-            });
-            Navigation.Refresh(true);
-        }
-        else
-        {
-            Snackbar.Add($"Skipping bio failed", Severity.Error);
-        }
-    }
-
     public void ContinueBio()
     {
         Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/bio/{_bio!.BioId}");
@@ -325,14 +301,6 @@ public partial class CaseSummary
     /// </summary>
     /// <returns></returns>
     private bool CanContinueBio() => _bio is not null && (_bio.BioStatus == BioStatus.InProgress || _bio.BioStatus == BioStatus.SkippedForNow);
-
-    /// <summary>
-    /// If true, indicates that either the bio doesn't exist OR No step is completed yet  
-    /// </summary>
-    private bool CanSkipBio() => _bio is not null && (_bio.BioStatus == BioStatus.InProgress || _bio.BioStatus == BioStatus.SkippedForNow || _bio.BioStatus == BioStatus.NotStarted);
-    //{
-    //    return _bio is null || _bio!.BioStatus == BioStatus.NotStarted;
-    //}
 
     private bool HasPathwayPlan => ParticipantSummaryDto.PathwayPlan is not null;
     private bool HasPathwayBeenReviewed => HasPathwayPlan && ParticipantSummaryDto.PathwayPlan?.LastReviewed is not null;
