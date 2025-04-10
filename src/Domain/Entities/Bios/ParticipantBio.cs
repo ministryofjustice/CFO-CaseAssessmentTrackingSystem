@@ -18,20 +18,14 @@ namespace Cfo.Cats.Domain.Entities.Bios
         public string? CompletedBy { get; private set; }
         public string BioJson { get; private set; }
         public BioStatus Status { get; private set; } = BioStatus.NotStarted;
+
         private ParticipantBio(Guid id, string participantId, string bioJson, BioStatus status)
         {
             Id = id;
             ParticipantId = participantId;
             BioJson = bioJson;
-            Status = status;
-            if (status == BioStatus.SkippedForNow)
-            {
-                AddDomainEvent(new BioSkippedDomainEvent(this));
-            }
-            else if (status == BioStatus.InProgress)
-            {
-                AddDomainEvent(new BioCreatedDomainEvent(this));
-            }
+            Status = status;          
+            AddDomainEvent(new BioCreatedDomainEvent(this));          
         }
 
         public ParticipantBio UpdateJson(string json)
@@ -51,11 +45,6 @@ namespace Cfo.Cats.Domain.Entities.Bios
         public static ParticipantBio Create(Guid id, string participantId, string bioJson)
         {
             return new ParticipantBio(id, participantId, bioJson, BioStatus.InProgress);
-        }
-
-        public static ParticipantBio Skip(Guid id, string participantId, string bioJson)
-        {
-            return new ParticipantBio(id, participantId, bioJson, BioStatus.SkippedForNow);
         }
 
         public ParticipantBio UpdateStatus(BioStatus status)

@@ -251,7 +251,6 @@
                 <div>
                     @if (_bioInfo!=string.Empty)
                     {
-
                         <div class="description-pair">
                             <dt>
                                 <MudText Typo="Typo.subtitle2">Due</MudText>
@@ -283,12 +282,7 @@
                         <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinueBio"/>
                     </MudTooltip>
                 }
-                @if (CanSkipBio())
-                {
-                    <MudTooltip Text="Skip Bio For Now">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.NoMeetingRoom" Variant="Variant.Outlined" OnClick="SkipBioForNow"/>
-                    </MudTooltip>
-                }
+          
                 @if (CanRestartBio())
                 {
                     <MudTooltip Text="Restart Bio">
