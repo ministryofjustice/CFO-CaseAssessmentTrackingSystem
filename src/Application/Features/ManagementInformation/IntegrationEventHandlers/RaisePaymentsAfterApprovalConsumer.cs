@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
+using Cfo.Cats.Application.Features.Assessments.IntegrationEvents;
 using Cfo.Cats.Application.Features.Inductions.IntegrationEvents;
 using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
 using Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
@@ -47,11 +48,18 @@ public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork) : IConsu
                 .ToArrayAsync())
                 .Select(task => new { task, PRI = pris.First(p => p.ObjectiveId == task.ObjectiveId) });
 
+            var reassessments = await unitOfWork.DbContext.ParticipantAssessments
+                .Where(a => a.ParticipantId == context.Message.ParticipantId && a.Completed != null)
+                .OrderBy(a => a.Completed)
+                .Skip(1) // Ignore initial assessment
+                .ToArrayAsync();
+
             events.AddRange(wings.Select(wi => new WingInductionCreatedIntegrationEvent(wi, DateTime.UtcNow)));
             events.AddRange(hubs.Select(hi => new HubInductionCreatedIntegrationEvent(hi, DateTime.UtcNow)));
             events.AddRange(activities.Select(e => new ActivityApprovedIntegrationEvent(e.Id, e.ApprovedOn!.Value)));
             events.AddRange(pris.Select(e => new PRIAssignedIntegrationEvent(e.Id, e.MeetingAttendedOn.ToDateTime(TimeOnly.MinValue))));
             events.AddRange(mandatoryTasks.Select(task => new PRIThroughTheGateCompletedIntegrationEvent(task.PRI.Id)));
+            events.AddRange(reassessments.Select(r => new AssessmentScoredIntegrationEvent(r.Id, r.ParticipantId, r.Completed!.Value)));
 
             await context.PublishBatch(events);
         }
