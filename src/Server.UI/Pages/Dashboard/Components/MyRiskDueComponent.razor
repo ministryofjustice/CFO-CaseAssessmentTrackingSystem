@@ -36,11 +36,6 @@
                         </ToolBarContent>
                         <HeaderContent>
                             <MudTh>
-                                <MudTableSortLabel SortBy="new Func<RiskDueDto, object>(x => x.ParticipantId)">
-                                    Ref
-                                </MudTableSortLabel>
-                            </MudTh>
-                            <MudTh>
                                 <MudTableSortLabel SortBy="new Func<RiskDueDto, object>(x => x.FirstName)">
                                     Participant
                                 </MudTableSortLabel>
@@ -56,33 +51,53 @@
                                 </MudTableSortLabel>
                             </MudTh>
                             <MudTh>
+                                <MudTableSortLabel SortBy="new Func<RiskDueDto, object>(x => x.Reason.Name)">
+                                    Review Reason
+                                </MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
                                 <MudTableSortLabel SortBy="new Func<RiskDueDto, object>(x => x.LastRiskUpdate.GetValueOrDefault())">
                                     Last Risk Update
                                 </MudTableSortLabel>
                             </MudTh>
                         </HeaderContent>
                         <RowTemplate>
-                            <MudTd DataLabel="Ref">
-                                <MudLink Href=@($"/pages/participants/{context.ParticipantId}")>
-                                    @context.ParticipantId
-                                </MudLink>
-                                
-                            </MudTd>
                             <MudTd DataLabel="Participant">
-                                @($"{context.FirstName} {context.LastName}")
+                                <MudStack>
+                                    <MudText>@($"{context.FirstName} {context.LastName}")</MudText>
+                                    <MudLink Typo="Typo.body2" Href=@($"/pages/participants/{context.ParticipantId}")>
+                                        @context.ParticipantId
+                                    </MudLink>
+                                </MudStack>
                             </MudTd>
                             <MudTd DataLabel="Status">
                                 @context.EnrolmentStatus.Name
                             </MudTd>
                             <MudTd DataLabel="Due Date">
-                                <MudStack>@context.DueDate.ToShortDateString()</MudStack>
-                                <MudStack>@context.DueDate.Humanize()</MudStack>
+                                <MudStack>
+                                    <MudText>@context.DueDate.ToShortDateString()</MudText>
+                                    @if (context.DueDate == DateTime.Today)
+                                    {
+                                        <MudText>Today</MudText>
+                                    }
+                                    else
+                                    {
+                                        <MudText Typo="Typo.body2">@context.DueDate.Humanize()</MudText>
+                                    }
+                                </MudStack>
+                            </MudTd>
+                            <MudTd>
+                                <MudChip Size="Size.Small"
+                                         T="string"
+                                         Color="@( context.DueDate < DateTime.Today ? Color.Error : Color.Info )">
+                                    @context.Reason.Name
+                                </MudChip>
                             </MudTd>
                             <MudTd DataLabel="Last Risk Update">
                                 @if (context.LastRiskUpdate.HasValue)
                                 {
                                     <MudStack>@context.LastRiskUpdate.Value.ToShortDateString()</MudStack>
-                                    <MudStack>@context.LastRiskUpdate.Value.Humanize()</MudStack>
+                                    <MudStack Typo="Typo.body2">@context.LastRiskUpdate.Value.Humanize()</MudStack>
                                 }
                             </MudTd>
                         </RowTemplate>
