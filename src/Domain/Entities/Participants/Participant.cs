@@ -358,7 +358,7 @@ public class Participant : OwnerPropertyEntity<string>
         return this;   
     }
 
-    public Participant SetBioDue(DateTime bioDueDate)
+    public Participant SetBioDue(DateTime? bioDueDate)
     {
         BioDue = bioDueDate;
         return this;
