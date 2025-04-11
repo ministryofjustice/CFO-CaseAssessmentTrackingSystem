@@ -148,7 +148,7 @@
             parameters = new DialogParameters<ConfirmationWithNotesDialog>()
             {
                 { x => x.ContentText, "Are you sure you would like to submit this case to Provider QA?" },
-                { x => x.NoteLabel, "Mandatory Justification Reason" },
+                { x => x.NoteLabel, "Justification required when two reds have not been achieved" },
                 { x => x.MandatoryNote, true}
             };
         }
@@ -156,7 +156,7 @@
             parameters = new DialogParameters<ConfirmationWithNotesDialog>()
             {
                 { x => x.ContentText, "Are you sure you would like to submit this case to Provider QA?" },
-                { x => x.NoteLabel, "Optional Justification Reason" },
+                { x => x.NoteLabel, "Justification Reason" },
                 { x => x.MandatoryNote, false}
             };
         }
