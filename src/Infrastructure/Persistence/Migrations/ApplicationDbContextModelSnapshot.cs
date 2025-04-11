@@ -846,7 +846,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime>("InductionDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -902,7 +902,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime>("InductionDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -1989,6 +1989,9 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<string>("AssessmentJustification")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("BioDue")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("ConsentStatus")
                         .HasColumnType("int");
 
@@ -2065,7 +2068,10 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("RiskDue")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
+
+                    b.Property<int>("RiskDueReason")
+                        .HasColumnType("int");
 
                     b.Property<int>("_currentLocationId")
                         .HasColumnType("int")

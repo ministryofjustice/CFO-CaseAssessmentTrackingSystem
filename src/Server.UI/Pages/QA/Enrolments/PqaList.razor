@@ -93,6 +93,11 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
+        <PropertyColumn Property="x => x.NoOfPreviousSubmissions" Title="@L["Resubmissions"]">
+            <CellTemplate>
+                <MudText>@context.Item.NoOfPreviousSubmissions</MudText>
+            </CellTemplate>
+        </PropertyColumn>
     </Columns>
     <NoRecordsContent>
         <MudText>@ConstantString.NoRecords</MudText>

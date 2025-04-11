@@ -2,6 +2,7 @@ using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Locations.DTOs;
+using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Inductions;
 
@@ -79,13 +80,10 @@ public static class AddWingInduction
 
         private async Task<bool> BeOnOrAfterConsentDate(Command command, CancellationToken cancellationToken)
         {
-            var consentDate = await _unitOfWork.DbContext
-                                .Participants.Where(x => x.Id == command.ParticipantId)
-                                .Select(c => c.Consents.Max(d => d.Lifetime.StartDate))
-                                .FirstAsync(cancellationToken);
+            var participant = await _unitOfWork.DbContext
+                .Participants.SingleAsync(x => x.Id == command.ParticipantId, cancellationToken);
 
-            return command.InductionDate >= consentDate;
-
+            return command.InductionDate >= participant.CalculateConsentDate();
         }
 
     }

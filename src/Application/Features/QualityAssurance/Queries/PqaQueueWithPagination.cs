@@ -36,6 +36,23 @@ public static class PqaQueueWithPagination
             var data = await ordered
                 .ProjectToPaginatedDataAsync<EnrolmentPqaQueueEntry, EnrolmentQueueEntryDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
 
+            var submissionCounts = await
+            (
+                from q in query
+                where data.Items.Select(c => c.ParticipantId).Contains(q.ParticipantId)
+                group q by q.ParticipantId into g
+                select new
+                {
+                    ParticipantId = g.Key,
+                    PreviousSubmissions = g.Count() - 1 // Exclude current submission
+                }
+            ).ToDictionaryAsync(x => x.ParticipantId, cancellationToken);
+
+            foreach (var item in data.Items)
+            {
+                item.NoOfPreviousSubmissions = submissionCounts[item.ParticipantId].PreviousSubmissions;
+            }
+
             return data;
         }
         private Expression<Func<EnrolmentPqaQueueEntry, object?>> GetSortExpression(Query request)

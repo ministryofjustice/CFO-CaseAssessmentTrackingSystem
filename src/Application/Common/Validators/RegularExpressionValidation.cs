@@ -18,7 +18,8 @@ namespace Cfo.Cats.Application.Common.Validators
         public const string NotesMessage = "{0} must contain only letters, numbers, spaces and common punctuation";
 
         public const int NotesLength = 1000;
-        
+
+        public const string Guid = @"^\{?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}\}?$";
         public const string GuidMessage = "{0} must contain a valid Guid";
 
         public const string Numbers = @"^[0-9]*$";

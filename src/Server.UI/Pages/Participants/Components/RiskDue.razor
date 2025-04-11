@@ -1,0 +1,41 @@
+﻿
+@using Cfo.Cats.Application.Features.Dashboard.DTOs
+@using Humanizer
+@inherits CatsComponentBase
+
+
+<MudItem xs="12" md="6" lg="3">
+    
+    @if (_loading == false)
+    {
+        <MudList T="string">
+            @foreach (var item in Model)
+            {
+                <MudListItem T="string"
+                             OnClickPreventDefault="true">
+                    <MudStack>
+                        <MudText Typo="Typo.caption" Color="Color.Info">
+                            @($"{item.FirstName} {item.LastName}")
+                        </MudText>
+                        <MudDivider />
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.body1"><strong>Due Date</strong></MudText>
+                            <MudText Typo="Typo.body1">@item.DueDate.ToShortDateString() (@item.DueDate.Humanize())</MudText>
+                        </MudStack>
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.body1"><strong>Last Completed</strong></MudText>
+                            @if (item.LastRiskUpdate.HasValue)
+                            {
+                                <MudText Typo="Typo.body1">@item.LastRiskUpdate.Value.ToShortDateString() (@item.LastRiskUpdate.Humanize())</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body1">Never</MudText>
+                            }
+                        </MudStack>
+                    </MudStack>
+                </MudListItem>
+            }
+        </MudList>
+    }
+</MudItem>

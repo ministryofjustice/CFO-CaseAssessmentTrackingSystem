@@ -380,7 +380,8 @@ public static class DependencyInjection
                         RoleNames.SMT,
                         RoleNames.QAManager, 
                         RoleNames.QAOfficer,
-                        RoleNames.QASupportManager);
+                        RoleNames.QASupportManager,
+                        RoleNames.PerformanceManager);
                 });
 
                 options.AddPolicy(SecurityPolicies.ViewAudit, policy => {
@@ -392,7 +393,7 @@ public static class DependencyInjection
                         );
                 });
 
-
+              
             })
             .AddAuthentication(options => {
                 options.DefaultScheme = IdentityConstants.ApplicationScheme;

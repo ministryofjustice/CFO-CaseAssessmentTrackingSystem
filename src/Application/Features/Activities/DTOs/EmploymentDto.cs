@@ -4,6 +4,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs;
 
 public class EmploymentDto
 {
+    public required string ParticipantId { get; set; }
+
     [Description("Employment Type")]
     public string? EmploymentType { get; set; }
 

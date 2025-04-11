@@ -27,7 +27,7 @@
     </MudItem>
     <MudItem xs="12">
         <MudChipSet @bind-SelectedValues="filteredTypes"
-                    Disabled="Disabled || Model.CanChangeActivityDefinition is false"
+        Disabled="Disabled || Model.CanChangeActivityDefinition is false"
         SelectionMode="SelectionMode.MultiSelection">
             @foreach (var type in ActivityType.List)
             {
@@ -41,17 +41,17 @@
     </MudItem> 
     <MudItem xs="12">
         <MudAutocomplete @ref="activityDropdown"
-                         T="ActivityDefinition"
-                         @bind-Value="Model.Definition"
-                         @bind-Value:after="OnActivityOrDateChanged"
-                         Disabled="Disabled || Model.CanChangeActivityDefinition is false"
-                         Label="@Model.GetMemberDescription(x => x.Definition)"
-                         For="() => Model.Definition"
-                         SearchFunc="@SearchActivities"
-                         ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
-                         AdornmentColor="Color.Primary"
-                         ToStringFunc="activity => activity?.Category.Name"
-                         MaxItems="null">
+        T="ActivityDefinition"
+        @bind-Value="Model.Definition"
+        @bind-Value:after="OnActivityOrDateChanged"
+        Disabled="Disabled || Model.CanChangeActivityDefinition is false"
+        Label="@Model.GetMemberDescription(x => x.Definition)"
+        For="() => Model.Definition"
+        SearchFunc="@SearchActivities"
+        ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+        AdornmentColor="Color.Primary"
+        ToStringFunc="activity => activity?.Category.Name"
+        MaxItems="null">
             <ItemTemplate>
                 <div class="d-flex gap-2 align-center">
                     <MudChip T="string" Size="Size.Small" Text="@context.Type.Name" Color="Color.Secondary" />
@@ -74,11 +74,12 @@
         <MudDatePicker @bind-Date="Model.CommencedOn" @bind-Date:after="OnActivityOrDateChanged"
         For="() => Model.CommencedOn"
         MaxDate="DateTime.UtcNow"
-        MinDate="DateTime.Today.AddMonths(-3)"
+        MinDate="Model.Definition?.Classification.IsClaimableMoreThanThreeMonthsAgo is not true ? DateTime.Today.AddMonths(-3) : null"
         Label="@Model.GetMemberDescription(x => x.CommencedOn)"
         PickerVariant="PickerVariant.Dialog"
         ImmediateText="true"
-        Editable="true" />
+        Editable="true" 
+        Disabled="Model.Definition is null" />
     </MudItem>
 
     @if (Model.Definition is { Classification.RequiresFurtherInformation: true })
@@ -140,9 +141,9 @@
     }
     <MudItem xs="12">
         <MudTextField @bind-Value="Model.AdditionalInformation"
-                      Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
-                      For="() => Model.AdditionalInformation"
-                      Lines="5" />
+        Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
+        For="() => Model.AdditionalInformation"
+        Lines="5" />
     </MudItem>
     @if(Model.Definition is { RequiresQa: true })
     {
@@ -203,9 +204,9 @@
 
     void ClearTemplates()
     {
-        Model.ISWTemplate = new();
-        Model.EducationTrainingTemplate = new();
-        Model.EmploymentTemplate = new();
+        Model.ISWTemplate = new() { ParticipantId = Model.ParticipantId };
+        Model.EducationTrainingTemplate = new() { ParticipantId = Model.ParticipantId };
+        Model.EmploymentTemplate = new() { ParticipantId = Model.ParticipantId };
     }
 
     void ClearSelectedActivity()

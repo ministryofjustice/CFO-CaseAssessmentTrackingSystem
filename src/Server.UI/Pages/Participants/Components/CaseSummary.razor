@@ -177,13 +177,15 @@
                 else
                 {
                     <MudText Typo="Typo.body2">No risk information provided.</MudText>
-
-                    <MudTooltip Text="@_riskTooltipText">
-                        <MudIcon Icon="@_riskIcon" Size="@Size.Small" Color="@_riskIconColor"/>
-                        <MudText Typo="Typo.body2">
-                            @String.Format("Due {0}", _riskInfo)
-                        </MudText>
-                    </MudTooltip>
+                    @if(_riskInfo!="")
+                    {
+                        <MudTooltip Text="@_riskTooltipText">
+                            <MudIcon Icon="@_riskIcon" Size="@Size.Small" Color="@_riskIconColor"/>
+                            <MudText Typo="Typo.body2">
+                                @String.Format("Due {0}", _riskInfo)
+                            </MudText>
+                        </MudTooltip>
+                    }
                 }
             </MudCardContent>
             <MudCardActions>
@@ -209,7 +211,7 @@
                     <MudText Typo="Typo.h6">Bio Information</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
-            <MudCardContent Class="d-flex justify-space-between align-center">
+            <MudCardContent>
 
                 @if (_bio is null)
                 {
@@ -246,6 +248,26 @@
                         </dl>
                     </div>
                 }
+                <div>
+                    @if (_bioInfo!=string.Empty)
+                    {
+
+                        <div class="description-pair">
+                            <dt>
+                                <MudText Typo="Typo.subtitle2">Due</MudText>
+                            </dt>
+                            <dd>
+                                <MudTooltip Text="@_bioTooltipText">
+                                    <MudIcon Icon="@_bioIcon" Size="@Size.Small" Color="@_bioIconColor" />
+                                    <MudText Typo="Typo.body2">
+                                        @String.Format(_bioInfo)
+                                    </MudText>
+                                </MudTooltip>
+                            </dd>
+                        </div>                  
+                    }
+                </div>
+
             </MudCardContent>
 
             <MudCardActions>
@@ -401,7 +423,7 @@
                                             <MudText Typo="Typo.subtitle2">@_latestPRI.Status.Name Reason</MudText>
                                         </dt>
                                         <dd>
-                                            <MudText Typo="Typo.body2">@_latestPRI.AbandonReason?</MudText>
+                                            <MudText Typo="Typo.body2">@_latestPRI.AbandonReason</MudText>
                                         </dd>
                                     </div>
                                 }

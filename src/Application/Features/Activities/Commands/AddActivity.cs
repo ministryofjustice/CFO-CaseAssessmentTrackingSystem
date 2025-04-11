@@ -8,18 +8,15 @@ using Cfo.Cats.Domain.Entities.Activities;
 using Cfo.Cats.Domain.Entities.Documents;
 using Humanizer.Bytes;
 using Microsoft.AspNetCore.Components.Forms;
-using System.Linq.Dynamic.Core.Tokenizer;
-using System.Threading;
 
 namespace Cfo.Cats.Application.Features.Activities.Commands;
 
 public static class AddActivity
 {
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
-    public class Command : IRequest<Result>
+    public record class Command(string ParticipantId) : IRequest<Result>
     {
         public Guid? ActivityId { get; set; }
-        public required string ParticipantId { get; set; }
         public required Guid TaskId { get; set; }
 
         [Description("Location")]
@@ -34,9 +31,9 @@ public static class AddActivity
         [Description("Additional Information")]
         public string? AdditionalInformation { get; set; }
 
-        public EmploymentDto EmploymentTemplate { get; set; } = new();
-        public EducationTrainingDto EducationTrainingTemplate { get; set; } = new();
-        public IswDto ISWTemplate { get; set; } = new();
+        public EmploymentDto EmploymentTemplate { get; set; } = new() { ParticipantId = ParticipantId };
+        public EducationTrainingDto EducationTrainingTemplate { get; set; } = new() { ParticipantId = ParticipantId };
+        public IswDto ISWTemplate { get; set; } = new() { ParticipantId = ParticipantId };
 
         [Description("Upload Template")]
         public IBrowserFile? Document { get; set; }
@@ -260,10 +257,16 @@ public static class AddActivity
                 .WithMessage("You must provide the date the activity took place")
                 .Must(NotBeCompletedInTheFuture)
                 .WithMessage("The date the activity took place cannot be in the future")
-                .GreaterThanOrEqualTo(DateTime.Today.AddMonths(-3))
-                .WithMessage("The activity must have taken place within the last three months")
                 .Must((command, commencedOn, token) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId, commencedOn))
                 .WithMessage("The activity cannot take place before the participant gave consent");
+
+            // ISW's can be claimed > 3 months ago. All other types of activity must be completed in last 3 months.
+            When(c => c.Definition?.Classification.IsClaimableMoreThanThreeMonthsAgo is false, () =>
+            {
+                RuleFor(c => c.CommencedOn)
+                    .GreaterThanOrEqualTo(DateTime.Today.AddMonths(-3))
+                    .WithMessage("The activity must have taken place within the last three months");
+            });
 
             RuleFor(c => c.AdditionalInformation)
                 .NotEmpty()
@@ -298,7 +301,6 @@ public static class AddActivity
             var activity = unitOfWork.DbContext.Activities.Single(a => a.Id == activityId);
             return activity.Definition == definition;
         }
-
 
         private bool BeInPendingStatus(Guid? activityId)
         {
@@ -351,15 +353,11 @@ public static class AddActivity
             {
                 return false;
             }
+            
+            var participant = unitOfWork.DbContext
+                                .Participants.Single(x => x.Id == participantId);
 
-            var consentDate = unitOfWork.DbContext
-                .Participants
-                .AsNoTracking()
-                .Where(x => x.Id == participantId)
-                .Select(c => c.Consents.Max(d => d.Lifetime.StartDate))
-                .First();
-
-            return commencedOn >= consentDate;
+            return commencedOn >= participant.CalculateConsentDate();
         }
     }
 }
