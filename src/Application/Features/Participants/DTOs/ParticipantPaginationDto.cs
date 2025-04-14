@@ -9,19 +9,19 @@ public class ParticipantPaginationDto
     [Description("Participant Id")]
     public string Id { get; set; } = default!;
     
-    [Description("Enrolment Status")]
+    [Description("Status")]
     public EnrolmentStatus EnrolmentStatus { get; set; } = default!;
     
-    [Description("Consent Status")]
+    [Description("Consent")]
     public ConsentStatus ConsentStatus { get; set; } = default!;
     
     [Description("Participant")]
     public string ParticipantName { get; set; } = default!;
     
-    [Description("Current Location")]
+    [Description("Location")]
     public LocationDto CurrentLocation { get; set; } = default!;
     
-    [Description("Enrolment Location")]
+    [Description("Enrolled At")]
     public LocationDto? EnrolmentLocation { get; set; }
     
     [Description("Assignee")]
@@ -29,6 +29,12 @@ public class ParticipantPaginationDto
     
     [Description("Tenant")]
     public string Tenant { get; set; } = default!;
+
+    [Description("Risk Due")]
+    public DateTime? RiskDue { get; set; }
+
+    [Description] 
+    public RiskDueReason RiskDueReason { get; set; } = RiskDueReason.Unknown;
 
     private class Mapper : Profile
     {
@@ -42,7 +48,9 @@ public class ParticipantPaginationDto
                 .ForMember(target => target.CurrentLocation, options => options.MapFrom(source => source.CurrentLocation))
                 .ForMember(target => target.EnrolmentLocation, options => options.MapFrom(source => source.EnrolmentLocation))
                 .ForMember(target => target.Owner, options => options.MapFrom(source => source.Owner!.DisplayName))
-                .ForMember(target => target.Tenant, options => options.MapFrom(source => source.Owner!.TenantName));
+                .ForMember(target => target.Tenant, options => options.MapFrom(source => source.Owner!.TenantName))
+                .ForMember(target => target.RiskDue, options => options.MapFrom(source => source.RiskDue))
+                .ForMember(target => target.RiskDueReason, options => options.MapFrom(source => source.RiskDueReason));
             
         }
     }
