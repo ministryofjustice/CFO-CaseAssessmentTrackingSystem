@@ -20,8 +20,8 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
         var ineligibilityReason = data switch
         {
             { DateOfFirstConsent: null } => IneligibilityReason.NotYetApproved,
-            { CountOfPaymentsInLastTwoMonths: > 0 } => IneligibilityReason.MaximumPaymentLimitReached,
-            { InitialAssessmentCompletedInLastTwoMonths: true } => IneligibilityReason.InitialAssessmentCompletedInLastTwoMonths,
+            { NumberOfPaymentsInLastTwoPaymentMonths: > 0 } => IneligibilityReason.MaximumPaymentLimitReached,
+            { WasInitialAssessmentCompletedInLastTwoPaymentMonths: true } => IneligibilityReason.InitialAssessmentCompletedInLastTwoMonths,
             _ => null,
         };
 
@@ -46,33 +46,34 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
         var db = unitOfWork.DbContext;
 
         var twoMonthsAgo = context.Message.OccurredOn.Date.AddMonths(-2);
+        var twoPaymentMonthsAgo = new DateTime(twoMonthsAgo.Year, twoMonthsAgo.Month, day: 1);
 
         var query = from p in db.Participants
                     join a in db.ParticipantAssessments on p.Id equals a.ParticipantId
+                    join l in db.Locations on a.LocationId equals l.Id
                     where a.Id == context.Message.Id
                     select new Data
                     {
                         Assessment = a,
-                        CountOfPaymentsInLastTwoMonths = (
+                        NumberOfPaymentsInLastTwoPaymentMonths = (
                             from rp in db.ReassessmentPayments
-                            join ddFrom in db.DateDimensions on twoMonthsAgo equals ddFrom.TheDate
                             join ddTo in db.DateDimensions on context.Message.OccurredOn.Date equals ddTo.TheDate
                             where rp.ParticipantId == p.Id
                                   && rp.EligibleForPayment
-                                  && rp.AssessmentCompleted >= ddFrom.TheFirstOfMonth
-                                  && rp.AssessmentCompleted <= ddTo.TheLastOfMonth
+                                  && rp.AssessmentCompleted.Date > twoPaymentMonthsAgo
+                                  && rp.AssessmentCompleted.Date < ddTo.TheLastOfMonth
                             select 1
                         ).Count(),
-                        ContractId = p.CurrentLocation.Contract!.Id, // What if the participant is in an unmapped location?
-                        LocationId = p.CurrentLocation.Id,
-                        LocationType = p.CurrentLocation.LocationType.Name,
+                        ContractId = l.Contract!.Id,
+                        LocationId = l.Id,
+                        LocationType = l.LocationType.Name,
                         DateOfFirstConsent = p.DateOfFirstConsent,
-                        InitialAssessmentCompletedInLastTwoMonths = (
+                        WasInitialAssessmentCompletedInLastTwoPaymentMonths = (
                             from a in db.ParticipantAssessments
                             where a.ParticipantId == p.Id
                             orderby a.Created ascending
                             select a
-                        ).First().Completed!.Value.Date >= twoMonthsAgo
+                        ).First().Completed!.Value.Date >= twoPaymentMonthsAgo
                     };
 
         return await query.FirstAsync();
@@ -82,8 +83,8 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
     record Data
     {
         public required ParticipantAssessment Assessment { get; set; }
-        public required int? CountOfPaymentsInLastTwoMonths { get; init; }
-        public required bool InitialAssessmentCompletedInLastTwoMonths { get; init; }
+        public required int? NumberOfPaymentsInLastTwoPaymentMonths { get; init; }
+        public required bool WasInitialAssessmentCompletedInLastTwoPaymentMonths { get; init; }
         public required string ContractId { get; set; }
         public required int LocationId { get; set; }
         public required string LocationType { get; set; }
