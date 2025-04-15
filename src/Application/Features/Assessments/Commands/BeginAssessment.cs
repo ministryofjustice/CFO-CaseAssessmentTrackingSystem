@@ -11,6 +11,7 @@ using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Relationships;
 using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.ThoughtsAndBehaviours;
 using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.WellbeingAndMentalHealth;
 using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Working;
+using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Assessments;
 using Newtonsoft.Json;
@@ -23,7 +24,10 @@ public static class BeginAssessment
     public class Command : ICacheInvalidatorRequest<Result<Guid>>
     {
         public required string ParticipantId { get; set; }
-        
+
+        [Description("Location of assessment")]
+        public LocationDto? Location { get; set; }
+
         //TODO: this could be done at a per participant level
         public string[] CacheKeys => [ AssessmentsCacheKey.GetAllCacheKey ];
         public CancellationTokenSource? SharedExpiryTokenSource 
@@ -66,7 +70,7 @@ public static class BeginAssessment
                 TypeNameHandling = TypeNameHandling.Auto
             });
             
-            ParticipantAssessment pa = ParticipantAssessment.Create(assessment.Id, request.ParticipantId, assessmentJson: json, _currentUserService.TenantId!);
+            ParticipantAssessment pa = ParticipantAssessment.Create(assessment.Id, request.ParticipantId, assessmentJson: json, _currentUserService.TenantId!, request.Location!.Id);
             foreach (var pathway in assessment.Pathways)
             {
                 pa.SetPathwayScore(pathway.Title, -1);
@@ -90,6 +94,10 @@ public static class BeginAssessment
                 .MaximumLength(9)
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+
+            RuleFor(c => c.Location)
+                .NotNull()
+                .WithMessage("You must choose a location");
 
             RuleFor(c => c.ParticipantId)
                 .MustAsync(Exist)

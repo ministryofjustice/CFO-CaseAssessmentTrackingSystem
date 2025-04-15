@@ -21,15 +21,17 @@ namespace Cfo.Cats.Domain.Entities.Assessments
         public string AssessmentJson {get; private set;}
         public DateTime? Completed { get; private set; }
         public string? CompletedBy { get; private set; }
+        public int LocationId { get; private set; }
 
         public IReadOnlyCollection<PathwayScore> Scores => _scores.AsReadOnly();
 
-        private ParticipantAssessment(Guid id, string participantId, string assessmentJson, string tenantId)
+        private ParticipantAssessment(Guid id, string participantId, string assessmentJson, string tenantId, int locationId)
         {
             Id = id;
             ParticipantId = participantId;
             AssessmentJson = assessmentJson;
             TenantId = tenantId;
+            LocationId = locationId;
             AddDomainEvent(new AssessmentCreatedDomainEvent(this));
         }
 
@@ -63,9 +65,9 @@ namespace Cfo.Cats.Domain.Entities.Assessments
         }
 
 
-        public static ParticipantAssessment Create(Guid id, string participantId, string assessmentJson, string tenantId)
+        public static ParticipantAssessment Create(Guid id, string participantId, string assessmentJson, string tenantId, int locationId)
         {
-            return new ParticipantAssessment(id, participantId, assessmentJson, tenantId);
+            return new ParticipantAssessment(id, participantId, assessmentJson, tenantId, locationId);
         }
 
         public string? TenantId {get; set;}

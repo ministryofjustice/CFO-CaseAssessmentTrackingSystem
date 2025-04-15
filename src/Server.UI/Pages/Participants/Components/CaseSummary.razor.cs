@@ -107,20 +107,19 @@ public partial class CaseSummary
 
     public async Task BeginAssessment()
     {
-        var command = new BeginAssessment.Command
+        var parameters = new DialogParameters<AddAssessmentDialog>()
         {
-            ParticipantId = ParticipantSummaryDto.Id
+            { x => x.Model, new BeginAssessment.Command() { ParticipantId = ParticipantSummaryDto.Id } }
         };
 
-        var result = await GetNewMediator().Send(command);
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<AddAssessmentDialog>("Begin assessment for participant", parameters, options);
 
-        if (result.Succeeded)
+        var state = await dialog.Result;
+
+        if (state is { Canceled: false })
         {
-            Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessment/{result.Data}");
-        }
-        else
-        {
-            Snackbar.Add(result.ErrorMessage, Severity.Error);
+            Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessment/{state.Data}");
         }
     }
 
