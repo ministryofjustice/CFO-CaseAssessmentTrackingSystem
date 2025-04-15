@@ -27,6 +27,11 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Participants
                 .WithMany()
                 .HasForeignKey(pa => pa.TenantId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne<Location>()
+                .WithMany()
+                .HasForeignKey(pa => pa.LocationId)
+                .OnDelete(DeleteBehavior.Restrict);
             
             builder.OwnsMany(p => p.Scores, score => {
                 score.WithOwner().HasForeignKey("AssessmentId");
