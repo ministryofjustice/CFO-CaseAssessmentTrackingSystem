@@ -141,9 +141,9 @@
     {
         //need to check if 2 or more reds
         var parameters = new DialogParameters<ConfirmationWithNotesDialog>();
-        var justificationRequried = await AssessmentJustificationRequired();
+        var justificationRequired = await AssessmentJustificationRequired();
 
-        if (justificationRequried)
+        if (justificationRequired)
         {
             parameters = new DialogParameters<ConfirmationWithNotesDialog>()
             {
@@ -314,7 +314,7 @@
 
     private async Task<bool> AssessmentJustificationRequired()
     {
-        bool justifcationRequired = false;
+        bool justificationRequired = true;
 
         var query = new GetAssessmentScores.Query()
                 {
@@ -323,15 +323,16 @@
 
         var result = await GetNewMediator().Send(query);
 
-        if (result.Succeeded && result.Data != null)
+        if (result is { Succeeded: true, Data: not null })
         {
             var latestAssessment = result.Data.MaxBy(pa => pa.CreatedDate);
-            var greenYellowCount = latestAssessment!.PathwayScore.Where(x => x.Score >= 10).Count();           
-            if (greenYellowCount >= 2)
+            var redCount = latestAssessment!.PathwayScore.Count(x => x.Score < 10);           
+            
+            if (redCount >= 2)
             { 
-                justifcationRequired= true;
+                justificationRequired = false;
             }            
         }
-        return justifcationRequired;
+        return justificationRequired;
     }            
  }
