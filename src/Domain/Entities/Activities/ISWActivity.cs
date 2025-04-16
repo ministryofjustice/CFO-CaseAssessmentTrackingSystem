@@ -31,6 +31,8 @@ public class ISWActivity : ActivityWithTemplate
     public double HoursPerformedPost { get; private set; }
     public DateTime BaselineAchievedOn { get; private set; }
 
+    public override DateTime Expiry => BaselineAchievedOn.AddMonths(3);
+
     public override string DocumentLocation => "activity/isw";
 
     public static ISWActivity Create(

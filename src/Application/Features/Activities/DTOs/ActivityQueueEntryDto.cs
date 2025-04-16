@@ -25,7 +25,7 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
 
         public DateTime CommencedOn => Activity.CommencedOn;
 
-        public DateTime Expiry => Activity.CommencedOn.AddMonths(3);
+        public DateTime Expiry => Activity.Expiry;
 
         public int NoOfPreviousSubmissions { get; set; }
 
