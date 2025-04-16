@@ -70,6 +70,8 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
     public ActivityStatus Status { get; protected set; }
     public DateTime? ApprovedOn { get; protected set; }
 
+    public virtual DateTime Expiry => CommencedOn.AddMonths(3);
+
     public Activity TransitionTo(ActivityStatus to)
     {
         if(Status.CanTransitionTo(to))
