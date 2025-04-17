@@ -20,12 +20,12 @@ Task("Clean")
     });
 
 Task("Build")
-    .Description("Builds the solution in the given configuration. (Defaults to Release)")
+    .Description("Builds the Server UI project in the given configuration. (Defaults to Release)")
     .IsDependentOn("Clean")
     .Does(() =>
 {
-    LogInformation("Building the solution");
-    DotNetBuild("./cats.sln", new DotNetBuildSettings
+    LogInformation("Building the Server UI project");
+    DotNetBuild("./src/Server.UI/Server.UI.csproj", new DotNetBuildSettings
     {
         Configuration = configuration,
     });
@@ -45,30 +45,27 @@ Task("Test")
 });
 
 Task("Publish")
-    .Description("Publishes the Server.UI project, and compresses the output as ./publish/build-artifacts.zip")
+    .Description("Publishes the Server.UI project")
     .IsDependentOn("Test")
     .Does(() => {
 
-        LogInformation("Publishing the solution");
+        LogInformation("Publishing the Server.UI project");
 
         CleanDirectory("./publish");
 
         var settings = new DotNetPublishSettings
             {
                 Configuration = configuration,
-                OutputDirectory = "./publish/workspace/",
+                OutputDirectory = "./publish/",
                 NoBuild = true,
+	        MSBuildSettings = new DotNetMSBuildSettings()
+                .WithProperty("DebugType", "None")
+                .WithProperty("DebugSymbols", "false")
+		
             };
 
-        DotNetPublish("./cats.sln", settings);
-        ZipCompress("./publish/workspace", "./publish/build-artifacts.zip");
-        CleanDirectory("./publish/workspace");
-        DeleteDirectory("./publish/workspace", new DeleteDirectorySettings{
-            Force = true,
-            Recursive = true
-        });
-
-
+        DotNetPublish("./src/Server.UI/Server.UI.csproj", settings);
+       
         LogInformation("Publishing complete");
     });
 

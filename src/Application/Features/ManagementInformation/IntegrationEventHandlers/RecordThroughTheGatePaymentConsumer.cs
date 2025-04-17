@@ -56,7 +56,7 @@ public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
             supportWorker: data.SupportWorker,
             contractId: data.ContractId,
             locationType: data.LocationType,
-            locationId: data.CustodyLocationId,
+            locationId: data.CommunityLocationId,
             tenantId: data.TenantId,
             paymentPeriod: data.PaymentPeriod,
             reason: reason);
@@ -193,7 +193,8 @@ public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
 
 
                 foreach (var h in Locations.Where(h => h.From >
-                                                ActualReleaseDate!.ToDateTime(TimeOnly.MinValue).AddDays(-90)))
+                                                ActualReleaseDate!.ToDateTime(TimeOnly.MinValue)
+                                                    .AddDays(-90)).OrderBy(h => h.From))
                 {
                     if (h.LocationId == CustodyLocationId)
                     {
