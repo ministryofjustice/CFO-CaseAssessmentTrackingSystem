@@ -148,7 +148,7 @@
             parameters = new DialogParameters<ConfirmationWithNotesDialog>()
             {
                 { x => x.ContentText, "Are you sure you would like to submit this case to Provider QA?" },
-                { x => x.NoteLabel, "Justification required when two reds have not been achieved" },
+                { x => x.NoteLabel, "If fewer than two reds have been achieved, a justification is required" },
                 { x => x.MandatoryNote, true}
             };
         }
@@ -156,17 +156,17 @@
             parameters = new DialogParameters<ConfirmationWithNotesDialog>()
             {
                 { x => x.ContentText, "Are you sure you would like to submit this case to Provider QA?" },
-                { x => x.NoteLabel, "Justification Reason" },
+                { x => x.NoteLabel, "If two or more reds have been achieved, no justification is required" },
                 { x => x.MandatoryNote, false}
             };
         }
 
         DialogOptions options = new DialogOptions()
-            {
-                BackdropClick = false,
-                CloseOnEscapeKey = true,
-                MaxWidth = MaxWidth.Medium
-            };
+        {
+            BackdropClick = false,
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Medium
+        };
 
         var dialog = await DialogService.ShowAsync<ConfirmationWithNotesDialog>("Submit to Provider QA", parameters, options);
         var dialogResult = await dialog.Result;
