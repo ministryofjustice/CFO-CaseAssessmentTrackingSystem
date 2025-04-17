@@ -24,7 +24,7 @@ public partial class CaseSummary
     private string _riskInfo = String.Empty;
     private string _riskTooltipText = String.Empty;
     private string _riskIcon = String.Empty;
-    private Color _riskIconColor = Color.Transparent;
+
 
     private bool _showTTGDue;
     private string _noPriInfo = String.Empty;
@@ -66,21 +66,14 @@ public partial class CaseSummary
     {
         if (ParticipantSummaryDto.RiskDue.HasValue)
         {
-            var datePart = ParticipantSummaryDto.RiskDue.Value.Date;
-                       
-            _riskInfo = String.Format("{0} because of {1}", datePart.Humanize(), ParticipantSummaryDto.RiskDueReason);
-            _riskTooltipText = String.Format("Due {0} because of {1}", DateOnly.FromDateTime(datePart),ParticipantSummaryDto.RiskDueReason);
-
-            int _dueInDays = ParticipantSummaryDto.RiskDueInDays!.Value!;
-            switch (_dueInDays)
+            int dueInDays = ParticipantSummaryDto.RiskDueInDays!.Value!;
+            switch (dueInDays)
             {
-                case var _ when _dueInDays <= 0:
+                case var _ when dueInDays <= 0:
                     _riskIcon = Icons.Material.Filled.Error;
-                    _riskIconColor = Color.Error;
                     break;
-                case var _ when _dueInDays >= 0 && _dueInDays <= 14:
+                case >= 0 and <= 14:
                     _riskIcon = Icons.Material.Filled.Warning;
-                    _riskIconColor = Color.Warning;
                     break;
             }
         }

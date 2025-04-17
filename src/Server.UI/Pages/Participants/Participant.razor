@@ -164,16 +164,16 @@
         {
             var datePart = _participant.RiskDue.Value.Date;
 
-            _riskInfo = String.Format("Due {0} because of {1}", datePart.Humanize(), _participant.RiskDueReason);
+            _riskInfo = $"Due {datePart.Humanize()}";
 
-            int _dueInDays = _participant!.RiskDueInDays!.Value;
-            switch (_dueInDays)
+            int dueInDays = _participant!.RiskDueInDays!.Value;
+            switch (dueInDays)
             {
-                case var _ when _dueInDays <= 0:
+                case <= 0:
                     _riskIcon = Icons.Material.Filled.Error;
                     _riskIconColor = Color.Error;
                     break;
-                case var _ when _dueInDays >= 0 && _dueInDays <= 14:
+                case <= 14:
                     _riskIcon = Icons.Material.Filled.Warning;
                     _riskIconColor = Color.Warning;
                     break;
