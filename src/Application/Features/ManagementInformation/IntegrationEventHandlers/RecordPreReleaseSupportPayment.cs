@@ -9,7 +9,15 @@ public class RecordPreReleaseSupportPayment(IUnitOfWork unitOfWork) : IConsumer<
     public async Task Consume(ConsumeContext<PRIAssignedIntegrationEvent> context)
     {
         var data = await GetData(context);
-        
+
+        var payment = GeneratePayment(data);
+            
+        unitOfWork.DbContext.SupportAndReferralPayments.Add(payment);
+        await unitOfWork.SaveChangesAsync();
+    }
+
+    public static SupportAndReferralPayment GeneratePayment(Data data)
+    {
         var ineligibilityReason = data switch
         {
             { DateOfFirstConsent: null } => IneligibilityReason.NotYetApproved,
@@ -23,12 +31,11 @@ public class RecordPreReleaseSupportPayment(IUnitOfWork unitOfWork) : IConsumer<
             null => CreatePayable(data),
             _ => CreateNonPayable(data, ineligibilityReason)
         };
-            
-        unitOfWork.DbContext.SupportAndReferralPayments.Add(payment);
-        await unitOfWork.SaveChangesAsync();
+
+        return payment;
     }
 
-    private SupportAndReferralPayment CreatePayable(Data data)
+    private static SupportAndReferralPayment CreatePayable(Data data)
         => SupportAndReferralPayment.CreatePayable(
             priId: data.PriId,
             participantId: data.ParticipantId,
@@ -43,7 +50,7 @@ public class RecordPreReleaseSupportPayment(IUnitOfWork unitOfWork) : IConsumer<
             paymentPeriod: data.PaymentPeriod
         );
 
-    private SupportAndReferralPayment CreateNonPayable(Data data, IneligibilityReason reason)
+    private static SupportAndReferralPayment CreateNonPayable(Data data, IneligibilityReason reason)
         => SupportAndReferralPayment.CreateNonPayable(
             priId: data.PriId,
             participantId: data.ParticipantId,
