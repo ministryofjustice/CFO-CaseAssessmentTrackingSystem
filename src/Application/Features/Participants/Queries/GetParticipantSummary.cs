@@ -33,6 +33,7 @@ public static class GetParticipantSummary
                 select c;
 
             var summary = await query.ProjectTo<ParticipantSummaryDto>(mapper.ConfigurationProvider)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (summary == null)
