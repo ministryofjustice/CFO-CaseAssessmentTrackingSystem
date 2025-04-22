@@ -50,7 +50,7 @@ public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
         timer?.Stop();
         var elapsedMilliseconds = timer?.ElapsedMilliseconds;
 
-        if (elapsedMilliseconds > 500)
+        if (elapsedMilliseconds > 1000)
         {
             var requestName = typeof(TRequest).FullName;
             var userName = currentUserService.UserName;
