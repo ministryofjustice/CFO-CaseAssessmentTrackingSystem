@@ -36,10 +36,10 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
     }
 
     static ReassessmentPayment CreatePayable(Data data)
-        => ReassessmentPayment.CreatePayable(data.Assessment, data.ContractId, data.LocationId, data.LocationType);
+        => ReassessmentPayment.CreatePayable(data.AssessmentId, data.Completed, data.Created, data.ParticipantId, data.TenantId, data.SupportWorkerId, data.ContractId, data.LocationId, data.LocationType);
 
     static ReassessmentPayment CreateNonPayable(Data data, IneligibilityReason ineligibilityReason)
-        => ReassessmentPayment.CreateNonPayable(data.Assessment, data.ContractId, data.LocationId, data.LocationType, ineligibilityReason);
+        => ReassessmentPayment.CreateNonPayable(data.AssessmentId, data.Completed, data.Created, data.ParticipantId, data.TenantId, data.SupportWorkerId, data.ContractId, data.LocationId, data.LocationType, ineligibilityReason);
     
     async Task<Data> GetData(ConsumeContext<AssessmentScoredIntegrationEvent> context)
     {
@@ -54,7 +54,6 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
                     where a.Id == context.Message.Id
                     select new Data
                     {
-                        Assessment = a,
                         NumberOfPaymentsInLastTwoPaymentMonths = (
                             from rp in db.ReassessmentPayments
                             join ddTo in db.DateDimensions on context.Message.OccurredOn.Date equals ddTo.TheDate
@@ -73,7 +72,13 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
                             where a.ParticipantId == p.Id
                             orderby a.Created ascending
                             select a
-                        ).First().Completed!.Value.Date >= twoPaymentMonthsAgo
+                        ).First().Completed!.Value.Date >= twoPaymentMonthsAgo,
+                        AssessmentId = a.Id,
+                        Completed = a.Completed!.Value,
+                        Created = a.Created!.Value,
+                        ParticipantId = a.ParticipantId,
+                        TenantId = a.TenantId!,
+                        SupportWorkerId = a.CompletedBy!
                     };
 
         return await query.FirstAsync();
@@ -82,7 +87,12 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
 
     record Data
     {
-        public required ParticipantAssessment Assessment { get; set; }
+        public required Guid AssessmentId { get; set; }
+        public required DateTime Completed { get; set; }
+        public required DateTime Created { get; set; }
+        public required string ParticipantId { get; set; }
+        public required string TenantId { get; set; }
+        public required string SupportWorkerId { get; set; }
         public required int? NumberOfPaymentsInLastTwoPaymentMonths { get; init; }
         public required bool WasInitialAssessmentCompletedInLastTwoPaymentMonths { get; init; }
         public required string ContractId { get; set; }

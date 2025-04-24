@@ -8,37 +8,48 @@ public class ReassessmentPayment
     private ReassessmentPayment() { }
 #pragma warning restore CS8618
 
-    public static ReassessmentPayment CreatePayable(ParticipantAssessment assessment, 
+    public static ReassessmentPayment CreatePayable(
+        Guid assessmentId,
+        DateTime assessmentCompleted,
+        DateTime assessmentCreated,
+        string participantId,
+        string tenantId,
+        string supportWorker, 
         string contractId,
         int locationId,
         string locationType)
     {
         var dates = new[]
         {
-            assessment.Completed!.Value.Date,
-            new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
-            // Enrolment approved?
+            assessmentCompleted.Date,
+            new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)
         };
 
         return new()
         {
             Id = Guid.CreateVersion7(),
-            AssessmentId = assessment.Id,
-            AssessmentCompleted = assessment.Completed!.Value,
-            AssessmentCreated = assessment.Created!.Value,
-            ParticipantId = assessment.ParticipantId,
-            TenantId = assessment.TenantId!,
+            AssessmentId = assessmentId,
+            AssessmentCompleted = assessmentCompleted,
+            AssessmentCreated = assessmentCreated,
+            ParticipantId = participantId,
+            TenantId = tenantId,
             EligibleForPayment = true,
             IneligibilityReason = null,
             PaymentPeriod = dates.Max(),
             ContractId = contractId,
             LocationId = locationId,
             LocationType = locationType,
-            SupportWorker = assessment.CompletedBy!
+            SupportWorker = supportWorker!
         };
     }
 
-    public static ReassessmentPayment CreateNonPayable(ParticipantAssessment assessment, 
+    public static ReassessmentPayment CreateNonPayable(
+        Guid assessmentId,
+        DateTime assessmentCompleted,
+        DateTime assessmentCreated,
+        string participantId,
+        string tenantId,
+        string supportWorker,
         string contractId,
         int locationId,
         string locationType,
@@ -46,25 +57,25 @@ public class ReassessmentPayment
     {
         var dates = new[]
         {
-            new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
-            assessment.Completed!.Value.Date
+            assessmentCompleted.Date,
+            new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)
         };
 
         return new()
         {
             Id = Guid.CreateVersion7(),
-            AssessmentId = assessment.Id,
-            AssessmentCompleted = assessment.Completed!.Value,
-            AssessmentCreated = assessment.Created!.Value,
-            ParticipantId = assessment.ParticipantId,
-            TenantId = assessment.TenantId!,
+            AssessmentId = assessmentId,
+            AssessmentCompleted = assessmentCompleted,
+            AssessmentCreated = assessmentCreated,
+            ParticipantId = participantId,
+            TenantId = tenantId,
             EligibleForPayment = false,
             IneligibilityReason = ineligibilityReason.Value,
             PaymentPeriod = dates.Max(),
             ContractId = contractId,
             LocationId = locationId,
             LocationType = locationType,
-            SupportWorker = assessment.CompletedBy!
+            SupportWorker = supportWorker!
         };
     }
 

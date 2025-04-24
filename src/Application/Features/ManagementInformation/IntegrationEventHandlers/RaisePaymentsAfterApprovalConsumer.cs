@@ -50,6 +50,7 @@ public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork) : IConsu
 
             var reassessments = await unitOfWork.DbContext.ParticipantAssessments
                 .Where(a => a.ParticipantId == context.Message.ParticipantId && a.Completed != null)
+                .Select(p => new { p.Id, p.ParticipantId, p.Completed })
                 .OrderBy(a => a.Completed)
                 .Skip(1) // Ignore initial assessment
                 .ToArrayAsync();
