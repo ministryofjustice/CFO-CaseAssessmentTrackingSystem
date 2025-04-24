@@ -1,5 +1,4 @@
 ﻿using Cfo.Cats.Application.Features.Assessments.IntegrationEvents;
-using Cfo.Cats.Domain.Entities.Assessments;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using MassTransit;
 
