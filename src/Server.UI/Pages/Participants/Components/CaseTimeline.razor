@@ -70,7 +70,8 @@
             _model = await GetNewMediator().Send(new TimelinesWithPaginationQuery.Query()
             {
                 ParticipantId = ParticipantSummaryDto.Id,
-                CurrentUser = UserProfile
+                CurrentUser = UserProfile,
+                PageSize = 300
             });
         }
         
