@@ -1,6 +1,4 @@
-﻿using Cfo.Cats.Infrastructure.Persistence.Seeding;
-
-namespace Cfo.Cats.Infrastructure.Persistence;
+﻿namespace Cfo.Cats.Infrastructure.Persistence;
 
 public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger, ApplicationDbContext context)
 {
@@ -9,16 +7,25 @@ public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitial
         try
         {
             await context.Database.MigrateAsync();
-            if (await context.DateDimensions.AnyAsync() == false)
-            {
-                // this is not the best. But only runs in dev.
-                var dateDimensions = DateDimensionSeeder.GenerateDateDimensions(
-                    new DateTime(2000, 1, 1),
-                    new DateTime(2050, 12, 31)
-                );
 
-                await context.DateDimensions.AddRangeAsync(dateDimensions);
-                await context.SaveChangesAsync();
+            if (await context.Tenants.AnyAsync() == false)
+            {
+                logger.LogInformation("No tenant data found. Executing scripts");
+
+                // no tenant, seed all data
+                DirectoryInfo di = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../../db/seed"));
+
+                var sqlFiles = di.GetFiles("*.sql").OrderBy(s => s.Name);
+                foreach (var file in sqlFiles)
+                {
+                    logger.LogInformation("Executing {file}", file.FullName);
+                    await context.Database.ExecuteSqlRawAsync(await File.ReadAllTextAsync(file.FullName));
+                    logger.LogInformation("Executed {file}", file.FullName);
+                }
+            }
+            else
+            {
+                logger.LogInformation("Tenant information found in the database. Skipping seeding");
             }
         }
         catch (Exception ex)
