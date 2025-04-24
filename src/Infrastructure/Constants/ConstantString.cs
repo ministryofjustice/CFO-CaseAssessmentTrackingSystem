@@ -156,6 +156,9 @@ public static class ConstantString
     public static string AbandonPhase =>
     Localize("Abandon Phase");
 
+    public static string BeginAssessment =>
+        Localize("Begin Assessment");
+
     public static string ViewParticipant => Localize("View Participant");
     public static string PriNoActualReleaseDateWarning => Localize("No Actual Release date provided.");
     public static string PriTTGDueWarningToolTip => Localize("Through the Gate (TTG) is due {0}");

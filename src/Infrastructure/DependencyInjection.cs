@@ -4,6 +4,7 @@ using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
+using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents;
 using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 using Cfo.Cats.Application.Features.Participants.MessageBus;
 using Cfo.Cats.Application.Features.PRIs.IntegrationEventHandlers;
@@ -21,6 +22,7 @@ using Cfo.Cats.Infrastructure.Services.MultiTenant;
 using Cfo.Cats.Infrastructure.Services.Ordnance;
 using Cfo.Cats.Infrastructure.Services.Serialization;
 using MassTransit;
+using MediatR;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -48,6 +50,8 @@ public static class DependencyInjection
 
         services.AddSingleton<IUsersStateContainer, UsersStateContainer>();
         services.AddScoped<INetworkIpProvider, NetworkIpProvider>();
+
+        services.AddScoped<INotificationHandler<IdentityAuditNotification>, IdentityCacheClearanceHandler>();
 
         return services;
     }
@@ -375,12 +379,7 @@ public static class DependencyInjection
                 {
                     policy.RequireAuthenticatedUser();
                     policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-                    policy.RequireRole(
-                        RoleNames.SystemSupport,
-                        RoleNames.SMT,
-                        RoleNames.QAManager, 
-                        RoleNames.QAOfficer,
-                        RoleNames.QASupportManager);
+                    policy.RequireClaim(ApplicationClaimTypes.InternalStaff, "True");
                 });
 
                 options.AddPolicy(SecurityPolicies.ViewAudit, policy => {
@@ -392,7 +391,7 @@ public static class DependencyInjection
                         );
                 });
 
-
+              
             })
             .AddAuthentication(options => {
                 options.DefaultScheme = IdentityConstants.ApplicationScheme;

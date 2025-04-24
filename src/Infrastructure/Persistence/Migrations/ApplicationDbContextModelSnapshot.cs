@@ -613,6 +613,9 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("nvarchar(36)");
 
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
                     b.Property<string>("OwnerId")
                         .HasColumnType("nvarchar(36)");
 
@@ -627,6 +630,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EditorId");
+
+                    b.HasIndex("LocationId");
 
                     b.HasIndex("OwnerId");
 
@@ -846,7 +851,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime>("InductionDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -902,7 +907,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime>("InductionDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -1989,6 +1994,9 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<string>("AssessmentJustification")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("BioDue")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("ConsentStatus")
                         .HasColumnType("int");
 
@@ -2065,7 +2073,10 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("RiskDue")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
+
+                    b.Property<int>("RiskDueReason")
+                        .HasColumnType("int");
 
                     b.Property<int>("_currentLocationId")
                         .HasColumnType("int")
@@ -3721,6 +3732,12 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
                         .WithMany()
                         .HasForeignKey("EditorId");
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", null)
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
                         .WithMany()

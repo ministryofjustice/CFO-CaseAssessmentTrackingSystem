@@ -1,0 +1,72 @@
+﻿@using System.Globalization
+@using Cfo.Cats.Server.UI.Services.UserPreferences
+@inherits CatsComponentBase
+
+@inject LayoutService LayoutService
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            Edit Preferences
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid Spacing="3">
+            <MudItem xs="12">
+                <MudRadioGroup @bind-Value="UserPreferences.DarkLightTheme">
+                    <MudRadio Value="@DarkLightMode.System" Color="Color.Primary" Size="Size.Medium">System</MudRadio>
+                    <MudRadio Value="@DarkLightMode.Light" Color="Color.Primary" Size="Size.Medium">Light Mode</MudRadio>
+                    <MudRadio Value="@DarkLightMode.Dark" Color="Color.Primary" Size="Size.Medium">Dark Mode</MudRadio>
+                </MudRadioGroup>
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudSlider @bind-Value="@UserPreferences.DefaultFontSize" Min="0.75" Max="1.125" Step="0.0625" Color="Color.Primary" Immediate="true" >
+                    Font Size @($"{UserPreferences.DefaultFontSize.ToString(CultureInfo.InvariantCulture)} rem")
+                </MudSlider>
+            </MudItem>
+            
+            <MudItem xs="12" md="6">
+                <MudSlider @bind-Value="@UserPreferences.BorderRadius" Min="0" Max="32" Immediate="true" Step="1" Color="Color.Primary">
+                   Border Radius  @UserPreferences.BorderRadius.ToString(CultureInfo.InvariantCulture)
+                </MudSlider>
+            </MudItem>
+
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@_saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    private bool _saving;
+
+    [CascadingParameter] 
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [EditorRequired] 
+    [Parameter] 
+    public UserPreferences UserPreferences { get; set; } = default!;
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void ToggleDarkLightMode(DarkLightMode mode) => UserPreferences.DarkLightTheme = mode;
+
+    private async Task Submit()
+    {
+        try
+        {
+            _saving = true;
+            await LayoutService.UpdateUserPreferences(UserPreferences);
+            MudDialog.Close(DialogResult.Ok(true));
+            Snackbar.Add(ConstantString.SaveSuccess, Severity.Success);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+}

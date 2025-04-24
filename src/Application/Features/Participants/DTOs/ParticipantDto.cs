@@ -1,5 +1,6 @@
-﻿using Cfo.Cats.Application.Features.Locations.DTOs;
+using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Domain.Entities.Participants;
+using DocumentFormat.OpenXml.Office2016.Drawing.Command;
 
 namespace Cfo.Cats.Application.Features.Participants.DTOs;
 
@@ -52,6 +53,13 @@ public class ParticipantDto
     public string? FullName => string.Join(' ', [FirstName, MiddleName, LastName]);
 
     public DateTime? LastSync { get; set; }
+    public DateTime? CalculatedConsentDate { get; set; }
+
+    public DateTime? BioDue { get; set; }
+    public int? BioDueInDays { get; set; }
+
+    [Description("Risk Due Reason")]
+    public RiskDueReason? RiskDueReason { get; set; }
 
     private class Mapping : Profile
     {
@@ -75,7 +83,10 @@ public class ParticipantDto
                 .ForMember(dest => dest.RiskDue, opt => opt.MapFrom(src => src.RiskDue))
                 .ForMember(dest => dest.RiskDueInDays, opt => opt.MapFrom(src => src.RiskDueInDays()))
                 .ForMember(dest => dest.Nationality, opt => opt.MapFrom(src => src.Nationality))
-                .ForMember(dest => dest.LastSync, options => options.MapFrom(src => src.LastSyncDate ?? src.Created));
+                .ForMember(dest => dest.LastSync, options => options.MapFrom(src => src.LastSyncDate ?? src.Created))
+                .ForMember(dest => dest.BioDue, opt => opt.MapFrom(src => src.BioDue))
+                .ForMember(dest => dest.CalculatedConsentDate, opt => opt.MapFrom(src => src.CalculateConsentDate()))
+                .ForMember(dest => dest.BioDueInDays, opt => opt.MapFrom(src => src.BioDueInDays()));
         }
     }
 }

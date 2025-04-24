@@ -168,19 +168,19 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                 _unitOfWork = unitOfWork;
 
                 RuleFor(g => g)
-                    .Must(ActivityOccurredWithin3Months)
-                    .WithMessage("This activity took place over 3 months ago")
+                    .Must(NotExpired)
+                    .WithMessage("This activity has expired")
                     .When(g => g.Response == PqaResponse.Accept);
             }
 
-            private bool ActivityOccurredWithin3Months(Command c)
+            private bool NotExpired(Command c)
             {
                 if (c.Response == PqaResponse.Accept)
                 {
                     var entry = _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Activity)
                         .FirstOrDefault(a => a.Id == c.QueueEntryId);
 
-                    return entry != null && entry.Activity!.CommencedOn >= DateTime.Today.AddMonths(-3);
+                    return entry != null && DateTime.Today <= entry.Activity!.Expiry;
                 }
                 return false;
             }

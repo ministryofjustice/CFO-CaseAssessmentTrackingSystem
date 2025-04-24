@@ -11,6 +11,7 @@ public class ActivitySummaryDto
     public required DateTime CommencedOn { get; set; }
     public required ActivityDefinition Definition { get; set; }
     public required ActivityStatus Status { get; set; }
+    public required DateTime Expiry { get; set; }
 
     [Description("Additional Information")]
     public string? AdditionalInformation { get; set; }

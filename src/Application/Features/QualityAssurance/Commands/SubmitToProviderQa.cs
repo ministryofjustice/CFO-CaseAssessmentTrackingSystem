@@ -178,12 +178,10 @@ public static class SubmitToProviderQa
 
         private async Task<bool> HaveGivenConsentWithinLastThreeMonths(string participantId, CancellationToken cancellationToken)
         {
-            var consentDate = await _unitOfWork.DbContext
-                    .Participants.Where(x => x.Id == participantId)
-                    .Select(c => c.Consents.Max(d => d.Lifetime.StartDate))
-                    .FirstAsync(cancellationToken);
+            var participant = await _unitOfWork.DbContext
+                .Participants.SingleAsync(x => x.Id == participantId, cancellationToken);
 
-            return consentDate >= DateTime.Today.AddMonths(-3);                
+            return participant.CalculateConsentDate() >= DateTime.Today.AddMonths(-3);                
         }
     }
 }

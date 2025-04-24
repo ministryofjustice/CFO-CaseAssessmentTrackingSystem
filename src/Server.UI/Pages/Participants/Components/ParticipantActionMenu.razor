@@ -1,4 +1,5 @@
-﻿@using Cfo.Cats.Application.Features.Participants.Commands
+﻿@using Cfo.Cats.Application.Features.Assessments.Queries
+@using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.MessageBus
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
@@ -58,7 +59,6 @@
 </MudMenu>
 
 @code {
-
     private bool _canForceUpdate;
 
     [CascadingParameter]
@@ -79,9 +79,9 @@
     protected async Task Archive()
     {
         var command = new ArchiveCase.Command()
-                {
-                    ParticipantId = Participant.Id
-                };
+            {
+                ParticipantId = Participant.Id
+            };
 
         var parameters = new DialogParameters<ArchiveCaseDialog>()
             {
@@ -139,18 +139,34 @@
 
     protected async Task SubmitToPqa()
     {
-        var parameters = new DialogParameters<ConfirmationWithNotesDialog>()
+        //need to check if 2 or more reds
+        var parameters = new DialogParameters<ConfirmationWithNotesDialog>();
+        var justificationRequired = await AssessmentJustificationRequired();
+
+        if (justificationRequired)
         {
-            { x => x.ContentText, "Are you sure you would like to submit this case to Provider QA?" },
-            { x => x.NoteLabel, "Justification Reason" }
-        };
+            parameters = new DialogParameters<ConfirmationWithNotesDialog>()
+            {
+                { x => x.ContentText, "Are you sure you would like to submit this case to Provider QA?" },
+                { x => x.NoteLabel, "If fewer than two reds have been achieved, a justification is required" },
+                { x => x.MandatoryNote, true}
+            };
+        }
+        else{
+            parameters = new DialogParameters<ConfirmationWithNotesDialog>()
+            {
+                { x => x.ContentText, "Are you sure you would like to submit this case to Provider QA?" },
+                { x => x.NoteLabel, "If two or more reds have been achieved, no justification is required" },
+                { x => x.MandatoryNote, false}
+            };
+        }
 
         DialogOptions options = new DialogOptions()
-            {
-                BackdropClick = false,
-                CloseOnEscapeKey = true,
-                MaxWidth = MaxWidth.Medium
-            };
+        {
+            BackdropClick = false,
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Medium
+        };
 
         var dialog = await DialogService.ShowAsync<ConfirmationWithNotesDialog>("Submit to Provider QA", parameters, options);
         var dialogResult = await dialog.Result;
@@ -258,7 +274,6 @@
         }
     }
 
-
     protected async Task OpenConsentDialog()
     {
         // Show Dialog
@@ -291,9 +306,33 @@
                     }
                 </ul>
             </div>
-        , Severity.Error, options => {
-            options.RequireInteraction = true;
-            options.SnackbarVariant = Variant.Text;
-        } );
+            , Severity.Error, options => {
+                options.RequireInteraction = true;
+                options.SnackbarVariant = Variant.Text;
+            } );
     }
-}
+
+    private async Task<bool> AssessmentJustificationRequired()
+    {
+        bool justificationRequired = true;
+
+        var query = new GetAssessmentScores.Query()
+                {
+                    ParticipantId = Participant.Id
+                };
+
+        var result = await GetNewMediator().Send(query);
+
+        if (result is { Succeeded: true, Data: not null })
+        {
+            var latestAssessment = result.Data.MaxBy(pa => pa.CreatedDate);
+            var redCount = latestAssessment!.PathwayScore.Count(x => x.Score < 10);           
+            
+            if (redCount >= 2)
+            { 
+                justificationRequired = false;
+            }            
+        }
+        return justificationRequired;
+    }            
+ }

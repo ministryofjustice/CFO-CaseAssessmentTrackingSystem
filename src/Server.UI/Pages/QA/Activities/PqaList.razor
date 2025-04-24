@@ -112,7 +112,7 @@
         </PropertyColumn>
         <PropertyColumn Property="x => x.Expiry" Title="@L["Expiry"]">
             <CellTemplate>
-                <MudTooltip Text="Must be processed up to 3 months after commenced date">
+                <MudTooltip Text="Must be processed up to 3 months after completion">
                     @if (context.Item.Expiry < DateTime.Today)
                     {
                         <MudText Typo="Typo.body2">Expired</MudText>
@@ -138,6 +138,13 @@
                 </MudTooltip>
             </CellTemplate>
         </PropertyColumn>
+        @*
+        <PropertyColumn Property="x => x.NoOfPreviousSubmissions" Title="@L["Resubmissions"]">
+            <CellTemplate>
+                <MudText>@context.Item.NoOfPreviousSubmissions</MudText>
+            </CellTemplate>
+        </PropertyColumn>
+        *@
     </Columns>
     <NoRecordsContent>
         <MudText>@ConstantString.NoRecords</MudText>

@@ -39,7 +39,7 @@ public class Participant : OwnerPropertyEntity<string>
         Participant p = new()
         {
             ConsentStatus = ConsentStatus.PendingStatus,
-            EnrolmentStatus = EnrolmentStatus.IdentifiedStatus,
+            EnrolmentStatus = EnrolmentStatus.IdentifiedStatus,            
             Id = id,
             DateOfBirth = DateOnly.FromDateTime(dateOfBirth),
             FirstName = firstName,
@@ -51,7 +51,8 @@ public class Participant : OwnerPropertyEntity<string>
             ReferralSource = referralSource,
             ReferralComments = referralComments,
             _currentLocationId = locationId,
-            Nationality = nationality
+            Nationality = nationality,
+            RiskDueReason = RiskDueReason.NewEntry
         };
 
         p.AddDomainEvent(new ParticipantCreatedDomainEvent(p, locationId));
@@ -64,6 +65,7 @@ public class Participant : OwnerPropertyEntity<string>
     public string? Gender { get; private set; }
     public DateOnly DateOfBirth { get; private set; }
     public DateTime? RiskDue { get; private set; }
+    public RiskDueReason? RiskDueReason { get; private set; }
 
     public DateOnly? DateOfFirstConsent { get; private set; }
 
@@ -111,6 +113,10 @@ public class Participant : OwnerPropertyEntity<string>
 
     public Supervisor? Supervisor { get; private set; }
     public PersonalDetail? PersonalDetail { get; private set; }
+
+    public DateTime? BioDue { get; private set; }
+        
+    public int? BioDueInDays() => (BioDue.HasValue ? (BioDue!.Value.Date - DateTime.UtcNow.Date).Days : null);
 
     public IReadOnlyCollection<Consent> Consents => _consents.AsReadOnly();
 
@@ -345,10 +351,17 @@ public class Participant : OwnerPropertyEntity<string>
         return this;
     }
 
-    public Participant SetRiskDue(DateTime riskDueDate)
+    public Participant SetRiskDue(DateTime riskDueDate, RiskDueReason riskDueReason)
     {
         RiskDue = riskDueDate;
+        RiskDueReason = riskDueReason;
         return this;   
+    }
+
+    public Participant SetBioDue(DateTime? bioDueDate)
+    {
+        BioDue = bioDueDate;
+        return this;
     }
 
     /// <summary>
@@ -369,5 +382,14 @@ public class Participant : OwnerPropertyEntity<string>
     {
         LastSyncDate = DateTime.UtcNow;
         return this;
+    }
+    public DateTime? CalculateConsentDate()
+    {
+        if (DateOfFirstConsent is null)
+        {
+            var consent = Consents.MaxBy(c => c.Created)?.Lifetime.StartDate;
+            return consent is null ? null : consent.Value;
+        }
+        return DateOfFirstConsent.Value.ToDateTime(TimeOnly.MinValue);
     }
 }

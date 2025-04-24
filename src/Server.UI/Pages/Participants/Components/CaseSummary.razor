@@ -4,439 +4,426 @@
 @inherits CatsComponentBase
 
 <MudGrid Class="pa-3" Spacing="4">
-    <MudItem xs="12" md="4">
-        <MudCard Style="height: 100%">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Details</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudStack Row="true" Wrap="Wrap.Wrap" Justify="Justify.FlexStart" Spacing="2">
-                    <MudText>
-                        <strong>DOB</strong>
-                    </MudText>
-                    <MudText>
-                        @ParticipantSummaryDto.DateOfBirth (@ParticipantSummaryDto.DateOfBirth.CalculateAge())
-                    </MudText>
-                    <MudFlexBreak />
-                    <MudText>
-                        <strong>Enrolment Location</strong>
-                    </MudText>
-                    <MudText>@ParticipantSummaryDto.EnrolmentLocation</MudText>
-                    <MudFlexBreak />
-                    <MudText>
-                        <strong>Nationality</strong>
-                    </MudText>
-                    <MudText>@(ParticipantSummaryDto.Nationality ?? "Not Set")</MudText>
-                    <MudFlexBreak />
-                    <MudText>
-                        <strong>Consent Date</strong>
-                    </MudText>
-                    <MudText>@ParticipantSummaryDto.DateOfFirstConsent</MudText>
-                    <MudFlexBreak />
-                    <MudText>
-                        <strong>Last Data Sync</strong>
-                    </MudText>
-                    <MudTooltip Text="@ParticipantSummaryDto.LastSync.ToString(CultureInfo.CurrentCulture)">
-                        <MudText>
-                            @ParticipantSummaryDto.LastSync.Humanize()
-                        </MudText>
-                    </MudTooltip> 
-                </MudStack>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="4">
-        <MudCard Style="Height: 100%;">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Latest Assessment</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent Class="d-flex justify-space-between align-center">
+<!-- Details -->
+<MudItem xs="12" md="4">
+    <MudCard Style="height: 100%">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">Details</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
 
-                @if (_latestAssessment is null)
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText>
+                    <strong>DOB</strong>
+                </MudText>
+                <MudText>
+                    @ParticipantSummaryDto.DateOfBirth (@ParticipantSummaryDto.DateOfBirth.CalculateAge())
+                </MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText>
+                    <strong>Enrolment Location</strong>
+                </MudText>
+                <MudText>@ParticipantSummaryDto.EnrolmentLocation</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText>
+                    <strong>Nationality</strong>
+                </MudText>
+                <MudText>@(ParticipantSummaryDto.Nationality ?? "Not Set")</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText>
+                    <strong>Consent Date</strong>
+                </MudText>
+                <MudText>@ParticipantSummaryDto.DateOfFirstConsent</MudText>
+            </MudStack>
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText>
+                    <strong>Last Data Sync</strong>
+                </MudText>
+                <MudTooltip Text="@ParticipantSummaryDto.LastSync.ToString(CultureInfo.CurrentCulture)">
+                    <MudText>
+                        @ParticipantSummaryDto.LastSync.Humanize()
+                    </MudText>
+                </MudTooltip>
+            </MudStack>
+        </MudCardContent>
+    </MudCard>
+</MudItem>
+
+<!-- Assessment -->
+
+<MudItem xs="12" md="4">
+    <MudCard Style="Height: 100%;">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">Latest Assessment</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+
+            @if (_latestAssessment is null)
+            {
+                <MudText Typo="Typo.body2">@_noAssessmentInfo</MudText>
+            }
+            else
+            {
+                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                    <MudText><strong>Date Created</strong></MudText>
+                    <MudText>@_latestAssessment.AssessmentDate!.Value.ToString("dd/MM/yyyy")</MudText>
+                </MudStack>
+
+                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                    <MudText><strong>Created By</strong></MudText>
+                    <MudText>@UserService.DataSource.First(u => u.Id == _latestAssessment.AssessmentCreator).DisplayName</MudText>
+                </MudStack>
+
+                @if (_latestAssessment.Completed.HasValue)
                 {
-                    <MudText Typo="Typo.body2">@_noAssessmentInfo</MudText>
+
+                    <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                        <MudText><strong>Date Completed</strong></MudText>
+                        <MudText>@_latestAssessment.Completed!.Value.ToString("dd/MM/yyyy")</MudText>
+                    </MudStack>
+                    <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                        <MudText><strong>Due</strong></MudText>
+                        <MudTooltip Text="@_assessmentDueTooltipText">
+                            <MudIcon Icon="@_assessmentDueIcon" Size="@Size.Small" Color="@_assessmentDueIconColor" Class="mr-2"/>
+                            <MudText Typo="Typo.body2">
+                                @_assessmentDueInfo
+                            </MudText>
+                        </MudTooltip>
+                    </MudStack>
+                       
                 }
                 else
                 {
-                    <MudStack Row="true" Wrap="Wrap.Wrap" Justify="Justify.FlexStart" Spacing="2">
-                        <MudText><strong>Date Created</strong></MudText>
-                        <MudText>@_latestAssessment.AssessmentDate!.Value.ToString("dd/MM/yyyy")</MudText>
-                        <MudFlexBreak />
-                        <MudText><strong>Created By</strong></MudText>
-                        <MudText>@UserService.DataSource.First(u => u.Id == _latestAssessment.AssessmentCreator).DisplayName</MudText>
-                        <MudFlexBreak />
-
-                        @if (_latestAssessment.Completed.HasValue)
-                        {
-                            <MudText><strong>Date Completed</strong></MudText>
-                            <MudText>@_latestAssessment.Completed!.Value.ToString("dd/MM/yyyy")</MudText>
-                            <MudFlexBreak />
-                            <MudText><strong>Due</strong></MudText>
-                            <MudTooltip Text="@_assessmentDueTooltipText">
-                                <MudIcon Icon="@_assessmentDueIcon" Size="@Size.Small" Color="@_assessmentDueIconColor" Class="mr-2"/>
-                                <MudText Typo="Typo.body2">
-                                    @_assessmentDueInfo
-                                </MudText>
-                            </MudTooltip>
-                        }
-                        else
-                        {
-                            <MudTooltip Text="@_AssessmentNotCompletedInfo">
-                                <MudIcon Icon="@_assessmentDueIcon" Size="@Size.Small" Color="@_assessmentDueIconColor" Class="mr-2" />
-                                <MudText>
-                                    @_AssessmentNotCompletedInfo
-                                </MudText>
-                            </MudTooltip>
-                        }
-
+                    <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                        <MudTooltip Text="@_AssessmentNotCompletedInfo">
+                            <MudIcon Icon="@_assessmentDueIcon" Size="@Size.Small" Color="@_assessmentDueIconColor" Class="mr-2"/>
+                            <MudText>
+                                @_AssessmentNotCompletedInfo
+                            </MudText>
+                        </MudTooltip>
                     </MudStack>
                 }
-            </MudCardContent>
-            <MudCardActions>
+            }
+        </MudCardContent>
+        <MudCardActions>
 
-                @if (CanBeginAssessment())
-                {
-                    <MudTooltip Text="Create Assessment">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginAssessment"/>
-                    </MudTooltip>
-                }
-                @if (CanContinueAssessment())
-                {
-                    <MudTooltip Text="Continue Assessment">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinueAssessment"/>
-                    </MudTooltip>
-                }
-                @if (CanReassess())
-                {
-                    <MudTooltip Text="Reassess">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginAssessment"/>
-                    </MudTooltip>
-                }
-            </MudCardActions>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="4">
-        <MudCard Style="Height: 100%;">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <div class="d-flex justify-space-between align-center">
-                        <MudText Typo="Typo.h6">
-                            Risk Information
-                        </MudText>
-                        <MudTooltip Text="Expand">
-                            <MudIconButton OnClick="ExpandRiskInformation" Icon="@Icons.Material.Outlined.OpenInNew"/>
-                        </MudTooltip>
-                    </div>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                @if (HasRiskInformation())
-                {
-                    <div>
-                        <dl class="description-list">
-                            <div class="description-pair">
-                                <dt>
-                                    <MudText Typo="Typo.subtitle2">Last Reviewed</MudText>
-                                </dt>
-                                <dd>
-                                    <MudTooltip Text="@ParticipantSummaryDto.LatestRisk!.Created.ToString("dd/MM/yyyy hh:mm")">
-                                        <MudText Typo="Typo.body2">
-                                            @ParticipantSummaryDto.LatestRisk!.Created.Humanize()
-                                        </MudText>
-                                    </MudTooltip>
-                                </dd>
-                            </div>
-                            <div class="description-pair">
-                                <dt>
-                                    <MudText Typo="Typo.subtitle2">Reviewed By</MudText>
-                                </dt>
-                                <dd>
-                                    <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.LatestRisk!.CreatedBy).DisplayName</MudText>
-                                </dd>
-                            </div>
-                            <div class="description-pair">
-                                <dt>
-                                    <MudText Typo="Typo.subtitle2">Due</MudText>
-                                </dt>
-                                <dd>
-                                    <MudTooltip Text="@_riskTooltipText">
-                                        <MudIcon Icon="@_riskIcon" Size="@Size.Small" Color="@_riskIconColor"/>
-                                        <MudText Typo="Typo.body2">
-                                            @_riskInfo
-                                        </MudText>
-                                    </MudTooltip>
-                                </dd>
-                            </div>
-                        </dl>
-                    </div>
-                }
-                else
-                {
-                    <MudText Typo="Typo.body2">No risk information provided.</MudText>
+            @if (CanBeginAssessment())
+            {
+                <MudTooltip Text="Create Assessment">
+                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginAssessment"/>
+                </MudTooltip>
+            }
+            @if (CanContinueAssessment())
+            {
+                <MudTooltip Text="Continue Assessment">
+                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinueAssessment"/>
+                </MudTooltip>
+            }
+            @if (CanReassess())
+            {
+                <MudTooltip Text="Reassess">
+                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginAssessment"/>
+                </MudTooltip>
+            }
+        </MudCardActions>
+    </MudCard>
+</MudItem>
 
-                    <MudTooltip Text="@_riskTooltipText">
-                        <MudIcon Icon="@_riskIcon" Size="@Size.Small" Color="@_riskIconColor"/>
+    
+<!-- Risk information -->
+<MudItem xs="12" md="4">
+    <MudCard Style="Height: 100%;">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <div class="d-flex justify-space-between align-center">
+                    <MudText Typo="Typo.h6">
+                        Risk Information
+                    </MudText>
+                    <MudTooltip Text="Expand">
+                        <MudIconButton OnClick="ExpandRiskInformation" Icon="@Icons.Material.Outlined.OpenInNew"/>
+                    </MudTooltip>
+                </div>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+
+            @if (ParticipantSummaryDto.LatestRisk is not null)
+            {
+                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                    <MudText><strong>Last Reviewed</strong></MudText>
+                    <MudText>
+                        @ParticipantSummaryDto.LatestRisk.Created.ToShortDateString() (@ParticipantSummaryDto.LatestRisk!.Created.Humanize())
+                    </MudText>
+                </MudStack>
+                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                    <MudText><strong>Reviewed By</strong></MudText>
+                    <MudText>@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.LatestRisk!.CreatedBy).DisplayName</MudText>
+                </MudStack>
+            }
+
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText><strong>Next Review Due</strong></MudText>
+                @if (ParticipantSummaryDto.RiskDue.HasValue)
+                {
+                    <MudText>@ParticipantSummaryDto.RiskDue.ToShortDateOrEmptyString() (@ParticipantSummaryDto.RiskDue.Value.Humanize())</MudText>
+                }
+            </MudStack>
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText><strong>Review Reason</strong></MudText>
+                <MudChip Size="Size.Small"
+                         T="string"
+                         Color="@(ParticipantSummaryDto.RiskDue < DateTime.Today ? Color.Error : Color.Info)">
+                    @ParticipantSummaryDto.RiskDueReason
+                </MudChip>
+            </MudStack>
+        </MudCardContent>
+        <MudCardActions>
+            @if (CanAddRiskInformation())
+            {
+                <MudTooltip Text="Add Information">
+                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="OnClickAddRiskInformation"/>
+                </MudTooltip>
+            }
+            @if (CanReviewRiskInformation())
+            {
+                <MudTooltip Text="Review Information">
+                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="ReviewRiskInformation"/>
+                </MudTooltip>
+            }
+        </MudCardActions>
+    </MudCard>
+</MudItem>
+
+<!-- Bio -->
+<MudItem xs="12" md="4">
+    <MudCard Style="Height: 100%;">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">Bio Information</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+
+            @if (_bio is null)
+            {
+                <MudText>No Bio has been created.</MudText>
+            }
+            else
+            {
+
+                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                    <MudText><strong>Date Created</strong></MudText>
+                    <MudText>@_bio.BioDate!.Value.ToString("dd/MM/yyyy")</MudText>
+                </MudStack>
+                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                    <MudText><strong>Created By</strong></MudText>
+                    <MudText>@UserService.DataSource.First(u => u.Id == _bio.BioCreator).DisplayName</MudText>
+                </MudStack>
+                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                    <MudText><strong>Status</strong></MudText>
+                    <MudText Typo="Typo.body2">@_bio.BioStatus!.Name.Humanize()</MudText>
+                </MudStack>
+            }
+            
+            @if (_bioInfo != string.Empty)
+            {
+                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                    <MudText><strong>Due</strong></MudText>
+                    <MudTooltip Text="@_bioTooltipText">
+                        <MudIcon Icon="@_bioIcon" Size="@Size.Small" Color="@_bioIconColor"/>
                         <MudText Typo="Typo.body2">
-                            @String.Format("Due {0}", _riskInfo)
+                            @String.Format(_bioInfo)
                         </MudText>
                     </MudTooltip>
-                }
-            </MudCardContent>
-            <MudCardActions>
-                @if (CanAddRiskInformation())
-                {
-                    <MudTooltip Text="Add Information">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="OnClickAddRiskInformation"/>
-                    </MudTooltip>
-                }
-                @if (CanReviewRiskInformation())
-                {
-                    <MudTooltip Text="Review Information">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="ReviewRiskInformation"/>
-                    </MudTooltip>
-                }
-            </MudCardActions>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="4">
-        <MudCard Style="Height: 100%;">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Bio Information</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent Class="d-flex justify-space-between align-center">
+                </MudStack>
+            }
+            
+        </MudCardContent>
 
-                @if (_bio is null)
+        <MudCardActions>
+            @if (CanBeginBio())
+            {
+                <MudTooltip Text="Create Bio">
+                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginBio"/>
+                </MudTooltip>
+            }
+            @if (CanContinueBio())
+            {
+                <MudTooltip Text="Continue Bio">
+                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinueBio"/>
+                </MudTooltip>
+            }
+
+            @if (CanRestartBio())
+            {
+                <MudTooltip Text="Restart Bio">
+                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginBio"/>
+                </MudTooltip>
+            }
+        </MudCardActions>
+    </MudCard>
+</MudItem>
+<!-- Pathway plan -->
+<MudItem xs="12" md="4">
+    <MudCard Style="Height: 100%;">
+        <MudCardHeader>
+            <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Pathway Plan</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            @if (HasPathwayPlan)
+            {
+
+                @if (HasPathwayBeenReviewed)
                 {
-                    <MudText Typo="Typo.body2">No Bio has been created.</MudText>
+                    <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                        <MudText><strong>Last Reviewed</strong></MudText>
+                        <MudTooltip Text="@ParticipantSummaryDto.PathwayPlan!.LastReviewed!.Value.ToString("dd/MM/yyyy hh:mm")">
+                            <MudText>
+                                @ParticipantSummaryDto.PathwayPlan!.LastReviewed!.Value.Humanize()
+                            </MudText>
+                        </MudTooltip>
+                    </MudStack>
                 }
                 else
                 {
-                    <div>
-                        <dl class="description-list">
-                            <div class="description-pair">
-                                <dt>
-                                    <MudText Typo="Typo.subtitle2">Date Created</MudText>
-                                </dt>
-                                <dd>
-                                    <MudText Typo="Typo.body2">@_bio.BioDate!.Value.ToString("dd/MM/yyyy")</MudText>
-                                </dd>
-                            </div>
-                            <div class="description-pair">
-                                <dt>
-                                    <MudText Typo="Typo.subtitle2">Created By</MudText>
-                                </dt>
-                                <dd>
-                                    <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == _bio.BioCreator).DisplayName</MudText>
-                                </dd>
-                            </div>
-                            <div class="description-pair">
-                                <dt>
-                                    <MudText Typo="Typo.subtitle2">Status</MudText>
-                                </dt>
-                                <dd>
-                                    <MudText Typo="Typo.body2">@_bio.BioStatus!.Name.Humanize()</MudText>
-                                </dd>
-                            </div>
-                        </dl>
-                    </div>
+                    <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                        <MudText><strong>Date Created</strong></MudText>
+                        <MudTooltip Text="@ParticipantSummaryDto.PathwayPlan!.Created.ToString("dd/MM/yyyy hh:mm")">
+                            <MudText>
+                                @ParticipantSummaryDto.PathwayPlan!.Created.Humanize()
+                            </MudText>
+                        </MudTooltip>
+                    </MudStack>
                 }
-            </MudCardContent>
 
-            <MudCardActions>
-                @if (CanBeginBio())
+                @if (HasPathwayBeenReviewed)
                 {
-                    <MudTooltip Text="Create Bio">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginBio"/>
-                    </MudTooltip>
-                }
-                @if (CanContinueBio())
-                {
-                    <MudTooltip Text="Continue Bio">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinueBio"/>
-                    </MudTooltip>
-                }
-                @if (CanSkipBio())
-                {
-                    <MudTooltip Text="Skip Bio For Now">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.NoMeetingRoom" Variant="Variant.Outlined" OnClick="SkipBioForNow"/>
-                    </MudTooltip>
-                }
-                @if (CanRestartBio())
-                {
-                    <MudTooltip Text="Restart Bio">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginBio"/>
-                    </MudTooltip>
-                }
-            </MudCardActions>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="4">
-        <MudCard Style="Height: 100%;">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <div class="d-flex justify-space-between align-center">
-                        <MudText Typo="Typo.h6">Pathway Plan</MudText>
-                    </div>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                @if (HasPathwayPlan)
-                {
-                    <div>
-                        <dl class="description-list">
-                            <div class="description-pair">
-                                @if (HasPathwayBeenReviewed)
-                                {
-                                    <dt>
-                                        <MudText Typo="Typo.subtitle2">Last Reviewed</MudText>
-                                    </dt>
-                                    <dd>
-                                        <MudTooltip Text="@ParticipantSummaryDto.PathwayPlan!.LastReviewed!.Value.ToString("dd/MM/yyyy hh:mm")">
-                                            <MudText Typo="Typo.body2">
-                                                @ParticipantSummaryDto.PathwayPlan!.LastReviewed!.Value.Humanize()
-                                            </MudText>
-                                        </MudTooltip>
-                                    </dd>
-                                }
-                                else
-                                {
-                                    <dt>
-                                        <MudText Typo="Typo.subtitle2">Date Created</MudText>
-                                    </dt>
-                                    <dd>
-                                        <MudTooltip Text="@ParticipantSummaryDto.PathwayPlan!.Created.ToString("dd/MM/yyyy hh:mm")">
-                                            <MudText Typo="Typo.body2">
-                                                @ParticipantSummaryDto.PathwayPlan!.Created.Humanize()
-                                            </MudText>
-                                        </MudTooltip>
-                                    </dd>
-                                }
-                            </div>
-                            <div class="description-pair">
-                                @if (HasPathwayBeenReviewed)
-                                {
-                                    <dt>
-                                        <MudText Typo="Typo.subtitle2">Reviewed By</MudText>
-                                    </dt>
-                                    <dd>
-                                        <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.LastReviewedBy!).DisplayName</MudText>
-                                    </dd>
-                                }
-                                else
-                                {
-                                    <dt>
-                                        <MudText Typo="Typo.subtitle2">Created By</MudText>
-                                    </dt>
-                                    <dd>
-                                        <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.CreatedBy).DisplayName</MudText>
-                                    </dd>
-                                }
-                            </div>
-                        </dl>
-                    </div>
+                    <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                        <MudText><strong>Reviewed By</strong></MudText>
+                        <MudText>@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.LastReviewedBy!).DisplayName</MudText>
+                    </MudStack>
                 }
                 else
                 {
-                    <MudText Typo="Typo.body2">No pathway plan found.</MudText>
-                }
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="4">
-        <MudCard Style="Height: 100%;">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Latest Pre-Release Inventory (PRI)</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent Class="d-flex justify-space-between align-center">
+                    <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                        <MudText><strong>Created By</strong></MudText>
+                        <MudText>@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.CreatedBy).DisplayName</MudText>
+                    </MudStack>
 
-                @if (_latestPRI is null)
-                {
-                    <MudText Typo="Typo.body2">@_noPriInfo</MudText>
                 }
-                else
-                {
-                    <div>
-                        <dl class="description-list">
+
+            }
+            else
+            {
+                <MudText>No pathway plan found.</MudText>
+            }
+        </MudCardContent>
+    </MudCard>
+</MudItem>
+<MudItem xs="12" md="4">
+    <MudCard Style="Height: 100%;">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">Latest Pre-Release Inventory (PRI)</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent Class="d-flex justify-space-between align-center">
+
+            @if (_latestPRI is null)
+            {
+                <MudText Typo="Typo.body2">@_noPriInfo</MudText>
+            }
+            else
+            {
+                <div>
+                    <dl class="description-list">
+                        <div class="description-pair">
+                            <dt>
+                                <MudText Typo="Typo.subtitle2">Date Created</MudText>
+                            </dt>
+                            <dd>
+                                <MudText Typo="Typo.body2">@_latestPRI.Created.ToString("dd/MM/yyyy")</MudText>
+                            </dd>
+                        </div>
+
+                        @if (_latestPRI.Status == PriStatus.Completed || _latestPRI.Status == PriStatus.Abandoned)
+                        {
                             <div class="description-pair">
                                 <dt>
-                                    <MudText Typo="Typo.subtitle2">Date Created</MudText>
+                                    <MudText Typo="Typo.subtitle2">Date @_latestPRI.Status.Name</MudText>
                                 </dt>
                                 <dd>
-                                    <MudText Typo="Typo.body2">@_latestPRI.Created.ToString("dd/MM/yyyy")</MudText>
+                                    <MudText Typo="Typo.body2">@_latestPRI.CompletedOn?.ToString("dd/MM/yyyy")</MudText>
                                 </dd>
                             </div>
 
-                            @if (_latestPRI.Status == PriStatus.Completed || _latestPRI.Status == PriStatus.Abandoned)
-                            {                             
-                                <div class="description-pair">
-                                    <dt>
-                                        <MudText Typo="Typo.subtitle2">Date @_latestPRI.Status.Name</MudText>
-                                    </dt>
-                                    <dd>
-                                        <MudText Typo="Typo.body2">@_latestPRI.CompletedOn?.ToString("dd/MM/yyyy")</MudText>
-                                    </dd>
-                                </div>
+                            <div class="description-pair">
+                                <dt>
+                                    <MudText Typo="Typo.subtitle2">@_latestPRI.Status.Name By</MudText>
+                                </dt>
+                                <dd>
+                                    <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == _latestPRI.CompletedBy).DisplayName </MudText>
+                                </dd>
+                            </div>
 
-                                <div class="description-pair">
-                                    <dt>
-                                        <MudText Typo="Typo.subtitle2">@_latestPRI.Status.Name By</MudText>
-                                    </dt>
-                                    <dd>
-                                        <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == _latestPRI.CompletedBy).DisplayName </MudText>
-                                    </dd>
-                                </div>
-
-                                if (_latestPRI.Status == PriStatus.Abandoned)
-                                {
-                                    <div class="description-pair">
-                                        <dt>
-                                            <MudText Typo="Typo.subtitle2">@_latestPRI.Status.Name Reason</MudText>
-                                        </dt>
-                                        <dd>
-                                            <MudText Typo="Typo.body2">@_latestPRI.AbandonReason</MudText>
-                                        </dd>
-                                    </div>
-                                }
-                            }
-
-                            @if (_showTTGDue)
+                            if (_latestPRI.Status == PriStatus.Abandoned)
                             {
                                 <div class="description-pair">
                                     <dt>
-                                        <MudText Typo="Typo.subtitle2">TTG Due</MudText>
+                                        <MudText Typo="Typo.subtitle2">@_latestPRI.Status.Name Reason</MudText>
                                     </dt>
                                     <dd>
-                                        <MudTooltip Text="@_priDueTooltipText">
-                                            <MudIcon Icon="@_priDueIcon" Size="@Size.Small" Color="@_priDueIconColor"/>
-                                            <MudText Typo="Typo.body2">
-                                                @_priDueInfo
-                                            </MudText>
-                                        </MudTooltip>
+                                        <MudText Typo="Typo.body2">@_latestPRI.AbandonReason</MudText>
                                     </dd>
                                 </div>
                             }
-                        </dl>
-                    </div>
-                }
-            </MudCardContent>
-            <MudCardActions>
+                        }
 
-                @if (CanAddPRI())
-                {
-                    <MudTooltip Text="Create PRI">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginPRI"/>
-                    </MudTooltip>
-                }
+                        @if (_showTTGDue)
+                        {
+                            <div class="description-pair">
+                                <dt>
+                                    <MudText Typo="Typo.subtitle2">TTG Due</MudText>
+                                </dt>
+                                <dd>
+                                    <MudTooltip Text="@_priDueTooltipText">
+                                        <MudIcon Icon="@_priDueIcon" Size="@Size.Small" Color="@_priDueIconColor"/>
+                                        <MudText Typo="Typo.body2">
+                                            @_priDueInfo
+                                        </MudText>
+                                    </MudTooltip>
+                                </dd>
+                            </div>
+                        }
+                    </dl>
+                </div>
+            }
+        </MudCardContent>
+        <MudCardActions>
 
-            </MudCardActions>
-        </MudCard>
-    </MudItem>
+            @if (CanAddPRI())
+            {
+                <MudTooltip Text="Create PRI">
+                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginPRI"/>
+                </MudTooltip>
+            }
+
+        </MudCardActions>
+    </MudCard>
+</MudItem>
 </MudGrid>

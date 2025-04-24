@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
+using Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using MassTransit;
 
@@ -11,6 +11,14 @@ public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
     {
         var data = await GetData(context.Message.PRIId);
 
+        var payment = GeneratePayment(data);
+
+        unitOfWork.DbContext.SupportAndReferralPayments.Add(payment);
+        await unitOfWork.SaveChangesAsync();
+    }
+
+    public static SupportAndReferralPayment GeneratePayment(Data data)
+    {
         var ineligibilityReason = data switch
         {
             { DateOfFirstConsent: null } => IneligibilityReason.NotYetApproved,
@@ -28,11 +36,10 @@ public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
             _ => CreateNonPayable(data, ineligibilityReason)
         };
 
-        unitOfWork.DbContext.SupportAndReferralPayments.Add(payment);
-        await unitOfWork.SaveChangesAsync();
+        return payment;
     }
 
-    private SupportAndReferralPayment CreatePayable(Data data) =>
+    private static SupportAndReferralPayment CreatePayable(Data data) =>
         SupportAndReferralPayment.CreatePayable(
             priId: data.PriId,
             participantId: data.ParticipantId,
@@ -47,7 +54,7 @@ public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
             paymentPeriod: data.PaymentPeriod
         );
 
-    private SupportAndReferralPayment CreateNonPayable(Data data, IneligibilityReason reason)
+    private static SupportAndReferralPayment CreateNonPayable(Data data, IneligibilityReason reason)
         => SupportAndReferralPayment.CreateNonPayable(priId: data.PriId,
             participantId: data.ParticipantId,
             supportType: "Through the Gate",
@@ -56,7 +63,7 @@ public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
             supportWorker: data.SupportWorker,
             contractId: data.ContractId,
             locationType: data.LocationType,
-            locationId: data.CustodyLocationId,
+            locationId: data.CommunityLocationId,
             tenantId: data.TenantId,
             paymentPeriod: data.PaymentPeriod,
             reason: reason);
@@ -192,8 +199,9 @@ public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
                 bool beenInCommunityAfter = false;
 
 
-                foreach (var h in Locations.Where(h => h.From >
-                                                ActualReleaseDate!.ToDateTime(TimeOnly.MinValue).AddDays(-90)))
+                foreach (var h in Locations.Where(h => h.From < ActualReleaseDate!.ToDateTime(TimeOnly.MinValue)
+                                 .AddDays(14)) // add 14 days to allow for DMS sync issues
+                             .OrderBy(h => h.From))
                 {
                     if (h.LocationId == CustodyLocationId)
                     {

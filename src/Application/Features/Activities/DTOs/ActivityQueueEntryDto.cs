@@ -25,7 +25,9 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
 
         public DateTime CommencedOn => Activity.CommencedOn;
 
-        public DateTime Expiry => Activity.CommencedOn.AddMonths(3);
+        public DateTime Expiry => Activity.Expiry;
+
+        public int NoOfPreviousSubmissions { get; set; }
 
         public NoteDto[] Notes { get; set; } = [];
 
@@ -55,7 +57,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
                     .ForMember(target => target.IsCompleted, options => options.MapFrom(source => source.IsCompleted))
                     .ForMember(target => target.IsAccepted, options => options.MapFrom(source => source.IsAccepted))
                     .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
-                    .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity));
+                    .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity))
+                    .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore());
 
                 CreateMap<ActivityQa1QueueEntry, ActivityQueueEntryDto>()
                      .ForMember(target => target.ActivityId,
@@ -77,7 +80,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
                      ))
                      .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                       .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
-                    .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity));
+                    .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity))
+                    .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore());
 
                 CreateMap<ActivityQa2QueueEntry, ActivityQueueEntryDto>()
                     .ForMember(target => target.ActivityId,
@@ -99,7 +103,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
                     ))
                     .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                     .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
-                    .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity));
+                    .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity))
+                    .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore());
 
                 CreateMap<ActivityEscalationQueueEntry, ActivityQueueEntryDto>()
                     .ForMember(target => target.ActivityId,
@@ -121,7 +126,8 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs
                     ))
                     .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                     .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
-                    .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity));
+                    .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity))
+                    .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore());
             }
         }
     }

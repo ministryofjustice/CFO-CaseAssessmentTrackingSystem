@@ -1,76 +1,49 @@
 ﻿@page "/"
-@using Cfo.Cats.Application.Features.Dashboard.Queries
-@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
-@using Cfo.Cats.Server.UI.Pages.Participants.Components
 @inherits CatsComponentBase
 
-@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-    <MudText Typo="Typo.h3">
-        Dashboard
-    </MudText>
+
+<MudText Typo="Typo.h3">
+    Dashboard
+</MudText>
 
     <MudGrid Class="mt-2">
-
-        @if(UserProfile?.AssignedRoles?.Length == 0)
+        
+        @if (_showMyTeamsParticipants)
         {
-            <MyParticipantsComponent />
+            <MyTeamsParticipantsComponent/>
         }
         else
         {
-            <MyTeamsParticipantsComponent />
+            <MyParticipantsComponent />
         }
+        
         <MyNotifications />
 
-    @if (UserProfile?.AssignedRoles?.Length > 0)
-    {
-        <ErrorBoundary>
-            <ChildContent>
-                <CaseWorkload />
-            </ChildContent>
-            <ErrorContent>
-                <MudItem xs="12">
-                    <MudAlert Severity="Severity.Warning">
-                        <MudText>
-                            Error loading Case Workload.
-                        </MudText>
-                    </MudAlert>
-                </MudItem>
-            </ErrorContent>
-        </ErrorBoundary>
-        
-    }
-
-        @if(UserProfile?.AssignedRoles!.Contains(RoleNames.SystemSupport) == true)
+        @if (_showCaseWorkload)
         {
-            <JobManagement />
+            <CaseWorkload/>
         }
 
-        @if (ShowQaPots())
+        @if (_showRiskDueAggregate)
+        {
+            <RiskDueAggregateComponent />
+        }
+        else
+        {
+            <MyRiskDueComponent />
+        }
+
+        
+        @if (_showQaPots)
         {
             <QaPots />
         }
         
-    </MudGrid>
-
-@code {
-    public string Title { get; } = "Dashboard";
-
-    [CascadingParameter]
-    public UserProfile? UserProfile { get; set; }
-
-    private bool ShowQaPots()
-    {
-        var allowedRoles = new[]
+        @if(_showJobManagement)
         {
-            RoleNames.QAManager,
-            RoleNames.QAOfficer,
-            RoleNames.SMT,
-            RoleNames.QASupportManager,
-            RoleNames.SystemSupport,
-        };
+            <JobManagement />
+        }
 
-        return UserProfile!.AssignedRoles!.Any(e => allowedRoles.Contains(e));
-    }
-}
+    </MudGrid>

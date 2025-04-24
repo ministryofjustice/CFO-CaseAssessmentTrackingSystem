@@ -66,6 +66,12 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             cs => cs!.Value,
             cs => ConsentStatus.FromValue(cs));
 
+        builder.Property(e => e.RiskDueReason)
+            .IsRequired()
+            .HasConversion(
+            cs => cs!.Value,
+            cs => RiskDueReason.FromValue(cs));
+
         builder.Property(p => p.DateOfFirstConsent)
             .IsRequired(false);
 
@@ -76,6 +82,10 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
 
         builder.Property(p => p.ArchiveJustification)
         .HasMaxLength(ValidationConstants.NotesLength);
+
+        builder.Property(p => p.RiskDue)
+            .IsRequired(false)
+            .HasColumnType("date");
 
         builder.HasOne(e => e.CurrentLocation)
             .WithMany()
