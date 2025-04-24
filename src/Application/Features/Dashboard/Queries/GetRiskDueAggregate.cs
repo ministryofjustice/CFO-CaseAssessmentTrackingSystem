@@ -77,7 +77,7 @@ public static class GetRiskDueAggregate
                     on user.Id equals upcomingRiskGroup.UserId into upcomingRiskJoin
                 from upcomingRisk in upcomingRiskJoin.DefaultIfEmpty()
                 where user.TenantId!.StartsWith(request.CurrentUser.TenantId!)
-                &&   overdueRisk.Records > 0 || upcomingRisk.Records > 0
+                &&   (overdueRisk.Records > 0 || upcomingRisk.Records > 0)
                         orderby user.DisplayName
                 select new RiskDueAggregateDto(user.DisplayName!, overdueRisk.Records ?? 0, upcomingRisk.Records ?? 0);
 
@@ -120,7 +120,7 @@ public static class GetRiskDueAggregate
                     on tenant.Id equals upcomingRiskGroup.TenantId into upcomingRiskJoin
                 from upcomingRisk in upcomingRiskJoin.DefaultIfEmpty()
                 where tenant.Id.StartsWith(request.CurrentUser.TenantId!)
-                    && overdueRisk.Records > 0 || upcomingRisk.Records > 0
+                    && (overdueRisk.Records > 0 || upcomingRisk.Records > 0)
                 orderby tenant.Id
                 select new RiskDueAggregateDto(tenant.Name!, overdueRisk.Records ?? 0, upcomingRisk.Records ?? 0);
        
