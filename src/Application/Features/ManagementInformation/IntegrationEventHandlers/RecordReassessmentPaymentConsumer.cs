@@ -17,10 +17,18 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
 
         var data = await GetData(context);
 
+        var payment = GeneratePayment(data);
+
+        unitOfWork.DbContext.ReassessmentPayments.Add(payment);
+        await unitOfWork.SaveChangesAsync();
+    }
+
+    public static ReassessmentPayment GeneratePayment(Data data)
+    {
         var ineligibilityReason = data switch
         {
             { DateOfFirstConsent: null } => IneligibilityReason.NotYetApproved,
-            { NumberOfPaymentsInLastTwoPaymentMonths: > 0 } => IneligibilityReason.MaximumPaymentLimitReached,
+            { HaveAnyPaymentsBeenMadeInLastTwoPaymentMonths: true } => IneligibilityReason.MaximumPaymentLimitReached,
             { WasInitialAssessmentCompletedInLastTwoPaymentMonths: true } => IneligibilityReason.InitialAssessmentCompletedInLastTwoMonths,
             _ => null,
         };
@@ -31,15 +39,14 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
             _ => CreateNonPayable(data, ineligibilityReason)
         };
 
-        unitOfWork.DbContext.ReassessmentPayments.Add(payment);
-        await unitOfWork.SaveChangesAsync();
+        return payment;
     }
 
     static ReassessmentPayment CreatePayable(Data data)
-        => ReassessmentPayment.CreatePayable(data.AssessmentId, data.Completed, data.Created, data.ParticipantId, data.TenantId, data.SupportWorkerId, data.ContractId, data.LocationId, data.LocationType);
+        => ReassessmentPayment.CreatePayable(data.AssessmentId, data.Completed, data.Created, data.ParticipantId, data.TenantId, data.SupportWorker, data.ContractId, data.LocationId, data.LocationType);
 
     static ReassessmentPayment CreateNonPayable(Data data, IneligibilityReason ineligibilityReason)
-        => ReassessmentPayment.CreateNonPayable(data.AssessmentId, data.Completed, data.Created, data.ParticipantId, data.TenantId, data.SupportWorkerId, data.ContractId, data.LocationId, data.LocationType, ineligibilityReason);
+        => ReassessmentPayment.CreateNonPayable(data.AssessmentId, data.Completed, data.Created, data.ParticipantId, data.TenantId, data.SupportWorker, data.ContractId, data.LocationId, data.LocationType, ineligibilityReason);
     
     async Task<Data> GetData(ConsumeContext<AssessmentScoredIntegrationEvent> context)
     {
@@ -54,51 +61,56 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
                     where a.Id == context.Message.Id
                     select new Data
                     {
-                        NumberOfPaymentsInLastTwoPaymentMonths = (
+                        PreviouslyPaidAssessments = (
                             from rp in db.ReassessmentPayments
                             join ddTo in db.DateDimensions on context.Message.OccurredOn.Date equals ddTo.TheDate
                             where rp.ParticipantId == p.Id
                                   && rp.EligibleForPayment
-                                  && rp.AssessmentCompleted.Date > twoPaymentMonthsAgo
-                                  && rp.AssessmentCompleted.Date < ddTo.TheLastOfMonth
-                            select 1
-                        ).Count(),
+                                  && rp.PaymentPeriod.Date <= ddTo.TheLastOfMonth
+                            select new Data.Assessment(rp.PaymentPeriod)
+                        ),
                         ContractId = l.Contract!.Id,
                         LocationId = l.Id,
                         LocationType = l.LocationType.Name,
                         DateOfFirstConsent = p.DateOfFirstConsent,
-                        WasInitialAssessmentCompletedInLastTwoPaymentMonths = (
+                        InitialAssessmentCompletedOn = (
                             from a in db.ParticipantAssessments
                             where a.ParticipantId == p.Id
                             orderby a.Created ascending
                             select a
-                        ).First().Completed!.Value.Date >= twoPaymentMonthsAgo,
-                        AssessmentId = a.Id,
-                        Completed = a.Completed!.Value,
+                        ).First().Completed!.Value,
+                        AssessmentId = context.Message.Id,
+                        Completed = context.Message.OccurredOn,
                         Created = a.Created!.Value,
                         ParticipantId = a.ParticipantId,
                         TenantId = a.TenantId!,
-                        SupportWorkerId = a.CompletedBy!
+                        SupportWorker = a.CompletedBy!
                     };
 
-        return await query.FirstAsync();
+        return await query.SingleAsync();
     }
 
 
-    record Data
+    public record Data
     {
         public required Guid AssessmentId { get; set; }
         public required DateTime Completed { get; set; }
+
+        public DateTime PeriodFrom => new(Completed.AddMonths(-2).Year, Completed.AddMonths(-2).Month, day: 1);
+        public bool WasInitialAssessmentCompletedInLastTwoPaymentMonths => InitialAssessmentCompletedOn > PeriodFrom;
+        public bool HaveAnyPaymentsBeenMadeInLastTwoPaymentMonths => PreviouslyPaidAssessments.Any(a => a.PaidOn >= PeriodFrom);
+
+        public required DateTime InitialAssessmentCompletedOn { get; set; }
+        public IEnumerable<Assessment> PreviouslyPaidAssessments { get; set; } = [];
         public required DateTime Created { get; set; }
         public required string ParticipantId { get; set; }
         public required string TenantId { get; set; }
-        public required string SupportWorkerId { get; set; }
-        public required int? NumberOfPaymentsInLastTwoPaymentMonths { get; init; }
-        public required bool WasInitialAssessmentCompletedInLastTwoPaymentMonths { get; init; }
+        public required string SupportWorker { get; set; }
         public required string ContractId { get; set; }
         public required int LocationId { get; set; }
         public required string LocationType { get; set; }
         public required DateOnly? DateOfFirstConsent { get; init; }
 
+        public record Assessment(DateTime PaidOn);
     }
 }
