@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250410171939_ReassessmentPayments_AdditionalColumns")]
-    partial class ReassessmentPayments_AdditionalColumns
+    [Migration("20250425102647_ReassessmentPayments")]
+    partial class ReassessmentPayments
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -616,6 +616,9 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("nvarchar(36)");
 
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
                     b.Property<string>("OwnerId")
                         .HasColumnType("nvarchar(36)");
 
@@ -630,6 +633,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EditorId");
+
+                    b.HasIndex("LocationId");
 
                     b.HasIndex("OwnerId");
 
@@ -3788,6 +3793,12 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
                         .WithMany()
                         .HasForeignKey("EditorId");
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", null)
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
                         .WithMany()
