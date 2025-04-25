@@ -30,6 +30,14 @@
                             <MudTextField Class="mb-2" Label="Phone Number" @bind-Value="Model.MobileNumber" For="() => Model.MobileNumber" Clearable MaxLength="16" Counter="16" Immediate />
                         </MudItem>
                         <MudItem xs="12">
+                            @if (!string.IsNullOrWhiteSpace(_errorAtLeastOneFieldProvided))
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Error" Class="mt-2">
+                                    @_errorAtLeastOneFieldProvided
+                                </MudText>
+                            }
+                        </MudItem>
+                        <MudItem xs="12">
                             <MudCheckBox @bind-Value="Model.Primary" Label="Set as primary contact information" For="() => Model.Primary" />
                         </MudItem>
                     </MudGrid>

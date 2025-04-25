@@ -2,7 +2,7 @@
 
 public class ParticipantAddressDto
 {
-    public string Address { get; set; } = string.Empty;
-    public string PostCode { get; set; } = string.Empty;
-    public string UPRN { get; set; } = string.Empty;
+    public string? Address { get; set; }
+    public string? PostCode { get; set; }
+    public string? UPRN { get; set; }
 }

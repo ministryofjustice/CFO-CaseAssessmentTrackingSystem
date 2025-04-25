@@ -14,23 +14,23 @@ public static class AddOrUpdateContactDetail
         public Guid? Id { get; set; }
         public required string ParticipantId { get; set; }
         public string Description { get; set; } = string.Empty;
-        public ParticipantAddressDto AddressDetails { get; set; } = new();
+        public ParticipantAddressDto? AddressDetails { get; set; }
         public string? MobileNumber { get; set; }
         public string? EmailAddress { get; set; }
         public bool Primary { get; set; }
     }
 
-    private class Mapping : Profile 
-    { 
+    private class Mapping : Profile
+    {
         public Mapping()
         {
             CreateMap<Command, ParticipantContactDetail>(MemberList.None)
                 .ConstructUsing(command => ParticipantContactDetail.Create(
                     command.ParticipantId,
                     command.Description,
-                    command.AddressDetails.Address,
-                    command.AddressDetails.PostCode,
-                    command.AddressDetails.UPRN,
+                    command.AddressDetails != null ? command.AddressDetails.Address : null,
+                    command.AddressDetails != null ? command.AddressDetails.PostCode : null,
+                    command.AddressDetails != null ? command.AddressDetails.UPRN : null,
                     command.MobileNumber,
                     command.EmailAddress)
                 )
@@ -45,8 +45,8 @@ public static class AddOrUpdateContactDetail
                 });
 
             CreateMap<ParticipantContactDetailDto, Command>()
-                .ForMember(opt => opt.AddressDetails, dest => dest.MapFrom(src => new ParticipantAddressDto 
-                { 
+                .ForMember(opt => opt.AddressDetails, dest => dest.MapFrom(src => new ParticipantAddressDto
+                {
                     Address = src.Address,
                     PostCode = src.PostCode,
                     UPRN = src.UPRN
@@ -111,9 +111,15 @@ public static class AddOrUpdateContactDetail
             });
 
             // Populated fields
-            RuleFor(c => c.AddressDetails)
-                .Must(details => string.IsNullOrEmpty(details?.Address) is false)
-                .WithMessage("You must choose a valid address");
+            RuleFor(c => c)
+            .Must(AtLeastOneFieldProvided)
+            .WithMessage("You must provide at least one of the following: Address, Email Address, or Phone Number.");
+        }
+        private bool AtLeastOneFieldProvided(Command command)
+        {
+            return !string.IsNullOrEmpty(command.AddressDetails?.Address) ||
+                   !string.IsNullOrEmpty(command.EmailAddress) ||
+                   !string.IsNullOrEmpty(command.MobileNumber);
         }
 
     }
