@@ -36,19 +36,19 @@ public class SyncParticipantCommandHandler(IUnitOfWork unitOfWork, ICandidateSer
 
             if (candidate.Crn is not null)
             {
-                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.Crn,
+                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.Crn.ToUpper(),
                     ExternalIdentifierType.Crn));
             }
 
             if (candidate.NomisNumber is not null)
             {
-                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.NomisNumber,
+                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.NomisNumber.ToUpper(),
                     ExternalIdentifierType.NomisNumber));
             }
 
             if (candidate.PncNumber is not null)
             {
-                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.PncNumber,
+                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.PncNumber.ToUpper(),
                     ExternalIdentifierType.PncNumber));
             }
 
