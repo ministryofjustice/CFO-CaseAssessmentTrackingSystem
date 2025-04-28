@@ -12,12 +12,24 @@
                     <MudGrid xs="12">
                         <MudItem xs="12">
                             <MudDatePicker Label="@Model.GetMemberDescription(x => x.CompletionDate)"
-                                           @bind-Date="Model.CompletionDate"
-                                           For="(() => Model.CompletionDate)"
-                                           ImmediateText="true" Editable="false"
-                                           MinDate="EarliestCompletionDate"
-                                           MaxDate="DateTime.Today.Date" PickerVariant="PickerVariant.Dialog"/>
+                            @bind-Date="Model.CompletionDate"
+                            For="(() => Model.CompletionDate)"
+                            ImmediateText="true" Editable="false"
+                            MinDate="EarliestCompletionDate"
+                            MaxDate="DateTime.Today.Date" PickerVariant="PickerVariant.Dialog"/>
                         </MudItem>
+
+                        @* Present warning if completion date is less than 6 weeks from the start date *@
+                        @if(Model.CompletionDate < EarliestCompletionDate.AddDays((7 * 6)))
+                        {
+                            <MudItem xs="12">
+                                <MudAlert Severity="Severity.Warning">
+                                    The entered completion date is less than six weeks from the start date. 
+                                    Are you sure you would like to continue?
+                                </MudAlert>
+                            </MudItem>
+                        }
+
                     </MudGrid>
                 </MudForm>
             }
