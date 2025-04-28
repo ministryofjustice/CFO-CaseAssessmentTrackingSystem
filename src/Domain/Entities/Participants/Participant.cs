@@ -260,19 +260,19 @@ public class Participant : OwnerPropertyEntity<string>
 
         string? currentName = FullName;
 
-        if(string.Equals(FirstName, firstName, StringComparison.OrdinalIgnoreCase) is false)
+        if(string.Equals(FirstName, firstName) is false)
         {
             FirstName = firstName;
             nameHasChanged = true;
         }
 
-        if (string.Equals(MiddleName, middleName, StringComparison.OrdinalIgnoreCase) is false)
+        if(string.Equals(MiddleName, middleName) is false)
         {
             MiddleName = middleName;
             nameHasChanged = true;
         }
 
-        if (string.Equals(LastName, lastName, StringComparison.OrdinalIgnoreCase) is false)
+        if(string.Equals(LastName, lastName) is false)
         {
             LastName = lastName;
             nameHasChanged = true;
