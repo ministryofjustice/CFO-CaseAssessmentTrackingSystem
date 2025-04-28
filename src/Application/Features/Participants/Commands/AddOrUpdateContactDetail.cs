@@ -110,17 +110,19 @@ public static class AddOrUpdateContactDetail
                     .WithMessage(string.Format(ValidationConstants.NumbersMessage, "Mobile number"));
             });
 
-            // Populated fields
-            RuleFor(c => c)
-            .Must(AtLeastOneFieldProvided)
-            .WithMessage("You must provide at least one of the following: Address, Email Address, or Phone Number.");
+            RuleFor(x => x)
+                        .Custom((model, context) =>
+                        {
+                            if (string.IsNullOrWhiteSpace(model.AddressDetails?.Address) &&
+                                string.IsNullOrWhiteSpace(model.EmailAddress) &&
+                                string.IsNullOrWhiteSpace(model.MobileNumber))
+                            {
+                                context.AddFailure("You must provide at least one of the following: Address, Email Address, or Phone Number.");
+                            }
+                        });
+
         }
-        private bool AtLeastOneFieldProvided(Command command)
-        {
-            return !string.IsNullOrEmpty(command.AddressDetails?.Address) ||
-                   !string.IsNullOrEmpty(command.EmailAddress) ||
-                   !string.IsNullOrEmpty(command.MobileNumber);
-        }
+
 
     }
 

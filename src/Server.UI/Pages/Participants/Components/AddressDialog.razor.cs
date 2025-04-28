@@ -12,7 +12,6 @@ public partial class AddressDialog(IAddressLookupService addressLookupService)
     private MudForm _form = new();
     private bool _saving = false;
 
-    private string _errorAtLeastOneFieldProvided = string.Empty;
     [CascadingParameter] private IMudDialogInstance Dialog { get; set; } = default!;
 
     [Parameter]
@@ -39,21 +38,12 @@ public partial class AddressDialog(IAddressLookupService addressLookupService)
     {
         try
         {
-            //_errorAtLeastOneFieldProvided = string.Empty;
             _saving = true;
 
-            await _form.Validate();
+            await _form.Validate().ConfigureAwait(false);
 
-
-            var (isValid, objectLevelError) = await ValidateFormWithFluent(_form, Model, new A_BeValid());
-
-            if (!isValid)
+            if (!_form.IsValid)
             {
-                if (!string.IsNullOrWhiteSpace(objectLevelError))
-                {
-                    _errorAtLeastOneFieldProvided = objectLevelError;
-                }
-
                 return;
             }
 
