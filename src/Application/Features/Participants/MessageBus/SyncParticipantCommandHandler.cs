@@ -36,28 +36,28 @@ public class SyncParticipantCommandHandler(IUnitOfWork unitOfWork, ICandidateSer
 
             if (candidate.Crn is not null)
             {
-                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.Crn,
+                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.Crn.ToUpper(),
                     ExternalIdentifierType.Crn));
             }
 
             if (candidate.NomisNumber is not null)
             {
-                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.NomisNumber,
+                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.NomisNumber.ToUpper(),
                     ExternalIdentifierType.NomisNumber));
             }
 
             if (candidate.PncNumber is not null)
             {
-                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.PncNumber,
+                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.PncNumber.ToUpper(),
                     ExternalIdentifierType.PncNumber));
             }
 
             // Update first, middle, and last names
             logger.LogTrace("Update name(s)");
             participant.UpdateNameInformation(
-                candidate.FirstName,
-                candidate.SecondName,
-                candidate.LastName);
+                candidate.FirstName.ToUpper(),
+                candidate.SecondName?.ToUpper(),
+                candidate.LastName.ToUpper());
 
             // Update date of birth
             logger.LogTrace("Update date of birth");
