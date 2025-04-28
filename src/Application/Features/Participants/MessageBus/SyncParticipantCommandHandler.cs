@@ -55,9 +55,9 @@ public class SyncParticipantCommandHandler(IUnitOfWork unitOfWork, ICandidateSer
             // Update first, middle, and last names
             logger.LogTrace("Update name(s)");
             participant.UpdateNameInformation(
-                candidate.FirstName.ToTitleCase(),
-                candidate.SecondName?.ToTitleCase(),
-                candidate.LastName.ToTitleCase());
+                candidate.FirstName.ToUpper(),
+                candidate.SecondName?.ToUpper(),
+                candidate.LastName.ToUpper());
 
             // Update date of birth
             logger.LogTrace("Update date of birth");
