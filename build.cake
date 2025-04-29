@@ -20,12 +20,12 @@ Task("Clean")
     });
 
 Task("Build")
-    .Description("Builds the Server UI project in the given configuration. (Defaults to Release)")
+    .Description("Builds the solution in the given configuration. (Defaults to Release)")
     .IsDependentOn("Clean")
     .Does(() =>
 {
-    LogInformation("Building the Server UI project");
-    DotNetBuild("./src/Server.UI/Server.UI.csproj", new DotNetBuildSettings
+    LogInformation("Building the solution");
+    DotNetBuild("./cats.sln", new DotNetBuildSettings
     {
         Configuration = configuration,
     });
