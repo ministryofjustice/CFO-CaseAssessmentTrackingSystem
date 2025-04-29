@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Cfo.Cats.Application.Common.Interfaces.Caching;
 using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Domain.Common;
-using FluentAssertions;
 using MediatR;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 using NetArchTest.Rules;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Cfo.Cats.Domain.ArchitectureTests.ApplicationTests;
 
@@ -40,9 +36,6 @@ public class RequestTests
         var formattedFailedTypes = failedTypes == null ? "None" : string.Join("\n", failedTypes);
         
         result.IsSuccessful
-            .Should()
-            .BeTrue($"The following types failed the test:\n {formattedFailedTypes}");
-
+            .ShouldBeTrue($"The following types failed the test:\n {formattedFailedTypes}");
     }
-
 }

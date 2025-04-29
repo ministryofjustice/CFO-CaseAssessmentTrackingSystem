@@ -1,9 +1,9 @@
 ﻿using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using FluentAssertions;
 using NUnit.Framework;
 using System;
+using Shouldly;
 
 namespace Cfo.Cats.Application.UnitTests.Payments;
 
@@ -21,8 +21,8 @@ public class ThroughTheGatePaymentTests
 
         var payment = RecordThroughTheGatePaymentConsumer.GeneratePayment(data);
 
-        payment.IneligibilityReason.Should().Be(IneligibilityReason.NotYetApproved.Value);
-        payment.EligibleForPayment.Should().Be(false);
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.NotYetApproved.Value);
+        payment.EligibleForPayment.ShouldBe(false);
     }
 
     [Test]
@@ -39,8 +39,8 @@ public class ThroughTheGatePaymentTests
 
         var payment = RecordThroughTheGatePaymentConsumer.GeneratePayment(data);
 
-        payment.IneligibilityReason.Should().Be(IneligibilityReason.RequiredTasksNotCompletedInTime("4 weeks").Value);
-        payment.EligibleForPayment.Should().Be(false);
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.RequiredTasksNotCompletedInTime("4 weeks").Value);
+        payment.EligibleForPayment.ShouldBe(false);
     }
 
     [Test]
@@ -57,8 +57,8 @@ public class ThroughTheGatePaymentTests
 
         var payment = RecordThroughTheGatePaymentConsumer.GeneratePayment(data);
 
-        payment.IneligibilityReason.Should().Be(IneligibilityReason.RequiredTasksNotCompleted.Value);
-        payment.EligibleForPayment.Should().Be(false);
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.RequiredTasksNotCompleted.Value);
+        payment.EligibleForPayment.ShouldBe(false);
     }
 
     [Test]
@@ -68,8 +68,8 @@ public class ThroughTheGatePaymentTests
 
         var payment = RecordThroughTheGatePaymentConsumer.GeneratePayment(data);
 
-        payment.IneligibilityReason.Should().Be(IneligibilityReason.BeforeConsent.Value);
-        payment.EligibleForPayment.Should().Be(false);
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.BeforeConsent.Value);
+        payment.EligibleForPayment.ShouldBe(false);
     }
 
     [Test]
@@ -79,8 +79,8 @@ public class ThroughTheGatePaymentTests
 
         var payment = RecordThroughTheGatePaymentConsumer.GeneratePayment(data);
 
-        payment.IneligibilityReason.Should().Be(IneligibilityReason.MaximumPaymentLimitReached.Value);
-        payment.EligibleForPayment.Should().Be(false);
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.MaximumPaymentLimitReached.Value);
+        payment.EligibleForPayment.ShouldBe(false);
     }
 
     [Test]
@@ -90,10 +90,9 @@ public class ThroughTheGatePaymentTests
 
         var payment = RecordThroughTheGatePaymentConsumer.GeneratePayment(data);
 
-        payment.IneligibilityReason.Should().Be(IneligibilityReason.NeverInLocation.Value);
-        payment.EligibleForPayment.Should().Be(false);
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.NeverInLocation.Value);
+        payment.EligibleForPayment.ShouldBe(false);
     }
-
 
     [Test]
     public void ValidPayment_Should_BePaid()
@@ -102,8 +101,8 @@ public class ThroughTheGatePaymentTests
 
         var payment = RecordThroughTheGatePaymentConsumer.GeneratePayment(data);
 
-        payment.IneligibilityReason.Should().Be(null);
-        payment.EligibleForPayment.Should().Be(true);
+        payment.IneligibilityReason.ShouldBe(null);
+        payment.EligibleForPayment.ShouldBe(true);
     }
 
     static RecordThroughTheGatePaymentConsumer.Data GetData()

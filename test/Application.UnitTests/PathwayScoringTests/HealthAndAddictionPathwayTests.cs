@@ -1,9 +1,7 @@
 ﻿using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.HealthAndAdditiction;
-using DocumentFormat.OpenXml.InkML;
-using FluentAssertions;
 using NUnit.Framework;
-using System.Collections.Generic;
+using Shouldly;
 
 namespace Cfo.Cats.Application.UnitTests.PathwayScoringTests;
 
@@ -29,7 +27,7 @@ public class HealthAndAddictionPathwayTests
         pathway.E9.Answer = E9.NeverVaped;
 
         var rag = pathway.GetRagScore(41, AssessmentLocation.NorthWestAssessmentLocation, Sex.MaleSex);
-        rag.Should().Be(29);
+        rag.ShouldBe(29);
     }
 
     [Test]
@@ -51,7 +49,7 @@ public class HealthAndAddictionPathwayTests
         pathway.E9.Answer = E9.NeverVaped;
 
         var rag = pathway.GetRagScore(41, AssessmentLocation.NorthWestAssessmentLocation, Sex.MaleSex);
-        rag.Should().Be(13);
+        rag.ShouldBe(13);
     }
 
     [Test]
@@ -73,6 +71,6 @@ public class HealthAndAddictionPathwayTests
         pathway.E9.Answer = E9.NeverVaped;
 
         var rag = pathway.GetRagScore(41, AssessmentLocation.NorthWestAssessmentLocation, Sex.MaleSex);
-        rag.Should().Be(4);
+        rag.ShouldBe(4);
     }
 }

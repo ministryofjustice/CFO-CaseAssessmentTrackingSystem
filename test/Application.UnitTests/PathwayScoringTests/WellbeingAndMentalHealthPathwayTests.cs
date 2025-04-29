@@ -1,14 +1,12 @@
 ﻿using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.WellbeingAndMentalHealth;
-using DocumentFormat.OpenXml.InkML;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Cfo.Cats.Application.UnitTests.PathwayScoringTests;
 
 public class WellbeingAndMentalHealthPathwayTests
 {
-
     [Test]
     public void WellbeingAndMentalHealthPathway_Green()
     {
@@ -36,13 +34,12 @@ public class WellbeingAndMentalHealthPathwayTests
 
         //Satisfied with your life
         pathway.H11.Answer = H11.Mostly;
+
         //Stress
         pathway.H12.Answer = H12.FewTimesAMonth;
 
-
-
         var rag = pathway.GetRagScore(36, AssessmentLocation.NorthWestAssessmentLocation, Sex.MaleSex);
-        rag.Should().Be(35);
+        rag.ShouldBe(35);
     }
 
     [Test]
@@ -72,13 +69,12 @@ public class WellbeingAndMentalHealthPathwayTests
 
         //Satisfied with your life
         pathway.H11.Answer = H11.Mostly;
+
         //Stress
         pathway.H12.Answer = H12.FewTimesAMonth;
 
-
-
         var rag = pathway.GetRagScore(36, AssessmentLocation.NorthWestAssessmentLocation, Sex.MaleSex);
-        rag.Should().Be(17);
+        rag.ShouldBe(17);
     }
 
     [Test]
@@ -108,12 +104,11 @@ public class WellbeingAndMentalHealthPathwayTests
 
         //Satisfied with your life
         pathway.H11.Answer = H11.MostlyNot;
+
         //Stress
         pathway.H12.Answer = H12.FewTimesAMonth;
 
-
-
         var rag = pathway.GetRagScore(36, AssessmentLocation.NorthWestAssessmentLocation, Sex.MaleSex);
-        rag.Should().Be(1);
+        rag.ShouldBe(1);
     }
 }

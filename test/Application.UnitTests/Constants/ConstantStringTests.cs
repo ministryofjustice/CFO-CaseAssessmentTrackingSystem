@@ -1,10 +1,8 @@
 ﻿using System.Globalization;
 using System.Threading;
 using Cfo.Cats.Infrastructure.Constants;
-using FluentAssertions;
-using FluentValidation;
+using Shouldly;
 using NUnit.Framework;
-
 
 namespace Cfo.Cats.Application.UnitTests.Constants;
 
@@ -16,37 +14,61 @@ public class ConstantStringTests
         // Set the culture to a specific culture, e.g., "en-US"
         Thread.CurrentThread.CurrentCulture = new CultureInfo("en-gb");
         Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-gb");
-        
-        ConstantString.Add.Should().Be("Add");
-        ConstantString.Actions.Should().Be("Actions");
-        ConstantString.Cancel.Should().Be("Cancel");
-        ConstantString.Clear.Should().Be("Clear");
-        ConstantString.Close.Should().Be("Close");
-        ConstantString.Confirm.Should().Be("Confirm");
-        ConstantString.Delete.Should().Be("Delete");
-        ConstantString.Download.Should().Be("Download");
-        ConstantString.Downloading.Should().Be("Downloading...");
-        ConstantString.Edit.Should().Be("Edit");
-        ConstantString.Export.Should().Be("Export to Excel");
-        ConstantString.Import.Should().Be("Import from Excel");
-        ConstantString.New.Should().Be("New");
-        ConstantString.Next.Should().Be("Next");
-        ConstantString.No.Should().Be("No");
-        ConstantString.NoAllowed.Should().Be("No Allowed");
-        ConstantString.Ok.Should().Be("OK");
-        ConstantString.Previous.Should().Be("Previous");
-        ConstantString.Refresh.Should().Be("Refresh");
-        ConstantString.Reset.Should().Be("Reset");
-        ConstantString.Save.Should().Be("Save");
-        ConstantString.SaveChanges.Should().Be("Save Changes");
-        ConstantString.Search.Should().Be("Search");
-        ConstantString.Signin.Should().Be("Sign In");
-        ConstantString.SigninWith.Should().Be("Sign in with {0}");
-        ConstantString.Upload.Should().Be("Upload");
-        ConstantString.Uploading.Should().Be("Uploading...");
-        ConstantString.Yes.Should().Be("Yes");
-    }
 
-  
-    
+        ConstantString.Add.ShouldBe("Add");
+        ConstantString.Actions.ShouldBe("Actions");
+        ConstantString.Cancel.ShouldBe("Cancel");
+        ConstantString.Clear.ShouldBe("Clear");
+        ConstantString.Close.ShouldBe("Close");
+        ConstantString.Confirm.ShouldBe("Confirm");
+        ConstantString.Delete.ShouldBe("Delete");
+        ConstantString.Download.ShouldBe("Download");
+        ConstantString.Downloading.ShouldBe("Downloading...");
+        ConstantString.Edit.ShouldBe("Edit");
+        ConstantString.Export.ShouldBe("Export to Excel");
+        ConstantString.Import.ShouldBe("Import from Excel");
+        ConstantString.New.ShouldBe("New");
+        ConstantString.Next.ShouldBe("Next");
+        ConstantString.No.ShouldBe("No");
+        ConstantString.NoAllowed.ShouldBe("No Allowed");
+        ConstantString.Ok.ShouldBe("OK");
+        ConstantString.Previous.ShouldBe("Previous");
+        ConstantString.Refresh.ShouldBe("Refresh");
+        ConstantString.Reset.ShouldBe("Reset");
+        ConstantString.Save.ShouldBe("Save");
+        ConstantString.SaveChanges.ShouldBe("Save Changes");
+        ConstantString.Search.ShouldBe("Search");
+        ConstantString.Signin.ShouldBe("Sign In");
+        ConstantString.SigninWith.ShouldBe("Sign in with {0}");
+        ConstantString.Upload.ShouldBe("Upload");
+        ConstantString.Uploading.ShouldBe("Uploading...");
+        ConstantString.Yes.ShouldBe("Yes"); ConstantString.Add.ShouldBe("Add");
+        ConstantString.Actions.ShouldBe("Actions");
+        ConstantString.Cancel.ShouldBe("Cancel");
+        ConstantString.Clear.ShouldBe("Clear");
+        ConstantString.Close.ShouldBe("Close");
+        ConstantString.Confirm.ShouldBe("Confirm");
+        ConstantString.Delete.ShouldBe("Delete");
+        ConstantString.Download.ShouldBe("Download");
+        ConstantString.Downloading.ShouldBe("Downloading...");
+        ConstantString.Edit.ShouldBe("Edit");
+        ConstantString.Export.ShouldBe("Export to Excel");
+        ConstantString.Import.ShouldBe("Import from Excel");
+        ConstantString.New.ShouldBe("New");
+        ConstantString.Next.ShouldBe("Next");
+        ConstantString.No.ShouldBe("No");
+        ConstantString.NoAllowed.ShouldBe("No Allowed");
+        ConstantString.Ok.ShouldBe("OK");
+        ConstantString.Previous.ShouldBe("Previous");
+        ConstantString.Refresh.ShouldBe("Refresh");
+        ConstantString.Reset.ShouldBe("Reset");
+        ConstantString.Save.ShouldBe("Save");
+        ConstantString.SaveChanges.ShouldBe("Save Changes");
+        ConstantString.Search.ShouldBe("Search");
+        ConstantString.Signin.ShouldBe("Sign In");
+        ConstantString.SigninWith.ShouldBe("Sign in with {0}");
+        ConstantString.Upload.ShouldBe("Upload");
+        ConstantString.Uploading.ShouldBe("Uploading...");
+        ConstantString.Yes.ShouldBe("Yes");
+    }
 }

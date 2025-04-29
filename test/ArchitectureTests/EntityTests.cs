@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Cfo.Cats.Domain.Common.Contracts;
-using Cfo.Cats.Domain.Entities;
-using FluentAssertions;
-using NetArchTest.Rules;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Cfo.Cats.Domain.ArchitectureTests;
 
@@ -31,7 +29,6 @@ public class EntityTests
             }
         }
 
-        failingTypes.Should().BeEmpty();
-
+        failingTypes.ShouldBeEmpty();
     }
 }

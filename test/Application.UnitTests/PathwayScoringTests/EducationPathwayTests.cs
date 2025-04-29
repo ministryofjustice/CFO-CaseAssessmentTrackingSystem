@@ -1,9 +1,7 @@
 ﻿using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Education;
-using DocumentFormat.OpenXml.InkML;
-using FluentAssertions;
+using Shouldly;
 using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace Cfo.Cats.Application.UnitTests.PathwayScoringTests;
 
@@ -23,11 +21,10 @@ public class EducationPathwayTests
 
         pathway.D4.Answers = [ D4.UsingNumbersDifficulty ];
 
-
         pathway.D5.Answers = [ D5.Reading, D5.Drawing, D5.Painting, D5.Photography ];
 
         var rag = pathway.GetRagScore(23, AssessmentLocation.EastOfEnglandAssessmentLocation, Sex.MaleSex);
-        rag.Should().Be(25);
+        rag.ShouldBe(25);
     }
 
     [Test]
@@ -46,7 +43,7 @@ public class EducationPathwayTests
         pathway.D5.Answers = [ D5.Crafts ];
 
         var rag = pathway.GetRagScore(23, AssessmentLocation.EastOfEnglandAssessmentLocation, Sex.MaleSex);
-        rag.Should().Be(11);
+        rag.ShouldBe(11);
     }
 
     [Test]
@@ -65,6 +62,6 @@ public class EducationPathwayTests
         pathway.D5.Answers = [ D5.Crafts ];
 
         var rag = pathway.GetRagScore(23, AssessmentLocation.EastOfEnglandAssessmentLocation, Sex.MaleSex);
-        rag.Should().Be(1);
+        rag.ShouldBe(1);
     }
 }

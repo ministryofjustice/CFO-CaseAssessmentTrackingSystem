@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using FluentAssertions;
+using Shouldly;
 using FluentValidation;
 using FluentValidation.Results;
 using NUnit.Framework;
@@ -20,7 +20,7 @@ public class ValidationExceptionTests
         };
         var validationException = new ValidationException(failures);
         var actualErrorMessages = validationException.Errors.Select(x => x.ErrorMessage);
-        actualErrorMessages.Should().BeEquivalentTo(new List<string> { expectedErrorMessage });
+        actualErrorMessages.ShouldBe(new List<string> { expectedErrorMessage });        
     }
 
     [Test]
@@ -39,6 +39,6 @@ public class ValidationExceptionTests
 
         var actual = new ValidationException(failures).Errors;
 
-        actual.Should().NotBeEmpty();
+        actual.ShouldNotBeEmpty();
     }
 }
