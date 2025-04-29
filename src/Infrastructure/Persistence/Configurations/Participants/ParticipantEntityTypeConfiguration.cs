@@ -265,6 +265,9 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             personalDetails.Property(s => s.PreferredTitle)
                 .HasMaxLength(6);
 
+            personalDetails.Property(s => s.NINo)
+                .HasMaxLength(9);
+
             personalDetails.Property(s => s.AdditionalNotes)
                 .HasMaxLength(256);
         });

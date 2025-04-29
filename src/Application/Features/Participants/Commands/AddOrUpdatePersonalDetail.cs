@@ -3,6 +3,7 @@ using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
+using System.Text.RegularExpressions;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
 
@@ -24,6 +25,7 @@ public class AddOrUpdatePersonalDetail
                     command.PersonalDetails.PreferredNames,
                     command.PersonalDetails.PreferredPronouns,
                     command.PersonalDetails.PreferredTitle,
+                    command.PersonalDetails.NINo,
                     command.PersonalDetails.AdditionalNotes)
                 )
                 .AfterMap((_, destination) => destination.ClearDomainEvents());
@@ -63,6 +65,10 @@ public class AddOrUpdatePersonalDetail
                 .MaximumLength(6)
                 .WithMessage("Maximum length of 6 characters exceeded");
 
+            RuleFor(c => c.PersonalDetails.NINo)
+                .MaximumLength(9)
+                .WithMessage("Maximum length of 9 characters exceeded");
+
             RuleFor(c => c.PersonalDetails.AdditionalNotes)
                 .MaximumLength(256)
                 .WithMessage("Maximum length of 256 characters exceeded")
@@ -84,5 +90,35 @@ public class AddOrUpdatePersonalDetail
         }
 
         private bool Exist(string identifier) => _unitOfWork.DbContext.Participants.Any(e => e.Id == identifier);
+    }
+
+    public class C_ValidNationalInsuranceNumber : AbstractValidator<Command>
+    {
+        
+        public C_ValidNationalInsuranceNumber()
+        {
+            RuleFor(c => c.PersonalDetails.NINo)
+                .Must(IsValid)
+                .WithMessage("Invalid National Insurance Number");
+        }
+
+        // Regular expression for National Insurance Number
+        private static readonly Regex _ninoRegex = new Regex(
+            @"^(?!BG)(?!GB)(?!KN)(?!NK)(?!NT)(?!TN)(?!ZZ)" + // Invalid prefixes
+            @"[A-CEGHJ-PR-TW-Z]{2}" +                       // First two letters
+            @"\s?\d{2}\s?\d{2}\s?\d{2}" +                   // Six digits, with optional spaces
+            @"\s?[A-D]$",                                   // Final letter A-D
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private bool IsValid(string? nino)
+        {
+            bool isValid = true;
+            if (!string.IsNullOrWhiteSpace(nino))
+            {
+                nino.Replace(" ", "").ToUpperInvariant();
+                isValid= _ninoRegex.IsMatch(nino);
+            }
+            return isValid;
+        }        
     }
 }

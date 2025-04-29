@@ -11,6 +11,9 @@ public class ParticipantPersonalDetailDto
     [Description("Preferred Title")]
     public string? PreferredTitle { get; set; }
 
+    [Description("National Insurance Number")]
+    public string? NINo { get; set; }
+
     [Description("Additional Notes")]
     public string? AdditionalNotes { get; set; }
 }

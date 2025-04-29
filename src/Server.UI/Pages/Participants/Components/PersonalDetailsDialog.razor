@@ -17,6 +17,9 @@
                             <MudTextField Class="mb-2" Label="@Model.PersonalDetails.GetMemberDescription(x => x.PreferredTitle)" @bind-Value="Model.PersonalDetails.PreferredTitle" For="() => Model.PersonalDetails.PreferredTitle" Clearable MaxLength="6" Counter="6" Immediate Placeholder="i.e. Mr, Ms, Mx" />
                         </MudItem>
                         <MudItem xs="12">
+                            <MudTextField Class="mb-2" Label="@Model.PersonalDetails.GetMemberDescription(x => x.NINo)" @bind-Value="Model.PersonalDetails.NINo" For="() => Model.PersonalDetails.NINo" Clearable MaxLength="9" Counter="9" Immediate />
+                        </MudItem>
+                        <MudItem xs="12">
                             <MudTextField Class="mb-2" Label="@Model.PersonalDetails.GetMemberDescription(x => x.AdditionalNotes)" @bind-Value="Model.PersonalDetails.AdditionalNotes" For="() => Model.PersonalDetails.AdditionalNotes" Clearable MaxLength="256" Counter="256" Immediate
                                           Placeholder="e.g. Communication preferences, accessibility needs, or important background information" 
                                           Lines="4" />
