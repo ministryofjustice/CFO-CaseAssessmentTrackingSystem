@@ -1,7 +1,9 @@
 ﻿@using Cfo.Cats.Application.Features.Assessments.Commands
 @using Cfo.Cats.Application.Features.Assessments.DTOs
+@using Cfo.Cats.Application.Features.Participants.DTOs;
 @using Cfo.Cats.Application.Features.Assessments.Queries
 @using Cfo.Cats.Server.UI.Components.Stepper
+@using MudBlazor
 
 @inherits CatsComponentBase
 
@@ -10,27 +12,34 @@
 @if (_model != null)
 {
     <div tabindex="-1" @ref="topOfPageElement"></div>
-	<CatsMudStepper @ref="@Stepper" Color="Color.Primary" Variant="Variant.Filled"
-					MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
+    <CatsMudStepper @ref="@Stepper" Color="Color.Primary" Variant="Variant.Filled"
+                    MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
                     ActiveStepChanged="@OnStepChange" ShowSkipButton="false" ShowPreviousButton="@_showPrevious">
-		<ChildContent>
-			<MudForm Model="@_model">
-				@*This top-level form is responsible for submission *@
-                
+        <ChildContent>
+            <MudForm Model="@_model">
+                @*This top-level form is responsible for submission *@
+
                 @foreach (var pathway in _model.Pathways)
                 {
                     <AssessmentPathway Model="pathway" />
                 }
                 <StatusResultStep Processing="@Processing" SubmissionSuccess="@SubmissionSuccess" SuccessText="Assessment Submitted" FailureText="Assessment failed to submit" Upci="@Upci" />
-			</MudForm>
-		</ChildContent>
-	</CatsMudStepper>
+            </MudForm>
+        </ChildContent>
+        <ActionContent>
+            <MudButton Variant="Variant.Filled" Color="Color.Error"
+                        StartIcon="@Icons.Material.Filled.Delete"
+                        OnClick="DeleteAssessment"
+                        Style="margin-right: 16px; margin-bottom:4px"
+                        IconColor="Color.Surface">@ConstantString.Delete</MudButton>
+        </ActionContent>
+    </CatsMudStepper>
 }
 
 @code {
-
     private bool _showPrevious = false;
     private ElementReference topOfPageElement;
+    //private AssessmentSummaryDto? _latestAssessment;
 
     [Parameter]
     public string Upci { get; set; } = string.Empty;
@@ -58,10 +67,10 @@
         if (_model is null)
         {
             var response = await GetNewMediator().Send(new GetAssessment.Query()
-            {
-                AssessmentId = AssessmentId,
-                ParticipantId = Upci
-            });
+                {
+                    AssessmentId = AssessmentId,
+                    ParticipantId = Upci
+                });
 
             if (response.Succeeded)
             {
@@ -77,14 +86,14 @@
             Processing = true;
 
             var result = await GetNewMediator().Send(new SaveAssessment.Command()
-            {
-                Assessment = _model!
-            });
+                {
+                    Assessment = _model!
+                });
 
             // Do not show the previous step on the first or last steps.
             _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
 
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
                 await topOfPageElement.FocusAsync();
 
@@ -101,30 +110,48 @@
         }
         finally
         {
-            Processing = false; 
+            Processing = false;
         }
- 
+
     }
 
-	private async Task SubmitAssessment()
-	{
-		if (Stepper.IsAllStepsCompleted())
+    private async Task SubmitAssessment()
+    {
+        if (Stepper.IsAllStepsCompleted())
         {
             var validator = new AssessmentValidator();
             var result = await validator.ValidateAsync(_model!);
 
-			if (result.IsValid)
-			{
-				Processing = true;
+            if (result.IsValid)
+            {
+                Processing = true;
                 var response = await GetNewMediator().Send(new SaveAssessment.Command()
-                {
-                    Assessment = _model!,
-                    Submit = true
-                });
-				Processing = false;
+                    {
+                        Assessment = _model!,
+                        Submit = true
+                    });
+                Processing = false;
                 SubmissionSuccess = response.Succeeded;
             }
-			
-		}
-	}
+
+        }
+    }
+    private async Task DeleteAssessment()
+    {
+        var parameters = new DialogParameters<DeleteConfirmation>
+        {
+            { x => x.Command, new DeleteAssessment.Command() { AssessmentId = _model!.Id } },
+            { x => x.ContentText, "This action is permanent! Are you sure you want to delete current Assessment?" }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<DeleteConfirmation>("Delete Confirmation", parameters, options);
+        var result = await dialog.Result;
+        if (!result!.Canceled)
+        {
+            Snackbar.Add("Deletion Successful!", Severity.Info);
+            Navigation.NavigateTo(string.Format("/pages/participants/{0}", Upci), true);
+        }
+    }
 }
