@@ -19,15 +19,12 @@ public class ParticipantContactDetailEntityTypeConfiguration : IEntityTypeConfig
             .HasMaxLength(100);
 
         builder.Property(x => x.Address)
-            .IsRequired()
             .HasMaxLength(256);
 
         builder.Property(x => x.PostCode)
-            .IsRequired()
             .HasMaxLength(8);
 
         builder.Property(x => x.UPRN)
-            .IsRequired()
             .HasMaxLength(12);
 
         builder.Property(x => x.MobileNumber)

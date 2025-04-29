@@ -13,9 +13,9 @@ public class ParticipantContactDetail : BaseEntity<Guid>
     public static ParticipantContactDetail Create(
         string participantId, 
         string description, 
-        string address, 
-        string postCode, 
-        string uprn, 
+        string? address = null,
+        string? postCode = null,
+        string? uprn = null,
         string? mobileNumber = null,
         string? emailAddress = null)
     {
@@ -56,17 +56,17 @@ public class ParticipantContactDetail : BaseEntity<Guid>
     /// <summary>
     /// The geographical address. E.g. 1 High Street, London, England, AA1 1AA.
     /// </summary>
-    public string Address { get; private set; }
+    public string? Address { get; private set; }
 
     /// <summary>
     /// The postcode of the address.
     /// </summary>
-    public string PostCode { get; private set; }
+    public string? PostCode { get; private set; }
 
     /// <summary>
     /// The Unique Property Referene Number (UPRN) of the address.
     /// </summary>
-    public string UPRN { get; private set; }
+    public string? UPRN { get; private set; }
 
     /// <summary>
     /// Mobile phone number of the registered contact.
