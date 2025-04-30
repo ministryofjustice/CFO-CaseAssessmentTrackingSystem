@@ -4,6 +4,7 @@ using Cfo.Cats.Domain.Common.Exceptions;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Events;
 using Cfo.Cats.Domain.ValueObjects;
+using System.Xml.Linq;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
 
@@ -375,6 +376,26 @@ public class Participant : OwnerPropertyEntity<string>
         ArchiveJustification = justificationReason;
         ArchiveReason = archiveReason;
 
+        return this;
+    }
+
+    /// <summary>
+    /// Archives the participant 
+    /// </summary>
+    /// <param name="archiveReason"></param>
+    /// <param name="justificationReason"></param>
+    /// <returns></returns>
+    public Participant Unarchive(UnarchiveReason unarchiveReason, string? additonalInformation)
+    {
+        // need to make unarchive its own table like personal details / enrolment history psc
+        //unarchiveReason = unarchiveReason;
+        //additonalInformation = additonalInformation;
+        // Date on programme
+        //Date archived
+        //Reason for Archive
+        //Reason for re - joining
+        //Comments
+        //Support Worker
         return this;
     }
 
