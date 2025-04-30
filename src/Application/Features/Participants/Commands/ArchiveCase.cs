@@ -2,7 +2,7 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
-namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
+namespace Cfo.Cats.Application.Features.Participants.Commands;
 
 public static class ArchiveCase
 {
@@ -19,7 +19,7 @@ public static class ArchiveCase
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
-            participant!.Archive(request.ArchiveReason,request.Justification);
+            participant!.Archive(request.ArchiveReason, request.Justification);
             participant!.TransitionTo(EnrolmentStatus.ArchivedStatus);
 
             // ReSharper disable once MethodHasAsyncOverload
@@ -27,7 +27,7 @@ public static class ArchiveCase
         }
     }
 
-    public class A_ParticipantMustExistValidator : AbstractValidator<SubmitToProviderQa.Command>
+    public class A_ParticipantMustExistValidator : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
         public A_ParticipantMustExistValidator(IUnitOfWork unitOfWork)
@@ -49,7 +49,7 @@ public static class ArchiveCase
     public class Validator : AbstractValidator<Command>
     {
         public Validator()
-        {           
+        {
             RuleFor(c => c.Justification)
                 .NotEmpty()
                 .When(c => c.ArchiveReason.RequiresJustification)
