@@ -13,8 +13,8 @@
 {
     <div tabindex="-1" @ref="topOfPageElement"></div>
     <CatsMudStepper @ref="@Stepper" Color="Color.Primary" Variant="Variant.Filled"
-                    MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
-                    ActiveStepChanged="@OnStepChange" ShowSkipButton="false" ShowPreviousButton="@_showPrevious">
+    MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
+    ActiveStepChanged="@OnStepChange" ShowSkipButton="false" ShowPreviousButton="@_showPrevious">
         <ChildContent>
             <MudForm Model="@_model">
                 @*This top-level form is responsible for submission *@
@@ -27,17 +27,24 @@
             </MudForm>
         </ChildContent>
         <ActionContent>
-            <MudButton Variant="Variant.Filled" Color="Color.Error"
-                        StartIcon="@Icons.Material.Filled.Delete"
-                        OnClick="DeleteAssessment"
-                        Style="margin-right: 16px; margin-bottom:4px"
-                        IconColor="Color.Surface">@ConstantString.Delete</MudButton>
+            @if (_showDelete)
+            {
+                <MudButton Variant="Variant.Filled" Color="Color.Error"
+                StartIcon="@Icons.Material.Filled.Delete"
+                OnClick="DeleteAssessment"
+                Style="margin-right: 16px; margin-bottom:4px"
+                IconColor="Color.Surface">@ConstantString.Delete</MudButton>
+            }
         </ActionContent>
+
     </CatsMudStepper>
 }
 
 @code {
     private bool _showPrevious = false;
+    private bool _showDelete = false;
+    private bool _isRemoveable = false;
+
     private ElementReference topOfPageElement;
     //private AssessmentSummaryDto? _latestAssessment;
 
@@ -77,6 +84,11 @@
                 _model = response.Data!;
             }
         }
+
+        var unitOfWork = GetNewUnitOfWork();
+        var context = unitOfWork.DbContext;
+        var countOfCompletedAssessments = await context.ParticipantAssessments.CountAsync(asmt => asmt.ParticipantId==Upci && asmt.Completed.HasValue);
+        _showDelete = _isRemoveable = countOfCompletedAssessments > 0;
     }
 
     private async Task OnStepChange(int step)
@@ -92,7 +104,8 @@
 
             // Do not show the previous step on the first or last steps.
             _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
-
+            //Do not show Delete button if current assessment can be deleted and its not the last step.
+            _showDelete = _isRemoveable && Stepper.IsResultStep == false;
             if (result.Succeeded)
             {
                 await topOfPageElement.FocusAsync();
@@ -141,7 +154,9 @@
         var parameters = new DialogParameters<DeleteConfirmation>
         {
             { x => x.Command, new DeleteAssessment.Command() { AssessmentId = _model!.Id } },
-            { x => x.ContentText, "This action is permanent! Are you sure you want to delete current Assessment?" }
+            { x => x.ContentText, "This action will permanently delete this assessment and revert to the last completed one. Are you sure you want to do this?" },
+            { x => x.ConfirmText, "Yes" },
+            { x => x.CancelText, "No" }
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
