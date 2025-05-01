@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Infrastructure.Persistence;
-using FluentAssertions;
 using MediatR;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Cfo.Cats.Domain.ArchitectureTests.ApplicationTests;
 
@@ -42,7 +42,6 @@ public class RequestHandlerTests
             }
         }
 
-        failures.Should()
-            .BeEmpty(string.Join(Environment.NewLine, failures));
+        failures.ShouldBeEmpty(string.Join(Environment.NewLine, failures));
     }
 }

@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Cfo.Cats.Application.Pipeline;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Cfo.Cats.Domain.ArchitectureTests.InfrastructureTests;
 
@@ -32,8 +31,6 @@ public class EntityConfigurationTests
             }
         }
 
-        failingTypes.Should().BeEmpty();
-
+        failingTypes.ShouldBeEmpty();
     }
-
 }

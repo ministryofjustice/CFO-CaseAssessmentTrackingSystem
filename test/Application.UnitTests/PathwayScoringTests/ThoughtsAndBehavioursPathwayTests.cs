@@ -1,14 +1,12 @@
 ﻿using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.ThoughtsAndBehaviours;
-using DocumentFormat.OpenXml.InkML;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Cfo.Cats.Application.UnitTests.PathwayScoringTests;
 
 public class ThoughtsAndBehavioursPathwayTests
 {
-
     [Test]
     public void ThoughtsAndBehavioursPathway_Green()
     {
@@ -42,7 +40,7 @@ public class ThoughtsAndBehavioursPathwayTests
         pathway.G9.Answer = G9.StronglyAgree;
 
         var rag = pathway.GetRagScore(29, AssessmentLocation.NorthEastAssessmentLocation, Sex.FemaleSex);
-        rag.Should().Be(26);
+        rag.ShouldBe(26);
     }
 
     [Test]
@@ -78,7 +76,7 @@ public class ThoughtsAndBehavioursPathwayTests
         pathway.G9.Answer = G9.StronglyAgree;
 
         var rag = pathway.GetRagScore(29, AssessmentLocation.NorthEastAssessmentLocation, Sex.FemaleSex);
-        rag.Should().Be(19);
+        rag.ShouldBe(19);
     }
 
     [Test]
@@ -114,6 +112,6 @@ public class ThoughtsAndBehavioursPathwayTests
         pathway.G9.Answer = G9.StronglyAgree;
 
         var rag = pathway.GetRagScore(29, AssessmentLocation.NorthEastAssessmentLocation, Sex.FemaleSex);
-        rag.Should().Be(6);
+        rag.ShouldBe(6);
     }
 }
