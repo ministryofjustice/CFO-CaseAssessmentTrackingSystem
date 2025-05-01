@@ -85,7 +85,7 @@
     void ShowTooManyResultsFound() => _selectedType = typeof(TooManyResults);
     void ShowCandidateNotEligible() => _selectedType = typeof(NotEligible);
 
-    async Task BeginEnrolmentIfEligible()
+    private async Task BeginEnrolmentIfEligible()
     {
         var result = SearchResults
             .OrderBy(candidate => candidate.Precedence)
@@ -102,21 +102,21 @@
             return;
         }
 
-        var candidate = await CandidateService.GetByUpciAsync(result.Upci);
+        var candidateResult = await CandidateService.GetByUpciAsync(result.Upci);
 
-        if (candidate is null)
+        if (candidateResult.Succeeded == false)
         {
             Snackbar.Add("An issue occurred when attempting to retrieve the candidates information.", Severity.Error);
             return;
         }
 
-        if(candidate.IsActive is false)
+        if (candidateResult.Data!.IsActive is false)
         {
             ShowCandidateNotEligible();
             return;
         }
 
-        ShowCandidateFound(candidate);
+        ShowCandidateFound(candidateResult.Data!);
     }
 
     bool SearchReturnedCloseMatch(int precedence = 10) => Candidate.Precedence <= precedence;

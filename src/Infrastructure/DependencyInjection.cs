@@ -17,8 +17,10 @@ using Cfo.Cats.Infrastructure.Jobs;
 using Cfo.Cats.Infrastructure.Persistence.Interceptors;
 using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.Contracts;
+using Cfo.Cats.Infrastructure.Services.Delius;
 using Cfo.Cats.Infrastructure.Services.Locations;
 using Cfo.Cats.Infrastructure.Services.MultiTenant;
+using Cfo.Cats.Infrastructure.Services.OffLoc;
 using Cfo.Cats.Infrastructure.Services.Ordnance;
 using Cfo.Cats.Infrastructure.Services.Serialization;
 using MassTransit;
@@ -194,13 +196,15 @@ public static class DependencyInjection
 
         services
             .AddSingleton<TenantService>()
-            .AddSingleton<ITenantService>(sp => {
+            .AddSingleton<ITenantService>(sp =>
+            {
                 var service = sp.GetRequiredService<TenantService>();
                 service.Initialize();
                 return service;
             })
             .AddSingleton<LocationService>()
-            .AddSingleton<ILocationService>(sp => {
+            .AddSingleton<ILocationService>(sp =>
+            {
                 var service = sp.GetRequiredService<LocationService>();
                 service.Initialize();
                 return service;
@@ -212,6 +216,7 @@ public static class DependencyInjection
                 service.Initialize();
                 return service;
             });
+            
 
         services.Configure<NotifyOptions>(configuration.GetSection(NotifyOptions.Notify));
 
@@ -229,6 +234,34 @@ public static class DependencyInjection
             client.BaseAddress = new Uri(configuration.GetRequiredValue("DMS:ApplicationUrl"));
         });
 
+        services.AddHttpClient<OfflocService>((_, client) =>
+        {
+            client.DefaultRequestHeaders.Add("X-API-KEY", configuration.GetRequiredValue("DMS:ApiKey"));
+            client.BaseAddress = new Uri(configuration.GetRequiredValue("DMS:ApplicationUrl"));
+        });
+
+        services.AddHttpClient<DeliusService>((_, client) =>
+        {
+            client.DefaultRequestHeaders.Add("X-API-KEY", configuration.GetRequiredValue("DMS:ApiKey"));
+            client.BaseAddress = new Uri(configuration.GetRequiredValue("DMS:ApplicationUrl"));
+        });
+        
+        services.AddSingleton<IOfflocService>(sp =>
+        {
+            var offloc = sp.GetRequiredService<OfflocService>();
+            var cache = sp.GetRequiredService<IFusionCache>();
+
+            return new CachingOffLocService(cache, offloc);
+        });
+
+        services.AddSingleton<IDeliusService>(sp =>
+        {
+            var delius = sp.GetRequiredService<DeliusService>();
+            var cache = sp.GetRequiredService<IFusionCache>();
+
+            return new CachingDeliusService(cache, delius);
+        });
+        
         services.AddHttpClient<IAddressLookupService, AddressLookupService>((provider, client) =>
         {
             client.DefaultRequestHeaders.Add("key", configuration.GetRequiredValue("Ordnance:Places:ApiKey"));

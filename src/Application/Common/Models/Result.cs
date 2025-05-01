@@ -35,7 +35,7 @@ public class Result<T> : Result, IResult<T>
 {
     public T? Data { get; set; }
 
-    public static new Result<T> Failure(params string[] errors)
+    public new static Result<T> Failure(params string[] errors)
     {
         return new Result<T> { Succeeded = false, Errors = errors.ToArray() };
     }
@@ -45,7 +45,23 @@ public class Result<T> : Result, IResult<T>
         return new Result<T> { Succeeded = true, Data = data };
     }
 
+    public static Result<T> NotFound()
+    {
+        return new NotFoundResult<T>();
+    }
+
     public static implicit operator Result<T>(T data) => Success(data);
 
     public static implicit operator T(Result<T> result) => result.Data!;
 }
+
+public class NotFoundResult<T> : Result<T>
+{
+    public NotFoundResult()
+    {
+        Succeeded = false;
+        Data = default(T);
+        Errors = ["No data found"];
+    }
+}
+    

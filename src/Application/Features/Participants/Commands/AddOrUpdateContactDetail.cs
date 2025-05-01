@@ -93,6 +93,11 @@ public static class AddOrUpdateContactDetail
                 .MaximumLength(100)
                 .WithMessage("Maximum length exceeded");
 
+            RuleFor(c => c)
+                .Must(model => model.EmailAddress is not null || model.MobileNumber is not null);
+            
+
+
             When(c => string.IsNullOrEmpty(c.EmailAddress) is false, () =>
             {
                 RuleFor(c => c.EmailAddress)

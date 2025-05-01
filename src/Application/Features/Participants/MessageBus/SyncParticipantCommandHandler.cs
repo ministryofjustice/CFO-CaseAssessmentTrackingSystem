@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Domain.Entities.Participants;
+﻿using Cfo.Cats.Application.Features.Candidates.DTOs;
+using Cfo.Cats.Domain.Entities.Participants;
 using MassTransit;
 
 namespace Cfo.Cats.Application.Features.Participants.MessageBus;
@@ -22,12 +23,14 @@ public class SyncParticipantCommandHandler(IUnitOfWork unitOfWork, ICandidateSer
         {
             using var scope = logger.BeginScope("Sync for Participant: {Id}", [participant.Id]);
 
-            var candidate = await candidateService.GetByUpciAsync(participant.Id);
+            var result = await candidateService.GetByUpciAsync(participant.Id);
 
-            if (candidate is null)
+            if (result.Succeeded == false)
             {
-                throw new InvalidOperationException("No DMS information found");
+                throw new InvalidOperationException($"Error retrieving DMS information: {result.ErrorMessage}");
             }
+
+            var candidate = result.Data!;
 
             await unitOfWork.BeginTransactionAsync();
 
