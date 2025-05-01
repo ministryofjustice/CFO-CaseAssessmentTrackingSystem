@@ -13,15 +13,22 @@ public class PersonalDetail : BaseEntity<Guid>
     public string? PreferredNames { get; private set; }
     public string? PreferredPronouns { get; private set; }
     public string? PreferredTitle { get; private set; }
+    public string? NINo { get; private set; }
     public string? AdditionalNotes { get; private set; }
 
-    public static PersonalDetail CreateFrom(string? preferredNames, string? preferredPronouns, string? preferredTitle, string? additionalNotes)
+    public static PersonalDetail CreateFrom(string? preferredNames, string? preferredPronouns, string? preferredTitle, string? nationalInsuranceNumber, string? additionalNotes)
     {
+        if (!string.IsNullOrWhiteSpace(nationalInsuranceNumber))
+        {
+            nationalInsuranceNumber = nationalInsuranceNumber!.Replace(" ", "").ToUpperInvariant();
+        };
+
         PersonalDetail pd = new()
         {
             PreferredNames = preferredNames,
             PreferredPronouns = preferredPronouns,
             PreferredTitle = preferredTitle,
+            NINo = nationalInsuranceNumber,
             AdditionalNotes = additionalNotes
         };
 
