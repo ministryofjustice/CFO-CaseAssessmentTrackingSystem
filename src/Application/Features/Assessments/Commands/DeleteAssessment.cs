@@ -37,10 +37,11 @@ public static class DeleteAssessment
             _unitOfWork = unitOfWork;
 
             RuleFor(c => c.AssessmentId)
-                .Must(Exist);
+                .Must(ExistAndIncomplete);
+
         }
 
-        bool Exist(Guid identifier) => _unitOfWork.DbContext.ParticipantAssessments.Any(asmt => asmt.Id == identifier);
+        bool ExistAndIncomplete(Guid identifier) => _unitOfWork.DbContext.ParticipantAssessments.Any(asmt => asmt.Id == identifier && asmt.IsCompleted == false);
     }
 
 }
