@@ -1,8 +1,7 @@
 ﻿using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using FluentAssertions;
-using Humanizer;
 using NUnit.Framework;
+using Shouldly;
 using System;
 
 namespace Cfo.Cats.Application.UnitTests.Payments;
@@ -18,8 +17,8 @@ public class ReassessmentPaymentTests
 
         var payment = RecordReassessmentPaymentConsumer.GeneratePayment(data);
 
-        payment.IneligibilityReason.Should().Be(IneligibilityReason.NotYetApproved.Value);
-        payment.EligibleForPayment.Should().Be(false);
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.NotYetApproved.Value);
+        payment.EligibleForPayment.ShouldBe(false);
     }
 
     [Test]
@@ -32,8 +31,8 @@ public class ReassessmentPaymentTests
 
         var payment = RecordReassessmentPaymentConsumer.GeneratePayment(data);
 
-        payment.IneligibilityReason.Should().Be(IneligibilityReason.MaximumPaymentLimitReached.Value);
-        payment.EligibleForPayment.Should().Be(false);
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.MaximumPaymentLimitReached.Value);
+        payment.EligibleForPayment.ShouldBe(false);
     }
 
     [Test]
@@ -47,8 +46,8 @@ public class ReassessmentPaymentTests
 
         var payment = RecordReassessmentPaymentConsumer.GeneratePayment(data);
 
-        payment.IneligibilityReason.Should().Be(IneligibilityReason.InitialAssessmentCompletedInLastTwoMonths.Value);
-        payment.EligibleForPayment.Should().Be(false);
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.InitialAssessmentCompletedInLastTwoMonths.Value);
+        payment.EligibleForPayment.ShouldBe(false);
     }
 
     [Test]
@@ -58,8 +57,8 @@ public class ReassessmentPaymentTests
 
         var payment = RecordReassessmentPaymentConsumer.GeneratePayment(data);
 
-        payment.IneligibilityReason.Should().Be(null);
-        payment.EligibleForPayment.Should().Be(true);
+        payment.IneligibilityReason.ShouldBe(null);
+        payment.EligibleForPayment.ShouldBe(true);
     }
 
 
