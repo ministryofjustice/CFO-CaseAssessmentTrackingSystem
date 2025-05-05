@@ -1,17 +1,19 @@
 ﻿using Cfo.Cats.Application.Features.Delius.DTOs;
 
-namespace Cfo.Cats.Server.UI.Pages.Participants.Components.Delius;
+namespace Cfo.Cats.Server.UI.Pages.Participants.Components.DMS.Delius;
 
 public partial class DeliusOffenceDetails
 {
     private bool _isLoading = true;
 
-
-    private MainOffenceDto? _selectedOffence;
     private Func<MainOffenceDto?, string> _convertToString = o =>
     {
-        return o == null ? string.Empty :   
-            $"{o.OffenceDescription} - {o.OffenceDate} {(o.Disposals.All(d => d.TerminationDate is not null) ? " (terminated)" : string.Empty)} ";
+        if (o == null)
+        {
+            return string.Empty;
+        }
+
+        return $"{o.OffenceDescription} - {o.OffenceDate} {(o.Disposals.All(d => d.TerminationDate is not null) ? " (terminated)" : string.Empty)} ";
     };
 
     [Inject] public IDeliusService DeliusService { get; set; } = default!;
@@ -24,7 +26,6 @@ public partial class DeliusOffenceDetails
     protected override async Task OnInitializedAsync()
     {
         OffenceResult = await DeliusService.GetOffencesAsync(Crn);
-        _selectedOffence = OffenceResult.Data?.MainOffences?.FirstOrDefault();
         _isLoading = false;
     }
 
@@ -34,9 +35,11 @@ public partial class DeliusOffenceDetails
         {
             CloseOnEscapeKey = true,
             MaxWidth = MaxWidth.ExtraExtraLarge,
+            FullScreen = true,
+            FullWidth = true,
             CloseButton = true,
-            
         };
+
         var parameters = new DialogParameters<MainOffenceDialog>()
         {
             {

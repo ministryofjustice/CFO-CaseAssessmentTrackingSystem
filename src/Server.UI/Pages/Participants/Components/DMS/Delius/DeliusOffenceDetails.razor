@@ -39,12 +39,12 @@ else
             <HeaderContent>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<MainOffenceDto, object>(c => c.OffenceDescription)">
-                        Description
+                        Offence Description
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<MainOffenceDto, object>(c => c.OffenceDate ?? DateOnly.MinValue)">
-                        Date
+                        Offence Date
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
@@ -59,8 +59,8 @@ else
                 <MudTh>Details</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Description">@context.OffenceDescription</MudTd>
-                <MudTd DataLabel="Date">@context.OffenceDate</MudTd>
+                <MudTd DataLabel="Offence Description">@context.OffenceDescription</MudTd>
+                <MudTd DataLabel="Offence Date">@context.OffenceDate</MudTd>
                 <MudTd DataLabel="Disposals">@context.Disposals.Count()</MudTd>
                 <MudTd DataLabel="Disposals">@context.Disposals.SelectMany(d => d.Requirements).Count()</MudTd>
                 <MudTd DataLabel="Terminated">@(context.Disposals.All(t => t.TerminationDate is not null) ? "Yes" : "No")</MudTd>

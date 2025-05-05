@@ -1,6 +1,6 @@
 ﻿using Cfo.Cats.Application.Features.Offloc.DTOs;
 
-namespace Cfo.Cats.Server.UI.Pages.Participants.Components.Offloc;
+namespace Cfo.Cats.Server.UI.Pages.Participants.Components.DMS.Offloc;
 
 public partial class OffLocDetails
 {
