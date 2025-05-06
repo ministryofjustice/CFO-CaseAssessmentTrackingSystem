@@ -36,7 +36,8 @@ public static class DeleteAssessment
             _unitOfWork = unitOfWork;
 
             RuleFor(c => c.AssessmentId)
-                .Must(ExistAndIncomplete);
+                .Must(ExistAndIncomplete)
+                .WithMessage("Assessment already complete or it doesn't exist!");
 
         }
 

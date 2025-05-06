@@ -1,9 +1,7 @@
 @using Cfo.Cats.Application.Features.Assessments.Commands
 @using Cfo.Cats.Application.Features.Assessments.DTOs
-@using Cfo.Cats.Application.Features.Participants.DTOs;
 @using Cfo.Cats.Application.Features.Assessments.Queries
 @using Cfo.Cats.Server.UI.Components.Stepper
-@using MudBlazor
 
 @inherits CatsComponentBase
 
@@ -46,8 +44,6 @@
 
     private ElementReference topOfPageElement;
 
-    //private ParticipantAssessmentDto? ParticipantCompletedAssessmentDto = null;
-
     [Parameter]
     public string Upci { get; set; } = string.Empty;
 
@@ -74,10 +70,10 @@
         if (_model is null)
         {
             var response = await GetNewMediator().Send(new GetAssessment.Query()
-                {
-                    AssessmentId = AssessmentId,
-                    ParticipantId = Upci
-                });
+            {
+                AssessmentId = AssessmentId,
+                ParticipantId = Upci
+            });
 
             if (response.Succeeded)
             {
@@ -95,9 +91,9 @@
             Processing = true;
 
             var result = await GetNewMediator().Send(new SaveAssessment.Command()
-                {
-                    Assessment = _model!
-                });
+            {
+                Assessment = _model!
+            });
 
             // Do not show the previous step on the first or last steps.
             _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
@@ -136,10 +132,11 @@
             {
                 Processing = true;
                 var response = await GetNewMediator().Send(new SaveAssessment.Command()
-                    {
-                        Assessment = _model!,
-                        Submit = true
-                    });
+                {
+                    Assessment = _model!,
+                    Submit = true
+                });
+
                 Processing = false;
                 SubmissionSuccess = response.Succeeded;
             }
@@ -149,12 +146,12 @@
     private async Task DeleteAssessment()
     {
         var parameters = new DialogParameters
-            {
-                ["Command"] = new DeleteAssessment.Command() { AssessmentId = _model!.Id },
-                ["ContentText"] = "This action will permanently delete this assessment and restore the last completed assessment as being the most recent, if a previous one exists. Are you sure you want to do this?",
-                ["ConfirmText"] = "Yes",
-                ["CancelText"] = "No"
-            };
+        {
+            ["Command"] = new DeleteAssessment.Command() { AssessmentId = _model!.Id },
+            ["ContentText"] = "This action will permanently delete this assessment and restore the last completed assessment as being the most recent, if one exists. Are you sure you want to do this?",
+            ["ConfirmText"] = "Yes",
+            ["CancelText"] = "No"
+        };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
