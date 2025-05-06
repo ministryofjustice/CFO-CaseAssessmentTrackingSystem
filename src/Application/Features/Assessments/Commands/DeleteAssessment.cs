@@ -1,10 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cfo.Cats.Application.Features.Assessments.Commands;
 
@@ -20,12 +15,16 @@ public static class DeleteAssessment
     {
         public async Task<Result<int>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var result = await unitOfWork.DbContext.ParticipantAssessments
-                .Where(pcd => pcd.Id == request.AssessmentId)
-                .ExecuteDeleteAsync(cancellationToken);
-
+            var assessment = await unitOfWork.DbContext.ParticipantAssessments.Where(x => x.Id == request.AssessmentId).FirstOrDefaultAsync(cancellationToken);
+            int result = 0;
+            if (assessment is not null)
+            {
+                unitOfWork.DbContext.ParticipantAssessments.Remove(assessment);
+                result = await unitOfWork.SaveChangesAsync(cancellationToken);
+            }
             return Result<int>.Success(result);
         }
+
     }
 
     public class Validator : AbstractValidator<Command>
@@ -41,7 +40,7 @@ public static class DeleteAssessment
 
         }
 
-        bool ExistAndIncomplete(Guid identifier) => _unitOfWork.DbContext.ParticipantAssessments.Any(asmt => asmt.Id == identifier && asmt.IsCompleted == false);
+        bool ExistAndIncomplete(Guid identifier) => _unitOfWork.DbContext.ParticipantAssessments.Any(asmt => asmt.Id == identifier && asmt.Completed.HasValue == false);
     }
 
 }

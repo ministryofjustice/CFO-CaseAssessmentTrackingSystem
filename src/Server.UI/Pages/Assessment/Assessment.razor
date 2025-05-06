@@ -42,11 +42,11 @@
 
 @code {
     private bool _showPrevious = false;
-    private bool _showDelete = false;
-    private bool _isRemoveable = false;
+    private bool _showDelete = true;
 
     private ElementReference topOfPageElement;
-    //private AssessmentSummaryDto? _latestAssessment;
+
+    //private ParticipantAssessmentDto? ParticipantCompletedAssessmentDto = null;
 
     [Parameter]
     public string Upci { get; set; } = string.Empty;
@@ -84,11 +84,8 @@
                 _model = response.Data!;
             }
         }
-
-        var unitOfWork = GetNewUnitOfWork();
-        var context = unitOfWork.DbContext;
-        var countOfCompletedAssessments = await context.ParticipantAssessments.CountAsync(asmt => asmt.ParticipantId==Upci && asmt.Completed.HasValue);
-        _showDelete = _isRemoveable = countOfCompletedAssessments > 0;
+        //Show Delete button if it's not the last step.
+        _showDelete = Stepper.IsResultStep == false;
     }
 
     private async Task OnStepChange(int step)
@@ -104,8 +101,8 @@
 
             // Do not show the previous step on the first or last steps.
             _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
-            //Do not show Delete button if current assessment can be deleted and its not the last step.
-            _showDelete = _isRemoveable && Stepper.IsResultStep == false;
+            //Show Delete button if it's not the last step.
+            _showDelete = Stepper.IsResultStep == false;
             if (result.Succeeded)
             {
                 await topOfPageElement.FocusAsync();
@@ -151,13 +148,13 @@
     }
     private async Task DeleteAssessment()
     {
-        var parameters = new DialogParameters<DeleteConfirmation>
-        {
-            { x => x.Command, new DeleteAssessment.Command() { AssessmentId = _model!.Id } },
-            { x => x.ContentText, "This action will permanently delete this assessment and revert to the last completed one. Are you sure you want to do this?" },
-            { x => x.ConfirmText, "Yes" },
-            { x => x.CancelText, "No" }
-        };
+        var parameters = new DialogParameters
+            {
+                ["Command"] = new DeleteAssessment.Command() { AssessmentId = _model!.Id },
+                ["ContentText"] = "This action will permanently delete this assessment and revert to the last completed version, if a previous one exists. Are you sure you want to do this?",
+                ["ConfirmText"] = "Yes",
+                ["CancelText"] = "No"
+            };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
