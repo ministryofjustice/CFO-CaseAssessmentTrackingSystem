@@ -41,7 +41,7 @@ public static class DeleteAssessment
 
         }
 
-        bool ExistAndIncomplete(Guid identifier) => _unitOfWork.DbContext.ParticipantAssessments.Any(asmt => asmt.Id == identifier && asmt.IsCompleted == false);
+        bool ExistAndIncomplete(Guid identifier) => _unitOfWork.DbContext.ParticipantAssessments.Any(asmt => asmt.Id == identifier && asmt.Completed.HasValue==false);
     }
 
 }
