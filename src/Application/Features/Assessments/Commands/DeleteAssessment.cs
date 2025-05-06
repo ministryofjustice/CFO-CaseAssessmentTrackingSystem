@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Interfaces;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
 using System;
 using System.Collections.Generic;
@@ -20,12 +21,16 @@ public static class DeleteAssessment
     {
         public async Task<Result<int>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var result = await unitOfWork.DbContext.ParticipantAssessments
-                .Where(pcd => pcd.Id == request.AssessmentId)
-                .ExecuteDeleteAsync(cancellationToken);
-
+            var assessment = await unitOfWork.DbContext.ParticipantAssessments.Where(x => x.Id == request.AssessmentId).FirstOrDefaultAsync(cancellationToken);
+            int result = 0;
+            if (assessment is not null) {
+                unitOfWork.DbContext.ParticipantAssessments.Remove(assessment);
+                result = await unitOfWork.SaveChangesAsync(cancellationToken);
+            }
             return Result<int>.Success(result);
         }
+
+
     }
 
     public class Validator : AbstractValidator<Command>
