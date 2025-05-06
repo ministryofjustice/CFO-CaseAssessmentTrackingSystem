@@ -19,8 +19,7 @@ public static class ArchiveCase
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
-            participant!.Archive(request.ArchiveReason, request.Justification);
-            participant!.TransitionTo(EnrolmentStatus.ArchivedStatus);
+            participant!.TransitionTo(EnrolmentStatus.ArchivedStatus, request.ArchiveReason.Name, request.Justification);
 
             // ReSharper disable once MethodHasAsyncOverload
             return Result.Success();

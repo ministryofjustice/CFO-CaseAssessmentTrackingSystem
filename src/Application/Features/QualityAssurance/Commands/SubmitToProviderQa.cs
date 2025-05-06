@@ -18,7 +18,7 @@ public static class SubmitToProviderQa
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
-            participant!.TransitionTo(EnrolmentStatus.SubmittedToProviderStatus)
+            participant!.TransitionTo(EnrolmentStatus.SubmittedToProviderStatus, null, null)
                 .SetAssessmentJustification(request.JustificationReason);
             return Result.Success();
         }

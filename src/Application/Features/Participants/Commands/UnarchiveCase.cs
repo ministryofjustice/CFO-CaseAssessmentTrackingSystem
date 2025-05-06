@@ -10,7 +10,7 @@ public static class UnarchiveCase
     public class Command : IRequest<Result>
     {
         public required string ParticipantId { get; set; }
-        [Description("Reason for Unarchive")] public UnarchiveReason UnarchiveReason { get; set; } = UnarchiveReason.ArchivedByAccident;
+        [Description("Reason for Unarchive")] public UnarchiveReason UnarchiveReason { get; set; } = UnarchiveReason.ArchivedInError;
         [Description("Additional Information")] public string? AdditionalInformation { get; set; }
     }
 
@@ -19,8 +19,8 @@ public static class UnarchiveCase
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
-            participant!.Unarchive(request.UnarchiveReason, request.AdditionalInformation);
-            participant!.TransitionTo(EnrolmentStatus.ArchivedStatus);
+            //participant!.Unarchive(request.UnarchiveReason, request.AdditionalInformation);
+            participant!.TransitionTo(EnrolmentStatus.ArchivedStatus, request.UnarchiveReason.Name, request.AdditionalInformation);
 
             // ReSharper disable once MethodHasAsyncOverload
             return Result.Success();

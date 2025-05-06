@@ -17,7 +17,7 @@ public class TransitionParticipantAfterEscalationSubmissionEventHandler
         {
             notification.Entry
                 .Participant!
-                .TransitionTo(EnrolmentStatus.SubmittedToProviderStatus);
+                .TransitionTo(EnrolmentStatus.SubmittedToProviderStatus, null, null);
         }
 
         return Task.CompletedTask;

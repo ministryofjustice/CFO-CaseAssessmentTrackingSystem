@@ -22,11 +22,11 @@ public class VerifyRightToWorkOnApproval(IUnitOfWork unitOfWork, IRightToWorkSet
 
         if (isRightToWorkRequired)
         {
-            notification.Item.TransitionTo(EnrolmentStatus.SubmittedToProviderStatus);
+            notification.Item.TransitionTo(EnrolmentStatus.SubmittedToProviderStatus, null, null);
         }
         else
         {
-            notification.Item.TransitionTo(EnrolmentStatus.ApprovedStatus);
+            notification.Item.TransitionTo(EnrolmentStatus.ApprovedStatus, null, null);
         }
     }
 }
