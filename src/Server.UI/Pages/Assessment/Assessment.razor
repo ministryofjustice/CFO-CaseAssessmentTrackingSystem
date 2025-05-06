@@ -46,7 +46,8 @@
     private bool _isRemoveable = false;
 
     private ElementReference topOfPageElement;
-    //private AssessmentSummaryDto? _latestAssessment;
+
+    //private ParticipantAssessmentDto? ParticipantCompletedAssessmentDto = null;
 
     [Parameter]
     public string Upci { get; set; } = string.Empty;
@@ -85,10 +86,22 @@
             }
         }
 
-        var unitOfWork = GetNewUnitOfWork();
-        var context = unitOfWork.DbContext;
-        var countOfCompletedAssessments = await context.ParticipantAssessments.CountAsync(asmt => asmt.ParticipantId==Upci && asmt.Completed.HasValue);
-        _showDelete = _isRemoveable = countOfCompletedAssessments > 0;
+        var query = new GetAssessmentScores.Query()
+        {
+            ParticipantId = Upci
+        };
+
+        var result = await GetNewMediator().Send(query);
+        if (result is { Succeeded: true, Data: not null })
+        {
+            var earliestAssessment = result.Data.MinBy(pa => pa.CreatedDate);
+
+            if (earliestAssessment != null)
+            {
+                _isRemoveable = earliestAssessment!.PathwayScore.Count(x => x.Score > 0) > 0;
+            }
+        }
+        _showDelete = _isRemoveable;
     }
 
     private async Task OnStepChange(int step)
@@ -104,7 +117,7 @@
 
             // Do not show the previous step on the first or last steps.
             _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
-            //Do not show Delete button if current assessment can be deleted and its not the last step.
+            //Show Delete button if it's not the last step and current assessment can be deleted i.e. there is atleast 1 completed assessment.
             _showDelete = _isRemoveable && Stepper.IsResultStep == false;
             if (result.Succeeded)
             {
