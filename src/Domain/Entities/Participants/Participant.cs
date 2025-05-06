@@ -4,7 +4,6 @@ using Cfo.Cats.Domain.Common.Exceptions;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Events;
 using Cfo.Cats.Domain.ValueObjects;
-using System.Xml.Linq;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
 
@@ -133,11 +132,11 @@ public class Participant : OwnerPropertyEntity<string>
     /// <param name="to">The new enrolment status</param>
     /// <returns>This entity.</returns>
     /// <exception cref="InvalidEnrolmentTransition">If the new enrolment status is not valid</exception>
-    public Participant TransitionTo(EnrolmentStatus to)
+    public Participant TransitionTo(EnrolmentStatus to, string? Reason, string? AdditionalInformation)
     {
         if (EnrolmentStatus!.CanTransitionTo(to))
         {
-            AddDomainEvent(new ParticipantTransitionedDomainEvent(this, EnrolmentStatus, to));
+            AddDomainEvent(new ParticipantTransitionedDomainEvent(this, EnrolmentStatus, to, Reason, AdditionalInformation));
             EnrolmentStatus = to;
             return this;
         }
@@ -363,47 +362,14 @@ public class Participant : OwnerPropertyEntity<string>
     {
         BioDue = bioDueDate;
         return this;
-    }
-
-    /// <summary>
-    /// Archives the participant 
-    /// </summary>
-    /// <param name="archiveReason"></param>
-    /// <param name="justificationReason"></param>
-    /// <returns></returns>
-    public Participant Archive(ArchiveReason archiveReason, string? justificationReason)
-    {
-        ArchiveJustification = justificationReason;
-        ArchiveReason = archiveReason;
-
-        return this;
-    }
-
-    /// <summary>
-    /// Archives the participant 
-    /// </summary>
-    /// <param name="archiveReason"></param>
-    /// <param name="justificationReason"></param>
-    /// <returns></returns>
-    public Participant Unarchive(UnarchiveReason unarchiveReason, string? additonalInformation)
-    {
-        // need to make unarchive its own table like personal details / enrolment history psc
-        //unarchiveReason = unarchiveReason;
-        //additonalInformation = additonalInformation;
-        // Date on programme
-        //Date archived
-        //Reason for Archive
-        //Reason for re - joining
-        //Comments
-        //Support Worker
-        return this;
-    }
+    }    
 
     public Participant UpdateSync()
     {
         LastSyncDate = DateTime.UtcNow;
         return this;
     }
+
     public DateTime? CalculateConsentDate()
     {
         if (DateOfFirstConsent is null)

@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250506123110_EnrolmentHistory_AddReasonAndAdditionalInfo")]
+    partial class EnrolmentHistory_AddReasonAndAdditionalInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1784,8 +1787,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ParticipantId");
 
-                    b.HasIndex("SupportWorkerId");
-
                     b.HasIndex("TenantId");
 
                     b.ToTable("EscalationQueue", "Enrolment");
@@ -1847,8 +1848,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ParticipantId");
 
-                    b.HasIndex("SupportWorkerId");
-
                     b.HasIndex("TenantId");
 
                     b.ToTable("PqaQueue", "Enrolment");
@@ -1909,8 +1908,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.HasIndex("OwnerId");
 
                     b.HasIndex("ParticipantId");
-
-                    b.HasIndex("SupportWorkerId");
 
                     b.HasIndex("TenantId");
 
@@ -1975,8 +1972,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.HasIndex("OwnerId");
 
                     b.HasIndex("ParticipantId");
-
-                    b.HasIndex("SupportWorkerId");
 
                     b.HasIndex("TenantId");
 
@@ -4040,12 +4035,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "SupportWorker")
-                        .WithMany()
-                        .HasForeignKey("SupportWorkerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -4127,8 +4116,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Participant");
 
-                    b.Navigation("SupportWorker");
-
                     b.Navigation("Tenant");
                 });
 
@@ -4146,12 +4133,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "SupportWorker")
-                        .WithMany()
-                        .HasForeignKey("SupportWorkerId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
@@ -4232,8 +4213,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Participant");
 
-                    b.Navigation("SupportWorker");
-
                     b.Navigation("Tenant");
                 });
 
@@ -4251,12 +4230,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "SupportWorker")
-                        .WithMany()
-                        .HasForeignKey("SupportWorkerId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
@@ -4340,8 +4313,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Participant");
 
-                    b.Navigation("SupportWorker");
-
                     b.Navigation("Tenant");
                 });
 
@@ -4359,12 +4330,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "SupportWorker")
-                        .WithMany()
-                        .HasForeignKey("SupportWorkerId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
@@ -4447,8 +4412,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Navigation("Owner");
 
                     b.Navigation("Participant");
-
-                    b.Navigation("SupportWorker");
 
                     b.Navigation("Tenant");
                 });

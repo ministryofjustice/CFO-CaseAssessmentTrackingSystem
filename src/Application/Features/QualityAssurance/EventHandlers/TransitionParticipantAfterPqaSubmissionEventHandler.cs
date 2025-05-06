@@ -11,13 +11,13 @@ public class TransitionParticipantAfterPqaSubmissionEventHandler
         {
             notification.Entry
                 .Participant!
-                .TransitionTo(EnrolmentStatus.SubmittedToAuthorityStatus);
+                .TransitionTo(EnrolmentStatus.SubmittedToAuthorityStatus, null, null);
         }
         else
         {
             notification.Entry
                 .Participant!
-                .TransitionTo(EnrolmentStatus.EnrollingStatus);
+                .TransitionTo(EnrolmentStatus.EnrollingStatus, null, null);
         }
 
         return Task.CompletedTask;

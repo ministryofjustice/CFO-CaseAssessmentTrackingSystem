@@ -7,7 +7,7 @@ public class CreateTransitionEvent(IUnitOfWork unitOfWork) : INotificationHandle
 {
     public async Task Handle(ParticipantTransitionedDomainEvent notification, CancellationToken cancellationToken)
     {
-        ParticipantEnrolmentHistory history = ParticipantEnrolmentHistory.Create(notification.Item.Id, notification.To);
+        ParticipantEnrolmentHistory history = ParticipantEnrolmentHistory.Create(notification.Item.Id, notification.To, notification.Reason, notification.AdditionalInformation);
         await unitOfWork.DbContext.ParticipantEnrolmentHistories.AddAsync(history, cancellationToken);
     }
 }
