@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Constants.Database;
@@ -27,7 +28,13 @@ public class ParticipantEnrolmentHistoryConfiguration
             .HasConversion(
                 es => es!.Value,
                 es => EnrolmentStatus.FromValue(es)
-            );
+        );
+
+        builder.Property(peh => peh.Reason)
+            .HasMaxLength(ValidationConstants.NotesLength);
+
+        builder.Property(peh => peh.AdditionalInformation)
+            .HasMaxLength(ValidationConstants.NotesLength);
 
         builder.Property(x => x.CreatedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);

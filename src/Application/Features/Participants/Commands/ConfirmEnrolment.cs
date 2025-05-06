@@ -23,7 +23,7 @@ public static class ConfirmEnrolment
                 return Result.Failure("Participant not found");
             }
 
-            participant.TransitionTo(EnrolmentStatus.EnrollingStatus);
+            participant.TransitionTo(EnrolmentStatus.EnrollingStatus, null, null);
 
             return Result.Success();
         }
@@ -46,9 +46,7 @@ public static class ConfirmEnrolment
                 .MustAsync(Exist)
                 .WithMessage("Participant does not exist");
         }
-
         private async Task<bool> Exist(string identifier, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
     }
-
 }
