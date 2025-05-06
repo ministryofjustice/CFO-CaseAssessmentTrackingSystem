@@ -151,7 +151,7 @@
         var parameters = new DialogParameters
             {
                 ["Command"] = new DeleteAssessment.Command() { AssessmentId = _model!.Id },
-                ["ContentText"] = "This action will permanently delete this assessment and revert to the last completed version, if a previous one exists. Are you sure you want to do this?",
+                ["ContentText"] = "This action will permanently delete this assessment and restore the last completed assessment as being the most recent, if a previous one exists. Are you sure you want to do this?",
                 ["ConfirmText"] = "Yes",
                 ["CancelText"] = "No"
             };
