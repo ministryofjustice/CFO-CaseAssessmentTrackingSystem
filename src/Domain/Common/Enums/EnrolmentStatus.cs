@@ -30,6 +30,12 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
         CanTransitionTo(ArchivedStatus);
 
     /// <summary>
+    /// Indicates this status allows Unarchiving.
+    /// </summary>
+    public bool AllowUnarchive() => 
+        this==ArchivedStatus;
+
+    /// <summary>
     /// Indicates the case can be made dormant
     /// </summary>
     public bool AllowSuspend() =>
@@ -87,7 +93,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
 
     private sealed class Archived() : EnrolmentStatus("Archived", 4)
     {
-        protected override EnrolmentStatus[] GetAllowedTransitions() => [IdentifiedStatus];
+        protected override EnrolmentStatus[] GetAllowedTransitions() => [IdentifiedStatus, EnrollingStatus, ApprovedStatus];
     }
 
     private sealed class Dormant() : EnrolmentStatus("Dormant", 5)
@@ -101,7 +107,5 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
 
         public override bool AllowRightToWorkAddition() => true;
         public override bool AllowEnrolmentLocationChange() => true;
-    }
-
-  
+    } 
 }

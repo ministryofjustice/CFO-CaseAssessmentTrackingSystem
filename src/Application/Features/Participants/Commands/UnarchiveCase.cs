@@ -19,8 +19,22 @@ public static class UnarchiveCase
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
-            //participant!.Unarchive(request.UnarchiveReason, request.AdditionalInformation);
-            participant!.TransitionTo(EnrolmentStatus.ArchivedStatus, request.UnarchiveReason.Name, request.AdditionalInformation);
+
+            //need to get previous status
+            var previousStatus = await unitOfWork.DbContext.ParticipantEnrolmentHistories
+                    .Where(eh => eh.ParticipantId == request.ParticipantId)
+                    .OrderByDescending(eh => eh.Created)
+                    .Skip(1)
+                    .Select(eh => (int?)eh.EnrolmentStatus)
+                    .FirstOrDefaultAsync();
+
+            if (previousStatus == null)
+            {
+                throw new Exception("The participant does not have enough history to unarchive.");
+            }
+
+            EnrolmentStatus enrolmentStatus = EnrolmentStatus.FromValue(previousStatus.GetValueOrDefault());            
+            participant!.TransitionTo(enrolmentStatus, request.UnarchiveReason.Name, request.AdditionalInformation);
 
             // ReSharper disable once MethodHasAsyncOverload
             return Result.Success();
@@ -53,7 +67,7 @@ public static class UnarchiveCase
             RuleFor(c => c.AdditionalInformation)
                 .NotEmpty()
                 .When(c => c.UnarchiveReason.RequiresFurtherInformation)
-                .WithMessage("You must provide a justification for the selected unarchive reason")
+                .WithMessage("You must provide additional information for the selected unarchive reason")
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Addtional Information"));
         }
