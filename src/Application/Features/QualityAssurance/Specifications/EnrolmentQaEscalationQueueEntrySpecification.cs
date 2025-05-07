@@ -12,8 +12,7 @@ public class EnrolmentQaEscalationQueueEntrySpecification : Specification<Enrolm
 
         Query.Where(e => 
             e.ParticipantId.Contains(filter.Keyword!) || e.Participant!.LastName.Contains(filter.Keyword!),
-            string.IsNullOrEmpty(filter.Keyword));
+            string.IsNullOrEmpty(filter.Keyword) == false);
 
-        Query.Where(e => e.ParticipantId.Contains(filter.Keyword!), string.IsNullOrWhiteSpace(filter.Keyword) == false);
     }
 }

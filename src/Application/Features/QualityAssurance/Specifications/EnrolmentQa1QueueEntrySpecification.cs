@@ -12,8 +12,6 @@ public class EnrolmentQa1QueueEntrySpecification : Specification<EnrolmentQa1Que
 
         Query.Where(e => 
             e.ParticipantId.Contains(filter.Keyword!) || e.Participant!.LastName.Contains(filter.Keyword!),
-            string.IsNullOrEmpty(filter.Keyword));
-
-        Query.Where(e => e.ParticipantId.Contains(filter.Keyword!), string.IsNullOrWhiteSpace(filter.Keyword) == false);
+            string.IsNullOrEmpty(filter.Keyword) == false);
     }
 }

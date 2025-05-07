@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Activities.Queries
 {
     public static class ActivityPqaQueueWithPagination
     {
-        [RequestAuthorize(Roles = $"{RoleNames.QAFinance}, {RoleNames.SystemSupport}")]
+        [RequestAuthorize(Policy = SecurityPolicies.Pqa)]
         public class Query : ActivityQueueEntryFilter, IRequest<PaginatedData<ActivityQueueEntryDto>>
         {
             public Query()
