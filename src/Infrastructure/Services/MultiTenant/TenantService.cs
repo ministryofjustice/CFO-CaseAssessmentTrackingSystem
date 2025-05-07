@@ -7,49 +7,61 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure.Services.MultiTenant;
 
-public class TenantService : ITenantService
+public class TenantService(IFusionCache cache, IServiceScopeFactory scopeFactory, IMapper mapper, ILogger<TenantService> logger) 
+    : ITenantService
 {
-    private readonly IServiceScopeFactory scopeFactory;
-    private readonly IFusionCache fusionCache;
-    private readonly IMapper mapper;
-
-    public TenantService(
-        IFusionCache fusionCache,
-        IServiceScopeFactory scopeFactory,
-        IMapper mapper
-    )
-    {
-        this.scopeFactory = scopeFactory;
-        this.fusionCache = fusionCache;
-        this.mapper = mapper;
-    }
+    private bool _initialized;
+    private readonly object _initLock = new();
 
     public event Action? OnChange;
-    public List<TenantDto> DataSource { get; private set; } = new();
+    public IReadOnlyList<TenantDto> DataSource => 
+        cache.TryGet<IReadOnlyList<TenantDto>>(TenantCacheKey.TenantsCacheKey) is { HasValue: true } result
+            ? result.Value
+            : [];
+
 
     public void Initialize()
     {
-        using var scope = scopeFactory.CreateScope();
-        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        if(_initialized)
+        {
+            logger.LogInformation("TenantDto cache service is already initialized");
+            return;
+        }
 
-        DataSource =
-            fusionCache.GetOrSet(
-                TenantCacheKey.TenantsCacheKey,
-                _ =>
-                    unitOfWork.DbContext
-                        .Tenants.OrderBy(x => x.Name)
-                        .ProjectTo<TenantDto>(mapper.ConfigurationProvider)
-                        .ToList()
-            ) ?? [];
+        lock(_initLock)
+        {
+            if(_initialized)
+            {
+                logger.LogInformation("TenantDto cache service is already initialized (after lock)");
+                return;
+            }
+            LoadCache();
+            _initialized = true;
+        }
     }
 
     public void Refresh()
     {
-        fusionCache.Remove(TenantCacheKey.TenantsCacheKey);
-        Initialize();
+        logger.LogInformation("Refresh of TenantDto cache called");
+        LoadCache();
         OnChange?.Invoke();
     }
 
     public IEnumerable<TenantDto> GetVisibleTenants(string tenantId) => 
         DataSource.Where(t => t.Id.StartsWith(tenantId));
+
+    private void LoadCache()
+    {
+        using var scope = scopeFactory.CreateScope();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var data = unitOfWork.DbContext
+                        .Tenants.OrderBy(x => x.Name)
+                        .ProjectTo<TenantDto>(mapper.ConfigurationProvider)
+                        .ToList();
+
+        cache.Set(TenantCacheKey.TenantsCacheKey, data);
+
+        logger.LogInformation($"{data.Count} TenantDto elements added to cache");
+    }
 }

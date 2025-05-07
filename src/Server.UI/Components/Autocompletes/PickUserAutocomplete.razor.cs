@@ -5,7 +5,7 @@ namespace Cfo.Cats.Server.UI.Components.Autocompletes;
 
 public class PickUserAutocomplete : MudAutocomplete<ApplicationUserDto>
 {
-    private List<ApplicationUserDto> _userList = [];
+    private IReadOnlyList<ApplicationUserDto> _userList = [];
 
     [Parameter, EditorRequired]
     public string TenantId { get; set; } = default!;
@@ -41,7 +41,7 @@ public class PickUserAutocomplete : MudAutocomplete<ApplicationUserDto>
         MaxItems = 50;
         _userList = string.IsNullOrEmpty(TenantId)
             ? UserService.DataSource
-            : UserService.DataSource.Where(x => x.TenantId!.StartsWith(TenantId)).ToList();
+            : UserService.DataSource.Where(x => x.TenantId!.StartsWith(TenantId)).ToList().AsReadOnly();
         ToStringFunc = user => user?.DisplayName;
 
         return base.SetParametersAsync(parameters);
