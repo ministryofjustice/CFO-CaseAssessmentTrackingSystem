@@ -4,7 +4,7 @@ namespace Cfo.Cats.Application.Common.Interfaces;
 
 public interface IPicklistService
 {
-    List<KeyValueDto> DataSource { get; }
+    IReadOnlyList<KeyValueDto> DataSource { get; }
     event Action? OnChange;
     void Initialize();
     void Refresh();

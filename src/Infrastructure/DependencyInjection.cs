@@ -173,7 +173,8 @@ public static class DependencyInjection
         services.AddDbContextFactory<ApplicationDbContext>((serviceProvider, optionsBuilder) =>
         {
             optionsBuilder.AddInterceptors(serviceProvider.GetServices<ISaveChangesInterceptor>());
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("CatsDb")!);
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("CatsDb")!,
+                options => options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
         }, ServiceLifetime.Scoped);
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();

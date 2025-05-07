@@ -1,32 +1,22 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Domain.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure.Services.Identity;
 
-public class UserService : IUserService
+public class UserService(IFusionCache cache, IMapper mapper, IServiceScopeFactory scopeFactory, ILogger<UserService> logger) 
+    : IUserService
 {
     private const string Cachekey = "ALL-ApplicationUserDto";
-    private readonly IFusionCache fusionCache;
-    private readonly IMapper mapper;
-    private readonly UserManager<ApplicationUser> userManager;
-
-    public UserService(IFusionCache fusionCache, IMapper mapper, IServiceScopeFactory scopeFactory)
-    {
-        this.fusionCache = fusionCache;
-        this.mapper = mapper;
-        var scope = scopeFactory.CreateScope();
-        userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        DataSource = new List<ApplicationUserDto>();
-    }
-
-    public List<ApplicationUserDto> DataSource { get; private set; }
+    private bool _initialized;
+    private readonly object _initLock = new();
+    
+    public IReadOnlyList<ApplicationUserDto> DataSource => 
+        cache.TryGet<IReadOnlyList<ApplicationUserDto>>(Cachekey) is { HasValue: true } result
+            ? result.Value
+            : [];
 
     public event Action? OnChange;
 
@@ -37,34 +27,46 @@ public class UserService : IUserService
 
     public void Initialize()
     {
-        DataSource =
-            fusionCache.GetOrSet(
-                Cachekey,
-                _ =>
-                    userManager
-                        .Users.Include(x => x.UserRoles)
-                        .ThenInclude(x => x.Role)
-                        .ProjectTo<ApplicationUserDto>(mapper.ConfigurationProvider)
-                        .OrderBy(x => x.UserName)
-                        .ToList()
-            ) ?? new List<ApplicationUserDto>();
-        OnChange?.Invoke();
+        if(_initialized)
+        {
+            logger.LogInformation("ApplicationUserDto cache service is already initialized");
+            return;
+        }
+
+        lock(_initLock)
+        {
+            if(_initialized)
+            {
+                logger.LogInformation("ApplicationUserDto cache service is already initialized (after lock)");
+                return;
+            }
+
+            LoadCache();
+            _initialized = true;
+        }
     }
 
     public void Refresh()
     {
-        fusionCache.Remove(Cachekey);
-        DataSource =
-            fusionCache.GetOrSet(
-                Cachekey,
-                _ =>
-                    userManager
-                        .Users.Include(x => x.UserRoles)
-                        .ThenInclude(x => x.Role)
-                        .ProjectTo<ApplicationUserDto>(mapper.ConfigurationProvider)
-                        .OrderBy(x => x.UserName)
-                        .ToList()
-            ) ?? new List<ApplicationUserDto>();
+        logger.LogInformation("Refresh of ApplicationUserDto cache called");
+        LoadCache();
         OnChange?.Invoke();
+    }
+
+    private void LoadCache()
+    {
+        var scope = scopeFactory.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        var data = userManager
+                .Users.Include(x => x.UserRoles)
+                .ThenInclude(x => x.Role)
+                .ProjectTo<ApplicationUserDto>(mapper.ConfigurationProvider)
+                .OrderBy(x => x.UserName)
+                .ToList();
+
+        cache.Set(Cachekey, data);
+
+        logger.LogInformation($"{data.Count} ApplicationUserDto elements added to cache");
     }
 }

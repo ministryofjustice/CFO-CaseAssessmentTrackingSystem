@@ -6,43 +6,59 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure.Services;
 
-public class PicklistService : IPicklistService
-{
-    private readonly IApplicationDbContext _context;
-    private readonly IFusionCache _fusionCache;
-    private readonly IMapper _mapper;
-
-    public PicklistService(IFusionCache fusionCache,
+public class PicklistService(IFusionCache cache,
         IServiceScopeFactory scopeFactory,
-        IMapper mapper)
-    {
-        var scope = scopeFactory.CreateScope();
-        _context = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
-        _fusionCache = fusionCache;
-        _mapper = mapper;
-    }
+        ILogger<PicklistService> logger,
+        IMapper mapper) : IPicklistService
+{
+
+    private bool _initialized;
+    private readonly object _initLock = new();
     
     public event Action? OnChange;
-    public List<KeyValueDto> DataSource { get; private set; } = new();
-
+    public IReadOnlyList<KeyValueDto> DataSource => 
+        cache.TryGet<IReadOnlyList<KeyValueDto>>(KeyValueCacheKey.PicklistCacheKey) is { HasValue: true } result
+                ? result.Value : [];
 
     public void Initialize()
     {
-        DataSource = _fusionCache.GetOrSet(KeyValueCacheKey.PicklistCacheKey,
-        _ => _context.KeyValues.OrderBy(x => x.Name).ThenBy(x => x.Value)
-            .ProjectTo<KeyValueDto>(_mapper.ConfigurationProvider)
-            .ToList()
-        );
+        if(_initialized)
+        {
+            logger.LogInformation("KeyValueDto cache service is already initialized");
+            return;
+        }
+
+        lock(_initLock)
+        {
+            if(_initialized)
+            {
+                logger.LogInformation("KeyValueDto cache service is already initialized (after lock)");
+                return;
+            }
+            LoadCache();
+            _initialized = true;
+        }
     }
 
     public void Refresh()
     {
-        _fusionCache.Remove(KeyValueCacheKey.PicklistCacheKey);
-        DataSource = _fusionCache.GetOrSet(KeyValueCacheKey.PicklistCacheKey,
-        _ => _context.KeyValues.OrderBy(x => x.Name).ThenBy(x => x.Value)
-            .ProjectTo<KeyValueDto>(_mapper.ConfigurationProvider)
-            .ToList()
-        );
+        logger.LogInformation("Refresh of KeyValueDto cache called");
+        LoadCache();
         OnChange?.Invoke();
+    }
+
+    private void LoadCache()
+    {
+        using var scope = scopeFactory.CreateScope();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var data = unitOfWork.DbContext
+            .KeyValues.OrderBy(x => x.Name).ThenBy(x => x.Value)
+            .ProjectTo<KeyValueDto>(mapper.ConfigurationProvider)
+            .ToList();
+
+        cache.Set(KeyValueCacheKey.PicklistCacheKey, data);
+
+        logger.LogInformation($"{data.Count} KeyValueDto elements added to cache");
     }
 }
