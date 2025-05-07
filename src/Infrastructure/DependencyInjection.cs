@@ -174,7 +174,10 @@ public static class DependencyInjection
         {
             optionsBuilder.AddInterceptors(serviceProvider.GetServices<ISaveChangesInterceptor>());
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("CatsDb")!,
-                options => options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+                options =>
+                {
+                    // options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                });
         }, ServiceLifetime.Scoped);
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
