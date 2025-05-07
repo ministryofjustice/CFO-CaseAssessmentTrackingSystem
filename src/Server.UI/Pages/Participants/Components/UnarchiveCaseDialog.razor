@@ -1,0 +1,75 @@
+﻿@using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Domain.Common.Enums
+
+@inject IValidationService Validator
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+            <MudSelect @bind-Value="Model.UnarchiveReason" 
+                       Label="@Model.GetMemberDescription(x => x.UnarchiveReason)"
+                       For="@(() => Model.UnarchiveReason)">
+                <MudSelectItem Value="UnarchiveReason.CaseloadManageable">@UnarchiveReason.CaseloadManageable.Name</MudSelectItem>
+                <MudSelectItem Value="UnarchiveReason.NewSentence">@UnarchiveReason.NewSentence.Name</MudSelectItem>
+                <MudSelectItem Value="UnarchiveReason.MovedBackCatchmentArea">@UnarchiveReason.MovedBackCatchmentArea.Name</MudSelectItem>
+                <MudSelectItem Value="UnarchiveReason.MovedCFOLocation">@UnarchiveReason.MovedCFOLocation.Name</MudSelectItem>
+                <MudSelectItem Value="UnarchiveReason.RequestedFurtherSupport">@UnarchiveReason.RequestedFurtherSupport.Name</MudSelectItem>
+                <MudSelectItem Value="UnarchiveReason.RTWDocumentatonAvailable">@UnarchiveReason.RTWDocumentatonAvailable.Name</MudSelectItem>
+                <MudSelectItem Value="UnarchiveReason.ReestablishSupport">@UnarchiveReason.ReestablishSupport.Name</MudSelectItem>
+                <MudSelectItem Value="UnarchiveReason.Reengaged">@UnarchiveReason.Reengaged.Name</MudSelectItem>
+                <MudSelectItem Value="UnarchiveReason.ChangePersonalCircumstances">@UnarchiveReason.ChangePersonalCircumstances.Name</MudSelectItem>
+                <MudSelectItem Value="UnarchiveReason.ArchivedInError">@UnarchiveReason.ArchivedInError.Name</MudSelectItem>
+                <MudSelectItem Value="UnarchiveReason.Other">@UnarchiveReason.Other.Name</MudSelectItem>
+            </MudSelect>
+            <MudTextField @bind-Value="Model.AdditionalInformation"
+                          Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
+                          For="@(() => Model.AdditionalInformation)"
+                          Lines="5" 
+                          Class="mt-4" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>        
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Unarchive</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    bool saving = false;
+    MudForm? form;
+
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public required UnarchiveCase.Command Model { get; set; }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            saving = true;
+
+            if(form is null)
+            {
+                saving = false;
+                return;
+            }
+
+            await form.Validate();
+
+            if(form.IsValid)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+}

@@ -162,4 +162,6 @@ public static class ConstantString
     public static string ViewParticipant => Localize("View Participant");
     public static string PriNoActualReleaseDateWarning => Localize("No Actual Release date provided.");
     public static string PriTTGDueWarningToolTip => Localize("Through the Gate (TTG) is due {0}");
+
+    public static string Unarchive => Localize("Unarchive");
 }
