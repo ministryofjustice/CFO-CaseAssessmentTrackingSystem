@@ -1,7 +1,6 @@
-﻿@using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Application.Features.Participants.Queries
 
-@* @using Cfo.Cats.Application.Features.Assessments.Commands *@
 @using Cfo.Cats.Application.Features.Assessments.DTOs
 @using Cfo.Cats.Application.Features.Assessments.Queries
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
@@ -28,11 +27,6 @@
                     <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Status</strong></MudText>
                     <MudText Typo="Typo.subtitle1">@_participant!.EnrolmentStatus!.Name</MudText>
                     <MudDivider Vertical="true" FlexItem="true"/>
-@*                     <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Assigned To</strong></MudText>
-                    <MudText Typo="Typo.subtitle1">@($"{_participant!.SupportWorker} ({_participant!.TenantId}) ")</MudText>
-                    <MudDivider Vertical="true" FlexItem="true"/>
-                    <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Location</strong></MudText>
-                    <MudText Typo="Typo.subtitle1">@_participant!.CurrentLocation.Name</MudText> *@
                 </MudStack>
 
             </MudItem>
@@ -62,33 +56,5 @@
             }
         </MudGrid>
     </MudPaper>
-    @* 
-        var orderedTitles = new List<string> { "Working", "Housing", "Money", "Education", "Health & Addiction", "Relationships", "Thoughts & Behaviours", "Wellbeing & Mental Health" };
-        
-        <MudGrid Class="pa-1" Justify="Justify.FlexStart">
-        @foreach (var pdto in _model)
-        {
-
-            <MudItem md="12">
-                @foreach (var title in orderedTitles)
-                {
-                    var pathway = pdto.PathwayScore.FirstOrDefault(p => p.Pathway == title);
-
-                    if (pathway != null)
-                    {
-
-                        <RagComponent Pathway="pathway">
-                            <TooltipContent>
-                                <MudIcon Icon="@(scoreChange > 0 ? @Icons.Material.Filled.TrendingUp : @Icons.Material.Filled.TrendingDown)" Color="@(scoreChange > 0 ? GetColor(scoreChange) : Color.Primary)" />
-                                <span> Score: @pathway.Score</span>
-                            </TooltipContent>
-                        </RagComponent>
-
-                    }
-                }
-                <MudDivider Class="my-3" />
-            </MudItem>
-        }
-    </MudGrid> *@
 }
 
