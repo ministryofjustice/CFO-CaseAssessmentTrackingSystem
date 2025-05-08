@@ -1,28 +1,60 @@
 @using Cfo.Cats.Domain.ValueObjects
 
-@if (Pathway.Score >= 0)
-{
-   <MudChip T="string" Icon="@Cfo.Cats.Domain.Common.Enums.Pathway.FromName(Pathway.Pathway).Icon" Label="true" Color="@GetColor(Pathway.Score)">
+<div style="position: relative; display: inline-block;">
+    <MudChip T="string"
+             Icon="@Cfo.Cats.Domain.Common.Enums.Pathway.FromName(Pathway.Pathway).Icon"
+             Label="true"
+             Color="@(Pathway.Score >= 0 ? GetColor(Pathway.Score) : Color.Primary)"
+             Disabled="@(Pathway.Score < 0)"
+             @onmouseenter="ShowPopover"
+             @onmouseleave="HidePopover">
         @Pathway.Pathway
     </MudChip>
-}
-else
-{
-    <MudChip T="string" Icon="@Cfo.Cats.Domain.Common.Enums.Pathway.FromName(Pathway.Pathway).Icon" Label="true" Color="Color.Primary" Disabled="true">
-        @Pathway.Pathway
-    </MudChip>
-}
+
+    @if (int.TryParse(ToolTipText, out int toolTipValue))
+    {
+        <MudPopover Open="@showPopover">
+            <MudText Color="@(toolTipValue >= 0 ? GetPopoverTextColor(toolTipValue) : Color.Primary)">
+                @ToolTipText
+                @if (toolTipValue > 0)
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.ArrowUpward" Color="Color.Info" />
+                }
+                else if (toolTipValue < 0)
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.ArrowDownward" Color="Color.Error" />
+                }
+            </MudText>
+        </MudPopover>
+    }
+
+
+</div>
 
 @code {
 
     [Parameter, EditorRequired]
     public PathwayScore Pathway { get; set; } = default!;
 
+    [Parameter]
+    public string ToolTipText { get; set; } = string.Empty;
+
+    private bool showPopover = false;
+
+    private void ShowPopover() => showPopover = true;
+    private void HidePopover()=> showPopover = false;
+
     private Color GetColor(double ragScore) =>
         ragScore switch
         {
             > 25 => Color.Success,
             >= 10 => Color.Warning,
+            _ => Color.Error,
+        };
+    private Color GetPopoverTextColor(double scoreChange) =>
+        scoreChange switch
+        {
+            > 0 => Color.Success,
             _ => Color.Error,
         };
 }
