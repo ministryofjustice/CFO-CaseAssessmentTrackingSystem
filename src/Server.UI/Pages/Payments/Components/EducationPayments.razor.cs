@@ -29,7 +29,7 @@ public partial class EducationPayments
             join dd in unitOfWork.DbContext.DateDimensions on ep.PaymentPeriod equals dd.TheDate
             join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
             join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id
-            join a in unitOfWork.DbContext.Activities on ep.ActivityId equals a.Id
+            join a in unitOfWork.DbContext.EducationTrainingActivities on ep.ActivityId equals a.Id
             where dd.TheMonth == Month && dd.TheYear == Year
             select new
             {
@@ -45,7 +45,9 @@ public partial class EducationPayments
                 ep.IneligibilityReason,
                 TenantId = c!.Tenant!.Id!,
                 ep.PaymentPeriod,
-                ParticipantName = a.Participant!.FirstName + " " + a.Participant!.LastName
+                ParticipantName = a.Participant!.FirstName + " " + a.Participant!.LastName,
+                a.CourseLevel,
+                a.CourseTitle
             };
 
         query = Contract is null
@@ -65,7 +67,9 @@ public partial class EducationPayments
                 LocationType = x.LocationType,
                 IneligibilityReason = x.IneligibilityReason,
                 ParticipantName = x.ParticipantName,
-                PaymentPeriod = x.PaymentPeriod
+                PaymentPeriod = x.PaymentPeriod,
+                CourseLevel = x.CourseLevel,
+                CourseTitle = x.CourseTitle
             })
             .OrderBy(e => e.Contract)
             .ThenByDescending(e => e.CreatedOn)
@@ -104,6 +108,8 @@ public partial class EducationPayments
         public string Location { get; set; } = "";
         public string? IneligibilityReason { get; set; }
         public string ParticipantName { get; set; } = "";
+        public string CourseLevel { get; set; } = string.Empty;
+        public string CourseTitle { get; set; } = string.Empty;
     }
 
     private class SummaryDataModel

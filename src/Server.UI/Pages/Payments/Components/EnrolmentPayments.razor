@@ -37,6 +37,7 @@
                     }
                     <MudTh>Created</MudTh>
                     <MudTh>Approved</MudTh>
+                    <MudTh>Submission To Authority</MudTh>
                     <MudTh>Participant</MudTh>
                     <MudTh>Location</MudTh>
                     <MudTh>Payable</MudTh>
@@ -53,6 +54,7 @@
                     }
                     <MudTd DataLabel="Created">@context.CreatedOn.ToShortDateString()</MudTd>
                     <MudTd DataLabel="Approved">@(context.Approved.HasValue ? context.Approved.Value.ToShortDateString() : "")</MudTd>
+                    <MudTd DataLabel="Submission To Authority">@context.SubmissionToAuthority.ToShortDateString()</MudTd>
                     <MudTd DataLabel="Participant">
                         <div class="d-flex flex-column">
                             <MudText Typo="Typo.body1">@context.ParticipantName</MudText>
@@ -201,7 +203,8 @@
                         Location = l.Name,
                         ep.IneligibilityReason,
                         TenantId = c!.Tenant!.Id!,
-                        ParticipantName = p.FirstName + " " + p.LastName
+                        ParticipantName = p.FirstName + " " + p.LastName,
+                        ep.SubmissionToAuthority
                     };
 
         query = Contract is null 
@@ -219,7 +222,8 @@
                     Location = x.Location,
                     LocationType = x.LocationType,
                     IneligibilityReason = x.IneligibilityReason,                 
-                    ParticipantName = x.ParticipantName
+                    ParticipantName = x.ParticipantName,
+                    SubmissionToAuthority = x.SubmissionToAuthority
                 })
             .OrderBy(e =>  e.Contract)
             .ThenByDescending(e => e.CreatedOn)
@@ -251,6 +255,7 @@
     private class RawData
     {
         public DateTime CreatedOn { get; set; }
+        public DateTime SubmissionToAuthority { get; set; }
         public DateTime? Approved { get; set; }
         public string Contract { get; set; } = "";
         public string ParticipantId { get; set; } = "";
