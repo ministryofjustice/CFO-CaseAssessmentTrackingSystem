@@ -26,6 +26,10 @@ public partial class HousingPathway
             (Sex.Male, B5.FairlySafeToWalkAloneAfterDarkInLocalArea) => 0.56,
             (Sex.Male, B5.ABitUnsafeToWalkAloneAfterDarkInLocalArea) => 0.10,
             (Sex.Male, B5.VeryUnsafeToWalkAloneAfterDarkInLocalArea) => 0.02,
+            (Sex.Unknown, B5.VerySafeToWalkAloneAfterDarkInLocalArea) => 1,
+            (Sex.Unknown, B5.FairlySafeToWalkAloneAfterDarkInLocalArea) => 0.67,
+            (Sex.Unknown, B5.ABitUnsafeToWalkAloneAfterDarkInLocalArea) => 0.20,
+            (Sex.Unknown, B5.VeryUnsafeToWalkAloneAfterDarkInLocalArea) => 0.05,
             _ => throw new ApplicationException("Unknown answer")
         };
     internal static double GetHousingSatisfaction(B4 answer)
