@@ -1,0 +1,64 @@
+﻿@using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Application.Features.Participants.Queries
+
+@* @using Cfo.Cats.Application.Features.Assessments.Commands *@
+@using Cfo.Cats.Application.Features.Assessments.DTOs
+@using Cfo.Cats.Application.Features.Assessments.Queries
+@using Cfo.Cats.Server.UI.Pages.Participants.Components
+
+@inherits CatsComponentBase
+
+@page "/pages/participants/{Upci}/assessmenthistory"
+
+
+@if (_model is not null)
+{
+    var orderedTitles = new List<string> { "Working", "Housing", "Money", "Education", "Health & Addiction", "Relationships", "Thoughts & Behaviours", "Wellbeing & Mental Health" };
+    
+    <MudGrid Class="pa-1" Justify="Justify.FlexStart">
+    @foreach(var pdto in _model){
+
+        <MudItem  md="12">
+        @foreach (var title in orderedTitles)
+        {
+            var pathway = pdto.PathwayScore.FirstOrDefault(p => p.Pathway == title);
+
+            if (pathway != null)
+            {
+
+                <RagComponent Pathway="pathway" ToolTipText="@(pathway.Score.ToString())"></RagComponent>
+
+            }
+        }
+        <MudDivider Class="my-3" />
+        </MudItem>
+    }
+    </MudGrid>
+}
+
+@code {
+    private IEnumerable<ParticipantAssessmentDto> _model = Enumerable.Empty<ParticipantAssessmentDto>();
+    
+    [CascadingParameter] public UserProfile UserProfile { get; set; } = default!;
+
+    [Parameter]
+    public string Upci { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(Upci))
+        {
+            var query = new GetAssessmentScores.Query()
+            {
+                ParticipantId = Upci
+            };
+
+            var result = await GetNewMediator().Send(query);
+
+            if (result.Succeeded && result.Data != null)
+            {
+                _model =  result.Data.OrderByDescending(pa => pa.CreatedDate);
+            }
+        }
+    }
+}
