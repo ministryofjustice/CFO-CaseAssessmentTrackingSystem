@@ -67,6 +67,7 @@
                             Location
                         </MudTableSortLabel>
                     </MudTh>
+                    <MudTh>Details</MudTh>
                     <MudTh>Payable</MudTh>
                 </HeaderContent>
                 <RowTemplate>
@@ -90,6 +91,16 @@
                         <div class="d-flex flex-column">
                             <MudText Typo="Typo.body1">@context.Location</MudText>
                             <MudText Typo="Typo.body1">@context.LocationType</MudText>
+                        </div>
+                    </MudTd>
+                    <MudTd DataLabel="Details" Style="max-width: 192px; overflow: hidden; padding: 0;">
+                        <div class="d-flex flex-column">
+                            <MudTooltip Text="@context.EmploymentCategory">
+                                <MudText Typo="Typo.body1" Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@context.EmploymentCategory</MudText>
+                            </MudTooltip>
+                            <MudTooltip Text="@context.EmploymentType">
+                                <MudText Typo="Typo.body1" Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@context.EmploymentType</MudText>
+                            </MudTooltip>
                         </div>
                     </MudTd>
                     <MudTd DataLabel="Payable">
