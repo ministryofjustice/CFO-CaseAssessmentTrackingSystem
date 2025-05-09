@@ -29,7 +29,7 @@ public partial class EmploymentPayments
             join dd in unitOfWork.DbContext.DateDimensions on ep.PaymentPeriod equals dd.TheDate
             join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
             join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id
-            join a in unitOfWork.DbContext.Activities on ep.ActivityId equals a.Id
+            join a in unitOfWork.DbContext.EmploymentActivities on ep.ActivityId equals a.Id
             where dd.TheMonth == Month && dd.TheYear == Year
             select new
             {
@@ -45,7 +45,9 @@ public partial class EmploymentPayments
                 ep.IneligibilityReason,
                 TenantId = c!.Tenant!.Id!,
                 ParticipantName = a.Participant!.FirstName + " " + a.Participant!.LastName,
-                ep.PaymentPeriod
+                ep.PaymentPeriod,
+                a.EmploymentType,
+                EmploymentCategory = a.Definition.Category.Name
             };
 
         query = Contract is null
@@ -65,7 +67,9 @@ public partial class EmploymentPayments
                 LocationType = x.LocationType,
                 ParticipantName = x.ParticipantName,
                 PaymentPeriod = x.PaymentPeriod,
-                IneligibilityReason = x.IneligibilityReason
+                IneligibilityReason = x.IneligibilityReason,
+                EmploymentCategory = x.EmploymentCategory,
+                EmploymentType = x.EmploymentType
             })
             .OrderBy(e => e.Contract)
             .ThenByDescending(e => e.CreatedOn)
@@ -102,6 +106,8 @@ public partial class EmploymentPayments
         public required bool EligibleForPayment { get; set; }
         public required string? IneligibilityReason { get; set; }
         public required string ParticipantName { get; set; }
+        public required string EmploymentType { get; set; }
+        public required string EmploymentCategory { get; set; }
     }
 
     private class SummaryDataModel
