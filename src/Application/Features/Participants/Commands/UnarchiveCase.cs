@@ -1,6 +1,11 @@
-﻿using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Interfaces;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.Entities.Notifications;
+using Cfo.Cats.Domain.Entities.Participants;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
 
@@ -33,7 +38,31 @@ public static class UnarchiveCase
                 throw new Exception("The participant does not have enough history to unarchive.");
             }
 
-            EnrolmentStatus enrolmentStatus = EnrolmentStatus.FromValue(previousStatus.GetValueOrDefault());            
+            EnrolmentStatus enrolmentStatus = EnrolmentStatus.FromValue(previousStatus.GetValueOrDefault());
+
+            //need to check been archived more than 6 to reset risk due
+            var archivedCount = await unitOfWork.DbContext.ParticipantEnrolmentHistories
+                    .Where(eh => eh.ParticipantId == request.ParticipantId && eh.EnrolmentStatus == 4)
+                    .CountAsync();
+
+            //need to get previous status
+            var dateOfArchive = await unitOfWork.DbContext.ParticipantEnrolmentHistories
+                    .Where(eh => eh.ParticipantId == request.ParticipantId && eh.EnrolmentStatus == 4)
+                    .OrderByDescending(eh => eh.Created)
+                    .Select(eh => eh.Created)
+                    .FirstOrDefaultAsync();
+
+            if ((archivedCount > 0 && archivedCount % 7 == 0)
+                || (dateOfArchive.HasValue && dateOfArchive.Value < DateTime.UtcNow.AddMonths(-6)))
+            {
+                participant!.SetRiskDue(DateTime.UtcNow, RiskDueReason.RemovedFromArchive);
+                //var latestAssessment = unitOfWork.DbContext.ParticipantAssessments
+                //        .OrderByDescending(a => a.Created)
+                //        .First();
+
+                //latestAssessment.Completed = DateTime.UtcNow.AddMonths(-3);
+            }
+
             participant!.TransitionTo(enrolmentStatus, request.UnarchiveReason.Name, request.AdditionalInformation);
 
             // ReSharper disable once MethodHasAsyncOverload
@@ -63,7 +92,7 @@ public static class UnarchiveCase
     public class Validator : AbstractValidator<Command>
     {
         public Validator()
-        {           
+        {
             RuleFor(c => c.AdditionalInformation)
                 .NotEmpty()
                 .When(c => c.UnarchiveReason.RequiresFurtherInformation)
