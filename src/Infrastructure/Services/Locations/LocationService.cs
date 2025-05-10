@@ -1,66 +1,57 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
-using Cfo.Cats.Application.Features.Locations.Caching;
 using Cfo.Cats.Application.Features.Locations.DTOs;
-using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure.Services.Locations;
 
-public class LocationService(IServiceScopeFactory scopeFactory, IFusionCache cache, IMapper mapper, ILogger<LocationService> logger) 
+public class LocationService(IServiceScopeFactory scopeFactory, IMapper mapper, ILogger<LocationService> logger) 
     : ILocationService
 {
     
-    private bool _initialized;
-    private readonly object _initLock = new();
+    public IReadOnlyList<LocationDto> DataSource
+    {
+        get
+        {
+            logger.LogDebug("DataSource called, getting from the database");
 
-    public IReadOnlyList<LocationDto> DataSource =>  cache.TryGet<IReadOnlyList<LocationDto>>(LocationsCacheKey.GetCacheKey("all")) is { HasValue: true } result
-            ? result.Value
-            : [];
+            using var scope = scopeFactory.CreateScope();
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+            var data = unitOfWork.DbContext
+                .Locations
+                .OrderBy(e => e.Name)
+                .ProjectTo<LocationDto>(mapper.ConfigurationProvider)
+                .ToList();
+
+            return data.AsReadOnly();
+        }
+    }
 
     public event Action? OnChange;
 
-    public IEnumerable<LocationDto> GetVisibleLocations(string tenantId) => DataSource.Where(c => c.Tenants.Any(t => t.StartsWith(tenantId)));
-
-    public void Initialize()
-    {   
-        if(_initialized)
-        {
-            logger.LogInformation("LocationDto cache service is already initialized");
-            return;
-        }
-
-        lock(_initLock)
-        {
-            if(_initialized)
-            {
-                logger.LogInformation("LocationDto cache service is already initialized (after lock)");
-                return;
-            }
-            LoadCache();
-            _initialized = true;
-        }
-    }
-
-    public void Refresh()
+    public IEnumerable<LocationDto> GetVisibleLocations(string tenantId)
     {
-        logger.LogInformation("Refresh of LocationDto cache called");
-        LoadCache();
-        OnChange?.Invoke();
-    }
+        logger.LogDebug("GetVisibleLocations called, getting from the database");
 
-    private void LoadCache()
-    {
         using var scope = scopeFactory.CreateScope();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
         var data = unitOfWork.DbContext
-                    .Locations.OrderBy(x => x.Name)
-                    .ProjectTo<LocationDto>(mapper.ConfigurationProvider)
-                    .ToList();
+            .Locations
+            .Where(l => l.Tenants.Any(t => t.Id.StartsWith(tenantId)))
+            .OrderBy(e => e.Name)
+            .ProjectTo<LocationDto>(mapper.ConfigurationProvider)
+            .ToList();
 
-        cache.Set(LocationsCacheKey.GetCacheKey("all"), data);
-
-        logger.LogInformation($"{data.Count} LocationDto elements added to cache");
+        return data.AsReadOnly();
     }
+
+    public void Refresh()
+    {
+        logger.LogInformation("Refresh of LocationService called, ignored as this is the none caching service");
+        OnChange?.Invoke();
+    }
+
+ 
 }

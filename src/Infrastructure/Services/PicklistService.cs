@@ -1,64 +1,40 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Cfo.Cats.Application.Features.KeyValues.Caching;
 using Cfo.Cats.Application.Features.KeyValues.DTOs;
-using ZiggyCreatures.Caching.Fusion;
+using Cfo.Cats.Application.Features.Locations.DTOs;
+using Cfo.Cats.Infrastructure.Services.Locations;
 
 namespace Cfo.Cats.Infrastructure.Services;
 
-public class PicklistService(IFusionCache cache,
-        IServiceScopeFactory scopeFactory,
-        ILogger<PicklistService> logger,
-        IMapper mapper) : IPicklistService
+public class PicklistService(IServiceScopeFactory scopeFactory, ILogger<PicklistService> logger, IMapper mapper) 
+    : IPicklistService
 {
-
-    private bool _initialized;
-    private readonly object _initLock = new();
-    
     public event Action? OnChange;
-    public IReadOnlyList<KeyValueDto> DataSource => 
-        cache.TryGet<IReadOnlyList<KeyValueDto>>(KeyValueCacheKey.PicklistCacheKey) is { HasValue: true } result
-                ? result.Value : [];
 
-    public void Initialize()
+    public IReadOnlyList<KeyValueDto> DataSource
     {
-        if(_initialized)
+        get
         {
-            logger.LogInformation("KeyValueDto cache service is already initialized");
-            return;
-        }
+            logger.LogDebug("DataSource called, getting from the database");
 
-        lock(_initLock)
-        {
-            if(_initialized)
-            {
-                logger.LogInformation("KeyValueDto cache service is already initialized (after lock)");
-                return;
-            }
-            LoadCache();
-            _initialized = true;
+            using var scope = scopeFactory.CreateScope();
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+            var data = unitOfWork.DbContext
+                .KeyValues
+                .OrderBy(e => e.Name)
+                .ThenBy(e => e.Value)
+                .ProjectTo<KeyValueDto>(mapper.ConfigurationProvider)
+                .ToList();
+
+            return data.AsReadOnly();
         }
     }
+
 
     public void Refresh()
     {
-        logger.LogInformation("Refresh of KeyValueDto cache called");
-        LoadCache();
+        logger.LogInformation("Refresh of PicklistService called, ignored as this is the none caching service");
         OnChange?.Invoke();
-    }
-
-    private void LoadCache()
-    {
-        using var scope = scopeFactory.CreateScope();
-        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-
-        var data = unitOfWork.DbContext
-            .KeyValues.OrderBy(x => x.Name).ThenBy(x => x.Value)
-            .ProjectTo<KeyValueDto>(mapper.ConfigurationProvider)
-            .ToList();
-
-        cache.Set(KeyValueCacheKey.PicklistCacheKey, data);
-
-        logger.LogInformation($"{data.Count} KeyValueDto elements added to cache");
     }
 }

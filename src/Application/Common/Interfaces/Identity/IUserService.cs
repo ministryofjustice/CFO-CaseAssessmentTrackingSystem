@@ -6,7 +6,6 @@ public interface IUserService
 {
     IReadOnlyList<ApplicationUserDto> DataSource { get; }
     event Action? OnChange;
-    void Initialize();
     void Refresh();
     string? GetDisplayName(string userId);
 }

@@ -2,72 +2,52 @@
 using AutoMapper.QueryableExtensions;
 using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
-using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure.Services.Contracts;
 
-public class ContractService(IServiceScopeFactory scopeFactory, IFusionCache cache, IMapper mapper, ILogger<ContractService> logger) 
+public class ContractService(IServiceScopeFactory scopeFactory, IMapper mapper, ILogger<ContractService> logger) 
     : IContractService
 {
-
-    private const string CacheKey = "contracts-all";
-    
-    private bool _initialized;
-    private readonly object _initLock = new();
-    
-    public IReadOnlyList<ContractDto> DataSource => 
-        cache.TryGet<IReadOnlyList<ContractDto>>(CacheKey) is { HasValue: true } result
-            ? result.Value
-            : [];
-    
-    
-    public event Action? OnChange;
-    
-    public void Initialize()
+    public IReadOnlyList<ContractDto> DataSource
     {
-        if(_initialized)
+        get
         {
-            logger.LogInformation("ContractDto cache service is already initialized");
-            return;
-        }
+            logger.LogDebug("DataSource called, getting from the database");
 
-        lock(_initLock)
-        {
-            if(_initialized)
-            {
-                logger.LogInformation("ContractDto cache service is already initialized (after lock)");
-                return;
-            }
+            using var scope = scopeFactory.CreateScope();
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-            LoadCache();
-            _initialized = true;
+            var data = unitOfWork.DbContext
+                .Contracts
+                .OrderBy(e => e.Description)
+                .ProjectTo<ContractDto>(mapper.ConfigurationProvider)
+                .ToList();
+
+            return data.AsReadOnly();
         }
     }
+    public event Action? OnChange;
 
     public void Refresh()
     {
-        logger.LogInformation("Refresh of ContractDto cache called");
-        LoadCache();
+        logger.LogInformation("Refresh of ContractService called, ignored as this is the none caching service");
         OnChange?.Invoke();
     }
 
     public IEnumerable<ContractDto> GetVisibleContracts(string tenantId)
-        => DataSource.Where(c => c.TenantId.StartsWith(tenantId));
-
-    private void LoadCache()
     {
+        logger.LogDebug("GetVisibleContracts called, getting from the database");
+
         using var scope = scopeFactory.CreateScope();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
         var data = unitOfWork.DbContext
-                .Contracts
-                .AsNoTracking()
-                .OrderBy(x => x.Description)
-                .ProjectTo<ContractDto>(mapper.ConfigurationProvider)
-                .ToList();
-        
-        cache.Set(CacheKey, data);
+            .Contracts
+            .Where(c => c.Tenant!.Id.StartsWith(tenantId))
+            .OrderBy(e => e.Description)
+            .ProjectTo<ContractDto>(mapper.ConfigurationProvider)
+            .ToList();
 
-        logger.LogInformation($"{data.Count} ContractDto elements added to cache");
+        return data.AsReadOnly();
     }
 }

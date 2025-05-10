@@ -6,7 +6,6 @@ public interface ITenantService
 {
     IReadOnlyList<TenantDto> DataSource { get; }
     event Action? OnChange;
-    void Initialize();
     void Refresh();
     IEnumerable<TenantDto> GetVisibleTenants(string tenantId);
 }
