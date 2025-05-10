@@ -6,7 +6,6 @@ public interface IContractService
 {
     IReadOnlyList<ContractDto> DataSource { get; }
     event Action? OnChange;
-    void Initialize();
     void Refresh();
     IEnumerable<ContractDto> GetVisibleContracts(string tenantId);
 }

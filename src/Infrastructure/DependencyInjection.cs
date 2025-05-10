@@ -12,7 +12,6 @@ using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Configurations;
 using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
-using Cfo.Cats.Infrastructure.Constants.Database;
 using Cfo.Cats.Infrastructure.Jobs;
 using Cfo.Cats.Infrastructure.Persistence.Interceptors;
 using Cfo.Cats.Infrastructure.Services.Candidates;
@@ -29,7 +28,6 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using Quartz.AspNetCore;
 using ZiggyCreatures.Caching.Fusion;
@@ -194,31 +192,37 @@ public static class DependencyInjection
         services.AddSingleton<PicklistService>()
             .AddSingleton<IPicklistService>(sp => {
                 var service = sp.GetRequiredService<PicklistService>();
-                service.Initialize();
-                return service;
-            });
+                var cache = sp.GetRequiredService<IFusionCache>();
+                var logger = sp.GetRequiredService<ILogger<CachingPicklistService>>();
 
-        services
+                return new CachingPicklistService(cache, service, logger);
+            })
             .AddSingleton<TenantService>()
             .AddSingleton<ITenantService>(sp =>
             {
                 var service = sp.GetRequiredService<TenantService>();
-                service.Initialize();
-                return service;
+                var cache = sp.GetRequiredService<IFusionCache>();
+                var logger = sp.GetRequiredService<ILogger<CachingTenantService>>();
+
+                return new CachingTenantService(cache, service, logger);
             })
             .AddSingleton<LocationService>()
             .AddSingleton<ILocationService>(sp =>
             {
                 var service = sp.GetRequiredService<LocationService>();
-                service.Initialize();
-                return service;
+                var cache = sp.GetRequiredService<IFusionCache>();
+                var logger = sp.GetRequiredService<ILogger<CachingLocationService>>();
+
+                return new CachingLocationService(cache, service, logger);
             })
             .AddSingleton<ContractService>()
             .AddSingleton<IContractService>(sp =>
             {
                 var service = sp.GetRequiredService<ContractService>();
-                service.Initialize();
-                return service;
+                var cache = sp.GetRequiredService<IFusionCache>();
+                var logger = sp.GetRequiredService<ILogger<CachingContractService>>();
+
+                return new CachingContractService(cache, service, logger);
             });
             
 
@@ -452,13 +456,14 @@ public static class DependencyInjection
             options.Cookie.SecurePolicy = policy;
         });
 
-        services
-            .AddSingleton<UserService>()
-            .AddSingleton<IUserService>(sp => {
-                var service = sp.GetRequiredService<UserService>();
-                service.Initialize();
-                return service;
-            });        
+        services.AddSingleton<UserService>();
+        services.AddSingleton<IUserService>(sp => {
+            var service = sp.GetRequiredService<UserService>();
+            var cache = sp.GetRequiredService<IFusionCache>();
+            var logger =sp.GetRequiredService<ILogger<CachingUserService>>();
+
+            return new CachingUserService(cache, service, logger);
+        });
 
         return services;
     }

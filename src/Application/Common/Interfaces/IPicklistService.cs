@@ -6,6 +6,5 @@ public interface IPicklistService
 {
     IReadOnlyList<KeyValueDto> DataSource { get; }
     event Action? OnChange;
-    void Initialize();
     void Refresh();
 }

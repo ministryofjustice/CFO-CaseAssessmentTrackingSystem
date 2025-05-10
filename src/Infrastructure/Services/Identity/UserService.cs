@@ -1,72 +1,58 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Cfo.Cats.Application.Features.Identity.DTOs;
-using Cfo.Cats.Domain.Identity;
-using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure.Services.Identity;
 
-public class UserService(IFusionCache cache, IMapper mapper, IServiceScopeFactory scopeFactory, ILogger<UserService> logger) 
+public class UserService(IMapper mapper, IServiceScopeFactory scopeFactory, ILogger<UserService> logger) 
     : IUserService
 {
-    private const string Cachekey = "ALL-ApplicationUserDto";
-    private bool _initialized;
-    private readonly object _initLock = new();
-    
-    public IReadOnlyList<ApplicationUserDto> DataSource => 
-        cache.TryGet<IReadOnlyList<ApplicationUserDto>>(Cachekey) is { HasValue: true } result
-            ? result.Value
-            : [];
-
     public event Action? OnChange;
+
+    public IReadOnlyList<ApplicationUserDto> DataSource 
+    {
+        get 
+        {
+            logger.LogDebug("DataSource called, getting from the database");
+
+            using var scope = scopeFactory.CreateScope();
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+            var query = from a in unitOfWork.DbContext.Users
+                            .AsNoTracking()
+                            .Include(x => x.UserRoles)
+                            .ThenInclude(e => e.Role)
+                        orderby a.UserName ascending
+                        select a;
+
+            var list = query
+                        .AsSplitQuery()
+                        .ProjectTo<ApplicationUserDto>(mapper.ConfigurationProvider)
+                        .ToList();
+            return list.AsReadOnly();
+        }
+    }
+
 
     public string? GetDisplayName(string userId)
     {
-        return DataSource.FirstOrDefault(u => u.Id == userId)?.DisplayName;
+        logger.LogDebug("GetDisplayName called, getting from the database");
+
+        using var scope = scopeFactory.CreateScope();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var query = from a in unitOfWork.DbContext.Users
+                        .Where(x => x.Id == userId )
+                    select a.DisplayName;
+
+        return query.FirstOrDefault();
     }
 
-    public void Initialize()
-    {
-        if(_initialized)
-        {
-            logger.LogInformation("ApplicationUserDto cache service is already initialized");
-            return;
-        }
-
-        lock(_initLock)
-        {
-            if(_initialized)
-            {
-                logger.LogInformation("ApplicationUserDto cache service is already initialized (after lock)");
-                return;
-            }
-
-            LoadCache();
-            _initialized = true;
-        }
-    }
-
+   
     public void Refresh()
     {
-        logger.LogInformation("Refresh of ApplicationUserDto cache called");
-        LoadCache();
+        logger.LogInformation("Refresh of UserService called, ignored as this is the none caching service");
         OnChange?.Invoke();
     }
 
-    private void LoadCache()
-    {
-        var scope = scopeFactory.CreateScope();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-        var data = userManager
-                .Users.Include(x => x.UserRoles)
-                .ThenInclude(x => x.Role)
-                .ProjectTo<ApplicationUserDto>(mapper.ConfigurationProvider)
-                .OrderBy(x => x.UserName)
-                .ToList();
-
-        cache.Set(Cachekey, data);
-
-        logger.LogInformation($"{data.Count} ApplicationUserDto elements added to cache");
-    }
 }

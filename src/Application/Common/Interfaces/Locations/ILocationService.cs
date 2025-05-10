@@ -6,7 +6,6 @@ public interface ILocationService
 {
     IReadOnlyList<LocationDto> DataSource { get; }
     event Action? OnChange;
-    void Initialize();
     void Refresh();
     IEnumerable<LocationDto> GetVisibleLocations(string tenantId);
 }
