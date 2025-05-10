@@ -68,7 +68,7 @@
                         </MudTabPanel>
                         <MudTabPanel Text="Sentence Information">
                             <CaseSentenceInformation ParticipantId="@Id" />
-                            <ExternalData ParticipantId="@Id" ConsentStatus="@_participant.ConsentStatus" />
+                            @* <ExternalData ParticipantId="@Id" ConsentStatus="@_participant.ConsentStatus" /> *@
                         </MudTabPanel>
                         <MudTabPanel Text="Risk" ID="@Id" Icon="@_riskIcon" IconColor="@_riskIconColor" ToolTip="@_riskInfo">
                             <CaseRisk ParticipantId="@Id"/>
