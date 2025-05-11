@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <RootNamespace>Cfo.Cats.Server.UI</RootNamespace>
@@ -18,10 +18,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ActualLab.Fusion" Version="10.1.12" />
-        <PackageReference Include="ActualLab.Fusion.Blazor" Version="10.1.12" />
-        <PackageReference Include="ActualLab.Fusion.Ext.Services" Version="10.1.12" />
-        <PackageReference Include="ActualLab.Generators" Version="10.1.12">
+        <PackageReference Include="ActualLab.Fusion" Version="10.1.14" />
+        <PackageReference Include="ActualLab.Fusion.Blazor" Version="10.1.14" />
+        <PackageReference Include="ActualLab.Fusion.Ext.Services" Version="10.1.14" />
+        <PackageReference Include="ActualLab.Generators" Version="10.1.14">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
