@@ -105,6 +105,7 @@
             if (result.Succeeded)
             {
                 Snackbar.Add($"Participant {Participant.Id} Archived", Severity.Success);
+                await OnUpdate.InvokeAsync();
             }
             else
             {
@@ -134,6 +135,7 @@
             if (result.Succeeded)
             {
                 Snackbar.Add($"Participant {Participant.Id} suspended", Severity.Success);
+                await OnUpdate.InvokeAsync();
             }
             else
             {
@@ -370,6 +372,7 @@
             if (result.Succeeded)
             {
                 Snackbar.Add($"Participant {Participant.Id} Unarchived", Severity.Success);
+                await OnUpdate.InvokeAsync();
             }
             else
             {
