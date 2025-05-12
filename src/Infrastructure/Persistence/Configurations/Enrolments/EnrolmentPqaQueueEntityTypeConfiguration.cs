@@ -57,6 +57,11 @@ public class EnrolmentPqaQueueEntityTypeConfiguration : IEntityTypeConfiguration
             .WithMany()
             .HasForeignKey(t => t.ParticipantId);
 
+        builder.HasOne(t => t.SupportWorker)
+            .WithMany()
+            .HasForeignKey(t => t.SupportWorkerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.Property(e => e.TenantId)
             .IsRequired()
             .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);

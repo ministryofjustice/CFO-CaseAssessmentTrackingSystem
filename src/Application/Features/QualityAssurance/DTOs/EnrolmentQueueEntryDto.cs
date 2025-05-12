@@ -39,7 +39,7 @@ public class EnrolmentQueueEntryDto
                     options.MapFrom(target => target.Participant!.FirstName + " " + target.Participant.LastName);
                 })
                 .ForMember(target => target.SupportWorker, options => options.MapFrom(
-                    source => source.Participant!.Owner!.DisplayName
+                    source => source.SupportWorker!.DisplayName
                 ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                 .ForMember(target => target.IsCompleted, options => options.MapFrom(source=> source.IsCompleted))
@@ -60,7 +60,7 @@ public class EnrolmentQueueEntryDto
                     options.MapFrom(target => target.Participant!.FirstName + " " + target.Participant.LastName);
                 })
                 .ForMember(target => target.SupportWorker, options => options.MapFrom(
-                source => source.Participant!.Owner!.DisplayName
+                    source => source.SupportWorker!.DisplayName
                 ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                  .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
@@ -79,7 +79,7 @@ public class EnrolmentQueueEntryDto
                     options.MapFrom(target => target.Participant!.FirstName + " " + target.Participant.LastName);
                 })
                 .ForMember(target => target.SupportWorker, options => options.MapFrom(
-                source => source.Participant!.Owner!.DisplayName
+                    source => source.SupportWorker!.DisplayName
                 ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
@@ -98,7 +98,7 @@ public class EnrolmentQueueEntryDto
                     options.MapFrom(target => target.Participant!.FirstName + " " + target.Participant.LastName);
                 })
                 .ForMember(target => target.SupportWorker, options => options.MapFrom(
-                    source => source.Participant!.Owner!.DisplayName
+                    source => source.SupportWorker!.DisplayName
                 ))
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))

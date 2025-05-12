@@ -55,7 +55,7 @@ public static class Qa2WithPagination
                     sortExpression = (x => x.Created!);
                     break;
                 case "SupportWorker":
-                    sortExpression = (x => x.Participant!.Owner!.DisplayName!);
+                    sortExpression = (x => x.SupportWorker!.DisplayName!);
                     break;
                 case "AssignedTo":
                     sortExpression = (x => x.OwnerId == null ? null : x.Owner!.DisplayName);

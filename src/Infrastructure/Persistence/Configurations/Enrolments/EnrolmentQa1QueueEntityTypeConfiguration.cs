@@ -64,6 +64,11 @@ public class EnrolmentQa1QueueEntityTypeConfiguration : IEntityTypeConfiguration
             .IsRequired()
             .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
 
+        builder.HasOne(t => t.SupportWorker)
+            .WithMany()
+            .HasForeignKey(t => t.SupportWorkerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.Property(e => e.SupportWorkerId)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId)
             .IsRequired();
