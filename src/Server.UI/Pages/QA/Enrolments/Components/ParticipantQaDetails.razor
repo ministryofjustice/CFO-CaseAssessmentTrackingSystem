@@ -1,5 +1,6 @@
 ﻿@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Common.Extensions
+@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 @inherits CatsComponentBase
 
 <style>
@@ -73,7 +74,7 @@
     </MudText>
     <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
         <MudText Typo="Typo.body1"><strong>Staff Member</strong></MudText>
-        <MudText Typo="Typo.body1">@Participant.SupportWorker</MudText>
+        <MudText Typo="Typo.body1">@QueueEntry.SupportWorker</MudText>
     </MudStack>
     <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
         <MudText Typo="Typo.body1"><strong>Consent Date</strong></MudText>
@@ -93,7 +94,10 @@
 @code{
 
     [Parameter, EditorRequired]
-    public ParticipantDto Participant { get; set; } = default!;
+    public required ParticipantDto Participant { get; set; }
+
+    [Parameter, EditorRequired]
+    public required EnrolmentQueueEntryDto QueueEntry { get; set; }
 
     [Parameter, EditorRequired] 
     public bool ShowNationality { get; set; } = false;
