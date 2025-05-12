@@ -5,6 +5,7 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
+@using Cfo.Cats.Server.UI.Pages.Participants.Components.DMS
 @using Humanizer
 
 @inherits CatsComponentBase
@@ -66,7 +67,8 @@
                             <Inductions ParticipantId="@_participant.Id"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Sentence Information">
-                            <CaseSentenceInformation ParticipantId="@Id"/>
+                            <CaseSentenceInformation ParticipantId="@Id" />
+                            @* <ExternalData ParticipantId="@Id" ConsentStatus="@_participant.ConsentStatus" /> *@
                         </MudTabPanel>
                         <MudTabPanel Text="Risk" ID="@Id" Icon="@_riskIcon" IconColor="@_riskIconColor" ToolTip="@_riskInfo">
                             <CaseRisk ParticipantId="@Id"/>

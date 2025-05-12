@@ -1,55 +1,55 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
-using Cfo.Cats.Application.Features.Tenants.Caching;
+using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Tenants.DTOs;
-using ZiggyCreatures.Caching.Fusion;
+using Cfo.Cats.Infrastructure.Services.Locations;
 
 namespace Cfo.Cats.Infrastructure.Services.MultiTenant;
 
-public class TenantService : ITenantService
+public class TenantService(IServiceScopeFactory scopeFactory, IMapper mapper, ILogger<TenantService> logger) 
+    : ITenantService
 {
-    private readonly IServiceScopeFactory scopeFactory;
-    private readonly IFusionCache fusionCache;
-    private readonly IMapper mapper;
-
-    public TenantService(
-        IFusionCache fusionCache,
-        IServiceScopeFactory scopeFactory,
-        IMapper mapper
-    )
+    public IReadOnlyList<TenantDto> DataSource 
     {
-        this.scopeFactory = scopeFactory;
-        this.fusionCache = fusionCache;
-        this.mapper = mapper;
-    }
+        get
+        {
+            logger.LogDebug("DataSource called, getting from the database");
 
+            using var scope = scopeFactory.CreateScope();
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+            var data = unitOfWork.DbContext
+                .Tenants
+                .OrderBy(e => e.Name)
+                .ProjectTo<TenantDto>(mapper.ConfigurationProvider)
+                .ToList();
+
+            return data.AsReadOnly();
+        }
+    }
     public event Action? OnChange;
-    public List<TenantDto> DataSource { get; private set; } = new();
-
-    public void Initialize()
-    {
-        using var scope = scopeFactory.CreateScope();
-        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-
-        DataSource =
-            fusionCache.GetOrSet(
-                TenantCacheKey.TenantsCacheKey,
-                _ =>
-                    unitOfWork.DbContext
-                        .Tenants.OrderBy(x => x.Name)
-                        .ProjectTo<TenantDto>(mapper.ConfigurationProvider)
-                        .ToList()
-            ) ?? [];
-    }
-
     public void Refresh()
     {
-        fusionCache.Remove(TenantCacheKey.TenantsCacheKey);
-        Initialize();
+        logger.LogInformation("Refresh of TenantService called, ignored as this is the none caching service");
         OnChange?.Invoke();
     }
 
-    public IEnumerable<TenantDto> GetVisibleTenants(string tenantId) => 
-        DataSource.Where(t => t.Id.StartsWith(tenantId));
+    public IEnumerable<TenantDto> GetVisibleTenants(string tenantId)
+    {
+        logger.LogDebug("GetVisibleTenants called, getting from the database");
+
+        using var scope = scopeFactory.CreateScope();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var data = unitOfWork.DbContext
+            .Tenants
+            .Where(l => l.Id.StartsWith(tenantId))
+            .OrderBy(e => e.Name)
+            .ProjectTo<TenantDto>(mapper.ConfigurationProvider)
+            .ToList();
+
+        return data.AsReadOnly();
+
+    }
 }

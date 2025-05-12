@@ -2106,7 +2106,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -2128,7 +2127,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(9)");
 
                     b.Property<string>("PostCode")
-                        .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("nvarchar(8)");
 
@@ -2136,7 +2134,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UPRN")
-                        .IsRequired()
                         .HasMaxLength(12)
                         .HasColumnType("nvarchar(12)");
 
@@ -4600,6 +4597,10 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                             b1.Property<string>("AdditionalNotes")
                                 .HasMaxLength(256)
                                 .HasColumnType("nvarchar(256)");
+
+                            b1.Property<string>("NINo")
+                                .HasMaxLength(9)
+                                .HasColumnType("nvarchar(9)");
 
                             b1.Property<string>("ParticipantId")
                                 .IsRequired()

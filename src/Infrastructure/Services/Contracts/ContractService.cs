@@ -2,41 +2,52 @@
 using AutoMapper.QueryableExtensions;
 using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
-using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure.Services.Contracts;
 
-public class ContractService(IServiceScopeFactory scopeFactory, IFusionCache cache, IMapper mapper) 
+public class ContractService(IServiceScopeFactory scopeFactory, IMapper mapper, ILogger<ContractService> logger) 
     : IContractService
 {
-
-    private const string CacheKey = "contracts-all";
-    
-    public List<ContractDto> DataSource { get; private set; } = [];
-    public event Action? OnChange;
-    
-    public void Initialize()
+    public IReadOnlyList<ContractDto> DataSource
     {
-        using var scope = scopeFactory.CreateScope();
-        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        get
+        {
+            logger.LogDebug("DataSource called, getting from the database");
 
-        DataSource = cache.GetOrSet(
-            CacheKey,
-            _ => unitOfWork.DbContext
+            using var scope = scopeFactory.CreateScope();
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+            var data = unitOfWork.DbContext
                 .Contracts
-                .AsNoTracking()
-                .OrderBy(x => x.Description)
+                .OrderBy(e => e.Description)
                 .ProjectTo<ContractDto>(mapper.ConfigurationProvider)
-                .ToList());
+                .ToList();
+
+            return data.AsReadOnly();
+        }
     }
+    public event Action? OnChange;
 
     public void Refresh()
     {
-        cache.Remove(CacheKey);
-        Initialize();
+        logger.LogInformation("Refresh of ContractService called, ignored as this is the none caching service");
         OnChange?.Invoke();
     }
 
     public IEnumerable<ContractDto> GetVisibleContracts(string tenantId)
-        => DataSource.Where(c => c.TenantId.StartsWith(tenantId));
+    {
+        logger.LogDebug("GetVisibleContracts called, getting from the database");
+
+        using var scope = scopeFactory.CreateScope();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var data = unitOfWork.DbContext
+            .Contracts
+            .Where(c => c.Tenant!.Id.StartsWith(tenantId))
+            .OrderBy(e => e.Description)
+            .ProjectTo<ContractDto>(mapper.ConfigurationProvider)
+            .ToList();
+
+        return data.AsReadOnly();
+    }
 }

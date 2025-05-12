@@ -11,7 +11,7 @@ public class ExternalIdentifierType : SmartEnum<ExternalIdentifierType>
         isExclusive: true);
 
     public static readonly ExternalIdentifierType Crn = new(
-        name: "CRN (Delius)", 
+        name: "Delius CRN", 
         value: 1, 
         displayOrderPriority: 1, 
         isExclusive: true);

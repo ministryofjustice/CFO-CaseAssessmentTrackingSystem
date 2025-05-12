@@ -31,7 +31,7 @@ public class AuditTrailAdvancedSpecification : Specification<AuditTrail>
             )
             .Where(p => p.DateTime >= last30day, filter.ListView == AuditTrailListView.Last30days)
             .Where(
-                x => x.TableName!.Contains(filter.Keyword!),
+                x => x.TableName!.Contains(filter.Keyword!) || x.Owner!.DisplayName!.Contains(filter.Keyword!),
                 !string.IsNullOrEmpty(filter.Keyword)
             );
     }

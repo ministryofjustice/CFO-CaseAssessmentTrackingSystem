@@ -306,10 +306,10 @@
                     }
                 </ul>
             </div>
-            , Severity.Error, options => {
-                options.RequireInteraction = true;
-                options.SnackbarVariant = Variant.Text;
-            } );
+    , Severity.Error, options => {
+        options.RequireInteraction = true;
+        options.SnackbarVariant = Variant.Text;
+    } );
     }
 
     private async Task<bool> AssessmentJustificationRequired()
@@ -326,13 +326,18 @@
         if (result is { Succeeded: true, Data: not null })
         {
             var latestAssessment = result.Data.MaxBy(pa => pa.CreatedDate);
-            var redCount = latestAssessment!.PathwayScore.Count(x => x.Score < 10);           
-            
-            if (redCount >= 2)
-            { 
-                justificationRequired = false;
-            }            
+
+            if (latestAssessment != null)
+            {
+                var redCount = latestAssessment!.PathwayScore.Count(x => x.Score < 10);
+
+                if (redCount >= 2)
+                {
+                    justificationRequired = false;
+                }
+            }          
         }
+
         return justificationRequired;
     }            
  }

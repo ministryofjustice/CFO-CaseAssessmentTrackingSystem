@@ -1,0 +1,77 @@
+﻿@using Cfo.Cats.Application.Features.Delius.DTOs
+
+
+
+@if (_isLoading)
+{
+    <MudProgressLinear Color="Color.Info" Indeterminate="true" Class="my-7">
+        <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+            Loading
+        </MudText>
+    </MudProgressLinear>
+}
+else
+{
+    
+    if (OffenceResult is { Succeeded: false } e)
+    {
+        <MudAlert Severity="Severity.Warning" >
+            <MudText>
+                @e.ErrorMessage
+            </MudText>
+        </MudAlert>
+
+    }
+
+    if (OffenceResult is { Succeeded: true, Data: not null })
+    {
+        <MudTable
+            T="MainOffenceDto" Items="OffenceResult.Data.MainOffences"
+            Striped="true">
+            <ColGroup>
+                <col />
+                <col style="width: 120px;" />
+                <col style="width: 120px;" />
+                <col style="width: 120px;" />
+                <col style="width: 120px;" />
+                <col style="width: 30px;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<MainOffenceDto, object>(c => c.OffenceDescription)">
+                        Offence Description
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<MainOffenceDto, object>(c => c.OffenceDate ?? DateOnly.MinValue)">
+                        Offence Date
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<MainOffenceDto, object>(c => c.Disposals.Length)">
+                        Disposals
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<MainOffenceDto, object>(c => c.Disposals.SelectMany(d => d.Requirements).Count())">
+                    Requirements
+                </MudTableSortLabel></MudTh>
+                <MudTh>Terminated</MudTh>
+                <MudTh>Details</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Offence Description">@context.OffenceDescription</MudTd>
+                <MudTd DataLabel="Offence Date">@context.OffenceDate</MudTd>
+                <MudTd DataLabel="Disposals">@context.Disposals.Count()</MudTd>
+                <MudTd DataLabel="Disposals">@context.Disposals.SelectMany(d => d.Requirements).Count()</MudTd>
+                <MudTd DataLabel="Terminated">@(context.Disposals.All(t => t.TerminationDate is not null) ? "Yes" : "No")</MudTd>
+                <MudTd DataLabel="Details">
+                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Info"
+                                   OnClick="() => Display(context)" />
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new[] { 10, 25, 50 }" />
+            </PagerContent>
+        </MudTable>
+    }
+}

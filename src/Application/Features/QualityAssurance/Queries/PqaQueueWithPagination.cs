@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
+using Cfo.Cats.Application.Features.QualityAssurance.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
 
@@ -8,7 +9,7 @@ namespace Cfo.Cats.Application.Features.QualityAssurance.Queries;
 
 public static class PqaQueueWithPagination
 {
-    [RequestAuthorize(Roles = $"{RoleNames.QAFinance}, {RoleNames.SystemSupport}")]
+    [RequestAuthorize(Policy = SecurityPolicies.Pqa)]
     public class Query : QueueEntryFilter, IRequest<PaginatedData<EnrolmentQueueEntryDto>>
     {
         public Query()

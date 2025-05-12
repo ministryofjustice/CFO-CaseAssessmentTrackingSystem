@@ -1,48 +1,40 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Cfo.Cats.Application.Features.KeyValues.Caching;
 using Cfo.Cats.Application.Features.KeyValues.DTOs;
-using ZiggyCreatures.Caching.Fusion;
+using Cfo.Cats.Application.Features.Locations.DTOs;
+using Cfo.Cats.Infrastructure.Services.Locations;
 
 namespace Cfo.Cats.Infrastructure.Services;
 
-public class PicklistService : IPicklistService
+public class PicklistService(IServiceScopeFactory scopeFactory, ILogger<PicklistService> logger, IMapper mapper) 
+    : IPicklistService
 {
-    private readonly IApplicationDbContext _context;
-    private readonly IFusionCache _fusionCache;
-    private readonly IMapper _mapper;
-
-    public PicklistService(IFusionCache fusionCache,
-        IServiceScopeFactory scopeFactory,
-        IMapper mapper)
-    {
-        var scope = scopeFactory.CreateScope();
-        _context = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
-        _fusionCache = fusionCache;
-        _mapper = mapper;
-    }
-    
     public event Action? OnChange;
-    public List<KeyValueDto> DataSource { get; private set; } = new();
 
-
-    public void Initialize()
+    public IReadOnlyList<KeyValueDto> DataSource
     {
-        DataSource = _fusionCache.GetOrSet(KeyValueCacheKey.PicklistCacheKey,
-        _ => _context.KeyValues.OrderBy(x => x.Name).ThenBy(x => x.Value)
-            .ProjectTo<KeyValueDto>(_mapper.ConfigurationProvider)
-            .ToList()
-        );
+        get
+        {
+            logger.LogDebug("DataSource called, getting from the database");
+
+            using var scope = scopeFactory.CreateScope();
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+            var data = unitOfWork.DbContext
+                .KeyValues
+                .OrderBy(e => e.Name)
+                .ThenBy(e => e.Value)
+                .ProjectTo<KeyValueDto>(mapper.ConfigurationProvider)
+                .ToList();
+
+            return data.AsReadOnly();
+        }
     }
+
 
     public void Refresh()
     {
-        _fusionCache.Remove(KeyValueCacheKey.PicklistCacheKey);
-        DataSource = _fusionCache.GetOrSet(KeyValueCacheKey.PicklistCacheKey,
-        _ => _context.KeyValues.OrderBy(x => x.Name).ThenBy(x => x.Value)
-            .ProjectTo<KeyValueDto>(_mapper.ConfigurationProvider)
-            .ToList()
-        );
+        logger.LogInformation("Refresh of PicklistService called, ignored as this is the none caching service");
         OnChange?.Invoke();
     }
 }

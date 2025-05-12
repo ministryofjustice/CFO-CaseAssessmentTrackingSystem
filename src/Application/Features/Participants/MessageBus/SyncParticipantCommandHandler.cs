@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Domain.Entities.Participants;
+﻿using Cfo.Cats.Application.Features.Candidates.DTOs;
+using Cfo.Cats.Domain.Entities.Participants;
 using MassTransit;
 
 namespace Cfo.Cats.Application.Features.Participants.MessageBus;
@@ -22,12 +23,14 @@ public class SyncParticipantCommandHandler(IUnitOfWork unitOfWork, ICandidateSer
         {
             using var scope = logger.BeginScope("Sync for Participant: {Id}", [participant.Id]);
 
-            var candidate = await candidateService.GetByUpciAsync(participant.Id);
+            var result = await candidateService.GetByUpciAsync(participant.Id);
 
-            if (candidate is null)
+            if (result.Succeeded == false)
             {
-                throw new InvalidOperationException("No DMS information found");
+                throw new InvalidOperationException($"Error retrieving DMS information: {result.ErrorMessage}");
             }
+
+            var candidate = result.Data!;
 
             await unitOfWork.BeginTransactionAsync();
 
@@ -36,28 +39,28 @@ public class SyncParticipantCommandHandler(IUnitOfWork unitOfWork, ICandidateSer
 
             if (candidate.Crn is not null)
             {
-                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.Crn,
+                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.Crn.ToUpper(),
                     ExternalIdentifierType.Crn));
             }
 
             if (candidate.NomisNumber is not null)
             {
-                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.NomisNumber,
+                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.NomisNumber.ToUpper(),
                     ExternalIdentifierType.NomisNumber));
             }
 
             if (candidate.PncNumber is not null)
             {
-                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.PncNumber,
+                participant.AddOrUpdateExternalIdentifier(ExternalIdentifier.Create(candidate.PncNumber.ToUpper(),
                     ExternalIdentifierType.PncNumber));
             }
 
             // Update first, middle, and last names
             logger.LogTrace("Update name(s)");
             participant.UpdateNameInformation(
-                candidate.FirstName,
-                candidate.SecondName,
-                candidate.LastName);
+                candidate.FirstName.ToUpper(),
+                candidate.SecondName?.ToUpper(),
+                candidate.LastName.ToUpper());
 
             // Update date of birth
             logger.LogTrace("Update date of birth");

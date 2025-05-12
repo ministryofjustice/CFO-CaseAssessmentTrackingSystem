@@ -1,0 +1,139 @@
+﻿@using Cfo.Cats.Application.Features.Delius.DTOs
+
+
+<MudDialog>
+    <DialogContent>
+        
+        <MudDataGrid @ref="_dataGrid" ReadOnly="true" Items="@Disposals">
+            <Columns>
+                <HierarchyColumn T="DisposalDto" ButtonDisabledFunc="@(x => x.Requirements.Length == 0)"></HierarchyColumn>
+                <PropertyColumn Property="x => x.SentenceDate" Title="Sentence Date"></PropertyColumn>
+                <PropertyColumn Property="x => x.SentenceLength" Title="Length"></PropertyColumn>
+                <PropertyColumn Property="x => x.DisposalDetail" Title="Details"></PropertyColumn>
+                <PropertyColumn Property="x => x.TerminationDate" Title="Termination Date"></PropertyColumn>
+                <PropertyColumn Property="x => x.TerminationDescription" Title="Termination Description"></PropertyColumn>
+            </Columns>
+            <ChildRowContent>
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Requirements</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudTable Items="@context.Item.Requirements" Context="requirement" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                            <HeaderContent>
+                                <MudTh>Category</MudTh>
+                                <MudTh>Sub Category</MudTh>
+                                <MudTh>Termination Description</MudTh>
+                                <MudTh>Length</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>
+                                    @requirement.CategoryDescription
+                                </MudTd>
+                                <MudTd>
+                                    @requirement.SubCategoryDescription
+                                </MudTd>
+                                <MudTd>
+                                    @requirement.TerminationDescription
+                                </MudTd>
+                                <MudTd>
+                                    @requirement.Length @requirement.UnitDescription
+                                </MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    </MudCardContent>
+                </MudCard>
+            </ChildRowContent>
+            <PagerContent>
+                <MudDataGridPager T="DisposalDto" />
+            </PagerContent>
+        </MudDataGrid>
+        
+
+        @*  <MudTable T="DisposalDto"
+                  Items="@Disposals"
+                  Context="disposal"
+                  Striped="true">
+            <HeaderContent>
+                <MudTh>
+                    Sentence Date
+                </MudTh>
+                <MudTh>
+                    Sentence Length
+                </MudTh>
+                <MudTh>
+                    Details
+                </MudTh>
+                <MudTh>
+                    Termination reason
+                </MudTh>
+                <MudTh>
+                    Termination Date
+                </MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    @disposal.SentenceDate
+                </MudTd>
+                <MudTd>
+                    @disposal.Length @disposal.UnitDescription
+                </MudTd>
+                <MudTd>
+                    @disposal.DisposalDetail
+                </MudTd>
+                <MudTd>
+                    @disposal.TerminationDescription
+                </MudTd>
+                <MudTd>
+                    @disposal.TerminationDate
+                </MudTd>
+                <MudTd>
+                    @if (disposal.Requirements is { Length: > 0 })
+                    {
+                        <MudIconButton Icon="@Icons.Material.Outlined.ExpandCircleDown" Size="Size.Small" OnClick="@(() => disposal.ShowDetails = !disposal.ShowDetails)">
+                            Requirements
+                        </MudIconButton>
+                    }
+                </MudTd>
+            </RowTemplate>
+            <ChildRowContent>
+
+                @if (disposal.ShowDetails)
+                {
+                    <MudTr>
+                        <td colspan="5">
+                            <MudTable Items="@disposal.Requirements" Context="requirement" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                <HeaderContent>
+                                    <MudTh>Category</MudTh>
+                                    <MudTh>Sub Category</MudTh>
+                                    <MudTh>Termination Description</MudTh>
+                                    <MudTh>Length</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd>
+                                        @requirement.CategoryDescription
+                                    </MudTd>
+                                    <MudTd>
+                                        @requirement.SubCategoryDescription
+                                    </MudTd>
+                                    <MudTd>
+                                        @requirement.TerminationDescription
+                                    </MudTd>
+                                    <MudTd>
+                                        @requirement.Length @requirement.UnitDescription
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </td>
+                    </MudTr>
+                }
+            </ChildRowContent>
+        </MudTable>  *@
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Ok">Ok</MudButton>
+    </DialogActions>
+</MudDialog>

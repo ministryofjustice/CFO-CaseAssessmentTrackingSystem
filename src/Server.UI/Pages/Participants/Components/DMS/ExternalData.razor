@@ -1,0 +1,43 @@
+﻿@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Participants.Components.DMS.Offloc
+@using Cfo.Cats.Server.UI.Pages.Participants.Components.DMS.Delius
+@inherits CatsComponentBase
+
+
+@if (ConsentStatus == ConsentStatus.PendingStatus)
+{
+    <MudAlert Severity="Severity.Normal">
+        Consent status has not been confirmed.
+    </MudAlert>
+}
+else
+{
+    <MudExpansionPanels>
+        @foreach (var identifier in Identifiers.Where(i => i.Type == ExternalIdentifierType.NomisNumber.Name || i.Type == ExternalIdentifierType.Crn.Name))
+        {
+            <MudExpansionPanel>
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudIcon Icon="@Icons.Material.Filled.Info" class="mr-3"></MudIcon>
+                        <MudText>
+                            @identifier.Type <strong>@identifier.Value</strong>
+                        </MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    @if (identifier.Type == ExternalIdentifierType.NomisNumber.Name)
+                    {
+                        <OffLocDetails NomisNumber="@identifier.Value"/>
+                    }
+
+                    @if (identifier.Type == ExternalIdentifierType.Crn.Name)
+                    {
+                        <DeliusOffenceDetails Crn="@identifier.Value"/>
+                    }
+                </ChildContent>
+            </MudExpansionPanel>
+        }
+    </MudExpansionPanels>
+}
+
+

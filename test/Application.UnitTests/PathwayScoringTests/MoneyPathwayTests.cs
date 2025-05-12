@@ -1,14 +1,12 @@
 ﻿using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Money;
-using DocumentFormat.OpenXml.InkML;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Cfo.Cats.Application.UnitTests.PathwayScoringTests;
 
 public class MoneyPathwayTests
 {
-
     [Test]
     public void MoneyPathway_Green()
     {
@@ -31,7 +29,7 @@ public class MoneyPathwayTests
         pathway.C9.Answer = C9.Never;
 
         var rag = pathway.GetRagScore(32, AssessmentLocation.SouthWestAssessmentLocation, Sex.MaleSex);
-        rag.Should().Be(23);
+        rag.ShouldBe(23);
     }
 
     [Test]
@@ -56,7 +54,7 @@ public class MoneyPathwayTests
         pathway.C9.Answer = C9.WithinTheLastYear;
 
         var rag = pathway.GetRagScore(32, AssessmentLocation.SouthWestAssessmentLocation, Sex.MaleSex);
-        rag.Should().Be(14);
+        rag.ShouldBe(14);
     }
 
     [Test]
@@ -73,6 +71,7 @@ public class MoneyPathwayTests
         //Problem Debt
         //Do you owe over £1000 in unsecured loans, credit cards or other debt
         pathway.C3.Answer = C3.Yes;
+
         //Do you owe any informal debt
         pathway.C4.Answer = C4.Yes;
 
@@ -83,6 +82,6 @@ public class MoneyPathwayTests
         pathway.C9.Answer = C9.WithinTheLastYear;
 
         var rag = pathway.GetRagScore(32, AssessmentLocation.SouthWestAssessmentLocation, Sex.MaleSex);
-        rag.Should().Be(6);
+        rag.ShouldBe(6);
     }
 }

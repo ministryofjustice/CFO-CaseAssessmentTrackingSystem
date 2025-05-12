@@ -1,8 +1,8 @@
 ﻿using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using FluentAssertions;
 using NUnit.Framework;
 using System;
+using Shouldly;
 
 namespace Cfo.Cats.Application.UnitTests.Payments;
 
@@ -18,8 +18,8 @@ public class PreReleaseSupportPaymentTests
 
         var payment = RecordPreReleaseSupportPayment.GeneratePayment(data);
 
-        payment.IneligibilityReason.Should().Be(IneligibilityReason.NotYetApproved.Value);
-        payment.EligibleForPayment.Should().Be(false);
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.NotYetApproved.Value);
+        payment.EligibleForPayment.ShouldBe(false);
     }
 
     [Test]
@@ -29,8 +29,8 @@ public class PreReleaseSupportPaymentTests
 
         var payment = RecordPreReleaseSupportPayment.GeneratePayment(data);
 
-        payment.IneligibilityReason.Should().Be(IneligibilityReason.MaximumPaymentLimitReached.Value);
-        payment.EligibleForPayment.Should().Be(false);
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.MaximumPaymentLimitReached.Value);
+        payment.EligibleForPayment.ShouldBe(false);
     }
 
     [Test]
@@ -40,8 +40,8 @@ public class PreReleaseSupportPaymentTests
 
         var payment = RecordPreReleaseSupportPayment.GeneratePayment(data);
 
-        payment.IneligibilityReason.Should().Be(IneligibilityReason.BeforeConsent.Value);
-        payment.EligibleForPayment.Should().Be(false);
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.BeforeConsent.Value);
+        payment.EligibleForPayment.ShouldBe(false);
     }
 
     [Test]
@@ -51,8 +51,8 @@ public class PreReleaseSupportPaymentTests
 
         var payment = RecordPreReleaseSupportPayment.GeneratePayment(data);
 
-        payment.IneligibilityReason.Should().Be(null);
-        payment.EligibleForPayment.Should().Be(true);
+        payment.IneligibilityReason.ShouldBe(null);
+        payment.EligibleForPayment.ShouldBe(true);
     }
 
     static RecordPreReleaseSupportPayment.Data GetData()
@@ -75,5 +75,4 @@ public class PreReleaseSupportPaymentTests
             CountOfPayments = 0
         };
     }
-
 }

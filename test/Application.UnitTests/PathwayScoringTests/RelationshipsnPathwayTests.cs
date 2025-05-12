@@ -1,8 +1,7 @@
 ﻿using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.Relationships;
-using DocumentFormat.OpenXml.InkML;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Cfo.Cats.Application.UnitTests.PathwayScoringTests;
 
@@ -25,7 +24,7 @@ public class RelationshipsnPathwayTests
         pathway.F8.Answer = F8.No;
 
         var rag = pathway.GetRagScore(60, AssessmentLocation.SouthEastAssessmentLocation, Sex.MaleSex);
-        rag.Should().Be(36);
+        rag.ShouldBe(36);
     }
 
     [Test]
@@ -44,7 +43,7 @@ public class RelationshipsnPathwayTests
         pathway.F8.Answer = F8.No;
 
         var rag = pathway.GetRagScore(60, AssessmentLocation.SouthEastAssessmentLocation, Sex.MaleSex);
-        rag.Should().Be(24);
+        rag.ShouldBe(24);
     }
 
     [Test]
@@ -63,7 +62,6 @@ public class RelationshipsnPathwayTests
         pathway.F8.Answer = F8.No;
 
         var rag = pathway.GetRagScore(60, AssessmentLocation.SouthEastAssessmentLocation, Sex.MaleSex);
-        rag.Should().Be(3);
+        rag.ShouldBe(3);
     }
-
 }

@@ -2,6 +2,8 @@
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Infrastructure.Services.Ordnance;
+using FluentValidation;
+using static Cfo.Cats.Application.Features.Participants.Commands.AddOrUpdateContactDetail;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
@@ -14,8 +16,8 @@ public partial class AddressDialog(IAddressLookupService addressLookupService)
 
     [Parameter]
     public required AddOrUpdateContactDetail.Command Model { get; set; }
-    
-    private async Task<IEnumerable<ParticipantAddressDto>> Search(string searchText, CancellationToken cancellationToken)
+
+    private async Task<IEnumerable<ParticipantAddressDto?>> Search(string searchText, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(searchText) is false)
         {
@@ -38,9 +40,9 @@ public partial class AddressDialog(IAddressLookupService addressLookupService)
         {
             _saving = true;
 
-            await _form.Validate();
+            await _form.Validate().ConfigureAwait(false);
 
-            if (_form.IsValid is false)
+            if (!_form.IsValid)
             {
                 return;
             }
@@ -62,6 +64,28 @@ public partial class AddressDialog(IAddressLookupService addressLookupService)
         {
             _saving = false;
         }
+    }
+    public static async Task<(bool IsValid, string? ObjectLevelError)>
+    ValidateFormWithFluent<TModel>(
+        MudForm form,
+        TModel model,
+        IValidator<TModel> validator)
+    {
+        // Run MudBlazor validation (field-level)
+        await form.Validate();
+
+        // Run FluentValidation (model-level)
+        var fluentResult = validator.Validate(model);
+
+        // Get only object-level error (no PropertyName)
+        var objectLevelError = fluentResult.Errors
+            .FirstOrDefault(e => string.IsNullOrWhiteSpace(e.PropertyName))?.ErrorMessage;
+
+        // Form is valid only if both checks pass
+        //because once mandatory fields on the form are filled in the _form.IsValid becomes true even if the three fields are all empty
+        var isValid = form.IsValid && objectLevelError == null;
+
+        return (isValid, objectLevelError);
     }
 
 }

@@ -67,7 +67,8 @@
         if (_form.IsValid)
         {
             var result = await CandidateService.SearchAsync(Query!);
-            await OnSearch.InvokeAsync(result?.ToArray() ?? []);
+
+            await OnSearch.InvokeAsync(result.Succeeded ? result.Data : []);
         }
     }
 

@@ -1,70 +1,58 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Features.Identity.DTOs;
-using Cfo.Cats.Domain.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure.Services.Identity;
 
-public class UserService : IUserService
+public class UserService(IMapper mapper, IServiceScopeFactory scopeFactory, ILogger<UserService> logger) 
+    : IUserService
 {
-    private const string Cachekey = "ALL-ApplicationUserDto";
-    private readonly IFusionCache fusionCache;
-    private readonly IMapper mapper;
-    private readonly UserManager<ApplicationUser> userManager;
+    public event Action? OnChange;
 
-    public UserService(IFusionCache fusionCache, IMapper mapper, IServiceScopeFactory scopeFactory)
+    public IReadOnlyList<ApplicationUserDto> DataSource 
     {
-        this.fusionCache = fusionCache;
-        this.mapper = mapper;
-        var scope = scopeFactory.CreateScope();
-        userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        DataSource = new List<ApplicationUserDto>();
+        get 
+        {
+            logger.LogDebug("DataSource called, getting from the database");
+
+            using var scope = scopeFactory.CreateScope();
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+            var query = from a in unitOfWork.DbContext.Users
+                            .AsNoTracking()
+                            .Include(x => x.UserRoles)
+                            .ThenInclude(e => e.Role)
+                        orderby a.UserName ascending
+                        select a;
+
+            var list = query
+                        .AsSplitQuery()
+                        .ProjectTo<ApplicationUserDto>(mapper.ConfigurationProvider)
+                        .ToList();
+            return list.AsReadOnly();
+        }
     }
 
-    public List<ApplicationUserDto> DataSource { get; private set; }
-
-    public event Action? OnChange;
 
     public string? GetDisplayName(string userId)
     {
-        return DataSource.FirstOrDefault(u => u.Id == userId)?.DisplayName;
+        logger.LogDebug("GetDisplayName called, getting from the database");
+
+        using var scope = scopeFactory.CreateScope();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var query = from a in unitOfWork.DbContext.Users
+                        .Where(x => x.Id == userId )
+                    select a.DisplayName;
+
+        return query.FirstOrDefault();
     }
 
-    public void Initialize()
-    {
-        DataSource =
-            fusionCache.GetOrSet(
-                Cachekey,
-                _ =>
-                    userManager
-                        .Users.Include(x => x.UserRoles)
-                        .ThenInclude(x => x.Role)
-                        .ProjectTo<ApplicationUserDto>(mapper.ConfigurationProvider)
-                        .OrderBy(x => x.UserName)
-                        .ToList()
-            ) ?? new List<ApplicationUserDto>();
-        OnChange?.Invoke();
-    }
-
+   
     public void Refresh()
     {
-        fusionCache.Remove(Cachekey);
-        DataSource =
-            fusionCache.GetOrSet(
-                Cachekey,
-                _ =>
-                    userManager
-                        .Users.Include(x => x.UserRoles)
-                        .ThenInclude(x => x.Role)
-                        .ProjectTo<ApplicationUserDto>(mapper.ConfigurationProvider)
-                        .OrderBy(x => x.UserName)
-                        .ToList()
-            ) ?? new List<ApplicationUserDto>();
+        logger.LogInformation("Refresh of UserService called, ignored as this is the none caching service");
         OnChange?.Invoke();
     }
+
 }
