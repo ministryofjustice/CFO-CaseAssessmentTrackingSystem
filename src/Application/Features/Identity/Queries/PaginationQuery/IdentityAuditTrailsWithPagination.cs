@@ -1,4 +1,3 @@
-using Cfo.Cats.Application.Common.Extensions;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Identity.DTOs;
@@ -9,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Identity.Queries.PaginationQuery;
 
 public static class IdentityAuditTrailsWithPagination
 {
-    [RequestAuthorize(Roles = RoleNames.SystemSupport)]
+    [RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsRead)]
     public class Query : IdentityAuditTrailAdvancedFilter,
         IRequest<PaginatedData<IdentityAuditTrailDto>>
     {

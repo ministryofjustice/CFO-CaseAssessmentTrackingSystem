@@ -9,9 +9,9 @@
     FixedHeader="true"
     FixedFooter="true"
     Virtualize="true"
-    @bind-RowsPerPage="defaultPageSize"
+    @bind-RowsPerPage="_defaultPageSize"
     Height="calc(100vh - 300px)"
-    Loading="@loading"
+    Loading="@_loading"
     Hover="true"
     @ref="_table"
     BreakPoint="Breakpoint.Sm">
@@ -63,60 +63,6 @@
         <MudText>@ConstantString.Loading</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })"/>
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })"/>
     </PagerContent>
 </MudDataGrid>
-
-
-@code 
-{
-
-    [Parameter, EditorRequired]
-    public string UserName { get;set; } = default!;
-
-    private IdentityAuditTrailsWithPagination.Query Query { get; } = new();
-
-    private MudDataGrid<IdentityAuditTrailDto> _table = null!;
-
-    private readonly IdentityAuditTrailDto _currentDto = new();
-
-    private bool loading;
-    private int defaultPageSize = 15;
-
-    private async Task<GridData<IdentityAuditTrailDto>> ServerReload(GridState<IdentityAuditTrailDto> state)
-    {
-        try
-        {
-            loading = true;
-            Query.UserName = UserName;
-            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Id";
-            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
-            Query.PageNumber = state.Page + 1;
-            Query.PageSize = state.PageSize;
-
-            var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
-            return new GridData<IdentityAuditTrailDto> { TotalItems = result.TotalItems, Items = result.Items };
-        }
-        finally
-        {
-            loading = false;
-        }
-    }
-    
-    private async Task OnChangedListView(IdentityAuditTrailListView listview)
-    {
-        Query.ListView = listview;
-        await _table.ReloadServerData();
-    }
-
-    private async Task OnRefresh()
-    {
-        await _table.ReloadServerData();
-    }
-
-    private async Task OnSearch(IdentityActionType? identityActionType)
-    {
-        Query.IdentityActionType = identityActionType;
-        await _table.ReloadServerData();
-    }
-}
