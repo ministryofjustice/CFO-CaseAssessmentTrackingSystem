@@ -52,10 +52,15 @@ public class EnrolmentEscalationQueueEntityTypeConfiguration : IEntityTypeConfig
         builder.HasOne(t => t.Tenant)
             .WithMany()
             .HasForeignKey(x => x.TenantId);
-        
+
         builder.HasOne(t => t.Participant)
             .WithMany()
             .HasForeignKey(t => t.ParticipantId);
+
+        builder.HasOne(t => t.SupportWorker)
+            .WithMany()
+            .HasForeignKey(t => t.SupportWorkerId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(e => e.TenantId)
             .IsRequired()
