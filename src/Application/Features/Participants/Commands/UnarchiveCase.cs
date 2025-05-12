@@ -1,10 +1,6 @@
-﻿using Cfo.Cats.Application.Common.Interfaces;
-using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
-using Cfo.Cats.Domain.Entities.Notifications;
-using Cfo.Cats.Domain.Entities.Participants;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
@@ -15,7 +11,7 @@ public static class UnarchiveCase
     public class Command : IRequest<Result>
     {
         public required string ParticipantId { get; set; }
-        [Description("Reason for Unarchive")] public UnarchiveReason UnarchiveReason { get; set; } = UnarchiveReason.ArchivedInError;
+        [Description("Reason for Unarchive")] public UnarchiveReason UnarchiveReason { get; set; } = UnarchiveReason.CaseloadManageable;
         [Description("Additional Information")] public string? AdditionalInformation { get; set; }
     }
 
@@ -44,8 +40,7 @@ public static class UnarchiveCase
             var archivedCount = await unitOfWork.DbContext.ParticipantEnrolmentHistories
                     .Where(eh => eh.ParticipantId == request.ParticipantId && eh.EnrolmentStatus == 4)
                     .CountAsync();
-
-            //need to get previous status
+                        
             var dateOfArchive = await unitOfWork.DbContext.ParticipantEnrolmentHistories
                     .Where(eh => eh.ParticipantId == request.ParticipantId && eh.EnrolmentStatus == 4)
                     .OrderByDescending(eh => eh.Created)
@@ -56,11 +51,6 @@ public static class UnarchiveCase
                 || (dateOfArchive.HasValue && dateOfArchive.Value < DateTime.UtcNow.AddMonths(-6)))
             {
                 participant!.SetRiskDue(DateTime.UtcNow, RiskDueReason.RemovedFromArchive);
-                //var latestAssessment = unitOfWork.DbContext.ParticipantAssessments
-                //        .OrderByDescending(a => a.Created)
-                //        .First();
-
-                //latestAssessment.Completed = DateTime.UtcNow.AddMonths(-3);
             }
 
             participant!.TransitionTo(enrolmentStatus, request.UnarchiveReason.Name, request.AdditionalInformation);
