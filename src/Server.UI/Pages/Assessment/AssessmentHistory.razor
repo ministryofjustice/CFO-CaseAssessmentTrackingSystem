@@ -14,19 +14,32 @@
 @if (_model is not null)
 {
     var orderedTitles = new List<string> { "Working", "Housing", "Money", "Education", "Health & Addiction", "Relationships", "Thoughts & Behaviours", "Wellbeing & Mental Health" };
+    var modelList = _model.Reverse().ToList(); // newest to Oldest
     
     <MudGrid Class="pa-1" Justify="Justify.FlexStart">
-    @foreach(var pdto in _model){
-
+    @* @foreach(var pdto in _model){ *@
+    @for (int i = 0; i < modelList.Count; i++)
+    {
+        var pdto = modelList[i];
+        var previous = i > 0 ? modelList[i - 1] : null;
         <MudItem  md="12">
         @foreach (var title in orderedTitles)
         {
-            var pathway = pdto.PathwayScore.FirstOrDefault(p => p.Pathway == title);
+            @* var pathway = pdto.PathwayScore.FirstOrDefault(p => p.Pathway == title); *@
+            var currentPathway = pdto.PathwayScore.FirstOrDefault(p => p.Pathway == title);
+            var previousPathway = previous?.PathwayScore.FirstOrDefault(p => p.Pathway == title);
 
-            if (pathway != null)
+            if (currentPathway != null)
             {
-
-                <RagComponent Pathway="pathway" ToolTipText="@(pathway.Score.ToString())"></RagComponent>
+                double scoreChange = 0;
+                if (previousPathway != null)
+                    scoreChange = currentPathway.Score - previousPathway.Score;
+                <RagComponent Pathway="currentPathway">
+                    <TooltipContent>
+                                <MudIcon Icon="@(scoreChange > 0 ? @Icons.Material.Filled.TrendingUp : @Icons.Material.Filled.TrendingDown)" Color="@(scoreChange > 0 ? GetColor(scoreChange) : Color.Primary)" />
+                                <span> Score: @currentPathway.Score Change in Score:  @scoreChange</span>
+                    </TooltipContent>
+                </RagComponent>
 
             }
         }
@@ -61,4 +74,10 @@
             }
         }
     }
+    private Color GetColor(double scoreChange) =>
+        scoreChange switch
+        {
+            > 0 => Color.Success,
+            _ => Color.Error,
+        };
 }
