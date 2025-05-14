@@ -10,6 +10,9 @@
         <NuGetAudit>false</NuGetAudit>
     </PropertyGroup>
     <ItemGroup>
+      <Compile Remove="Features\Participants\Queries\GetParticipantAssessmentHistory.cs" />
+    </ItemGroup>
+    <ItemGroup>
         <PackageReference Include="Humanizer.Core.uk" Version="2.14.1" />
         <PackageReference Include="MassTransit.Abstractions" Version="8.4.0" />
         <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="9.0.4" />
