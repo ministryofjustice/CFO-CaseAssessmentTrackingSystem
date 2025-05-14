@@ -1,10 +1,15 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.WellbeingAndMentalHealth;
+using Cfo.Cats.Application.Features.Assessments.DTOs;
+using Cfo.Cats.Application.Features.Assessments.Queries;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.Features.QualityAssurance.Commands;
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components;
+using DocumentFormat.OpenXml.Wordprocessing;
 using IResult = Cfo.Cats.Application.Common.Interfaces.IResult;
+
 namespace Cfo.Cats.Server.UI.Pages.QA.Enrolments;
 
 public partial class QA2
@@ -13,8 +18,7 @@ public partial class QA2
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry = null;
     private ParticipantDto? _participantDto = null;
-
-    bool saving = false;
+    private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
 
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; } = null!;
@@ -44,6 +48,8 @@ public partial class QA2
                 QueueEntryId = _queueEntry.Id,
                 CurrentUser = UserProfile
             };
+
+            await SetLatestParticipantAssessment(_queueEntry.ParticipantId);
         }
         else
         {
@@ -51,41 +57,55 @@ public partial class QA2
         }
     }
 
+    protected async Task SetLatestParticipantAssessment(string participantId)
+    {
+        if (!string.IsNullOrEmpty(participantId))
+        {
+            var query = new GetAssessmentScores.Query()
+            {
+                ParticipantId = participantId
+            };
+
+            var result = await GetNewMediator().Send(query);
+
+            if (result.Succeeded && result.Data != null)
+            {
+                _latestParticipantAssessmentDto = result.Data.MaxBy(pa => pa.CreatedDate);
+            }
+
+        }
+    }
+
     protected async Task SubmitToQa()
     {
-        try
+        await _form!.Validate().ConfigureAwait(false);
+
+        if (_form.IsValid is false)
         {
-            saving = true;
-            await _form!.Validate().ConfigureAwait(false);
+            return;
+        }
 
-            if (_form.IsValid is false)
+        bool submit = true;
+
+        if (Command is { IsMessageExternal: true, Message.Length: > 0 })
+        {
+            submit = await warningMessage!.ShowAsync();
+        }
+
+        if (submit)
+        {
+            var result = await GetNewMediator().Send(Command);
+
+            if (result.Succeeded)
             {
-                return;
+                Snackbar.Add("Participant submitted", Severity.Info);
+                Navigation.NavigateTo("/pages/qa/enrolments/qa2", true);
             }
-
-            bool submit = true;
-
-            if (Command is { IsMessageExternal: true, Message.Length: > 0 })
+            else
             {
-                submit = await warningMessage!.ShowAsync();
-            }
-
-            if (submit)
-            {
-                var result = await GetNewMediator().Send(Command);
-
-                if (result.Succeeded)
-                {
-                    Snackbar.Add("Participant submitted", Severity.Info);
-                    Navigation.NavigateTo("/pages/qa/enrolments/qa2", true);
-                }
-                else
-                {
-                    ShowActionFailure("Failed to submit", result);
-                }
+                ShowActionFailure("Failed to submit", result);
             }
         }
-        finally { saving = false; }
     }
 
     private void ShowActionFailure(string title, IResult result)
@@ -117,5 +137,11 @@ public partial class QA2
     {
         Command.Message = args?.Value?.ToString() ?? string.Empty;
     }
-
 }
+
+        finally { saving = false; }
+        }
+            saving = true;
+        {
+        try
+    bool saving = false;

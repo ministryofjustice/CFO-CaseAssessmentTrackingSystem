@@ -11,73 +11,84 @@
 @page "/pages/participants/{Upci}/assessmenthistory"
 
 
-@if (_model is not null)
+@if (_participantAssessments.Any() == true && _participant is not null)
 {
-    var orderedTitles = new List<string> { "Working", "Housing", "Money", "Education", "Health & Addiction", "Relationships", "Thoughts & Behaviours", "Wellbeing & Mental Health" };
-    var modelList = _model.Reverse().ToList(); // newest to Oldest
-    
-    <MudGrid Class="pa-1" Justify="Justify.FlexStart">
-    @* @foreach(var pdto in _model){ *@
-    @for (int i = 0; i < modelList.Count; i++)
-    {
-        var pdto = modelList[i];
-        var previous = i > 0 ? modelList[i - 1] : null;
-        <MudItem  md="12">
-        @foreach (var title in orderedTitles)
-        {
-            @* var pathway = pdto.PathwayScore.FirstOrDefault(p => p.Pathway == title); *@
-            var currentPathway = pdto.PathwayScore.FirstOrDefault(p => p.Pathway == title);
-            var previousPathway = previous?.PathwayScore.FirstOrDefault(p => p.Pathway == title);
+    <MudPaper Class="pa-2 ma-2" Elevation="3">
 
-            if (currentPathway != null)
-            {
-                double scoreChange = 0;
-                if (previousPathway != null)
-                    scoreChange = currentPathway.Score - previousPathway.Score;
-                <RagComponent Pathway="currentPathway">
-                    <TooltipContent>
+        <MudGrid Class="pa-1" Justify="Justify.FlexStart">
+            <MudItem xs="12">
+
+                <MudStack Row="true" Spacing="2" Reverse="false" Breakpoint="Breakpoint.SmAndDown" AlignItems="AlignItems.Start" Justify="Justify.FlexStart" Wrap="Wrap.Wrap"  >
+                    <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Participant</strong></MudText>
+                    <MudText Typo="Typo.subtitle1">@_participant!.FullName</MudText>
+                    <MudDivider Vertical="true" FlexItem="true"/>
+                    <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Ref</strong></MudText>
+                    <MudText Typo="Typo.subtitle1">@_participant!.Id</MudText>
+                    <MudDivider Vertical="true" FlexItem="true"/>
+                    <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Status</strong></MudText>
+                    <MudText Typo="Typo.subtitle1">@_participant!.EnrolmentStatus!.Name</MudText>
+                    <MudDivider Vertical="true" FlexItem="true"/>
+@*                     <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Assigned To</strong></MudText>
+                    <MudText Typo="Typo.subtitle1">@($"{_participant!.SupportWorker} ({_participant!.TenantId}) ")</MudText>
+                    <MudDivider Vertical="true" FlexItem="true"/>
+                    <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Location</strong></MudText>
+                    <MudText Typo="Typo.subtitle1">@_participant!.CurrentLocation.Name</MudText> *@
+                </MudStack>
+
+            </MudItem>
+        </MudGrid>
+
+        <MudGrid Class="pa-1" Justify="Justify.FlexStart">
+        @foreach (var participantAssessmentDto in _participantAssessments)
+        {
+            <MudItem md="12">
+                <MudStack Row="true" Spacing="2" Reverse="false" Breakpoint="Breakpoint.SmAndDown" AlignItems="AlignItems.Start" Justify="Justify.FlexStart" Wrap="Wrap.Wrap"  >
+                    <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Completed</strong></MudText>
+                        <MudText Typo="Typo.subtitle1">@participantAssessmentDto.Completed!.Value.ToString("dd/MM/yyyy")</MudText>
+                    <MudDivider Vertical="true" FlexItem="true"/>
+                    <MudText Typo="Typo.subtitle1">
+                        @GetSinceConsentDate(participantAssessmentDto.Completed)
+                    </MudText >
+                    <MudText Typo="Typo.subtitle1" Color="Color.Info">since participant consented</MudText>
+
+                </MudStack>
+                <RagBar Model="@participantAssessmentDto" />
+                <MudStack Row="true" Spacing="2" Reverse="false" Breakpoint="Breakpoint.SmAndDown" AlignItems="AlignItems.Start" Justify="Justify.FlexStart" Wrap="Wrap.Wrap">
+                    <MudText Typo="Typo.subtitle1" Color="Color.Info"><strong>Assessment Location</strong></MudText>
+                    <MudText Typo="Typo.subtitle1">@participantAssessmentDto.LocationName</MudText>
+                </MudStack>
+                    <MudDivider Class="my-3" />
+            </MudItem>
+            }
+        </MudGrid>
+    </MudPaper>
+    @* 
+        var orderedTitles = new List<string> { "Working", "Housing", "Money", "Education", "Health & Addiction", "Relationships", "Thoughts & Behaviours", "Wellbeing & Mental Health" };
+        
+        <MudGrid Class="pa-1" Justify="Justify.FlexStart">
+        @foreach (var pdto in _model)
+        {
+
+            <MudItem md="12">
+                @foreach (var title in orderedTitles)
+                {
+                    var pathway = pdto.PathwayScore.FirstOrDefault(p => p.Pathway == title);
+
+                    if (pathway != null)
+                    {
+
+                        <RagComponent Pathway="pathway">
+                            <TooltipContent>
                                 <MudIcon Icon="@(scoreChange > 0 ? @Icons.Material.Filled.TrendingUp : @Icons.Material.Filled.TrendingDown)" Color="@(scoreChange > 0 ? GetColor(scoreChange) : Color.Primary)" />
-                                <span> Score: @currentPathway.Score Change in Score:  @scoreChange</span>
-                    </TooltipContent>
-                </RagComponent>
+                                <span> Score: @pathway.Score</span>
+                            </TooltipContent>
+                        </RagComponent>
 
-            }
+                    }
+                }
+                <MudDivider Class="my-3" />
+            </MudItem>
         }
-        <MudDivider Class="my-3" />
-        </MudItem>
-    }
-    </MudGrid>
+    </MudGrid> *@
 }
 
-@code {
-    private IEnumerable<ParticipantAssessmentDto> _model = Enumerable.Empty<ParticipantAssessmentDto>();
-    
-    [CascadingParameter] public UserProfile UserProfile { get; set; } = default!;
-
-    [Parameter]
-    public string Upci { get; set; } = string.Empty;
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (!string.IsNullOrEmpty(Upci))
-        {
-            var query = new GetAssessmentScores.Query()
-            {
-                ParticipantId = Upci
-            };
-
-            var result = await GetNewMediator().Send(query);
-
-            if (result.Succeeded && result.Data != null)
-            {
-                _model =  result.Data.OrderByDescending(pa => pa.CreatedDate);
-            }
-        }
-    }
-    private Color GetColor(double scoreChange) =>
-        scoreChange switch
-        {
-            > 0 => Color.Success,
-            _ => Color.Error,
-        };
-}

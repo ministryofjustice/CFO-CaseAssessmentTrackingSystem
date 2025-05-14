@@ -1,4 +1,6 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Assessments.DTOs;
+using Cfo.Cats.Application.Features.Assessments.Queries;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.Features.QualityAssurance.Commands;
@@ -15,8 +17,7 @@ public partial class QA1
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry = null;
     private ParticipantDto? _participantDto = null;
-
-    bool saving = false;
+    private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
 
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; } = null!;
@@ -46,6 +47,8 @@ public partial class QA1
                 QueueEntryId = _queueEntry.Id,
                 CurrentUser = UserProfile
             };
+
+            await SetLatestParticipantAssessment(_queueEntry.ParticipantId);
         }
         else
         {
@@ -53,30 +56,46 @@ public partial class QA1
         }
     }
 
+    protected async Task SetLatestParticipantAssessment(string participantId)
+    {
+        if (!string.IsNullOrEmpty(participantId))
+        {
+            var query = new GetAssessmentScores.Query()
+            {
+                ParticipantId = participantId
+            };
+
+            var result = await GetNewMediator().Send(query);
+
+            if (result.Succeeded && result.Data != null)
+            {
+                _latestParticipantAssessmentDto = result.Data.MaxBy(pa => pa.CreatedDate);
+            }
+
+        }
+    }
+
     protected async Task SubmitToQa()
     {
-        try
+        await _form!.Validate().ConfigureAwait(false);
+
+        if (_form.IsValid is false)
         {
-            saving = true;
-            await _form!.Validate().ConfigureAwait(false);
-
-            if (_form.IsValid is false)
-            {
-                return;
-            }
-            var result = await GetNewMediator().Send(Command);
-
-            if (result.Succeeded)
-            {
-                Snackbar.Add("Participant submitted to QA2", Severity.Info);
-                Navigation.NavigateTo("/pages/qa/enrolments/qa1", true);
-            }
-            else
-            {
-                ShowActionFailure("Failed to submit", result);
-            }
+            return;
         }
-        finally { saving = false; }
+
+        var result = await GetNewMediator().Send(Command);
+
+        if (result.Succeeded)
+        {
+            Snackbar.Add("Participant submitted to QA2", Severity.Info);
+            Navigation.NavigateTo("/pages/qa/enrolments/qa1", true);
+        }
+        else
+        {
+            ShowActionFailure("Failed to submit", result);
+        }
+
     }
 
     private void ShowActionFailure(string title, IResult result)
@@ -109,3 +128,10 @@ public partial class QA1
         Command.Message = args?.Value?.ToString() ?? string.Empty;
     }
 }
+
+    bool saving = false;
+        try
+        {
+            saving = true;
+        }
+        finally { saving = false; }

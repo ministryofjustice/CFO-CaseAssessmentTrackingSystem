@@ -8,6 +8,9 @@ public class ParticipantAssessmentDto
     public required string ParticipantId { get; set; } 
     public required PathwayScore[] PathwayScore { get; set; }
     public required DateTime CreatedDate { get; set; }
+    public DateTime? Completed { get;  set; }
+    public int LocationId { get; set; }
+    public string LocationName { get; set; } = string.Empty;
 
     private class Mapping : Profile
     {
@@ -15,7 +18,8 @@ public class ParticipantAssessmentDto
         {
             CreateMap<ParticipantAssessment, ParticipantAssessmentDto>()
                 .ForMember(p => p.CreatedDate, options => options.MapFrom(source => source.Created))
-                .ForMember(p => p.PathwayScore, options => options.MapFrom(source => source.Scores));
+                .ForMember(p => p.PathwayScore, options => options.MapFrom(source => source.Scores))
+                .ForMember(p => p.Completed, options => options.MapFrom(source => source.Completed));
         }
     }
 }

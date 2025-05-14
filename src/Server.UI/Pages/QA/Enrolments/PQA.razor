@@ -3,7 +3,7 @@
 @attribute [Authorize(Policy = SecurityPolicies.Pqa)]
 @using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.Participants.DTOs
-
+@using Cfo.Cats.Application.Features.Assessments.DTOs
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 
@@ -64,7 +64,7 @@
                     <RightToWorkTabPanel ParticipantDto="_participantDto" ShowRightToWorkWarning="@_showRightToWorkWarning" />
                 </MudTabPanel>
                 <MudTabPanel Text="Assessment" Icon="@(_participantDto.AssessmentJustification is not null ? Icons.Material.Filled.Warning : string.Empty)" IconColor="Color.Warning">
-                    <AssessmentTabPanel ParticipantDto="_participantDto"/>
+                    <AssessmentTabPanel ParticipantDto="_participantDto" ParticipantAssessmentDto="@_latestParticipantAssessmentDto" />
                 </MudTabPanel>
                 <MudTabPanel Text="Submission">
                     @if (_queueEntry.IsCompleted == false)
@@ -102,4 +102,3 @@
         </MudItem>
     </MudGrid>
 }
-
