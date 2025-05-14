@@ -140,7 +140,7 @@ public static class SubmitQa1Response
 
             RuleFor(c => c)
                 .MustAsync(OwnerMustNotBeApprover)
-                .WithMessage("This assessment is created by you hence must not be processed at QA1 stage by you");
+                .WithMessage("This enrolment was assigned to you hence must not be processed at QA1 stage by you");
         }
 
         private async Task<bool> OwnerMustNotBeApprover(Command c, CancellationToken cancellationToken)

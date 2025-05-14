@@ -147,7 +147,7 @@ public static class SubmitPqaResponse
 
             RuleFor(c => c)
                 .Must(OwnerMustNotBeApprover)
-                .WithMessage("This assessment is created by you hence must not be processed at PQA stage by you");
+                .WithMessage("This enrolment was assigned to you hence must not be processed at PQA stage by you");
         }
 
         private bool OwnerMustNotBeApprover(Command c)
