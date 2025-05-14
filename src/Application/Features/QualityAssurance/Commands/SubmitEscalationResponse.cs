@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -151,7 +151,7 @@ public static class SubmitEscalationResponse
 
             RuleFor(c => c)
                 .MustAsync(OwnerMustNotBeApprover)
-                .WithMessage("This assessment is created by you hence must not be processed at Escalation stage by you");
+                .WithMessage("This enrolment was assigned to you hence must not be processed at Escalation stage by you");
         }
 
         private async Task<bool> OwnerMustNotBeApprover(Command c, CancellationToken cancellationToken)
