@@ -3,9 +3,6 @@ using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Assessments.Queries;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
-using Cfo.Cats.Infrastructure.Persistence;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using Color = MudBlazor.Color;
 
 namespace Cfo.Cats.Server.UI.Pages.Assessment
 {

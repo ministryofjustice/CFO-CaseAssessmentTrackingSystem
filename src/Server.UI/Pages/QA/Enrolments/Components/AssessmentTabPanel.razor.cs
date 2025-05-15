@@ -1,6 +1,5 @@
 using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Participants.DTOs;
-using Cfo.Cats.Application.Features.Assessments.Queries;
 
 namespace Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components
 {

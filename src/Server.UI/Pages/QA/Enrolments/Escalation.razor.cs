@@ -1,5 +1,4 @@
 using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Features.Assessments.DTOs.V1.Pathways.WellbeingAndMentalHealth;
 using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Assessments.Queries;
 using Cfo.Cats.Application.Features.Participants.DTOs;
@@ -8,7 +7,6 @@ using Cfo.Cats.Application.Features.QualityAssurance.Commands;
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Application.Features.QualityAssurance.Queries;
 using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components;
-using DocumentFormat.OpenXml.Wordprocessing;
 using IResult = Cfo.Cats.Application.Common.Interfaces.IResult;
 
 namespace Cfo.Cats.Server.UI.Pages.QA.Enrolments;
