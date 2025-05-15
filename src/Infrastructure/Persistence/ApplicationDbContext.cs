@@ -110,6 +110,7 @@ public class ApplicationDbContext
     public DbSet<DateDimension> DateDimensions => Set<DateDimension>();
 
     public DbSet<SupportAndReferralPayment> SupportAndReferralPayments => Set<SupportAndReferralPayment>();
+    public DbSet<ReassessmentPayment> ReassessmentPayments => Set<ReassessmentPayment>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

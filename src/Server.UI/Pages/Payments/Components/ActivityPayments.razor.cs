@@ -27,7 +27,9 @@ public partial class ActivityPayments
     {
         var unitOfWork = GetNewUnitOfWork();
 
-        var query = from ep in unitOfWork.DbContext.ActivityPayments
+        var query = 
+        (
+            from ep in unitOfWork.DbContext.ActivityPayments
             join dd in unitOfWork.DbContext.DateDimensions on ep.PaymentPeriod equals dd.TheDate
             join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
             join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id
@@ -51,7 +53,36 @@ public partial class ActivityPayments
                 ep.PaymentPeriod,
                 TenantId = c!.Tenant!.Id!,
                 ParticipantName = p.FirstName + " " + p.LastName
-            };
+            }
+        )
+        .Union
+        (
+                from re in unitOfWork.DbContext.ReassessmentPayments
+                join dd in unitOfWork.DbContext.DateDimensions on re.PaymentPeriod equals dd.TheDate
+                join c in unitOfWork.DbContext.Contracts on re.ContractId equals c.Id
+                join l in unitOfWork.DbContext.Locations on re.LocationId equals l.Id
+                join p in unitOfWork.DbContext.Participants on re.ParticipantId equals p.Id
+                where dd.TheMonth == Month && dd.TheYear == Year
+                select new
+                {
+                    ActivityInput = re.AssessmentCreated, // AssessmentCreated
+                    CommencedDate = re.AssessmentCompleted, // AssessmentCreated? 
+                    ActivityApproved = re.AssessmentCompleted,
+                    PaymentDate = re.PaymentPeriod,
+                    re.ParticipantId,
+                    re.EligibleForPayment,
+                    ActivityCategory = "Participant Reassessment",
+                    ActivityType = ActivityType.SupportWork.Name,
+                    Contract = c.Description,
+                    ContractId = c.Id,
+                    re.LocationType,
+                    Location = l.Name,
+                    re.IneligibilityReason,
+                    re.PaymentPeriod,
+                    TenantId = c!.Tenant!.Id!,
+                    ParticipantName = p.FirstName + " " + p.LastName
+                }
+        );
 
         query = Contract is null
             ? query.Where(q => q.TenantId.StartsWith(CurrentUser.TenantId!))
