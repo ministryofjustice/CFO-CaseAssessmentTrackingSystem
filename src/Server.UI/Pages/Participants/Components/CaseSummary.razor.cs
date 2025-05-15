@@ -122,14 +122,17 @@ public partial class CaseSummary
             Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessment/{state.Data}");
         }
     }
+
     public void ContinueAssessment()
     {
         Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessment/{_latestAssessment!.AssessmentId}");
     }
+
     public void ViewAssessmentHistory()
     {
         Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessmenthistory");
     }
+
     /// <summary>
     /// If true, indicates we are creating our first ever assessment. 
     /// </summary>
@@ -161,6 +164,7 @@ public partial class CaseSummary
         } &&
                ParticipantSummaryDto.EnrolmentStatus.SupportsReassessment();
     }
+
     private bool IsAssessmentHistoryAvailable() => ParticipantSummaryDto.Assessments.Any(a => a.Completed.HasValue);
 
     private bool HasRiskInformation() => ParticipantSummaryDto.LatestRisk is not null;
