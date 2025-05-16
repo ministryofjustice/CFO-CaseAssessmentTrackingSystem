@@ -3,42 +3,16 @@
 
 @inherits CatsComponentBase
 
-@if (_model is not null)
+@if (Model is not null)
 {
     var orderedTitles = new List<string> { "Working", "Housing", "Money", "Education", "Health & Addiction", "Relationships", "Thoughts & Behaviours", "Wellbeing & Mental Health" };
     @foreach (var title in orderedTitles)
     {
-        var pathway = _model.PathwayScore.FirstOrDefault(p => p.Pathway == title);
+        var pathway = Model.PathwayScore.FirstOrDefault(p => p.Pathway == title);
 
         if (pathway != null)
         {
             <RagComponent Pathway="pathway"></RagComponent>
-        }
-    }
-}
-
-@code {
-    private ParticipantAssessmentDto? _model = null;
-    
-    [Parameter]
-    [EditorRequired]
-    public string ParticipantId { get; set; } = default!;
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (!string.IsNullOrEmpty(ParticipantId))
-        {
-            var query = new GetAssessmentScores.Query()
-                {
-                    ParticipantId = ParticipantId
-                };
-
-            var result = await GetNewMediator().Send(query);
-
-            if (result.Succeeded && result.Data != null)
-            {
-                _model = result.Data.MaxBy(pa => pa.CreatedDate);
-            }
         }
     }
 }

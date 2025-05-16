@@ -2,6 +2,7 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Application.Features.Assessments.Queries;
 
@@ -27,13 +28,22 @@ public static class GetAssessmentScores
 
         public async Task<Result<IEnumerable<ParticipantAssessmentDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var query = _unitOfWork.DbContext.ParticipantAssessments
-                .Include(pa => pa.Scores)
-                .Where(pa => pa.ParticipantId == request.ParticipantId)
-                .AsNoTracking()
-                .ProjectTo<ParticipantAssessmentDto>(_mapper.ConfigurationProvider);
+            var query = (from pa in _unitOfWork.DbContext.ParticipantAssessments
+                         join l in _unitOfWork.DbContext.Locations on pa.LocationId equals l.Id
+                         where pa.ParticipantId == request.ParticipantId
+                         select new ParticipantAssessmentDto
+                         {
+                             ParticipantId = pa.ParticipantId,
+                             CreatedDate = pa.Created!.Value,
+                             Completed = pa.Completed,
+                             LocationId = pa.LocationId,
+                             LocationName = l.Name, // Directly access LocationName
+                             PathwayScore = pa.Scores.Select(s => new PathwayScore(s.Pathway, s.Score)).ToArray()
+                         })
+                         .AsNoTracking();
 
             var result = await query.ToListAsync(cancellationToken);
+
             return Result<IEnumerable<ParticipantAssessmentDto>>.Success(result);
         }
     }
