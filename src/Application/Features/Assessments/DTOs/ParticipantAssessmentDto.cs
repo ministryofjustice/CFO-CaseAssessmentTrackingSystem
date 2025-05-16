@@ -19,7 +19,9 @@ public class ParticipantAssessmentDto
             CreateMap<ParticipantAssessment, ParticipantAssessmentDto>()
                 .ForMember(p => p.CreatedDate, options => options.MapFrom(source => source.Created))
                 .ForMember(p => p.PathwayScore, options => options.MapFrom(source => source.Scores))
-                .ForMember(p => p.Completed, options => options.MapFrom(source => source.Completed));
+                .ForMember(p => p.Completed, options => options.MapFrom(source => source.Completed))
+                .ForMember(p => p.LocationId, options => options.MapFrom(source => source.LocationId))
+                .ForMember(p => p.LocationName, options => options.Ignore());
         }
     }
 }
