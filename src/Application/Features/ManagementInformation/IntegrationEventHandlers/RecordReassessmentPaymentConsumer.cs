@@ -67,7 +67,7 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
                                   && rp.EligibleForPayment
                                   && rp.PaymentPeriod.Date <= ddTo.TheLastOfMonth
                             select new Data.Assessment(rp.PaymentPeriod)
-                        ),
+                        ).ToArray(),
                         ContractId = l.Contract!.Id,
                         LocationId = l.Id,
                         LocationType = l.LocationType.Name,
@@ -100,7 +100,7 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
         public bool HaveAnyPaymentsBeenMadeInLastTwoPaymentMonths => PreviouslyPaidAssessments.Any(a => a.PaidOn >= PeriodFrom);
 
         public required DateTime InitialAssessmentCompletedOn { get; set; }
-        public IEnumerable<Assessment> PreviouslyPaidAssessments { get; set; } = [];
+        public Assessment[] PreviouslyPaidAssessments { get; set; } = [];
         public required DateTime Created { get; set; }
         public required string ParticipantId { get; set; }
         public required string TenantId { get; set; }
