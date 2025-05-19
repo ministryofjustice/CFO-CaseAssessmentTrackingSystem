@@ -3,10 +3,10 @@
 @attribute [Authorize(Policy = SecurityPolicies.Pqa)]
 @using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.Participants.DTOs
-@using Cfo.Cats.Application.Features.Participants.Queries
+
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
-@using Cfo.Cats.Application.Features.QualityAssurance.Queries
+
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components
@@ -88,7 +88,7 @@
                             <MudText Class="ml-2">Characters: @CharacterCount / 1000</MudText>
                         </MudForm>
                         <MudContainer Class="d-flex px-0 pt-8">
-                            <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
+                            <MudLoadingButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled" Loading="saving">Submit</MudLoadingButton>
                         </MudContainer>
                     }
                     else
@@ -103,123 +103,3 @@
     </MudGrid>
 }
 
-@code {
-    private MudForm? _form;
-    private EnrolmentQueueEntryDto? _queueEntry;
-    private ParticipantDto? _participantDto;
-    private ParticipantSummaryDto? _participantSummaryDto;
-
-    [Parameter] public Guid Id { get; set; }
-
-    [CascadingParameter] public UserProfile? UserProfile { get; set; }
-
-    private SubmitPqaResponse.Command Command { get; set; } = default!;
-
-    private string _rtwInfo = String.Empty;
-    private string _rtwIcon = String.Empty;
-    private Color _rtwIconColor = Color.Transparent;
-    private bool _showRightToWorkWarning = false;
-    private bool _pqaResponseDisabled = false;
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (_participantDto is null)
-        {
-            var result = await GetNewMediator().Send(new GetPqaEntryById.Query
-            {
-                Id = Id,
-                CurrentUser = UserProfile
-            });
-
-            if (result.Succeeded)
-            {
-                _queueEntry = result.Data!;
-                _participantDto = await GetNewMediator().Send(new GetParticipantById.Query
-                {
-                    Id = _queueEntry.ParticipantId
-                });
-
-                Command = new SubmitPqaResponse.Command
-                {
-                    QueueEntryId = Id,
-                    CurrentUser = UserProfile
-                };
-
-                _participantSummaryDto = await GetNewMediator().Send(new GetParticipantSummary.Query()
-                {
-                    ParticipantId = _participantDto.Id,
-                    CurrentUser = UserProfile!
-                });
-            }
-
-            StateHasChanged();
-            ShowRightToWorkWarning();
-        }
-    }
-
-    protected async Task SubmitToQa()
-    {
-        await _form!.Validate().ConfigureAwait(false);
-        if (_form.IsValid)
-        {
-            var result = await GetNewMediator().Send(Command);
-
-            var message = Command.Response switch
-            {
-                SubmitPqaResponse.PqaResponse.Accept => "Participant submitted to QA",
-                SubmitPqaResponse.PqaResponse.Return => "Participant returned to Support Worker",
-                _ => "Comment added"
-            };
-
-
-            if (result.Succeeded)
-            {
-                Snackbar.Add(message, Severity.Info);
-                Navigation.NavigateTo("/pages/qa/enrolments/pqa");
-            }
-            else
-            {
-                ShowActionFailure("Failed to return to submit", result);
-            }
-        }
-    }
-
-    private void ShowActionFailure(string title, IResult result)
-    {
-        Snackbar.Add(
-            @<div>
-                <h2>@title</h2>
-                <ul>
-                    @foreach (var e in result.Errors)
-                    {
-                        <li>@e</li>
-                    }
-                </ul>
-            </div>
-    , Severity.Error, options =>
-            {
-                options.RequireInteraction = true;
-                options.SnackbarVariant = Variant.Text;
-            });
-    }
-
-    private int CharacterCount => Command.Message?.Length ?? 0;
-
-    void ShowRightToWorkWarning()
-    {
-        _showRightToWorkWarning = _participantSummaryDto!.IsRightToWorkRequired
-                                && _participantSummaryDto!.ConsentStatus == Domain.Common.Enums.ConsentStatus.GrantedStatus
-                                && _participantSummaryDto!.HasActiveRightToWork == false;
-
-        if (_showRightToWorkWarning)
-        {
-            _rtwInfo = "Right To Work required!";
-            _rtwIcon = Icons.Material.Filled.Error;
-            _rtwIconColor = Color.Error;
-
-            _pqaResponseDisabled = true;
-            Command.Response = SubmitPqaResponse.PqaResponse.Return;
-        }
-    }
-
-}
