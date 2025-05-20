@@ -6,23 +6,22 @@ namespace Cfo.Cats.Infrastructure.Services.OffLoc;
 public class CachingOffLocService(IFusionCache cache, IOfflocService offlocService)
     : IOfflocService
 {
-    public async Task<Result<PersonalDetailsDto>> GetPersonalDetailsAsync(string nomisNumber)
+    public async Task<Result<SentenceDataDto>> GetSentenceDataAsync(string nomsNumber)
     {
-        string cacheKey = $"CachingOffLockService-PersonalDetails-{nomisNumber}";
+        string cacheKey = $"CachingOffLockService-SentenceDataDto-{nomsNumber}";
 
-        var cached = await cache.TryGetAsync<Result<PersonalDetailsDto>>(cacheKey);
+        var cached = await cache.TryGetAsync<Result<SentenceDataDto>>(cacheKey);
 
         if (cached.HasValue)
         {
             return cached.Value;
         }
 
-        var result = await offlocService.GetPersonalDetailsAsync(nomisNumber);
+        var result = await offlocService.GetSentenceDataAsync(nomsNumber);
 
         if (result.Succeeded)
         {
-            // we only cache successful results
-            await cache.SetAsync(cacheKey, result, TimeSpan.FromMinutes(20));
+            await cache.SetAsync(cacheKey, result, TimeSpan.FromMinutes(20), tags: ["dms"]);
         }
 
         return result;
