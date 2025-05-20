@@ -22,7 +22,7 @@ public class CachingDeliusService(IFusionCache cache, IDeliusService deliusServi
         if (result.Succeeded)
         {
             // we only cache successful results
-            await cache.SetAsync(cacheKey, result, TimeSpan.FromMinutes(20));
+            await cache.SetAsync(cacheKey, result, TimeSpan.FromMinutes(20), tags: ["dms"]);
         }
 
         return result;
