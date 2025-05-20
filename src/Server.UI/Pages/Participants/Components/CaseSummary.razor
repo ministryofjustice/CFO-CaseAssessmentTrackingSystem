@@ -137,12 +137,6 @@
                     <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginAssessment"/>
                 </MudTooltip>
             }
-            @if (IsAssessmentHistoryAvailable())
-            {
-                <MudTooltip Text="History">
-                        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.WorkHistory" Variant="Variant.Outlined" OnClick="ViewAssessmentHistory" />
-                </MudTooltip>
-            }
             </MudStack>
         </MudCardActions>
     </MudCard>
