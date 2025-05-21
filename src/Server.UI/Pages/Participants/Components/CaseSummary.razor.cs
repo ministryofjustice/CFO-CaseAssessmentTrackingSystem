@@ -123,6 +123,11 @@ public partial class CaseSummary
         }
     }
 
+    public void GotoHistory()
+    {
+        Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/ParticipantActiveHistory/");      
+    }
+
     public void ContinueAssessment()
     {
         Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessment/{_latestAssessment!.AssessmentId}");
