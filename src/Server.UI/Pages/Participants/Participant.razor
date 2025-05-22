@@ -6,6 +6,7 @@
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.DMS
+@using Cfo.Cats.Server.UI.Pages.Participants.Components.Histories
 @using Humanizer
 
 @inherits CatsComponentBase
@@ -57,52 +58,89 @@
                     }
 
                     <MudTabs Class="primary-tabs mt-2" Outlined="true" Color="Color.Info" Border="true" Style="height: 100%;">
+
                         <MudTabPanel Text="Case Summary">
-                            <CaseSummary/>
+                            <MudTabs Outlined="true" Border="true" Class="mt-2">
+
+                                <MudTabPanel Text="Latest">
+                                    <CaseSummary />
+                                </MudTabPanel>
+                                <MudTabPanel Text="Active History">
+                                    <MudText> </MudText>
+                                    <ParticipantActiveHistory ParticipantId="@_participant.Id" />
+                                </MudTabPanel>
+
+                            </MudTabs>
                         </MudTabPanel>
+
                         <MudTabPanel Text="About">
                             <CaseAbout ParticipantId="@_participant.Id" />
                         </MudTabPanel>
                         <MudTabPanel Text="Inductions">
-                            <Inductions ParticipantId="@_participant.Id"/>
+                            <Inductions ParticipantId="@_participant.Id" />
                         </MudTabPanel>
                         <MudTabPanel Text="Sentence Information">
                             <CaseSentenceInformation ParticipantId="@Id" />
                             <ExternalData ParticipantId="@Id" ConsentStatus="@_participant.ConsentStatus" />
                         </MudTabPanel>
                         <MudTabPanel Text="Risk" ID="@Id" Icon="@_riskIcon" IconColor="@_riskIconColor" ToolTip="@_riskInfo">
-                            <CaseRisk ParticipantId="@Id"/>
+                            <CaseRisk ParticipantId="@Id" />
                         </MudTabPanel>
                         <MudTabPanel Text="Assessments" Icon="@_assessmentIcon" IconColor="@_assessmentIconColor" ToolTip="@_assessmentInfo">
                             <CaseAssessment ParticipantId="@Id" ConsentDate="@_participant.DateOfFirstConsent"/>
                         </MudTabPanel>
                         <MudTabPanel Text="PRI" Icon="@_priDueIcon" IconColor="@_priDueIconColor" ToolTip="@_priDueToolTip">
-                            <CasePRI ParticipantId="@Id" OnUpdate="Refresh"/>
+                            <CasePRI ParticipantId="@Id" OnUpdate="Refresh" />
                         </MudTabPanel>
                         <MudTabPanel Text="Bio" Icon="@_bioIcon" IconColor="@_bioIconColor" ToolTip="@_bioInfo">
-                            <CaseBio ParticipantId="@Id"/>
+                            <CaseBio ParticipantId="@Id" />
                         </MudTabPanel>
                         <MudTabPanel Text="Documents">
-                            <CaseDocuments ParticipantId="@Id"/>
+                            <CaseDocuments ParticipantId="@Id" />
                         </MudTabPanel>
                         <MudTabPanel Text="Pathway Plan">
-                            <CasePathwayPlan ParticipantId="@Id" OnUpdate="Refresh"/>
+                            <CasePathwayPlan ParticipantId="@Id" OnUpdate="Refresh" />
                         </MudTabPanel>
                         <MudTabPanel Text="Notes">
-                            <CaseNotes ParticipantId="@Id"/>
+                            <CaseNotes ParticipantId="@Id" />
                         </MudTabPanel>
                         <MudTabPanel Text="Timeline">
-                            <CaseTimeline/>
+                            <CaseTimeline />
                         </MudTabPanel>
 
                         @if (UserProfile.AssignedRoles.Any(r =>
-                  r is RoleNames.SystemSupport or RoleNames.SMT or RoleNames.QAManager))
+                      r is RoleNames.SystemSupport or RoleNames.SMT or RoleNames.QAManager))
                         {
                             <MudTabPanel Text="Audit">
-                                <ParticipantAudit Id="@Id"/>
+                                <ParticipantAudit Id="@Id" />
                             </MudTabPanel>
                         }
-                    </MudTabs>
+
+                        <MudTabPanel Text="Histories">
+                            <MudTabs Outlined="true" Border="true" Class="mt-2">
+                                <MudTabPanel Text="Histories">
+                                    <MudExpansionPanels Class="pa-3 m-3" MultiExpansion="true">
+                                        <MudExpansionPanel>
+                                            <TitleContent>
+                                                <div class="d-flex">
+                                                    <MudText>Case Active History</MudText>
+                                                </div>
+                                            </TitleContent>
+                                            <ChildContent>
+                                                <MudGrid Class="mb-4 px-10">
+                                                    <ParticipantActiveHistory ParticipantId="@_participant.Id" />
+                                                </MudGrid>
+                                            </ChildContent>
+                                        </MudExpansionPanel>                                        
+                                    </MudExpansionPanels>
+                                </MudTabPanel>
+                                <MudTabPanel Text="Case Active">                                    
+                                     <ParticipantActiveHistory ParticipantId="@_participant.Id" /> 
+                                </MudTabPanel>
+                            </MudTabs>
+
+                        </MudTabPanel>
+                            </MudTabs>
                 }
             </MudPaper>
         </CascadingValue>
