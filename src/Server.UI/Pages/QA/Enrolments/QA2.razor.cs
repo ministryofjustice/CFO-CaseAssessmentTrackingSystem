@@ -17,7 +17,7 @@ public partial class QA2
     private EnrolmentQueueEntryDto? _queueEntry = null;
     private ParticipantDto? _participantDto = null;
     private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
-
+    private bool _saving = false;
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; } = null!;
 
@@ -76,34 +76,39 @@ public partial class QA2
 
     protected async Task SubmitToQa()
     {
-        await _form!.Validate().ConfigureAwait(false);
-
-        if (_form.IsValid is false)
+        try
         {
-            return;
-        }
+            _saving = true;
+            await _form!.Validate().ConfigureAwait(false);
 
-        bool submit = true;
-
-        if (Command is { IsMessageExternal: true, Message.Length: > 0 })
-        {
-            submit = await warningMessage!.ShowAsync();
-        }
-
-        if (submit)
-        {
-            var result = await GetNewMediator().Send(Command);
-
-            if (result.Succeeded)
+            if (_form.IsValid is false)
             {
-                Snackbar.Add("Participant submitted", Severity.Info);
-                Navigation.NavigateTo("/pages/qa/enrolments/qa2", true);
+                return;
             }
-            else
+
+            bool submit = true;
+
+            if (Command is { IsMessageExternal: true, Message.Length: > 0 })
             {
-                ShowActionFailure("Failed to submit", result);
+                submit = await warningMessage!.ShowAsync();
+            }
+
+            if (submit)
+            {
+                var result = await GetNewMediator().Send(Command);
+
+                if (result.Succeeded)
+                {
+                    Snackbar.Add("Participant submitted", Severity.Info);
+                    Navigation.NavigateTo("/pages/qa/enrolments/qa2", true);
+                }
+                else
+                {
+                    ShowActionFailure("Failed to submit", result);
+                }
             }
         }
+        finally { _saving = false; }
     }
 
     private void ShowActionFailure(string title, IResult result)
@@ -136,10 +141,3 @@ public partial class QA2
         Command.Message = args?.Value?.ToString() ?? string.Empty;
     }
 }
-
-        finally { saving = false; }
-        }
-            saving = true;
-        {
-        try
-    bool saving = false;

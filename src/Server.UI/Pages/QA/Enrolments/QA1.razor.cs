@@ -18,6 +18,7 @@ public partial class QA1
     private EnrolmentQueueEntryDto? _queueEntry = null;
     private ParticipantDto? _participantDto = null;
     private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
+    private bool _saving = false;
 
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; } = null!;
@@ -77,24 +78,30 @@ public partial class QA1
 
     protected async Task SubmitToQa()
     {
-        await _form!.Validate().ConfigureAwait(false);
-
-        if (_form.IsValid is false)
+        try
         {
-            return;
-        }
+            _saving = true;
 
-        var result = await GetNewMediator().Send(Command);
+            await _form!.Validate().ConfigureAwait(false);
 
-        if (result.Succeeded)
-        {
-            Snackbar.Add("Participant submitted to QA2", Severity.Info);
-            Navigation.NavigateTo("/pages/qa/enrolments/qa1", true);
+            if (_form.IsValid is false)
+            {
+                return;
+            }
+
+            var result = await GetNewMediator().Send(Command);
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add("Participant submitted to QA2", Severity.Info);
+                Navigation.NavigateTo("/pages/qa/enrolments/qa1", true);
+            }
+            else
+            {
+                ShowActionFailure("Failed to submit", result);
+            }
         }
-        else
-        {
-            ShowActionFailure("Failed to submit", result);
-        }
+        finally { _saving = false; }
 
     }
 
@@ -128,10 +135,3 @@ public partial class QA1
         Command.Message = args?.Value?.ToString() ?? string.Empty;
     }
 }
-
-    bool saving = false;
-        try
-        {
-            saving = true;
-        }
-        finally { saving = false; }

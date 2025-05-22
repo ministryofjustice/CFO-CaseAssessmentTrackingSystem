@@ -18,7 +18,7 @@ public partial class Escalation
     private EnrolmentQueueEntryDto? _queueEntry;
     private ParticipantDto? _participantDto;
     private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
-
+    private bool _saving = false;
     [Parameter] public Guid Id { get; set; }
 
     [CascadingParameter] public UserProfile? UserProfile { get; set; }
@@ -77,41 +77,47 @@ public partial class Escalation
 
     protected async Task SubmitToQa()
     {
-        await _form!.Validate().ConfigureAwait(false);
-        if (_form.IsValid is false)
+        try
         {
-            return;
-        }
+            _saving = true;
 
-        bool submit = true;
-
-        if (Command is { IsMessageExternal: true, Message.Length: > 0 })
-        {
-            submit = await warningMessage!.ShowAsync();
-        }
-
-        if (submit)
-        {
-            var result = await GetNewMediator().Send(Command);
-
-            var message = Command.Response switch
+            await _form!.Validate().ConfigureAwait(false);
+            if (_form.IsValid is false)
             {
-                SubmitEscalationResponse.EscalationResponse.Accept => "Participant accepted",
-                SubmitEscalationResponse.EscalationResponse.Return => "Participant returned to PQA",
-                _ => "Comment added"
-            };
-
-
-            if (result.Succeeded)
-            {
-                Snackbar.Add(message, Severity.Info);
-                Navigation.NavigateTo("/pages/qa/servicedesk/enrolments");
+                return;
             }
-            else
+
+            bool submit = true;
+
+            if (Command is { IsMessageExternal: true, Message.Length: > 0 })
             {
-                ShowActionFailure("Failed to return to submit", result);
+                submit = await warningMessage!.ShowAsync();
+            }
+
+            if (submit)
+            {
+                var result = await GetNewMediator().Send(Command);
+
+                var message = Command.Response switch
+                {
+                    SubmitEscalationResponse.EscalationResponse.Accept => "Participant accepted",
+                    SubmitEscalationResponse.EscalationResponse.Return => "Participant returned to PQA",
+                    _ => "Comment added"
+                };
+
+
+                if (result.Succeeded)
+                {
+                    Snackbar.Add(message, Severity.Info);
+                    Navigation.NavigateTo("/pages/qa/servicedesk/enrolments");
+                }
+                else
+                {
+                    ShowActionFailure("Failed to return to submit", result);
+                }
             }
         }
+        finally { _saving = false; }
     }
 
     private void ShowActionFailure(string title, IResult result)
@@ -139,10 +145,3 @@ public partial class Escalation
 
     private int characterCount => Command.Message?.Length ?? 0;
 }
-
-    bool saving = false;
-        try
-        {
-            saving = true;
-        finally { saving = false; }
-        }

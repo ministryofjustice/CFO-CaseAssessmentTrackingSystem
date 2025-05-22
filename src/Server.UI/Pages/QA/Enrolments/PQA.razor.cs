@@ -18,7 +18,7 @@ public partial class PQA
     private ParticipantDto? _participantDto;
     private ParticipantSummaryDto? _participantSummaryDto;
     private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
-
+    private bool _saving = false;
     [Parameter] public Guid Id { get; set; }
 
     [CascadingParameter] public UserProfile? UserProfile { get; set; }
@@ -90,29 +90,35 @@ public partial class PQA
 
     protected async Task SubmitToQa()
     {
-        await _form!.Validate().ConfigureAwait(false);
-        if (_form.IsValid)
+        try
         {
-            var result = await GetNewMediator().Send(Command);
-
-            var message = Command.Response switch
+            _saving = true;
+            await _form!.Validate().ConfigureAwait(false);
+            if (_form.IsValid)
             {
-                SubmitPqaResponse.PqaResponse.Accept => "Participant submitted to QA",
-                SubmitPqaResponse.PqaResponse.Return => "Participant returned to Support Worker",
-                _ => "Comment added"
-            };
+                var result = await GetNewMediator().Send(Command);
+
+                var message = Command.Response switch
+                {
+                    SubmitPqaResponse.PqaResponse.Accept => "Participant submitted to QA",
+                    SubmitPqaResponse.PqaResponse.Return => "Participant returned to Support Worker",
+                    _ => "Comment added"
+                };
 
 
-            if (result.Succeeded)
-            {
-                Snackbar.Add(message, Severity.Info);
-                Navigation.NavigateTo("/pages/qa/enrolments/pqa");
+                if (result.Succeeded)
+                {
+                    Snackbar.Add(message, Severity.Info);
+                    Navigation.NavigateTo("/pages/qa/enrolments/pqa");
+                }
+                else
+                {
+                    ShowActionFailure("Failed to return to submit", result);
+                }
             }
-            else
-            {
-                ShowActionFailure("Failed to return to submit", result);
-            }
+
         }
+        finally { _saving = false; }
     }
 
     private void ShowActionFailure(string title, IResult result)
@@ -157,10 +163,3 @@ public partial class PQA
         }
     }
 }
-
-    private bool saving = false;
-        try
-        {
-            saving = true;
-        }
-        finally { saving = false; }
