@@ -22,5 +22,5 @@ public record IneligibilityReason
     public static IneligibilityReason RequiredTasksNotCompletedInTime(string timePeriod) => new($"The mandatory tasks have not been completed within {timePeriod}");
     public static IneligibilityReason NeverInLocation = new("The participant has never been in the specified locations");
 
-
+    public static IneligibilityReason InitialAssessmentCompletedInLastTwoMonths = new("Reassessment took place within two months of initial assessment");
 }
