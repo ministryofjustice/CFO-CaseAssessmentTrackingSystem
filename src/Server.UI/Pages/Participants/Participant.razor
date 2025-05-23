@@ -10,12 +10,11 @@
 @using Humanizer
 
 @inherits CatsComponentBase
-
+ 
 @attribute [Authorize]
 
 <style>
-    .primary-tabs .mud-tabs-toolbar .mud-tooltip-root .mud-tab-active {
-    }
+    .primary-tabs .mud-tabs-toolbar .mud-tooltip-root .mud-tab-active {}
 </style>
 
 <MudContainer Style="height: 100%; width: 100%; min-width: 480px" MaxWidth="MaxWidth.ExtraExtraLarge">
@@ -61,15 +60,13 @@
 
                         <MudTabPanel Text="Case Summary">
                             <MudTabs Outlined="true" Border="true" Class="mt-2">
-
-                                <MudTabPanel Text="Latest">
+                                <MudTabPanel Text="Case Summary">
                                     <CaseSummary />
                                 </MudTabPanel>
-                                <MudTabPanel Text="Active History">
+                                <MudTabPanel Text="Status History">
                                     <MudText> </MudText>
                                     <ParticipantActiveHistory ParticipantId="@_participant.Id" />
                                 </MudTabPanel>
-
                             </MudTabs>
                         </MudTabPanel>
 
@@ -115,32 +112,8 @@
                                 <ParticipantAudit Id="@Id" />
                             </MudTabPanel>
                         }
-
-                        <MudTabPanel Text="Histories">
-                            <MudTabs Outlined="true" Border="true" Class="mt-2">
-                                <MudTabPanel Text="Histories">
-                                    <MudExpansionPanels Class="pa-3 m-3" MultiExpansion="true">
-                                        <MudExpansionPanel>
-                                            <TitleContent>
-                                                <div class="d-flex">
-                                                    <MudText>Case Active History</MudText>
-                                                </div>
-                                            </TitleContent>
-                                            <ChildContent>
-                                                <MudGrid Class="mb-4 px-10">
-                                                    <ParticipantActiveHistory ParticipantId="@_participant.Id" />
-                                                </MudGrid>
-                                            </ChildContent>
-                                        </MudExpansionPanel>                                        
-                                    </MudExpansionPanels>
-                                </MudTabPanel>
-                                <MudTabPanel Text="Case Active">                                    
-                                     <ParticipantActiveHistory ParticipantId="@_participant.Id" /> 
-                                </MudTabPanel>
-                            </MudTabs>
-
-                        </MudTabPanel>
-                            </MudTabs>
+                    
+                    </MudTabs>
                 }
             </MudPaper>
         </CascadingValue>

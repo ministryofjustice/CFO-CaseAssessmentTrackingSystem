@@ -11,10 +11,22 @@ public static class GetParticipantEnrolmentHistory
     public class Query : IRequest<IEnumerable<ParticipantEnrolmentHistoryDto>>    
     {
         public required string ParticipantId { get; set; }
+        public required UserProfile CurrentUser { get; set; }
     }
 
     class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, IEnumerable<ParticipantEnrolmentHistoryDto>>
     {
+        //Hide CFO Users details from providers
+        private static readonly string[] HiddenTenantIds = ["1.1.", "1."];
+        private static readonly string[] AllowedRoles =
+        [
+            RoleNames.QAOfficer,
+            RoleNames.QASupportManager,
+            RoleNames.QAManager,
+            RoleNames.SMT,
+            RoleNames.SystemSupport
+        ];
+
         public async Task<IEnumerable<ParticipantEnrolmentHistoryDto>> Handle(Query request, CancellationToken cancellationToken)
         {      
             var db = unitOfWork.DbContext;
@@ -35,40 +47,48 @@ public static class GetParticipantEnrolmentHistory
                                      Reason=peh.Reason,
                                      AdditionalInformation = peh.AdditionalInformation!,
                                      LocationName = l.Name,
-                                     SupportWorker = u!.DisplayName!
+                                     SupportWorker = u!.DisplayName!,
+                                     SupportWorkerTenantId = u!.TenantId
                                  }).ToListAsync();
+
+            if (results.Count == 0)
+                return results;
+            
+            bool hideUser = !request.CurrentUser.AssignedRoles.Any(role => AllowedRoles.Contains(role));
 
             for (int i = 1; i < results.Count; i++)
             {
-                if (results[i].ActionDate.HasValue && results[i - 1].ActionDate.HasValue)
+                // Mask support worker if needed
+                if (hideUser && HiddenTenantIds.Contains(results[i].SupportWorkerTenantId))
                 {
-                    var current = results[i].ActionDate!.Value.ToDateTime(TimeOnly.MinValue);
-                    var previous = results[i - 1].ActionDate!.Value.ToDateTime(TimeOnly.MinValue);
-                    results[i - 1].DaysSincePrevious = (current - previous).Days;
+                    results[i].SupportWorker = "CFO User";
+                }
+
+                // Calculate DaysSincePrevious
+                if (i == results.Count - 1)
+                {
+                    // Last row - compare to today
+                    results[i].DaysSincePrevious = results[i].ActionDate.HasValue
+                        ? (DateTime.Today - results[i].ActionDate!.Value.ToDateTime(TimeOnly.MinValue)).Days
+                        : 0;
+                }
+                else if (results[i].ActionDate.HasValue && results[i + 1].ActionDate.HasValue)
+                {
+                    results[i].DaysSincePrevious =
+                        (results[i + 1].ActionDate!.Value.ToDateTime(TimeOnly.MinValue) -
+                         results[i].ActionDate!.Value.ToDateTime(TimeOnly.MinValue)).Days;
                 }
                 else
                 {
-                    results[i - 1].DaysSincePrevious = 0;
+                    results[i].DaysSincePrevious = 0;
                 }
-            }
-
-            // Handle last row using today's date
-            if (results.Count > 0 && results[^1].ActionDate.HasValue)
-            {
-                var lastActionDate = results[^1].ActionDate!.Value.ToDateTime(TimeOnly.MinValue);
-                var today = DateTime.Today;
-                results[^1].DaysSincePrevious = (today - lastActionDate).Days;
-            }
-            else if (results.Count > 0)
-            {
-                results[^1].DaysSincePrevious = 0;
             }
 
             return results;
         }
     }
-  
-    public class Validator : AbstractValidator<Query>
+
+public class Validator : AbstractValidator<Query>
     {
         public Validator()
         {

@@ -1,6 +1,5 @@
-﻿@inherits CatsComponentBase
-
-<h3>Participant Active History</h3>
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs;
+@inherits CatsComponentBase
 
 @if (ParticipantEnrolmentHistory.Any() is false)
 {
@@ -28,6 +27,7 @@ else
                 <PropertyColumn Property="x => x.LocationName" Title="Location"
                                 CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 </PropertyColumn>
+
                 <PropertyColumn Property="x => x.SupportWorker" Title="Performed By"
                                 CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 </PropertyColumn>
@@ -35,5 +35,8 @@ else
                                 CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 </PropertyColumn>
         </Columns>
+        <PagerContent>
+            <MudDataGridPager T="ParticipantEnrolmentHistoryDto" />
+        </PagerContent>
     </MudDataGrid>
 }
