@@ -20,7 +20,9 @@ public class ParticipantEnrolmentHistoryDto
     public required string AdditionalInformation { get; init; }
 
     [Description("Performed By")]
-    public required string SupportWorker { get; init; }
+    public required string SupportWorker { get; set; }
+
+    public string? SupportWorkerTenantId { get; set; }
 
     [Description("Location")]
     public required string LocationName { get; init; }

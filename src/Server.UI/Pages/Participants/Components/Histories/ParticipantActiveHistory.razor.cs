@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 
@@ -9,7 +10,9 @@ public partial class ParticipantActiveHistory
 
     [Parameter, EditorRequired]
     public required string ParticipantId { get; set; } = string.Empty;
-    
+    [CascadingParameter]
+    public UserProfile UserProfile { get; set; } = default!;
+
     protected override async Task OnInitializedAsync()
     {
         await Refresh();
@@ -22,10 +25,12 @@ public partial class ParticipantActiveHistory
         {
             var query = new GetParticipantEnrolmentHistory.Query()
             {
-                ParticipantId = ParticipantId
+                ParticipantId = ParticipantId,
+                CurrentUser = UserProfile!
             };
 
             ParticipantEnrolmentHistory = await GetNewMediator().Send(query);
+       
         }
     }
 }
