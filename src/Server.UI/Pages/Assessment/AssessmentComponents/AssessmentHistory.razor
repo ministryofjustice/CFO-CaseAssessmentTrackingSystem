@@ -1,4 +1,6 @@
 @using Cfo.Cats.Application.Features.Assessments.DTOs
+@using Humanizer
+
 @inherits CatsComponentBase
 
 @if (ParticipantAssessments.Any() == true)
@@ -7,10 +9,16 @@
     <Columns>
         <TemplateColumn Title="Completed" Sortable="true" SortBy="x => x.Completed">
             <CellTemplate>
-                <MudStack>
-                    <MudText Typo="Typo.body2">@context.Item.Completed!.Value.ToShortDateString()</MudText>
-                    <MudText Typo="Typo.body2">@($"{GetSinceConsentDate(context.Item.Completed)} (since consent)")</MudText>
-                </MudStack>
+                    <MudStack>
+                        @if(context.Item.Completed.HasValue)
+                        {
+                            <MudText Typo="Typo.body2">@context.Item.Completed.Value.ToShortDateString()</MudText>
+                            if (ConsentDate.HasValue)
+                            {
+                                <MudText Typo="Typo.body2">@($"{(context.Item.Completed.Value - ConsentDate.Value).Humanize()} (since consent)")</MudText>
+                            }
+                        }
+                    </MudStack>
             </CellTemplate>
         </TemplateColumn>
         <PropertyColumn Property="x => x.LocationName" Title="Location"></PropertyColumn>
