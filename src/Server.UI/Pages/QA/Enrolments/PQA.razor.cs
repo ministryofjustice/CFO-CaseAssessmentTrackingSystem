@@ -1,4 +1,6 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Assessments.DTOs;
+using Cfo.Cats.Application.Features.Assessments.Queries;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.Features.QualityAssurance.Commands;
@@ -15,7 +17,8 @@ public partial class PQA
     private EnrolmentQueueEntryDto? _queueEntry;
     private ParticipantDto? _participantDto;
     private ParticipantSummaryDto? _participantSummaryDto;
-
+    private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
+    private bool _saving = false;
     [Parameter] public Guid Id { get; set; }
 
     [CascadingParameter] public UserProfile? UserProfile { get; set; }
@@ -27,8 +30,6 @@ public partial class PQA
     private Color _rtwIconColor = Color.Transparent;
     private bool _showRightToWorkWarning = false;
     private bool _pqaResponseDisabled = false;
-
-    private bool saving = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,6 +60,8 @@ public partial class PQA
                     ParticipantId = _participantDto.Id,
                     CurrentUser = UserProfile!
                 });
+
+                await SetLatestParticipantAssessment(_queueEntry.ParticipantId);
             }
 
             StateHasChanged();
@@ -66,11 +69,30 @@ public partial class PQA
         }
     }
 
+    protected async Task SetLatestParticipantAssessment(string participantId)
+    {
+        if (!string.IsNullOrEmpty(participantId))
+        {
+            var query = new GetAssessmentScores.Query()
+            {
+                ParticipantId = participantId
+            };
+
+            var result = await GetNewMediator().Send(query);
+
+            if (result.Succeeded && result.Data != null)
+            {
+                _latestParticipantAssessmentDto = result.Data.MaxBy(pa => pa.CreatedDate);
+            }
+
+        }
+    }
+
     protected async Task SubmitToQa()
     {
         try
         {
-            saving = true;
+            _saving = true;
             await _form!.Validate().ConfigureAwait(false);
             if (_form.IsValid)
             {
@@ -94,8 +116,9 @@ public partial class PQA
                     ShowActionFailure("Failed to return to submit", result);
                 }
             }
+
         }
-        finally { saving = false; }
+        finally { _saving = false; }
     }
 
     private void ShowActionFailure(string title, IResult result)
@@ -139,5 +162,4 @@ public partial class PQA
             Command.Response = SubmitPqaResponse.PqaResponse.Return;
         }
     }
-
 }

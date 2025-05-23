@@ -4,6 +4,7 @@
 
 @using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Assessments.DTOs
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 @using Cfo.Cats.Application.SecurityConstants
@@ -22,7 +23,7 @@
         align-items: center;
     }
 
-    
+
 </style>
 
 <QaExternalMessageWarning @ref="warningMessage" />
@@ -61,7 +62,7 @@
                     <RightToWorkTabPanel ParticipantDto="_participantDto"/>
                 </MudTabPanel>
                 <MudTabPanel Text="Assessment" Icon="@(_participantDto.AssessmentJustification is not null ? Icons.Material.Filled.Warning : string.Empty)" IconColor="Color.Warning">
-                    <AssessmentTabPanel ParticipantDto="_participantDto"/>
+                    <AssessmentTabPanel ParticipantDto="_participantDto" ParticipantAssessmentDto="@_latestParticipantAssessmentDto"/>
                 </MudTabPanel>
                 <MudTabPanel Text="Submission">
                     @if (_queueEntry.IsCompleted == false)
@@ -98,9 +99,9 @@
                             <MudGrid Class="py-4">
                                 <MudItem Class="d-flex align-center" xs="12" md="3" xl="2">
                                     <MudSwitch @bind-Value="Command.IsMessageExternal"
-                                               For="() => Command.IsMessageExternal"
-                                               Label="External"
-                                               Color="Color.Primary" />
+                                    For="() => Command.IsMessageExternal"
+                                    Label="External"
+                                    Color="Color.Primary" />
                                 </MudItem>
                                 <MudItem xs="12" md="9" xl="10">
                                     <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
@@ -110,7 +111,7 @@
                         </MudForm>
 
                         <MudContainer Class="d-flex px-0 pt-8">
-                            <MudLoadingButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled" Loading="saving">Submit</MudLoadingButton>
+                            <MudLoadingButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled" Loading="_saving">Submit</MudLoadingButton>
                         </MudContainer>
                     }
                     else
