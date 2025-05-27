@@ -2,6 +2,7 @@
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Application.Features.Assessments.DTOs
 @using Cfo.Cats.Application.Features.Assessments.Queries
+
 <MudGrid>
     <MudItem xs="12">
         <RagBar Model="@ParticipantAssessmentDto" />
@@ -16,8 +17,9 @@
             </MudText>
         </MudItem>
     }
-    <MudItem xs="12">
-        <CaseAssessment ParticipantId="@ParticipantDto.Id"/>
-    </MudItem>
-</MudGrid>
 
+    <MudItem xs="12">
+        <CaseAssessment ParticipantId="@ParticipantDto.Id" ConsentDate="@ParticipantDto.DateOfFirstConsent" />
+    </MudItem>
+
+</MudGrid>

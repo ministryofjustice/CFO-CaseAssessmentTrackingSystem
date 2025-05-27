@@ -74,7 +74,7 @@
                             <CaseRisk ParticipantId="@Id"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Assessments" Icon="@_assessmentIcon" IconColor="@_assessmentIconColor" ToolTip="@_assessmentInfo">
-                            <CaseAssessment ParticipantId="@Id"/>
+                            <CaseAssessment ParticipantId="@Id" ConsentDate="@_participant.DateOfFirstConsent"/>
                         </MudTabPanel>
                         <MudTabPanel Text="PRI" Icon="@_priDueIcon" IconColor="@_priDueIconColor" ToolTip="@_priDueToolTip">
                             <CasePRI ParticipantId="@Id" OnUpdate="Refresh"/>
@@ -108,4 +108,3 @@
         </CascadingValue>
     }
 </MudContainer>
-

@@ -7,7 +7,5 @@ public partial class AssessmentHistory
     [Parameter, EditorRequired]
     public IEnumerable<ParticipantAssessmentDto> ParticipantAssessments { get; set; } = Enumerable.Empty<ParticipantAssessmentDto>();
     [Parameter, EditorRequired]
-    public DateTime? ConsentDate { get; set; }
-
-
+    public DateOnly? ConsentDate { get; set; }
 }

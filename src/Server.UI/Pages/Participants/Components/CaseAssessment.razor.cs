@@ -1,38 +1,34 @@
 using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Assessments.Queries;
-using Cfo.Cats.Application.Features.Participants.Queries;
 using Microsoft.JSInterop;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
 public partial class CaseAssessment
 {
+    private Application.Features.Assessments.DTOs.Assessment? _model;
+    private IEnumerable<ParticipantAssessmentDto> _participantAssessments = Enumerable.Empty<ParticipantAssessmentDto>();  
 
-    private Cfo.Cats.Application.Features.Assessments.DTOs.Assessment? _model;
-    private IEnumerable<ParticipantAssessmentDto> _participantAssessments = Enumerable.Empty<ParticipantAssessmentDto>();
-    private DateTime? _consentDate;
-
-    private bool _notFoundAssessment = false;
+    private bool _loading = true;
 
     [Parameter]
     [EditorRequired]
     public string ParticipantId { get; set; } = default!;
 
+    [Parameter]
+    [EditorRequired]
+    public DateOnly? ConsentDate { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        if (_model is not null)
-        {
-            return;
-        }
-
         try
         {
             var result = await GetNewMediator().Send(new GetAssessment.Query()
             {
                 ParticipantId = ParticipantId
             });
-
-            if (result.Succeeded)
+           
+            if (result is { Succeeded: true, Data: not null })
             {
                 _model = result.Data;
             }
@@ -42,29 +38,19 @@ public partial class CaseAssessment
                 ParticipantId = ParticipantId
             };
 
-            var resultpa = await GetNewMediator().Send(query);
+            var assessmentHistoryResult = await GetNewMediator().Send(query);
 
-            if (resultpa.Succeeded && resultpa.Data != null)
+            if (assessmentHistoryResult is { Succeeded: true, Data: not null })
             {
-                _participantAssessments = resultpa.Data
+                _participantAssessments = assessmentHistoryResult.Data
                                                 .Where(pa => pa.Completed.HasValue)
                                                 .OrderByDescending(pa => pa.CreatedDate);
-                if (_participantAssessments?.Any() == true)
-                {
-                    var _participant = await GetNewMediator().Send(new GetParticipantById.Query()
-                    {
-                        Id = ParticipantId
-                    });
-                    _consentDate = _participant.CalculatedConsentDate;
-                }
             }
-
         }
         finally
         {
-            _notFoundAssessment = _model is null;
+            _loading = false;
         }
-
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

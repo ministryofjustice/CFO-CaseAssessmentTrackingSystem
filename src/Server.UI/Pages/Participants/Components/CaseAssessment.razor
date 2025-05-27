@@ -5,91 +5,93 @@
 
 <style>
     .readonly-toggle {
-        pointer-events: none; 
-        filter: grayscale(100%);
+    pointer-events: none; 
+    filter: grayscale(100%);
     }
 
     .two-columns {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Two columns */
-        gap: 10px; /* Adjust the gap between items as needed */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    gap: 10px; /* Adjust the gap between items as needed */
     }
 
     .toggle-item {
-        box-sizing: border-box; /* Ensure padding and borders are included in width/height */
-        padding: 10px; /* Add padding if needed */
-        justify-content: left !important;
+    box-sizing: border-box; /* Ensure padding and borders are included in width/height */
+    padding: 10px; /* Add padding if needed */
+    justify-content: left !important;
     }
-    
 </style>
 
+<MudTabs Outlined="true" Border="true" Class="mt-2" >
+    <MudTabPanel Text="Latest">
+        <MudExpansionPanels MultiExpansion="true">
 
-    <MudTabs Outlined="true" Border="true" Class="mt-2" >
-        <MudTabPanel Text="Latest">
-            <MudExpansionPanels Class="pa-3 m-3" MultiExpansion="true">
-                @if (_notFoundAssessment)
+            @if(_loading)
+            {
+                <Cfo.Cats.Server.UI.Pages.Dashboard.Components.LoadingCard Title="Assessments loading" />
+            }
+            else
+            {
+                @if (_model is null)
                 {
-                    <MudAlert>
-                        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No assessment found.</MudAlert>
+                    <MudAlert Severity="Severity.Info">
+                        No assessment found
                     </MudAlert>
                 }
-                @if (_model is not null)
+                else
+                {
+                    foreach (var pathway in _model.Pathways)
                     {
-                        @foreach (var pathway in _model.Pathways)
-                        {
-                            <MudExpansionPanel>
-                                <TitleContent>
-                                    <div class="d-flex">
-                                        <MudIcon Icon="@pathway.Icon" Color="Color.Primary" class="mr-3" />
-                                        <MudText>@pathway.Title</MudText>
-                                    </div>
-                                </TitleContent>
-                                <ChildContent>
-                                    <MudGrid Class="mb-4 px-10">
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <div class="d-flex">
+                                    <MudIcon Icon="@pathway.Icon" Color="Color.Primary" class="mr-3" />
+                                    <MudText>@pathway.Title</MudText>
+                                </div>
+                            </TitleContent>
+                            <ChildContent>
+                                <MudGrid Class="mb-4 px-10">
 
-                                        @foreach (var question in pathway.Questions())
-                                        {
+                                    @foreach (var question in pathway.Questions())
+                                    {
+                                        <MudItem xs="4">
+                                            <Cfo.Cats.Server.UI.Pages.Assessment.AssessmentComponents.AssessmentQuestion Question="@question.Question" HelperText="@question.OtherInformation" />
+                                        </MudItem>
 
-                                            <MudItem xs="4">
-                                                <Cfo.Cats.Server.UI.Pages.Assessment.AssessmentComponents.AssessmentQuestion Question="@question.Question" HelperText="@question.OtherInformation" />
-                                            </MudItem>
+                                        <MudItem xs="8">
+                                            @if (question is SingleChoiceQuestion atq)
+                                            {
+                                                <MudToggleGroup T="string" Class="readonly-toggle" SelectionMode="SelectionMode.SingleSelection" @bind-Value="@atq.Answer" CheckMark FixedContent Color="Color.Primary">
+                                                    @foreach (var item in atq.Options)
+                                                    {
+                                                        <MudToggleItem Value="@item" Text="@item" />
+                                                    }
+                                                </MudToggleGroup>
+                                            }
 
-                                            <MudItem xs="8">
-                                                @if (question is SingleChoiceQuestion atq)
-                                                {
-                                                    <MudToggleGroup T="string" Class="readonly-toggle" SelectionMode="SelectionMode.SingleSelection" @bind-Value="@atq.Answer" CheckMark FixedContent Color="Color.Primary">
-                                                        @foreach (var item in atq.Options)
-                                                        {
-                                                            <MudToggleItem Value="@item" Text="@item" />
-                                                        }
-                                                    </MudToggleGroup>
-
-                                                }
-
-                                                @if (question is MultipleChoiceQuestion amcq)
-                                                {
-                                                    <MudToggleGroup T="string" Class="two-columns readonly-toggle" Vertical SelectionMode="SelectionMode.MultiSelection" @bind-Values="@amcq.Answers" CheckMark Color="Color.Primary" Outlined="false" Delimiters="false">
-                                                        @foreach (var item in amcq.Options)
-                                                        {
-                                                            <MudToggleItem Class="toggle-item" Value="@item" Text="@item" UnselectedIcon="@Icons.Material.Filled.CheckBoxOutlineBlank" SelectedIcon="@Icons.Material.Filled.CheckBox" />
-                                                        }
-                                                    </MudToggleGroup>
-                                                }
-                                            </MudItem>
-                                            <MudDivider />
-                                        }
-                                    </MudGrid>
-                                </ChildContent>
-                            </MudExpansionPanel>
-                        }
+                                            @if (question is MultipleChoiceQuestion amcq)
+                                            {
+                                                <MudToggleGroup T="string" Class="two-columns readonly-toggle" Vertical SelectionMode="SelectionMode.MultiSelection" @bind-Values="@amcq.Answers" CheckMark Color="Color.Primary" Outlined="false" Delimiters="false">
+                                                    @foreach (var item in amcq.Options)
+                                                    {
+                                                        <MudToggleItem Class="toggle-item" Value="@item" Text="@item" UnselectedIcon="@Icons.Material.Filled.CheckBoxOutlineBlank" SelectedIcon="@Icons.Material.Filled.CheckBox" />
+                                                    }
+                                                </MudToggleGroup>
+                                            }
+                                        </MudItem>
+                                        <MudDivider />
+                                    }
+                                </MudGrid>
+                            </ChildContent>
+                        </MudExpansionPanel>
                     }
+                }
+            }            
             </MudExpansionPanels>
-        </MudTabPanel>
-        <MudTabPanel Text="RAG History">
-        <Cfo.Cats.Server.UI.Pages.Assessment.AssessmentComponents.AssessmentHistory ParticipantAssessments="_participantAssessments" ConsentDate="_consentDate" />
-        </MudTabPanel>
-    </MudTabs>
+    </MudTabPanel>
 
+    <MudTabPanel Text="RAG History">
+        <Cfo.Cats.Server.UI.Pages.Assessment.AssessmentComponents.AssessmentHistory ParticipantAssessments="_participantAssessments" ConsentDate="ConsentDate" />
+    </MudTabPanel>
 
-
-
+</MudTabs>
