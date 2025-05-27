@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250425102647_ReassessmentPayments")]
+    partial class ReassessmentPayments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -1842,8 +1845,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ParticipantId");
 
-                    b.HasIndex("SupportWorkerId");
-
                     b.HasIndex("TenantId");
 
                     b.ToTable("EscalationQueue", "Enrolment");
@@ -1905,8 +1906,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ParticipantId");
 
-                    b.HasIndex("SupportWorkerId");
-
                     b.HasIndex("TenantId");
 
                     b.ToTable("PqaQueue", "Enrolment");
@@ -1967,8 +1966,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.HasIndex("OwnerId");
 
                     b.HasIndex("ParticipantId");
-
-                    b.HasIndex("SupportWorkerId");
 
                     b.HasIndex("TenantId");
 
@@ -2033,8 +2030,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.HasIndex("OwnerId");
 
                     b.HasIndex("ParticipantId");
-
-                    b.HasIndex("SupportWorkerId");
 
                     b.HasIndex("TenantId");
 
@@ -2172,6 +2167,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -2193,6 +2189,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(9)");
 
                     b.Property<string>("PostCode")
+                        .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("nvarchar(8)");
 
@@ -2200,6 +2197,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UPRN")
+                        .IsRequired()
                         .HasMaxLength(12)
                         .HasColumnType("nvarchar(12)");
 
@@ -2217,10 +2215,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AdditionalInformation")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<DateTime?>("Created")
                         .HasColumnType("datetime2");
@@ -2243,10 +2237,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(9)
                         .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("Reason")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
 
                     b.HasKey("Id");
 
@@ -4098,12 +4088,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "SupportWorker")
-                        .WithMany()
-                        .HasForeignKey("SupportWorkerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -4185,8 +4169,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Participant");
 
-                    b.Navigation("SupportWorker");
-
                     b.Navigation("Tenant");
                 });
 
@@ -4204,12 +4186,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "SupportWorker")
-                        .WithMany()
-                        .HasForeignKey("SupportWorkerId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
@@ -4290,8 +4266,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Participant");
 
-                    b.Navigation("SupportWorker");
-
                     b.Navigation("Tenant");
                 });
 
@@ -4309,12 +4283,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "SupportWorker")
-                        .WithMany()
-                        .HasForeignKey("SupportWorkerId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
@@ -4398,8 +4366,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Participant");
 
-                    b.Navigation("SupportWorker");
-
                     b.Navigation("Tenant");
                 });
 
@@ -4417,12 +4383,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "SupportWorker")
-                        .WithMany()
-                        .HasForeignKey("SupportWorkerId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
@@ -4505,8 +4465,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Navigation("Owner");
 
                     b.Navigation("Participant");
-
-                    b.Navigation("SupportWorker");
 
                     b.Navigation("Tenant");
                 });
@@ -4703,10 +4661,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                             b1.Property<string>("AdditionalNotes")
                                 .HasMaxLength(256)
                                 .HasColumnType("nvarchar(256)");
-
-                            b1.Property<string>("NINo")
-                                .HasMaxLength(9)
-                                .HasColumnType("nvarchar(9)");
 
                             b1.Property<string>("ParticipantId")
                                 .IsRequired()

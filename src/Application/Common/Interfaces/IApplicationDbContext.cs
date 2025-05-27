@@ -101,4 +101,5 @@ public interface IApplicationDbContext
     DbSet<PriCode> PriCodes { get; }
 
     DbSet<SupportAndReferralPayment> SupportAndReferralPayments { get; }
+    DbSet<ReassessmentPayment> ReassessmentPayments { get; }
 }
