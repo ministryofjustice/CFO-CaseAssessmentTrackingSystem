@@ -26,6 +26,7 @@ public static class GrabQa1Entry
             try
             {
                 var entry = await unitOfWork.DbContext.EnrolmentQa1Queue
+                    .Include(q => q.SupportWorker)
                     .Where(x => x.OwnerId == request.CurrentUser.UserId)
                     .Where(x => x.IsCompleted == false)
                     .FirstOrDefaultAsync(cancellationToken);
@@ -33,6 +34,7 @@ public static class GrabQa1Entry
                 if (entry is null)
                 {
                     entry = await unitOfWork.DbContext.EnrolmentQa1Queue
+                        .Include(q => q.SupportWorker)
                         .Where(x => x.IsCompleted == false && x.OwnerId == null)
                         .OrderBy(x => x.Created)
                         .FirstOrDefaultAsync(cancellationToken);
