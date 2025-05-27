@@ -1,9 +1,7 @@
 @page "/pages/qa/enrolments/qa2/"
 
 @using Cfo.Cats.Application.Common.Validators
-@using Cfo.Cats.Application.Features.Documents.Queries
 @using Cfo.Cats.Application.Features.Participants.DTOs
-@using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 @using Cfo.Cats.Application.SecurityConstants
@@ -128,7 +126,7 @@
                             </MudForm>
 
                             <MudContainer Class="d-flex px-0 pt-8">
-                                <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
+                                <MudLoadingButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled" Loading="saving">Submit</MudLoadingButton>
                             </MudContainer>
                         }
                         else
@@ -143,102 +141,3 @@
         </MudGrid>
     }
 </MudContainer>
-
-@code {
-    private QaExternalMessageWarning? warningMessage;
-    private MudForm? _form;
-    private EnrolmentQueueEntryDto? _queueEntry = null;
-    private ParticipantDto? _participantDto = null;
-
-    [CascadingParameter]
-    public UserProfile? UserProfile { get; set; } = null!;
-
-    private SubmitQa2Response.Command Command { get; set; } = default!;
-
-    private async Task GetQueueItem()
-    {
-        GrabQa2Entry.Command command = new GrabQa2Entry.Command()
-        {
-            CurrentUser = UserProfile!
-        };
-
-        var result = await GetNewMediator().Send(command);
-
-        if (result.Succeeded)
-        {
-            _queueEntry = result.Data!;
-
-            _participantDto = await GetNewMediator().Send(new GetParticipantById.Query()
-            {
-                Id = _queueEntry.ParticipantId
-            });
-
-            Command = new SubmitQa2Response.Command()
-            {
-                QueueEntryId = _queueEntry.Id,
-                CurrentUser = UserProfile
-            };
-        }
-        else
-        {
-            Snackbar.Add(result.ErrorMessage, Severity.Info);
-        }
-    }
-
-    protected async Task SubmitToQa()
-    {
-        await _form!.Validate().ConfigureAwait(false);
-
-        if (_form.IsValid is false)
-        {
-            return;
-        }
-
-        bool submit = true;
-
-        if (Command is { IsMessageExternal: true, Message.Length: > 0 })
-        {
-            submit = await warningMessage!.ShowAsync();
-        }
-
-        if (submit)
-        {
-            var result = await GetNewMediator().Send(Command);
-
-            if (result.Succeeded)
-            {
-                Snackbar.Add("Participant submitted", Severity.Info);
-                Navigation.NavigateTo("/pages/qa/enrolments/qa2", true);
-            }
-            else
-            {
-                ShowActionFailure("Failed to submit", result);
-            }
-        }
-    }
-
-    private void ShowActionFailure(string title, IResult result)
-    {
-        Snackbar.Add(
-        @<div>
-            <h2>@title</h2>
-            <ul>
-                @foreach (var e in result.Errors)
-                {
-                    <li>@e</li>
-                }
-            </ul>
-        </div>
-        , Severity.Error, options => {
-            options.RequireInteraction = true;
-            options.SnackbarVariant = Variant.Text;
-        });
-    }
-
-    private int characterCount => Command.Message?.Length ?? 0;
-
-    private void UpdateCharacterCount(ChangeEventArgs args)
-    {
-        Command.Message = args?.Value?.ToString() ?? string.Empty;
-    }
-}

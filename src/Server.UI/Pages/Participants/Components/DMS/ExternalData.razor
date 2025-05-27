@@ -7,11 +7,16 @@
 @if (ConsentStatus == ConsentStatus.PendingStatus)
 {
     <MudAlert Severity="Severity.Normal">
-        Consent status has not been confirmed.
+        Information will become available once consent has been approved.
     </MudAlert>
 }
 else
 {
+
+    <MudAlert Severity="Severity.Warning">
+        The offence information below contains data that has been obtained and merged from other systems. All information should be validated with the supervising officer / offender manager prior to use. {OPTIONAL: Please notify the Service Desk if you identify any errors}
+    </MudAlert>
+
     <MudExpansionPanels>
         @foreach (var identifier in Identifiers.Where(i => i.Type == ExternalIdentifierType.NomisNumber.Name || i.Type == ExternalIdentifierType.Crn.Name))
         {

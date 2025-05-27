@@ -35,7 +35,7 @@ public partial class DeliusOffenceDetails
         {
             CloseOnEscapeKey = true,
             MaxWidth = MaxWidth.ExtraExtraLarge,
-            FullScreen = true,
+            FullScreen = false,
             FullWidth = true,
             CloseButton = true,
         };

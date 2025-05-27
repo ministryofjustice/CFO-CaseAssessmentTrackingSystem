@@ -1,131 +1,104 @@
 ﻿@using Cfo.Cats.Application.Features.Offloc.DTOs
 
 
-@if (PersonalDetails is not null)
+@if (SentenceData is not null)
 {
 
-    @if (PersonalDetails is NotFoundResult<PersonalDetailsDto>)
+    @if (SentenceData is NotFoundResult<SentenceDataDto>)
     {
         <MudAlert Severity="Severity.Warning">
             No details found
         </MudAlert>
     }
-    else if (PersonalDetails is { Succeeded: false })
+    else if (SentenceData is { Succeeded: false })
     {
         <MudAlert Severity="Severity.Warning">
-            @PersonalDetails.ErrorMessage
+            @SentenceData.ErrorMessage
         </MudAlert>
     }
-    else if (PersonalDetails is { Data: not null })
+    else if (SentenceData is { Data: not null })
     {
-        @if (PersonalDetails.Data.IsActive == false)
-        {
-            <MudAlert Severity="Severity.Info">
-                This record is not 'active'.
-            </MudAlert>
-        }
-
         <MudGrid>
-            <MudItem xs="12" md="3">
-                <MudCard>
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h6">Personal Details</MudText>
-                        </CardHeaderContent>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <MudForm ReadOnly="true">
-                            <MudTextField Value="PersonalDetails.Data.FirstName"
-                                          Label="@PersonalDetails.Data.GetMemberDescription(x => x.FirstName)"
-                                          Class="mb-2"/>
-                            <MudTextField Value="PersonalDetails.Data.SecondName"
-                                          Label="@PersonalDetails.Data.GetMemberDescription(x => x.SecondName)"
-                                          Class="mb-2"/>
-                            <MudTextField Value="PersonalDetails.Data.Surname"
-                                          Label="@PersonalDetails.Data.GetMemberDescription(x => x.Surname)"
-                                          Class="mb-2"/>
-                            <MudTextField Value="PersonalDetails.Data.DateOfBirth"
-                                          Label="@PersonalDetails.Data.GetMemberDescription(x => x.DateOfBirth)"
-                                          Class="mb-2"/>
-                            <MudTextField Value="PersonalDetails.Data.Gender"
-                                          Label="@PersonalDetails.Data.GetMemberDescription(x => x.Gender)"
-                                          Class="mb-2"/>
-                            <MudTextField Value="PersonalDetails.Data.MaternityStatus"
-                                          Label="@PersonalDetails.Data.GetMemberDescription(x => x.MaternityStatus)"
-                                          Class="mb-2"/>
-                            <MudTextField Value="PersonalDetails.Data.Nationality"
-                                          Label="@PersonalDetails.Data.GetMemberDescription(x => x.Nationality)"
-                                          Class="mb-2"/>
-                            <MudTextField Value="PersonalDetails.Data.Religion"
-                                          Label="@PersonalDetails.Data.GetMemberDescription(x => x.Religion)"
-                                          Class="mb-2"/>
-                            <MudTextField Value="PersonalDetails.Data.MaritalStatus"
-                                          Label="@PersonalDetails.Data.GetMemberDescription(x => x.MaritalStatus)"
-                                          Class="mb-2"/>
-                            <MudTextField Value="PersonalDetails.Data.EthnicGroup"
-                                          Label="@PersonalDetails.Data.GetMemberDescription(x => x.EthnicGroup)"
-                                          Class="mb-2"/>
-                        </MudForm>
-                    </MudCardContent>
-                </MudCard>
+            <MudItem xs="12">
+                <MudTable T="SentenceInformationDto" Items="SentenceData.Data.SentenceInformation" Striped="true">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">
+                            Sentence Information
+                        </MudText>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>First Sentenced</MudTh>
+                        <MudTh>Years</MudTh>
+                        <MudTh>Months</MudTh>
+                        <MudTh>Days</MudTh>
+                        <MudTh>Earliest Possible Release Date</MudTh>
+                        <MudTh>Date Of Release</MudTh>
+                        <MudTh>Sed</MudTh>
+                        <MudTh>Hdced</MudTh>
+                        <MudTh>Hdcad</MudTh>
+                        <MudTh>Ped</MudTh>
+                        <MudTh>Crd</MudTh>
+                        <MudTh>Npd</MudTh>
+                        <MudTh>Led</MudTh>
+                        <MudTh>Tused</MudTh>
+                        <MudTh>Active</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="First Sentenced">@context.FirstSentenced</MudTd>
+                        <MudTd DataLabel="Years">@context.SentenceYears</MudTd>
+                        <MudTd DataLabel="Months">@context.SentenceMonths</MudTd>
+                        <MudTd DataLabel="Days">@context.SentenceDays</MudTd>
+                        <MudTd DataLabel="Earliest Possible Release Date">@context.EarliestPossibleReleaseDate</MudTd>
+                        <MudTd DataLabel="Date Of Release">@context.DateOfRelease</MudTd>
+                        <MudTd DataLabel="Sed">@context.Sed</MudTd>
+                        <MudTd DataLabel="Hdced">@context.Hdced</MudTd>
+                        <MudTd DataLabel="Hdcad">@context.Hdcad</MudTd>
+                        <MudTd DataLabel="Ped">@context.Ped</MudTd>
+                        <MudTd DataLabel="Crd">@context.Crd</MudTd>
+                        <MudTd DataLabel="Npd">@context.Npd</MudTd>
+                        <MudTd DataLabel="Led">@context.Led</MudTd>
+                        <MudTd DataLabel="Tused">@context.Tused</MudTd>
+                        <MudTd DataLabel="Is Active">@context.IsActive</MudTd>
+                    </RowTemplate>
+                </MudTable>
             </MudItem>
-            <MudItem xs="12" md="3">
-
-                @if (PersonalDetails.Data.MainOffences is [])
-                {
-                    <MudAlert Severity="Severity.Info">
-                        No main offence data found
-                    </MudAlert>
-                }
-
-                @foreach (var offence in PersonalDetails.Data.MainOffences)
-                {
-                    <MudCard>
-                        <MudCardHeader>
-                            <CardHeaderContent>
-                                <MudText Typo="Typo.h6">Main Offence</MudText>
-                            </CardHeaderContent>
-                        </MudCardHeader>
-                        <MudCardContent>
-                            <MudForm ReadOnly="true">
-                                <MudTextField Value="offence.MainOffence1"
-                                              Label="@offence.GetMemberDescription(x => x.MainOffence1)"
-                                              Class="mb-2"/>
-                                <MudTextField Value="offence.DateFirstConviction"
-                                              Label="@offence.GetMemberDescription(x => x.DateFirstConviction)"
-                                              Class="mb-2"/>
-                            </MudForm>
-                        </MudCardContent>
-                    </MudCard>
-                }
-
+            <MudItem xs="12" md="6">
+                <MudTable T="MainOffenceDto" Items="SentenceData.Data.MainOffence" Striped="true">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">
+                            Main Offence
+                        </MudText>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>Main Offence</MudTh>
+                        <MudTh>Date First Conviction</MudTh>
+                        <MudTh>Active</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="First Sentenced">@context.MainOffence</MudTd>
+                        <MudTd DataLabel="Years">@context.DateFirstConviction</MudTd>
+                        <MudTd DataLabel="Is Active">@context.IsActive</MudTd>
+                    </RowTemplate>
+                </MudTable>
             </MudItem>
-            <MudItem xs="12" md="3">
-
-                <MudCard>
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h6">Other Offences</MudText>
-                        </CardHeaderContent>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <MudTable Hover="false"
-                                  Striped="true"
-                                  Items="PersonalDetails.Data.OtherOffences">
-                            <HeaderContent>
-                                <MudTh>Details</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd DataLabel="Details">@context.Details</MudTd>
-                            </RowTemplate>
-                        </MudTable>
-                    </MudCardContent>
-                </MudCard>
+            <MudItem xs="12" md="6">
+                <MudTable T="OtherOffenceDto" Items="SentenceData.Data.OtherOffences" Striped="true">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">
+                            Other Offences
+                        </MudText>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>Details</MudTh>
+                        <MudTh>Active</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="First Sentenced">@context.Details</MudTd>
+                        <MudTd DataLabel="Is Active">@context.IsActive</MudTd>
+                    </RowTemplate>
+                </MudTable>
             </MudItem>
         </MudGrid>
-
-
-
     }
 }
 

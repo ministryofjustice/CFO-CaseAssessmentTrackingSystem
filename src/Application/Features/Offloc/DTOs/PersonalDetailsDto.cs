@@ -1,56 +1,59 @@
-﻿using MassTransit.Futures.Contracts;
+﻿namespace Cfo.Cats.Application.Features.Offloc.DTOs;
 
-namespace Cfo.Cats.Application.Features.Offloc.DTOs;
-
-public record PersonalDetailsDto
+public class SentenceDataDto
 {
-    public required string NomsNumber { get; set; }
-
-    [Description("First Name")]
-    public string FirstName { get; set; } = string.Empty;
-
-    [Description("Second Name")]
-    public string SecondName { get; set; } = string.Empty;
-
-    [Description("Surname")]
-    public string Surname { get; set; } = string.Empty;
-
-    [Description("Date Of Birth")]
-    public DateOnly DateOfBirth { get; set; }
-
-    public string Gender { get; set; } = null!;
-
-    [Description("Maternity Status")]
-    public string MaternityStatus { get; set; } = string.Empty;
-
-
-    public string Nationality { get; set; } = string.Empty;
-
-    public string Religion { get; set; } = string.Empty;
-
-    [Description("Marital Status")]
-    public string MaritalStatus { get; set; } = string.Empty;
-
-    [Description("Ethnicity")]
-    public string EthnicGroup { get; set; } = string.Empty;
-
-    public bool IsActive { get; set; }
-
-    public MainOffence[] MainOffences { get; set; } = [];
-
-    public OtherOffence[] OtherOffences { get; set; } = [];
+    public string NomsNumber { get; set; } = default!;
+    public IEnumerable<SentenceInformationDto> SentenceInformation { get; set; } = default!;
+    public MainOffenceDto[] MainOffence { get; set; } = [];
+    public OtherOffenceDto[] OtherOffences { get; set; } = [];
 }
 
-public record MainOffence
+public class MainOffenceDto
 {
-    [Description("Main Offence")]
-    public required string MainOffence1 { get; set; }
-    [Description("Date Of First Conviction")]
+    public string? MainOffence { get; set; }
+
     public DateOnly? DateFirstConviction { get; set; }
+
     public bool IsActive { get; set; }
 }
 
-public record OtherOffence
+public class OtherOffenceDto
 {
-    public required string Details { get; set; }
+    public string Details { get; set; } = null!;
+
+    public bool IsActive { get; set; }
+}
+
+public class SentenceInformationDto
+{
+    public DateOnly? FirstSentenced { get; set; }
+
+    public int? SentenceYears { get; set; }
+
+    public int? SentenceMonths { get; set; }
+
+    public int? SentenceDays { get; set; }
+
+    public DateOnly? EarliestPossibleReleaseDate { get; set; }
+
+    public DateOnly? DateOfRelease { get; set; }
+
+    public string? Sed { get; set; }
+
+    public string? Hdced { get; set; }
+
+    public string? Hdcad { get; set; }
+
+    public string? Ped { get; set; }
+
+    public string? Crd { get; set; }
+
+    public string? Npd { get; set; }
+
+    public string? Led { get; set; }
+
+    public DateOnly? Tused { get; set; }
+
+    public bool IsActive { get; set; }
+
 }
