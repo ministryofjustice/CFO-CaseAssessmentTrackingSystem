@@ -144,7 +144,7 @@ public static class DependencyInjection
                         e.ConfigureConsumer<RecordPreReleaseSupportPayment>(context);
                         e.ConfigureConsumer<RecordThroughTheGatePaymentConsumer>(context);
                         e.ConfigureConsumer<RecordWingInductionPaymentConsumer>(context);
-                        
+                        e.ConfigureConsumer<RecordReassessmentPaymentConsumer>(context);
                     });
 
                 });
