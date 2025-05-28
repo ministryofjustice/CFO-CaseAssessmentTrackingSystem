@@ -71,7 +71,6 @@ public partial class Escalation
             {
                 _latestParticipantAssessmentDto = result.Data.MaxBy(pa => pa.CreatedDate);
             }
-
         }
     }
 
@@ -144,4 +143,5 @@ public partial class Escalation
     }
 
     private int characterCount => Command.Message?.Length ?? 0;
+
 }

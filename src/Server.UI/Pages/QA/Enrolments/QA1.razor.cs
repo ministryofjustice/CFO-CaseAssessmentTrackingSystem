@@ -20,6 +20,8 @@ public partial class QA1
     private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
     private bool _saving = false;
 
+    
+
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; } = null!;
 
@@ -73,7 +75,7 @@ public partial class QA1
                 _latestParticipantAssessmentDto = result.Data.MaxBy(pa => pa.CreatedDate);
             }
 
-        }
+    }
     }
 
     protected async Task SubmitToQa()

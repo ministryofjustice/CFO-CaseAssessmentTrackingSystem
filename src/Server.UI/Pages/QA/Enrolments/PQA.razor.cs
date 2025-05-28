@@ -31,6 +31,8 @@ public partial class PQA
     private bool _showRightToWorkWarning = false;
     private bool _pqaResponseDisabled = false;
 
+    
+
     protected override async Task OnInitializedAsync()
     {
         if (_participantDto is null)
@@ -162,4 +164,5 @@ public partial class PQA
             Command.Response = SubmitPqaResponse.PqaResponse.Return;
         }
     }
+
 }
