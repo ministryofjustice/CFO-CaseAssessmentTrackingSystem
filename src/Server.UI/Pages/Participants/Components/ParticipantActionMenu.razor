@@ -22,6 +22,11 @@
             <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error" OnClick="Archive">Archive</MudMenuItem>
         }
 
+        @if (Participant.EnrolmentStatus.AllowUnarchive())
+        {
+            <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error" OnClick="Unarchive">Unarchive</MudMenuItem>
+        }
+
         @* @if (Participant.EnrolmentStatus.AllowSuspend())
         {
             <MudMenuItem Icon="@Icons.Material.Filled.HideSource" IconColor="Color.Error" OnClick="Suspend">Suspend</MudMenuItem>
@@ -100,6 +105,7 @@
             if (result.Succeeded)
             {
                 Snackbar.Add($"Participant {Participant.Id} Archived", Severity.Success);
+                await OnUpdate.InvokeAsync();
             }
             else
             {
@@ -129,6 +135,7 @@
             if (result.Succeeded)
             {
                 Snackbar.Add($"Participant {Participant.Id} suspended", Severity.Success);
+                await OnUpdate.InvokeAsync();
             }
             else
             {
@@ -340,4 +347,37 @@
 
         return justificationRequired;
     }            
- }
+
+    protected async Task Unarchive()
+    {
+        var command = new UnarchiveCase.Command()
+            {
+                ParticipantId = Participant.Id
+            };
+
+        var parameters = new DialogParameters<UnarchiveCaseDialog>()
+            {
+                { x => x.Model,command}
+            };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<UnarchiveCaseDialog>("Unarchive Case", parameters, options);
+
+        var state = await dialog.Result;
+
+        if (state!.Canceled is false)
+        {
+            var result = await GetNewMediator().Send(command);
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"Participant {Participant.Id} Unarchived", Severity.Success);
+                await OnUpdate.InvokeAsync();
+            }
+            else
+            {
+                ShowActionFailure("Failed to Unarchive", result);
+            }
+        }
+    }
+}

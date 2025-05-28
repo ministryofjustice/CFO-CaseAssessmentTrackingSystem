@@ -17,7 +17,8 @@ public static class SuspendCase
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
-            participant!.TransitionTo(EnrolmentStatus.DormantStatus);
+            participant!.TransitionTo(EnrolmentStatus.DormantStatus, null, null);
+
             // ReSharper disable once MethodHasAsyncOverload
             return Result.Success();
         }

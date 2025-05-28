@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -141,5 +141,26 @@ public static class SubmitEscalationResponse
             return entry != null && entry.Participant!.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus;
         }
     }
-    
+
+    public class E_OwnerShouldNotBeApprover : AbstractValidator<Command>
+    {
+        private IUnitOfWork _unitOfWork;
+        public E_OwnerShouldNotBeApprover(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c)
+                .MustAsync(OwnerMustNotBeApprover)
+                .WithMessage("This enrolment was assigned to you hence must not be processed at Escalation stage by you");
+        }
+
+        private async Task<bool> OwnerMustNotBeApprover(Command c, CancellationToken cancellationToken)
+        {
+            var entry = await _unitOfWork.DbContext.EnrolmentEscalationQueue
+                .FirstOrDefaultAsync(a => a.Id == c.QueueEntryId, cancellationToken: cancellationToken);
+
+            return entry != null && entry.SupportWorkerId.Equals(c.CurrentUser!.UserId) == false;
+        }
+    }
+
 }

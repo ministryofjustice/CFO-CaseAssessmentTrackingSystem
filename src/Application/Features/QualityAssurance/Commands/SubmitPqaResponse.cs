@@ -147,15 +147,15 @@ public static class SubmitPqaResponse
 
             RuleFor(c => c)
                 .Must(OwnerMustNotBeApprover)
-                .WithMessage("This assessment is created by you hence must not be processed at PQA stage by you");
+                .WithMessage("This enrolment was assigned to you hence must not be processed at PQA stage by you");
         }
 
         private bool OwnerMustNotBeApprover(Command c)
         {
-            var entry = _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
+            var entry = _unitOfWork.DbContext.EnrolmentPqaQueue
                 .FirstOrDefault(a => a.Id == c.QueueEntryId);
 
-            return entry != null && entry.Participant!.OwnerId!.Equals(c.CurrentUser!.UserId) == false;
+            return entry != null && entry.SupportWorkerId.Equals(c.CurrentUser!.UserId) == false;
         }
     }
 

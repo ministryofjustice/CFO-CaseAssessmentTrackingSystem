@@ -2,6 +2,7 @@
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Events;
+using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
@@ -58,6 +59,8 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>
     public string TenantId { get;  private set; }
 
     public string SupportWorkerId { get; private set; }
+
+    public virtual ApplicationUser? SupportWorker { get; private set; }
 
     public DateTime ConsentDate { get; private set; }
 }

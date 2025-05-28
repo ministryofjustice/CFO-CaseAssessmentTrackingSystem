@@ -4,10 +4,8 @@
 
 @using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.Participants.DTOs
-@using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
-@using Cfo.Cats.Application.Features.QualityAssurance.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components
@@ -47,7 +45,7 @@
 
     <MudGrid Style="height: 100vh; width: 100%;">
         <MudItem xs="4" Style="height: calc(100vh - 150px); width: 100%;">
-            <ParticipantQaDetails Participant="_participantDto" ShowNationality="true"/>
+            <ParticipantQaDetails Participant="_participantDto" QueueEntry="_queueEntry" ShowNationality="true" />
         </MudItem>
 
         <MudItem xs="8" Style="height: 100%; width: 100%;">
@@ -112,7 +110,7 @@
                         </MudForm>
 
                         <MudContainer Class="d-flex px-0 pt-8">
-                            <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
+                            <MudLoadingButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled" Loading="saving">Submit</MudLoadingButton>
                         </MudContainer>
                     }
                     else
@@ -125,108 +123,4 @@
             </MudTabs>
         </MudItem>
     </MudGrid>
-}
-
-@code {
-    private QaExternalMessageWarning? warningMessage;
-    private MudForm? _form;
-    private EnrolmentQueueEntryDto? _queueEntry;
-    private ParticipantDto? _participantDto;
-
-    [Parameter] public Guid Id { get; set; }
-
-    [CascadingParameter] public UserProfile? UserProfile { get; set; }
-
-    private SubmitEscalationResponse.Command Command { get; set; } = default!;
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (_participantDto is null)
-        {
-            var result = await GetNewMediator().Send(new GetEscalationEntryById.Query
-            {
-                Id = Id,
-                CurrentUser = UserProfile
-            });
-
-            if (result.Succeeded)
-            {
-                _queueEntry = result.Data!;
-
-                _participantDto = await GetNewMediator().Send(new GetParticipantById.Query
-                {
-                    Id = _queueEntry.ParticipantId
-                });
-
-                Command = new SubmitEscalationResponse.Command
-                {
-                    QueueEntryId = Id,
-                    CurrentUser = UserProfile
-                };
-            }
-
-            StateHasChanged();
-        }
-    }
-
-    protected async Task SubmitToQa()
-    {
-        await _form!.Validate().ConfigureAwait(false);
-        if (_form.IsValid is false)
-        {
-            return;
-        }
-
-        bool submit = true;
-
-        if (Command is { IsMessageExternal: true, Message.Length: > 0 })
-        {
-            submit = await warningMessage!.ShowAsync();
-        }
-
-        if (submit)
-        {
-            var result = await GetNewMediator().Send(Command);
-
-            var message = Command.Response switch
-            {
-                SubmitEscalationResponse.EscalationResponse.Accept => "Participant accepted",
-                SubmitEscalationResponse.EscalationResponse.Return => "Participant returned to PQA",
-                _ => "Comment added"
-            };
-
-
-            if (result.Succeeded)
-            {
-                Snackbar.Add(message, Severity.Info);
-                Navigation.NavigateTo("/pages/qa/servicedesk/enrolments");
-            }
-            else
-            {
-                ShowActionFailure("Failed to return to submit", result);
-            }
-        }
-    }
-
-    private void ShowActionFailure(string title, IResult result)
-    {
-        Snackbar.Add(
-            @<div>
-                <h2>@title</h2>
-                <ul>
-                    @foreach (var e in result.Errors)
-                    {
-                        <li>@e</li>
-                    }
-                </ul>
-            </div>
-            , Severity.Error, options =>
-            {
-                options.RequireInteraction = true;
-                options.SnackbarVariant = Variant.Text;
-            });
-    }
-
-    private int characterCount => Command.Message?.Length ?? 0;
-
 }

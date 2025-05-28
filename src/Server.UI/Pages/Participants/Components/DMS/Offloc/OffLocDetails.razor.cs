@@ -11,8 +11,8 @@ public partial class OffLocDetails
     [Parameter, EditorRequired] 
     public string NomisNumber { get; set; } = default!;
     
-    private Result<PersonalDetailsDto>? PersonalDetails { get; set; } 
+    private Result<SentenceDataDto>? SentenceData { get; set; } 
 
     protected override async Task OnInitializedAsync() 
-        => PersonalDetails = await OfflocService.GetPersonalDetailsAsync(NomisNumber);
+        => SentenceData = await OfflocService.GetSentenceDataAsync(NomisNumber);
 }

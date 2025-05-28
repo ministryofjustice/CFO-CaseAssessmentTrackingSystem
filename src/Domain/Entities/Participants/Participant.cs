@@ -132,11 +132,11 @@ public class Participant : OwnerPropertyEntity<string>
     /// <param name="to">The new enrolment status</param>
     /// <returns>This entity.</returns>
     /// <exception cref="InvalidEnrolmentTransition">If the new enrolment status is not valid</exception>
-    public Participant TransitionTo(EnrolmentStatus to)
+    public Participant TransitionTo(EnrolmentStatus to, string? Reason, string? AdditionalInformation)
     {
         if (EnrolmentStatus!.CanTransitionTo(to))
         {
-            AddDomainEvent(new ParticipantTransitionedDomainEvent(this, EnrolmentStatus, to));
+            AddDomainEvent(new ParticipantTransitionedDomainEvent(this, EnrolmentStatus, to, Reason, AdditionalInformation));
             EnrolmentStatus = to;
             return this;
         }
@@ -362,27 +362,14 @@ public class Participant : OwnerPropertyEntity<string>
     {
         BioDue = bioDueDate;
         return this;
-    }
-
-    /// <summary>
-    /// Archives the participant 
-    /// </summary>
-    /// <param name="archiveReason"></param>
-    /// <param name="justificationReason"></param>
-    /// <returns></returns>
-    public Participant Archive(ArchiveReason archiveReason, string? justificationReason)
-    {
-        ArchiveJustification = justificationReason;
-        ArchiveReason = archiveReason;
-
-        return this;
-    }
+    }    
 
     public Participant UpdateSync()
     {
         LastSyncDate = DateTime.UtcNow;
         return this;
     }
+
     public DateTime? CalculateConsentDate()
     {
         if (DateOfFirstConsent is null)
