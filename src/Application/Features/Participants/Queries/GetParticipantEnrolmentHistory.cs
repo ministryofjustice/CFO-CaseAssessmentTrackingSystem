@@ -64,24 +64,14 @@ public static class GetParticipantEnrolmentHistory
                     results[i].SupportWorker = "CFO User";
                 }
 
-                // Calculate DaysSincePrevious
-                if (i == results.Count - 1)
-                {
-                    // Last row - compare to today
-                    results[i].DaysSincePrevious = results[i].ActionDate.HasValue
-                        ? (DateTime.Today - results[i].ActionDate!.Value.ToDateTime(TimeOnly.MinValue)).Days
-                        : 0;
-                }
-                else if (results[i].ActionDate.HasValue && results[i + 1].ActionDate.HasValue)
-                {
-                    results[i].DaysSincePrevious =
-                        (results[i + 1].ActionDate!.Value.ToDateTime(TimeOnly.MinValue) -
-                         results[i].ActionDate!.Value.ToDateTime(TimeOnly.MinValue)).Days;
-                }
-                else
-                {
-                    results[i].DaysSincePrevious = 0;
-                }
+                var current = results[i];
+                var next = i == results.Count - 1
+                    ? DateOnly.FromDateTime(DateTime.Today)
+                    : results[i + 1].ActionDate;
+
+                current.DaysSincePrevious = (current.ActionDate.HasValue && next.HasValue)
+                    ? next.Value.DayNumber - current.ActionDate.Value.DayNumber
+                    : 0;
             }
 
             return results;
