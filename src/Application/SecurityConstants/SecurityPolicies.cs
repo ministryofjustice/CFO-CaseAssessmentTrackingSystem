@@ -55,4 +55,6 @@ public static class SecurityPolicies
     /// Used to allow users to view the audits
     /// </summary>
     public const string ViewAudit = nameof(ViewAudit);
+
+    public const string SystemSupportFunctions = nameof(SystemSupportFunctions);
 }
