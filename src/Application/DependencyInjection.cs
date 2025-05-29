@@ -1,7 +1,9 @@
 ﻿
+using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Features.ManagementInformation;
 using Cfo.Cats.Application.Pipeline;
 using Cfo.Cats.Application.Pipeline.PreProcessors;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Cfo.Cats.Application;
@@ -38,8 +40,21 @@ public static class DependencyInjection
                 return scope.ServiceProvider.GetRequiredService<IMediator>();
             };
         });
+        services.AddSingleton<InMemoryTargetsProvider>();
+        services.AddSingleton<InMemoryTargetsProviderReprofiled>();
         
-        services.AddSingleton<ITargetsProvider, InMemoryTargetsProvider>();
+        services.AddSingleton<ITargetsProvider>(sp =>
+        {
+            var configuration = sp.GetRequiredService<IConfiguration>();
+
+            if (Convert.ToBoolean(configuration["Features:InMemoryTargetsProviderReprofiled"]))
+            {
+                var inMemory = sp.GetRequiredService<InMemoryTargetsProvider>();
+                return new InMemoryTargetsProviderReprofiled(inMemory);
+            }
+
+            return sp.GetRequiredService<InMemoryTargetsProvider>();
+        });
 
         services.AddLazyCache();
 
