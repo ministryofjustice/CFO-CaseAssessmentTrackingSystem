@@ -432,6 +432,15 @@ public static class DependencyInjection
                         );
                 });
 
+                options.AddPolicy(SecurityPolicies.SystemSupportFunctions, policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+                    policy.RequireRole(RoleNames.SystemSupport,
+                        RoleNames.SystemSupport,
+                        RoleNames.SMT
+                    );
+                });
               
             })
             .AddAuthentication(options => {
