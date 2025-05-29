@@ -1,11 +1,11 @@
-﻿namespace Cfo.Cats.Application.Features.Participants.DTOs;
+namespace Cfo.Cats.Application.Features.Participants.DTOs;
 
 public class ParticipantEnrolmentHistoryDto
 {
     public required int Id { get; init; }
 
     [Description("Date")]
-    public required DateOnly? ActionDate { get; init; }
+    public required DateTime? ActionDate { get; init; }
 
     [Description("Status")]
     public required string Status { get; init; }

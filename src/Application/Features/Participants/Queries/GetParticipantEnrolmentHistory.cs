@@ -40,7 +40,7 @@ public static class GetParticipantEnrolmentHistory
                                  {
                                      Id = peh.Id,
                                      ActionDate = peh.Created.HasValue
-                                             ? DateOnly.FromDateTime(peh.Created.Value)
+                                             ? peh.Created.Value
                                                      : null,
                                      Status = peh.EnrolmentStatus == 4 ? "Archived" : "Active",
                                      Event = peh.EnrolmentStatus.Name,
@@ -49,14 +49,16 @@ public static class GetParticipantEnrolmentHistory
                                      LocationName = l.Name,
                                      SupportWorker = u!.DisplayName!,
                                      SupportWorkerTenantId = u!.TenantId
-                                 }).ToListAsync();
+                                 })
+                                 .OrderBy(x => x.ActionDate)
+                                 .ToListAsync();
 
             if (results.Count == 0)
                 return results;
             
             bool hideUser = !request.CurrentUser.AssignedRoles.Any(role => AllowedRoles.Contains(role));
 
-            for (int i = 1; i < results.Count; i++)
+            for (int i = 0; i < results.Count; i++)
             {
                 // Mask support worker if needed
                 if (hideUser && HiddenTenantIds.Contains(results[i].SupportWorkerTenantId))
@@ -66,11 +68,11 @@ public static class GetParticipantEnrolmentHistory
 
                 var current = results[i];
                 var next = i == results.Count - 1
-                    ? DateOnly.FromDateTime(DateTime.Today)
+                    ? DateTime.UtcNow
                     : results[i + 1].ActionDate;
 
                 current.DaysSincePrevious = (current.ActionDate.HasValue && next.HasValue)
-                    ? next.Value.DayNumber - current.ActionDate.Value.DayNumber
+                    ? (next.Value - current.ActionDate.Value).Days                    
                     : 0;
             }
 

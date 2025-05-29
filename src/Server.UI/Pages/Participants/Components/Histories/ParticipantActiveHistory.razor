@@ -8,9 +8,9 @@
 else
 {
     <MudDataGrid Items="@ParticipantEnrolmentHistory" Striped="true">
-        <Columns>
-                <PropertyColumn Property="x => x.ActionDate" Title="Date"
-                                CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+        <Columns> 
+                <PropertyColumn Property="x => x.ActionDate.ToShortDateOrEmptyString()" SortBy="x => x.ActionDate" Title="Date"
+                        CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 </PropertyColumn>
                 <PropertyColumn Property="x => x.Status" Title="Status"
                                 CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
