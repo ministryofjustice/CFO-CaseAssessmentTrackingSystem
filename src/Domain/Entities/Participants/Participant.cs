@@ -94,14 +94,7 @@ public class Participant : OwnerPropertyEntity<string>
     /// <summary>
     /// If the location differed from the current location
     /// </summary>
-    public string? EnrolmentLocationJustification { get; private set; }
-
-    /// <summary>
-    /// The justification for Archiving participant
-    /// </summary>
-    public string? ArchiveJustification { get; private set; }
-
-    public ArchiveReason? ArchiveReason{ get; private set; }
+    public string? EnrolmentLocationJustification { get; private set; }  
 
     public string? AssessmentJustification { get; private set; }
 
