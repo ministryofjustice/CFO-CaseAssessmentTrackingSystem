@@ -32,9 +32,6 @@
                                 </MudText>
                                 <MudText Typo="Typo.body2">@note.CreatedByEmail</MudText>
                             </CardHeaderContent>
-                            <CardHeaderActions>
-                                <MudIconButton Icon="@Icons.Material.Filled.Info"></MudIconButton>
-                            </CardHeaderActions>
                         </MudCardHeader>
                         <MudCardContent>
                             <MudText Typo="Typo.body1">
@@ -45,11 +42,15 @@
                             
                         </MudCardContent>
                         <MudCardActions>
-                            @note.Created.Humanize()
+                            <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
+                                <MudText Typo="Typo.body1">
+                                    @note.Created.Humanize()
+                                </MudText>
+                            </MudTooltip>
                         </MudCardActions>
                     </MudCardContent>
                 </MudCard>
-              
+
             </MudTimelineItem>
         }
     </MudTimeline>
