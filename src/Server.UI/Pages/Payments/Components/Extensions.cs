@@ -20,5 +20,31 @@ public static class Extensions
 
         // Cap the result at 100%
         return Math.Min(Math.Round(percentage), 100);
-   } 
+   }
+
+   public static decimal CalculatePercentage(this int achieved, int target)
+   {
+       if (target == 0)
+       {
+           return 0; 
+       }
+
+       decimal percentage = (decimal)achieved / target * 100;
+       return Math.Round(percentage);
+   }
+
+   public static string GetPerformanceClass(this int achieved, int target)
+   {
+       if (target == 0) return "performance-error";
+
+       var percentage = (decimal)achieved / target * 100;
+
+       return percentage switch
+       {
+           >= 100 => "performance-success",
+           >= 86 => "performance-warning",
+           _ => "performance-error"
+       };
+   }
+
 }

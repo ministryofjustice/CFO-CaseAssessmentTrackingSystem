@@ -1,0 +1,194 @@
+﻿
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@using Cfo.Cats.Server.UI.Pages.Payments.Components
+@inherits CatsComponentBase
+
+<style>
+    td, th {
+        text-align: center !important;
+    }
+
+    .fully-bordered-table {
+        border: 1px solid var(--mud-palette-table-lines);
+        border-collapse: collapse;
+        table-layout: fixed; /* This ensures equal column widths */
+        width: 100%;
+    }
+
+    .fully-bordered-table th,
+    .fully-bordered-table td {
+        border: 1px solid var(--mud-palette-table-lines) !important;
+        width: calc(100% / 13); /* Equal width for all 13 columns */
+        padding: 8px;
+        text-align: center;
+        vertical-align: middle;
+        word-wrap: break-word; /* Enable text wrapping */
+        white-space: normal; /* Allow text to wrap */
+        overflow-wrap: break-word; /* Break long words if needed */
+    }
+
+    .fully-bordered-table th {
+        border-bottom: 2px solid var(--mud-palette-table-lines) !important;
+        font-size: 0.75rem; /* Smaller font for headers to fit better */
+        line-height: 1.2; /* Tighter line height for wrapped text */
+    }
+
+    .fully-bordered-table .left-align {
+        text-align: left !important;
+        font-weight: 600;
+    }
+
+    /* Specific styling for the header cells to ensure proper wrapping */
+    .fully-bordered-table thead th {
+        height: auto;
+        min-height: 40px; /* Minimum height to accommodate wrapped text */
+    }
+
+    /* Make the MudText components wrap properly */
+    .fully-bordered-table .mud-typography {
+        word-wrap: break-word;
+        white-space: normal;
+        line-height: 1.2;
+    }
+
+    .performance-success {
+        background-color: var(--mud-palette-success) !important;
+        color: white !important;
+        font-weight: 500;
+    }
+
+    .performance-warning {
+        background-color: var(--mud-palette-warning) !important;
+        color: white !important;
+        font-weight: 500;
+    }
+
+    .performance-error {
+        background-color: var(--mud-palette-error) !important;
+        color: white !important;
+        font-weight: 500;
+    }
+
+</style>
+
+@if (_isLoading)
+{
+    <LoadingCard Title="Fetching cumulative data" />
+}
+else
+{
+    if (_results is not null)
+    {
+
+        <MudSimpleTable Style="overflow-x: auto;" Class="fully-bordered-table ma-4" Bordered="true" >
+            <thead >
+                <tr >
+                    <th colspan="13"><MudText Typo="Typo.h6">@($"{EndDate:MMM yyyy}")</MudText></th>
+                </tr>
+                <tr>
+                    <th rowspan="3"></th>
+                    <th colspan="4"><MudText Typo="Typo.subtitle1">Attachments</MudText></th>
+                    <th colspan="2"><MudText Typo="Typo.subtitle1">Support &amp; Referral</MudText></th>
+                    <th colspan="4"><MudText Typo="Typo.subtitle1">Activities</MudText></th>
+                    <th colspan="2"><MudText Typo="Typo.subtitle1">ETE</MudText></th>
+                </tr>
+                <tr>
+                    <th colspan="2"><MudText Typo="Typo.subtitle2">Enrolments</MudText></th>
+                    <th colspan="2"><MudText Typo="Typo.subtitle2">Inductions</MudText></th>
+                    <th rowspan="2"><MudText Typo="Typo.subtitle2">Pre-Release Support</MudText></th>
+                    <th rowspan="2"><MudText Typo="Typo.subtitle2">Through the Gate</MudText></th>
+                    <th rowspan="2"><MudText Typo="Typo.subtitle2">Support Work</MudText></th>
+                    <th rowspan="2"><MudText Typo="Typo.subtitle2">Human Citizenship</MudText></th>
+                    <th rowspan="2"><MudText Typo="Typo.subtitle2">Community and Social</MudText></th>
+                    <th rowspan="2"><MudText Typo="Typo.subtitle2">ISW Support</MudText></th>
+                    <th rowspan="2"><MudText Typo="Typo.subtitle2">Education &amp; Training</MudText></th>
+                    <th rowspan="2"><MudText Typo="Typo.subtitle2">Employment</MudText></th>
+                </tr>
+                <tr>
+                    <th>Prison</th>
+                    <th>Community</th>
+                    <th>Wings</th>
+                    <th>Hubs</th>
+
+                </tr>
+            </thead>
+            <tbody >
+                @if (_targets is not null)
+                {
+                    <tr>
+                        <td class="left-align">Area Targets</td>
+                        <td>@_targets.Prison</td>
+                        <td>@_targets.Community</td>
+                        <td>@_targets.Wings</td>
+                        <td>@_targets.Hubs</td>
+                        <td>@_targets.PreReleaseSupport</td>
+                        <td>@_targets.ThroughTheGate</td>
+                        <td>@_targets.SupportWork</td>
+                        <td>@_targets.HumanCitizenship</td>
+                        <td>@_targets.CommunityAndSocial</td>
+                        <td>@_targets.Interventions</td>
+                        <td>@_targets.TrainingAndEducation</td>
+                        <td>@_targets.Employment</td>
+                    </tr>
+
+                    <tr>
+                        <td class="left-align">Actuals</td>
+                        <td>@_results.custody_enrolments</td>
+                        <td>@_results.community_enrolments</td>
+                        <td>@_results.wing_inductions</td>
+                        <td>@_results.hub_inductions</td>
+                        <td>@_results.prerelease_support</td>
+                        <td>@_results.ttg</td>
+                        <td>@_results.support_work</td>
+                        <td>@_results.human_citizenship</td>
+                        <td>@_results.community_and_social</td>
+                        <td>@_results.isws</td>
+                        <td>@_results.education</td>
+                        <td>@_results.employment</td>
+                        
+                    </tr>
+                    <tr>
+                        <td class="left-align">% Achieved</td>
+                        <td class="@_results.custody_enrolments.GetPerformanceClass(_targets.Prison)">
+                            @_results.custody_enrolments.CalculatePercentage(_targets.Prison)
+                        </td>
+                        <td class="@_results.community_enrolments.GetPerformanceClass(_targets.Community)">
+                            @_results.community_enrolments.CalculatePercentage(_targets.Community)
+                        </td>
+                        <td class="@_results.wing_inductions.GetPerformanceClass(_targets.Wings)">
+                            @_results.wing_inductions.CalculatePercentage(_targets.Wings)
+                        </td>
+                        <td class="@_results.hub_inductions.GetPerformanceClass(_targets.Hubs)">
+                            @_results.hub_inductions.CalculatePercentage(_targets.Hubs)
+                        </td>
+                        <td class="@_results.prerelease_support.GetPerformanceClass(_targets.PreReleaseSupport)">
+                            @_results.prerelease_support.CalculatePercentage(_targets.PreReleaseSupport)
+                        </td>
+                        <td class="@_results.ttg.GetPerformanceClass(_targets.ThroughTheGate)">
+                            @_results.ttg.CalculatePercentage(_targets.ThroughTheGate)
+                        </td>
+                        <td class="@_results.support_work.GetPerformanceClass(_targets.SupportWork)">
+                            @_results.support_work.CalculatePercentage(_targets.SupportWork)
+                        </td>
+                        <td class="@_results.human_citizenship.GetPerformanceClass(_targets.HumanCitizenship)">
+                            @_results.human_citizenship.CalculatePercentage(_targets.HumanCitizenship)
+                        </td>
+                        <td class="@_results.community_and_social.GetPerformanceClass(_targets.CommunityAndSocial)">
+                            @_results.community_and_social.CalculatePercentage(_targets.CommunityAndSocial)
+                        </td>
+                        <td class="@_results.isws.GetPerformanceClass(_targets.Interventions)">
+                            @_results.isws.CalculatePercentage(_targets.Interventions)
+                        </td>
+                        <td class="@_results.education.GetPerformanceClass(_targets.TrainingAndEducation)">
+                            @_results.education.CalculatePercentage(_targets.TrainingAndEducation)
+                        </td>
+                        <td class="@_results.employment.GetPerformanceClass(_targets.Employment)">
+                            @_results.employment.CalculatePercentage(_targets.Employment)
+                        </td>
+                    </tr>
+                }
+                </tbody>
+        </MudSimpleTable> 
+    }
+}
+
