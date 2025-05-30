@@ -196,7 +196,11 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
 
             note.Property(x => x.CallReference)
                 .HasMaxLength(DatabaseConstants.FieldLengths.CallReference);
-            
+
+            note.Property(x => x.TenantId)
+                .IsRequired()
+                .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
+
             note.HasOne(n => n.CreatedByUser)
                 .WithMany()
                 .HasForeignKey(x => x.CreatedBy);

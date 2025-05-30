@@ -85,7 +85,11 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
             note.Property(x => x.Message).HasMaxLength(255);
             
             note.Property(x => x.CallReference).HasMaxLength(DatabaseConstants.FieldLengths.CallReference);
-            
+
+            note.Property(x => x.TenantId)
+                .IsRequired()
+                .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
+
             note.HasOne(n => n.CreatedByUser)
                 .WithMany()
                 .HasForeignKey(x => x.CreatedBy);
