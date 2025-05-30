@@ -10,19 +10,19 @@
         <MudContainer>
             <MudFocusTrap>
                 <MudTextField @bind-Value="@search"
-                                Class="mb-3"
-                                Clearable="true" 
-                                Placeholder="@L["Search..."]"
-                                TextChanged="@(SearchPages)"
-                                Immediate="true"
-                                @onkeydown="HandleTextFieldKeyDown" />
+                Class="mb-3"
+                Clearable="true" 
+                Placeholder="@L["Search..."]"
+                TextChanged="@(SearchPages)"
+                Immediate="true"
+                @onkeydown="HandleTextFieldKeyDown" />
                 <MudList T="string" ReadOnly="false"
-                            Style="height: 300px; overflow-y: auto">
+                Style="height: 300px; overflow-y: auto">
                     @foreach (var (key, value) in pagesFiltered)
                     {
                         <MudListItem T="string" OnClick="@(() => Navigation.NavigateTo(value))" @onkeypress="@(e => HandleListItemKeyDown(e, value))">
                             <MudHighlighter HighlightedText="@search"
-                                            Text="@key"/>
+                            Text="@key"/>
                         </MudListItem>
                     }
                 </MudList>
@@ -128,8 +128,16 @@
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
                 pages.Add("Activities Second Pass", "/pages/qa/activities/qa2");
-                pages.Add("Payments", "/pages/finance/payments/");
             }
+
+            allowed = [RoleNames.Finance, RoleNames.QAFinance, RoleNames.SystemSupport, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT];
+            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+            {
+                pages.Add("Payments", "/pages/finance/payments/");
+                pages.Add("Cumulatives", "/pages/performance/cumulatives");
+            }
+
+
 
             allowed = [RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
