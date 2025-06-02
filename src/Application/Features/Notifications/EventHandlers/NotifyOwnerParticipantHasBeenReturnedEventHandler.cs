@@ -3,12 +3,19 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Notifications.EventHandlers;
 
-public class NotifyOwnerParticipantHasBeenReturnedEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantTransitionedDomainEvent>
+public class NotifyOwnerParticipantHasBeenReturnedEventHandler(IUnitOfWork unitOfWork, ILogger<NotifyOwnerParticipantHasBeenReturnedEventHandler> logger) : INotificationHandler<ParticipantTransitionedDomainEvent>
 {
     public async Task Handle(ParticipantTransitionedDomainEvent notification, CancellationToken cancellationToken)
     {
         if (notification.From == EnrolmentStatus.SubmittedToProviderStatus && notification.To == EnrolmentStatus.EnrollingStatus)
         {
+            if (notification.Item.OwnerId is null)
+            {
+                logger.LogWarning("Participant {ParticipantId} without an owner has been returned. Notification ignored.", notification.Item.Id);
+                return;
+            }
+
+
             const string heading = "Enrolment returned";
 
             string details = "You have enrolments that have been returned by PQA";
