@@ -23,26 +23,26 @@ public class InMemoryTargetsProviderReprofiled : ITargetsProvider
     {
         return new Dictionary<string, ContractTargetDto>
         {
-            { "East Midlands", new ContractTargetDto("East Midlands", 102, 65, 5, 50, 56, 39, 501, 48, 90, 5, 15, 42) },
+            { "East Midlands", new ContractTargetDto("East Midlands", 102, 65, 5, 50, 56, 25, 501, 48, 90, 5, 15, 42) },
             {
                 "East Of England",
-                new ContractTargetDto("East Of England", 108, 80, 5, 50, 59, 41, 564, 48, 90, 5, 17, 47)
+                new ContractTargetDto("East Of England", 108, 80, 5, 50, 59, 27, 564, 48, 90, 5, 17, 47)
             },
-            { "London", new ContractTargetDto("London", 96, 64, 5, 50, 53, 37, 480, 48, 90, 5, 14, 40) },
-            { "North East", new ContractTargetDto("North East", 78, 98, 10, 100, 43, 30, 528, 95, 180, 10, 16, 44) },
+            { "London", new ContractTargetDto("London", 96, 64, 5, 50, 53, 24, 480, 48, 90, 5, 14, 40) },
+            { "North East", new ContractTargetDto("North East", 78, 98, 10, 100, 43, 19, 528, 95, 180, 10, 16, 44) },
             {
-                "North West", new ContractTargetDto("North West", 162, 166, 10, 150, 89, 62, 984, 143, 270,
+                "North West", new ContractTargetDto("North West", 162, 166, 10, 150, 89, 40, 984, 143, 270,
                     15, 30, 82)
             },
-            { "South East", new ContractTargetDto("South East", 144, 89, 5, 50, 79, 55, 699, 48, 90, 5, 21, 58) },
-            { "South West", new ContractTargetDto("South West", 111, 82, 3, 50, 61, 43, 579, 48, 90, 5, 17, 48) },
+            { "South East", new ContractTargetDto("South East", 144, 89, 5, 50, 79, 36, 699, 48, 90, 5, 21, 58) },
+            { "South West", new ContractTargetDto("South West", 111, 82, 3, 50, 61, 27, 579, 48, 90, 5, 17, 48) },
             {
                 "West Midlands",
-                new ContractTargetDto("South West", 126, 112, 8, 100, 69, 48, 714, 95, 180, 10, 21, 60)
+                new ContractTargetDto("South West", 126, 112, 8, 100, 69, 31, 714, 95, 180, 10, 21, 60)
             },
             {
                 "Yorkshire and Humberside",
-                new ContractTargetDto("Yorkshire and Humberside", 144, 161, 15, 150, 79, 55, 915, 143, 270, 15, 27, 76)
+                new ContractTargetDto("Yorkshire and Humberside", 144, 161, 15, 150, 79, 36, 915, 143, 270, 15, 27, 76)
             }
         };
     }
