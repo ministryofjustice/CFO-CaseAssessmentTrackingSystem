@@ -16,7 +16,7 @@
                 Color color = GetColour(model);
                 
                 <MudTimelineItem Size="Size.Medium" Color="@color" Elevation="25">
-                    <MudTooltip Text="@model.OccurredOn.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
+                    
                         <MudCard Outlined="false" Elevation="25">
                             <MudCardContent>
                                 <MudText Typo="Typo.h6">@model.Line1</MudText>
@@ -29,18 +29,22 @@
                                 {
                                     <MudText Typo="Typo.body2">@model.Line3</MudText>
                                 }
-
+                            </MudCardContent>
+                            <MudCardActions>
                                 @if (hideUser && CFOTenantIds.Contains(model.UserTenantId))
                                 {
-                                    <MudText Typo="Typo.body2">CFO User @model.OccurredOn.Humanize()</MudText>
+                                    <MudTooltip Text="@model.OccurredOn.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
+                                        <MudText Typo="Typo.body2">CFO User @model.OccurredOn.Humanize()</MudText>
+                                    </MudTooltip>
                                 }
                                 else
                                 {
-                                    <MudText Typo="Typo.body2">@model.User @model.OccurredOn.Humanize()</MudText>
+                                    <MudTooltip Text="@model.OccurredOn.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
+                                        <MudText Typo="Typo.body2">@model.User @model.OccurredOn.Humanize()</MudText>
+                                    </MudTooltip>
                                 }
-
-                            </MudCardContent>
-                        </MudCard> </MudTooltip>
+                            </MudCardActions>
+                        </MudCard> 
                 </MudTimelineItem>
 
             }
