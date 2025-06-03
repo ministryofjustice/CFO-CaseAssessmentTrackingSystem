@@ -10,8 +10,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"
-CREATE OR ALTER FUNCTION mi.GetCumulativeTotals(
+            migrationBuilder.Sql(@"exec ('CREATE OR ALTER FUNCTION mi.GetCumulativeTotals(
                                         @StartDate DATE,
                                         @EndDate DATE
                                     )
@@ -44,11 +43,11 @@ CREATE OR ALTER FUNCTION mi.GetCumulativeTotals(
                                                 FROM mi.EnrolmentPayment
                                                 WHERE EligibleForPayment = 1  
                                                   AND Approved BETWEEN @StartDate AND @EndDate  
-                                                   AND LocationType IN ('Wing',
-                                                                      'Feeder',
-                                                                      'Outlying',
-                                                                      'Female',
-                                                                      'Unmapped Custody')
+                                                   AND LocationType IN (''Wing'',
+                                                                      ''Feeder'',
+                                                                      ''Outlying'',
+                                                                      ''Female'',
+                                                                      ''Unmapped Custody'')
                                                 GROUP BY ContractId
                                             ) as Custody ON c.Id = Custody.ContractId
                                             LEFT JOIN (
@@ -58,10 +57,10 @@ CREATE OR ALTER FUNCTION mi.GetCumulativeTotals(
                                                 FROM mi.EnrolmentPayment
                                                 WHERE EligibleForPayment = 1  
                                                   AND Approved BETWEEN @StartDate AND @EndDate  
-                                                  AND LocationType IN ('Community',
-                                                                      'Hub',
-                                                                      'Satellite',
-                                                                      'Unmapped Community')
+                                                  AND LocationType IN (''Community'',
+                                                                      ''Hub'',
+                                                                      ''Satellite'',
+                                                                      ''Unmapped Community'')
                                                 GROUP BY ContractId
                                             ) as Community ON c.Id = Community.ContractId
                                             LEFT JOIN (
@@ -71,7 +70,7 @@ CREATE OR ALTER FUNCTION mi.GetCumulativeTotals(
                                                 FROM mi.InductionPayment
                                                 WHERE EligibleForPayment = 1  
                                                   AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
-                                                  AND LocationType IN ('Wing')
+                                                  AND LocationType IN (''Wing'')
                                                 GROUP BY ContractId
                                             ) as Wing ON c.Id = Wing.ContractId
                                             LEFT JOIN (
@@ -81,7 +80,7 @@ CREATE OR ALTER FUNCTION mi.GetCumulativeTotals(
                                                 FROM mi.InductionPayment
                                                 WHERE EligibleForPayment = 1  
                                                   AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
-                                                  AND LocationType IN ('Hub')
+                                                  AND LocationType IN (''Hub'')
                                                 GROUP BY ContractId
                                             ) as Hub ON c.Id = Hub.ContractId
         LEFT JOIN (
@@ -91,7 +90,7 @@ CREATE OR ALTER FUNCTION mi.GetCumulativeTotals(
             FROM mi.SupportAndReferralPayment
             WHERE EligibleForPayment = 1  
               AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
-              AND SupportType IN ('Pre-Release Support')
+              AND SupportType IN (''Pre-Release Support'')
             GROUP BY ContractId
         ) as prs ON c.Id = prs.ContractId
         LEFT JOIN (
@@ -101,7 +100,7 @@ CREATE OR ALTER FUNCTION mi.GetCumulativeTotals(
             FROM mi.SupportAndReferralPayment
             WHERE EligibleForPayment = 1  
               AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
-              AND SupportType IN ('Through the Gate')
+              AND SupportType IN (''Through the Gate'')
             GROUP BY ContractId
         ) as ttg ON c.Id = ttg.ContractId
         LEFT JOIN (
@@ -111,7 +110,7 @@ CREATE OR ALTER FUNCTION mi.GetCumulativeTotals(
             FROM mi.ActivityPayment
             WHERE EligibleForPayment = 1  
               AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
-              AND ActivityType IN ('Support Work')
+              AND ActivityType IN (''Support Work'')
             GROUP BY ContractId
         ) as support_work ON c.Id = support_work.ContractId
         LEFT JOIN (
@@ -121,7 +120,7 @@ CREATE OR ALTER FUNCTION mi.GetCumulativeTotals(
             FROM mi.ActivityPayment
             WHERE EligibleForPayment = 1  
               AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
-              AND ActivityType IN ('Human Citizenship')
+              AND ActivityType IN (''Human Citizenship'')
             GROUP BY ContractId
         ) as human_citizenship ON c.Id = human_citizenship.ContractId
         LEFT JOIN (
@@ -131,7 +130,7 @@ CREATE OR ALTER FUNCTION mi.GetCumulativeTotals(
             FROM mi.ActivityPayment
             WHERE EligibleForPayment = 1  
               AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
-              AND ActivityType IN ('Community and Social')
+              AND ActivityType IN (''Community and Social'')
             GROUP BY ContractId
         ) as community_social ON c.Id = community_social.ContractId
         LEFT JOIN (
@@ -141,7 +140,7 @@ CREATE OR ALTER FUNCTION mi.GetCumulativeTotals(
                 FROM mi.ActivityPayment
                 WHERE EligibleForPayment = 1  
                   AND PaymentPeriod BETWEEN @StartDate AND @EndDate  
-                  AND ActivityType IN ('ISW Support')
+                  AND ActivityType IN (''ISW Support'')
                 GROUP BY ContractId
             ) as isws ON c.Id = isws.ContractId
         LEFT JOIN (
@@ -179,7 +178,7 @@ CREATE OR ALTER FUNCTION mi.GetCumulativeTotals(
         employment,
         education
     FROM payment_summary
-);
+);')
             ");
         }
 
