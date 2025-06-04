@@ -22,9 +22,7 @@ public static class AddNote
             {
                 CreateMap<Command, Note>(MemberList.None);
             }
-
         }
-
     }
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result>
@@ -59,7 +57,9 @@ public static class AddNote
                 .Length(9)
                 .WithMessage("Invalid Participant Id")
                 .MustAsync(Exist)
-                .WithMessage("Participant does not exist");
+                .WithMessage("Participant does not exist")
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived");
 
             RuleFor(c => c.Message)
                 .NotEmpty()
@@ -70,7 +70,8 @@ public static class AddNote
 
         private async Task<bool> Exist(string identifier, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
-
+ 
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
-
 }

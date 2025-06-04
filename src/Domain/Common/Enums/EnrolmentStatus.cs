@@ -58,6 +58,12 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
     public virtual bool SupportsReassessment() => true;
 
     /// <summary>
+    ///     Indicates that a participant at this enrolment stage is allowed to have assesmsment access.
+    /// </summary>
+    /// <returns>True if the current status allows user to add/continue/reassessment</returns>
+    public virtual bool ParticipantIsActive() => true;
+
+    /// <summary>
     ///     Indicates we can add right to work when the status is at this stage
     /// </summary>
     /// <returns>True if we allow addition of Right to Work documentation</returns>
@@ -71,7 +77,6 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
     private sealed class SubmittedToProvider() : EnrolmentStatus("Submitted to Provider", 1)
     {
         protected override EnrolmentStatus[] GetAllowedTransitions() => [ArchivedStatus, EnrollingStatus, SubmittedToAuthorityStatus];
-
         public override bool SupportsReassessment() => false;
 
         public override bool AllowEnrolmentLocationChange() => true;
@@ -93,6 +98,8 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
 
     private sealed class Archived() : EnrolmentStatus("Archived", 4)
     {
+        public override bool ParticipantIsActive() => false;        
+
         protected override EnrolmentStatus[] GetAllowedTransitions() => [IdentifiedStatus, EnrollingStatus, ApprovedStatus];
     }
 

@@ -2,7 +2,6 @@ using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Locations.DTOs;
-using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Inductions;
 
@@ -53,8 +52,9 @@ public static class AddWingInduction
                .Matches(ValidationConstants.AlphaNumeric)
                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
                .MustAsync(MustExist)
-               .WithMessage("Participant does not exist.");
-
+               .WithMessage("Participant does not exist.")
+               .MustAsync(MustNotBeArchived)
+               .WithMessage("Participant is archived");
 
             RuleFor(x => x.InductionDate)
                 .NotNull()
@@ -72,7 +72,6 @@ public static class AddWingInduction
 
             RuleFor(x => x.CurrentUser)
                 .NotNull();
-
         }
 
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
@@ -86,5 +85,7 @@ public static class AddWingInduction
             return command.InductionDate >= participant.CalculateConsentDate();
         }
 
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 }
