@@ -44,9 +44,15 @@ public static class ConfirmEnrolment
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
                 .MustAsync(Exist)
-                .WithMessage("Participant does not exist");
+                .WithMessage("Participant does not exist")
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived"); ;
         }
+
         private async Task<bool> Exist(string identifier, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
+
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+         => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 }

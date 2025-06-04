@@ -26,12 +26,7 @@
         {
             <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error" OnClick="Unarchive">Unarchive</MudMenuItem>
         }
-
-        @* @if (Participant.EnrolmentStatus.AllowSuspend())
-        {
-            <MudMenuItem Icon="@Icons.Material.Filled.HideSource" IconColor="Color.Error" OnClick="Suspend">Suspend</MudMenuItem>
-        } *@
-
+        
         @if (Participant.EnrolmentStatus.AllowSubmitToPqa())
         {
             <MudMenuItem Icon="@Icons.Material.Filled.Send" IconColor="Color.Primary" OnClick="SubmitToPqa">Submit to Provider QA</MudMenuItem>
@@ -50,7 +45,7 @@
             </MudMenuItem>            
         }
 
-        @if (_canForceUpdate)
+        @if (_canForceUpdate  && Participant.EnrolmentStatus.ParticipantIsActive())
         {
             <MudMenuItem Icon="@Icons.Material.Filled.LocationSearching" IconColor="Color.Primary" OnClick="SetStickyLocation">
                 @ConstantString.SetStickyLocation

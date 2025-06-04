@@ -71,12 +71,17 @@ namespace Cfo.Cats.Application.Features.Participants.Commands
                    .MustAsync(Exist)
                    .WithMessage("Participant does not exist")
                    .Matches(ValidationConstants.AlphaNumeric)
-                   .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+                   .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
+                   .MustAsync(MustNotBeArchived)
+                   .WithMessage("Participant is archived"); ;
             }
 
             // Check if the participant exists in the database
             private async Task<bool> Exist(string participantId, CancellationToken cancellationToken)
                 => await _unitOfWork.DbContext.Participants.AnyAsync(p => p.Id == participantId, cancellationToken);
+
+            private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
         }
 
         public class B_AssignerHasAccessToAssignee : AbstractValidator<Command>
