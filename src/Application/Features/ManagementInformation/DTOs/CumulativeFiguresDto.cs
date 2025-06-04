@@ -1,6 +1,11 @@
 ﻿namespace Cfo.Cats.Application.Features.ManagementInformation.DTOs;
 
+
 public record CumulativeFiguresDto(
+    Actuals Actual, ContractTargetDto Target
+);
+
+public record Actuals(
     string contract_id,
     string description,
     int custody_enrolments,
