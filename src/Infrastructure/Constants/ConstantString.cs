@@ -163,4 +163,34 @@ public static class ConstantString
     public static string PriTTGDueWarningToolTip => Localize("Through the Gate (TTG) is due {0}");
 
     public static string Unarchive => Localize("Unarchive");
+
+    public static string ActivePreReleaseInventoryPRI =>
+     Localize("Active Pre-Release Inventory (PRI)");
+
+    public static string CustodySupportWorker =>
+     Localize("Custody Support Worker");
+
+    public static string CommunitySupportWorker =>
+     Localize("Community Support Worker");
+
+    public static string Participant =>
+     Localize("Participant");
+
+    public static string ExpectedReleaseRegion =>
+     Localize("Expected Release Region");
+
+    public static string ExpectedDateOfRelease =>
+     Localize("Expected Date of Release");
+
+    public static string ActualReleaseDate =>
+     Localize("Actual Release Date");
+
+    public static string PRISuccessfullyCompleted =>
+     Localize("PRI successfully completed");
+
+    public static string GeneratePRICode =>
+     Localize("Generate PRI Code");
+
+    public static string Active =>
+     Localize("Active");
 }

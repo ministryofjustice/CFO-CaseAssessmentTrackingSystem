@@ -13,9 +13,12 @@
                                 <MudText Typo="Typo.h6">Personal Details</MudText>
                             </CardHeaderContent>
                             <CardHeaderActions>
-                                <MudTooltip Text="Edit">
-                                    <MudIconButton OnClick="EditPersonalInformation" Icon="@Icons.Material.Filled.Edit" />
-                                </MudTooltip>
+                                @if (participant.EnrolmentStatus!.ParticipantIsActive())
+                                {
+                                    <MudTooltip Text="Edit">
+                                        <MudIconButton OnClick="EditPersonalInformation" Icon="@Icons.Material.Filled.Edit" />
+                                    </MudTooltip>
+                                }
                             </CardHeaderActions>
                             <CardHeaderAvatar>
                                 <MudAvatar Color="Color.Primary">
@@ -29,8 +32,8 @@
                             <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.PreferredTitle" Label="@personalDetails?.GetMemberDescription(x => x.PreferredTitle)" Placeholder="i.e. Mr, Ms, Mx" />
                             <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.NINo" Label="@personalDetails?.GetMemberDescription(x => x.NINo)" />
                             <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.AdditionalNotes" Label="@personalDetails?.GetMemberDescription(x => x.AdditionalNotes)"
-                                          Placeholder="e.g. Communication preferences, accessibility needs, or important background information"
-                                          Lines="4" />
+                            Placeholder="e.g. Communication preferences, accessibility needs, or important background information"
+                            Lines="4" />
                         </MudCardContent>
                     </MudCard>
                 </MudItem>
@@ -77,14 +80,14 @@
                                     </TitleContent>
                                     <ChildContent>
                                         <MudTextField Value="detail.Address"
-                                                      Label="@detail.GetMemberDescription(x => x.Address)"
-                                                      Class="mb-2" />
+                                        Label="@detail.GetMemberDescription(x => x.Address)"
+                                        Class="mb-2" />
                                         <MudTextField Value="detail.EmailAddress"
-                                                      Label="@detail.GetMemberDescription(x => x.EmailAddress)"
-                                                      Class="mb-2" />
+                                        Label="@detail.GetMemberDescription(x => x.EmailAddress)"
+                                        Class="mb-2" />
                                         <MudTextField Value="detail.MobileNumber"
-                                                      Label="@detail.GetMemberDescription(x => x.MobileNumber)"
-                                                      Class="mb-2" />
+                                        Label="@detail.GetMemberDescription(x => x.MobileNumber)"
+                                        Class="mb-2" />
                                     </ChildContent>
 
                                 </MudExpansionPanel>
@@ -92,9 +95,12 @@
                         </MudExpansionPanels>
                     </MudCardContent>
                     <MudCardActions>
-                        <MudTooltip Text="Add Contact Information">
-                            <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="AddContact" />
-                        </MudTooltip>
+                        @if (participant!.EnrolmentStatus!.ParticipantIsActive())
+                        {
+                            <MudTooltip Text="Add Contact Information">
+                                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="AddContact" />
+                            </MudTooltip>
+                        }
                     </MudCardActions>
                 </MudCard>
             </MudItem>

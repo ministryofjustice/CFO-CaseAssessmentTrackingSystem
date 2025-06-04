@@ -123,12 +123,14 @@
                     <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginAssessment"/>
                 </MudTooltip>
             }
+
             @if (CanContinueAssessment())
             {
                 <MudTooltip Text="Continue Assessment">
                     <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinueAssessment"/>
                 </MudTooltip>
             }
+
             @if (CanReassess())
             {
                 <MudTooltip Text="Reassess">
@@ -139,7 +141,6 @@
         </MudCardActions>
     </MudCard>
 </MudItem>
-
     
 <!-- Risk information -->
 <MudItem xs="12" md="4">
@@ -172,7 +173,6 @@
                 </MudStack>
             }
 
-
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
                 <MudText><strong>Next Review Due</strong></MudText>
                 @if (ParticipantSummaryDto.RiskDue.HasValue)
@@ -189,6 +189,7 @@
                 </MudChip>
             </MudStack>
         </MudCardContent>
+
         <MudCardActions>
             @if (CanAddRiskInformation())
             {
@@ -259,6 +260,7 @@
                     <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginBio"/>
                 </MudTooltip>
             }
+
             @if (CanContinueBio())
             {
                 <MudTooltip Text="Continue Bio">
@@ -275,7 +277,6 @@
         </MudCardActions>
     </MudCard>
 </MudItem>
-
 
 <!-- Pathway plan -->
 <MudItem xs="12" md="4">
@@ -325,7 +326,6 @@
                         <MudText><strong>Created By</strong></MudText>
                         <MudText>@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.CreatedBy).DisplayName</MudText>
                     </MudStack>
-
                 }
             }
             else
