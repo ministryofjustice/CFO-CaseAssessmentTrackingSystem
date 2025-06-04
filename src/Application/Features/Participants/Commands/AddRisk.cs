@@ -1,8 +1,9 @@
-﻿
+﻿using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
+using FluentValidation;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
 
@@ -16,11 +17,19 @@ public static class AddRisk
         [Description("Justification for reason")] public string? Justification { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<Guid>>
+    public class Handler : IRequestHandler<Command, Result<Guid>>
     {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Handler(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;         
+        }
+
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
         {
-            Risk? risk = await unitOfWork.DbContext.Risks
+
+            Risk? risk = await _unitOfWork.DbContext.Risks
                 .Include(x => x.Participant)
                 .OrderByDescending(r => r.Created)
                 .FirstOrDefaultAsync(r => r.ParticipantId == request.ParticipantId);
@@ -34,20 +43,26 @@ public static class AddRisk
                 risk = Risk.Review(risk, request.ReviewReason, request.Justification);
             }
 
-            await unitOfWork.DbContext.Risks.AddAsync(risk, cancellationToken);
+            await _unitOfWork.DbContext.Risks.AddAsync(risk, cancellationToken);
             return Result<Guid>.Success(risk.Id);
         }
     }
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+
             RuleFor(x => x.ParticipantId)
                 .NotNull()
                 .MinimumLength(9)
                 .MaximumLength(9)
-                .Matches(ValidationConstants.AlphaNumeric);
+                .Matches(ValidationConstants.AlphaNumeric)
+                .Must(MustNotBeArchived)
+                .WithMessage("Participant is archived"); ;
 
             RuleFor(c => c.Justification)
                 .NotEmpty()
@@ -56,6 +71,8 @@ public static class AddRisk
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
         }
-    }
 
+        private  bool MustNotBeArchived(string participantId)
+        =>  _unitOfWork.DbContext.Participants.Any(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
+    }
 }

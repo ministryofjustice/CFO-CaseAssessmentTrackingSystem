@@ -100,4 +100,35 @@ public static class AbandonPRI
             => _unitOfWork.DbContext.PRIs.Any(p => p.ParticipantId == participantId
                     && PriStatus.ActiveList.Contains(p.Status));                        
     }
+
+    public class C_ParticipantMustBeActive : AbstractValidator<Command>
+    {
+        private IUnitOfWork _unitOfWork;
+
+        public C_ParticipantMustBeActive(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c.ParticipantId)
+                .Must(MustNotBeArchived);
+        }
+
+        bool MustNotBeArchived(string participantId)
+                => _unitOfWork.DbContext.Participants.Any(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
+    }
+
+    public class D_ParticipantMustExist : AbstractValidator<Command>
+    {
+        private IUnitOfWork _unitOfWork;
+
+        public D_ParticipantMustExist(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(d => d.ParticipantId)
+                .Must(Exist);
+        }
+
+        bool Exist(string identifier) => _unitOfWork.DbContext.Participants.Any(e => e.Id == identifier);
+    }
 }

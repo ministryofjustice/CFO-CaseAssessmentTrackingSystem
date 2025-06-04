@@ -52,8 +52,9 @@ public static class AddHubInduction
                .Matches(ValidationConstants.AlphaNumeric)
                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
                .MustAsync(MustExist)
-               .WithMessage("Participant does not exist.");
-
+               .WithMessage("Participant does not exist.")
+               .MustAsync(MustNotBeArchived)
+               .WithMessage("Participant is archived");
 
             RuleFor(x => x.InductionDate)
                 .NotNull()
@@ -71,7 +72,6 @@ public static class AddHubInduction
 
             RuleFor(x => x.CurrentUser)
                 .NotNull();
-
         }
 
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
@@ -85,5 +85,8 @@ public static class AddHubInduction
             return command.InductionDate >= participant.CalculateConsentDate();
         }
 
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId 
+                && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 }

@@ -61,6 +61,11 @@ public static class SetEnrolmentLocation
                 throw new ConflictException($"Participant {request.Identifier} is already enrolled");
             }
 
+            if (participant.EnrolmentStatus == EnrolmentStatus.ArchivedStatus)
+            {
+                throw new ConflictException($"Participant {request.Identifier} is archived");
+            }
+
             participant.SetEnrolmentLocation(request.AlternativeLocation?.Id ?? request.CurrentLocation.Id, request.JustificationReason);
             return participant.Id;
         }

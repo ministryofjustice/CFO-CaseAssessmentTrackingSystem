@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Assessments.Caching;
@@ -88,7 +87,7 @@ public static class BeginAssessment
         public Validator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-
+                     
             RuleFor(c => c.ParticipantId)
                 .MinimumLength(9)
                 .MaximumLength(9)
@@ -103,7 +102,9 @@ public static class BeginAssessment
                 .MustAsync(Exist)
                 .WithMessage("Participant not found")
                 .MustAsync(HaveEnrolmentLocation)
-                .WithMessage("Participant must have an enrolment location");
+                .WithMessage("Participant must have an enrolment location")
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived");
         }
 
         private async Task<bool> Exist(string participantId, CancellationToken cancellationToken)
@@ -111,6 +112,8 @@ public static class BeginAssessment
 
         private async Task<bool> HaveEnrolmentLocation(string participantId, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentLocation != null, cancellationToken);
+            
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
-
 }

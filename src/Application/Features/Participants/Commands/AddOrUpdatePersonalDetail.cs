@@ -121,4 +121,20 @@ public class AddOrUpdatePersonalDetail
             return isValid;
         }        
     }
+
+    public class D_ParticipantMustBeActive : AbstractValidator<Command>
+    {
+        private IUnitOfWork _unitOfWork;
+
+        public D_ParticipantMustBeActive(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c.ParticipantId)
+                .Must(MustNotBeArchived);
+        }
+
+        bool MustNotBeArchived(string participantId)
+                => _unitOfWork.DbContext.Participants.Any(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
+    }
 }
