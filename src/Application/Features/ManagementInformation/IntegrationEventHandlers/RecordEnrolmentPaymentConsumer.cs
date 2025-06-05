@@ -1,16 +1,13 @@
-﻿using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
+﻿using Cfo.Cats.Application.Features.QualityAssurance.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using MassTransit;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<ParticipantTransitionedIntegrationEvent>
+public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<EnrolmentApprovedAtQaIntegrationEvent>
 {
-    public async Task Consume(ConsumeContext<ParticipantTransitionedIntegrationEvent> context)
+    public async Task Consume(ConsumeContext<EnrolmentApprovedAtQaIntegrationEvent> context)
     {
-        if (context.Message.To == EnrolmentStatus.ApprovedStatus.Name)
-        {
-
             // get participant information
             var participantInfo = await unitOfWork.DbContext
                 .Participants
@@ -67,7 +64,7 @@ public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<
                 .WithSubmissionToPqa(supportWorker.SubmissionToPqa!.Value)
                 .WithSubmissionToAuthority(submissionToAuthority!.Value)
                 .WithSubmissionsToAuthority(submissionsToAuthority)
-                .WithApproved(context.Message.OccuredOn.Date)
+                .WithApproved(context.Message.ApprovalDate.Date)
                 .WithLocationId(participantInfo.LocationId)
                 .WithLocationType(participantInfo.LocationType)
                 .WithTenantId(supportWorker.TenantId)
@@ -76,10 +73,8 @@ public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<
                 .WithIneligibilityReason(exists == false ? null : "Already paid")
                 .Build();
 
-
             unitOfWork.DbContext.EnrolmentPayments.Add(payment);
             await unitOfWork.SaveChangesAsync(CancellationToken.None);
 
-        }
     }
 }
