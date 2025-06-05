@@ -37,15 +37,17 @@ public partial class CaseWorkload
 
     private async Task OnExport()
     {
-        _downloading = true;
-        var request = new ExportCaseWorkload.Query()
+        try
         {
-           CurrentUser = UserProfile
-        };
-        var result = await GetNewMediator().Send(request);
-        var downloadResult = await BlazorDownloadFileService.DownloadFile($"CaseWorkLoad.xlsx", result, "application/octet-stream");
-        Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
-        _downloading = false;
+            _downloading = true;
+            await GetNewMediator().Send(new ExportCaseWorkload.Command());
+            Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+        }
+        finally
+        {
+            _downloading = false;
+            Snackbar.Add($"An error occurred while generating your document.", Severity.Error);
+        }
     }
 
     private bool FilterFunc(CaseSummaryDto data) => FilterFunc(data, _searchString);
