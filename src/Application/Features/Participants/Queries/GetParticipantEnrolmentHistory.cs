@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetParticipantEnrolmentHistory
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<IEnumerable<ParticipantEnrolmentHistoryDto>>    
+    public class Query : IRequest<IEnumerable<ParticipantEnrolmentHistoryDto>>
     {
         public required string ParticipantId { get; set; }
         public required UserProfile CurrentUser { get; set; }
@@ -28,34 +28,46 @@ public static class GetParticipantEnrolmentHistory
         ];
 
         public async Task<IEnumerable<ParticipantEnrolmentHistoryDto>> Handle(Query request, CancellationToken cancellationToken)
-        {      
+        {
             var db = unitOfWork.DbContext;
 
-            var results = await (from peh in db.ParticipantEnrolmentHistories
+            var results = await (
+                                 from peh in db.ParticipantEnrolmentHistories
                                  join u in db.Users on peh.CreatedBy equals u.Id
-                                 join plh in db.ParticipantLocationHistories on peh.ParticipantId equals plh.ParticipantId
+
+                                 // Do a group join (left join) to all PLHs for this participant
+                                 join plhGroup in db.ParticipantLocationHistories
+                                     on peh.ParticipantId equals plhGroup.ParticipantId into plhGroupJoin
+
+                                 // For each PEH, select the most recent PLH where plh.From <= peh.Created
+                                 from plh in plhGroupJoin
+                                     .Where(plh => plh.From <= peh.Created)
+                                     .OrderByDescending(plh => plh.From)
+                                     .Take(1) // Take the latest valid PLH
+                                     .DefaultIfEmpty()
+
                                  join l in db.Locations on plh.LocationId equals l.Id
                                  where peh.ParticipantId == request.ParticipantId
+                                       && plh.From <= peh.Created
+
                                  select new ParticipantEnrolmentHistoryDto
                                  {
                                      Id = peh.Id,
-                                     ActionDate = peh.Created.HasValue
-                                             ? peh.Created.Value
-                                                     : null,
+                                     ActionDate = peh.Created,
                                      Status = peh.EnrolmentStatus == 4 ? "Archived" : "Active",
                                      Event = peh.EnrolmentStatus.Name,
-                                     Reason=peh.Reason,
+                                     Reason = peh.Reason,
                                      AdditionalInformation = peh.AdditionalInformation!,
                                      LocationName = l.Name,
                                      SupportWorker = u!.DisplayName!,
                                      SupportWorkerTenantId = u!.TenantId
                                  })
-                                 .OrderBy(x => x.ActionDate)
-                                 .ToListAsync();
+                                  .OrderBy(x => x.ActionDate)
+                                  .ToListAsync();
 
             if (results.Count == 0)
                 return results;
-            
+
             bool hideUser = !request.CurrentUser.AssignedRoles.Any(role => AllowedRoles.Contains(role));
 
             for (int i = 0; i < results.Count; i++)
@@ -72,7 +84,7 @@ public static class GetParticipantEnrolmentHistory
                     : results[i + 1].ActionDate;
 
                 current.DaysSincePrevious = (current.ActionDate.HasValue && next.HasValue)
-                    ? (next.Value - current.ActionDate.Value).Days                    
+                    ? (next.Value - current.ActionDate.Value).Days
                     : 0;
             }
 
@@ -80,7 +92,7 @@ public static class GetParticipantEnrolmentHistory
         }
     }
 
-public class Validator : AbstractValidator<Query>
+    public class Validator : AbstractValidator<Query>
     {
         public Validator()
         {
