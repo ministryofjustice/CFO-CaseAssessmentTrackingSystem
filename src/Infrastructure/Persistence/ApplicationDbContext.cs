@@ -43,6 +43,7 @@ public class ApplicationDbContext
     public DbSet<Contract> Contracts => Set<Contract>();
 
     public DbSet<Document> Documents => Set<Document>();
+    public DbSet<GeneratedDocument> GeneratedDocuments => Set<GeneratedDocument>();
     public DbSet<Participant> Participants => Set<Participant>();
     public DbSet<PathwayPlan> PathwayPlans => Set<PathwayPlan>();
     public DbSet<Risk> Risks => Set<Risk>();
@@ -79,7 +80,8 @@ public class ApplicationDbContext
     public DbSet<WingInduction> WingInductions => Set<WingInduction>();
 
     public DbSet<ParticipantAccessAuditTrail> AccessAuditTrails => Set<ParticipantAccessAuditTrail>();
-    
+    public DbSet<DocumentAuditTrail> DocumentAuditTrails => Set<DocumentAuditTrail>();
+
     public DbSet<Notification> Notifications => Set<Notification>();
 
     public DbSet<Activity> Activities => Set<Activity>();

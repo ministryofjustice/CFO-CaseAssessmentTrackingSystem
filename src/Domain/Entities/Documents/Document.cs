@@ -7,20 +7,16 @@ namespace Cfo.Cats.Domain.Entities.Documents;
 
 public class Document : OwnerPropertyEntity<Guid>, IMayHaveTenant, IAuditTrial
 {
-    
-    private Document()
-    {
-        
-    }
+    private Document() { } 
 
-    private Document(string title, string description, DocumentType documentType)
+    protected Document(string title, string description, DocumentType documentType)
     {
         Id = Guid.CreateVersion7();
         Title = title;
         IsPublic = false;
         Description = description;
         DocumentType = documentType;
-        
+
         AddDomainEvent(new DocumentCreatedDomainEvent(this));
     }
 
@@ -52,7 +48,6 @@ public class Document : OwnerPropertyEntity<Guid>, IMayHaveTenant, IAuditTrial
     public DocumentType DocumentType { get; private set; } = default!;
     public string? Version {  get; private set; }
     public virtual Tenant? Tenant { get; set; }
-
     public string? TenantId {get; set;}
 }
 

@@ -4,6 +4,7 @@ using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
+using Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents;
 using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 using Cfo.Cats.Application.Features.Participants.MessageBus;
@@ -145,6 +146,13 @@ public static class DependencyInjection
                         e.ConfigureConsumer<RecordThroughTheGatePaymentConsumer>(context);
                         e.ConfigureConsumer<RecordWingInductionPaymentConsumer>(context);
                         e.ConfigureConsumer<RecordReassessmentPaymentConsumer>(context);
+                    });
+
+                    cfg.ReceiveEndpoint("document-service", e =>
+                    {
+                        e.ConcurrentMessageLimit = 1;
+
+                        e.ConfigureConsumer<DocumentExportCaseWorkloadIntegrationEventConsumer>(context);
                     });
 
                 });
