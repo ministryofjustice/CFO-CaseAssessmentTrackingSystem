@@ -29,6 +29,7 @@ public interface IApplicationDbContext
     DbSet<Location> Locations { get; }
 
     DbSet<Document> Documents { get; }
+    DbSet<GeneratedDocument> GeneratedDocuments { get; }
 
     DbSet<Participant> Participants { get; }
     
@@ -68,6 +69,9 @@ public interface IApplicationDbContext
     DbSet<IdentityAuditTrail> IdentityAuditTrails { get; }
 
     DbSet<ParticipantAccessAuditTrail> AccessAuditTrails { get; }
+
+    DbSet<DocumentAuditTrail> DocumentAuditTrails { get; }
+
 
     DbSet<HubInduction> HubInductions { get; }
 
