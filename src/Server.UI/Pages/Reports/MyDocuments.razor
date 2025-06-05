@@ -1,0 +1,83 @@
+﻿@page "/reports/my-documents"
+@using Cfo.Cats.Domain.Entities.Documents
+@using Humanizer
+
+@inherits CatsComponentBase
+
+<MudTable Items="documents"
+Hover="true"
+Breakpoint="Breakpoint.Sm"
+Loading="@loading"
+LoadingProgressColor="Color.Info"
+Class="mb-8 pa-4">
+    <ToolBarContent>
+        <div class="d-flex align-start flex-grow-1">
+            <div class="d-flex gap-4">
+                <MudIcon Icon="@Icons.Material.Filled.CloudDownload" Size="Size.Large" />
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.caption">My Documents</MudText>
+                    <MudText Typo="Typo.body1">Requested documents will appear here for 7 days</MudText>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex flex-column justify-end">
+            <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" />
+        </div>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>@ConstantString.Actions</MudTh>
+        <MudTh>Status</MudTh>
+        <MudTh>File Name</MudTh>
+        <MudTh>Description</MudTh>
+        <MudTh>Requested on</MudTh>
+        <MudTh>Available until</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="@ConstantString.Actions">
+            <MudMenu Disabled="context.IsReadyForDownload is false" Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                <MudMenuItem OnClick="async() => await Download(context)">Download</MudMenuItem>
+            </MudMenu>
+        </MudTd>
+        <MudTd DataLabel="Status">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">
+                    @{
+                        Color color = context.Status switch
+                        {
+                            DocumentStatus.Processing => Color.Info,
+                            DocumentStatus.Available => Color.Success,
+                            DocumentStatus.Error => Color.Error,
+                            _ => Color.Primary
+                        };
+                    }
+                    <MudChip T="string" Color="color" Size="Size.Small">@context.Status.Humanize()</MudChip>
+                </MudText>
+            </div>
+        </MudTd>
+        <MudTd DataLabel="File Name">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.Title</MudText>
+            </div>
+        </MudTd>
+        <MudTd DataLabel="Description">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.Description</MudText>
+            </div>
+        </MudTd>
+        <MudTd DataLabel="Requested on">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.Created.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+                <MudText Typo="Typo.body2">(@context.Created.Humanize())</MudText>
+            </div>
+        </MudTd>
+        <MudTd DataLabel="Available until">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body2">@context.ExpiresOn.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+                <MudText Typo="Typo.body2">(@context.ExpiresOn.Humanize())</MudText>
+            </div>
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>

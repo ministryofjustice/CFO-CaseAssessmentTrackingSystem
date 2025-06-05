@@ -20,6 +20,7 @@ internal static class DatabaseConstants
         public const string Consent = nameof(Consent);
         public const string Contract = nameof(Contract);
         public const string Document = nameof(Document);
+        public const string GeneratedDocument = nameof(GeneratedDocument);
         public const string Location = nameof(Location);
         public const string LocationMapping = nameof(LocationMapping);
         public const string Participant = nameof(Participant);
@@ -62,6 +63,7 @@ internal static class DatabaseConstants
         public const string PasswordHistory = nameof(PasswordHistory);
 
         public const string AccessAuditTrail = nameof(AccessAuditTrail);
+        public const string DocumentAuditTrail = nameof(DocumentAuditTrail);
 
         public const string HubInduction = nameof(HubInduction);
         public const string WingInduction = nameof(WingInduction);

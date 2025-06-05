@@ -1,0 +1,37 @@
+﻿@inherits CatsComponentBase
+
+<MudDialog>
+    <DialogContent>
+        <MudText>As per SyOPS, sensitive data must be stored appropriately - if unsure, speak to your local infosec manager.</MudText>
+        <MudText>This export will only include filtered data (relevant to you).</MudText>
+        <MudText>You will be notified when your download is ready on the "My Documents" screen.</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    bool saving;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void Submit()
+    {
+        try
+        {
+            saving = true;
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+}
