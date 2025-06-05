@@ -34,8 +34,8 @@
             <tr>
                 <td>
                     <div class="d-flex flex-column">
-                        <MudText Typo="Typo.body2">@access.Participant.FullName</MudText>
-                        <MudText Typo="Typo.body2">@access.Participant.Id</MudText>
+                        <MudText Typo="Typo.body2">@access.FullName</MudText>
+                        <MudText Typo="Typo.body2">@access.ParticipantId</MudText>
                     </div>
                 </td>
                 <td>
@@ -44,7 +44,7 @@
                     </MudText>
                 </td>
                 <td>
-                    <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="@(()=> View(access.Participant))">View</MudButton>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="@(()=> View(access.ParticipantId))">View</MudButton>
                 </td>
             </tr>
         }
@@ -59,18 +59,3 @@
         </tr>
     </tbody>
 </MudSimpleTable>
-
-@code {
-    private IEnumerable<ParticipantWithAccessEndingSoonDto> participantAccess = [];
-
-    protected async override Task OnInitializedAsync()
-    {
-        participantAccess = await GetNewMediator().Send(new GetParticipantsWithAccessEndingSoon.Query());
-        await base.OnInitializedAsync();
-    }
-
-    private void View(ParticipantDto participant)
-    {
-        Navigation.NavigateTo($"/pages/participants/{participant.Id}");
-    }
-}
