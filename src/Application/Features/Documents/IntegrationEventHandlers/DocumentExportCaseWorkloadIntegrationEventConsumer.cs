@@ -1,5 +1,5 @@
 ﻿using Cfo.Cats.Application.Features.Dashboard.DTOs;
-using Cfo.Cats.Application.Features.Dashboard.IntegrationEvents;
+using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.Documents;
 using MassTransit;
 
@@ -9,10 +9,15 @@ public class DocumentExportCaseWorkloadIntegrationEventConsumer(
     IUnitOfWork unitOfWork, 
     IExcelService excelService, 
     IUploadService uploadService, 
-    IDomainEventDispatcher domainEventDispatcher) : IConsumer<ExportCaseWorkloadIntegrationEvent>
+    IDomainEventDispatcher domainEventDispatcher) : IConsumer<ExportDocumentIntegrationEvent>
 {
-    public async Task Consume(ConsumeContext<ExportCaseWorkloadIntegrationEvent> context)
+    public async Task Consume(ConsumeContext<ExportDocumentIntegrationEvent> context)
     {
+        if(context.Message.Key != DocumentTemplate.CaseWorkload.Name)
+        {
+            return;
+        }
+
         var document = await unitOfWork.DbContext.GeneratedDocuments.FindAsync(context.Message.DocumentId);
 
         if(document is null)

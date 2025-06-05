@@ -1,13 +1,13 @@
 ﻿using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Outbox;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
 
-namespace Cfo.Cats.Application.Features.Dashboard.Export;
+namespace Cfo.Cats.Application.Features.KeyValues.Commands.Export;
 
-public static class ExportCaseWorkload 
+public static class ExportKeyValues
 {
-    [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+    [RequestAuthorize(Roles = RoleNames.SystemSupport)]
     public class Command : IRequest<Result>
     {
         public string? SearchCriteria { get; set; }
@@ -20,13 +20,24 @@ public static class ExportCaseWorkload
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var document = GeneratedDocument
-                .Create(DocumentTemplate.CaseWorkload, "CaseWorkload.xlsx", "CaseWorkload Export", currentUser.UserId!, currentUser.TenantId!, request.SearchCriteria)
+                .Create(DocumentTemplate.KeyValues, "KeyValues.xlsx", "KeyValues Export", currentUser.UserId!, currentUser.TenantId!, request.SearchCriteria)
                 .WithStatus(DocumentStatus.Processing)
                 .WithExpiry(DateTime.UtcNow.AddDays(7));
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 
             return Result.Success();
+        }
+    }
+
+    public class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+
+            RuleFor(r => r.SearchCriteria)
+                .Matches(ValidationConstants.Keyword)
+                .WithMessage(string.Format(ValidationConstants.KeywordMessage, "Search Keyword"));
         }
     }
 }
