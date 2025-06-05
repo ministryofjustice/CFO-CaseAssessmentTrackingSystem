@@ -3,7 +3,6 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Dashboard.DTOs;
 using Cfo.Cats.Application.Features.Dashboard.Export;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
-using Cfo.Cats.Application.Features.KeyValues.Queries.Export;
 using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
@@ -43,10 +42,13 @@ public partial class CaseWorkload
             await GetNewMediator().Send(new ExportCaseWorkload.Command());
             Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
         }
+        catch
+        {
+            Snackbar.Add($"An error occurred while generating your document.", Severity.Error);
+        }
         finally
         {
             _downloading = false;
-            Snackbar.Add($"An error occurred while generating your document.", Severity.Error);
         }
     }
 
