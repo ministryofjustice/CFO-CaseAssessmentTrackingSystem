@@ -1,6 +1,7 @@
-﻿using ActualLab.Api;
+using ActualLab.Api;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
+using System.Linq.Expressions;
 
 namespace Cfo.Cats.Server.UI.Services.Navigation;
 
@@ -74,6 +75,12 @@ public class MenuService : IMenuService
                                 Title="Cumulatives",
                                 Href = "/pages/analytics/cumulatives",
                                 PageStatus = PageStatus.Completed,
+                            },
+                            new()
+                            {
+                                Title = "My Documents",
+                                Href = "/reports/my-documents",
+                                PageStatus = PageStatus.Completed
                             }
                         ]
                     },                  
@@ -235,7 +242,7 @@ public class MenuService : IMenuService
                                 Href = "/system/outbox",
                                 PageStatus = PageStatus.Completed
                             }
-                        }
+                        } 
                     }
                 }
             }

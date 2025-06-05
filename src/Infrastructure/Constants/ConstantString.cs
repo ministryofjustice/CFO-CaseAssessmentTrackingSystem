@@ -73,8 +73,7 @@ public static class ConstantString
     public static string LogoutFail => Localize("Logout fail");
     public static string ImportSuccess => Localize("Import successfully");
     public static string ImportFail => Localize("Import fail");
-    public static string ExportSuccess => Localize("Export successfully");
-    public static string ExportFail => Localize("Export fail");
+    public static string ExportSuccess => Localize("Export requested. File will be available for download in 'My Documents' shortly.");
     public static string UploadSuccess => Localize("Upload successfully");
 
     public static string Selected => Localize("Selected");
