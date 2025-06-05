@@ -1,11 +1,11 @@
 @page "/system/picklist"
+@using Cfo.Cats.Application.Features.KeyValues.Commands.Export
 @using Cfo.Cats.Application.Features.KeyValues.DTOs
 @using BlazorDownloadFile
 @using Cfo.Cats.Application.Features.KeyValues.Caching
 @using Cfo.Cats.Application.Features.KeyValues.Commands.AddEdit
 @using Cfo.Cats.Application.Features.KeyValues.Commands.Delete
 @using Cfo.Cats.Application.Features.KeyValues.Commands.Import
-@using Cfo.Cats.Application.Features.KeyValues.Queries.Export
 @using Cfo.Cats.Application.Features.KeyValues.Queries.PaginationQuery
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.SystemManagement.Components
@@ -55,105 +55,105 @@
                         </MudButton>
                         @if (_canCreate)
                         {
-                        <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.Add"
-                                   Size="Size.Small"
-                                   OnClick="OnCreate"
-                                   Style="margin-right: 4px; margin-bottom:4px"
-                                   IconColor="Color.Surface">
-                            @ConstantString.New
-                        </MudButton>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                            StartIcon="@Icons.Material.Filled.Add"
+                            Size="Size.Small"
+                            OnClick="OnCreate"
+                            Style="margin-right: 4px; margin-bottom:4px"
+                            IconColor="Color.Surface">
+                                @ConstantString.New
+                            </MudButton>
                         }
                         @if (_canDelete)
                         {
-                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
-                                   StartIcon="@Icons.Material.Filled.Delete"
-                                   Disabled="@(!(_selectedItems.Count > 0))"
-                                   OnClick="OnDeleteChecked"
-                                   Size="Size.Small"
-                                   Style="margin-right: 4px; margin-bottom:4px"
-                                   IconColor="Color.Surface">
-                            @ConstantString.Delete
-                        </MudButton>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
+                            StartIcon="@Icons.Material.Filled.Delete"
+                            Disabled="@(!(_selectedItems.Count > 0))"
+                            OnClick="OnDeleteChecked"
+                            Size="Size.Small"
+                            Style="margin-right: 4px; margin-bottom:4px"
+                            IconColor="Color.Surface">
+                                @ConstantString.Delete
+                            </MudButton>
                         }
                         @if (_canImport)
                         {
-                        <MudButton Disabled="@_uploading" Variant="Variant.Outlined" Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.Upload"
-                                   Size="Size.Small"
-                                   Style="margin-right:4px; margin-bottom:4px"
-                                   for="importdataInput"
-                                   HtmlTag="label"
-                                   IconColor="Color.Surface">
-                            @if (_uploading)
-                            {
-                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                            <MudText Class="ms-2"> @ConstantString.Uploading</MudText>
-                            }
-                            else
-                            {
-                            <MudText>@ConstantString.Import</MudText>
-                            }
+                            <MudButton Disabled="@_uploading" Variant="Variant.Outlined" Color="Color.Primary"
+                            StartIcon="@Icons.Material.Filled.Upload"
+                            Size="Size.Small"
+                            Style="margin-right:4px; margin-bottom:4px"
+                            for="importdataInput"
+                            HtmlTag="label"
+                            IconColor="Color.Surface">
+                                @if (_uploading)
+                                {
+                                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                                    <MudText Class="ms-2"> @ConstantString.Uploading</MudText>
+                                }
+                                else
+                                {
+                                    <MudText>@ConstantString.Import</MudText>
+                                }
 
-                        </MudButton>
-                        <InputFile id="importdataInput" OnChange="OnImportData" hidden accept=".xlsx"/>
+                            </MudButton>
+                            <InputFile id="importdataInput" OnChange="OnImportData" hidden accept=".xlsx"/>
                         }
                         @if (_canExport)
                         {
-                        <MudButton Disabled="@_downloading" Variant="Variant.Outlined" Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.Download"
-                                   Size="Size.Small"
-                                   Style="margin-right: 4px; margin-bottom:4px"
-                                   OnClick="OnExport"
-                                   IconColor="Color.Surface">
-                            @if (_downloading)
-                            {
-                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                            <MudText Class="ms-2"> @ConstantString.Downloading</MudText>
-                            }
-                            else
-                            {
-                            <MudText>@ConstantString.Export</MudText>
-                            }
-                        </MudButton>
+                            <MudButton Disabled="@_downloading" Variant="Variant.Outlined" Color="Color.Primary"
+                            StartIcon="@Icons.Material.Filled.Download"
+                            Size="Size.Small"
+                            Style="margin-right: 4px; margin-bottom:4px"
+                            OnClick="OnExport"
+                            IconColor="Color.Surface">
+                                @if (_downloading)
+                                {
+                                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                                    <MudText Class="ms-2"> @ConstantString.Downloading</MudText>
+                                }
+                                else
+                                {
+                                    <MudText>@ConstantString.Export</MudText>
+                                }
+                            </MudButton>
                         }
                     </MudHidden>
                     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
                         @if (_canCreate)
                         {
-                        <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.Add"
-                                   Size="Size.Small"
-                                   OnClick="OnCreate"
-                                   Style="margin-right: 4px; margin-bottom:4px"
-                                   IconColor="Color.Surface">
-                            @ConstantString.New
-                        </MudButton>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                            StartIcon="@Icons.Material.Filled.Add"
+                            Size="Size.Small"
+                            OnClick="OnCreate"
+                            Style="margin-right: 4px; margin-bottom:4px"
+                            IconColor="Color.Surface">
+                                @ConstantString.New
+                            </MudButton>
                         }
                         @if (_canDelete)
                         {
-                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
-                                   StartIcon="@Icons.Material.Filled.Delete"
-                                   Disabled="@(!(_selectedItems.Count > 0))"
-                                   OnClick="OnDeleteChecked"
-                                   Size="Size.Small"
-                                   Style="margin-right: 4px; margin-bottom:4px"
-                                   IconColor="Color.Surface">
-                            @ConstantString.Delete
-                        </MudButton>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
+                            StartIcon="@Icons.Material.Filled.Delete"
+                            Disabled="@(!(_selectedItems.Count > 0))"
+                            OnClick="OnDeleteChecked"
+                            Size="Size.Small"
+                            Style="margin-right: 4px; margin-bottom:4px"
+                            IconColor="Color.Surface">
+                                @ConstantString.Delete
+                            </MudButton>
                         }
                     </MudHidden>
                 </div>
                 @if (_canSearch)
                 {
-                <MudStack Row="true" AlignItems="AlignItems.Stretch">
-                    <MudEnumSelect TEnum="Picklist?" Placeholder="@L["Search for picklist"]" Value="@_searchPicklist" Clearable="true" ValueChanged="@(s => OnSearch(s))" Style="width:160px" FullWidth="true"> </MudEnumSelect>
-                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Value="@_searchString" Placeholder="Search" Adornment="Adornment.End" Style="min-width:260px" FullWidth="true"
-                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
-                        </MudTextField>
-                    </MudHidden>
-                </MudStack>
+                    <MudStack Row="true" AlignItems="AlignItems.Stretch">
+                        <MudEnumSelect TEnum="Picklist?" Placeholder="@L["Search for picklist"]" Value="@_searchPicklist" Clearable="true" ValueChanged="@(s => OnSearch(s))" Style="width:160px" FullWidth="true"> </MudEnumSelect>
+                        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                            <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Value="@_searchString" Placeholder="Search" Adornment="Adornment.End" Style="min-width:260px" FullWidth="true"
+                            AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                            </MudTextField>
+                        </MudHidden>
+                    </MudStack>
                 }
 
             </div>
@@ -367,15 +367,25 @@
 
     private async Task OnExport()
     {
-        _downloading = true;
-        var request = new ExportKeyValuesQuery
+        try
         {
-            Keyword = _searchString
-        };
-        var result = await GetNewMediator().Send(request);
-        var downloadResult = await BlazorDownloadFileService.DownloadFile($"{L["Picklist"]}.xlsx", result, "application/octet-stream");
-        Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
-        _downloading = false;
+            _downloading = true;
+
+            await GetNewMediator().Send(new ExportKeyValues.Command()
+            {
+                SearchCriteria = _searchString
+            });
+
+            Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+        }
+        catch
+        {
+            Snackbar.Add($"An error occurred while generating your document.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
     }
 
     private async Task OnImportData(InputFileChangeEventArgs e)
