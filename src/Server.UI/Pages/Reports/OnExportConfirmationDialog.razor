@@ -1,37 +1,62 @@
-﻿@inherits CatsComponentBase
+﻿@using BlazorDownloadFile
+@using Cfo.Cats.Application.Features.Documents.Queries
+
+@inherits CatsComponentBase
+
+@inject IBlazorDownloadFileService BlazorDownloadFileService
 
 <MudDialog>
     <DialogContent>
         <MudText>As per SyOPS, sensitive data must be stored appropriately - if unsure, speak to your local infosec manager.</MudText>
         <MudText>This export will only include filtered data (relevant to you).</MudText>
-        <MudText>You will be notified when your download is ready on the "My Documents" screen.</MudText>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+        <MudLoadingButton Loading="downloading" Color="Color.Primary" OnClick="Download">
+            @(downloading ? ConstantString.Downloading : ConstantString.Download)
+        </MudLoadingButton>
     </DialogActions>
 </MudDialog>
 
 
 @code {
-    bool saving;
+    bool downloading;
+
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired] public required Guid DocumentId { get; set; }
 
     private void Cancel()
     {
         MudDialog.Cancel();
     }
 
-    private void Submit()
+    private async Task Download()
     {
         try
         {
-            saving = true;
+            downloading = true;
+
+            var result = await GetNewMediator().Send(new GetDocumentById.Query() { Id = DocumentId }); ;
+
+            if (result is not { Succeeded: true, Data: not null })
+            {
+                Snackbar.Add(string.Join(", ", result.Errors));
+                return;
+            }
+            
+            using (var memoryStream = new MemoryStream())
+            {
+                await result.Data!.FileStream.CopyToAsync(memoryStream);
+                var bytes = memoryStream.ToArray();
+                await BlazorDownloadFileService.DownloadFile(result.Data.FileName, bytes, "application/octet-stream");
+            }
+
             MudDialog.Close(DialogResult.Ok(true));
         }
         finally
         {
-            saving = false;
+            downloading = false;
         }
     }
 }
