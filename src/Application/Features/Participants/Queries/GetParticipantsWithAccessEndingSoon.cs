@@ -49,7 +49,7 @@ public static class GetParticipantsWithAccessEndingSoon
                                          FROM 
                                              [Participant].[OwnershipHistory] as [oh]
                                          WHERE 
-                                             [oh].[OwnerId] = {ownerId} and [oh].[To] > {lastNinetyDays}
+                                             [oh].[OwnerId] = {ownerId} and [oh].[To] >= {lastNinetyDays}
                                          GROUP BY [oh].[ParticipantId] 
                                              ) AS [LostAccessTo] on Participant.Id = LostAccessTo.ParticipantId
                                      WHERE
