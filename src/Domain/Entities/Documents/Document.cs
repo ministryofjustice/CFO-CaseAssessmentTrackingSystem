@@ -38,6 +38,12 @@ public class Document : OwnerPropertyEntity<Guid>, IMayHaveTenant, IAuditTrial
         return this;
     }
 
+    public string? Download()
+    {
+        AddDomainEvent(new DocumentDownloadedDomainEvent(this, DateTime.UtcNow));
+        return URL;
+    }
+
     public string? Title { get; private set; }
     public string? Description { get; private set; }
     
