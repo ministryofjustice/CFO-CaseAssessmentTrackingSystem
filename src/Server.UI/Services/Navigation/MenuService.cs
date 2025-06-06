@@ -72,7 +72,7 @@ public class MenuService : IMenuService
                             new()
                             {
                                 Title="Cumulatives",
-                                Href = "/pages/performance/cumulatives",
+                                Href = "/pages/analytics/cumulatives",
                                 PageStatus = PageStatus.Completed,
                             }
                         ]
