@@ -63,7 +63,7 @@ public class MenuService : IMenuService
                     },
                     new()
                     {
-                        Title = "Performance",
+                        Title = "Analytics",
                         Roles = new[] { RoleNames.SystemSupport, RoleNames.Finance },
                         Icon = Icons.Material.Filled.Analytics,
                         PageStatus = PageStatus.Completed,
