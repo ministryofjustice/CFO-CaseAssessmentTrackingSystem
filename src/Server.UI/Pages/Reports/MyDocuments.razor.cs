@@ -12,12 +12,24 @@ public partial class MyDocuments
 
     protected override async Task OnInitializedAsync()
     {
-        documents = await GetNewMediator().Send(new GetMyDocumentsQuery.Query());
+        try
+        {
+            loading = true;
+            documents = await GetNewMediator().Send(new GetMyDocumentsQuery.Query());
+        }
+        finally { loading = false; }
     }
 
     async Task Download(GeneratedDocumentDto document)
     {
-        await Task.CompletedTask;
+        var parameters = new DialogParameters<OnExportConfirmationDialog>()
+        {
+            { x => x.DocumentId, document.Id }
+        };
+
+        var dialog = await DialogService.ShowAsync<OnExportConfirmationDialog>(document.Title, parameters);
+
+        await dialog.Result;
     }
 
 }
