@@ -1,7 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Outbox;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
+using Humanizer;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Export;
 
@@ -29,4 +29,32 @@ public static class ExportCaseWorkload
             return Result.Success();
         }
     }
+
+    public class Validator : AbstractValidator<Command>
+    {
+        readonly ICurrentUserService currentUserService;
+        readonly IUnitOfWork unitOfWork;
+        readonly TimeSpan cooldown = TimeSpan.FromMinutes(5);
+
+        public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        {
+            this.currentUserService = currentUserService;
+            this.unitOfWork = unitOfWork;
+
+            RuleFor(c => c)
+                .Must(WaitBeforeRequestingDocumentAgain)
+                .WithMessage($"You must wait {cooldown.Humanize()} between requesting documents.");
+        }
+
+        bool WaitBeforeRequestingDocumentAgain(Command c)
+        {
+            var cooldownPeriod = DateTime.UtcNow - cooldown;
+
+            var hasRecentlyRequestedDocument = unitOfWork.DbContext.GeneratedDocuments
+                .Any(d => d.CreatedBy == currentUserService.UserId && d.Created > cooldownPeriod);
+
+            return hasRecentlyRequestedDocument is false;
+        }
+    }
+
 }
