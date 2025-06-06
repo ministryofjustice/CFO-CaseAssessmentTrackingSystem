@@ -39,8 +39,16 @@ public partial class CaseWorkload
         try
         {
             _downloading = true;
-            await GetNewMediator().Send(new ExportCaseWorkload.Command());
-            Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+            var result = await GetNewMediator().Send(new ExportCaseWorkload.Command());
+
+            if(result.Succeeded)
+            {
+                Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+                return;
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+
         }
         catch
         {
