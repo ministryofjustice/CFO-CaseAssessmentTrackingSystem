@@ -1,5 +1,8 @@
-﻿using Cfo.Cats.Application.Features.Dashboard.DTOs;
+﻿using AutoMapper;
+using Cfo.Cats.Application.Features.Dashboard.DTOs;
 using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
+using Cfo.Cats.Application.Features.KeyValues.DTOs;
+using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Documents;
 using MassTransit;
 
@@ -27,28 +30,42 @@ public class DocumentExportCaseWorkloadIntegrationEventConsumer(
 
         try
         {
-            var data = await unitOfWork.DbContext.Database
-                .SqlQuery<CaseSummaryDto>(
-                    $@"SELECT 
-                    u.UserName,
-                    u.TenantName,
-                    p.EnrolmentStatus as EnrolmentStatusId, 
-                    l.Name as LocationName,
-                    COUNT(*) as [Count]
-                FROM 
-                    Participant.Participant as p
-                INNER JOIN
-                    [Configuration].Location as l ON p.CurrentLocationId = l.Id
-                INNER JOIN
-                    [Identity].[User] as u ON p.OwnerId = u.Id
-                WHERE
-                    u.TenantId LIKE {context.Message.TenantId}  
-                GROUP BY 
-                    u.UserName,
-                    u.TenantName,
+            var searchCriteria = context.Message.SearchCriteria ?? string.Empty;
+            var tenantPrefix = context.Message.TenantId;
+
+            var statuses = EnrolmentStatus.List
+                .Where(e => e.Name.Contains(searchCriteria))
+                .Select(e => e.Value)
+                .ToList();
+
+#pragma warning disable CS8602
+            var query =
+                from p in unitOfWork.DbContext.Participants
+                where p.Owner.TenantId.StartsWith(tenantPrefix)
+                   && (
+                       p.Owner.UserName.Contains(searchCriteria) ||
+                       p.Owner.DisplayName.Contains(searchCriteria) ||
+                       p.Owner.TenantName.Contains(searchCriteria) ||
+                       statuses.Contains(p.EnrolmentStatus)
+                      )
+                group p by new
+                {
+                    p.Owner.UserName,
+                    p.Owner.TenantName,
                     p.EnrolmentStatus,
-                    l.Name"
-                ).ToArrayAsync();
+                    LocationName = p.CurrentLocation.Name
+                } into g
+                select new CaseSummaryDto
+                {
+                    UserName = g.Key.UserName,
+                    TenantName = g.Key.TenantName,
+                    EnrolmentStatusId = g.Key.EnrolmentStatus,
+                    LocationName = g.Key.LocationName,
+                    Count = g.Count()
+                };
+#pragma warning restore CS8602
+
+            var data = await query.ToListAsync();
 
             var results = await excelService.ExportAsync(data,
                 new Dictionary<string, Func<CaseSummaryDto, object?>>
