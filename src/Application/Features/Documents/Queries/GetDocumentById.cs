@@ -19,12 +19,18 @@ public static class GetDocumentById
     {
         public async Task<Result<DownloadDocumentDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var document = await unitOfWork.DbContext.Documents.FindAsync(request.Id);
-            var streamResult = await uploadService.DownloadAsync(document!.URL!);
+            var document = await unitOfWork.DbContext.Documents.FindAsync([request.Id], cancellationToken);
+
+            if(document is null)
+            {
+                return Result<DownloadDocumentDto>.Failure("Document not found.");
+            }
+
+            var streamResult = await uploadService.DownloadAsync(document);
 
             if(streamResult.Succeeded)
             {
-                DownloadDocumentDto dto = new DownloadDocumentDto()
+                DownloadDocumentDto dto = new()
                 {
                     FileStream = streamResult,
                     FileExtension = document.Title!.Split(".").Last(),
