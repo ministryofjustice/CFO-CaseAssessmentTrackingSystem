@@ -39,7 +39,10 @@ public partial class CaseWorkload
         try
         {
             _downloading = true;
-            var result = await GetNewMediator().Send(new ExportCaseWorkload.Command());
+            var result = await GetNewMediator().Send(new ExportCaseWorkload.Command()
+            {
+                SearchCriteria = _searchString
+            });
 
             if(result.Succeeded)
             {
