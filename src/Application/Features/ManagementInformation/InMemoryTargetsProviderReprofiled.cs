@@ -6,6 +6,18 @@ public class InMemoryTargetsProviderReprofiled : ITargetsProvider
 {
     private readonly ITargetsProvider _legacyTargetsProvider;
     private readonly Dictionary<string, ContractTargetDto> _targets;
+    private readonly Dictionary<string, string> _idMappings = new()
+    {
+        { "con_24036" , "North West"},
+        { "con_24037" , "North East"},
+        { "con_24038" , "Yorkshire and Humberside"},
+        { "con_24041" , "West Midlands"},
+        { "con_24042" , "East Midlands"},
+        { "con_24043" , "East Of England"},
+        { "con_24044" , "London"},
+        { "con_24045" , "South West"},
+        { "con_24046" , "South East"}
+    };
 
     public InMemoryTargetsProviderReprofiled(ITargetsProvider legacyTargetsProvider)
     {
@@ -17,6 +29,12 @@ public class InMemoryTargetsProviderReprofiled : ITargetsProvider
     {
         var useLegacyTargetsProvider = IsBeforeReprofile(month, year);
         return useLegacyTargetsProvider ? _legacyTargetsProvider.GetTarget(contract, month, year) : _targets[contract];
+    }
+    
+    public ContractTargetDto GetTargetById(string contractId, int month, int year)
+    {
+        string name = _idMappings[contractId];
+        return _targets[name];
     }
 
     private Dictionary<string, ContractTargetDto> AddTargets()

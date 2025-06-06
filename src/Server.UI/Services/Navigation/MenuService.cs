@@ -63,10 +63,19 @@ public class MenuService : IMenuService
                     },
                     new()
                     {
-                        Title = "Reports",
+                        Title = "Analytics",
+                        Roles = new[] { RoleNames.SystemSupport, RoleNames.Finance },
                         Icon = Icons.Material.Filled.Analytics,
-                        Href = "/reports",
-                        PageStatus = PageStatus.ComingSoon
+                        PageStatus = PageStatus.Completed,
+                        IsParent = true,
+                        MenuItems = [
+                            new()
+                            {
+                                Title="Cumulatives",
+                                Href = "/pages/analytics/cumulatives",
+                                PageStatus = PageStatus.Completed,
+                            }
+                        ]
                     },                  
                 }
             },
