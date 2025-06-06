@@ -1,6 +1,7 @@
 using System.Net;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Cfo.Cats.Domain.Entities.Documents;
 using Microsoft.Extensions.Configuration;
 
 namespace Cfo.Cats.Infrastructure.Services;
@@ -62,9 +63,10 @@ public class UploadService : IUploadService
             }
         }
     }
-    public async Task<Result<Stream>> DownloadAsync(string key)
+    public async Task<Result<Stream>> DownloadAsync(Document document)
     {
-        
+        var key = document.Download();
+
         var getTagRequest = new GetObjectTaggingRequest(){
             BucketName = _bucketName,
             Key = key
