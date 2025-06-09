@@ -153,7 +153,7 @@ public static class DependencyInjection
                         e.ConcurrentMessageLimit = 1;
 
                         e.ConfigureConsumer<DocumentExportCaseWorkloadIntegrationEventConsumer>(context);
-                        e.ConfigureConsumer<DocumentKeyValuesIntegrationEventConsumer>(context);
+                        e.ConfigureConsumer<DocumentExportKeyValuesIntegrationEventConsumer>(context);
                     });
 
                 });
