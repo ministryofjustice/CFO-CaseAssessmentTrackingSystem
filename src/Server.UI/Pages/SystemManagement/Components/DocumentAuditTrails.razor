@@ -1,0 +1,83 @@
+﻿@using Cfo.Cats.Application.Features.AuditTrails.DTOs
+@using Cfo.Cats.Application.Features.AuditTrails.Specifications.DocumentAuditTrail;
+@using Cfo.Cats.Domain.Entities.Documents
+
+@inherits CatsComponentBase
+
+<MudDataGrid ServerData="@(ServerReload)"
+             T="DocumentAuditTrailDto"
+             FixedHeader="true"
+             FixedFooter="true"
+             Virtualize="true"
+             @bind-RowsPerPage="defaultPageSize"
+             Height="calc(100vh - 300px)"
+             Loading="@loading"
+             Hover="true" 
+             @ref="table"
+             BreakPoint="Breakpoint.Sm">
+    <ToolBarContent>
+        <div class="d-flex align-start flex-grow-1">
+            <div class="d-flex gap-4">
+                <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Large" />
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.caption" Class="mb-2">Document Audit Trails</MudText>
+                    <MudEnumSelect Style="min-width:120px" TEnum="DocumentAuditTrailListView" ValueChanged="OnChangedListView" Value="Query.ListView" Dense="true" Label="List View">
+                    </MudEnumSelect>
+                </div>
+            </div>
+            <div class="flex-grow-1" />
+
+            <div class="d-flex flex-column justify-end">
+                <div class="d-flex">
+                    <MudButton Variant="Variant.Outlined"
+                               Size="Size.Small"
+                               OnClick="@(() => OnRefresh())"
+                               StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
+                               Style="margin-right: 4px; margin-bottom:4px">
+                        @ConstantString.Refresh
+                    </MudButton>
+                </div>
+
+                <MudStack Row="true" AlignItems="AlignItems.Stretch">
+                    <MudEnumSelect TEnum="Cfo.Cats.Domain.Entities.Documents.DocumentAuditTrailRequestType?" Placeholder="Search for request type" Value="@Query.RequestType" Clearable="true" ValueChanged="@(s => OnSearch(s))" Style="min-width:120px" FullWidth="true"> </MudEnumSelect>
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Value="@Query.Keyword" Placeholder="Search" Adornment="Adornment.End" Style="min-width:120px" FullWidth="true"
+                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                        </MudTextField>
+                    </MudHidden>
+                </MudStack>
+
+
+            </div>
+        </div>
+    </ToolBarContent>
+    <Columns>
+        <PropertyColumn Property="x => x.DocumentTitle" Title="Document" Sortable="false">
+            <CellTemplate>
+                <MudStack>
+                    <MudText Typo="Typo.body2">@context.Item.DocumentTitle</MudText>
+                    <MudText Typo="Typo.body2">@context.Item.DocumentDescription</MudText>
+                </MudStack>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.RequestType" Title="Event" />
+        <PropertyColumn Property="x => x.OccurredOn" Title="Occurred On" />
+        <PropertyColumn Property="x => x.UserId" Title="User">
+            <CellTemplate>
+                <MudStack>
+                    <MudText Typo="Typo.body2">@context.Item.UserName</MudText>
+                    <MudText Typo="Typo.body2">@context.Item.UserId</MudText>
+                </MudStack>
+            </CellTemplate>
+        </PropertyColumn>
+    </Columns>
+    <NoRecordsContent>
+        <MudText>@ConstantString.NoRecords</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>@ConstantString.Loading</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })" />
+    </PagerContent>
+</MudDataGrid>

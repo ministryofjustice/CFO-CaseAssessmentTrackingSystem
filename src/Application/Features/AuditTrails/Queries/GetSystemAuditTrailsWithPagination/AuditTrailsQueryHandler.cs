@@ -1,7 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.AuditTrails.DTOs;
 
-namespace Cfo.Cats.Application.Features.AuditTrails.Queries.PaginationQuery;
+namespace Cfo.Cats.Application.Features.AuditTrails.Queries.GetSystemAuditTrailsWithPagination;
 
 public class AuditTrailsQueryHandler
     : IRequestHandler<AuditTrailsWithPaginationQuery, PaginatedData<AuditTrailDto>>

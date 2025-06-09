@@ -1,11 +1,11 @@
-﻿namespace Cfo.Cats.Application.Features.AuditTrails.Specifications;
+﻿namespace Cfo.Cats.Application.Features.AuditTrails.Specifications.DocumentAuditTrail;
 
-public enum AuditTrailListView
+public enum DocumentAuditTrailListView
 {
     [Description("All")]
     All,
 
-    [Description("My Change Histories")]
+    [Description("My Events")]
     My,
 
     [Description("Created Today")]
