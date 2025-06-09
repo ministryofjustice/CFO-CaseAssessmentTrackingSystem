@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250609133726_UserGeneratedDocuments_v3")]
-    partial class UserGeneratedDocuments_v3
+    [Migration("20250609134759_UserGeneratedDocuments_WithAuditTrail")]
+    partial class UserGeneratedDocuments_WithAuditTrail
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
