@@ -86,38 +86,6 @@
                                     @ConstantString.New
                                 </MudButton>
                             }
-                            @if (_canExport)
-                            {
-                                <MudLoadingButton Variant="Variant.Outlined" Color="Color.Primary"
-                                StartIcon="@Icons.Material.Filled.Download"
-                                Size="Size.Small"
-                                @bind-Loading="_exporting" LoadingAdornment="Adornment.Start" OnClick="OnExport"
-                                IconColor="Color.Surface">
-                                    @ConstantString.Export
-                                </MudLoadingButton>
-                            }
-                            @if (_canImport)
-                            {
-                                <MudFileUpload T="IBrowserFile" FilesChanged="OnImportData" Accept=".xlsx">
-                                    <ActivatorContent>
-                                        <MudButton Size="Size.Small"
-                                        Variant="Variant.Outlined"
-                                        Color="Color.Primary"
-                                        Disabled="@_loading"
-                                        StartIcon="@Icons.Material.Filled.Upload">
-                                            @if (_uploading)
-                                            {
-                                                <MudProgressCircular Size="Size.Small" Indeterminate="true"/>
-                                                @ConstantString.Uploading
-                                            }
-                                            else
-                                            {
-                                                @ConstantString.Import
-                                            }
-                                        </MudButton>
-                                    </ActivatorContent>
-                                </MudFileUpload>
-                            }
                         </MudHidden>
                         <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
                             @if (_canCreate)
@@ -370,10 +338,7 @@
     private bool _canManageRoles;
     private bool _canResetPassword;
     private bool _canManagePermissions;
-    private bool _canImport;
-    private bool _canExport;
     private bool _loading;
-    private bool _exporting;
     private bool _uploading;
     private List<ApplicationRoleDto> _roles = new();
     private string? _searchRole;
@@ -393,9 +358,7 @@
 
         policies ??= new()
         {
-            { SecurityPolicies.SystemFunctionsWrite, (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded },
-            { SecurityPolicies.Import, false /*(await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Import)).Succeeded */ },
-            { SecurityPolicies.Export, false /* (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Export)).Succeeded */ }
+            { SecurityPolicies.SystemFunctionsWrite, (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded }
         };
 
         _canCreate = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
@@ -407,8 +370,6 @@
         _canManageRoles = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canResetPassword = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
         _canManagePermissions = policies.GetValueOrDefault(SecurityPolicies.SystemFunctionsWrite);
-        _canImport = policies.GetValueOrDefault(SecurityPolicies.Import);
-        _canExport = policies.GetValueOrDefault(SecurityPolicies.Export);
 
         _roles = await RoleManager.Roles
             .ProjectTo<ApplicationRoleDto>(Mapper.ConfigurationProvider)
@@ -854,102 +815,6 @@
         finally
         {
             _processing = false;
-        }
-    }
-
-    private async Task OnExport()
-    {
-        _exporting = true;
-        try
-        {
-            var searchPredicate = CreateSearchPredicate();
-
-            var users = await UserManager.Users
-                .Where(searchPredicate)
-                .ProjectTo<ApplicationUserDto>(Mapper.ConfigurationProvider)
-                .ToListAsync();
-
-            var result = await ExportUsers(users);
-            await BlazorDownloadFileService.DownloadFile($"{L["Users"]}.xlsx", result, "application/octet-stream");
-            Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
-        }
-        finally
-        {
-            _exporting = false;
-        }
-    }
-
-    private async Task<byte[]> ExportUsers(List<ApplicationUserDto> items)
-    {
-        return await ExcelService.ExportAsync(items,
-            new Dictionary<string, Func<ApplicationUserDto, object?>>
-                    {
-                { L["Id"], item => item.Id },
-                { L["User Name"], item => item.UserName },
-                { L["Display Name"], item => item.DisplayName },
-                { L["Email"], item => item.Email },
-                { L["Phone Number"], item => item.PhoneNumber },
-                { L["Tenant Id"], item => item.TenantId },
-                { L["Tenant Name"], item => item.TenantName }
-                    }, L["Users"]);
-    }
-
-    private async Task OnImportData(IBrowserFile file)
-    {
-        _uploading = true;
-        try
-        {
-            var stream = new MemoryStream();
-            await file.OpenReadStream(GlobalVariable.MaxAllowedSize).CopyToAsync(stream);
-            var result = await ImportUsers(stream);
-
-            if (result?.Succeeded == true)
-            {
-                if (result.Data != null)
-                {
-                    await ProcessImportedUsers(result.Data);
-                    await _table.ReloadServerData();
-                }
-                Snackbar.Add($"{ConstantString.ImportSuccess}", Severity.Info);
-            }
-            else if (result?.Errors != null)
-            {
-                foreach (var msg in result.Errors)
-                {
-                    Snackbar.Add($"{msg}", Severity.Error);
-                }
-            }
-        }
-        finally
-        {
-            _uploading = false;
-        }
-    }
-
-    private async Task<IResult<IEnumerable<ApplicationUser>>> ImportUsers(MemoryStream stream)
-    {
-        return await ExcelService.ImportAsync(stream.ToArray(), new Dictionary<string, Func<DataRow, ApplicationUser, object?>>
-        {
-            { L["User Name"], (row, item) => item.UserName = row[L["User Name"]]?.ToString() },
-            { L["Display Name"], (row, item) => item.DisplayName = row[L["Display Name"]]?.ToString() },
-            { L["Email"], (row, item) => item.Email = row[L["Email"]]?.ToString() },
-            { L["Phone Number"], (row, item) => item.PhoneNumber = row[L["Phone Number"]]?.ToString() },
-            { L["Tenant Id"], (row, item) => item.TenantId = row[L["Tenant Id"]]?.ToString() }
-        }, L["Users"]);
-    }
-
-    private async Task ProcessImportedUsers(IEnumerable<ApplicationUser> users)
-    {
-        foreach (var user in users)
-        {
-            if (!UserManager.Users.Any(x => x.UserName == user.UserName))
-            {
-                var identityResult = await UserManager.CreateAsync(user);
-                if (identityResult.Succeeded == false)
-                {
-                    Snackbar.Add($"{string.Join(',', identityResult.Errors.Select(x => x.Description))}", Severity.Error);
-                }
-            }
         }
     }
 }
