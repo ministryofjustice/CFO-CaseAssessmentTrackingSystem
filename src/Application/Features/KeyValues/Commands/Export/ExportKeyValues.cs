@@ -2,6 +2,7 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
+using Humanizer;
 
 namespace Cfo.Cats.Application.Features.KeyValues.Commands.Export;
 
@@ -32,12 +33,32 @@ public static class ExportKeyValues
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        readonly ICurrentUserService currentUserService;
+        readonly IUnitOfWork unitOfWork;
+        readonly TimeSpan cooldown = TimeSpan.FromSeconds(30);
+
+        public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
         {
+            this.currentUserService = currentUserService;
+            this.unitOfWork = unitOfWork;
 
             RuleFor(r => r.SearchCriteria)
                 .Matches(ValidationConstants.Keyword)
                 .WithMessage(string.Format(ValidationConstants.KeywordMessage, "Search Keyword"));
+
+            RuleFor(c => c)
+                .Must(WaitBeforeRequestingDocumentAgain)
+                .WithMessage($"You must wait {cooldown.Humanize()} between requesting documents.");
+        }
+
+        bool WaitBeforeRequestingDocumentAgain(Command c)
+        {
+            var cooldownPeriod = DateTime.UtcNow - cooldown;
+
+            var hasRecentlyRequestedDocument = unitOfWork.DbContext.GeneratedDocuments
+                .Any(d => d.CreatedBy == currentUserService.UserId && d.Created > cooldownPeriod);
+
+            return hasRecentlyRequestedDocument is false;
         }
     }
 }
