@@ -5,10 +5,10 @@ using MassTransit;
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
-public class DocumentKeyValuesIntegrationEventConsumer(
+public class DocumentExportKeyValuesIntegrationEventConsumer(
     IUnitOfWork unitOfWork,
     IExcelService excelService,
-    IStringLocalizer<DocumentKeyValuesIntegrationEventConsumer> localizer,
+    IStringLocalizer<DocumentExportKeyValuesIntegrationEventConsumer> localizer,
     IUploadService uploadService,
     IMapper mapper,
     IDomainEventDispatcher domainEventDispatcher) : IConsumer<ExportDocumentIntegrationEvent>
