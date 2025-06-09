@@ -1,8 +1,8 @@
-﻿namespace Cfo.Cats.Application.Features.AuditTrails.Specifications;
+﻿namespace Cfo.Cats.Application.Features.AuditTrails.Specifications.SystemAuditTrail;
 
-public class AuditTrailAdvancedSpecification : Specification<AuditTrail>
+public class SystemAuditTrailAdvancedSpecification : Specification<AuditTrail>
 {
-    public AuditTrailAdvancedSpecification(AuditTrailAdvancedFilter filter)
+    public SystemAuditTrailAdvancedSpecification(SystemAuditTrailAdvancedFilter filter)
     {
         var today = DateTime.Now.ToUniversalTime().Date;
         var start = Convert.ToDateTime(
@@ -23,13 +23,13 @@ public class AuditTrailAdvancedSpecification : Specification<AuditTrail>
             .Where(p => p.AuditType == filter.AuditType, filter.AuditType is not null)
             .Where(
                 p => p.UserId == filter.CurrentUser!.UserId,
-                filter is { ListView: AuditTrailListView.My, CurrentUser: not null }
+                filter is { ListView: SystemAuditTrailListView.My, CurrentUser: not null }
             )
             .Where(
                 p => p.DateTime.Date == DateTime.Now.Date,
-                filter.ListView == AuditTrailListView.CreatedToday
+                filter.ListView == SystemAuditTrailListView.CreatedToday
             )
-            .Where(p => p.DateTime >= last30day, filter.ListView == AuditTrailListView.Last30days)
+            .Where(p => p.DateTime >= last30day, filter.ListView == SystemAuditTrailListView.Last30days)
             .Where(
                 x => x.TableName!.Contains(filter.Keyword!) || x.Owner!.DisplayName!.Contains(filter.Keyword!),
                 !string.IsNullOrEmpty(filter.Keyword)

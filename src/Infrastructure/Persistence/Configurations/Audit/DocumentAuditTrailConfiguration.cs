@@ -13,17 +13,15 @@ public class DocumentAuditTrailConfiguration : IEntityTypeConfiguration<Document
 
         builder.HasKey(a => a.Id);
         
-        builder.HasOne<ApplicationUser>()
+        builder.HasOne(a => a.User)
             .WithMany()
             .HasForeignKey(a => a.UserId);
 
-        builder.HasOne<GeneratedDocument>()
+        builder.HasOne(a => a.Document)
             .WithMany()
             .HasForeignKey(a => a.DocumentId);
 
-        builder.Property(a => a.RequestType)
-            .IsRequired()
-            .HasMaxLength(300);
+        builder.Property(t => t.RequestType).HasConversion<string>().IsRequired();
 
         builder.Property(a => a.OccurredOn)
             .IsRequired();

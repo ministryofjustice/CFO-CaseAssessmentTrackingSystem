@@ -1,21 +1,21 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.AuditTrails.Caching;
 using Cfo.Cats.Application.Features.AuditTrails.DTOs;
-using Cfo.Cats.Application.Features.AuditTrails.Specifications;
+using Cfo.Cats.Application.Features.AuditTrails.Specifications.SystemAuditTrail;
 using Cfo.Cats.Application.SecurityConstants;
 using DocumentFormat.OpenXml.Wordprocessing;
 
-namespace Cfo.Cats.Application.Features.AuditTrails.Queries.PaginationQuery;
+namespace Cfo.Cats.Application.Features.AuditTrails.Queries.GetSystemAuditTrailsWithPagination;
 
 [RequestAuthorize(Policy = SecurityPolicies.ViewAudit)]
 public class AuditTrailsWithPaginationQuery
-    : AuditTrailAdvancedFilter,
+    : SystemAuditTrailAdvancedFilter,
         ICacheableRequest<PaginatedData<AuditTrailDto>>
 {
-    public AuditTrailAdvancedSpecification Specification => new(this);
+    public SystemAuditTrailAdvancedSpecification Specification => new(this);
 
-    public string CacheKey => AuditTrailsCacheKey.GetPaginationCacheKey($"{this}");
-    public MemoryCacheEntryOptions? Options => AuditTrailsCacheKey.MemoryCacheEntryOptions;
+    public string CacheKey => SystemAuditTrailsCacheKey.GetPaginationCacheKey($"{this}");
+    public MemoryCacheEntryOptions? Options => SystemAuditTrailsCacheKey.MemoryCacheEntryOptions;
 
     public override string ToString()
     {
