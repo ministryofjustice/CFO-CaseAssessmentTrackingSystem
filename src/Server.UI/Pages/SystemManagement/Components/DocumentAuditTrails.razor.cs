@@ -3,6 +3,7 @@ using Cfo.Cats.Application.Features.AuditTrails.DTOs;
 using Cfo.Cats.Application.Features.AuditTrails.Queries;
 using Cfo.Cats.Application.Features.AuditTrails.Specifications.DocumentAuditTrail;
 using Cfo.Cats.Domain.Entities.Documents;
+using Cfo.Cats.Server.UI.Pages.Reports;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Cfo.Cats.Server.UI.Pages.SystemManagement.Components;
@@ -67,5 +68,17 @@ public partial class DocumentAuditTrails(IMediator mediator)
     {
         Query.Keyword = string.Empty;
         await table.ReloadServerData();
+    }
+
+    private async Task Download(DocumentAuditTrailDto document)
+    {
+        var parameters = new DialogParameters<OnExportConfirmationDialog>()
+        {
+            { x => x.DocumentId, document.DocumentId }
+        };
+
+        var dialog = await DialogService.ShowAsync<OnExportConfirmationDialog>(document.DocumentTitle, parameters);
+
+        await dialog.Result;
     }
 }
