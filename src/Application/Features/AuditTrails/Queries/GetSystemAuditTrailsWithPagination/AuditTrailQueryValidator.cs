@@ -1,6 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Validators;
 
-namespace Cfo.Cats.Application.Features.AuditTrails.Queries.PaginationQuery
+namespace Cfo.Cats.Application.Features.AuditTrails.Queries.GetSystemAuditTrailsWithPagination
 {
     public class AuditTrailQueryValidator : AbstractValidator<AuditTrailsWithPaginationQuery>
     {
