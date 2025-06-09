@@ -13,7 +13,7 @@ public class AuditDocumentDownload(IUnitOfWork unitOfWork, ICurrentUserService c
         }
 
         await unitOfWork.DbContext.DocumentAuditTrails.AddAsync(
-            DocumentAuditTrail.Create(notification.Entity.Id, currentUserService.UserId!, "Document Downloaded", notification.OccurredOn),
+            DocumentAuditTrail.Create(notification.Entity.Id, currentUserService.UserId!, DocumentAuditTrailRequestType.DocumentDownloaded, notification.OccurredOn),
             cancellationToken);
     }
 }

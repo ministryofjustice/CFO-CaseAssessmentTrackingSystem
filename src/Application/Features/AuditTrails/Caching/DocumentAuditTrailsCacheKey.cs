@@ -1,12 +1,12 @@
 ﻿namespace Cfo.Cats.Application.Features.AuditTrails.Caching;
 
-public static class AuditTrailsCacheKey
+public static class DocumentAuditTrailsCacheKey
 {
-    public const string GetAllCacheKey = "all-audittrails";
+    public const string GetAllCacheKey = "all-documentaudittrails";
     private static readonly TimeSpan RefreshInterval = TimeSpan.FromMilliseconds(30);
     private static CancellationTokenSource tokenSource;
 
-    static AuditTrailsCacheKey()
+    static DocumentAuditTrailsCacheKey()
     {
         tokenSource = new CancellationTokenSource(RefreshInterval);
     }
@@ -18,7 +18,7 @@ public static class AuditTrailsCacheKey
 
     public static string GetPaginationCacheKey(string parameters)
     {
-        return $"AuditTrailsWithPaginationQuery,{parameters}";
+        return $"DocumentAuditTrailsWithPaginationQuery,{parameters}";
     }
 
     public static CancellationTokenSource SharedExpiryTokenSource()
