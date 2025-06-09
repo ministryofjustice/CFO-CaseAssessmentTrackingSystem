@@ -1,4 +1,4 @@
-﻿using Ardalis.SmartEnum;
+using Ardalis.SmartEnum;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Documents;
@@ -59,6 +59,7 @@ public class DocumentTemplate : SmartEnum<DocumentTemplate>
 
     public static readonly DocumentTemplate CaseWorkload = new(nameof(CaseWorkload), 0);
     public static readonly DocumentTemplate KeyValues = new(nameof(KeyValues), 1);
-
+    public static readonly DocumentTemplate RiskDue = new(nameof(RiskDue), 2);
+    public static readonly DocumentTemplate RiskDueAggregate = new(nameof(RiskDueAggregate), 3);
     public static readonly DocumentTemplate CumulativeFigures = new(nameof(CumulativeFigures), 100);
 }
