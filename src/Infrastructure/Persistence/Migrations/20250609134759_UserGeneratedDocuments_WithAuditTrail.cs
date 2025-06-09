@@ -12,13 +12,45 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "DocumentAuditTrail",
+                schema: "Audit",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DocumentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(36)", nullable: false),
+                    RequestType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OccurredOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DocumentAuditTrail", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DocumentAuditTrail_Document_DocumentId",
+                        column: x => x.DocumentId,
+                        principalSchema: "Document",
+                        principalTable: "Document",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DocumentAuditTrail_User_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Identity",
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "GeneratedDocument",
                 schema: "Document",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SearchCriteriaUsed = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ExpiresOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    ExpiresOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Template = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,35 +64,11 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "DocumentAuditTrail",
-                schema: "Audit",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DocumentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(36)", nullable: false),
-                    RequestType = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    OccurredOn = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DocumentAuditTrail", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DocumentAuditTrail_GeneratedDocument_DocumentId",
-                        column: x => x.DocumentId,
-                        principalSchema: "Document",
-                        principalTable: "GeneratedDocument",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_DocumentAuditTrail_User_UserId",
-                        column: x => x.UserId,
-                        principalSchema: "Identity",
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+            migrationBuilder.CreateIndex(
+                name: "IX_Document_Created_CreatedBy",
+                schema: "Document",
+                table: "Document",
+                columns: new[] { "Created", "CreatedBy" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentAuditTrail_DocumentId",
@@ -73,6 +81,12 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                 schema: "Audit",
                 table: "DocumentAuditTrail",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GeneratedDocument_ExpiresOn",
+                schema: "Document",
+                table: "GeneratedDocument",
+                column: "ExpiresOn");
         }
 
         /// <inheritdoc />
@@ -85,6 +99,11 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
             migrationBuilder.DropTable(
                 name: "GeneratedDocument",
                 schema: "Document");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Document_Created_CreatedBy",
+                schema: "Document",
+                table: "Document");
         }
     }
 }
