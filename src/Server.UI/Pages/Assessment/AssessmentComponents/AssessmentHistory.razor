@@ -1,0 +1,46 @@
+@using Cfo.Cats.Application.Features.Assessments.DTOs
+@using Humanizer
+
+@inherits CatsComponentBase
+
+@if (ParticipantAssessments.Any() == true)
+{
+    <MudDataGrid Items="@ParticipantAssessments" Striped="true" >
+        <Columns>
+
+            <TemplateColumn Title="Completed" Sortable="true" SortBy="x => x.Completed">
+                <CellTemplate>
+                        <MudStack>
+                            @if(context.Item.Completed.HasValue)
+                            {
+                                <MudText Typo="Typo.body2">@context.Item.Completed.Value.ToShortDateString()</MudText>
+                                if (ConsentDate.HasValue)
+                                {
+                                    <MudText Typo="Typo.body2">@($"{(context.Item.Completed.Value - ConsentDate.Value.ToDateTime(TimeOnly.MinValue)).Humanize()} (since consent)")</MudText>
+                                }
+                            }
+                        </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+
+            <PropertyColumn Property="x => x.LocationName" Title="Location">
+            </PropertyColumn>
+
+            <TemplateColumn Title="RAG Bar">
+                <CellTemplate>
+                    <Cfo.Cats.Server.UI.Pages.Participants.Components.RagBar Model="@context.Item" />
+                </CellTemplate>
+            </TemplateColumn>
+
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="ParticipantAssessmentDto" />
+        </PagerContent>
+    </MudDataGrid>
+}
+else
+{
+    <MudAlert Severity="Severity.Info">
+        No assessment history found
+    </MudAlert>
+}

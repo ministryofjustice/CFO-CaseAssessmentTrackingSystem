@@ -2,6 +2,7 @@
 
 @using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Assessments.DTOs
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 @using Cfo.Cats.Application.SecurityConstants
@@ -75,7 +76,7 @@
                         <RightToWorkTabPanel ParticipantDto="_participantDto"/>
                     </MudTabPanel>
                     <MudTabPanel Text="Assessment" Icon="@(_participantDto.AssessmentJustification is not null ? Icons.Material.Filled.Warning : string.Empty)" IconColor="Color.Warning">
-                        <AssessmentTabPanel ParticipantDto="_participantDto"/>
+                        <AssessmentTabPanel ParticipantDto="_participantDto" ParticipantAssessmentDto="@_latestParticipantAssessmentDto" />
                     </MudTabPanel>
                     <MudTabPanel Text="Submission">
                         @if (_queueEntry.IsCompleted == false)
@@ -126,7 +127,7 @@
                             </MudForm>
 
                             <MudContainer Class="d-flex px-0 pt-8">
-                                <MudLoadingButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled" Loading="saving">Submit</MudLoadingButton>
+                                <MudLoadingButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled" Loading="_saving">Submit</MudLoadingButton>
                             </MudContainer>
                         }
                         else

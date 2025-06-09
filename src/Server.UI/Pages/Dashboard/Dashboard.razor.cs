@@ -34,7 +34,7 @@ public partial class Dashboard
         _showRiskDueAggregate = _showCaseWorkload;
 
         _showQaPots = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
-        _showJobManagement = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SeniorInternal)).Succeeded;
+        _showJobManagement = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions)).Succeeded;
     }
 
   

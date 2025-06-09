@@ -4,6 +4,7 @@
 @inherits CatsComponentBase
 
 <MudGrid Class="pa-3" Spacing="4">
+
 <!-- Details -->
 <MudItem xs="12" md="4">
     <MudCard Style="height: 100%">
@@ -13,7 +14,6 @@
             </CardHeaderContent>
         </MudCardHeader>
         <MudCardContent>
-
 
             <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
                 <MudText>
@@ -59,8 +59,8 @@
     </MudCard>
 </MudItem>
 
-<!-- Assessment -->
 
+<!-- Assessment -->
 <MudItem xs="12" md="4">
     <MudCard Style="Height: 100%;">
         <MudCardHeader>
@@ -88,7 +88,6 @@
 
                 @if (_latestAssessment.Completed.HasValue)
                 {
-
                     <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
                         <MudText><strong>Date Completed</strong></MudText>
                         <MudText>@_latestAssessment.Completed!.Value.ToString("dd/MM/yyyy")</MudText>
@@ -101,8 +100,7 @@
                                 @_assessmentDueInfo
                             </MudText>
                         </MudTooltip>
-                    </MudStack>
-                       
+                    </MudStack>                       
                 }
                 else
                 {
@@ -118,7 +116,7 @@
             }
         </MudCardContent>
         <MudCardActions>
-
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
             @if (CanBeginAssessment())
             {
                 <MudTooltip Text="Create Assessment">
@@ -137,6 +135,7 @@
                     <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginAssessment"/>
                 </MudTooltip>
             }
+            </MudStack>
         </MudCardActions>
     </MudCard>
 </MudItem>
@@ -276,6 +275,8 @@
         </MudCardActions>
     </MudCard>
 </MudItem>
+
+
 <!-- Pathway plan -->
 <MudItem xs="12" md="4">
     <MudCard Style="Height: 100%;">
@@ -326,7 +327,6 @@
                     </MudStack>
 
                 }
-
             }
             else
             {

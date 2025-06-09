@@ -2050,13 +2050,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<bool>("ActiveInFeed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ArchiveJustification")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int?>("ArchiveReason")
-                        .HasColumnType("int");
-
                     b.Property<string>("AssessmentJustification")
                         .HasColumnType("nvarchar(max)");
 
@@ -3324,7 +3317,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                             b1.Property<string>("TenantId")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)");
 
                             b1.HasKey("Id");
 
@@ -3427,7 +3421,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                             b1.Property<string>("TenantId")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)");
 
                             b1.HasKey("Id");
 
@@ -3533,7 +3528,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                             b1.Property<string>("TenantId")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)");
 
                             b1.HasKey("Id");
 
@@ -3639,7 +3635,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                             b1.Property<string>("TenantId")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)");
 
                             b1.HasKey("Id");
 
@@ -4149,7 +4146,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                             b1.Property<string>("TenantId")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)");
 
                             b1.HasKey("Id");
 
@@ -4254,7 +4252,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                             b1.Property<string>("TenantId")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)");
 
                             b1.HasKey("Id");
 
@@ -4362,7 +4361,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                             b1.Property<string>("TenantId")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)");
 
                             b1.HasKey("Id");
 
@@ -4470,7 +4470,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                             b1.Property<string>("TenantId")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)");
 
                             b1.HasKey("Id");
 
@@ -4666,7 +4667,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                             b1.Property<string>("TenantId")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)");
 
                             b1.HasKey("Id");
 
@@ -5279,7 +5281,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                             b1.Property<string>("TenantId")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)");
 
                             b1.Property<string>("UserId")
                                 .IsRequired()

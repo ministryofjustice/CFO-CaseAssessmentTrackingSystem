@@ -1,10 +1,13 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Assessments.DTOs;
+using Cfo.Cats.Application.Features.Assessments.Queries;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.Features.QualityAssurance.Commands;
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components;
 using IResult = Cfo.Cats.Application.Common.Interfaces.IResult;
+
 namespace Cfo.Cats.Server.UI.Pages.QA.Enrolments;
 
 public partial class QA2
@@ -13,9 +16,8 @@ public partial class QA2
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry = null;
     private ParticipantDto? _participantDto = null;
-
-    bool saving = false;
-
+    private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
+    private bool _saving = false;
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; } = null!;
 
@@ -44,6 +46,8 @@ public partial class QA2
                 QueueEntryId = _queueEntry.Id,
                 CurrentUser = UserProfile
             };
+
+            await SetLatestParticipantAssessment(_queueEntry.ParticipantId);
         }
         else
         {
@@ -51,11 +55,30 @@ public partial class QA2
         }
     }
 
+    protected async Task SetLatestParticipantAssessment(string participantId)
+    {
+        if (!string.IsNullOrEmpty(participantId))
+        {
+            var query = new GetAssessmentScores.Query()
+            {
+                ParticipantId = participantId
+            };
+
+            var result = await GetNewMediator().Send(query);
+
+            if (result.Succeeded && result.Data != null)
+            {
+                _latestParticipantAssessmentDto = result.Data.MaxBy(pa => pa.CreatedDate);
+            }
+
+        }
+    }
+
     protected async Task SubmitToQa()
     {
         try
         {
-            saving = true;
+            _saving = true;
             await _form!.Validate().ConfigureAwait(false);
 
             if (_form.IsValid is false)
@@ -85,7 +108,7 @@ public partial class QA2
                 }
             }
         }
-        finally { saving = false; }
+        finally { _saving = false; }
     }
 
     private void ShowActionFailure(string title, IResult result)

@@ -1,5 +1,6 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Entities.Participants;
+using Cfo.Cats.Domain.ValueObjects;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -31,7 +32,11 @@ public class EnrolmentPqaQueueEntityTypeConfiguration : IEntityTypeConfiguration
 
             note.Property(x => x.CallReference)
                 .HasMaxLength(DatabaseConstants.FieldLengths.CallReference);
-            
+
+            note.Property(x => x.TenantId)
+                .IsRequired()
+                .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
+
             note.HasOne(n => n.CreatedByUser)
                 .WithMany()
                 .HasForeignKey(x => x.CreatedBy);

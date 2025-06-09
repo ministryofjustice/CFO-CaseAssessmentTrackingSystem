@@ -1,4 +1,6 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Assessments.DTOs;
+using Cfo.Cats.Application.Features.Assessments.Queries;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.Features.QualityAssurance.Commands;
@@ -15,8 +17,10 @@ public partial class QA1
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry = null;
     private ParticipantDto? _participantDto = null;
+    private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
+    private bool _saving = false;
 
-    bool saving = false;
+    
 
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; } = null!;
@@ -46,6 +50,8 @@ public partial class QA1
                 QueueEntryId = _queueEntry.Id,
                 CurrentUser = UserProfile
             };
+
+            await SetLatestParticipantAssessment(_queueEntry.ParticipantId);
         }
         else
         {
@@ -53,17 +59,38 @@ public partial class QA1
         }
     }
 
+    protected async Task SetLatestParticipantAssessment(string participantId)
+    {
+        if (!string.IsNullOrEmpty(participantId))
+        {
+            var query = new GetAssessmentScores.Query()
+            {
+                ParticipantId = participantId
+            };
+
+            var result = await GetNewMediator().Send(query);
+
+            if (result.Succeeded && result.Data != null)
+            {
+                _latestParticipantAssessmentDto = result.Data.MaxBy(pa => pa.CreatedDate);
+            }
+
+    }
+    }
+
     protected async Task SubmitToQa()
     {
         try
         {
-            saving = true;
+            _saving = true;
+
             await _form!.Validate().ConfigureAwait(false);
 
             if (_form.IsValid is false)
             {
                 return;
             }
+
             var result = await GetNewMediator().Send(Command);
 
             if (result.Succeeded)
@@ -76,7 +103,8 @@ public partial class QA1
                 ShowActionFailure("Failed to submit", result);
             }
         }
-        finally { saving = false; }
+        finally { _saving = false; }
+
     }
 
     private void ShowActionFailure(string title, IResult result)

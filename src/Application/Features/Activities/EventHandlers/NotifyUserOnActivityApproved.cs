@@ -17,7 +17,7 @@ public class NotifyUserOnActivityApproved(IUnitOfWork unitOfWork) : INotificatio
 
             Notification? previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
                 n => n.Heading == heading
-                && n.OwnerId == notification.Item.Participant!.OwnerId
+                && n.OwnerId == notification.Item.OwnerId
                 && n.ReadDate == null
             );
 
@@ -25,7 +25,7 @@ public class NotifyUserOnActivityApproved(IUnitOfWork unitOfWork) : INotificatio
 
             if (previous is null)
             {
-                var n = Notification.Create(heading, details, notification.Item.Participant!.OwnerId!);
+                var n = Notification.Create(heading, details, notification.Item.OwnerId!);
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }
         }

@@ -1,89 +1,93 @@
 name: Create new release
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      # Check if the branch is main
-      - name: Check branch
-        run: |
-          if [ "${{ github.ref }}" != "refs/heads/main" ]; then
-            echo "This workflow can only be triggered from the main branch."
-            exit 1
-          fi
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
 
-      # Set up .NET environment
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '9.0.x'  # specify the version of .NET you need
+    - name: Restore Cake Tool
+      run: dotnet tool restore
 
-      # Restore dependencies
-      - name: Restore dependencies
-        run: dotnet restore
+    - name: Build, Test & Publish
+      run: dotnet cake --target=Publish --configuration=Release
 
-      # Restore dotnet tools
-      - name: Restore dotnet tools
-        run: dotnet tool restore
+    - name: Generate Migration Script
+      run: dotnet cake --target=Script --configuration=Release
+      if: github.ref == 'refs/heads/main'  # Only run on main branch
 
-      # Build the project
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
+    # Upload build artifacts
+    - name: Upload Published App
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: published-app
+        path: ./publish/
+        retention-days: 7
 
-      # Run unit tests
-      - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal
+    # Upload test results
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          **/TestResults/
+          **/*.trx
+        retention-days: 7
 
-      # Publish the build artifacts
-      - name: Publish
-        run: dotnet publish --configuration Release --no-build --output ./publish
+    # Create zip archive of build artifacts for release
+    - name: Create Build Artifacts Archive
+      if: success() && github.ref == 'refs/heads/main'
+      run: |
+        cd ./publish
+        zip -r ../build-artifacts.zip .
+        cd ..
 
-      # Run EF migrations
-      - name: Run EF migrations
-        run: dotnet ef migrations script --project src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj --startup-project src/Server.UI/Server.UI.csproj --no-build --configuration Release --context Cfo.Cats.Infrastructure.Persistence.ApplicationDbContext --idempotent -o ./publish/Migration.sql
+    # Generate tag and release names based on date
+    - name: Set Release Version
+      if: success() && github.ref == 'refs/heads/main'
+      id: set_release_version
+      run: |
+        TAG_NAME="v$(date +'%Y%m%d%H%M%S')"
+        echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+        echo "RELEASE_NAME=Release $TAG_NAME" >> $GITHUB_ENV
 
-      # Compress the build artifacts into a ZIP file
-      - name: Compress build artifacts
-        run: |
-          cd publish
-          zip -r ../build-artifacts.zip .
+    # Create a new release
+    - name: Create Release
+      if: success() && github.ref == 'refs/heads/main'
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.TAG_NAME }}
+        release_name: ${{ env.RELEASE_NAME }}
+        body: 'Automatic release based on date and time.'
+        draft: false
+        prerelease: false
 
-      # Generate tag and release names based on date
-      - name: Set Release Version
-        id: set_release_version
-        run: |
-          TAG_NAME="v$(date +'%Y%m%d%H%M%S')"
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
-          echo "RELEASE_NAME=Release $TAG_NAME" >> $GITHUB_ENV
-
-      # Create a new release
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ env.TAG_NAME }}
-          release_name: ${{ env.RELEASE_NAME }}
-          body: 'Automatic release based on date and time.'
-          draft: false
-          prerelease: false
-
-      # Upload build artifacts to the release
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build-artifacts.zip
-          asset_name: build-artifacts.zip
-          asset_content_type: application/zip
+    # Upload build artifacts to the release
+    - name: Upload Release Asset
+      if: success() && github.ref == 'refs/heads/main'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./build-artifacts.zip
+        asset_name: build-artifacts.zip
+        asset_content_type: application/zip

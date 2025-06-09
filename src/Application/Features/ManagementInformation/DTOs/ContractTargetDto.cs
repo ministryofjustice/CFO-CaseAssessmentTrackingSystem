@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Cfo.Cats.Application.Features.Contracts.DTOs;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.DTOs;
 
@@ -7,6 +6,25 @@ public record ContractTargetDto
 {
     public ContractTargetDto()
     {
+    }
+
+    public static ContractTargetDto operator +(ContractTargetDto a, ContractTargetDto b)
+    {
+        return a with
+        {
+            Prison = a.Prison + b.Prison,
+            Community = a.Community + b.Community,
+            CommunityAndSocial = a.CommunityAndSocial + b.CommunityAndSocial,
+            Employment = a.Employment + b.Employment,
+            Wings = a.Wings + b.Wings,
+            Hubs = a.Hubs + b.Hubs,
+            PreReleaseSupport = a.PreReleaseSupport + b.PreReleaseSupport,
+            ThroughTheGate = a.ThroughTheGate + b.ThroughTheGate,   
+            SupportWork = a.SupportWork + b.SupportWork,
+            HumanCitizenship = a.HumanCitizenship + b.HumanCitizenship,
+            Interventions = a.Interventions + b.Interventions,
+            TrainingAndEducation = a.TrainingAndEducation + b.TrainingAndEducation,
+        };
     }
 
 
@@ -31,16 +49,16 @@ public record ContractTargetDto
     
 
     public required string Contract { get; init; }
-    public int Prison { get; init; }
-    public int Community { get; init; } 
-    public int Wings { get; init; }
-    public int Hubs { get; init; }
-    public int PreReleaseSupport { get; init; }
-    public int ThroughTheGate { get; init; }
-    public int SupportWork { get; init; }
-    public int HumanCitizenship { get; init; }
-    public int CommunityAndSocial { get; init; }
-    public int Interventions { get; init; }
-    public int Employment { get; init; }
-    public int TrainingAndEducation { get;init; }
+    public required int Prison { get; init; }
+    public required int Community { get; init; } 
+    public required int Wings { get; init; }
+    public required int Hubs { get; init; }
+    public required int PreReleaseSupport { get; init; }
+    public required int ThroughTheGate { get; init; }
+    public required int SupportWork { get; init; }
+    public required int HumanCitizenship { get; init; }
+    public required int CommunityAndSocial { get; init; }
+    public required int Interventions { get; init; }
+    public required int Employment { get; init; }
+    public required int TrainingAndEducation { get;init; }
 }

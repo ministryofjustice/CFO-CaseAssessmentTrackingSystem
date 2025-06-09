@@ -4,9 +4,12 @@ var sqlPassword = builder.AddParameter("sqlPassword", secret: true);
 var rabbitUser = builder.AddParameter("rabbitUser", secret: true);
 var rabbitPassword = builder.AddParameter("rabbitPassword", secret: true);
 
+#pragma warning disable ASPIREPROXYENDPOINTS001
 var sql = builder.AddSqlServer("sql", sqlPassword, 1433)
     .WithDataVolume("cats-aspire-data")
-    .WithLifetime(ContainerLifetime.Persistent);
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithEndpointProxySupport(false);
+#pragma warning restore ASPIREPROXYENDPOINTS001
     
     
 var catsDb = sql.AddDatabase("CatsDb");

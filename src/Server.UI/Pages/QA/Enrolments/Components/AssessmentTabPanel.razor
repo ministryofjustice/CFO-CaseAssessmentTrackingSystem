@@ -1,8 +1,11 @@
 ﻿@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
+@using Cfo.Cats.Application.Features.Assessments.DTOs
+@using Cfo.Cats.Application.Features.Assessments.Queries
+
 <MudGrid>
     <MudItem xs="12">
-        <RagBar ParticipantId="@ParticipantDto.Id"/>
+        <RagBar Model="@ParticipantAssessmentDto" />
     </MudItem>
 
     @if (ParticipantDto.AssessmentJustification is not null)
@@ -14,15 +17,9 @@
             </MudText>
         </MudItem>
     }
+
     <MudItem xs="12">
-        <CaseAssessment ParticipantId="@ParticipantDto.Id"/>
+        <CaseAssessment ParticipantId="@ParticipantDto.Id" ConsentDate="@ParticipantDto.DateOfFirstConsent" />
     </MudItem>
+
 </MudGrid>
-
-@code {
-
-    [Parameter, EditorRequired]
-    public ParticipantDto ParticipantDto { get; set; } = default!;
-
-
-}

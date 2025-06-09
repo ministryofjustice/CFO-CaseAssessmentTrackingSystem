@@ -1,4 +1,6 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Assessments.DTOs;
+using Cfo.Cats.Application.Features.Assessments.Queries;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.Features.QualityAssurance.Commands;
@@ -15,8 +17,8 @@ public partial class Escalation
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry;
     private ParticipantDto? _participantDto;
-
-    bool saving = false;
+    private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
+    private bool _saving = false;
     [Parameter] public Guid Id { get; set; }
 
     [CascadingParameter] public UserProfile? UserProfile { get; set; }
@@ -47,9 +49,28 @@ public partial class Escalation
                     QueueEntryId = Id,
                     CurrentUser = UserProfile
                 };
+                await SetLatestParticipantAssessment(_queueEntry.ParticipantId);
             }
 
             StateHasChanged();
+        }
+    }
+
+    protected async Task SetLatestParticipantAssessment(string participantId)
+    {
+        if (!string.IsNullOrEmpty(participantId))
+        {
+            var query = new GetAssessmentScores.Query()
+            {
+                ParticipantId = participantId
+            };
+
+            var result = await GetNewMediator().Send(query);
+
+            if (result.Succeeded && result.Data != null)
+            {
+                _latestParticipantAssessmentDto = result.Data.MaxBy(pa => pa.CreatedDate);
+            }
         }
     }
 
@@ -57,7 +78,8 @@ public partial class Escalation
     {
         try
         {
-            saving = true;
+            _saving = true;
+
             await _form!.Validate().ConfigureAwait(false);
             if (_form.IsValid is false)
             {
@@ -94,7 +116,7 @@ public partial class Escalation
                 }
             }
         }
-        finally { saving = false; }
+        finally { _saving = false; }
     }
 
     private void ShowActionFailure(string title, IResult result)

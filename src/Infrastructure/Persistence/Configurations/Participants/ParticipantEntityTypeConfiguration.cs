@@ -73,15 +73,7 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             cs => RiskDueReason.FromValue(cs));
 
         builder.Property(p => p.DateOfFirstConsent)
-            .IsRequired(false);
-
-        builder.Property(e => e.ArchiveReason)
-            .HasConversion(
-        ar => ar!.Value,
-        ar => ArchiveReason.FromValue(ar));
-
-        builder.Property(p => p.ArchiveJustification)
-        .HasMaxLength(ValidationConstants.NotesLength);
+            .IsRequired(false);      
 
         builder.Property(p => p.RiskDue)
             .IsRequired(false)
@@ -204,7 +196,11 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
 
             note.Property(x => x.CallReference)
                 .HasMaxLength(DatabaseConstants.FieldLengths.CallReference);
-            
+
+            note.Property(x => x.TenantId)
+                .IsRequired()
+                .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
+
             note.HasOne(n => n.CreatedByUser)
                 .WithMany()
                 .HasForeignKey(x => x.CreatedBy);

@@ -1,0 +1,128 @@
+﻿
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@using Cfo.Cats.Server.UI.Pages.Payments.Components
+@inherits CatsComponentBase
+
+@if (_isLoading)
+{
+    <LoadingCard Title="Fetching cumulative data" />
+}
+else
+{
+    if (_cumulativeFigures is not null)
+    {
+
+        <MudSimpleTable Style="overflow-x: auto;" Class="fully-bordered-table ma-4" Bordered="true" >
+            <thead >
+            <tr >
+                <th colspan="13"><MudText Typo="Typo.h6">@($"{EndDate:MMM yyyy}")</MudText></th>
+            </tr>
+            <tr>
+                <th rowspan="3"></th>
+                <th colspan="4"><MudText Typo="Typo.subtitle1">Attachments</MudText></th>
+                <th colspan="2"><MudText Typo="Typo.subtitle1">Support &amp; Referral</MudText></th>
+                <th colspan="4"><MudText Typo="Typo.subtitle1">Activities</MudText></th>
+                <th colspan="2"><MudText Typo="Typo.subtitle1">ETE</MudText></th>
+            </tr>
+            <tr>
+                <th colspan="2"><MudText Typo="Typo.subtitle2">Enrolments</MudText></th>
+                <th colspan="2"><MudText Typo="Typo.subtitle2">Inductions</MudText></th>
+                <th rowspan="2"><MudText Typo="Typo.subtitle2">Pre-Release Support</MudText></th>
+                <th rowspan="2"><MudText Typo="Typo.subtitle2">Through the Gate</MudText></th>
+                <th rowspan="2"><MudText Typo="Typo.subtitle2">Support Work</MudText></th>
+                <th rowspan="2"><MudText Typo="Typo.subtitle2">Human Citizenship</MudText></th>
+                <th rowspan="2"><MudText Typo="Typo.subtitle2">Community and Social</MudText></th>
+                <th rowspan="2"><MudText Typo="Typo.subtitle2">ISW Support</MudText></th>
+                <th rowspan="2"><MudText Typo="Typo.subtitle2">Education &amp; Training</MudText></th>
+                <th rowspan="2"><MudText Typo="Typo.subtitle2">Employment</MudText></th>
+            </tr>
+            <tr>
+                <th>Prison</th>
+                <th>Community</th>
+                <th>Wings</th>
+                <th>Hubs</th>
+
+            </tr>
+            </thead>
+            <tbody >
+
+            <tr>
+                <td class="left-align">Area Targets</td>
+                <td>@_cumulativeFigures.Target.Prison</td>
+                <td>@_cumulativeFigures.Target.Community</td>
+                <td>@_cumulativeFigures.Target.Wings</td>
+                <td>@_cumulativeFigures.Target.Hubs</td>
+                <td>@_cumulativeFigures.Target.PreReleaseSupport</td>
+                <td>@_cumulativeFigures.Target.ThroughTheGate</td>
+                <td>@_cumulativeFigures.Target.SupportWork</td>
+                <td>@_cumulativeFigures.Target.HumanCitizenship</td>
+                <td>@_cumulativeFigures.Target.CommunityAndSocial</td>
+                <td>@_cumulativeFigures.Target.Interventions</td>
+                <td>@_cumulativeFigures.Target.TrainingAndEducation</td>
+                <td>@_cumulativeFigures.Target.Employment</td>
+            </tr>
+
+            <tr>
+                <td class="left-align">Actuals</td>
+                <td>@_cumulativeFigures.Actual.custody_enrolments</td>
+                <td>@_cumulativeFigures.Actual.community_enrolments</td>
+                <td>@_cumulativeFigures.Actual.wing_inductions</td>
+                <td>@_cumulativeFigures.Actual.hub_inductions</td>
+                <td>@_cumulativeFigures.Actual.prerelease_support</td>
+                <td>@_cumulativeFigures.Actual.ttg</td>
+                <td>@_cumulativeFigures.Actual.support_work</td>
+                <td>@_cumulativeFigures.Actual.human_citizenship</td>
+                <td>@_cumulativeFigures.Actual.community_and_social</td>
+                <td>@_cumulativeFigures.Actual.isws</td>
+                <td>@_cumulativeFigures.Actual.education</td>
+                <td>@_cumulativeFigures.Actual.employment</td>
+                        
+            </tr>
+            <tr>
+                <td class="left-align">% Achieved</td>
+                <td class="@_cumulativeFigures.Actual.custody_enrolments.GetPerformanceClass(_cumulativeFigures.Target.Prison)">
+                    @_cumulativeFigures.Actual.custody_enrolments.CalculatePercentage(_cumulativeFigures.Target.Prison)
+                </td>
+                <td class="@_cumulativeFigures.Actual.community_enrolments.GetPerformanceClass(_cumulativeFigures.Target.Community)">
+                    @_cumulativeFigures.Actual.community_enrolments.CalculatePercentage(_cumulativeFigures.Target.Community)
+                </td>
+                <td class="@_cumulativeFigures.Actual.wing_inductions.GetPerformanceClass(_cumulativeFigures.Target.Wings)">
+                    @_cumulativeFigures.Actual.wing_inductions.CalculatePercentage(_cumulativeFigures.Target.Wings)
+                </td>
+                <td class="@_cumulativeFigures.Actual.hub_inductions.GetPerformanceClass(_cumulativeFigures.Target.Hubs)">
+                    @_cumulativeFigures.Actual.hub_inductions.CalculatePercentage(_cumulativeFigures.Target.Hubs)
+                </td>
+                <td class="@_cumulativeFigures.Actual.prerelease_support.GetPerformanceClass(_cumulativeFigures.Target.PreReleaseSupport)">
+                    @_cumulativeFigures.Actual.prerelease_support.CalculatePercentage(_cumulativeFigures.Target.PreReleaseSupport)
+                </td>
+                <td class="@_cumulativeFigures.Actual.ttg.GetPerformanceClass(_cumulativeFigures.Target.ThroughTheGate)">
+                    @_cumulativeFigures.Actual.ttg.CalculatePercentage(_cumulativeFigures.Target.ThroughTheGate)
+                </td>
+                <td class="@_cumulativeFigures.Actual.support_work.GetPerformanceClass(_cumulativeFigures.Target.SupportWork)">
+                    @_cumulativeFigures.Actual.support_work.CalculatePercentage(_cumulativeFigures.Target.SupportWork)
+                </td>
+                <td class="@_cumulativeFigures.Actual.human_citizenship.GetPerformanceClass(_cumulativeFigures.Target.HumanCitizenship)">
+                    @_cumulativeFigures.Actual.human_citizenship.CalculatePercentage(_cumulativeFigures.Target.HumanCitizenship)
+                </td>
+                <td class="@_cumulativeFigures.Actual.community_and_social.GetPerformanceClass(_cumulativeFigures.Target.CommunityAndSocial)">
+                    @_cumulativeFigures.Actual.community_and_social.CalculatePercentage(_cumulativeFigures.Target.CommunityAndSocial)
+                </td>
+                <td class="@_cumulativeFigures.Actual.isws.GetPerformanceClass(_cumulativeFigures.Target.Interventions)">
+                    @_cumulativeFigures.Actual.isws.CalculatePercentage(_cumulativeFigures.Target.Interventions)
+                </td>
+                <td class="@_cumulativeFigures.Actual.education.GetPerformanceClass(_cumulativeFigures.Target.TrainingAndEducation)">
+                    @_cumulativeFigures.Actual.education.CalculatePercentage(_cumulativeFigures.Target.TrainingAndEducation)
+                </td>
+                <td class="@_cumulativeFigures.Actual.employment.GetPerformanceClass(_cumulativeFigures.Target.Employment)">
+                    @_cumulativeFigures.Actual.employment.CalculatePercentage(_cumulativeFigures.Target.Employment)
+                </td>
+            </tr>
+            </tbody>
+        </MudSimpleTable> 
+    }
+    else
+    {
+        <MudAlert Class="mx-2 my-2" Severity="Severity.Info">No information available for this period (@EndDate.ToString("MMM yyyy")).</MudAlert>
+    }
+}
+
