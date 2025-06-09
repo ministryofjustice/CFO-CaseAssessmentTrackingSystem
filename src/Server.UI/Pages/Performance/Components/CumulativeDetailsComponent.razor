@@ -188,5 +188,9 @@ else
             </tbody>
         </MudSimpleTable> 
     }
+    else
+    {
+        <MudAlert Class="mx-2 my-2" Severity="Severity.Info">No information available for this period (@EndDate.ToString("MMM yyyy")).</MudAlert>
+    }
 }
 
