@@ -1,10 +1,7 @@
 name: Create new release
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -27,7 +24,6 @@ jobs:
 
     - name: Generate Migration Script
       run: dotnet cake --target=Script --configuration=Release
-      if: github.ref == 'refs/heads/main'  # Only run on main branch
 
     # Upload build artifacts
     - name: Upload Published App
