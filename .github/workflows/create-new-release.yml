@@ -1,10 +1,7 @@
 name: Create new release
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -27,7 +24,6 @@ jobs:
 
     - name: Generate Migration Script
       run: dotnet cake --target=Script --configuration=Release
-      if: github.ref == 'refs/heads/main'  # Only run on main branch
 
     # Upload build artifacts
     - name: Upload Published App
@@ -36,7 +32,7 @@ jobs:
       with:
         name: published-app
         path: ./publish/
-        retention-days: 7
+        retention-days: 90
 
     # Upload test results
     - name: Upload Test Results
@@ -47,7 +43,7 @@ jobs:
         path: |
           **/TestResults/
           **/*.trx
-        retention-days: 7
+        retention-days: 90
 
     # Create zip archive of build artifacts for release
     - name: Create Build Artifacts Archive
