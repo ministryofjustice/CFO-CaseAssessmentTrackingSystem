@@ -34,7 +34,7 @@ public static class ExportCaseWorkload
     {
         readonly ICurrentUserService currentUserService;
         readonly IUnitOfWork unitOfWork;
-        readonly TimeSpan cooldown = TimeSpan.FromMinutes(5);
+        readonly TimeSpan cooldown = TimeSpan.FromSeconds(30);
 
         public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
         {
