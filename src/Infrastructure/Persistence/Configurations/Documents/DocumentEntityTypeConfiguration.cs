@@ -27,6 +27,8 @@ public class DocumentEntityTypeConfiguration : IEntityTypeConfiguration<Document
         builder.Navigation(e => e.Owner).AutoInclude();
         builder.Navigation(e => e.Editor).AutoInclude();
 
+        builder.HasIndex(e => new { e.Created, e.CreatedBy });
+
         builder.Property(x => x.CreatedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
         builder.Property(x => x.LastModifiedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
         builder.Property(x => x.OwnerId).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
