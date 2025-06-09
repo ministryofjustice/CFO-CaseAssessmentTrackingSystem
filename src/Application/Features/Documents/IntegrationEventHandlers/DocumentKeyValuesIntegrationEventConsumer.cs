@@ -51,7 +51,7 @@ public class DocumentKeyValuesIntegrationEventConsumer(
 
             var uploadRequest = new UploadRequest(document.Title!, UploadType.Document, results);
 
-            var result = await uploadService.UploadAsync($"UserGeneratedDocuments/{context.Message.UserId}", uploadRequest);
+            var result = await uploadService.UploadAsync($"MyDocuments/{context.Message.UserId}", uploadRequest);
 
             document
                 .WithStatus(DocumentStatus.Available)

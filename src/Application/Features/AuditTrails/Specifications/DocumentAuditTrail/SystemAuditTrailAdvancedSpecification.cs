@@ -30,7 +30,8 @@ public class DocumentAuditTrailAdvancedSpecification : Specification<Domain.Enti
             )
             .Where(p => p.OccurredOn >= last30day, filter.ListView == DocumentAuditTrailListView.Last30days)
             .Where(
-                p => p.Document!.Title!.Contains(filter.Keyword!) || p.Document!.Description!.Contains(filter.Keyword!), 
+                p => p.Document!.Title!.Contains(filter.Keyword!) || p.Document!.Description!.Contains(filter.Keyword!)
+                || p.User!.UserName!.Contains(filter.Keyword!) || p.User!.DisplayName!.Contains(filter.Keyword!),
                 filter.Keyword is not null);
     }
 }
