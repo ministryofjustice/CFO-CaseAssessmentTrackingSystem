@@ -371,12 +371,18 @@
         {
             _downloading = true;
 
-            await GetNewMediator().Send(new ExportKeyValues.Command()
+            var result = await GetNewMediator().Send(new ExportKeyValues.Command()
             {
                 SearchCriteria = _searchString
             });
 
-            Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+                return;
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
         }
         catch
         {
