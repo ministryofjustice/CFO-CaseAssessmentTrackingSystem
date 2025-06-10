@@ -1,0 +1,30 @@
+﻿@using Cfo.Cats.Application.Features.Delius.DTOs
+@inherits CatsComponentBase
+
+<MudDialog>
+    <DialogContent>
+        @if (isLoading)
+        {
+            <Cfo.Cats.Server.UI.Pages.Dashboard.Components.LoadingCard Title="@ConstantString.Loading" />
+        }else if (offenderManagerSummary != null)
+        {
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="offenderManagerSummary.OrganistationDescription"
+                                  Label="Organisation" Disabled>
+                    </MudTextField>
+                    <MudTextField @bind-Value="offenderManagerSummary.TeamDescription"
+                                  Label="Team" Disabled>
+                    </MudTextField>
+                </MudItem>
+            </MudGrid>
+        }
+        else
+        {
+            <MudText>No details to display.</MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close">@ConstantString.Close</MudButton>
+    </DialogActions>
+</MudDialog>
