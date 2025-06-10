@@ -27,4 +27,25 @@ public class CachingDeliusService(IFusionCache cache, IDeliusService deliusServi
 
         return result;
     }
+    public async Task<Result<OffenderManagerSummaryDto>> GetOffenderManagerSummaryAsync(string crn)
+    {
+        string cacheKey = $"CachingDeliusService-OffenderManagerSummary-{crn}";
+
+        var cached = await cache.TryGetAsync<Result<OffenderManagerSummaryDto>>(cacheKey);
+
+        if (cached.HasValue)
+        {
+            return cached.Value;
+        }
+
+        var result = await deliusService.GetOffenderManagerSummaryAsync(crn);
+
+        if (result.Succeeded)
+        {
+            // we only cache successful results
+            await cache.SetAsync(cacheKey, result, TimeSpan.FromMinutes(20), tags: ["dms"]);
+        }
+
+        return result;
+    }
 }

@@ -49,9 +49,9 @@ namespace Cfo.Cats.Server.UI.Pages.Transfers
             };
 
             var parameters = new DialogParameters<ProcessTransferDialog>()
-        {
-            { x => x.Model, command }
-        };
+            {
+                { x => x.Model, command }
+            };
 
             var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
             var dialog = await DialogService.ShowAsync<ProcessTransferDialog>("Process and Assign", parameters, options);
@@ -73,6 +73,17 @@ namespace Cfo.Cats.Server.UI.Pages.Transfers
         }
 
         private void View(string participantId) => Navigation.NavigateTo($"/pages/participants/{participantId}");
+
+        async Task ViewOffenderManagerSummary(string participantId)
+        {
+                var parameters = new DialogParameters<OffenderManagerSummaryDialog>();
+                parameters.Add(x => x.ParticipantId, participantId);
+
+                var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+
+                await DialogService.ShowAsync<OffenderManagerSummaryDialog>("Offender Manager Summary", parameters, options);
+
+        }
 
         private bool FilterIncoming1(IncomingTransferDto arg)
             => FilterIncoming(arg, _searchIncomingString);
