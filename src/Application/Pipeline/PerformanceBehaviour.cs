@@ -24,7 +24,7 @@ public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
     }
 
     /// <summary>
-    ///     Logs warnings if a request takes longer to execute than a specified threshold.
+    ///     Logs mediator calls to sentry
     /// </summary>
     /// <param name="request">The incoming request</param>
     /// <param name="next">The delegate for the next action in the pipeline process.</param>
@@ -36,34 +36,21 @@ public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
         CancellationToken cancellationToken
     )
     {
-        Stopwatch? timer = null;
+        
+        var requestName = typeof(TRequest).FullName!;
 
-        // Increment ExecutionCount in a thread-safe manner.
-        Interlocked.Increment(ref RequestCounter.ExecutionCount);
-        if (RequestCounter.ExecutionCount > 3)
+        var transaction = SentrySdk.StartTransaction(requestName, "mediator-call");
+        try
         {
-            timer = Stopwatch.StartNew();
+            var response = await next(cancellationToken)
+                .ConfigureAwait(false);
+            transaction.Finish(SpanStatus.Ok);
+            return response;
         }
-
-        var response = await next().ConfigureAwait(false);
-
-        timer?.Stop();
-        var elapsedMilliseconds = timer?.ElapsedMilliseconds;
-
-        if (elapsedMilliseconds > 1000)
+        catch (Exception ex)
         {
-            var requestName = typeof(TRequest).FullName;
-            var userName = currentUserService.UserName;
-
-            logger.LogWarning(
-                "{Name} long running request ({ElapsedMilliseconds} milliseconds) with {@Request} {@UserName} ",
-                requestName,
-                elapsedMilliseconds,
-                request,
-                userName
-            );
+            transaction.Finish(ex);
+            throw;
         }
-
-        return response;
     }
 }
