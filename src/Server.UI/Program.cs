@@ -3,11 +3,11 @@ using Cfo.Cats.Infrastructure;
 using Cfo.Cats.Infrastructure.Persistence;
 using Cfo.Cats.Server;
 using Cfo.Cats.Server.UI;
-using Serilog;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.RegisterSerilog();
+
 builder.WebHost.UseStaticWebAssets();
 
 builder.AddServerUi();
@@ -17,6 +17,20 @@ builder.Services
     .AddInfrastructure(builder.Configuration);
 
 builder.AddServiceDefaults();
+
+// Use Sentry.AspNetCore instead of Logging.AddSentry
+var sentryDsn = builder.Configuration["Sentry:Dsn"];
+if (!string.IsNullOrEmpty(sentryDsn))
+{
+    builder.WebHost.UseSentry(options =>
+    {
+        builder.Configuration.GetSection("Sentry").Bind(options);
+        options.AddExceptionFilterForType<NavigationException>();
+        
+        options.AddEntityFramework(); // If you use EF
+        
+    });
+}
 
 var app = builder.Build();
 
@@ -29,9 +43,10 @@ if (app.Environment.IsDevelopment())
     await applicationDbContextInitializer.InitialiseAsync();
 }
 
+// Add this middleware for tracing
+app.UseSentryTracing();
+
 app.MapDefaultEndpoints();
 
 
 await app.RunAsync();
-
-Log.CloseAndFlush();
