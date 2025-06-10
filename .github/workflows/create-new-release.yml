@@ -53,14 +53,36 @@ jobs:
         zip -r ../build-artifacts.zip .
         cd ..
 
-    # Generate tag and release names based on date
+    # Generate tag and release names with daily build numbers
     - name: Set Release Version
       if: success() && github.ref == 'refs/heads/main'
       id: set_release_version
       run: |
-        TAG_NAME="v$(date +'%Y%m%d%H%M%S')"
+        # Get current date in YYYY.MM.DD format
+        DATE_PREFIX="v$(date +'%Y.%m.%d')"
+        
+        # Get existing tags for today using GitHub API
+        EXISTING_TAGS=$(curl -s \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          "https://api.github.com/repos/${{ github.repository }}/tags" \
+          | jq -r --arg prefix "$DATE_PREFIX" '.[] | select(.name | startswith($prefix)) | .name')
+        
+        # Count existing tags for today and increment
+        if [ -z "$EXISTING_TAGS" ]; then
+          BUILD_NUMBER="01"
+        else
+          # Extract build numbers, find max, and increment
+          MAX_BUILD=$(echo "$EXISTING_TAGS" | sed "s/${DATE_PREFIX}.//g" | sort -n | tail -1)
+          BUILD_NUMBER=$(printf "%02d" $((MAX_BUILD + 1)))
+        fi
+        
+        # Set the final tag and release names
+        TAG_NAME="${DATE_PREFIX}.${BUILD_NUMBER}"
         echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
         echo "RELEASE_NAME=Release $TAG_NAME" >> $GITHUB_ENV
+        
+        echo "Generated tag: $TAG_NAME"
 
     # Create a new release
     - name: Create Release
