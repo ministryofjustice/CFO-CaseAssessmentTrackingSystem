@@ -61,14 +61,17 @@
                                 <MudExpansionPanel>
                                     <TitleContent>
                                         <div class="d-flex gap-4">
-                                            <div class="d-flex gap-2">
-                                                <MudTooltip Text="Edit">
-                                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" OnClick="() => EditContact(detail)" />
-                                                </MudTooltip>
-                                                <MudTooltip Text="Delete">
-                                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Size="Size.Small" OnClick="() => DeleteContact(detail)" />
-                                                </MudTooltip>
-                                            </div>
+                                            @if (!participant!.EnrolmentStatus!.ParticipantIsActive())
+                                            {
+                                                <div class="d-flex gap-2">
+                                                    <MudTooltip Text="Edit">
+                                                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" OnClick="() => EditContact(detail)" />
+                                                    </MudTooltip>
+                                                    <MudTooltip Text="Delete">
+                                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Size="Size.Small" OnClick="() => DeleteContact(detail)" />
+                                                    </MudTooltip>
+                                                </div>
+                                            }
                                             <div class="d-flex align-center gap-2">
                                                 <MudText>@detail.Description</MudText>
                                                 @if (detail.Primary)

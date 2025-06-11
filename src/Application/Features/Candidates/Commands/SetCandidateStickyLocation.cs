@@ -15,14 +15,20 @@ public static class SetCandidateStickyLocation
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+
             RuleFor(x => x.ParticipantId)
                 .NotNull()
                 .MaximumLength(9)
                 .MinimumLength(9)
                 .Matches(ValidationConstants.AlphaNumeric)
-                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived");
 
             RuleFor(x => x.Region)
                 .NotNull()
@@ -32,5 +38,7 @@ public static class SetCandidateStickyLocation
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Region"));
 
         }
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Inductions;
 
@@ -11,10 +10,10 @@ public static class AddInductionPhase
     public class Command : IRequest<Result>
     {
         public Guid WingInductionId { get; set; }
-        
+
         [Description("Start Date")]
         public DateTime? StartDate { get; set; }
-        
+
         public UserProfile? CurrentUser { get; set; }
     }
 
@@ -35,13 +34,20 @@ public static class AddInductionPhase
     public class Validator : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
-        
+
         public Validator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            
+
             RuleFor(c => c.WingInductionId)
-                .NotEmpty();
+                .NotEmpty()
+                .WithMessage("Wing Induction should not be empty")
+                .MustAsync(MustExist)
+                .WithMessage("No wing induction found")
+                .MustAsync(MustHaveNoOpenPhases)
+                .WithMessage("Cannot add a new phase while an existing one is open")
+                .MustAsync(ParticipantMustNotBeArchived)
+                .WithMessage("Participant is archived");
 
             RuleFor(c => c.StartDate)
                 .NotNull()
@@ -51,20 +57,12 @@ public static class AddInductionPhase
             RuleFor(c => c.CurrentUser)
                 .NotNull();
 
-            RuleFor(c => c.WingInductionId)
-                .MustAsync(MustExist)
-                .WithMessage("No wing induction found");
-
-            RuleFor(x => x.WingInductionId)
-                .MustAsync(MustHaveNoOpenPhases)
-                .WithMessage("Cannot add a new phase while an existing one is open");
-            
             RuleFor(x => x)
                 .MustAsync(MustBeAfterPrecedingPhaseClosures)
                 .WithMessage("Phase cannot commence before other phases were completed");
-    }
+        }
 
-    private async Task<bool> MustExist(Guid id, CancellationToken cancellationToken)
+        private async Task<bool> MustExist(Guid id, CancellationToken cancellationToken)
         {
             var element = await _unitOfWork.DbContext.WingInductions
                 .Include(wi => wi.Phases)
@@ -72,7 +70,7 @@ public static class AddInductionPhase
 
             return element != null;
         }
-        
+
         private async Task<bool> MustHaveNoOpenPhases(Guid id, CancellationToken cancellationToken)
         {
             // as this is called second we can be sure this will not return null
@@ -84,7 +82,7 @@ public static class AddInductionPhase
 
             return count == 0;
         }
-        
+
         private async Task<bool> MustBeAfterPrecedingPhaseClosures(Command command, CancellationToken cancellationToken)
         {
             // as this is called second we can be sure this will not return null
@@ -100,6 +98,19 @@ public static class AddInductionPhase
 
             return element.Phases.Max(e => e.CompletedDate)?.Date <= command.StartDate;
         }
-    }
 
+        private async Task<bool> ParticipantMustNotBeArchived(Guid id, CancellationToken cancellationToken)
+        {
+            var participantId = await (from pp in _unitOfWork.DbContext.WingInductions
+                                       join p in _unitOfWork.DbContext.Participants on pp.ParticipantId equals p.Id
+                                       where (pp.Id == id
+                                       && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
+                                       select p.Id
+                                       )
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync();
+
+            return participantId != null;
+        }
+    }
 }

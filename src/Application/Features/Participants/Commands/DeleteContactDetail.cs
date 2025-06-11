@@ -38,4 +38,31 @@ public static class DeleteContactDetail
         bool Exist(Guid identifier) => _unitOfWork.DbContext.ParticipantContactDetails.Any(pcd => pcd.Id == identifier);
     }
 
+    public class A_ParticipantMustNotBeArchived : AbstractValidator<Command>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public A_ParticipantMustNotBeArchived(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c.ContactDetailId)
+                .Must(ParticipantMustNotBeArchived)
+                .WithMessage("Participant is archived");
+        }
+
+        private bool ParticipantMustNotBeArchived(Guid contactDetailId)
+        {
+            var participantId = (from pp in _unitOfWork.DbContext.ParticipantContactDetails
+                                 join p in _unitOfWork.DbContext.Participants on pp.ParticipantId equals p.Id
+                                 where (pp.Id == contactDetailId
+                                 && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
+                                 select p.Id
+                                   )
+                        .AsNoTracking()
+                        .FirstOrDefault();
+
+            return participantId != null;
+        }
+    }
 }

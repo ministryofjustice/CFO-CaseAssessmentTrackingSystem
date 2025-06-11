@@ -1,4 +1,3 @@
-using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Activities.DTOs;
@@ -17,6 +16,7 @@ public static class AddActivity
     public record class Command(string ParticipantId) : IRequest<Result>
     {
         public Guid? ActivityId { get; set; }
+
         public required Guid TaskId { get; set; }
 
         [Description("Location")]
@@ -234,7 +234,10 @@ public static class AddActivity
 
             RuleFor(c => c.ParticipantId)
                 .NotNull()
-                .Length(9);
+                .Length(9)
+                .WithMessage("Invalid Participant Id")
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived");
 
             RuleFor(c => c.Location)
                 .NotNull()
@@ -292,7 +295,6 @@ public static class AddActivity
                             .MustAsync(BePdfFile)
                             .WithMessage("File is not a PDF");
                 });
-
             });
         }
 
@@ -347,6 +349,7 @@ public static class AddActivity
         }
 
         bool NotBeCompletedInTheFuture(DateTime? completed) => completed < DateTime.UtcNow;
+
         private bool HaveOccurredOnOrAfterConsentWasGranted(string participantId, DateTime? commencedOn)
         {
             if(commencedOn is null)
@@ -359,5 +362,8 @@ public static class AddActivity
 
             return commencedOn >= participant.CalculateConsentDate();
         }
+
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+            => await unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 }

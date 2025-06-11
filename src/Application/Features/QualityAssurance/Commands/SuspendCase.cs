@@ -38,9 +38,15 @@ public static class SuspendCase
                 .WithMessage("Invalid Participant Id")
                 .MustAsync(MustExist)
                 .WithMessage("Participant does not exist")
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived"); ;
         }
+
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
+
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 }

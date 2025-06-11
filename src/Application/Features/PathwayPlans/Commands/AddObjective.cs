@@ -31,6 +31,7 @@ public static class AddObjective
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var objective = mapper.Map<Objective>(request);
+
             var pathwayPlan = await unitOfWork.DbContext.PathwayPlans.FindAsync(request.PathwayPlanId);
 
             if (pathwayPlan is null)
@@ -46,10 +47,17 @@ public static class AddObjective
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+
             RuleFor(x => x.PathwayPlanId)
-                .NotNull();
+                .NotNull()
+                .WithMessage("Pathway Plan should not be empty")
+                .MustAsync(ParticipantMustNotBeArchived)
+                .WithMessage("Participant is archived");
 
             RuleFor(x => x.Description)
                 .NotEmpty()
@@ -58,5 +66,18 @@ public static class AddObjective
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
         }
 
-    }
+        private async Task<bool> ParticipantMustNotBeArchived(Guid pathwayPlanId, CancellationToken cancellationToken)
+        {
+            var participantId = await (from pp in _unitOfWork.DbContext.PathwayPlans
+                                 join p in _unitOfWork.DbContext.Participants on pp.ParticipantId equals p.Id
+                                 where (pp.Id == pathwayPlanId
+                                 && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
+                                 select p.Id
+                                       )
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync();
+
+            return participantId != null;
+        }
+    }   
 }

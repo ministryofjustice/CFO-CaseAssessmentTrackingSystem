@@ -38,7 +38,9 @@ public static class SubmitToProviderQa
                 .WithMessage("Invalid Participant Id")
                 .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
                 .MustAsync(MustExist)
-                .WithMessage("Participant does not exist");                
+                .WithMessage("Participant does not exist")
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is not archived");                 
 
             RuleFor(c => c.JustificationReason)
                 .Matches(x => ValidationConstants.Notes)
@@ -47,6 +49,9 @@ public static class SubmitToProviderQa
 
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
                 => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
+
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+         => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 
     public class B_ParticipantAssessmentShouldExist : AbstractValidator<Command>
