@@ -20,15 +20,15 @@ builder.AddServiceDefaults();
 
 // Use Sentry.AspNetCore instead of Logging.AddSentry
 var sentryDsn = builder.Configuration["Sentry:Dsn"];
-if (!string.IsNullOrEmpty(sentryDsn))
+var useSentry = !string.IsNullOrEmpty(sentryDsn);
+
+if (useSentry)
 {
     builder.WebHost.UseSentry(options =>
     {
         builder.Configuration.GetSection("Sentry").Bind(options);
         options.AddExceptionFilterForType<NavigationException>();
-        
         options.AddEntityFramework(); // If you use EF
-        
     });
 }
 
@@ -44,7 +44,11 @@ if (app.Environment.IsDevelopment())
 }
 
 // Add this middleware for tracing
-app.UseSentryTracing();
+
+if (useSentry)
+{
+    app.UseSentryTracing();
+}
 
 app.MapDefaultEndpoints();
 
