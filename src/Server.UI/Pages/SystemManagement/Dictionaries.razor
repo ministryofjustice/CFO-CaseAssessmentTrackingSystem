@@ -373,7 +373,7 @@
 
             var result = await GetNewMediator().Send(new ExportKeyValues.Command()
             {
-                SearchCriteria = _searchString
+                Query = Query
             });
 
             if (result.Succeeded)
