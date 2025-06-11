@@ -21,11 +21,10 @@ public static class BeginBio
     public class Handler : IRequestHandler<Command, Result<Guid>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ICurrentUserService _currentUserService;
-        public Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        
+        public Handler(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork;
-            _currentUserService = currentUserService;
+            _unitOfWork = unitOfWork;        
         }
 
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
@@ -57,13 +56,24 @@ public static class BeginBio
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+
             RuleFor(c => c.ParticipantId)
                 .MinimumLength(9)
+                .WithMessage("Invalid Participant Id")
                 .MaximumLength(9)
+                .WithMessage("Invalid Participant Id")
                 .Matches(ValidationConstants.AlphaNumeric)
-                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, nameof(Command.ParticipantId)));
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, nameof(Command.ParticipantId)))
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived"); 
         }
+
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 }

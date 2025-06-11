@@ -138,6 +138,7 @@ public static class SubmitPqaResponse
             return entry != null && entry.Participant!.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus;
         }
     }
+
     public class E_OwnerShouldNotBeApprover : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -159,17 +160,17 @@ public static class SubmitPqaResponse
         }
     }
 
-    public class G_EnrolmentOccurredWithin3Months : AbstractValidator<Command>
+    public class F_EnrolmentOccurredWithin3Months : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
-        public G_EnrolmentOccurredWithin3Months(IUnitOfWork unitOfWork)
+        public F_EnrolmentOccurredWithin3Months(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(g => g)
+            RuleFor(f => f)
                 .Must(EnrolmentOccurredWithin3Months)
                 .WithMessage("The enrolment consent date is over 3 months ago")
-                .When(g => g.Response == PqaResponse.Accept);
+                .When(f => f.Response == PqaResponse.Accept);
         }
 
         private bool EnrolmentOccurredWithin3Months(Command c)
@@ -181,5 +182,28 @@ public static class SubmitPqaResponse
 
             return entry != null && entry.Participant!.CalculateConsentDate() >= DateTime.Today.AddMonths(-3);
         }
+    }
+  
+    public class G_ParticipantMustNotBeArchived : AbstractValidator<Command>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public G_ParticipantMustNotBeArchived(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(g => g.QueueEntryId)
+                .Must(ParticipantMustNotBeArchived)
+                .WithMessage("Participant is archived");
+        }
+
+        private bool ParticipantMustNotBeArchived(Guid queueEntryId)
+        {
+
+            var entry = _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
+                .FirstOrDefault(a => a.Id == queueEntryId);
+
+            return entry != null && entry.Participant!.EnrolmentStatus == EnrolmentStatus.ArchivedStatus;
+        }  
     }
 }

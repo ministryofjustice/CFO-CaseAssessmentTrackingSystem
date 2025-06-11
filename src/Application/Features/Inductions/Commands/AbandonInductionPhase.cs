@@ -55,8 +55,11 @@ public static class AbandonInductionPhase
             _unitOfWork = unitOfWork;
             
             RuleFor(c => c.WingInductionId)
-                .NotEmpty();
-
+                .NotEmpty()
+                .WithMessage("Wing Induction should not be empty")
+                .MustAsync(ParticipantMustNotBeArchived)
+                .WithMessage("Participant is archived");
+            
             RuleFor(c => c.CompletionDate)
                 .NotNull()
                 .LessThan(DateTime.Today.AddDays(1).Date)
@@ -117,5 +120,18 @@ public static class AbandonInductionPhase
 
             return openPhase.StartDate < command.CompletionDate;
         }
+
+        private async Task<bool> ParticipantMustNotBeArchived(Guid id, CancellationToken cancellationToken)
+        {
+            var participantId =  await (from wi in _unitOfWork.DbContext.WingInductions
+                                 join p in _unitOfWork.DbContext.Participants on wi.ParticipantId equals p.Id
+                                 where (wi.Id == id
+                                        && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
+                                 select p.Id)
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync();
+
+            return participantId != null;
+        }       
     }
 }
