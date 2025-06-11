@@ -62,5 +62,7 @@ public class DocumentTemplate : SmartEnum<DocumentTemplate>
     public static readonly DocumentTemplate RiskDue = new(nameof(RiskDue), 2);
     public static readonly DocumentTemplate RiskDueAggregate = new(nameof(RiskDueAggregate), 3);
     public static readonly DocumentTemplate Participants = new(nameof(Participants), 4);
+    public static readonly DocumentTemplate PqaActivities = new(nameof(PqaActivities), 5);
+    public static readonly DocumentTemplate PqaEnrolments = new(nameof(PqaEnrolments), 6);
     public static readonly DocumentTemplate CumulativeFigures = new(nameof(CumulativeFigures), 100);
 }
