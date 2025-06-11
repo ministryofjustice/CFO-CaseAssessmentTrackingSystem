@@ -11,15 +11,15 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class ParticipantsWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.CandidateSearch)]
-    public class Query : ParticipantAdvancedFilter, IRequest<PaginatedData<ParticipantPaginationDto>>
+    public class Query : ParticipantAdvancedFilter, IRequest<Result<PaginatedData<ParticipantPaginationDto>>>
     {
         public ParticipantAdvancedSpecification Specification => new(this);
     
     }
     
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, PaginatedData<ParticipantPaginationDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PaginatedData<ParticipantPaginationDto>>>
     {
-        public async Task<PaginatedData<ParticipantPaginationDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<PaginatedData<ParticipantPaginationDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var data = await unitOfWork.DbContext.Participants.OrderBy($"{request.OrderBy} {request.SortDirection}")
                 .ProjectToPaginatedDataAsync<Participant, ParticipantPaginationDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);

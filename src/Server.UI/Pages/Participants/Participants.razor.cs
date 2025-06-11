@@ -92,7 +92,16 @@ public partial class Participants
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
             var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
-            return new GridData<ParticipantPaginationDto> { TotalItems = result.TotalItems, Items = result.Items };
+
+            if (result is {Succeeded: true, Data: not null})
+            {
+                return new GridData<ParticipantPaginationDto> { TotalItems = result.Data.TotalItems, Items = result.Data.Items };
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Warning);
+                return new GridData<ParticipantPaginationDto> { TotalItems = 0, Items = [] };
+            }
         }
         finally
         {
