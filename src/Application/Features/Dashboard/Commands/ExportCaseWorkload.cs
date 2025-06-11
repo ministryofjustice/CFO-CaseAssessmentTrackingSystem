@@ -1,7 +1,9 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
 using Humanizer;
+using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Export;
 
@@ -10,7 +12,7 @@ public static class ExportCaseWorkload
     [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
     public class Command : IRequest<Result>
     {
-        public string? SearchCriteria { get; set; }
+        public required GetCaseWorkload.Query Query { get; set; }
     }
 
     public class Handler(
@@ -19,8 +21,10 @@ public static class ExportCaseWorkload
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
+            var json = JsonConvert.SerializeObject(request.Query);
+
             var document = GeneratedDocument
-                .Create(DocumentTemplate.CaseWorkload, "CaseWorkload.xlsx", "CaseWorkload Export", currentUser.UserId!, currentUser.TenantId!, request.SearchCriteria);
+                .Create(DocumentTemplate.CaseWorkload, "CaseWorkload.xlsx", "CaseWorkload Export", currentUser.UserId!, currentUser.TenantId!, json);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 
