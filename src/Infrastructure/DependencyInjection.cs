@@ -156,6 +156,7 @@ public static class DependencyInjection
                         e.ConfigureConsumer<DocumentExportKeyValuesIntegrationEventConsumer>(context);
                         e.ConfigureConsumer<DocumentExportRiskDueAggregateIntegrationEventConsumer>(context);
                         e.ConfigureConsumer<DocumentExportRiskDueIntegrationEventConsumer>(context);
+                        e.ConfigureConsumer<DocumentExportParticipantsIntegrationEventConsumer>(context);
                         e.ConfigureConsumer<DocumentExportCumulativesIntegrationEventConsumer>(context);
                     });
 
