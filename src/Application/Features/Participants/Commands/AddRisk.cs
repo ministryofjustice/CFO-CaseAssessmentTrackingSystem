@@ -1,9 +1,7 @@
-﻿using Cfo.Cats.Application.Common.Interfaces;
-using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
-using FluentValidation;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
 
@@ -61,8 +59,8 @@ public static class AddRisk
                 .MinimumLength(9)
                 .MaximumLength(9)
                 .Matches(ValidationConstants.AlphaNumeric)
-                .Must(MustNotBeArchived)
-                .WithMessage("Participant is archived"); ;
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived"); 
 
             RuleFor(c => c.Justification)
                 .NotEmpty()
@@ -72,7 +70,7 @@ public static class AddRisk
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
         }
 
-        private  bool MustNotBeArchived(string participantId)
-        =>  _unitOfWork.DbContext.Participants.Any(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+        => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
     }
 }

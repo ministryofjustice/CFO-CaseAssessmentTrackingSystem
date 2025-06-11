@@ -131,7 +131,8 @@ public class AddOrUpdatePersonalDetail
             _unitOfWork = unitOfWork;
 
             RuleFor(c => c.ParticipantId)
-                .Must(MustNotBeArchived);
+                .Must(MustNotBeArchived)
+                 .WithMessage("Participant is archived");
         }
 
         bool MustNotBeArchived(string participantId)

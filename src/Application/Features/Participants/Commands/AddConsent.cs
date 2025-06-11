@@ -81,7 +81,8 @@ public static class AddConsent
                 .WithMessage("Invalid Participant Id")
                 .MustAsync(Exist)
                 .WithMessage("Participant does not exist")
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, nameof(Command.ParticipantId)))
                 .MustAsync(MustNotBeArchived)
                 .WithMessage("Participant is archived");
 
