@@ -159,6 +159,12 @@ public static class DependencyInjection
                         e.ConfigureConsumer<DocumentExportParticipantsIntegrationEventConsumer>(context);
                         e.ConfigureConsumer<DocumentExportPqaActivitiesIntegrationEventConsumer>(context);
                         e.ConfigureConsumer<DocumentExportPqaEnrolmentsIntegrationEventConsumer>(context);
+                        e.ConfigureConsumer<DocumentExportActivityPaymentsIntegrationEventConsumer>(context);
+                        e.ConfigureConsumer<DocumentExportEducationPaymentsIntegrationEventConsumer>(context);
+                        e.ConfigureConsumer<DocumentExportEmploymentPaymentsIntegrationEventConsumer>(context);
+                        e.ConfigureConsumer<DocumentExportEnrolmentPaymentsIntegrationEventConsumer>(context);
+                        e.ConfigureConsumer<DocumentExportInductionPaymentsIntegrationEventConsumer>(context);
+                        e.ConfigureConsumer<DocumentExportSupportAndReferralPaymentsIntegrationEventConsumer>(context);
                         e.ConfigureConsumer<DocumentExportCumulativesIntegrationEventConsumer>(context);
                     });
 
