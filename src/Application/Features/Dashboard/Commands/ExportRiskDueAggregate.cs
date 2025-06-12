@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Export;
 
 public static class ExportRiskDueAggregate
 {
-    [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
     {
         public required GetRiskDueAggregate.Query Query { get; set; }
