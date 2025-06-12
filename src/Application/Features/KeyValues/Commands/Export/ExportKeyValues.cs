@@ -21,9 +21,7 @@ public static class ExportKeyValues
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var document = GeneratedDocument
-                .Create(DocumentTemplate.KeyValues, "KeyValues.xlsx", "KeyValues Export", currentUser.UserId!, currentUser.TenantId!, request.SearchCriteria)
-                .WithStatus(DocumentStatus.Processing)
-                .WithExpiry(DateTime.UtcNow.AddDays(7));
+                .Create(DocumentTemplate.KeyValues, "KeyValues.xlsx", "KeyValues Export", currentUser.UserId!, currentUser.TenantId!, request.SearchCriteria);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 
