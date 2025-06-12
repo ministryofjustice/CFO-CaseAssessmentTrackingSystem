@@ -11,13 +11,33 @@
     }
 
     <MudRadioGroup T="Guid" @bind-Value="_selectedDocument">
-        
-    @foreach (var consent in ParticipantDto.Consents.OrderByDescending(c => c.ConsentDate))
-    {
-        <MudRadio T="Guid" Color="Color.Primary" Value="@consent.DocumentId!.Value">
-            @consent.FileName (@consent.ConsentDate.ToShortDateString())
-        </MudRadio>
-    }
+        <MudTable Items="@ParticipantDto.Consents.OrderByDescending(x => x.Created)" Hover="true" Striped="true" Dense="true" Class="ma-3" Style="width: 100%">
+            <HeaderContent>
+                <MudTh>View</MudTh>
+                <MudTh>File Name</MudTh>
+                <MudTh>Consent Date</MudTh>
+                <MudTh>Upload Date</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudRadio Value="@context.DocumentId!.Value" Color="Color.Primary"/>
+                </MudTd>
+                <MudTd DataLabel="File Name">@context.FileName</MudTd>
+                <MudTd DataLabel="Consent">@context.ConsentDate.ToShortDateString()</MudTd>
+                <MudTd DataLabel="Uploaded By">@context.Created</MudTd>
+                <MudTd>
+                    @if (ParticipantDto.Consents.OrderByDescending(x => x.Created).First() == context)
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Star"></MudIcon>
+                    }
+                    else
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Cancel"></MudIcon>
+                    }
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
     </MudRadioGroup>
     
     @if (_selectedDocument != Guid.Empty)

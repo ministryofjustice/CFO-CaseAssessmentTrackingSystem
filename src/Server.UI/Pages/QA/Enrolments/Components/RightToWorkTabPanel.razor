@@ -13,12 +13,42 @@
 }
 
 <MudRadioGroup T="Guid" @bind-Value="_selectedDocument">
-    @foreach (var rtw in ParticipantDto.RightToWorks.OrderByDescending(c => c.ValidFrom))
-    {
-        <MudRadio T="Guid" Color="Color.Primary" Value="@rtw.DocumentId!.Value">
-            @rtw.FileName (@rtw.ValidFrom.ToShortDateString() - @rtw.ValidTo.ToShortDateString())
-        </MudRadio>
-    }
+    
+    <MudTable Items="@ParticipantDto.RightToWorks" Hover="true" Striped="true" Dense="true" Class="ma-3" Style="width: 100%">
+        <HeaderContent>
+            <MudTh>View</MudTh>
+            <MudTh>File Name</MudTh>
+            <MudTh>Valid From</MudTh>
+            <MudTh>Valid To</MudTh>
+            <MudTh>Upload Date</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>
+                <MudRadio T="Guid" Color="Color.Primary" Value="@context.DocumentId!.Value" />
+            </MudTd>
+            <MudTd DataLabel="File Name">
+                @context.FileName
+            </MudTd>
+            <MudTd DataLabel="Valid From">
+                @context.ValidFrom.ToShortDateString()
+            </MudTd>
+            <MudTd DataLabel="Valid To">
+                @if (context.ValidTo == DateTime.MaxValue)
+                {
+                    <MudText>
+                        Indefinite 
+                    </MudText>   
+                }
+                else
+                {
+                    @context.ValidTo.ToShortDateString()    
+                }
+            </MudTd>
+            <MudTd>
+                @context.Created
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
 </MudRadioGroup>
 
 @if (_selectedDocument != Guid.Empty)
