@@ -54,7 +54,8 @@ public class DocumentExportInductionPaymentsIntegrationEventConsumer(
                     { "Participant Name", item => item.ParticipantName },
                     { "Location Name", item => item.Location },
                     { "Location Type", item => item.LocationType },
-                    { "Payable", item => item.EligibleForPayment }
+                    { "Payable", item => item.EligibleForPayment },
+                    { "Ineligibility Reason", item => item.IneligibilityReason }
                 }
             );
 

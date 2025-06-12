@@ -56,7 +56,8 @@ public class DocumentExportEmploymentPaymentsIntegrationEventConsumer(
                     { "Location Type", item => item.LocationType },
                     { "Employment Category", item => item.EmploymentCategory },
                     { "Employment Type", item => item.EmploymentType },
-                    { "Payable", item => item.EligibleForPayment }
+                    { "Payable", item => item.EligibleForPayment },
+                    { "Ineligibility Reason", item => item.IneligibilityReason }
                 }
             );
 

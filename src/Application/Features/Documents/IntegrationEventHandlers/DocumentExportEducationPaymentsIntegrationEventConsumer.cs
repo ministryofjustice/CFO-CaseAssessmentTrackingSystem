@@ -56,7 +56,8 @@ public class DocumentExportEducationPaymentsIntegrationEventConsumer(
                     { "Location Type", item => item.LocationType },
                     { "Course Title", item => item.CourseTitle },
                     { "Course Level", item => item.CourseLevel },
-                    { "Payable", item => item.EligibleForPayment }
+                    { "Payable", item => item.EligibleForPayment },
+                    { "Ineligibility Reason", item => item.IneligibilityReason }
                 }
             );
 
