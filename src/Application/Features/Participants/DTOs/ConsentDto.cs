@@ -9,6 +9,8 @@ public class ConsentDto
     public DateTime ConsentDate { get; set; }
     public Guid? DocumentId { get; set; } 
     
+    public DateTime Created { get; set; }
+    
     public string? FileName { get; set; }
 
     private class Mapping : Profile
@@ -18,7 +20,8 @@ public class ConsentDto
             CreateMap<Consent, ConsentDto>()
                 .ForMember(c => c.DocumentId, options => options.MapFrom(source => source.Document!.Id))
                 .ForMember(c => c.FileName, options => options.MapFrom(source => source.Document!.Title))
-                .ForMember(c => c.ConsentDate, options => options.MapFrom(source => source.Lifetime.StartDate));
+                .ForMember(c => c.ConsentDate, options => options.MapFrom(source => source.Lifetime.StartDate))
+                .ForMember(c => c.Created, options => options.MapFrom(source => source.Created!));
         }
     }
 }
