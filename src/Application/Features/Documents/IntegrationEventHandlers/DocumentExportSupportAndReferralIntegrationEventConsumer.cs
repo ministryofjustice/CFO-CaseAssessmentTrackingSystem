@@ -45,7 +45,16 @@ public class DocumentExportSupportAndReferralPaymentsIntegrationEventConsumer(
             var results = await excelService.ExportAsync(data.Data?.Items ?? [],
                 new Dictionary<string, Func<SupportAndReferralPaymentDto, object?>>
                 {
-                    { "Participant Id", item => item.ParticipantId }
+                    { "Contract", item => item.Contract },
+                    { "Created", item => item.CreatedOn },
+                    { "Approved", item => item.Approved },
+                    { "Payment Period", item => item.PaymentPeriod },
+                    { "Participant Id", item => item.ParticipantId },
+                    { "Participant Name", item => item.ParticipantName },
+                    { "Location Name", item => item.Location },
+                    { "Location Type", item => item.LocationType },
+                    { "Support Type", item => item.SupportType },
+                    { "Payable", item => item.EligibleForPayment }
                 }
             );
 
