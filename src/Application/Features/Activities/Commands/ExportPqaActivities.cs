@@ -22,9 +22,7 @@ public static class ExportPqaActivities
             var json = JsonConvert.SerializeObject(request.Query);
 
             var document = GeneratedDocument
-                .Create(DocumentTemplate.PqaActivities, "PqaActivities.xlsx", "PqaActivities Export", currentUser.UserId!, currentUser.TenantId!, json)
-                .WithStatus(DocumentStatus.Processing)
-                .WithExpiry(DateTime.UtcNow.AddDays(7));
+                .Create(DocumentTemplate.PqaActivities, "PqaActivities.xlsx", "PqaActivities Export", currentUser.UserId!, currentUser.TenantId!, json);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 

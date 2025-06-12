@@ -24,9 +24,7 @@ public static class ExportParticipants
             var json = JsonConvert.SerializeObject(request.Query);
 
             var document = GeneratedDocument
-                .Create(DocumentTemplate.Participants, "Participants.xlsx", "Participants Export", currentUser.UserId!, currentUser.TenantId!, json)
-                .WithStatus(DocumentStatus.Processing)
-                .WithExpiry(DateTime.UtcNow.AddDays(7));
+                .Create(DocumentTemplate.Participants, "Participants.xlsx", "Participants Export", currentUser.UserId!, currentUser.TenantId!, json);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 

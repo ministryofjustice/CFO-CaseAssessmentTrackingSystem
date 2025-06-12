@@ -22,9 +22,7 @@ public static class ExportPqaEnrolments
             var json = JsonConvert.SerializeObject(request.Query);
 
             var document = GeneratedDocument
-                .Create(DocumentTemplate.PqaEnrolments, "PqaEnrolments.xlsx", "PqaEnrolments Export", currentUser.UserId!, currentUser.TenantId!, json)
-                .WithStatus(DocumentStatus.Processing)
-                .WithExpiry(DateTime.UtcNow.AddDays(7));
+                .Create(DocumentTemplate.PqaEnrolments, "PqaEnrolments.xlsx", "PqaEnrolments Export", currentUser.UserId!, currentUser.TenantId!, json);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 

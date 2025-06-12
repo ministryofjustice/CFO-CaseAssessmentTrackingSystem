@@ -24,9 +24,7 @@ public static class ExportRiskDue
             var json = JsonConvert.SerializeObject(request.Query);
 
             var document = GeneratedDocument
-                .Create(DocumentTemplate.RiskDue, "RiskDue.xlsx", "RiskDue Export", currentUser.UserId!, currentUser.TenantId!, json)
-                .WithStatus(DocumentStatus.Processing)
-                .WithExpiry(DateTime.UtcNow.AddDays(7));
+                .Create(DocumentTemplate.RiskDue, "RiskDue.xlsx", "RiskDue Export", currentUser.UserId!, currentUser.TenantId!, json);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 
