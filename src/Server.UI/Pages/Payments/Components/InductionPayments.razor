@@ -1,4 +1,5 @@
-﻿@using Size = MudBlazor.Size
+@using Cfo.Cats.Application.Features.Payments.DTOs
+@using Size = MudBlazor.Size
 @inherits CatsComponentBase
 
 <style type="text/css">
@@ -24,7 +25,7 @@
                 Breakpoint="Breakpoint.Sm"
                 Loading="@_loading"
                 LoadingProgressColor="Color.Info"
-                Filter="new Func<RawData, bool>(FilterFunc1)">
+                Filter="new Func<InductionPaymentDto, bool>(FilterFunc1)">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Inductions</MudText>
                     <MudSpacer />
@@ -34,43 +35,43 @@
                     @if (Contract is null)
                     {
                         <MudTh>
-                            <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Contract)">
+                            <MudTableSortLabel SortBy="new Func<InductionPaymentDto, object>(x => x.Contract)">
                                 Contract
                             </MudTableSortLabel>
                         </MudTh>
                     }
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.CreatedOn)">
+                        <MudTableSortLabel SortBy="new Func<InductionPaymentDto, object>(x => x.CreatedOn)">
                             Created
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.CommencedOn)">
+                        <MudTableSortLabel SortBy="new Func<InductionPaymentDto, object>(x => x.CommencedOn)">
                             Commenced On
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Approved!)">
+                        <MudTableSortLabel SortBy="new Func<InductionPaymentDto, object>(x => x.Approved!)">
                             Approved
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.PaymentPeriod!)">
+                        <MudTableSortLabel SortBy="new Func<InductionPaymentDto, object>(x => x.PaymentPeriod!)">
                             Payment Period
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.ParticipantName)">
+                        <MudTableSortLabel SortBy="new Func<InductionPaymentDto, object>(x => x.ParticipantName)">
                             Participant
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Location)">
+                        <MudTableSortLabel SortBy="new Func<InductionPaymentDto, object>(x => x.Location)">
                             Location
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh> 
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.EligibleForPayment)">
+                        <MudTableSortLabel SortBy="new Func<InductionPaymentDto, object>(x => x.EligibleForPayment)">
                             Payable
                         </MudTableSortLabel>
                     </MudTh>
@@ -123,9 +124,9 @@
     else
     {
         <MudItem xs="12" md="6">
-            <ApexChart TItem="SummaryDataModel" 
+            <ApexChart TItem="InductionPaymentSummaryDto"
                        Title="Inductions By Contract">
-                <ApexPointSeries TItem="SummaryDataModel"
+                <ApexPointSeries TItem="InductionPaymentSummaryDto"
                 Items="SummaryData"
                 Name="Wing"
                 SeriesType="SeriesType.Bar"
@@ -134,7 +135,7 @@
                 ShowDataLabels="true" />
 
 
-                <ApexPointSeries TItem="SummaryDataModel"
+                <ApexPointSeries TItem="InductionPaymentSummaryDto"
                 Items="SummaryData"
                 Name="Hub"
                 SeriesType="SeriesType.Bar"

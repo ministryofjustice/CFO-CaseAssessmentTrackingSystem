@@ -1,14 +1,14 @@
 ﻿using ApexCharts;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
-using Cfo.Cats.Domain.Common.Enums;
-using Microsoft.EntityFrameworkCore;
+using Cfo.Cats.Application.Features.Payments.DTOs;
+using Cfo.Cats.Application.Features.Payments.Queries;
 
 namespace Cfo.Cats.Server.UI.Pages.Payments.Components;
 
 public partial class ActivityPayments
 {
-    private readonly ApexChartOptions<SummaryDataModel> _options = new();
+    private readonly ApexChartOptions<ActivityPaymentSummaryDto> _options = new();
     private bool _loading = true;
 
     [Parameter, EditorRequired] public bool DataView { get; set; }
@@ -21,159 +21,46 @@ public partial class ActivityPayments
 
     [CascadingParameter] public UserProfile CurrentUser { get; set; } = default!;
 
-    private RawData[] Payments { get; set; } = [];
+    ActivityPaymentDto[] Payments = [];
+    List<ActivityPaymentSummaryDto> SummaryData = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var unitOfWork = GetNewUnitOfWork();
+        try
+        {
+            _loading = true;
 
-        var query = 
-        (
-            from ep in unitOfWork.DbContext.ActivityPayments
-            join dd in unitOfWork.DbContext.DateDimensions on ep.PaymentPeriod equals dd.TheDate
-            join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
-            join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id
-            join p in unitOfWork.DbContext.Participants on ep.ParticipantId equals p.Id
-            where dd.TheMonth == Month && dd.TheYear == Year
-            select new
+            var mediator = GetNewMediator();
+
+            var result = await mediator.Send(new GetActivityPayments.Query()
             {
-                ep.ActivityInput,
-                ep.CommencedDate,
-                ep.ActivityApproved,
-                PaymentDate = ep.PaymentPeriod,
-                ep.ParticipantId,
-                ep.EligibleForPayment,
-                ep.ActivityCategory,
-                ep.ActivityType,
-                Contract = c.Description,
-                ContractId = c.Id,
-                ep.LocationType,
-                Location = l.Name,
-                ep.IneligibilityReason,
-                ep.PaymentPeriod,
-                TenantId = c!.Tenant!.Id!,
-                ParticipantName = p.FirstName + " " + p.LastName
+                ContractId = Contract?.Id,
+                Month = Month,
+                Year = Year,
+                TenantId = CurrentUser!.TenantId!
+            });
+
+            if (result is not { Succeeded: true })
+            {
+                throw new Exception(result.ErrorMessage);
             }
-        )
-        .Union
-        (
-                from re in unitOfWork.DbContext.ReassessmentPayments
-                join dd in unitOfWork.DbContext.DateDimensions on re.PaymentPeriod equals dd.TheDate
-                join c in unitOfWork.DbContext.Contracts on re.ContractId equals c.Id
-                join l in unitOfWork.DbContext.Locations on re.LocationId equals l.Id
-                join p in unitOfWork.DbContext.Participants on re.ParticipantId equals p.Id
-                where dd.TheMonth == Month && dd.TheYear == Year
-                select new
-                {
-                    ActivityInput = re.AssessmentCreated, // AssessmentCreated
-                    CommencedDate = re.AssessmentCompleted, // AssessmentCreated? 
-                    ActivityApproved = re.AssessmentCompleted,
-                    PaymentDate = re.PaymentPeriod,
-                    re.ParticipantId,
-                    re.EligibleForPayment,
-                    ActivityCategory = "Participant Reassessment",
-                    ActivityType = ActivityType.SupportWork.Name,
-                    Contract = c.Description,
-                    ContractId = c.Id,
-                    re.LocationType,
-                    Location = l.Name,
-                    re.IneligibilityReason,
-                    re.PaymentPeriod,
-                    TenantId = c!.Tenant!.Id!,
-                    ParticipantName = p.FirstName + " " + p.LastName
-                }
-        );
 
-        query = Contract is null
-            ? query.Where(q => q.TenantId.StartsWith(CurrentUser.TenantId!))
-            : query.Where(q => q.ContractId == Contract.Id);
+            Payments = result.Data?.Items ?? [];
+            SummaryData = result.Data?.ContractSummary ?? [];
 
-
-        Payments = await query.AsNoTracking()
-            .Select(x => new RawData
-            {
-                CreatedOn = x.ActivityInput,
-                CommencedOn = x.CommencedDate,
-                ActivityApproved = x.ActivityApproved,
-                ParticipantId = x.ParticipantId,
-                EligibleForPayment = x.EligibleForPayment,
-                Contract = x.Contract,
-                Category = x.ActivityCategory,
-                Type = x.ActivityType,
-                Location = x.Location,
-                LocationType = x.LocationType,
-                IneligibilityReason = x.IneligibilityReason,
-                ParticipantName = x.ParticipantName,
-                PaymentPeriod = x.PaymentPeriod
-            })
-            .OrderBy(e => e.Contract)
-            .ThenByDescending(e => e.CreatedOn)
-            .ToArrayAsync();
-
-        this.SummaryData = Payments
-            .Where(e => e.EligibleForPayment)
-            .GroupBy(e => e.Contract)
-            .Select(x => new SummaryDataModel
-            {
-                Contract = x.Key,
-                SupportWork = x.Count(g => g.Type == ActivityType.SupportWork.Name),
-                SupportWorkTarget = TargetProvider.GetTarget(x.Key, Month, Year).SupportWork,
-                CommunityAndSocial = x.Count(g => g.Type == ActivityType.CommunityAndSocial.Name),
-                CommunityAndSocialTarget = TargetProvider.GetTarget(x.Key, Month, Year).CommunityAndSocial,
-                HumanCitizenship = x.Count(g => g.Type == ActivityType.HumanCitizenship.Name),
-                HumanCitizenshipTarget = TargetProvider.GetTarget(x.Key, Month, Year).HumanCitizenship,
-                ISWSupport = x.Count(g => g.Type == ActivityType.InterventionsAndServicesWraparoundSupport.Name),
-                ISWSupportTarget = TargetProvider.GetTarget(x.Key, Month, Year).Interventions
-            })
-            .OrderBy(c => c.Contract)
-            .ToList();
-
-        _loading = false;
+        }
+        catch(Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        finally { _loading = false; }
     }
 
     private string _searchString = "";
-    private List<SummaryDataModel> SummaryData = [];
 
-    private class RawData
-    {
-        public DateTime CreatedOn { get; set; }
-        public DateTime CommencedOn { get; set; }
-        public DateTime ActivityApproved { get; set; }
-        public DateTime PaymentPeriod { get; set; }
-        public string Contract { get; set; } = "";
-        public string ParticipantId { get; set; } = "";
-        public bool EligibleForPayment { get; set; }
-        public string Category { get; set; } = "";
-        public string Type { get; set; } = "";
-        public string LocationType { get; set; } = "";
-        public string Location { get; set; } = "";
-        public string? IneligibilityReason { get; set; }
-        public string ParticipantName { get; set; } = "";
-    }
+    private bool FilterFunc1(ActivityPaymentDto data) => FilterFunc(data, _searchString);
 
-    private class SummaryDataModel
-    {
-        public required string Contract { get; set; }
-        public int SupportWork { get; set; }
-        public int SupportWorkTarget { get; set; }
-        public decimal SupportWorkPercentage => SupportWork.CalculateCappedPercentage(SupportWorkTarget);
-        public int CommunityAndSocial { get; set; }
-        public int CommunityAndSocialTarget { get; set; }
-
-        public decimal CommunityAndSocialPercentage =>
-            CommunityAndSocial.CalculateCappedPercentage(CommunityAndSocialTarget);
-
-        public int HumanCitizenship { get; set; }
-        public int HumanCitizenshipTarget { get; set; }
-        public decimal HumanCitizenshipPercentage => HumanCitizenship.CalculateCappedPercentage(HumanCitizenshipTarget);
-        public int ISWSupport { get; set; }
-        public int ISWSupportTarget { get; set; }
-        public decimal ISWSupportPercentage => ISWSupport.CalculateCappedPercentage(ISWSupportTarget);
-    }
-
-    private bool FilterFunc1(RawData data) => FilterFunc(data, _searchString);
-
-    private bool FilterFunc(RawData data, string searchString)
+    private bool FilterFunc(ActivityPaymentDto data, string searchString)
     {
         if (string.IsNullOrWhiteSpace(searchString))
         {

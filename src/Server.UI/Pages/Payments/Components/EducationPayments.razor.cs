@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
-using Microsoft.EntityFrameworkCore;
+using Cfo.Cats.Application.Features.Payments.DTOs;
+using Cfo.Cats.Application.Features.Payments.Queries;
 
 namespace Cfo.Cats.Server.UI.Pages.Payments.Components;
 
@@ -18,111 +19,46 @@ public partial class EducationPayments
 
     [CascadingParameter] public UserProfile CurrentUser { get; set; } = default!;
 
-    private RawData[] Payments { get; set; } = [];
+    EducationPaymentDto[] Payments = [];
+    List<EducationPaymentSummaryDto> SummaryData = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var unitOfWork = GetNewUnitOfWork();
+        try
+        {
+            _loading = true;
 
+            var mediator = GetNewMediator();
 
-        var query = from ep in unitOfWork.DbContext.EducationPayments
-            join dd in unitOfWork.DbContext.DateDimensions on ep.PaymentPeriod equals dd.TheDate
-            join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
-            join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id
-            join a in unitOfWork.DbContext.EducationTrainingActivities on ep.ActivityId equals a.Id
-            where dd.TheMonth == Month && dd.TheYear == Year
-            select new
+            var result = await mediator.Send(new GetEducationPayments.Query()
             {
-                ep.ActivityInput,
-                a.CommencedOn,
-                ep.ActivityApproved,
-                ep.ParticipantId,
-                ep.EligibleForPayment,
-                Contract = c.Description,
-                ep.LocationType,
-                ContractId = c.Id,
-                Location = l.Name,
-                ep.IneligibilityReason,
-                TenantId = c!.Tenant!.Id!,
-                ep.PaymentPeriod,
-                ParticipantName = a.Participant!.FirstName + " " + a.Participant!.LastName,
-                a.CourseLevel,
-                a.CourseTitle
-            };
+                ContractId = Contract?.Id,
+                Month = Month,
+                Year = Year,
+                TenantId = CurrentUser!.TenantId!
+            });
 
-        query = Contract is null
-            ? query.Where(q => q.TenantId.StartsWith(CurrentUser.TenantId!))
-            : query.Where(q => q.ContractId == Contract.Id);
-
-        Payments = await query.AsNoTracking()
-            .Select(x => new RawData
+            if (result is not { Succeeded: true })
             {
-                CreatedOn = x.ActivityInput,
-                CommencedOn = x.CommencedOn,
-                ActivityApproved = x.ActivityApproved,
-                ParticipantId = x.ParticipantId,
-                EligibleForPayment = x.EligibleForPayment,
-                Contract = x.Contract,
-                Location = x.Location,
-                LocationType = x.LocationType,
-                IneligibilityReason = x.IneligibilityReason,
-                ParticipantName = x.ParticipantName,
-                PaymentPeriod = x.PaymentPeriod,
-                CourseLevel = x.CourseLevel,
-                CourseTitle = x.CourseTitle
-            })
-            .OrderBy(e => e.Contract)
-            .ThenByDescending(e => e.CreatedOn)
-            .ToArrayAsync();
+                throw new Exception(result.ErrorMessage);
+            }
 
-        this.SummaryData = Payments
-            .Where(e => e.EligibleForPayment)
-            .GroupBy(e => e.Contract)
-            .Select(x => new SummaryDataModel
-            {
-                Contract = x.Key,
-                Educations = x.Count(),
-                EducationsTarget = TargetProvider.GetTarget(x.Key, Month, Year).TrainingAndEducation
-            })
-            .OrderBy(c => c.Contract)
-            .ToList();
+            Payments = result.Data?.Items ?? [];
+            SummaryData = result.Data?.ContractSummary ?? [];
 
-        _loading = false;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        finally { _loading = false; }
     }
 
     private string _searchString = "";
-    private List<SummaryDataModel> SummaryData = [];
 
-    private class RawData
-    {
-        public DateTime CreatedOn { get; set; }
-        public DateTime CommencedOn { get; set; }
-        public DateTime ActivityApproved { get; set; }
+    private bool FilterFunc1(EducationPaymentDto data) => FilterFunc(data, _searchString);
 
-        public DateTime PaymentPeriod { get; set; }
-            
-        public string Contract { get; set; } = "";
-        public string ParticipantId { get; set; } = "";
-        public bool EligibleForPayment { get; set; }
-        public string LocationType { get; set; } = "";
-        public string Location { get; set; } = "";
-        public string? IneligibilityReason { get; set; }
-        public string ParticipantName { get; set; } = "";
-        public string CourseLevel { get; set; } = string.Empty;
-        public string CourseTitle { get; set; } = string.Empty;
-    }
-
-    private class SummaryDataModel
-    {
-        public required string Contract { get; set; }
-        public required int Educations { get; set; }
-        public required int EducationsTarget { get; set; }
-        public decimal EducationsPercentage => Educations.CalculateCappedPercentage(EducationsTarget);
-    }
-
-    private bool FilterFunc1(RawData data) => FilterFunc(data, _searchString);
-
-    private bool FilterFunc(RawData data, string searchString)
+    private bool FilterFunc(EducationPaymentDto data, string searchString)
     {
         if (string.IsNullOrWhiteSpace(searchString))
         {

@@ -1,4 +1,5 @@
-﻿@using Size = MudBlazor.Size
+﻿@using Cfo.Cats.Application.Features.Payments.DTOs
+@using Size = MudBlazor.Size
 @inherits CatsComponentBase
 
 <style type="text/css">
@@ -23,7 +24,7 @@
                       Breakpoint="Breakpoint.Sm"
                       Loading="@_loading"
                       LoadingProgressColor="Color.Info"
-                      Filter="new Func<RawData, bool>(FilterFunc1)">
+                      Filter="new Func<SupportAndReferralPaymentDto, bool>(FilterFunc1)">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Support &amp; Referral</MudText>
                     <MudSpacer />
@@ -34,38 +35,38 @@
                     @if (Contract is null)
                     {
                         <MudTh>
-                            <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Contract)">
+                            <MudTableSortLabel SortBy="new Func<SupportAndReferralPaymentDto, object>(x => x.Contract)">
                                 Contract
                             </MudTableSortLabel>
                         </MudTh>
                     }
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.CreatedOn)">
+                        <MudTableSortLabel SortBy="new Func<SupportAndReferralPaymentDto, object>(x => x.CreatedOn)">
                             Created
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Approved)">
+                        <MudTableSortLabel SortBy="new Func<SupportAndReferralPaymentDto, object>(x => x.Approved)">
                             Approved
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.PaymentPeriod)">
+                        <MudTableSortLabel SortBy="new Func<SupportAndReferralPaymentDto, object>(x => x.PaymentPeriod)">
                             Payment Period
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.ParticipantName)">
+                        <MudTableSortLabel SortBy="new Func<SupportAndReferralPaymentDto, object>(x => x.ParticipantName)">
                             Participant
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Location)">
+                        <MudTableSortLabel SortBy="new Func<SupportAndReferralPaymentDto, object>(x => x.Location)">
                             Location
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.SupportType)">
+                        <MudTableSortLabel SortBy="new Func<SupportAndReferralPaymentDto, object>(x => x.SupportType)">
                             Support Type
                         </MudTableSortLabel>
                     </MudTh>
@@ -122,16 +123,16 @@
     else
     {
         <MudItem xs="12" md="6">
-            <ApexChart TItem="SummaryDataModel"
+            <ApexChart TItem="SupportAndReferralPaymentSummaryDto"
                        Title="Support &amp; Referral By Contract">
-                <ApexPointSeries TItem="SummaryDataModel"
+                <ApexPointSeries TItem="SupportAndReferralPaymentSummaryDto"
                                  Items="SummaryData"
                                  Name="Pre-Release Support"
                                  SeriesType="SeriesType.Bar"
                                  XValue="e => e.Contract"
                                  YValue="e => e.PreReleaseSupport"
                 />
-                <ApexPointSeries TItem="SummaryDataModel"
+                <ApexPointSeries TItem="SupportAndReferralPaymentSummaryDto"
                                  Items="SummaryData"
                                  Name="Through the Gate"
                                  SeriesType="SeriesType.Bar"

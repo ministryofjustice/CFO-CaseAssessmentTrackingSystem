@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
-using Microsoft.EntityFrameworkCore;
+using Cfo.Cats.Application.Features.Payments.DTOs;
+using Cfo.Cats.Application.Features.Payments.Queries;
 
 namespace Cfo.Cats.Server.UI.Pages.Payments.Components;
 
@@ -19,113 +20,45 @@ public partial class InductionPayments
     [CascadingParameter]
     public UserProfile CurrentUser { get; set; } = default!;
 
-    private RawData[] Payments { get; set; } = [];
+    private InductionPaymentDto[] Payments { get; set; } = [];
+    private List<InductionPaymentSummaryDto> SummaryData = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var unitOfWork = GetNewUnitOfWork();
+        try
+        {
+            _loading = true;
 
-        var query = from ip in unitOfWork.DbContext.InductionPayments
-                    join dd in unitOfWork.DbContext.DateDimensions on ip.PaymentPeriod equals dd.TheDate
-                    join c in unitOfWork.DbContext.Contracts on ip.ContractId equals c.Id
-                    join l in unitOfWork.DbContext.Locations on ip.LocationId equals l.Id
-                    join p in unitOfWork.DbContext.Participants on ip.ParticipantId equals p.Id
-                    where dd.TheMonth == Month && dd.TheYear == Year
-                    select new
-                    {
-                        ip.InductionInput,
-                        ip.CommencedDate,
-                        ip.Approved,
-                        ip.ParticipantId,
-                        ip.EligibleForPayment,
-                        Contract = c.Description,
-                        ContractId = c.Id,
-                        ip.LocationType,
-                        Location = l.Name,
-                        ip.IneligibilityReason,
-                        TenantId = c!.Tenant!.Id!,
-                        ip.PaymentPeriod,
-                        ip.Induction,
-                        ParticipantName = p.FirstName + " " + p.LastName
-                    };
+            var mediator = GetNewMediator();
 
-        query = Contract is null
-                ? query.Where(q => q.TenantId.StartsWith(CurrentUser.TenantId!))
-                : query.Where(q => q.ContractId == Contract.Id);
-
-
-        Payments = await query.AsNoTracking()
-            .Select(x => new RawData
+            var result = await mediator.Send(new GetInductionPayments.Query()
             {
-                CreatedOn = x.InductionInput,
-                InductionDate = x.Induction,
-                CommencedOn = x.CommencedDate,
-                Approved = x.Approved,
-                PaymentPeriod = x.PaymentPeriod,
-                ParticipantId = x.ParticipantId,
-                EligibleForPayment = x.EligibleForPayment,
-                Contract = x.Contract,
-                Location = x.Location,
-                LocationType = x.LocationType,
-                IneligibilityReason = x.IneligibilityReason,
-                ParticipantName = x.ParticipantName
-            })
-            .OrderBy(e => e.Contract)
-            .ThenByDescending(e => e.CreatedOn)
-            .ToArrayAsync();
+                ContractId = Contract?.Id,
+                Month = Month,
+                Year = Year,
+                TenantId = CurrentUser!.TenantId!
+            });
 
-        this.SummaryData = Payments
-            .Where(e => e.EligibleForPayment)
-            .GroupBy(e => e.Contract)
-            .Select(x => new SummaryDataModel
+            if (result is not { Succeeded: true })
             {
-                Contract = x.Key,
-                Wings = x.Count(g => g.LocationType == "Wing"),
-                Hubs = x.Count(g => g.LocationType == "Hub"),
-                WingsTarget = TargetProvider.GetTarget(x.Key, Month, Year).Wings,
-                HubsTarget = TargetProvider.GetTarget(x.Key, Month, Year).Hubs,
-            })
-            .OrderBy(c => c.Contract)
-            .ToList();
+                throw new Exception(result.ErrorMessage);
+            }
 
-        _loading = false;
+            Payments = result.Data?.Items ?? [];
+            SummaryData = result.Data?.ContractSummary ?? [];
 
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        finally { _loading = false; }
     }
 
     private string _searchString = "";
-    private List<SummaryDataModel> SummaryData = [];
+    private bool FilterFunc1(InductionPaymentDto data) => FilterFunc(data, _searchString);
 
-    private class RawData
-    {
-        public DateTime CreatedOn { get; set; }
-        public DateTime CommencedOn { get; set; }
-        public DateTime InductionDate { get; set; }
-        public DateTime? Approved { get; set; }
-        public DateTime? PaymentPeriod { get; set; }
-
-        public string Contract { get; set; } = "";
-        public string ParticipantId { get; set; } = "";
-        public bool EligibleForPayment { get; set; }
-        public string LocationType { get; set; } = "";
-        public string Location { get; set; } = "";
-        public string? IneligibilityReason { get; set; }
-        public string ParticipantName { get; set; } = "";
-    }
-
-    private class SummaryDataModel
-    {
-        public required string Contract { get; set; }
-        public int Wings { get; set; }
-        public int WingsTarget { get; set; }
-        public decimal WingsPercentage => Wings.CalculateCappedPercentage(WingsTarget);
-        public int Hubs { get; set; }
-        public int HubsTarget { get; set; }
-        public decimal HubsPercentage => Hubs.CalculateCappedPercentage(HubsTarget);
-    }
-
-    private bool FilterFunc1(RawData data) => FilterFunc(data, _searchString);
-
-    private bool FilterFunc(RawData data, string searchString)
+    private bool FilterFunc(InductionPaymentDto data, string searchString)
     {
         if (string.IsNullOrWhiteSpace(searchString))
         {
