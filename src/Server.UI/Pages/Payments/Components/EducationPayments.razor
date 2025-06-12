@@ -4,12 +4,12 @@
 
 <style type="text/css">
     .centered {
-        text-align: center;
+    text-align: center;
     }
 
     .mud-table-head th {
-        text-align: center;
-        font-weight: bold;
+    text-align: center;
+    font-weight: bold;
     }
 </style>
 
@@ -18,11 +18,11 @@
     {
         <MudItem xs="12">
             <MudTable Items="@Payments" 
-                      Hover="true" 
-                      Breakpoint="Breakpoint.Sm" 
-                      Loading="@_loading" 
-                      LoadingProgressColor="Color.Info"
-                      Filter="new Func<EducationPaymentDto, bool>(FilterFunc1)">
+            Hover="true" 
+            Breakpoint="Breakpoint.Sm" 
+            Loading="@_loading" 
+            LoadingProgressColor="Color.Info"
+            Filter="new Func<EducationPaymentDto, bool>(FilterFunc1)">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Education & Training</MudText>
                     <MudSpacer />
@@ -126,16 +126,19 @@
     else
     {
         <MudItem xs="12" md="6">
-            <ApexChart TItem="EducationPaymentSummaryDto"
-                       Title="Education & Training By Contract">
-                <ApexPointSeries TItem="EducationPaymentSummaryDto"
-                                 Items="SummaryData"
-                                 Name="Educations"
-                                 SeriesType="SeriesType.Bar"
-                                 XValue="e => e.Contract"
-                                 YValue="e => e.Educations"
-                                 ShowDataLabels="true"/>
-            </ApexChart>
+            @if (_loading is false)
+            {
+                <ApexChart TItem="EducationPaymentSummaryDto"
+                           Title="Education & Training By Contract">
+                    <ApexPointSeries TItem="EducationPaymentSummaryDto"
+                                     Items="SummaryData"
+                                     Name="Educations"
+                                     SeriesType="SeriesType.Bar"
+                                     XValue="e => e.Contract"
+                                     YValue="e => e.Educations"
+                                     ShowDataLabels="true" />
+                </ApexChart>
+            }
         </MudItem>
         <MudItem xs="12" md="6">
             <MudTable Items="@SummaryData"

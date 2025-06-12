@@ -20,11 +20,11 @@
     {
         <MudItem xs="12">
             <MudTable Items="@Payments"
-                      Hover="true"
-                      Breakpoint="Breakpoint.Sm"
-                      Loading="@_loading"
-                      LoadingProgressColor="Color.Info"
-                      Filter="new Func<ActivityPaymentDto, bool>(FilterFunc1)">
+            Hover="true"
+            Breakpoint="Breakpoint.Sm"
+            Loading="@_loading"
+            LoadingProgressColor="Color.Info"
+            Filter="new Func<ActivityPaymentDto, bool>(FilterFunc1)">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Activities</MudText>
                     <MudSpacer />
@@ -127,7 +127,7 @@
                 </PagerContent>
             </MudTable>
         </MudItem>
-        
+
     }
     else
     {
@@ -196,37 +196,35 @@
             </MudTable>    
         </MudItem>
         <MudItem xs="12" md="6">
-            <ApexChart TItem="ActivityPaymentSummaryDto"
-                Title="Activities By Contract">
-                <ApexPointSeries TItem="ActivityPaymentSummaryDto"
-                Items="SummaryData"
-                Name="@ActivityType.SupportWork.Name"
-                SeriesType="SeriesType.Bar"
-                XValue="e => e.Contract"
-                YValue="e => e.SupportWork"
-                />
-                <ApexPointSeries TItem="ActivityPaymentSummaryDto"
-                Items="SummaryData"
-                Name="@ActivityType.HumanCitizenship.Name"
-                SeriesType="SeriesType.Bar"
-                XValue="e => e.Contract"
-                YValue="e => e.HumanCitizenship"
-                />
-                <ApexPointSeries TItem="ActivityPaymentSummaryDto"
-                Items="SummaryData"
-                Name="@ActivityType.CommunityAndSocial.Name"
-                SeriesType="SeriesType.Bar"
-                XValue="e => e.Contract"
-                YValue="e => e.CommunityAndSocial"
-                />
-                <ApexPointSeries TItem="ActivityPaymentSummaryDto"
-                Items="SummaryData"
-                Name="@ActivityType.InterventionsAndServicesWraparoundSupport.Name"
-                SeriesType="SeriesType.Bar"
-                XValue="e => e.Contract"
-                YValue="e => e.ISWSupport"
-                />
-            </ApexChart> 
+            @if(_loading is false)
+            {
+                <ApexChart TItem="ActivityPaymentSummaryDto" Title="Activities By Contract">
+                    <ApexPointSeries TItem="ActivityPaymentSummaryDto"
+                                        Items="SummaryData"
+                                        Name="@ActivityType.SupportWork.Name"
+                                        SeriesType="SeriesType.Bar"
+                                        XValue="e => e.Contract"
+                                        YValue="e => e.SupportWork" />
+                    <ApexPointSeries TItem="ActivityPaymentSummaryDto"
+                                        Items="SummaryData"
+                                        Name="@ActivityType.HumanCitizenship.Name"
+                                        SeriesType="SeriesType.Bar"
+                                        XValue="e => e.Contract"
+                                        YValue="e => e.HumanCitizenship" />
+                    <ApexPointSeries TItem="ActivityPaymentSummaryDto"
+                                        Items="SummaryData"
+                                        Name="@ActivityType.CommunityAndSocial.Name"
+                                        SeriesType="SeriesType.Bar"
+                                        XValue="e => e.Contract"
+                                        YValue="e => e.CommunityAndSocial" />
+                    <ApexPointSeries TItem="ActivityPaymentSummaryDto"
+                                        Items="SummaryData"
+                                        Name="@ActivityType.InterventionsAndServicesWraparoundSupport.Name"
+                                        SeriesType="SeriesType.Bar"
+                                        XValue="e => e.Contract"
+                                        YValue="e => e.ISWSupport" />
+                </ApexChart>
+            }
         </MudItem>
     }
 </MudGrid>
