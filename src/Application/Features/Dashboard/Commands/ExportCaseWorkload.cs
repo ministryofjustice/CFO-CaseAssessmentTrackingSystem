@@ -20,9 +20,7 @@ public static class ExportCaseWorkload
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var document = GeneratedDocument
-                .Create(DocumentTemplate.CaseWorkload, "CaseWorkload.xlsx", "CaseWorkload Export", currentUser.UserId!, currentUser.TenantId!, request.SearchCriteria)
-                .WithStatus(DocumentStatus.Processing)
-                .WithExpiry(DateTime.UtcNow.AddDays(7));
+                .Create(DocumentTemplate.CaseWorkload, "CaseWorkload.xlsx", "CaseWorkload Export", currentUser.UserId!, currentUser.TenantId!, request.SearchCriteria);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 
