@@ -84,7 +84,7 @@ jobs:
         
         echo "Generated tag: $TAG_NAME"
 
-    # Create a new release
+    # Create a new release on main
     - name: Create Release
       if: success() && github.ref == 'refs/heads/main'
       id: create_release
@@ -94,9 +94,10 @@ jobs:
       with:
         tag_name: ${{ env.TAG_NAME }}
         release_name: ${{ env.RELEASE_NAME }}
-        body: 'Automatic release based on date and time.'
+        body: ${{ steps.generate_changelog.outputs.changelog }}
         draft: false
         prerelease: false
+        generate_release_notes: true
 
     # Upload build artifacts to the release
     - name: Upload Release Asset
