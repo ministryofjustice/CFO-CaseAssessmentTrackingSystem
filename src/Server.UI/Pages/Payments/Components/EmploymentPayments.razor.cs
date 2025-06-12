@@ -1,13 +1,16 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
+using Cfo.Cats.Application.Features.Payments.Commands;
 using Cfo.Cats.Application.Features.Payments.DTOs;
 using Cfo.Cats.Application.Features.Payments.Queries;
+using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Server.UI.Pages.Payments.Components;
 
 public partial class EmploymentPayments
 {
     private bool _loading = true;
+    private bool _downloading;
 
     [Parameter, EditorRequired] public bool DataView { get; set; }
 
@@ -22,6 +25,7 @@ public partial class EmploymentPayments
     EmploymentPaymentDto[] Payments { get; set; } = [];
     List<EmploymentPaymentSummaryDto> SummaryData = [];
 
+    GetEmploymentPayments.Query? Query;
 
     protected override async Task OnInitializedAsync()
     {
@@ -29,15 +33,17 @@ public partial class EmploymentPayments
         {
             _loading = true;
 
-            var mediator = GetNewMediator();
-
-            var result = await mediator.Send(new GetEmploymentPayments.Query()
+            Query = new()
             {
                 ContractId = Contract?.Id,
                 Month = Month,
                 Year = Year,
                 TenantId = CurrentUser!.TenantId!
-            });
+            };
+
+            var mediator = GetNewMediator();
+
+            var result = await mediator.Send(Query);
 
             if (result is not { Succeeded: true })
             {
@@ -93,5 +99,34 @@ public partial class EmploymentPayments
         }
 
         return false;
+    }
+
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+            var result = await GetNewMediator().Send(new ExportEmploymentPayments.Command()
+            {
+                Query = Query!
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+                return;
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+
+        }
+        catch
+        {
+            Snackbar.Add($"An error occurred while generating your document.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
     }
 }

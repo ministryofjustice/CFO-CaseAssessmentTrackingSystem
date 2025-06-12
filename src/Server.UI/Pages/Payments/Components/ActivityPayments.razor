@@ -28,7 +28,26 @@
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Activities</MudText>
                     <MudSpacer />
-                    <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    <MudStack Row="true">
+                        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        <MudButton Disabled="@_downloading"
+                                    Variant="Variant.Outlined"
+                                    Color="Color.Primary"
+                                    StartIcon="@Icons.Material.Filled.Download"
+                                    Size="Size.Small"
+                                    OnClick="OnExport"
+                                    IconColor="Color.Surface">
+                            @if (_downloading)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2"> @ConstantString.Downloading</MudText>
+                            }
+                            else
+                            {
+                                <MudText>@ConstantString.Export</MudText>
+                            }
+                        </MudButton>
+                    </MudStack>
                 </ToolBarContent>
                 <HeaderContent>
 
