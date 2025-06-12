@@ -27,7 +27,11 @@ public partial class MyDocuments
             { x => x.DocumentId, document.Id }
         };
 
-        var dialog = await DialogService.ShowAsync<OnExportConfirmationDialog>(document.Title, parameters);
+        var dialog = await DialogService.ShowAsync<OnExportConfirmationDialog>(document.Title, parameters, new DialogOptions
+        {
+            MaxWidth = MaxWidth.Medium,
+            CloseButton = true
+        });
 
         await dialog.Result;
     }
