@@ -16,7 +16,7 @@ public class GeneratedDocument : Document
         TenantId = tenantId;
         SearchCriteriaUsed = searchCriteria;
         Status = DocumentStatus.Processing;
-        ExpiresOn = DateTime.Today.AddDays(7);
+        ExpiresOn = DateTime.Today.AddDays(8);
         AddDomainEvent(new GeneratedDocumentCreatedDomainEvent(this));
     }
 
