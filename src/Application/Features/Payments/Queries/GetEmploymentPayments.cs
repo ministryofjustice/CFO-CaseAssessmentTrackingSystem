@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Payments.Queries;
 public static class GetEmploymentPayments
 {
     [RequestAuthorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
-    public class Query : IRequest<Result<EmploymentPaymentsDto>>
+    public class Query : BaseFilter, IRequest<Result<EmploymentPaymentsDto>>
     {
         public required int Month { get; set; }
         public required int Year { get; set; }
@@ -50,6 +50,16 @@ public static class GetEmploymentPayments
             query = request.ContractId is null
                 ? query.Where(q => q.TenantId.StartsWith(request.TenantId))
                 : query.Where(q => q.ContractId == request.ContractId);
+
+            if (string.IsNullOrWhiteSpace(request.Keyword) is false)
+            {
+                query = query.Where(
+                    x => x.ParticipantName.Contains(request.Keyword)
+                      || x.ParticipantId.Contains(request.Keyword)
+                      || x.IneligibilityReason != null && x.IneligibilityReason.Contains(request.Keyword)
+                      || x.Location.Contains(request.Keyword)
+                      || x.LocationType.Contains(request.Keyword));
+            }
 
             result.Items = await query.AsNoTracking()
                 .Select(x => new EmploymentPaymentDto

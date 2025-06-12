@@ -28,23 +28,15 @@ public partial class InductionPayments
 
     GetInductionPayments.Query? Query;
 
-    protected override async Task OnInitializedAsync()
+    async Task OnRefresh()
     {
         try
         {
             _loading = true;
 
-            Query = new()
-            {
-                ContractId = Contract?.Id,
-                Month = Month,
-                Year = Year,
-                TenantId = CurrentUser!.TenantId!
-            };
-
             var mediator = GetNewMediator();
 
-            var result = await mediator.Send(Query);
+            var result = await mediator.Send(Query!);
 
             if (result is not { Succeeded: true })
             {
@@ -62,43 +54,25 @@ public partial class InductionPayments
         finally { _loading = false; }
     }
 
-    private string _searchString = "";
-    private bool FilterFunc1(InductionPaymentDto data) => FilterFunc(data, _searchString);
-
-    private bool FilterFunc(InductionPaymentDto data, string searchString)
+    protected override async Task OnInitializedAsync()
     {
-        if (string.IsNullOrWhiteSpace(searchString))
+        Query = new()
         {
-            return true;
-        }
+            ContractId = Contract?.Id,
+            Month = Month,
+            Year = Year,
+            TenantId = CurrentUser!.TenantId!
+        };
 
-        if (data.ParticipantName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
+        await OnRefresh();
+    }
 
-        if (data.ParticipantId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
+    private string _searchString = "";
 
-        if (data.IneligibilityReason is not null && data.IneligibilityReason.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        if (data.Location.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        if (data.LocationType.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-
-        return false;
+    async Task OnSearch()
+    {
+        Query!.Keyword = _searchString;
+        await OnRefresh();
     }
 
     private async Task OnExport()
