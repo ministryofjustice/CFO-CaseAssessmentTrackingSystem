@@ -17,7 +17,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Activities
 
             builder.Property(p => p.TenantId)
                 .IsRequired()
-                .HasMaxLength(50);
+                .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
 
             builder.OwnsMany(p => p.Notes, note =>
             {
