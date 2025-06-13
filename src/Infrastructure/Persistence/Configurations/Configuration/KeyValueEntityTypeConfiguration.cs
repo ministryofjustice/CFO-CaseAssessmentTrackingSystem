@@ -11,7 +11,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Configuration
                 DatabaseConstants.Schemas.Configuration);
             builder.Property(t => t.Name).HasConversion<string>();
             builder.Property(t => t.Name).HasMaxLength(50);
-            builder.Property(t => t.Value).HasMaxLength(100).IsRequired();
+            builder.Property(t => t.Value).HasMaxLength(DatabaseConstants.FieldLengths.KeyValue).IsRequired();
             builder.Property(t => t.Text).HasMaxLength(100).IsRequired();
             builder.Property(t => t.Description).HasMaxLength(100).IsRequired(false);
             builder.Ignore(e => e.DomainEvents);

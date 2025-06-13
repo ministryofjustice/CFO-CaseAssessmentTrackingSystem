@@ -40,7 +40,8 @@ public class EmploymentDto
 
             RuleFor(c => c.EmployerName)
                 .NotNull()
-                .WithMessage("You must enter Company Name");
+                .WithMessage("You must enter Company Name")
+                .MaximumLength(64);
 
             When(c => c.JobTitle is not null, () =>
             {
