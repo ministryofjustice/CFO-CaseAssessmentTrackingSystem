@@ -1,8 +1,10 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.Features.KeyValues.Queries.PaginationQuery;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
 using Humanizer;
+using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.KeyValues.Commands.Export;
 
@@ -11,7 +13,7 @@ public static class ExportKeyValues
     [RequestAuthorize(Roles = RoleNames.SystemSupport)]
     public class Command : IRequest<Result>
     {
-        public string? SearchCriteria { get; set; }
+        public required KeyValuesWithPaginationQuery? Query { get; set; }
     }
 
     public class Handler(
@@ -20,8 +22,10 @@ public static class ExportKeyValues
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
+            var json = JsonConvert.SerializeObject(request.Query);
+
             var document = GeneratedDocument
-                .Create(DocumentTemplate.KeyValues, "KeyValues.xlsx", "KeyValues Export", currentUser.UserId!, currentUser.TenantId!, request.SearchCriteria);
+                .Create(DocumentTemplate.KeyValues, "KeyValues.xlsx", "KeyValues Export", currentUser.UserId!, currentUser.TenantId!, json);
 
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 
@@ -39,10 +43,6 @@ public static class ExportKeyValues
         {
             this.currentUserService = currentUserService;
             this.unitOfWork = unitOfWork;
-
-            RuleFor(r => r.SearchCriteria)
-                .Matches(ValidationConstants.Keyword)
-                .WithMessage(string.Format(ValidationConstants.KeywordMessage, "Search Keyword"));
 
             RuleFor(c => c)
                 .Must(WaitBeforeRequestingDocumentAgain)

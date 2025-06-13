@@ -65,7 +65,6 @@ public class MenuService : IMenuService
                     new()
                     {
                         Title = "Analytics",
-                        Roles = new[] { RoleNames.SystemSupport, RoleNames.Finance },
                         Icon = Icons.Material.Filled.Analytics,
                         PageStatus = PageStatus.Completed,
                         IsParent = true,
@@ -75,6 +74,7 @@ public class MenuService : IMenuService
                                 Title="Cumulatives",
                                 Href = "/pages/analytics/cumulatives",
                                 PageStatus = PageStatus.Completed,
+                                Roles = new[] { RoleNames.SystemSupport, RoleNames.Finance },
                             },
                             new()
                             {

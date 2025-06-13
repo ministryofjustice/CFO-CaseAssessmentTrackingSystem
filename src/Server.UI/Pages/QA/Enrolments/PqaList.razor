@@ -1,4 +1,5 @@
 ﻿@page "/pages/qa/enrolments/pqa"
+@using Cfo.Cats.Application.Features.QualityAssurance.Commands
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 @using Cfo.Cats.Application.Features.QualityAssurance.Queries
 @using Cfo.Cats.Application.SecurityConstants
@@ -35,24 +36,42 @@
             </div>
             <div class="flex-grow-1"></div>
             <div class="d-flex flex-column justify-end">
-                <div class="d-flex">
-                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                        <MudButton Variant="Variant.Outlined"
-                                   Size="Size.Small"
-                                   Disabled="@_loading"
-                                   OnClick="@(() => OnRefresh())"
-                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
-                                   Style="margin-right: 4px; margin-bottom:4px">
-                            @ConstantString.Refresh
-                        </MudButton>
-                    </MudHidden>
-                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
-
-                    </MudHidden>
-                </div>
-                <MudTextField T="string" ValueChanged="@(OnSearch)" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
-                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
-                </MudTextField>
+                <MudStack>
+                    <MudStack Row="true">
+                        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                            <MudButton Variant="Variant.Outlined"
+                                       Size="Size.Small"
+                                       Disabled="@_loading"
+                                       OnClick="@(() => OnRefresh())"
+                                       StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
+                                       Style="margin-right: 4px; margin-bottom:4px">
+                                @ConstantString.Refresh
+                            </MudButton>
+                            <MudButton Disabled="@_downloading"
+                                       Variant="Variant.Outlined"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Download"
+                                       Size="Size.Small"
+                                       Style="margin-right: 4px; margin-bottom: 4px"
+                                       OnClick="OnExport"
+                                       IconColor="Color.Surface">
+                                @if (_downloading)
+                                {
+                                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                    <MudText Class="ms-2"> @ConstantString.Downloading</MudText>
+                                }
+                                else
+                                {
+                                    <MudText>@ConstantString.Export</MudText>
+                                }
+                            </MudButton>
+                            <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true"></MudHidden>
+                        </MudHidden>
+                    </MudStack>
+                    <MudTextField T="string" ValueChanged="@(OnSearch)" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                    </MudTextField>
+                </MudStack>
             </div>
         </div>
     </ToolBarContent>
@@ -118,6 +137,7 @@
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
     
     private bool _loading = false;
+    private bool _downloading;
     private int _defaultPageSize = 15;
     private MudDataGrid<EnrolmentQueueEntryDto> _table = default!;
 
@@ -166,5 +186,34 @@
         _selectedItems = new ();
         Query.Keyword = string.Empty;
         await _table.ReloadServerData();
+    }
+
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+            var result = await GetNewMediator().Send(new ExportPqaEnrolments.Command()
+            {
+                Query = Query
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+                return;
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+
+        }
+        catch
+        {
+            Snackbar.Add($"An error occurred while generating your document.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
     }
 }

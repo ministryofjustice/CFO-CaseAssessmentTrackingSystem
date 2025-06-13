@@ -4,6 +4,7 @@ using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Activities;
+using System.Text.Json.Serialization;
 
 namespace Cfo.Cats.Application.Features.Activities.Queries
 {
@@ -17,6 +18,8 @@ namespace Cfo.Cats.Application.Features.Activities.Queries
                 SortDirection = "Desc";
                 OrderBy = "Created";
             }
+
+            [JsonIgnore]
             public ActivityPqaQueueEntrySpecification Specification => new(this);
         }
 

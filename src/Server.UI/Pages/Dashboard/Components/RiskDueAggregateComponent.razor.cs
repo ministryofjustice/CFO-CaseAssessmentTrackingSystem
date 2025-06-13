@@ -1,6 +1,8 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Dashboard.DTOs;
+using Cfo.Cats.Application.Features.Dashboard.Export;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
+using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
 
@@ -9,6 +11,7 @@ public partial class RiskDueAggregateComponent
     private bool _loading = true;
     private bool _byPerson = false;
     private string _searchString = "";
+    private bool _downloading = false;
 
     private GetRiskDueAggregate.Query Query { get; set; } = default!;
 
@@ -20,7 +23,7 @@ public partial class RiskDueAggregateComponent
     {
         Query = new GetRiskDueAggregate.Query()
         {
-            CurrentUser = CurrentUser,
+            TenantId = CurrentUser.TenantId!,
             GroupingType = GetRiskDueAggregate.RiskAggregateGroupingType.Tenant
         };
         await OnRefresh();
@@ -61,4 +64,32 @@ public partial class RiskDueAggregateComponent
         return false;
     }
 
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+            var result = await GetNewMediator().Send(new ExportRiskDueAggregate.Command()
+            {
+                Query = Query
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+                return;
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+
+        }
+        catch
+        {
+            Snackbar.Add($"An error occurred while generating your document.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
+    }
 }

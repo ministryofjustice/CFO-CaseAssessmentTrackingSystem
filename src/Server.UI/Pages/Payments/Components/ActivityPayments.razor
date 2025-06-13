@@ -1,4 +1,5 @@
-﻿@using Size = MudBlazor.Size
+﻿@using Cfo.Cats.Application.Features.Payments.DTOs
+@using Size = MudBlazor.Size
 @inherits CatsComponentBase
 
 <style type="text/css">
@@ -19,58 +20,76 @@
     {
         <MudItem xs="12">
             <MudTable Items="@Payments"
-                      Hover="true"
-                      Breakpoint="Breakpoint.Sm"
-                      Loading="@_loading"
-                      LoadingProgressColor="Color.Info"
-                      Filter="new Func<RawData, bool>(FilterFunc1)">
+            Hover="true"
+            Breakpoint="Breakpoint.Sm"
+            Loading="@_loading"
+            LoadingProgressColor="Color.Info">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Activities</MudText>
                     <MudSpacer />
-                    <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    <MudStack Row="true">
+                        <MudTextField @bind-Value="_searchString" @bind-Value:after="OnSearch" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        <MudButton Disabled="@_downloading"
+                                    Variant="Variant.Outlined"
+                                    Color="Color.Primary"
+                                    StartIcon="@Icons.Material.Filled.Download"
+                                    Size="Size.Small"
+                                    OnClick="OnExport"
+                                    IconColor="Color.Surface">
+                            @if (_downloading)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2"> @ConstantString.Downloading</MudText>
+                            }
+                            else
+                            {
+                                <MudText>@ConstantString.Export</MudText>
+                            }
+                        </MudButton>
+                    </MudStack>
                 </ToolBarContent>
                 <HeaderContent>
 
                     @if (Contract is null)
                     {
                         <MudTh>
-                            <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Contract)">
+                            <MudTableSortLabel SortBy="new Func<ActivityPaymentDto, object>(x => x.Contract)">
                                 Contract
                             </MudTableSortLabel>
                         </MudTh>
                     }
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.CreatedOn)">
+                        <MudTableSortLabel SortBy="new Func<ActivityPaymentDto, object>(x => x.CreatedOn)">
                             Created
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.CommencedOn)">
+                        <MudTableSortLabel SortBy="new Func<ActivityPaymentDto, object>(x => x.CommencedOn)">
                             Commenced On
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.ActivityApproved)">
+                        <MudTableSortLabel SortBy="new Func<ActivityPaymentDto, object>(x => x.ActivityApproved)">
                             Approved
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.PaymentPeriod)">
+                        <MudTableSortLabel SortBy="new Func<ActivityPaymentDto, object>(x => x.PaymentPeriod)">
                             Payment Period
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.ParticipantName)">
+                        <MudTableSortLabel SortBy="new Func<ActivityPaymentDto, object>(x => x.ParticipantName)">
                             Participant
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Location)">
+                        <MudTableSortLabel SortBy="new Func<ActivityPaymentDto, object>(x => x.Location)">
                             Location
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RawData, object>(x => x.Type)">
+                        <MudTableSortLabel SortBy="new Func<ActivityPaymentDto, object>(x => x.Type)">
                             Activity
                         </MudTableSortLabel>
                     </MudTh>
@@ -126,7 +145,7 @@
                 </PagerContent>
             </MudTable>
         </MudItem>
-        
+
     }
     else
     {
@@ -195,37 +214,35 @@
             </MudTable>    
         </MudItem>
         <MudItem xs="12" md="6">
-            <ApexChart TItem="SummaryDataModel"
-            Title="Activities By Contract">
-                <ApexPointSeries TItem="SummaryDataModel"
-                Items="SummaryData"
-                Name="@ActivityType.SupportWork.Name"
-                SeriesType="SeriesType.Bar"
-                XValue="e => e.Contract"
-                YValue="e => e.SupportWork"
-                />
-                <ApexPointSeries TItem="SummaryDataModel"
-                Items="SummaryData"
-                Name="@ActivityType.HumanCitizenship.Name"
-                SeriesType="SeriesType.Bar"
-                XValue="e => e.Contract"
-                YValue="e => e.HumanCitizenship"
-                />
-                <ApexPointSeries TItem="SummaryDataModel"
-                Items="SummaryData"
-                Name="@ActivityType.CommunityAndSocial.Name"
-                SeriesType="SeriesType.Bar"
-                XValue="e => e.Contract"
-                YValue="e => e.CommunityAndSocial"
-                />
-                <ApexPointSeries TItem="SummaryDataModel"
-                Items="SummaryData"
-                Name="@ActivityType.InterventionsAndServicesWraparoundSupport.Name"
-                SeriesType="SeriesType.Bar"
-                XValue="e => e.Contract"
-                YValue="e => e.ISWSupport"
-                />
-            </ApexChart> 
+            @if(_loading is false)
+            {
+                <ApexChart TItem="ActivityPaymentSummaryDto" Title="Activities By Contract">
+                    <ApexPointSeries TItem="ActivityPaymentSummaryDto"
+                                        Items="SummaryData"
+                                        Name="@ActivityType.SupportWork.Name"
+                                        SeriesType="SeriesType.Bar"
+                                        XValue="e => e.Contract"
+                                        YValue="e => e.SupportWork" />
+                    <ApexPointSeries TItem="ActivityPaymentSummaryDto"
+                                        Items="SummaryData"
+                                        Name="@ActivityType.HumanCitizenship.Name"
+                                        SeriesType="SeriesType.Bar"
+                                        XValue="e => e.Contract"
+                                        YValue="e => e.HumanCitizenship" />
+                    <ApexPointSeries TItem="ActivityPaymentSummaryDto"
+                                        Items="SummaryData"
+                                        Name="@ActivityType.CommunityAndSocial.Name"
+                                        SeriesType="SeriesType.Bar"
+                                        XValue="e => e.Contract"
+                                        YValue="e => e.CommunityAndSocial" />
+                    <ApexPointSeries TItem="ActivityPaymentSummaryDto"
+                                        Items="SummaryData"
+                                        Name="@ActivityType.InterventionsAndServicesWraparoundSupport.Name"
+                                        SeriesType="SeriesType.Bar"
+                                        XValue="e => e.Contract"
+                                        YValue="e => e.ISWSupport" />
+                </ApexChart>
+            }
         </MudItem>
     }
 </MudGrid>

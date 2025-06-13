@@ -7,12 +7,20 @@
 
 <MudDialog>
     <DialogContent>
-        <MudText>As per SyOPS, sensitive data must be stored appropriately - if unsure, speak to your local infosec manager.</MudText>
-        <MudText>This export will only include filtered data (relevant to you).</MudText>
+        <MudContainer>
+            <ul>
+                <li><MudText>Sensitive data must be stored in full compliance with HMPPS SyOPS and your organisation’s data security policies.</MudText></li>
+                <li><MudText>Exercise due care with any personal data contained in the export.</MudText></li>
+                <li><MudText>Ensure appropriate protective measures are in place when storing, accessing, or transmitting this data (e.g., encrypted storage, secure sharing methods and secure email).</MudText></li>
+                <li><MudText>Do not store data on unapproved devices, locations, or services.</MudText></li>
+                <li><MudText>If you are unsure, speak to your local infosec manager.</MudText></li>
+            </ul>
+            <MudCheckBox @bind-Value="acknowledged" Label="I understand and accept my responsibility to store this data securely." />
+        </MudContainer>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Loading="downloading" Color="Color.Primary" OnClick="Download">
+        <MudLoadingButton Loading="downloading" Color="Color.Primary" OnClick="Download" Disabled="acknowledged is false">
             @(downloading ? ConstantString.Downloading : ConstantString.Download)
         </MudLoadingButton>
     </DialogActions>
@@ -21,6 +29,7 @@
 
 @code {
     bool downloading;
+    bool acknowledged;
 
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 

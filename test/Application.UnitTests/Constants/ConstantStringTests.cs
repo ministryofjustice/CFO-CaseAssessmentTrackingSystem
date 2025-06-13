@@ -25,7 +25,7 @@ public class ConstantStringTests
         ConstantString.Download.ShouldBe("Download");
         ConstantString.Downloading.ShouldBe("Downloading...");
         ConstantString.Edit.ShouldBe("Edit");
-        ConstantString.Export.ShouldBe("Export to Excel");
+        ConstantString.Export.ShouldBe("Export");
         ConstantString.Import.ShouldBe("Import from Excel");
         ConstantString.New.ShouldBe("New");
         ConstantString.Next.ShouldBe("Next");
@@ -52,7 +52,7 @@ public class ConstantStringTests
         ConstantString.Download.ShouldBe("Download");
         ConstantString.Downloading.ShouldBe("Downloading...");
         ConstantString.Edit.ShouldBe("Edit");
-        ConstantString.Export.ShouldBe("Export to Excel");
+        ConstantString.Export.ShouldBe("Export");
         ConstantString.Import.ShouldBe("Import from Excel");
         ConstantString.New.ShouldBe("New");
         ConstantString.Next.ShouldBe("Next");

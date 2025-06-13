@@ -1,12 +1,16 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
-using Microsoft.EntityFrameworkCore;
+using Cfo.Cats.Application.Features.Payments.Commands;
+using Cfo.Cats.Application.Features.Payments.DTOs;
+using Cfo.Cats.Application.Features.Payments.Queries;
+using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Server.UI.Pages.Payments.Components;
 
 public partial class EducationPayments
 {
     private bool _loading = true;
+    private bool _downloading;
 
     [Parameter, EditorRequired] public bool DataView { get; set; }
 
@@ -18,143 +22,84 @@ public partial class EducationPayments
 
     [CascadingParameter] public UserProfile CurrentUser { get; set; } = default!;
 
-    private RawData[] Payments { get; set; } = [];
+    EducationPaymentDto[] Payments = [];
+    List<EducationPaymentSummaryDto> SummaryData = [];
+
+    GetEducationPayments.Query? Query;
+
+    async Task OnRefresh()
+    {
+        try
+        {
+            _loading = true;
+
+            var mediator = GetNewMediator();
+
+            var result = await mediator.Send(Query!);
+
+            if (result is not { Succeeded: true })
+            {
+                throw new Exception(result.ErrorMessage);
+            }
+
+            Payments = result.Data?.Items ?? [];
+            SummaryData = result.Data?.ContractSummary ?? [];
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        finally { _loading = false; }
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        var unitOfWork = GetNewUnitOfWork();
+        Query = new()
+        {
+            ContractId = Contract?.Id,
+            Month = Month,
+            Year = Year,
+            TenantId = CurrentUser!.TenantId!
+        };
 
-
-        var query = from ep in unitOfWork.DbContext.EducationPayments
-            join dd in unitOfWork.DbContext.DateDimensions on ep.PaymentPeriod equals dd.TheDate
-            join c in unitOfWork.DbContext.Contracts on ep.ContractId equals c.Id
-            join l in unitOfWork.DbContext.Locations on ep.LocationId equals l.Id
-            join a in unitOfWork.DbContext.EducationTrainingActivities on ep.ActivityId equals a.Id
-            where dd.TheMonth == Month && dd.TheYear == Year
-            select new
-            {
-                ep.ActivityInput,
-                a.CommencedOn,
-                ep.ActivityApproved,
-                ep.ParticipantId,
-                ep.EligibleForPayment,
-                Contract = c.Description,
-                ep.LocationType,
-                ContractId = c.Id,
-                Location = l.Name,
-                ep.IneligibilityReason,
-                TenantId = c!.Tenant!.Id!,
-                ep.PaymentPeriod,
-                ParticipantName = a.Participant!.FirstName + " " + a.Participant!.LastName,
-                a.CourseLevel,
-                a.CourseTitle
-            };
-
-        query = Contract is null
-            ? query.Where(q => q.TenantId.StartsWith(CurrentUser.TenantId!))
-            : query.Where(q => q.ContractId == Contract.Id);
-
-        Payments = await query.AsNoTracking()
-            .Select(x => new RawData
-            {
-                CreatedOn = x.ActivityInput,
-                CommencedOn = x.CommencedOn,
-                ActivityApproved = x.ActivityApproved,
-                ParticipantId = x.ParticipantId,
-                EligibleForPayment = x.EligibleForPayment,
-                Contract = x.Contract,
-                Location = x.Location,
-                LocationType = x.LocationType,
-                IneligibilityReason = x.IneligibilityReason,
-                ParticipantName = x.ParticipantName,
-                PaymentPeriod = x.PaymentPeriod,
-                CourseLevel = x.CourseLevel,
-                CourseTitle = x.CourseTitle
-            })
-            .OrderBy(e => e.Contract)
-            .ThenByDescending(e => e.CreatedOn)
-            .ToArrayAsync();
-
-        this.SummaryData = Payments
-            .Where(e => e.EligibleForPayment)
-            .GroupBy(e => e.Contract)
-            .Select(x => new SummaryDataModel
-            {
-                Contract = x.Key,
-                Educations = x.Count(),
-                EducationsTarget = TargetProvider.GetTarget(x.Key, Month, Year).TrainingAndEducation
-            })
-            .OrderBy(c => c.Contract)
-            .ToList();
-
-        _loading = false;
+        await OnRefresh();
     }
 
     private string _searchString = "";
-    private List<SummaryDataModel> SummaryData = [];
 
-    private class RawData
+    async Task OnSearch()
     {
-        public DateTime CreatedOn { get; set; }
-        public DateTime CommencedOn { get; set; }
-        public DateTime ActivityApproved { get; set; }
-
-        public DateTime PaymentPeriod { get; set; }
-            
-        public string Contract { get; set; } = "";
-        public string ParticipantId { get; set; } = "";
-        public bool EligibleForPayment { get; set; }
-        public string LocationType { get; set; } = "";
-        public string Location { get; set; } = "";
-        public string? IneligibilityReason { get; set; }
-        public string ParticipantName { get; set; } = "";
-        public string CourseLevel { get; set; } = string.Empty;
-        public string CourseTitle { get; set; } = string.Empty;
+        Query!.Keyword = _searchString;
+        await OnRefresh();
     }
 
-    private class SummaryDataModel
+    private async Task OnExport()
     {
-        public required string Contract { get; set; }
-        public required int Educations { get; set; }
-        public required int EducationsTarget { get; set; }
-        public decimal EducationsPercentage => Educations.CalculateCappedPercentage(EducationsTarget);
-    }
-
-    private bool FilterFunc1(RawData data) => FilterFunc(data, _searchString);
-
-    private bool FilterFunc(RawData data, string searchString)
-    {
-        if (string.IsNullOrWhiteSpace(searchString))
+        try
         {
-            return true;
-        }
+            _downloading = true;
+            var result = await GetNewMediator().Send(new ExportEducationPayments.Command()
+            {
+                Query = Query!
+            });
 
-        if (data.ParticipantName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+                return;
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+
+        }
+        catch
         {
-            return true;
+            Snackbar.Add($"An error occurred while generating your document.", Severity.Error);
         }
-
-        if (data.ParticipantId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        finally
         {
-            return true;
+            _downloading = false;
         }
-
-        if (data.IneligibilityReason is not null &&
-            data.IneligibilityReason.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        if (data.Location.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        if (data.LocationType.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        return false;
     }
 }
