@@ -154,6 +154,7 @@ public static class DependencyInjection
 
                         e.ConfigureConsumer<DocumentExportCaseWorkloadIntegrationEventConsumer>(context);
                         e.ConfigureConsumer<DocumentExportKeyValuesIntegrationEventConsumer>(context);
+                        e.ConfigureConsumer<DocumentExportCumulativesIntegrationEventConsumer>(context);
                     });
 
                 });
@@ -295,6 +296,7 @@ public static class DependencyInjection
             .AddScoped<IDateTime, DateTimeService>()
             .AddScoped<ICommunicationsService, CommunicationsService>()
             .AddScoped<IExcelService, ExcelService>()
+            .AddScoped<ICumulativeExcelService, CumulativeExcelService>()
             .AddScoped<IUploadService, UploadService>();
     }
 
