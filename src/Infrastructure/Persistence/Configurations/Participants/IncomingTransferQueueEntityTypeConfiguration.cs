@@ -44,9 +44,9 @@ public class IncomingTransferQueueEntityTypeConfiguration : IEntityTypeConfigura
         builder.HasIndex(q => q.Completed);
 
         builder.Property(q => q.CreatedBy)
-            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
         builder.Property(q => q.LastModifiedBy)
-            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
     }
 }
