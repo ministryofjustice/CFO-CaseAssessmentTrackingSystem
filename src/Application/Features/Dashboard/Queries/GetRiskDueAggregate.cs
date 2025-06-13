@@ -1,7 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Dashboard.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
-using DocumentFormat.OpenXml.Drawing;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 
@@ -10,8 +9,7 @@ public static class GetRiskDueAggregate
     [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
     public class Query : IRequest<Result<RiskDueAggregateDto[]>>
     {
-        public required UserProfile CurrentUser { get; set; }
-
+        public required string TenantId { get; set; }
         public required RiskAggregateGroupingType GroupingType { get; set; }
     }
 
@@ -76,7 +74,7 @@ public static class GetRiskDueAggregate
                         })
                     on user.Id equals upcomingRiskGroup.UserId into upcomingRiskJoin
                 from upcomingRisk in upcomingRiskJoin.DefaultIfEmpty()
-                where user.TenantId!.StartsWith(request.CurrentUser.TenantId!)
+                where user.TenantId!.StartsWith(request.TenantId)
                 &&   (overdueRisk.Records > 0 || upcomingRisk.Records > 0)
                         orderby user.DisplayName
                 select new RiskDueAggregateDto(user.DisplayName!, overdueRisk.Records ?? 0, upcomingRisk.Records ?? 0);
@@ -119,7 +117,7 @@ public static class GetRiskDueAggregate
                         })
                     on tenant.Id equals upcomingRiskGroup.TenantId into upcomingRiskJoin
                 from upcomingRisk in upcomingRiskJoin.DefaultIfEmpty()
-                where tenant.Id.StartsWith(request.CurrentUser.TenantId!)
+                where tenant.Id.StartsWith(request.TenantId)
                     && (overdueRisk.Records > 0 || upcomingRisk.Records > 0)
                 orderby tenant.Id
                 select new RiskDueAggregateDto(tenant.Name!, overdueRisk.Records ?? 0, upcomingRisk.Records ?? 0);

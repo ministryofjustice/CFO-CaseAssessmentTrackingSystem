@@ -1,11 +1,14 @@
 ﻿using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Dashboard.Export;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Participants.Caching;
+using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.Features.Participants.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Infrastructure.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -24,6 +27,7 @@ public partial class Participants
     private HashSet<ParticipantPaginationDto> _selectedItems = new();
     private MudDataGrid<ParticipantPaginationDto> _table = default!;
     private bool _loading;
+    private bool _downloading;
     private bool _canSearch;
     private bool _canEnrol;
     private ParticipantPaginationDto _currentDto = new() { Id = "" };
@@ -36,7 +40,7 @@ public partial class Participants
 
     private string GetMultiSelectionText(List<string> selectedValues)
     {
-        return $"{selectedValues.Count} location{(selectedValues.Count > 1 ? "s have" : " has")} been selected";
+        return $"{selectedValues.Count} location{(selectedValues.Count == 1 ? " has" : "s have")} been selected";
     }
 
     private async Task LocationValuesChanged(IEnumerable<LocationDto>? selectedValues)
@@ -139,4 +143,34 @@ public partial class Participants
     {
         Navigation.NavigateTo("/pages/candidates/search");
     }
+
+    private async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+            var result = await GetNewMediator().Send(new ExportParticipants.Command()
+            {
+                Query = Query!
+            });
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
+                return;
+            }
+
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+
+        }
+        catch
+        {
+            Snackbar.Add($"An error occurred while generating your document.", Severity.Error);
+        }
+        finally
+        {
+            _downloading = false;
+        }
+    }
+
 }

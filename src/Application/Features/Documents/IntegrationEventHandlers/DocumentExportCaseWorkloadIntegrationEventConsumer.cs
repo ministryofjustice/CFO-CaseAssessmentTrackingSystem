@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using Cfo.Cats.Application.Features.Dashboard.DTOs;
+using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Application.Features.KeyValues.DTOs;
+using Cfo.Cats.Application.Features.KeyValues.Queries.PaginationQuery;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Documents;
 using MassTransit;
+using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
@@ -30,44 +33,18 @@ public class DocumentExportCaseWorkloadIntegrationEventConsumer(
 
         try
         {
-            var searchCriteria = context.Message.SearchCriteria ?? string.Empty;
-            var tenantPrefix = context.Message.TenantId;
+            var request = JsonConvert.DeserializeObject<GetCaseWorkload.Query>(context.Message.SearchCriteria!)
+                ?? throw new Exception();
 
-            var statuses = EnrolmentStatus.List
-                .Where(e => e.Name.Contains(searchCriteria))
-                .Select(e => e.Value)
-                .ToList();
+            // Hack: call handler directly (skips Authorization pipeline, as we're outside of the HttpContext).
+            var data = await new GetCaseWorkload.Handler(unitOfWork).Handle(request!, CancellationToken.None);
 
-#pragma warning disable CS8602
-            var query =
-                from p in unitOfWork.DbContext.Participants
-                where p.Owner.TenantId.StartsWith(tenantPrefix)
-                   && (
-                       p.Owner.UserName.Contains(searchCriteria) ||
-                       p.Owner.DisplayName.Contains(searchCriteria) ||
-                       p.Owner.TenantName.Contains(searchCriteria) ||
-                       statuses.Contains(p.EnrolmentStatus)
-                      )
-                group p by new
-                {
-                    p.Owner.UserName,
-                    p.Owner.TenantName,
-                    p.EnrolmentStatus,
-                    LocationName = p.CurrentLocation.Name
-                } into g
-                select new CaseSummaryDto
-                {
-                    UserName = g.Key.UserName,
-                    TenantName = g.Key.TenantName,
-                    EnrolmentStatusId = g.Key.EnrolmentStatus,
-                    LocationName = g.Key.LocationName,
-                    Count = g.Count()
-                };
-#pragma warning restore CS8602
+            if(data is not { Succeeded: true })
+            {
+                throw new Exception(data.ErrorMessage);
+            }
 
-            var data = await query.ToListAsync();
-
-            var results = await excelService.ExportAsync(data,
+            var results = await excelService.ExportAsync(data.Data ?? [],
                 new Dictionary<string, Func<CaseSummaryDto, object?>>
                 {
                     { "Tenant", item => item.TenantName },
