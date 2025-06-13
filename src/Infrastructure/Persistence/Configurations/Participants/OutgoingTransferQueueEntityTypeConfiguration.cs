@@ -56,9 +56,9 @@ public class OutgoingTransferQueueEntityTypeConfiguration : IEntityTypeConfigura
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(q => q.CreatedBy)
-            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
         builder.Property(q => q.LastModifiedBy)
-            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
     }
 }
