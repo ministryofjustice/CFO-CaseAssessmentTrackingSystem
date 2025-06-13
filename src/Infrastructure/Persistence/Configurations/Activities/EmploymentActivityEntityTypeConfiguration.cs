@@ -15,5 +15,14 @@ public class EmploymentActivityEntityTypeConfiguration : IEntityTypeConfiguratio
         builder.HasOne(a => a.Document)
             .WithMany()
             .IsRequired(true);
+
+        builder.Property(e => e.EmploymentType)
+            .HasMaxLength(DatabaseConstants.FieldLengths.KeyValue);
+
+        builder.Property(e => e.SalaryFrequency)
+            .HasMaxLength(DatabaseConstants.FieldLengths.KeyValue);
+
+        builder.Property(e => e.EmployerName)
+            .HasMaxLength(64);
     }
 }

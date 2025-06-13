@@ -115,6 +115,11 @@ internal static class DatabaseConstants
         /// </summary>
         public const int CallReference = 20;
 
+        /// <summary>
+        /// The maximum length for a key value pair.
+        /// </summary>
+        public const int KeyValue = 100;
+
     }
 
 }
