@@ -192,7 +192,7 @@ public class CumulativeExcelService : ICumulativeExcelService
             }
             else if (value >= 86)
             {
-                cell.Style.Fill.BackgroundColor = XLColor.Yellow;
+                cell.Style.Fill.BackgroundColor = XLColor.Orange;
             }
             else
             {
