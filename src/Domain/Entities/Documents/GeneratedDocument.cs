@@ -59,4 +59,6 @@ public class DocumentTemplate : SmartEnum<DocumentTemplate>
 
     public static readonly DocumentTemplate CaseWorkload = new(nameof(CaseWorkload), 0);
     public static readonly DocumentTemplate KeyValues = new(nameof(KeyValues), 1);
+
+    public static readonly DocumentTemplate CumulativeFigures = new(nameof(CumulativeFigures), 100);
 }
