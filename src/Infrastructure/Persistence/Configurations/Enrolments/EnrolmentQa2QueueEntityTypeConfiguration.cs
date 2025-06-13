@@ -17,7 +17,7 @@ public class EnrolmentQa2QueueEntityTypeConfiguration : IEntityTypeConfiguration
         
         builder.Property(p => p.TenantId)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
         
         builder.OwnsMany(p => p.Notes, note =>
         {
