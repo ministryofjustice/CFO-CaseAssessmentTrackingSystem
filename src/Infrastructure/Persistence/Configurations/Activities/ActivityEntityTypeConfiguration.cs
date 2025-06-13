@@ -16,7 +16,7 @@ internal class ActivityEntityTypeConfiguration : IEntityTypeConfiguration<Activi
             DatabaseConstants.Tables.Activity,
             DatabaseConstants.Schemas.Activities);
 
-        builder.HasOne(a=>a.Participant)
+        builder.HasOne(a => a.Participant)
             .WithMany()
             .HasForeignKey(a => a.ParticipantId);
 
@@ -77,5 +77,11 @@ internal class ActivityEntityTypeConfiguration : IEntityTypeConfiguration<Activi
                 t => t!.Value,
                 t => ActivityType.FromValue(t)
             );
+
+        builder.Property(a => a.CreatedBy).IsRequired()
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
+        builder.Property(a => a.LastModifiedBy).IsRequired()
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
     }
 }
