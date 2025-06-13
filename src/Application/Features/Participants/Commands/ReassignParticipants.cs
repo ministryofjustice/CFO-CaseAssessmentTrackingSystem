@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -97,6 +97,25 @@ namespace Cfo.Cats.Application.Features.Participants.Commands
                                                                 && x.Id == c.CurrentUser.UserId
                                                                 && x.IsActive == true
                                                                 ).AnyAsync(cancellationToken);
+            }
+        }
+
+        public class C_ParticipantMustNotHaveAnOpenTransfer : AbstractValidator<Command>
+        {
+            private IUnitOfWork _unitOfWork;
+            public C_ParticipantMustNotHaveAnOpenTransfer(IUnitOfWork unitOfWork)
+            {
+                _unitOfWork = unitOfWork;
+
+                RuleForEach(c => c.ParticipantIdsToReassign)
+                    .Must(NotHaveAnOpenTransfer)
+                    .WithMessage((command, participantId) => $"Participant {participantId} has an active transfer, you must first complete the transfer before reassigning.");
+            }
+
+            private bool NotHaveAnOpenTransfer(string participantId)
+            {
+                return _unitOfWork.DbContext.ParticipantIncomingTransferQueue
+                    .Any(p => p.ParticipantId == participantId && p.Completed == false) is false;
             }
         }
     }
