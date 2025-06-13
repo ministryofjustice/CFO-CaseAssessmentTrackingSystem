@@ -31,7 +31,7 @@
         <value>Edit</value>
     </data>
     <data name="Export" xml:space="preserve">
-        <value>Export to Excel</value>
+        <value>Export</value>
     </data>
     <data name="Import" xml:space="preserve">
         <value>Import from Excel</value>

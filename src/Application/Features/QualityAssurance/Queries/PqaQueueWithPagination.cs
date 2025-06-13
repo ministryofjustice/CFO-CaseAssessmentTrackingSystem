@@ -4,6 +4,7 @@ using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Application.Features.QualityAssurance.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
+using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.QualityAssurance.Queries;
 
@@ -17,6 +18,8 @@ public static class PqaQueueWithPagination
             SortDirection = "Desc";
             OrderBy = "Created";
         }
+
+        [JsonIgnore]
         public EnrolmentPqaQueueEntrySpecification Specification => new(this);
     }
 

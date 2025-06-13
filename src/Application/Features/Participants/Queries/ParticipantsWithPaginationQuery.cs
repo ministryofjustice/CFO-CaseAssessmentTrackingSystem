@@ -5,6 +5,7 @@ using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
+using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
 
@@ -13,6 +14,7 @@ public static class ParticipantsWithPagination
     [RequestAuthorize(Policy = SecurityPolicies.CandidateSearch)]
     public class Query : ParticipantAdvancedFilter, IRequest<Result<PaginatedData<ParticipantPaginationDto>>>
     {
+        [JsonIgnore]
         public ParticipantAdvancedSpecification Specification => new(this);
     
     }

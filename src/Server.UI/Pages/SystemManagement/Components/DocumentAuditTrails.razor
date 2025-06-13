@@ -69,7 +69,11 @@
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Property="x => x.RequestType" Title="Event" />
-        <PropertyColumn Property="x => x.OccurredOn" Title="Occurred On" />
+        <PropertyColumn Property="x => x.OccurredOn" Title="Occurred On">
+            <CellTemplate>
+                <ToLocal DateTime="@context.Item.OccurredOn.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
+            </CellTemplate>
+        </PropertyColumn>
         <PropertyColumn Property="x => x.UserId" Title="User">
             <CellTemplate>
                 <MudStack>

@@ -1,7 +1,10 @@
 ﻿using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Application.Features.KeyValues.DTOs;
+using Cfo.Cats.Application.Features.KeyValues.Queries.PaginationQuery;
+using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Domain.Entities.Documents;
 using MassTransit;
+using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
@@ -29,17 +32,15 @@ public class DocumentExportKeyValuesIntegrationEventConsumer(
 
         try
         {
-#pragma warning disable CS8602
-#pragma warning disable CS8604
-            var data = await unitOfWork.DbContext.KeyValues.Where(x =>
-                    x.Description.Contains(context.Message.SearchCriteria) || x.Value.Contains(context.Message.SearchCriteria) ||
-                    x.Text.Contains(context.Message.SearchCriteria))
-                .ProjectTo<KeyValueDto>(mapper.ConfigurationProvider)
-                .ToListAsync();
-#pragma warning restore CS8602
-#pragma warning restore CS8604
+            var request = JsonConvert.DeserializeObject<KeyValuesWithPaginationQuery>(context.Message.SearchCriteria!)
+                ?? throw new Exception();
 
-            var results = await excelService.ExportAsync(data,
+            request.PageSize = int.MaxValue;
+
+            // Hack: call handler directly (skips Authorization pipeline, as we're outside of the HttpContext).
+            var data = await new KeyValuesQueryHandler(unitOfWork, mapper).Handle(request!, CancellationToken.None);
+
+            var results = await excelService.ExportAsync(data.Items,
                 new Dictionary<string, Func<KeyValueDto, object?>>
                 {
                 { localizer["Name"], item => item.Name },

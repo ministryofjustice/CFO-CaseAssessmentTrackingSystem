@@ -29,7 +29,7 @@ public static class ConstantString
     public static string Add => Localize("Add");
     public static string Clone => Localize("Clone");
     public static string New => Localize("New");
-    public static string Export => Localize("Export to Excel");
+    public static string Export => Localize("Export");
     public static string ExportPDF => Localize("Export to PDF");
     public static string Import => Localize("Import from Excel");
     public static string Actions => Localize("Actions");
