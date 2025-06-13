@@ -54,5 +54,11 @@ public class OutgoingTransferQueueEntityTypeConfiguration : IEntityTypeConfigura
             .WithMany()
             .HasForeignKey(q => q.ParticipantId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(q => q.CreatedBy)
+            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
+
+        builder.Property(q => q.LastModifiedBy)
+            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
     }
 }
