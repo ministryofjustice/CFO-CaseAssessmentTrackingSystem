@@ -42,5 +42,11 @@ public class IncomingTransferQueueEntityTypeConfiguration : IEntityTypeConfigura
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(q => q.Completed);
+
+        builder.Property(q => q.CreatedBy)
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
+        builder.Property(q => q.LastModifiedBy)
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
     }
 }
