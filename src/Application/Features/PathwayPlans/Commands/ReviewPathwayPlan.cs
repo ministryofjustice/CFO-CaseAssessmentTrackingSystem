@@ -41,6 +41,7 @@ public static class ReviewPathwayPlan
                 .MustAsync(ParticipantMustNotBeArchived)
                 .WithMessage("Participant is archived"); 
         }
+
         private async Task<bool> ParticipantMustNotBeArchived(Guid pathwayPlanId, CancellationToken cancellationToken)
         {
             var participantId = await (from pp in _unitOfWork.DbContext.PathwayPlans
@@ -51,34 +52,6 @@ public static class ReviewPathwayPlan
                                        )
                             .AsNoTracking()
                             .FirstOrDefaultAsync();
-
-            return participantId != null;
-        }
-    }
-
-    public class A_ParticipantMustNotBeArchived : AbstractValidator<Command>
-    {
-        private readonly IUnitOfWork _unitOfWork;
-
-        public A_ParticipantMustNotBeArchived(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-
-            RuleFor(c => c.PathwayPlanId)
-                .Must(ParticipantMustNotBeArchived)
-                .WithMessage("Participant is archived");
-        }
-
-        private bool ParticipantMustNotBeArchived(Guid pathwayPlanId)
-        {
-            var participantId = (from pp in _unitOfWork.DbContext.PathwayPlans
-                                 join p in _unitOfWork.DbContext.Participants on pp.ParticipantId equals p.Id
-                                 where (pp.Id == pathwayPlanId
-                                 && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
-                                 select p.Id
-                                   )
-                        .AsNoTracking()
-                        .FirstOrDefault();
 
             return participantId != null;
         }

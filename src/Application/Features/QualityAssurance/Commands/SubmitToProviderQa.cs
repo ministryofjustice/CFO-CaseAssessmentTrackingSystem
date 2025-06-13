@@ -40,7 +40,7 @@ public static class SubmitToProviderQa
                 .MustAsync(MustExist)
                 .WithMessage("Participant does not exist")
                 .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is not archived");                 
+                .WithMessage("Participant is archived");                 
 
             RuleFor(c => c.JustificationReason)
                 .Matches(x => ValidationConstants.Notes)

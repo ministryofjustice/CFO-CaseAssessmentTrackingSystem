@@ -1,5 +1,4 @@
 using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Assessments.Caching;
 using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -19,8 +18,7 @@ public static class SaveAssessment
 
         public bool Submit { get; set; } = false;
         
-        public required Assessment Assessment { get; set; } 
-        
+        public required Assessment Assessment { get; set; }         
     }
 
     public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : IRequestHandler<Command, Result>
@@ -92,7 +90,9 @@ public static class SaveAssessment
                 .MustAsync(Exist)
                 .WithMessage("Participant not found")
                 .MustAsync(HaveEnrolmentLocation)
-                .WithMessage("Participant must have an enrolment location");
+                .WithMessage("Participant must have an enrolment location")
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived");
         }
 
         private async Task<bool> Exist(Guid assessmentId, CancellationToken cancellationToken)
@@ -106,5 +106,8 @@ public static class SaveAssessment
 
         private async Task<bool> NotBeCompleted(Guid assessmentId, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.ParticipantAssessments.AnyAsync(pa => pa.Id == assessmentId && pa.Completed == null, cancellationToken);
+
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 }

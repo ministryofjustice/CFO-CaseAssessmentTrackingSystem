@@ -65,7 +65,8 @@
             await _form!.Validate().ConfigureAwait(false);
 
             if (_form!.IsValid == false)
-            {
+            {                
+                Snackbar.Add("Failed to set sticky location", Severity.Error);
                 return;
             }
 

@@ -48,36 +48,24 @@ public static class SaveRisk
             RuleFor(r => r.RiskId)
                 .NotNull()
                 .MustAsync(NotBeCompleted)
-                .WithMessage("Risk already completed");
+                .WithMessage("Risk already completed")
+                .MustAsync(ParticipantMustNotBeArchived)
+                .WithMessage("Participant is archived"); ;
         }
 
         private async Task<bool> NotBeCompleted(Guid riskId, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Risks.AnyAsync(r => r.Id == riskId && r.Completed == null, cancellationToken);
-    }
 
-    public class A_ParticipantMustNotBeArchived : AbstractValidator<Command>
-    {
-        private readonly IUnitOfWork _unitOfWork;
-
-        public A_ParticipantMustNotBeArchived(IUnitOfWork unitOfWork)
+        private async Task<bool> ParticipantMustNotBeArchived(Guid riskId, CancellationToken cancellationToken)
         {
-            _unitOfWork = unitOfWork;
-
-            RuleFor(c => c.RiskId)
-                .Must(ParticipantMustNotBeArchived)
-                .WithMessage("Participant is archived");
-        }
-
-        private bool ParticipantMustNotBeArchived(Guid riskId)
-        {
-            var participantId = (from r in _unitOfWork.DbContext.Risks
+            var participantId = await (from r in _unitOfWork.DbContext.Risks
                                  join p in _unitOfWork.DbContext.Participants on r.ParticipantId equals p.Id
                                  where (r.Id == riskId
                                  && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
                                  select p.Id
                                    )
                         .AsNoTracking()
-                        .FirstOrDefault();
+                        .FirstOrDefaultAsync();
 
             return participantId != null;
         }

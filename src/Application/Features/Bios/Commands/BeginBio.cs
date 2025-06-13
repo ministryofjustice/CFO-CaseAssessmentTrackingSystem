@@ -64,16 +64,21 @@ public static class BeginBio
 
             RuleFor(c => c.ParticipantId)
                 .MinimumLength(9)
-                .WithMessage("Invalid Participant Id")
                 .MaximumLength(9)
-                .WithMessage("Invalid Participant Id")
                 .Matches(ValidationConstants.AlphaNumeric)
-                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, nameof(Command.ParticipantId)))
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+
+            RuleFor(c => c.ParticipantId)
+                .MustAsync(Exist)
+                .WithMessage("Participant not found")                
                 .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived"); 
+                .WithMessage("Participant is archived");                 
         }
 
         private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
                 => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
+
+        private async Task<bool> Exist(string participantId, CancellationToken cancellationToken)
+                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId, cancellationToken);
     }
 }

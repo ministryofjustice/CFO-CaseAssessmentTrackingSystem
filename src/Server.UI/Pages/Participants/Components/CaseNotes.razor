@@ -21,11 +21,17 @@
         }
         else
         {
-            if(_notes.Count()==0)
+            if (_notes.Count() == 0)
             {
-                <MudText Typo="Typo.body1">
-                    No Notes
-                </MudText>
+                <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudText Typo="Typo.body1">
+                                No Notes
+                            </MudText>
+                        </MudCardContent>
+                        </MudCard>                    
+                </MudTimelineItem>
             }
         }
 
