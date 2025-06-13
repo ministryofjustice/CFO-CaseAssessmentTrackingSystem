@@ -240,6 +240,12 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
 
             supervisor.Property(s => s.Address)
                 .HasMaxLength(256);
+
+            supervisor.Property(s => s.CreatedBy)
+                .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
+            supervisor.Property(s => s.LastModifiedBy)
+                .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
         });
 
         builder.OwnsOne(p => p.PersonalDetail, personalDetails =>
