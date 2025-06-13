@@ -26,9 +26,7 @@ public static class ExportCumulativeFigures
                     "Cumulative Figures",
                     currentUserService.UserId!,
                     currentUserService.TenantId!,
-                    searchCriteria: serializer.Serialize(request))
-                .WithExpiry(DateTime.Now.AddDays(8).Date)
-                .WithStatus(DocumentStatus.Processing);
+                    searchCriteria: serializer.Serialize(request));
             
             await unitOfWork.DbContext.Documents.AddAsync(document, cancellationToken);
 
