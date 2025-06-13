@@ -119,9 +119,17 @@ public partial class CaseSummary
             Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessment/{state.Data}");
         }
     }
+
     public void ContinueAssessment()
     {
-        Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessment/{_latestAssessment!.AssessmentId}");
+        if (CanContinueAssessment())
+        {
+            Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessment/{_latestAssessment!.AssessmentId}");
+        }
+        else
+        {
+            Snackbar.Add($"Unable to continue Assessment");
+        }
     }
 
     /// <summary>
@@ -146,6 +154,7 @@ public partial class CaseSummary
             AssessmentScored: false
         } 
         && ParticipantSummaryDto.EnrolmentStatus.ParticipantIsActive();
+     
     }
 
     /// <summary>
@@ -236,16 +245,14 @@ public partial class CaseSummary
 
         if (result.Succeeded is false)
         {
-            return;
-        }
-
-        if (command.ReviewReason.RequiresFurtherInformation)
-        {
-            Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/risk/{result.Data}");
+            Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
         }
         else
         {
-            Navigation.Refresh(true);
+            if (command.ReviewReason.RequiresFurtherInformation)
+            {
+                Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/risk/{result.Data}");
+            }            
         }
     }
 
