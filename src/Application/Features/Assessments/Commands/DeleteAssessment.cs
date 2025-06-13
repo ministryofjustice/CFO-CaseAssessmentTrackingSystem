@@ -24,7 +24,6 @@ public static class DeleteAssessment
             }
             return Result<int>.Success(result);
         }
-
     }
 
     public class Validator : AbstractValidator<Command>
@@ -37,11 +36,25 @@ public static class DeleteAssessment
 
             RuleFor(c => c.AssessmentId)
                 .Must(ExistAndIncomplete)
-                .WithMessage("Assessment already complete or it doesn't exist!");
-
+                .WithMessage("Assessment already complete or it doesn't exist!")
+                .MustAsync(ParticipantMustNotBeArchived)
+                .WithMessage("Participant is archived"); 
         }
 
         bool ExistAndIncomplete(Guid identifier) => _unitOfWork.DbContext.ParticipantAssessments.Any(asmt => asmt.Id == identifier && asmt.Completed.HasValue == false);
-    }
 
+        private async Task<bool> ParticipantMustNotBeArchived(Guid assessmentId, CancellationToken cancellationToken)
+        {
+            var participantId = await (from a in _unitOfWork.DbContext.ParticipantAssessments
+                                       join p in _unitOfWork.DbContext.Participants on a.ParticipantId equals p.Id
+                                       where (a.Id == assessmentId
+                                       && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
+                                       select p.Id
+                                       )
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync();
+
+            return participantId != null;
+        }
+    }
 }

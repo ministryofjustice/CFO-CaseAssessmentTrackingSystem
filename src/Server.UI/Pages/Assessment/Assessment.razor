@@ -1,18 +1,20 @@
 ﻿@using Cfo.Cats.Application.Features.Assessments.Commands
 @using Cfo.Cats.Application.Features.Assessments.DTOs
 @using Cfo.Cats.Application.Features.Assessments.Queries
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Server.UI.Components.Stepper
 
 @inherits CatsComponentBase
 
 @page "/pages/participants/{Upci}/assessment/{AssessmentId:guid}"
 
-@if (_model != null)
+@if (_model != null && string.IsNullOrEmpty(assessmentWarningMessage))
 {
     <div tabindex="-1" @ref="topOfPageElement"></div>
     <CatsMudStepper @ref="@Stepper" Color="Color.Primary" Variant="Variant.Filled"
-                    MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
-                    ActiveStepChanged="@OnStepChange" ShowSkipButton="false" ShowPreviousButton="@_showPrevious">
+    MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
+    ActiveStepChanged="@OnStepChange" ShowSkipButton="false" ShowPreviousButton="@_showPrevious">
         <ChildContent>
             <MudForm Model="@_model">
                 @*This top-level form is responsible for submission *@
@@ -28,19 +30,42 @@
             @if (_showDelete)
             {
                 <MudButton Variant="Variant.Filled" Color="Color.Error"
-                           StartIcon="@Icons.Material.Filled.Delete"
-                           OnClick="DeleteAssessment"
-                           Style="margin-right: 16px; margin-bottom:4px"
-                           IconColor="Color.Surface">@ConstantString.Delete</MudButton>
+                StartIcon="@Icons.Material.Filled.Delete"
+                OnClick="DeleteAssessment"
+                Style="margin-right: 16px; margin-bottom:4px"
+                IconColor="Color.Surface">@ConstantString.Delete</MudButton>
             }
         </ActionContent>
 
     </CatsMudStepper>
 }
+else
+{
+    //Handle inital load
+    if (!string.IsNullOrEmpty(assessmentWarningMessage))
+    {
+        <MudContainer Class="d-flex flex-column align-center justify-center">
+
+            <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">
+                @assessmentWarningMessage
+            </MudAlert>
+
+            <MudContainer Class="d-flex px-0 mt-8 justify-space-between">
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" OnClick="Cancel">
+                    @ConstantString.Cancel
+                </MudButton>
+            </MudContainer>
+
+        </MudContainer>
+    }
+}
 
 @code {
     private bool _showPrevious = false;
     private bool _showDelete = true;
+
+    private static string assessmentWarningMessage { get; set; } = string.Empty;
+    private ParticipantSummaryDto? _participant = null;
 
     private ElementReference topOfPageElement;
 
@@ -52,6 +77,8 @@
 
     [Parameter]
     public Cfo.Cats.Application.Features.Assessments.DTOs.Assessment? Model { get; set; }
+        
+    [CascadingParameter] public UserProfile UserProfile { get; set; } = default!;
 
     private Cfo.Cats.Application.Features.Assessments.DTOs.Assessment? _model;
 
@@ -66,22 +93,31 @@
     protected override async Task OnInitializedAsync()
     {
         _model ??= Model;
+        assessmentWarningMessage = string.Empty;
 
         if (_model is null)
         {
-            var response = await GetNewMediator().Send(new GetAssessment.Query()
-                {
-                    AssessmentId = AssessmentId,
-                    ParticipantId = Upci
-                });
-
-            if (response.Succeeded)
+            if (await CheckParticipantActive())
             {
-                _model = response.Data!;
+                var response = await GetNewMediator().Send(new GetAssessment.Query()
+                    {
+                        AssessmentId = AssessmentId,
+                        ParticipantId = Upci
+                    });
+
+                if (response.Succeeded)
+                {
+                    _model = response.Data!;
+
+                    //Show Delete button if it's not the last step.
+                    _showDelete = Stepper.IsResultStep == false;                    
+                }
+                else
+                {
+                    assessmentWarningMessage = "No Assessment";
+                }
             }
-        }
-        //Show Delete button if it's not the last step.
-        _showDelete = Stepper.IsResultStep == false;
+        }        
     }
 
     private async Task OnStepChange(int step)
@@ -89,60 +125,64 @@
         try
         {
             Processing = true;
-
-            var result = await GetNewMediator().Send(new SaveAssessment.Command()
-                {
-                    Assessment = _model!
-                });
-
-            // Do not show the previous step on the first or last steps.
-            _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
-            //Show Delete button if it's not the last step.
-            _showDelete = Stepper.IsResultStep == false;
-            if (result.Succeeded)
+            if (await CheckParticipantActive())
             {
-                await topOfPageElement.FocusAsync();
+                var result = await GetNewMediator().Send(new SaveAssessment.Command()
+                    {
+                        Assessment = _model!
+                    });
 
-                if (step == Stepper.Steps.Count())
+                // Do not show the previous step on the first or last steps.
+                _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
+
+                //Show Delete button if it's not the last step.
+                _showDelete = Stepper.IsResultStep == false;
+                if (result.Succeeded)
                 {
-                    await SubmitAssessment();
+                    await topOfPageElement.FocusAsync();
+
+                    if (step == Stepper.Steps.Count())
+                    {
+                        await SubmitAssessment();
+                    }
+                }
+                else
+                {
+                    Snackbar.Add(result.ErrorMessage, Severity.Error);
                 }
             }
-            else
-            {
-                Snackbar.Add(result.ErrorMessage, Severity.Error);
-            }
-
         }
         finally
         {
             Processing = false;
         }
-
     }
 
     private async Task SubmitAssessment()
     {
-        if (Stepper.IsAllStepsCompleted())
+        if (await CheckParticipantActive())
         {
-            var validator = new AssessmentValidator();
-            var result = await validator.ValidateAsync(_model!);
-
-            if (result.IsValid)
+            if (Stepper.IsAllStepsCompleted())
             {
-                Processing = true;
-                var response = await GetNewMediator().Send(new SaveAssessment.Command()
-                    {
-                        Assessment = _model!,
-                        Submit = true
-                    });
+                var validator = new AssessmentValidator();
+                var result = await validator.ValidateAsync(_model!);
 
-                Processing = false;
-                SubmissionSuccess = response.Succeeded;
+                if (result.IsValid)
+                {
+                    Processing = true;
+                    var response = await GetNewMediator().Send(new SaveAssessment.Command()
+                        {
+                            Assessment = _model!,
+                            Submit = true
+                        });
+
+                    Processing = false;
+                    SubmissionSuccess = response.Succeeded;
+                }
             }
-
         }
     }
+
     private async Task DeleteAssessment()
     {
         var parameters = new DialogParameters
@@ -162,5 +202,29 @@
             Snackbar.Add("Deletion Successful!", Severity.Info);
             Navigation.NavigateTo(string.Format("/pages/participants/{0}", Upci), true);
         }
+    }
+
+    private async Task<bool> CheckParticipantActive()
+    {
+        _participant = await GetNewMediator().Send(new GetParticipantSummary.Query()
+            {
+                ParticipantId = Upci,
+                CurrentUser = UserProfile
+            });
+
+        if (_participant!.EnrolmentStatus.ParticipantIsActive())
+        {
+            return true;
+        }
+
+        Snackbar.Add("Paricipant is archived", Severity.Error);
+        assessmentWarningMessage  = "Participant is Inactive";
+        return false;
+    }
+
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo($"/pages/participants/{Upci}");
     }
 }

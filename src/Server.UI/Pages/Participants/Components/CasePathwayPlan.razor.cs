@@ -108,10 +108,14 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components
             if (state is true)
             {
                 var result = await GetNewMediator().Send(command);
-
+                
                 if (result.Succeeded)
                 {
                     await OnRefresh();
+                }
+                else
+                {
+                    Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
                 }
             }
         }

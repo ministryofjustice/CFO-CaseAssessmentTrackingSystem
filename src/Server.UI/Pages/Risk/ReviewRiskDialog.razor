@@ -7,8 +7,8 @@
     <DialogContent>
         <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
             <MudSelect @bind-Value="Model.ReviewReason"
-                        Label="@Model.GetMemberDescription(x => x.ReviewReason)"
-                        For="@(() => Model.ReviewReason)">
+            Label="@Model.GetMemberDescription(x => x.ReviewReason)"
+            For="@(() => Model.ReviewReason)">
                 @if(AddReviewRequest)
                 {
                     <MudSelectItem Value="RiskReviewReason.InitialReview">@RiskReviewReason.InitialReview.Name</MudSelectItem>
@@ -23,10 +23,10 @@
             </MudSelect>
 
             <MudTextField @bind-Value="Model.Justification"
-                          Label="@Model.GetMemberDescription(x => x.Justification)"
-                          For="@(() => Model.Justification)"
-                          Lines="5" 
-                          Class="mt-4" />
+            Label="@Model.GetMemberDescription(x => x.Justification)"
+            For="@(() => Model.Justification)"
+            Lines="5" 
+            Class="mt-4" />
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -70,6 +70,10 @@
             {
                 MudDialog.Close(DialogResult.Ok(true));
             }
+            else
+            {
+                return;
+            }
 
         }
         finally
@@ -77,5 +81,4 @@
             saving = false;
         }
     }
-
 }
