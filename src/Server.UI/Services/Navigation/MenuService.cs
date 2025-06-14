@@ -204,6 +204,12 @@ public class MenuService : IMenuService
                             },
                             new()
                             {
+                                Title = "User Audit",
+                                Href = "/identity/users/audit",
+                                PageStatus = PageStatus.Completed
+                            },
+                            new()
+                            {
                                 Title = "Profile",
                                 Href = "/user/profile",
                                 PageStatus = PageStatus.Completed

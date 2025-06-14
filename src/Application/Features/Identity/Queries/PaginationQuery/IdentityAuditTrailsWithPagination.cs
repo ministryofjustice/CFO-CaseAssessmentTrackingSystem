@@ -10,12 +10,12 @@ public static class IdentityAuditTrailsWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsRead)]
     public class Query : IdentityAuditTrailAdvancedFilter,
-        IRequest<PaginatedData<IdentityAuditTrailDto>>
+        IRequest<Result<PaginatedData<IdentityAuditTrailDto>>>
     {
         public IdentityAuditTrailAdvancedSpecification Specification => new (this);
     }
 
-    public class Handler : IRequestHandler<Query, PaginatedData<IdentityAuditTrailDto>>
+    public class Handler : IRequestHandler<Query, Result<PaginatedData<IdentityAuditTrailDto>>>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
@@ -26,7 +26,7 @@ public static class IdentityAuditTrailsWithPagination
             this.mapper = mapper;
         }
 
-        public async Task<PaginatedData<IdentityAuditTrailDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<PaginatedData<IdentityAuditTrailDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var data = await unitOfWork.DbContext
                         .IdentityAuditTrails.OrderBy($"{request.OrderBy} {request.SortDirection}")
@@ -59,9 +59,11 @@ public static class IdentityAuditTrailsWithPagination
                 .Matches(ValidationConstants.SortDirection)
                 .WithMessage(ValidationConstants.SortDirectionMessage);
 
-            RuleFor(r => r.UserName)
-                .NotEmpty()
-                .EmailAddress();
+            When(r => r.UserName is not null, () => {
+                RuleFor(r => r.UserName)
+                    .EmailAddress();
+            });
+         
         }
     }
 }
