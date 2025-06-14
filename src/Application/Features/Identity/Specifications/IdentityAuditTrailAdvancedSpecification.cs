@@ -29,7 +29,7 @@ public class IdentityAuditTrailAdvancedSpecification : Specification<IdentityAud
             .Where(p => p.ActionType == filter.IdentityActionType, filter.IdentityActionType is not null)
             .Where(
                 p => p.UserName == filter.UserName,
-                filter is not null
+                filter.UserName is not null
             )
             .Where(
                 p => p.DateTime.Date == DateTime.Now.Date,

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using Cfo.Cats.Domain.Common.Contracts;
 
@@ -53,24 +54,34 @@ namespace Cfo.Cats.Domain.Entities
         /// <summary>
         /// An unknown user has tried to login
         /// </summary>
+        [Description("Unknown User")]
         UnknownUser, 
 
         /// <summary>
         /// The user has entered an incorrect password
         /// </summary>
+        [Description("Incorrect Password Entered")]
         IncorrectPasswordEntered,
         /// <summary>
         /// The user has entered an incorrect two code
         /// </summary>
+        [Description("Incorrect Two Factor Code Entered")]
         IncorrectTwoFactorCodeEntered,
+        [Description("Correct Password Entered Two Factor Required")]
         CorrectPasswordEnteredTwoFactorRequired,
+        [Description("Login Password Only")]
         LoginPasswordOnly,
+        [Description("Login With Two Factor Code")]
         LoginWithTwoFactorCode,
+        [Description("User Account Locked Out")]
         UserAccountLockedOut,
+        [Description("User Inactive")]
         UserInactive,
+        [Description("Password Reset")]
         PasswordReset,
-
+        [Description("Account Activated")]
         AccountActivated,
+        [Description("Account Deactivated")]
         AccountDeactivated
     }
 }
