@@ -377,4 +377,6 @@ public class Participant : OwnerPropertyEntity<string>
         }
         return DateOfFirstConsent.Value.ToDateTime(TimeOnly.MinValue);
     }
+
+    public bool IsActive() => EnrolmentStatus?.ParticipantIsActive() ?? false;
 }
