@@ -36,7 +36,7 @@ public class PRIPaginationDto
         {
             CreateMap<Domain.Entities.PRIs.PRI, PRIPaginationDto>()
                 .ForMember(dest => dest.ParticipantName, opt => opt.MapFrom(src => src.Participant!.FullName))
-                .ForMember(dest => dest.ParticipantIsActive, opt => opt.MapFrom(src => src.Participant!.EnrolmentStatus!.ParticipantIsActive()));
+                .ForMember(dest => dest.ParticipantIsActive, opt => opt.MapFrom(src => src.Participant!.IsActive()));
         }
     }
 }

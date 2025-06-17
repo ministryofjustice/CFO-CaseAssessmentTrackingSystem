@@ -45,7 +45,7 @@
             </MudMenuItem>            
         }
 
-        @if (_canForceUpdate  && Participant.EnrolmentStatus.ParticipantIsActive())
+        @if (_canForceUpdate  && Participant.IsActive)
         {
             <MudMenuItem Icon="@Icons.Material.Filled.LocationSearching" IconColor="Color.Primary" OnClick="SetStickyLocation">
                 @ConstantString.SetStickyLocation
