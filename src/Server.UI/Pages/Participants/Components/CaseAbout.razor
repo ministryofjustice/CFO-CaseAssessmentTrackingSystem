@@ -13,7 +13,7 @@
                                 <MudText Typo="Typo.h6">Personal Details</MudText>
                             </CardHeaderContent>
                             <CardHeaderActions>
-                                @if (participant.EnrolmentStatus!.ParticipantIsActive())
+                                @if (participant.IsActive)
                                 {
                                     <MudTooltip Text="Edit">
                                         <MudIconButton OnClick="EditPersonalInformation" Icon="@Icons.Material.Filled.Edit" />
@@ -61,7 +61,7 @@
                                 <MudExpansionPanel>
                                     <TitleContent>
                                         <div class="d-flex gap-4">
-                                            @if (!participant!.EnrolmentStatus!.ParticipantIsActive())
+                                            @if (!participant!.IsActive)
                                             {
                                                 <div class="d-flex gap-2">
                                                     <MudTooltip Text="Edit">
@@ -98,7 +98,7 @@
                         </MudExpansionPanels>
                     </MudCardContent>
                     <MudCardActions>
-                        @if (participant!.EnrolmentStatus!.ParticipantIsActive())
+                        @if (participant!.IsActive)
                         {
                             <MudTooltip Text="Add Contact Information">
                                 <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="AddContact" />

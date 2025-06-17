@@ -138,7 +138,7 @@ public partial class CaseSummary
     private bool CanBeginAssessment()
     {
         return _latestAssessment == null 
-            && ParticipantSummaryDto.EnrolmentStatus.ParticipantIsActive();
+            && ParticipantSummaryDto.IsActive;
     }
 
     /// <summary>
@@ -153,7 +153,7 @@ public partial class CaseSummary
         {
             AssessmentScored: false
         } 
-        && ParticipantSummaryDto.EnrolmentStatus.ParticipantIsActive();
+        && ParticipantSummaryDto.IsActive;
      
     }
 
@@ -168,7 +168,7 @@ public partial class CaseSummary
             AssessmentScored: true
         }
         && ParticipantSummaryDto.EnrolmentStatus.SupportsReassessment()
-        && ParticipantSummaryDto.EnrolmentStatus.ParticipantIsActive();        
+        && ParticipantSummaryDto.IsActive;        
     }
 
     private bool HasRiskInformation() => ParticipantSummaryDto.LatestRisk is not null;
@@ -176,13 +176,13 @@ public partial class CaseSummary
     private bool CanAddRiskInformation()
     { 
             return HasRiskInformation() is false
-            && ParticipantSummaryDto.EnrolmentStatus.ParticipantIsActive();
+            && ParticipantSummaryDto.IsActive;
     }
 
     private bool CanReviewRiskInformation() 
     { 
             return HasRiskInformation()
-            && ParticipantSummaryDto.EnrolmentStatus.ParticipantIsActive();
+            && ParticipantSummaryDto.IsActive;
     }
 
     public async Task ReviewRiskInformation()
@@ -305,13 +305,13 @@ public partial class CaseSummary
     private bool CanBeginBio() 
     {    
         return _bio == null
-                && ParticipantSummaryDto.EnrolmentStatus.ParticipantIsActive();
+                && ParticipantSummaryDto.IsActive;
     }
 
     private bool CanRestartBio()
     {
         return _bio?.BioStatus == BioStatus.Complete
-               && ParticipantSummaryDto.EnrolmentStatus.ParticipantIsActive();
+               && ParticipantSummaryDto.IsActive;
     }
 
     /// <summary>
@@ -323,7 +323,7 @@ public partial class CaseSummary
     { 
         return _bio is not null 
             && (_bio.BioStatus == BioStatus.InProgress || _bio.BioStatus == BioStatus.SkippedForNow)
-            && ParticipantSummaryDto.EnrolmentStatus.ParticipantIsActive();
+            && ParticipantSummaryDto.IsActive;
     }
 
     private bool HasPathwayPlan => ParticipantSummaryDto.PathwayPlan is not null;
@@ -335,7 +335,7 @@ public partial class CaseSummary
         return _latestPRI == null 
             && ParticipantSummaryDto.LocationType.IsCustody 
             && ParticipantSummaryDto.LocationType.IsMapped
-            && ParticipantSummaryDto.EnrolmentStatus.ParticipantIsActive();
+            && ParticipantSummaryDto.IsActive;
     }
 
     public void BeginPRI()

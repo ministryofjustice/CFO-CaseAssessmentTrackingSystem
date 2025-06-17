@@ -212,7 +212,7 @@ else
                 CurrentUser = UserProfile
             });
 
-        if (_participant!.EnrolmentStatus.ParticipantIsActive())
+        if (_participant!.IsActive)
         {
             return true;
         }

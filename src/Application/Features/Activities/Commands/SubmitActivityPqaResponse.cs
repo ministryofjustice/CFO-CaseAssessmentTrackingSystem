@@ -201,11 +201,10 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
 
             private bool ParticipantMustNotBeArchived(Guid queueEntryId)
             {
-
                 var entry = _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Participant)
                     .FirstOrDefault(a => a.Id == queueEntryId);
-
-                return entry != null && entry.Participant!.EnrolmentStatus == EnrolmentStatus.ArchivedStatus;
+                
+                return entry != null && entry.Participant!.IsActive();
             }
         }
     }
