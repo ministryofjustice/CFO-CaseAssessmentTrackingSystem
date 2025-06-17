@@ -129,11 +129,11 @@
     [Parameter]
     public EventCallback OnChange { get; set; }
 
-    [CascadingParameter]
+    [Parameter, EditorRequired]
     public required string ParticipantId { get; set; }
 
     [Parameter, EditorRequired]
-    public bool ParticipantIsActive { get; set; } = default!;
+    public required bool ParticipantIsActive { get; set; }
 
     public async Task Complete()
     {
