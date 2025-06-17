@@ -50,7 +50,7 @@
             .Where(task => task.IsCompleted is false || HideCompletedTasks is false)
             .OrderBy(task => task.Created))
             {
-                <ObjectiveTask Model="task" OnChange="async() => await OnChange.InvokeAsync()" ParticipantIsActive="ParticipantIsActive" PathwayPlanId="Model.PathwayPlanId" />
+                <ObjectiveTask Model="task" OnChange="async() => await OnChange.InvokeAsync()" ParticipantIsActive="ParticipantIsActive" PathwayPlanId="Model.PathwayPlanId" ParticipantId="@ParticipantId" />
             }
         </CascadingValue>
         <div class="d-flex align-center ml-2 mt-4 mb-2">
