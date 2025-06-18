@@ -162,7 +162,12 @@
 
                 if (result.Succeeded)
                 {
+                    Snackbar.Add(ConstantString.TaskSuccessfullyCompleted, Severity.Info);
                     await OnChange.InvokeAsync();
+                }
+                else
+                {
+                    Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
                 }
             }
             catch(ApplicationException ae)
@@ -210,10 +215,15 @@
         if (state!.Canceled is false)
         {
             var result = await GetNewMediator().Send(command);
-
+                        
             if (result.Succeeded)
-            {
+            {             
+                Snackbar.Add(ConstantString.DateSuccessfullyAdjusted, Severity.Info);
                 await OnChange.InvokeAsync();
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
             }
         }
     }
@@ -245,7 +255,12 @@
 
             if (result.Succeeded)
             {
+                Snackbar.Add(ConstantString.TaskSuccessfullyRenamed, Severity.Info);
                 await OnChange.InvokeAsync();
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
             }
         }
     }

@@ -1,6 +1,7 @@
 using Cfo.Cats.Application.Features.Activities.Queries;
 using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
+using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Pages.Activities;
 using Cfo.Cats.Server.UI.Pages.Objectives.Tasks;
 
@@ -44,10 +45,15 @@ namespace Cfo.Cats.Server.UI.Pages.Objectives
             if (state!.Canceled is false)
             {
                 var result = await GetNewMediator().Send(command);
-
+                                
                 if (result.Succeeded)
                 {
+                    Snackbar.Add(ConstantString.ObjectiveSuccessfullyCompleted, Severity.Info);
                     await OnChange.InvokeAsync();
+                }
+                else
+                {
+                    Snackbar.Add(result.ErrorMessage, Severity.Error);
                 }
             }
         }
@@ -76,7 +82,12 @@ namespace Cfo.Cats.Server.UI.Pages.Objectives
 
                 if (result.Succeeded)
                 {
+                    Snackbar.Add(ConstantString.TaskSuccessfullyAddedToObjective, Severity.Info);
                     await OnChange.InvokeAsync();
+                }
+                else
+                {
+                    Snackbar.Add(result.ErrorMessage, Severity.Error);
                 }
             }
         }
@@ -119,8 +130,13 @@ namespace Cfo.Cats.Server.UI.Pages.Objectives
                 var result = await GetNewMediator().Send(command);
 
                 if (result.Succeeded)
-                {
+                {                    
+                    Snackbar.Add(ConstantString.ObjectiveSuccessfullyRenamed, Severity.Info);
                     await OnChange.InvokeAsync();
+                }
+                else
+                {
+                    Snackbar.Add(result.ErrorMessage, Severity.Error);
                 }
             }
         }

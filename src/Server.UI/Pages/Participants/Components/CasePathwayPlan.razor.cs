@@ -1,6 +1,7 @@
 using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.Queries;
+using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Pages.Objectives;
 using FluentValidation;
 
@@ -81,7 +82,12 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components
 
                 if (result.Succeeded)
                 {
+                    Snackbar.Add(ConstantString.ThematicObjectiveSuccessfullyAdded, Severity.Info);
                     await OnRefresh();
+                }
+                else
+                {
+                    Snackbar.Add(result.ErrorMessage, Severity.Error);
                 }
             }
         }
@@ -108,9 +114,11 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components
             if (state is true)
             {
                 var result = await GetNewMediator().Send(command);
-                
+
                 if (result.Succeeded)
                 {
+
+                    Snackbar.Add(ConstantString.PathwayPlanSuccessfullyReviewed, Severity.Info);
                     await OnRefresh();
                 }
                 else
