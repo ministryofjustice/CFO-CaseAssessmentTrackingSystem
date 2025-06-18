@@ -79,6 +79,9 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
             .IsRequired(false)
             .HasColumnType("date");
 
+        builder.Property(x => x.PrimaryRecordKeyAtCreation)
+            .HasMaxLength(DatabaseConstants.FieldLengths.ExternalIdentifier);
+
         builder.HasOne(e => e.CurrentLocation)
             .WithMany()
             .HasForeignKey("_currentLocationId")
@@ -174,7 +177,7 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
 
             externalIdentifier.Property(x => x.Value)
                 .IsRequired()
-                .HasMaxLength(16);
+                .HasMaxLength(DatabaseConstants.FieldLengths.ExternalIdentifier);
 
             externalIdentifier.Property(e => e.Type)
                 .IsRequired()

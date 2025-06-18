@@ -8,6 +8,6 @@ internal class PublishParticipantCreatedEventHandler(IUnitOfWork unitOfWork) : I
 {
     public async Task Handle(ParticipantCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        await unitOfWork.DbContext.InsertOutboxMessage(new ParticipantCreatedIntegrationEvent(notification.Item.Id, notification.Item.Created ?? DateTime.UtcNow));
+        await unitOfWork.DbContext.InsertOutboxMessage(new ParticipantCreatedIntegrationEvent(notification.Item.Id, notification.Item.PrimaryRecordKeyAtCreation, notification.Item.Created ?? DateTime.UtcNow));
     }
 }
