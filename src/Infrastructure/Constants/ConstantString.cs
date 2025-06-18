@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using Cfo.Cats.Domain.Entities.Participants;
+using System.Globalization;
 using System.Resources;
 
 namespace Cfo.Cats.Infrastructure.Constants;
@@ -193,4 +194,31 @@ public static class ConstantString
 
     public static string Active =>
      Localize("Active");
+
+    public static string DateSuccessfullyAdjusted =>
+    Localize("Date Successfully Adjusted");
+
+    public static string TaskSuccessfullyRenamed =>
+    Localize("Task Successfully Renamed");
+
+    public static string TaskSuccessfullyCompleted =>
+    Localize("Task Successfully Completed");
+
+    public static string ThematicObjectiveSuccessfullyAdded =>
+    Localize("Thematic Objective Successfully Added");
+
+    public static string PathwayPlanSuccessfullyReviewed =>
+    Localize("Pathway Plan Successfully Reviewed");
+
+    public static string TaskSuccessfullyAddedToObjective =>
+    Localize("Task Successfully Added To Objective");
+
+    public static string ObjectiveSuccessfullyRenamed =>
+    Localize("Objective Successfully Renamed");
+
+    public static string ObjectiveSuccessfullyCompleted =>
+    Localize("Objective Successfully Completed");
+
+    
+    
 }
