@@ -52,7 +52,8 @@ public class Participant : OwnerPropertyEntity<string>
             ReferralComments = referralComments,
             _currentLocationId = locationId,
             Nationality = nationality,
-            RiskDueReason = RiskDueReason.NewEntry
+            RiskDueReason = RiskDueReason.NewEntry,
+            Created = DateTime.UtcNow
         };
 
         p.AddDomainEvent(new ParticipantCreatedDomainEvent(p, locationId));
