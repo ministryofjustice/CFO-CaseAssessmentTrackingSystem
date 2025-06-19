@@ -78,10 +78,10 @@ internal class ActivityEntityTypeConfiguration : IEntityTypeConfiguration<Activi
                 t => ActivityType.FromValue(t)
             );
 
-        builder.Property(a => a.CreatedBy).IsRequired()
+        builder.Property(a => a.CreatedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
-        builder.Property(a => a.LastModifiedBy).IsRequired()
+        builder.Property(a => a.LastModifiedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
     }
 }
