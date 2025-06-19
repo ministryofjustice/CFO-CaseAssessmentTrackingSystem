@@ -23,11 +23,17 @@ public class CandidateService(
                 $"dateOfBirth={searchQuery.DateOfBirth!.Value:yyyy-MM-dd}"
             };
             var result = await client.GetFromJsonAsync<SearchResult[]>($"/search?{string.Join('&', queryParams)}");
-            return result!;
+
+            if (result == null)
+            {
+                return Result<SearchResult[]>.NotFound();
+            }
+            
+            return Result<SearchResult[]>.Success(result);
         }
         catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
         {
-            return Result<Result<SearchResult[]>>.NotFound();
+            return Result<SearchResult[]>.NotFound();
         }
         catch (Exception ex)
         {
