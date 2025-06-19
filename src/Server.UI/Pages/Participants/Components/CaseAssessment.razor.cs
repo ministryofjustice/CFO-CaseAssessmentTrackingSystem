@@ -55,6 +55,6 @@ public partial class CaseAssessment
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JS.InvokeVoidAsync("removeInlineStyle", ".two-columns");
+        await JSRuntime.InvokeVoidAsync("removeInlineStyle", ".two-columns");
     }
 }
