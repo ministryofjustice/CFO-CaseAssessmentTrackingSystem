@@ -120,6 +120,11 @@ internal static class DatabaseConstants
         /// </summary>
         public const int KeyValue = 100;
 
+        /// <summary>
+        /// The maximum length for an external identifier (e.g. CRN, Nomis Number).
+        /// </summary>
+        public const int ExternalIdentifier = 16;
+
     }
 
 }

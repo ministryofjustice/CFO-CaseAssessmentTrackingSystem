@@ -89,4 +89,6 @@ public class CandidateDto
     public string? CommunityLocation { get; set; }
     public string? CustodyLocation { get; set; }
     public bool IsInCustody { get; set; }
+
+    public string? PrimaryRecordKey => Primary is "NOMIS" ? NomisNumber : Crn;
 }

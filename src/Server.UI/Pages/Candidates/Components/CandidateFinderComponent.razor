@@ -12,27 +12,27 @@
                     <MudItem xs="12">
 
                         <MudTextField Label="External Identifier (PNomis/NDelius Id)" @bind-Value="Query.ExternalIdentifier"
-                            For="(() => Query.ExternalIdentifier)" Immediate="true" />
+                        For="(() => Query.ExternalIdentifier)" Immediate="true" />
 
                     </MudItem>
                     <MudItem xs="12">
                         <MudTextField Label="First Name" @bind-Value="Query.FirstName" For="(() => Query.FirstName)"
-                            Immediate="true" />
+                        Immediate="true" />
                     </MudItem>
                     <MudItem xs="12">
                         <MudTextField Label="Last Name" @bind-Value="Query.LastName" For="(() => Query.LastName)"
-                            Immediate="true" />
+                        Immediate="true" />
                     </MudItem>
                     <MudItem xs="12">
                         <MudDatePicker Label="Date Of Birth" @bind-Date="Query.DateOfBirth" For="(() => Query.DateOfBirth)" PickerVariant="PickerVariant.Dialog"
-                            ImmediateText="true" Editable="true" MaxDate="DateTime.Today.AddYears(-18)" />
+                        ImmediateText="true" Editable="true" MaxDate="DateTime.Today.AddYears(-18)" />
                     </MudItem>
                 </MudFocusTrap>
             </MudForm>
             <MudContainer Class="d-flex px-0 pt-8">
                 <MudSpacer />
                 <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Search" Loading="false"
-                    Disabled="false">
+                Disabled="false">
                     Search
                 </MudLoadingButton>
             </MudContainer>
@@ -67,6 +67,11 @@
         if (_form.IsValid)
         {
             var result = await CandidateService.SearchAsync(Query!);
+
+            if(result.Succeeded is false)
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
 
             await OnSearch.InvokeAsync(result.Succeeded ? result.Data : []);
         }

@@ -34,7 +34,8 @@ public class Participant : OwnerPropertyEntity<string>
         string referralSource, 
         string? referralComments, 
         int locationId,
-        string? nationality)
+        string? nationality,
+        string? primaryRecordKeyAtCreation)
     {
         Participant p = new()
         {
@@ -52,7 +53,9 @@ public class Participant : OwnerPropertyEntity<string>
             ReferralComments = referralComments,
             _currentLocationId = locationId,
             Nationality = nationality,
-            RiskDueReason = RiskDueReason.NewEntry
+            RiskDueReason = RiskDueReason.NewEntry,
+            PrimaryRecordKeyAtCreation = primaryRecordKeyAtCreation,
+            Created = DateTime.UtcNow
         };
 
         p.AddDomainEvent(new ParticipantCreatedDomainEvent(p, locationId));
@@ -101,6 +104,8 @@ public class Participant : OwnerPropertyEntity<string>
     public string? RegistrationDetailsJson { get; private set; }
 
     public string? FullName => string.Join(' ', [FirstName, MiddleName, LastName]);
+
+    public string? PrimaryRecordKeyAtCreation { get; set; }
 
     public DateTime? LastSyncDate { get; private set; } 
 

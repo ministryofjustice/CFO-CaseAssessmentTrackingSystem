@@ -62,7 +62,8 @@ public static class CreateParticipant
                 referralSource: request.ReferralSource!,
                 referralComments: request.ReferralComments,
                 locationId: candidate.MappedLocationId,
-                nationality: candidate.Nationality);
+                nationality: candidate.Nationality,
+                primaryRecordKeyAtCreation: candidate.PrimaryRecordKey);
 
             if(candidate.Crn is not null)
             {
