@@ -1,14 +1,15 @@
 ﻿using Cfo.Cats.Application.Features.Assessments.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using MassTransit;
+using Rebus.Handlers;
+
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<AssessmentScoredIntegrationEvent>
+public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMessages<AssessmentScoredIntegrationEvent>
 {
-    public async Task Consume(ConsumeContext<AssessmentScoredIntegrationEvent> context)
+    public async Task Handle(AssessmentScoredIntegrationEvent context)
     {
-        if(await unitOfWork.DbContext.ParticipantAssessments.CountAsync(a => a.ParticipantId == context.Message.ParticipantId) is 1)
+        if(await unitOfWork.DbContext.ParticipantAssessments.CountAsync(a => a.ParticipantId == context.ParticipantId) is 1)
         {
             // We are only interested in reassessments
             return;
@@ -47,22 +48,22 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
     static ReassessmentPayment CreateNonPayable(Data data, IneligibilityReason ineligibilityReason)
         => ReassessmentPayment.CreateNonPayable(data.AssessmentId, data.Completed, data.Created, data.ParticipantId, data.TenantId, data.SupportWorker, data.ContractId, data.LocationId, data.LocationType, ineligibilityReason);
     
-    async Task<Data> GetData(ConsumeContext<AssessmentScoredIntegrationEvent> context)
+    async Task<Data> GetData(AssessmentScoredIntegrationEvent context)
     {
         var db = unitOfWork.DbContext;
 
-        var twoMonthsAgo = context.Message.OccurredOn.Date.AddMonths(-2);
+        var twoMonthsAgo = context.OccurredOn.Date.AddMonths(-2);
         var twoPaymentMonthsAgo = new DateTime(twoMonthsAgo.Year, twoMonthsAgo.Month, day: 1);
 
         var query = from p in db.Participants
                     join a in db.ParticipantAssessments on p.Id equals a.ParticipantId
                     join l in db.Locations on a.LocationId equals l.Id
-                    where a.Id == context.Message.Id
+                    where a.Id == context.Id
                     select new Data
                     {
                         PreviouslyPaidAssessments = (
                             from rp in db.ReassessmentPayments
-                            join ddTo in db.DateDimensions on context.Message.OccurredOn.Date equals ddTo.TheDate
+                            join ddTo in db.DateDimensions on context.OccurredOn.Date equals ddTo.TheDate
                             where rp.ParticipantId == p.Id
                                   && rp.EligibleForPayment
                                   && rp.PaymentPeriod.Date <= ddTo.TheLastOfMonth
@@ -78,8 +79,8 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsum
                             orderby a.Created ascending
                             select a
                         ).First().Completed!.Value,
-                        AssessmentId = context.Message.Id,
-                        Completed = context.Message.OccurredOn,
+                        AssessmentId = context.Id,
+                        Completed = context.OccurredOn,
                         Created = a.Created!.Value,
                         ParticipantId = a.ParticipantId,
                         TenantId = a.TenantId!,

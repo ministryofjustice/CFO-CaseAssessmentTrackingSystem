@@ -1,19 +1,19 @@
 ﻿using Cfo.Cats.Application.Features.QualityAssurance.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using MassTransit;
+using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<EnrolmentApprovedAtQaIntegrationEvent>
+public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMessages<EnrolmentApprovedAtQaIntegrationEvent>
 {
-    public async Task Consume(ConsumeContext<EnrolmentApprovedAtQaIntegrationEvent> context)
+    public async Task Handle(EnrolmentApprovedAtQaIntegrationEvent context)
     {
             // get participant information
             var participantInfo = await unitOfWork.DbContext
                 .Participants
                 .IgnoreAutoIncludes()
                 .AsNoTracking()
-                .Where(p => p.Id == context.Message.ParticipantId)
+                .Where(p => p.Id == context.ParticipantId)
                 .Select(p => new
                 {
                     ParticipantId = p.Id,
@@ -32,16 +32,16 @@ public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<
 
             var submissionToAuthority = await unitOfWork.DbContext
                 .EnrolmentQa1Queue
-                .Where(p => p.ParticipantId == context.Message.ParticipantId)
+                .Where(p => p.ParticipantId == context.ParticipantId)
                 .MaxAsync(p => p.Created);
 
             var submissionsToAuthority = await unitOfWork.DbContext
                 .EnrolmentQa1Queue
-                .Where(p => p.ParticipantId == context.Message.ParticipantId)
+                .Where(p => p.ParticipantId == context.ParticipantId)
                 .CountAsync();
 
             var supportWorker = await unitOfWork.DbContext.EnrolmentPqaQueue
-                .Where(q => q.ParticipantId == context.Message.ParticipantId)
+                .Where(q => q.ParticipantId == context.ParticipantId)
                 .OrderByDescending(q => q.Created)
                 .Select(pqa => new
                 {
@@ -53,10 +53,10 @@ public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<
 
             // do we already have a payment?
             var exists = unitOfWork.DbContext.EnrolmentPayments
-                .Any(p => p.ParticipantId == context.Message.ParticipantId && p.EligibleForPayment);
+                .Any(p => p.ParticipantId == context.ParticipantId && p.EligibleForPayment);
 
             var payment = new EnrolmentPaymentBuilder()
-                .WithParticipantId(context.Message.ParticipantId)
+                .WithParticipantId(context.ParticipantId)
                 .WithSupportWorker(supportWorker.SupportWorkerId)
                 .WithContractId(participantInfo.ContractId)
                 .WithConsentAdded(participantInfo.Consent.ConsentAdded!.Value)
@@ -64,7 +64,7 @@ public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<
                 .WithSubmissionToPqa(supportWorker.SubmissionToPqa!.Value)
                 .WithSubmissionToAuthority(submissionToAuthority!.Value)
                 .WithSubmissionsToAuthority(submissionsToAuthority)
-                .WithApproved(context.Message.ApprovalDate.Date)
+                .WithApproved(context.ApprovalDate.Date)
                 .WithLocationId(participantInfo.LocationId)
                 .WithLocationType(participantInfo.LocationType)
                 .WithTenantId(supportWorker.TenantId)

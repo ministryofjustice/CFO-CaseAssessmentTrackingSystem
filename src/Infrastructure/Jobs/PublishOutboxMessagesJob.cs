@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Cfo.Cats.Application.Outbox;
-using MassTransit;
 using Quartz;
+using Rebus.Bus;
 
 
 namespace Cfo.Cats.Infrastructure.Jobs;
@@ -52,8 +52,10 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
                         throw new ApplicationException("Unable to deserialize message content");
                     }
 
-                    await bus.Publish(deserializedMessage, messageType);
+                    //await bus.Advanced.Topics.Publish(outboxMessage.Type, deserializedMessage);
 
+                    await bus.Publish(deserializedMessage);
+                    
                     outboxMessage.ProcessedOnUtc = DateTime.UtcNow;
                 }
                 catch (Exception ex)

@@ -1,12 +1,13 @@
 ﻿using Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using MassTransit;
+using Rebus.Handlers;
+
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordPreReleaseSupportPayment(IUnitOfWork unitOfWork) : IConsumer<PRIAssignedIntegrationEvent>
+public class RecordPreReleaseSupportPayment(IUnitOfWork unitOfWork) : IHandleMessages<PRIAssignedIntegrationEvent>
 {
-    public async Task Consume(ConsumeContext<PRIAssignedIntegrationEvent> context)
+    public async Task Handle(PRIAssignedIntegrationEvent context)
     {
         var data = await GetData(context);
 
@@ -66,7 +67,7 @@ public class RecordPreReleaseSupportPayment(IUnitOfWork unitOfWork) : IConsumer<
             reason: reason
         );
 
-    private async Task<Data> GetData(ConsumeContext<PRIAssignedIntegrationEvent> context)
+    private async Task<Data> GetData(PRIAssignedIntegrationEvent context)
     {
         var db = unitOfWork.DbContext;
 
@@ -74,7 +75,7 @@ public class RecordPreReleaseSupportPayment(IUnitOfWork unitOfWork) : IConsumer<
             join pri in db.PRIs on p.Id equals pri.ParticipantId
             join l in db.Locations on pri.CustodyLocationId equals l.Id
             join u in db.Users on pri.CreatedBy equals u.Id
-            where pri.Id == context.Message.PRIId
+            where pri.Id == context.PRIId
             select new Data
             {
                 PriId = pri.Id,

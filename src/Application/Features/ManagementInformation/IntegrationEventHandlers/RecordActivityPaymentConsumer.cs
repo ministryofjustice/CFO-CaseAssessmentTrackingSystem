@@ -1,18 +1,18 @@
-﻿using Cfo.Cats.Domain.Entities.ManagementInformation;
-using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
-using MassTransit;
+﻿using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
+using Cfo.Cats.Domain.Entities.ManagementInformation;
+using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<ActivityApprovedIntegrationEvent>
+public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMessages<ActivityApprovedIntegrationEvent>
 {
-    public async Task Consume(ConsumeContext<ActivityApprovedIntegrationEvent> context)
+    public async Task Handle(ActivityApprovedIntegrationEvent context)
     {
         var activity = await unitOfWork.DbContext.Activities
             .Include(a => a.TookPlaceAtContract)
             .Include(a => a.TookPlaceAtLocation)
             .AsNoTracking()
-            .SingleAsync(activity => activity.Id == context.Message.Id);
+            .SingleAsync(activity => activity.Id == context.Id);
 
 
         if (activity.Type == ActivityType.Employment || activity.Type == ActivityType.EducationAndTraining)

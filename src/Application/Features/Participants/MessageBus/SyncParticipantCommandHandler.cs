@@ -1,21 +1,24 @@
-﻿using Cfo.Cats.Application.Features.Candidates.DTOs;
-using Cfo.Cats.Domain.Entities.Participants;
-using MassTransit;
+﻿using Cfo.Cats.Domain.Entities.Participants;
+using Rebus.Handlers;
+
 
 namespace Cfo.Cats.Application.Features.Participants.MessageBus;
 
-[ExcludeFromConfigureEndpoints]
-public class SyncParticipantCommandHandler(IUnitOfWork unitOfWork, ICandidateService candidateService, IDomainEventDispatcher domainEventDispatcher, ILogger<SyncParticipantCommandHandler> logger) 
-    : IConsumer<SyncParticipantCommand>
+public class SyncParticipantCommandHandler(
+    IUnitOfWork unitOfWork,
+    ICandidateService candidateService,
+    IDomainEventDispatcher domainEventDispatcher,
+    ILogger<SyncParticipantCommandHandler> logger)
+    : IHandleMessages<SyncParticipantCommand>
 {
-    public async Task Consume(ConsumeContext<SyncParticipantCommand> context)
+    public async Task Handle(SyncParticipantCommand context)
     {
         var participant = await unitOfWork.DbContext
             .Participants
             .IgnoreAutoIncludes()
             .Include(x => x.CurrentLocation)
             .AsSplitQuery()
-            .FirstAsync(x => x.Id == context.Message.ParticipantId);
+            .FirstAsync(x => x.Id == context.ParticipantId);
     
         logger.LogDebug($"Syncing {participant.Id}");
 

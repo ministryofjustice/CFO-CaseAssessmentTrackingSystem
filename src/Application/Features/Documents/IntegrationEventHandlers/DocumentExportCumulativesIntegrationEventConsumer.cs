@@ -2,10 +2,10 @@
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
 using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Application.Features.ManagementInformation.Commands;
-using Cfo.Cats.Application.Features.ManagementInformation.DTOs;
 using Cfo.Cats.Application.Features.ManagementInformation.Providers;
 using Cfo.Cats.Domain.Entities.Documents;
-using MassTransit;
+using Rebus.Handlers;
+
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
@@ -17,12 +17,12 @@ public class DocumentExportCumulativesIntegrationEventConsumer(
     ICumulativeExcelService excelService,
     IUploadService uploadService,
     IDomainEventDispatcher domainEventDispatcher,
-    ILogger<DocumentExportCumulativesIntegrationEventConsumer> logger) : IConsumer<ExportDocumentIntegrationEvent>
+    ILogger<DocumentExportCumulativesIntegrationEventConsumer> logger) : IHandleMessages<ExportDocumentIntegrationEvent>
 {
 
-    public async Task Consume(ConsumeContext<ExportDocumentIntegrationEvent> context)
+    public async Task Handle(ExportDocumentIntegrationEvent context)
     {
-        if (context.Message.Key != DocumentTemplate.CumulativeFigures.Name)
+        if (context.Key != DocumentTemplate.CumulativeFigures.Name)
         {
             logger.LogDebug($"Document type is not managed by this handler. Ignoring.");
             return;
@@ -30,17 +30,17 @@ public class DocumentExportCumulativesIntegrationEventConsumer(
 
         var document = await unitOfWork.DbContext
             .GeneratedDocuments
-            .FindAsync(context.Message.DocumentId);
+            .FindAsync(context.DocumentId);
 
         if (document is null)
         {
-            logger.LogWarning("Cannot find document with id {DocumentId}", context.Message.DocumentId);
+            logger.LogWarning("Cannot find document with id {DocumentId}", context.DocumentId);
             return;
         }
 
         if (document.SearchCriteriaUsed is null)
         {
-            logger.LogWarning("Document with id {DocumentId} has no search criteria", context.Message.DocumentId);
+            logger.LogWarning("Document with id {DocumentId} has no search criteria", context.DocumentId);
             return;
         }
 
@@ -53,7 +53,7 @@ public class DocumentExportCumulativesIntegrationEventConsumer(
 
             string[] contracts = command.ContractId is not null
                 ? [command.ContractId]
-                : contractService.GetVisibleContracts(context.Message.TenantId)
+                : contractService.GetVisibleContracts(context.TenantId)
                     .Select(c => c.Id)
                     .ToArray();
 
@@ -76,7 +76,7 @@ public class DocumentExportCumulativesIntegrationEventConsumer(
 
             var uploadRequest = new UploadRequest(document.Title!, UploadType.Document, results);
 
-            var result = await uploadService.UploadAsync($"MyDocuments/{context.Message.UserId}", uploadRequest);
+            var result = await uploadService.UploadAsync($"MyDocuments/{context.UserId}", uploadRequest);
 
             document
                 .WithStatus(DocumentStatus.Available)

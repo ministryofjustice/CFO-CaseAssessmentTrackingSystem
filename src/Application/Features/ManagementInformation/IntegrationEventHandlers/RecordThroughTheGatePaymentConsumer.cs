@@ -1,15 +1,16 @@
 using Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using MassTransit;
+using Rebus.Handlers;
+
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
 public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
-    : IConsumer<PRIThroughTheGateCompletedIntegrationEvent>
+    : IHandleMessages<PRIThroughTheGateCompletedIntegrationEvent>
 {
-    public async Task Consume(ConsumeContext<PRIThroughTheGateCompletedIntegrationEvent> context)
+    public async Task Handle(PRIThroughTheGateCompletedIntegrationEvent context)
     {
-        var data = await GetData(context.Message.PRIId);
+        var data = await GetData(context.PRIId);
 
         var payment = GeneratePayment(data);
 

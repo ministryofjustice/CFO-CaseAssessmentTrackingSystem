@@ -1,6 +1,6 @@
 ﻿namespace Cfo.Cats.Application.Outbox;
 
-internal static class OutboxExtensions
+public static class OutboxExtensions
 {
     internal static async Task InsertOutboxMessage<T>(
         this IApplicationDbContext context,
