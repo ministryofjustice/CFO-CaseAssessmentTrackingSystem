@@ -4,39 +4,41 @@ using Cfo.Cats.Application.Features.Inductions.IntegrationEvents;
 using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
 using Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.PRIs;
-using MassTransit;
+using Rebus.Bus;
+using Rebus.Handlers;
+
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork) : IConsumer<ParticipantTransitionedIntegrationEvent>
+public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork, IBus bus) : IHandleMessages<ParticipantTransitionedIntegrationEvent>
 {
-    public async Task Consume(ConsumeContext<ParticipantTransitionedIntegrationEvent> context)
+    public async Task Handle(ParticipantTransitionedIntegrationEvent context)
     {
-        if (context.Message.To != EnrolmentStatus.ApprovedStatus.Name)
+        if (context.To != EnrolmentStatus.ApprovedStatus.Name)
         {
             return;
         }
 
-        if (await IsFirstApproval(context.Message.ParticipantId))
+        if (await IsFirstApproval(context.ParticipantId))
         {
             List<object> events = [];
 
             var wings = await unitOfWork.DbContext.WingInductions
-                .Where(e => e.ParticipantId == context.Message.ParticipantId)
+                .Where(e => e.ParticipantId == context.ParticipantId)
                 .Select(e => e.Id)
                 .ToArrayAsync();
 
             var hubs = await unitOfWork.DbContext.HubInductions
-                .Where(e => e.ParticipantId == context.Message.ParticipantId)
+                .Where(e => e.ParticipantId == context.ParticipantId)
                 .Select(e => e.Id)
                 .ToArrayAsync();
 
-            var activities = await unitOfWork.DbContext.Activities.Where(e => e.ParticipantId == context.Message.ParticipantId)
+            var activities = await unitOfWork.DbContext.Activities.Where(e => e.ParticipantId == context.ParticipantId)
                 .Where(e => e.ApprovedOn != null)
                 .Select(e => new { e.Id, e.ApprovedOn })
                 .ToArrayAsync();
 
-            var pris = await unitOfWork.DbContext.PRIs.Where(e => e.ParticipantId == context.Message.ParticipantId)
+            var pris = await unitOfWork.DbContext.PRIs.Where(e => e.ParticipantId == context.ParticipantId)
                 .Where(e => e.AssignedTo != null)
                 .Select(e => e)
                 .ToArrayAsync();
@@ -49,7 +51,7 @@ public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork) : IConsu
                 .Select(task => new { task, PRI = pris.First(p => p.ObjectiveId == task.ObjectiveId) });
 
             var reassessments = await unitOfWork.DbContext.ParticipantAssessments
-                .Where(a => a.ParticipantId == context.Message.ParticipantId && a.Completed != null)
+                .Where(a => a.ParticipantId == context.ParticipantId && a.Completed != null)
                 .Select(p => new { p.Id, p.ParticipantId, p.Completed })
                 .OrderBy(a => a.Completed)
                 .Skip(1) // Ignore initial assessment
@@ -62,7 +64,10 @@ public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork) : IConsu
             events.AddRange(mandatoryTasks.Select(task => new PRIThroughTheGateCompletedIntegrationEvent(task.PRI.Id)));
             events.AddRange(reassessments.Select(r => new AssessmentScoredIntegrationEvent(r.Id, r.ParticipantId, r.Completed!.Value)));
 
-            await context.PublishBatch(events);
+            foreach (var message in events)
+            {
+                await bus.Publish(message);
+            }
         }
     }
 

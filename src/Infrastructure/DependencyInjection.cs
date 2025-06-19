@@ -7,7 +7,9 @@ using Cfo.Cats.Application.Common.Interfaces.Serialization;
 using Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents;
 using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
+using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
 using Cfo.Cats.Application.Features.Participants.MessageBus;
+using Cfo.Cats.Application.Features.PathwayPlans.IntegrationEvents;
 using Cfo.Cats.Application.Features.PRIs.IntegrationEventHandlers;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
@@ -19,11 +21,11 @@ using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.Contracts;
 using Cfo.Cats.Infrastructure.Services.Delius;
 using Cfo.Cats.Infrastructure.Services.Locations;
+using Cfo.Cats.Infrastructure.Services.MessageHandling;
 using Cfo.Cats.Infrastructure.Services.MultiTenant;
 using Cfo.Cats.Infrastructure.Services.OffLoc;
 using Cfo.Cats.Infrastructure.Services.Ordnance;
 using Cfo.Cats.Infrastructure.Services.Serialization;
-using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -32,6 +34,9 @@ using Microsoft.Extensions.Configuration;
 using Quartz;
 using Quartz.AspNetCore;
 using ZiggyCreatures.Caching.Fusion;
+using Rebus;
+using Rebus.Config;
+using Rebus.Handlers;
 
 namespace Cfo.Cats.Infrastructure;
 
@@ -83,95 +88,33 @@ public static class DependencyInjection
                 s.GetRequiredService<RightToWorkSettings>()
             );
 
-        services.AddMassTransit(x =>
+        services.Configure<RabbitSettings>(configuration.GetSection("RabbitSettings"));
+            
+
+        services.AddRebus(configure =>
         {
-            
-            x.AddConsumers(typeof(RecordEnrolmentPaymentConsumer).Assembly); // Automatically add all consumers
+            var provider = services.BuildServiceProvider();
+            var rabbitSettings = provider.GetRequiredService<IOptions<RabbitSettings>>().Value;
 
-         
-
-            if(configuration.GetConnectionString("rabbit")!.Equals("InMemory", StringComparison.CurrentCultureIgnoreCase))
-            {
-                    x.UsingInMemory((context, cfg) =>
-                    {
-                        cfg.UseConcurrencyLimit(1); // all consumers should be limited to 1 unless otherwise specified
-
-                        cfg.ConfigureEndpoints(context);
-
-                        // Override for specific consumer with a custom concurrency limit
-                        cfg.ReceiveEndpoint("overnight-service", e =>
-                        {
-                            e.Consumer<SyncParticipantCommandHandler>(context, c =>
-                            {
-                                c.UseConcurrencyLimit(5); // Custom concurrency limit for this consumer
-                            });
-                        });
-
-
-                    });   
-            }
-            else
-            {
-                x.UsingRabbitMq((context, cfg) =>
-                {
-
-                    cfg.Host(configuration.GetConnectionString("rabbit"));
-
-                    cfg.ReceiveEndpoint("overnight-service", e =>
-                    {
-                        e.PrefetchCount = 64;
-                        e.ConcurrentMessageLimit = 5;
-                        e.ConfigureConsumer<SyncParticipantCommandHandler>(context);
-                    });
-
-                    cfg.ReceiveEndpoint("tasks-service", e =>
-                    {
-                        e.PrefetchCount = 64;
-                        e.ConcurrentMessageLimit = 5;
-
-                        e.ConfigureConsumer<PriTaskCompletedWatcherConsumer>(context);
-                        e.ConfigureConsumer<RaisePaymentsAfterApprovalConsumer>(context);
-                    });
-
-                    cfg.ReceiveEndpoint("payment-service", e =>
-                    {
-                        e.ConcurrentMessageLimit = 1;
-                        
-                        e.ConfigureConsumer<RecordActivityPaymentConsumer>(context);
-                        e.ConfigureConsumer<RecordEducationPayment>(context);
-                        e.ConfigureConsumer<RecordEmploymentPayment>(context);
-                        e.ConfigureConsumer<RecordEnrolmentPaymentConsumer>(context);
-                        e.ConfigureConsumer<RecordHubInductionPaymentConsumer>(context);
-                        e.ConfigureConsumer<RecordPreReleaseSupportPayment>(context);
-                        e.ConfigureConsumer<RecordThroughTheGatePaymentConsumer>(context);
-                        e.ConfigureConsumer<RecordWingInductionPaymentConsumer>(context);
-                        e.ConfigureConsumer<RecordReassessmentPaymentConsumer>(context);
-                    });
-
-                    cfg.ReceiveEndpoint("document-service", e =>
-                    {
-                        e.ConcurrentMessageLimit = 1;
-
-                        e.ConfigureConsumer<DocumentExportCaseWorkloadIntegrationEventConsumer>(context);
-                        e.ConfigureConsumer<DocumentExportKeyValuesIntegrationEventConsumer>(context);
-                        e.ConfigureConsumer<DocumentExportRiskDueAggregateIntegrationEventConsumer>(context);
-                        e.ConfigureConsumer<DocumentExportRiskDueIntegrationEventConsumer>(context);
-                        e.ConfigureConsumer<DocumentExportParticipantsIntegrationEventConsumer>(context);
-                        e.ConfigureConsumer<DocumentExportPqaActivitiesIntegrationEventConsumer>(context);
-                        e.ConfigureConsumer<DocumentExportPqaEnrolmentsIntegrationEventConsumer>(context);
-                        e.ConfigureConsumer<DocumentExportActivityPaymentsIntegrationEventConsumer>(context);
-                        e.ConfigureConsumer<DocumentExportEducationPaymentsIntegrationEventConsumer>(context);
-                        e.ConfigureConsumer<DocumentExportEmploymentPaymentsIntegrationEventConsumer>(context);
-                        e.ConfigureConsumer<DocumentExportEnrolmentPaymentsIntegrationEventConsumer>(context);
-                        e.ConfigureConsumer<DocumentExportInductionPaymentsIntegrationEventConsumer>(context);
-                        e.ConfigureConsumer<DocumentExportSupportAndReferralPaymentsIntegrationEventConsumer>(context);
-                        e.ConfigureConsumer<DocumentExportCumulativesIntegrationEventConsumer>(context);
-                    });
-
-                });
-            }
-            
+            return configure
+                .Transport(t => t.UseRabbitMqAsOneWayClient(configuration.GetConnectionString("rabbit"))
+                    .ExchangeNames(rabbitSettings.DirectExchange, rabbitSettings.TopicExchange));
         });
+        
+        var handlerTypes = typeof(SyncParticipantCommandHandler).Assembly
+            .GetTypes()
+            .Where(t => t.IsAbstract == false && t.GetInterfaces()
+                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>)));
+
+        foreach (var handler in handlerTypes)
+        {
+            services.AddScoped(handler);
+        }
+
+        services.AddHostedService<OvernightBackgroundService>();
+        services.AddHostedService<TasksBackgroundService>();
+        services.AddHostedService<PaymentBackgroundService>();
+        services.AddHostedService<DocumentsBackgroundService>();
 
         return services;
     }

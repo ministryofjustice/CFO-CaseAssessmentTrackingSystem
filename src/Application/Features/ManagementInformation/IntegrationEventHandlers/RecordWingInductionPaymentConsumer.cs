@@ -1,22 +1,22 @@
-using System.Net;
 using Cfo.Cats.Application.Features.Inductions.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using MassTransit;
+using Rebus.Handlers;
+using System.Net;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordWingInductionPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<WingInductionCreatedIntegrationEvent>
+public class RecordWingInductionPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMessages<WingInductionCreatedIntegrationEvent>
 {
 
-    public async Task Consume(ConsumeContext<WingInductionCreatedIntegrationEvent> context)
+    public async Task Handle(WingInductionCreatedIntegrationEvent context)
     {
         var inductionData = await unitOfWork.DbContext.WingInductions
             .Include(a => a.Location)
                 .ThenInclude(l => l!.Contract)
             .Include(a => a.Owner)
             .AsNoTracking()
-            .SingleAsync(i => i.Id == context.Message.Id);
+            .SingleAsync(i => i.Id == context.Id);
 
         IneligibilityReason? ineligibilityReason = null;
 

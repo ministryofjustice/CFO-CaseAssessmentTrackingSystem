@@ -2,21 +2,21 @@ using Cfo.Cats.Application.Features.Inductions.IntegrationEvents;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using MassTransit;
+using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordHubInductionPaymentConsumer(IUnitOfWork unitOfWork) : IConsumer<HubInductionCreatedIntegrationEvent>
+public class RecordHubInductionPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMessages<HubInductionCreatedIntegrationEvent>
 {
 
-    public async Task Consume(ConsumeContext<HubInductionCreatedIntegrationEvent> context)
+    public async Task Handle(HubInductionCreatedIntegrationEvent context)
     {
         var inductionData = await unitOfWork.DbContext.HubInductions
             .Include(a => a.Location)
                 .ThenInclude(l => l!.Contract)
             .Include(a => a.Owner)
             .AsNoTracking()
-            .SingleAsync(i => i.Id == context.Message.Id);
+            .SingleAsync(i => i.Id == context.Id);
 
         IneligibilityReason? ineligibilityReason = null;
 

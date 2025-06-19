@@ -4,8 +4,8 @@ using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Domain.Entities.Documents;
-using MassTransit;
 using Newtonsoft.Json;
+using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
@@ -14,16 +14,16 @@ public class DocumentExportParticipantsIntegrationEventConsumer(
     IExcelService excelService,
     IUploadService uploadService,
     IMapper mapper,
-    IDomainEventDispatcher domainEventDispatcher) : IConsumer<ExportDocumentIntegrationEvent>
+    IDomainEventDispatcher domainEventDispatcher) : IHandleMessages<ExportDocumentIntegrationEvent>
 {
-    public async Task Consume(ConsumeContext<ExportDocumentIntegrationEvent> context)
+    public async Task Handle(ExportDocumentIntegrationEvent context)
     {
-        if (context.Message.Key != DocumentTemplate.Participants.Name)
+        if (context.Key != DocumentTemplate.Participants.Name)
         {
             return;
         }
 
-        var document = await unitOfWork.DbContext.GeneratedDocuments.FindAsync(context.Message.DocumentId);
+        var document = await unitOfWork.DbContext.GeneratedDocuments.FindAsync(context.DocumentId);
 
         if (document is null)
         {
@@ -32,7 +32,7 @@ public class DocumentExportParticipantsIntegrationEventConsumer(
 
         try
         {
-            var request = JsonConvert.DeserializeObject<ParticipantsWithPagination.Query>(context.Message.SearchCriteria!) 
+            var request = JsonConvert.DeserializeObject<ParticipantsWithPagination.Query>(context.SearchCriteria!) 
                 ?? throw new Exception();
 
             request.PageSize = int.MaxValue;
@@ -57,7 +57,7 @@ public class DocumentExportParticipantsIntegrationEventConsumer(
 
             var uploadRequest = new UploadRequest(document.Title!, UploadType.Document, results);
 
-            var result = await uploadService.UploadAsync($"MyDocuments/{context.Message.UserId}", uploadRequest);
+            var result = await uploadService.UploadAsync($"MyDocuments/{context.UserId}", uploadRequest);
 
             document
                 .WithStatus(DocumentStatus.Available)

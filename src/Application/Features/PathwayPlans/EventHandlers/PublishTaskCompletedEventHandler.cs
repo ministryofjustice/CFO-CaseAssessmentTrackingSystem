@@ -1,7 +1,6 @@
 ﻿using Cfo.Cats.Application.Features.PathwayPlans.IntegrationEvents;
 using Cfo.Cats.Application.Outbox;
 using Cfo.Cats.Domain.Events;
-using MassTransit;
 
 namespace Cfo.Cats.Application.Features.PathwayPlans.EventHandlers
 {

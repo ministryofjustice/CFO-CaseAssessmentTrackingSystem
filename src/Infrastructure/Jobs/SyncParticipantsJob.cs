@@ -1,8 +1,6 @@
 ﻿using Cfo.Cats.Application.Features.Participants.MessageBus;
-using Cfo.Cats.Domain.Common.Enums;
-using Cfo.Cats.Domain.Entities.Participants;
-using MassTransit;
 using Quartz;
+using Rebus.Bus;
 
 namespace Cfo.Cats.Infrastructure.Jobs;
 

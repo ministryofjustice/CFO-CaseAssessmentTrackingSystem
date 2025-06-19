@@ -1,33 +1,35 @@
 ﻿using Cfo.Cats.Application.Features.PathwayPlans.IntegrationEvents;
 using Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
-using MassTransit;
+using Cfo.Cats.Application.Outbox;
+using Rebus.Handlers;
+
 
 namespace Cfo.Cats.Application.Features.PRIs.IntegrationEventHandlers;
 
-public class PriTaskCompletedWatcherConsumer(IUnitOfWork unitOfWork, ILogger<PriTaskCompletedWatcherConsumer> logger) : IConsumer<ObjectiveTaskCompletedIntegrationEvent>
+public class PriTaskCompletedWatcherConsumer(IUnitOfWork unitOfWork, ILogger<PriTaskCompletedWatcherConsumer> logger) : IHandleMessages<ObjectiveTaskCompletedIntegrationEvent>
 {
-    public async Task Consume(ConsumeContext<ObjectiveTaskCompletedIntegrationEvent> context)
+    public async Task Handle(ObjectiveTaskCompletedIntegrationEvent context)
     {
-        if (context.Message.IsMandatoryTask == false)
+        if (context.IsMandatoryTask == false)
         {
             logger.LogDebug("Ignoring non mandatory task");
             return;
         }
 
-        if (context.Message.Index != 2)
+        if (context.Index != 2)
         {
             logger.LogDebug("Ignoring mandatory task that is not index 2");
             return;
         }
 
-        if (context.Message.CompletionState == CompletionStatus.NotRequired.Name)
+        if (context.CompletionState == CompletionStatus.NotRequired.Name)
         {
             logger.LogDebug("Ignoring mandatory task that has been completed as not required");
             return;
         }
 
         var query = from p in unitOfWork.DbContext.PRIs
-            where p.ObjectiveId == context.Message.ObjectiveId
+            where p.ObjectiveId == context.ObjectiveId
                 && p.ActualReleaseDate != null
             select new
             {
@@ -41,7 +43,10 @@ public class PriTaskCompletedWatcherConsumer(IUnitOfWork unitOfWork, ILogger<Pri
         if (result is not null)
         {
             // we are a PRI objective, and we have a release date. Ergo, raise an event
-            await context.Publish(new PRIThroughTheGateCompletedIntegrationEvent(result.PRIId));
+            await unitOfWork.DbContext.InsertOutboxMessage(
+                new PRIThroughTheGateCompletedIntegrationEvent(result
+                    .PRIId));
+            await unitOfWork.SaveChangesAsync();
         }
 
     }

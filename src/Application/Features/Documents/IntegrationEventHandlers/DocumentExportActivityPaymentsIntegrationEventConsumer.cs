@@ -3,8 +3,8 @@ using Cfo.Cats.Application.Features.ManagementInformation;
 using Cfo.Cats.Application.Features.Payments.DTOs;
 using Cfo.Cats.Application.Features.Payments.Queries;
 using Cfo.Cats.Domain.Entities.Documents;
-using MassTransit;
 using Newtonsoft.Json;
+using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
@@ -13,16 +13,16 @@ public class DocumentExportActivityPaymentsIntegrationEventConsumer(
     IExcelService excelService,
     IUploadService uploadService,
     IDomainEventDispatcher domainEventDispatcher,
-    ITargetsProvider targetsProvider) : IConsumer<ExportDocumentIntegrationEvent>
+    ITargetsProvider targetsProvider) : IHandleMessages<ExportDocumentIntegrationEvent>
 {
-    public async Task Consume(ConsumeContext<ExportDocumentIntegrationEvent> context)
+    public async Task Handle(ExportDocumentIntegrationEvent context)
     {
-        if (context.Message.Key != DocumentTemplate.ActivityPayments.Name)
+        if (context.Key != DocumentTemplate.ActivityPayments.Name)
         {
             return;
         }
 
-        var document = await unitOfWork.DbContext.GeneratedDocuments.FindAsync(context.Message.DocumentId);
+        var document = await unitOfWork.DbContext.GeneratedDocuments.FindAsync(context.DocumentId);
 
         if (document is null)
         {
@@ -31,7 +31,7 @@ public class DocumentExportActivityPaymentsIntegrationEventConsumer(
 
         try
         {
-            var request = JsonConvert.DeserializeObject<GetActivityPayments.Query>(context.Message.SearchCriteria!)
+            var request = JsonConvert.DeserializeObject<GetActivityPayments.Query>(context.SearchCriteria!)
                 ?? throw new Exception();
 
             // Hack: call handler directly (skips Authorization pipeline, as we're outside of the HttpContext).
@@ -63,7 +63,7 @@ public class DocumentExportActivityPaymentsIntegrationEventConsumer(
 
             var uploadRequest = new UploadRequest(document.Title!, UploadType.Document, results);
 
-            var result = await uploadService.UploadAsync($"MyDocuments/{context.Message.UserId}", uploadRequest);
+            var result = await uploadService.UploadAsync($"MyDocuments/{context.UserId}", uploadRequest);
 
             document
                 .WithStatus(DocumentStatus.Available)
