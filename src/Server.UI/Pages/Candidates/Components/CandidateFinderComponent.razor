@@ -68,12 +68,7 @@
         {
             var result = await CandidateService.SearchAsync(Query!);
 
-            if(result.Succeeded is false)
-            {
-                Snackbar.Add(result.ErrorMessage, Severity.Error);
-            }
-
-            await OnSearch.InvokeAsync(result.Succeeded ? result.Data : []);
+            await OnSearch.InvokeAsync(result?.Data ?? []);
         }
     }
 
