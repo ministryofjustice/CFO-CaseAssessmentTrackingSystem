@@ -145,6 +145,10 @@ public static class DependencyInjection
         app.UseStatusCodePagesWithRedirects("/404");
         
         app.UseAuthentication();
+        
+        // Add session timeout middleware BEFORE authorization
+        app.UseMiddleware<SessionTimeoutMiddleware>();
+        
         app.UseAuthorization();
 
 

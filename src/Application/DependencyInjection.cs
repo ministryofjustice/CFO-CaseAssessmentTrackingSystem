@@ -25,6 +25,7 @@ public static class DependencyInjection
             config.AddOpenBehavior(typeof(UnhandledExceptionBehaviour<,>));
             config.AddOpenBehavior(typeof(RequestExceptionProcessorBehavior<,>));
             // config.AddOpenBehavior(typeof(MemoryCacheBehaviour<,>)); // issues with caching means we need to turn it off for now
+            config.AddOpenBehavior(typeof(SessionValidatingBehaviour<,>));
             config.AddOpenBehavior(typeof(AuthorizationBehaviour<,>));
 
             // config.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>)); // issues with caching means we need to turn it off for now

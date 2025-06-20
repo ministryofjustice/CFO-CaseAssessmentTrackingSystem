@@ -1,4 +1,5 @@
 using System.Net;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Domain.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +7,7 @@ using NetTools;
 
 namespace Cfo.Cats.Infrastructure.Services.Identity;
 
-public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory, IOptions<IdentityOptions> optionsAccessor, ILogger<SignInManager<ApplicationUser>> logger, IAuthenticationSchemeProvider schemes, IUserConfirmation<ApplicationUser> confirmation, IOptions<AllowlistOptions> allowlistOptions, INetworkIpProvider networkIpAccessor)
+public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory, IOptions<IdentityOptions> optionsAccessor, ILogger<SignInManager<ApplicationUser>> logger, IAuthenticationSchemeProvider schemes, IUserConfirmation<ApplicationUser> confirmation, IOptions<AllowlistOptions> allowlistOptions, INetworkIpProvider networkIpAccessor, ISessionService sessionService)
     : SignInManager<ApplicationUser>(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation)
 {    
     public override async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure)
@@ -40,10 +41,21 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
         if (PasswordCheckSucceededAndTwoFactorDisabledForIpRange(passwordCheckResult, ipAddress))
         {
             await SignInAsync(user, isPersistent);
+            sessionService.StartSession(user.Id);
             return passwordCheckResult;
         }        
 
         return await base.PasswordSignInAsync(userName, password, isPersistent, lockoutOnFailure); 
+    }
+
+    public override async Task<SignInResult> PasswordSignInAsync(ApplicationUser user, string password, bool isPersistent, bool lockoutOnFailure)
+    {
+        SignInResult result = await  base.PasswordSignInAsync(user, password, isPersistent, lockoutOnFailure);
+        if (result.Succeeded)
+        {
+            sessionService.StartSession(user.Id);
+        }
+        return result;
     }
 
     private bool PasswordCheckSucceededAndTwoFactorDisabledForIpRange(SignInResult passwordCheckResult, string? ipAddress)
