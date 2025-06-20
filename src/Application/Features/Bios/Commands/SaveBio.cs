@@ -60,9 +60,16 @@ public static class SaveBio
             RuleFor(x => x.Bio.ParticipantId)
                 .MinimumLength(9)
                 .MaximumLength(9)
+                .WithMessage("Invalid Participant Id")
                 .Matches(ValidationConstants.AlphaNumeric)
-                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, nameof(Command.Bio.ParticipantId)));
-            
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+
+            RuleFor(x => x.Bio.ParticipantId)
+                .MustAsync(Exist)
+                .WithMessage("Participant not found")
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived");
+
             RuleFor(x => x.Bio.Id)
                 .NotEmpty()
                 .MustAsync(NotBeCompleted)
@@ -71,6 +78,11 @@ public static class SaveBio
 
         private async Task<bool> NotBeCompleted(Guid bioId, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.ParticipantBios.AnyAsync(b => b.Id == bioId && b.Completed == null, cancellationToken);
-    }
 
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
+
+        private async Task<bool> Exist(string participantId, CancellationToken cancellationToken)
+                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId, cancellationToken);
+    }
 }

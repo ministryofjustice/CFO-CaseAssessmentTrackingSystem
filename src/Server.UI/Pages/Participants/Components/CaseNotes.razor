@@ -8,14 +8,33 @@
 @if(_notes is not null)
 {
     <MudTimeline TimelinePosition="TimelinePosition.Start" Modifiers="true">
-        <MudTimelineItem TimelineAlign="TimelineAlign.Start">
-            <div class="d-flex gap-4 align-center mud-list-subheader">
-                <MudTooltip Text="New">
-                    <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="OnAddNote" Class="rounded-circle"></MudIconButton>
-                </MudTooltip>
-                <MudText>New note</MudText>
-            </div>
-        </MudTimelineItem>
+        @if (ParticipantIsActive)
+        {
+            <MudTimelineItem TimelineAlign="TimelineAlign.Start">
+                <div class="d-flex gap-4 align-center mud-list-subheader">
+                    <MudTooltip Text="New">
+                        <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="OnAddNote" Class="rounded-circle"></MudIconButton>
+                    </MudTooltip>
+                    <MudText>New note</MudText>
+                </div>
+            </MudTimelineItem>
+        }
+        else
+        {
+            if (_notes.Count() == 0)
+            {
+                <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudText Typo="Typo.body1">
+                                No Notes
+                            </MudText>
+                        </MudCardContent>
+                        </MudCard>                    
+                </MudTimelineItem>
+            }
+        }
+
         @foreach(var note in _notes.OrderByDescending(x => x.Created))
         {
             <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
@@ -54,66 +73,4 @@
             </MudTimelineItem>
         }
     </MudTimeline>
-}
-
-@code {
-    ParticipantNoteDto[]? _notes = null;
-
-    [Parameter]
-    [EditorRequired]
-    public string ParticipantId { get; set; } = default!;
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            await OnRefresh();
-        }
-        catch(NotFoundException)
-        {
-            // handle not found
-        }
-        finally
-        {
-            await base.OnInitializedAsync();
-        }
-
-    }
-
-    private async Task OnRefresh()
-    {
-        _notes = await GetNewMediator().Send(new GetParticipantNotes.Query()
-        {
-            ParticipantId = ParticipantId
-        });
-    }
-
-    public async Task OnAddNote()
-    {
-        // Show Dialog
-        var parameters = new DialogParameters<AddNoteDialog>
-        {
-            { x => x.Model, new AddNote.Command() { ParticipantId = ParticipantId, Message = string.Empty } }
-        };
-
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-
-        var dialog = await DialogService.ShowAsync<AddNoteDialog>
-            ("Add a note", parameters, options);
-
-        var state = await dialog.Result;
-
-        if (!state!.Canceled)
-        {
-            await OnRefresh();
-        }
-
-    }
-
-    public async Task OnExpandNote(string message)
-    {
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        await DialogService.ShowMessageBox("Note", message, options: options);
-    }
-
 }

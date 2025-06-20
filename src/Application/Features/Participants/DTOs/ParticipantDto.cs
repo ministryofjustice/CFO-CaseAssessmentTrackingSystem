@@ -61,6 +61,8 @@ public class ParticipantDto
     [Description("Risk Due Reason")]
     public RiskDueReason? RiskDueReason { get; set; }
 
+    public bool IsActive { get; set; }
+
     private class Mapping : Profile
     {
         public Mapping()
@@ -86,7 +88,9 @@ public class ParticipantDto
                 .ForMember(dest => dest.LastSync, options => options.MapFrom(src => src.LastSyncDate ?? src.Created))
                 .ForMember(dest => dest.BioDue, opt => opt.MapFrom(src => src.BioDue))
                 .ForMember(dest => dest.CalculatedConsentDate, opt => opt.MapFrom(src => src.CalculateConsentDate()))
-                .ForMember(dest => dest.BioDueInDays, opt => opt.MapFrom(src => src.BioDueInDays()));
+                .ForMember(dest => dest.BioDueInDays, opt => opt.MapFrom(src => src.BioDueInDays()))
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive()));
+
         }
     }
 }

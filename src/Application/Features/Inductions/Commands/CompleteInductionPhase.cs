@@ -48,7 +48,13 @@ public static class CompleteInductionPhase
             _unitOfWork = unitOfWork;
             
             RuleFor(c => c.WingInductionId)
-                .NotEmpty();
+                .NotEmpty()
+                .MustAsync(MustExist)
+                .WithMessage("No wing induction found")
+                .MustAsync(MustHaveOpenPhase)
+                .WithMessage("No open phases to complete.")
+                .MustAsync(ParticipantMustNotBeArchived)
+                .WithMessage("Participant is archived");
 
             RuleFor(c => c.CompletionDate)
                 .NotNull()
@@ -57,19 +63,10 @@ public static class CompleteInductionPhase
 
             RuleFor(c => c.CurrentUser)
                 .NotNull();
-
-            RuleFor(c => c.WingInductionId)
-                .MustAsync(MustExist)
-                .WithMessage("No wing induction found");
-
-            RuleFor(x => x.WingInductionId)
-                .MustAsync(MustHaveOpenPhase)
-                .WithMessage("No open phases to complete.");
-            
+                        
             RuleFor(x => x)
                 .MustAsync(CompletionMustBeAfterStartDate)
                 .WithMessage("Completion must be after the start date");
-
         }
        
         private async Task<bool> MustExist(Guid id, CancellationToken cancellationToken)
@@ -103,9 +100,20 @@ public static class CompleteInductionPhase
             var openPhase = element.GetOpenPhase();
 
             return openPhase.StartDate < command.CompletionDate;
+        }
 
+        private async Task<bool> ParticipantMustNotBeArchived(Guid id, CancellationToken cancellationToken)
+        {
+            var participantId = await (from pp in _unitOfWork.DbContext.WingInductions
+                                       join p in _unitOfWork.DbContext.Participants on pp.ParticipantId equals p.Id
+                                       where (pp.Id == id
+                                       && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
+                                       select p.Id
+                                       )
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync();
 
+            return participantId != null;
         }
     }
-
 }

@@ -1,7 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
-using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
 
@@ -49,11 +48,26 @@ public static class SaveRisk
             RuleFor(r => r.RiskId)
                 .NotNull()
                 .MustAsync(NotBeCompleted)
-                .WithMessage("Risk already completed");
+                .WithMessage("Risk already completed")
+                .MustAsync(ParticipantMustNotBeArchived)
+                .WithMessage("Participant is archived"); ;
         }
 
         private async Task<bool> NotBeCompleted(Guid riskId, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Risks.AnyAsync(r => r.Id == riskId && r.Completed == null, cancellationToken);
-    }
 
+        private async Task<bool> ParticipantMustNotBeArchived(Guid riskId, CancellationToken cancellationToken)
+        {
+            var participantId = await (from r in _unitOfWork.DbContext.Risks
+                                 join p in _unitOfWork.DbContext.Participants on r.ParticipantId equals p.Id
+                                 where (r.Id == riskId
+                                 && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
+                                 select p.Id
+                                   )
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync();
+
+            return participantId != null;
+        }
+    }
 }

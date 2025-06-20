@@ -17,7 +17,7 @@
         }
         else
         {
-            <MudIconButton OnClick="Complete" Icon="@Icons.Material.Filled.CheckBoxOutlineBlank" />
+            <MudIconButton OnClick="Complete" Icon="@Icons.Material.Filled.CheckBoxOutlineBlank" Disabled="!ParticipantIsActive"/>
         }
     </AvatarContent>
     <ChildContent>
@@ -74,10 +74,10 @@
                 {
                     <MudText Typo="Typo.body2">Due @Model.Due.ToString("MMM, yyyy")</MudText>
                 }
-            </div>
+            </div>            
             <div class="d-flex gap-2 align-center mr-4">
                 <MudTooltip Text="Actions">
-                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Disabled="Model.IsCompleted" Size="Size.Small" Dense>
+                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Disabled="Model.IsCompleted || !ParticipantIsActive " Size="Size.Small" Dense>
                         <MudMenuItem OnClick="AdjustDate">Adjust date</MudMenuItem>
                         @if(Model.CanBeRenamed)
                         {
@@ -86,7 +86,7 @@
                     </MudMenu>
                 </MudTooltip>
                 <MudTooltip Text="Record">
-                    <MudMenu Icon="@Icons.Material.Filled.LibraryAdd" Variant="Variant.Filled" Disabled="Model.IsCompleted" Size="Size.Small" Dense>
+                    <MudMenu Icon="@Icons.Material.Filled.LibraryAdd" Variant="Variant.Filled" Disabled="Model.IsCompleted || !ParticipantIsActive" Size="Size.Small" Dense>
                         @if(Model.CanAddActivity)
                         {
                             <MudMenuItem OnClick="AddActivity">Add Activity/ETE</MudMenuItem>
@@ -129,8 +129,11 @@
     [Parameter]
     public EventCallback OnChange { get; set; }
 
-    [CascadingParameter]
-    public required ParticipantSummaryDto ParticipantSummaryDto { get; set; }
+    [Parameter, EditorRequired]
+    public required string ParticipantId { get; set; }
+
+    [Parameter, EditorRequired]
+    public required bool ParticipantIsActive { get; set; }
 
     public async Task Complete()
     {
@@ -159,7 +162,12 @@
 
                 if (result.Succeeded)
                 {
+                    Snackbar.Add(ConstantString.TaskSuccessfullyCompleted, Severity.Info);
                     await OnChange.InvokeAsync();
+                }
+                else
+                {
+                    Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
                 }
             }
             catch(ApplicationException ae)
@@ -207,10 +215,15 @@
         if (state!.Canceled is false)
         {
             var result = await GetNewMediator().Send(command);
-
+                        
             if (result.Succeeded)
-            {
+            {             
+                Snackbar.Add(ConstantString.DateSuccessfullyAdjusted, Severity.Info);
                 await OnChange.InvokeAsync();
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
             }
         }
     }
@@ -242,7 +255,12 @@
 
             if (result.Succeeded)
             {
+                Snackbar.Add(ConstantString.TaskSuccessfullyRenamed, Severity.Info);
                 await OnChange.InvokeAsync();
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
             }
         }
     }
@@ -252,7 +270,7 @@
         var parameters = new DialogParameters<AddActivityDialog>()
         {
             { 
-                x => x.Model, new AddActivity.Command(ParticipantSummaryDto.Id)
+                x => x.Model, new AddActivity.Command(ParticipantId)
                 { 
                     TaskId = Model.Id
                 } 
@@ -276,7 +294,7 @@
             {
                 x => x.Model, new ActivitiesWithPagination.Query()
                 {
-                    ParticipantId = ParticipantSummaryDto.Id,
+                    ParticipantId = ParticipantId,
                     TaskId = Model.Id
                 }
             },

@@ -15,12 +15,12 @@ public static class CompleteObjective
         public required Guid ObjectiveId { get; set; }
 
         public CompletionStatus Reason { get; set; } = CompletionStatus.Done;
-        
+
         public string? Justification { get; set; }
     }
 
     public class Handler(
-        IUnitOfWork unitOfWork, 
+        IUnitOfWork unitOfWork,
         ICurrentUserService currentUserService) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
@@ -39,10 +39,20 @@ public static class CompleteObjective
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+
             RuleFor(x => x.ObjectiveId)
                 .NotNull();
+
+            RuleFor(x => x.PathwayPlanId)
+                .NotNull()
+                .WithMessage("You must provide a Pathway Plan")
+                .MustAsync(ParticipantMustNotBeArchived)
+                .WithMessage("Participant is archived");
 
             When(x => x.Reason.RequiresJustification, () =>
             {
@@ -52,5 +62,18 @@ public static class CompleteObjective
             });
         }
 
+        private async Task<bool> ParticipantMustNotBeArchived(Guid pathwayPlanId, CancellationToken cancellationToken)
+        {
+            var participantId = await (from pp in _unitOfWork.DbContext.PathwayPlans
+                                       join p in _unitOfWork.DbContext.Participants on pp.ParticipantId equals p.Id
+                                       where (pp.Id == pathwayPlanId
+                                       && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
+                                       select p.Id
+                                       )
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync();
+
+            return participantId != null;
+        }
     }
 }

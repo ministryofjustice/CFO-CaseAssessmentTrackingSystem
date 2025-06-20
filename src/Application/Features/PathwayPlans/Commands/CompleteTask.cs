@@ -48,8 +48,12 @@ public class CompleteTask
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+
             RuleFor(x => x.TaskId)
                 .NotNull();
 
@@ -57,7 +61,10 @@ public class CompleteTask
                 .NotNull();
 
             RuleFor(x => x.PathwayPlanId)
-                .NotNull();
+                .NotNull()
+                .WithMessage("You must provide a Pathway Plan")
+                .MustAsync(ParticipantMustNotBeArchived)
+                .WithMessage("Participant is archived");
 
             When(x => x.Reason.RequiresJustification, () =>
             {
@@ -71,6 +78,18 @@ public class CompleteTask
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
         }
 
-    }
+        private async Task<bool> ParticipantMustNotBeArchived(Guid pathwayPlanId, CancellationToken cancellationToken)
+        {
+            var participantId = await (from pp in _unitOfWork.DbContext.PathwayPlans
+                                       join p in _unitOfWork.DbContext.Participants on pp.ParticipantId equals p.Id
+                                       where (pp.Id == pathwayPlanId
+                                       && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
+                                       select p.Id
+                                       )
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync();
 
+            return participantId != null;
+        }
+    }
 }

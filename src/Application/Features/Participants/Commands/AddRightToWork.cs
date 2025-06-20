@@ -85,7 +85,9 @@ public static class AddRightToWork
                 .WithMessage("Invalid Participant Id")
                 .MustAsync(Exist)
                 .WithMessage("Participant does not exist")
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived");
 
             When(v => v.RightToWorkRequired, () =>
             {
@@ -116,6 +118,9 @@ public static class AddRightToWork
 
         private async Task<bool> Exist(string identifier, CancellationToken cancellationToken) 
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
+
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
 
         private static bool NotExceedMaximumFileSize(IBrowserFile? file, double maxSizeMB)
             => file?.Size < ByteSize.FromMegabytes(maxSizeMB).Bytes;

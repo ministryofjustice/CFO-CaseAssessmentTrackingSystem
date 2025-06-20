@@ -65,19 +65,19 @@
                                 </MudTabPanel>
                                 <MudTabPanel Text="Status History">
                                     <MudText> </MudText>
-                                    <ParticipantActiveHistory ParticipantId="@_participant.Id" />
+                                    <ParticipantActiveHistory ParticipantId="@Id" />
                                 </MudTabPanel>
                             </MudTabs>
                         </MudTabPanel>
 
                         <MudTabPanel Text="About">
-                            <CaseAbout ParticipantId="@_participant.Id" />
+                            <CaseAbout ParticipantId="@Id" />
                         </MudTabPanel>
                         <MudTabPanel Text="Inductions">
-                            <Inductions ParticipantId="@_participant.Id" />
+                            <Inductions ParticipantId="@Id" ParticipantIsActive="@_participant.IsActive" />
                         </MudTabPanel>
                         <MudTabPanel Text="Sentence Information">
-                            <CaseSentenceInformation ParticipantId="@Id" />
+                            <CaseSentenceInformation ParticipantId="@Id" ParticipantIsActive="@_participant.IsActive" />
                             <ExternalData ParticipantId="@Id" ConsentStatus="@_participant.ConsentStatus" />
                         </MudTabPanel>
                         <MudTabPanel Text="Risk" ID="@Id" Icon="@_riskIcon" IconColor="@_riskIconColor" ToolTip="@_riskInfo">
@@ -96,10 +96,10 @@
                             <CaseDocuments ParticipantId="@Id" />
                         </MudTabPanel>
                         <MudTabPanel Text="Pathway Plan">
-                            <CasePathwayPlan ParticipantId="@Id" OnUpdate="Refresh" />
+                            <CasePathwayPlan ParticipantId="@Id" OnUpdate="Refresh" ParticipantIsActive="@_participant.IsActive" />
                         </MudTabPanel>
                         <MudTabPanel Text="Notes">
-                            <CaseNotes ParticipantId="@Id" />
+                            <CaseNotes ParticipantId="@Id" ParticipantIsActive="@_participant.IsActive" />
                         </MudTabPanel>
                         <MudTabPanel Text="Timeline">
                             <CaseTimeline />

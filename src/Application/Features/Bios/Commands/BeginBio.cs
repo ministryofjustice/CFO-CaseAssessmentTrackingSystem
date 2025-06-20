@@ -21,11 +21,10 @@ public static class BeginBio
     public class Handler : IRequestHandler<Command, Result<Guid>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ICurrentUserService _currentUserService;
-        public Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        
+        public Handler(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork;
-            _currentUserService = currentUserService;
+            _unitOfWork = unitOfWork;        
         }
 
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
@@ -57,13 +56,29 @@ public static class BeginBio
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+
             RuleFor(c => c.ParticipantId)
                 .MinimumLength(9)
                 .MaximumLength(9)
                 .Matches(ValidationConstants.AlphaNumeric)
-                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, nameof(Command.ParticipantId)));
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+
+            RuleFor(c => c.ParticipantId)
+                .MustAsync(Exist)
+                .WithMessage("Participant not found")                
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived");                 
         }
+
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
+
+        private async Task<bool> Exist(string participantId, CancellationToken cancellationToken)
+                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId, cancellationToken);
     }
 }
