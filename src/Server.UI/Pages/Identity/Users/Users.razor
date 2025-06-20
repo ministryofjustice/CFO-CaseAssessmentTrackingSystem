@@ -51,74 +51,57 @@
     ServerData="@(ServerReload)"
     BreakPoint="Breakpoint.Sm">
         <ToolBarContent>|
-            <div class="d-flex align-start flex-grow-1">
-                <div class="d-flex gap-4">
-                    <MudIcon Icon="@Icons.Material.Filled.SwitchAccount" Size="Size.Large"/>
-                    <div class="d-flex flex-column">
-                        <MudText Typo="Typo.caption" Class="mb-2">@L[_currentDto.GetClassDescription()]</MudText>
-                        <MudSelect T="string" Style="min-width:120px" ValueChanged="OnChangedListView" Value="@_selectedTenantId" Dense="true" Label="List View">
-                            <MudSelectItem T="string" Value="@(" ")">@L["ALL"]</MudSelectItem>
-                            @foreach (var item in TenantsService.DataSource.Where(x => x.Id.StartsWith(CurrentUser!.TenantId!)).OrderBy(t => t.Id))
-                            {
-                                <MudSelectItem T="string" Value="@item.Id">@item.Name</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </div>
-                </div>
-                <div class="flex-grow-1"></div>
-                <div class="d-flex flex-column justify-end">
-                    <div class="d-flex">
-                        <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                            <MudButton Variant="Variant.Outlined"
-                            Size="Size.Small"
-                            Disabled="@_loading"
-                            OnClick="@(OnRefresh)"
-                            StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary">
-                                @ConstantString.Refresh
-                            </MudButton>
-                            @if (_canCreate)
-                            {
-                                <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                                StartIcon="@Icons.Material.Filled.Add"
-                                Size="Size.Small"
-                                OnClick="OnCreate"
-                                IconColor="Color.Surface">
-                                    @ConstantString.New
-                                </MudButton>
-                            }
-                        </MudHidden>
-                        <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
-                            @if (_canCreate)
-                            {
-                                <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                                StartIcon="@Icons.Material.Filled.Add"
-                                Size="Size.Small"
-                                OnClick="OnCreate"
-                                IconColor="Color.Surface">
-                                    @ConstantString.New
-                                </MudButton>
-                            }
-                        </MudHidden>
-                    </div>
-                    @if (_canSearch)
+            <MudIcon Icon="@Icons.Material.Filled.SwitchAccount" Size="Size.Large" Class="mr-2"/>
+            <MudText Typo="Typo.caption" Class="mr-2">@L[_currentDto.GetClassDescription()]</MudText>
+            <MudSpacer />
+            
+            <MudStack Row="true">
+                @if (_canSearch)
+                {
+                    <MudSelect T="string" ValueChanged="OnChangedListView" Value="@_selectedTenantId" Dense="false" Label="Tenant" Clearable="true"
+                               Style="min-width: 300px;" Placeholder="Select a tenant">
+                        @foreach (var item in TenantsService.DataSource.Where(x => x.Id.StartsWith(CurrentUser!.TenantId!)).OrderBy(t => t.Id))
+                        {
+                            <MudSelectItem T="string" Value="@item.Id">
+                                @item.Name  
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudSelect T="string" Placeholder="Select a role" Value="@_searchRole" Clearable="true" ValueChanged="@(OnSearchRole)" Dense="false" Label="Role">
+                        @foreach (var str in _roles.OrderBy(x => x.Name).Select(x => x.Name) )
+                        {
+                            <MudSelectItem Value="@str">@str</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudTextField T="string" Immediate="false" ValueChanged="@(OnSearch)" Value="@_searchString" Placeholder="@ConstantString.Search" Adornment="Adornment.End" Label="Search"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                    </MudTextField>
+                }
+                
+                <MudStack Row="true">
+                    @if (_canCreate)
                     {
-                        <MudStack Row="true" AlignItems="AlignItems.Stretch">
-                            <MudSelect T="string" Placeholder="Search for role name" Value="@_searchRole" Clearable="true" ValueChanged="@(OnSearchRole)" Style="width:150px">
-                                @foreach (var str in _roles.Select(x => x.Name))
-                                {
-                                    <MudSelectItem Value="@str">@str</MudSelectItem>
-                                }
-                            </MudSelect>
-                            <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                                <MudTextField T="string" Immediate="false" ValueChanged="@(OnSearch)" Value="@_searchString" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
-                                AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
-                                </MudTextField>
-                            </MudHidden>
-                        </MudStack>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Add"
+                                   Size="Size.Small"
+                                   OnClick="OnCreate"
+                                   IconColor="Color.Surface">
+                            @ConstantString.New
+                        </MudButton>
                     }
+                    <MudButton Variant="Variant.Outlined"
+                               Size="Size.Small"
+                               Disabled="@_loading"
+                               OnClick="@(OnRefresh)"
+                               StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary">
+                        @ConstantString.Refresh
+                    </MudButton>
+                </MudStack>
+                
 
-                </div>
-            </div>
+            </MudStack>
+            
+          
         </ToolBarContent>
         <Columns>
             <HierarchyColumn T="ApplicationUserDto" ButtonDisabledFunc="@(x => x.Notes.Count() is 0)" />
@@ -318,7 +301,7 @@
     private int _defaultPageSize = 15;
     private readonly ApplicationUserDto _currentDto = new();
     private string _searchString = string.Empty;
-    private string _selectedTenantId = " ";
+    private string? _selectedTenantId = null;
     private string Title { get; set; } = "Users";
     private List<PermissionModel> _permissions = new();
     private IList<Claim> _assignedClaims = default!;
@@ -399,7 +382,7 @@
         return x =>
             (x.UserName!.Contains(_searchString) || x.Email!.Contains(_searchString) || x.DisplayName!.Contains(_searchString) || x.PhoneNumber!.Contains(_searchString)) 
             && (_searchRole == null || (_searchRole != null && x.UserRoles.Any(x => x.Role.Name == _searchRole))) 
-            && (_selectedTenantId == " " || (_selectedTenantId != " " && x.TenantId == _selectedTenantId));
+            && (_selectedTenantId == null || (_selectedTenantId != null && x.TenantId == _selectedTenantId));
     }
 
     private async Task<GridData<ApplicationUserDto>> ServerReload(GridState<ApplicationUserDto> state)
