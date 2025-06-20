@@ -4,6 +4,7 @@ using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
 using Cfo.Cats.Application.Common.Interfaces.Serialization;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 using Cfo.Cats.Application.Features.Identity.Notifications.IdentityEvents;
 using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
@@ -116,6 +117,8 @@ public static class DependencyInjection
         services.AddHostedService<PaymentBackgroundService>();
         services.AddHostedService<DocumentsBackgroundService>();
 
+        services.AddSingleton<ISessionService,SessionService>();
+        
         return services;
     }
 
