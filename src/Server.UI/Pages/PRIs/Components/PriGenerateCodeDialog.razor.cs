@@ -19,7 +19,7 @@ namespace Cfo.Cats.Server.UI.Pages.PRIs.Components
 
         public async Task GeneratePriCode()
         {
-            await form!.Validate().ConfigureAwait(false);
+            await form!.Validate();
 
             if (form.IsValid is false)
             {

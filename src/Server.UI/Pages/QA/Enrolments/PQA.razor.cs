@@ -95,7 +95,7 @@ public partial class PQA
         try
         {
             _saving = true;
-            await _form!.Validate().ConfigureAwait(false);
+            await _form!.Validate();
             if (_form.IsValid)
             {
                 var result = await GetNewMediator().Send(Command);

@@ -239,7 +239,7 @@
             Query.PageSize = state.PageSize;
             Query.PrimaryKey ??= _entries.First().PrimaryKey;
 
-            var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
+            var result = await GetNewMediator().Send(Query);
             return new GridData<AuditTrailDto> { TotalItems = result.TotalItems, Items = result.Items };
         }
         finally

@@ -79,7 +79,7 @@ public partial class QA2
         try
         {
             _saving = true;
-            await _form!.Validate().ConfigureAwait(false);
+            await _form!.Validate();
 
             if (_form.IsValid is false)
             {

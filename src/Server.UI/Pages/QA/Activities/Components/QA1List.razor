@@ -188,7 +188,7 @@
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
 
-            var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
+            var result = await GetNewMediator().Send(Query);
             return new GridData<ActivityQueueEntryDto> { TotalItems = result.TotalItems, Items = result.Items };
         }
         finally

@@ -29,7 +29,7 @@ public partial class CaseWorkload
     private async Task OnRefresh()
     {
         Query.CurrentUser = UserProfile;
-        Result = await GetNewMediator().Send(Query).ConfigureAwait(false);
+        Result = await GetNewMediator().Send(Query);
     }
 
     private Result<CaseSummaryDto[]>? Result { get; set; }

@@ -62,7 +62,7 @@ public partial class MatchFound
         {
             loading = true;
 
-            await _form!.Validate().ConfigureAwait(false);
+            await _form!.Validate();
 
             if (_form!.IsValid)
             {

@@ -211,7 +211,7 @@
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
 
-            var result = await Mediator.Send(Query).ConfigureAwait(false);
+            var result = await Mediator.Send(Query);
             return new GridData<OutboxMessageDto> { TotalItems = result.TotalItems, Items = result.Items };
         }
         finally

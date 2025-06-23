@@ -95,7 +95,7 @@ public partial class Participants
                 : SortDirection.Ascending.ToString();
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
-            var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
+            var result = await GetNewMediator().Send(Query);
 
             if (result is {Succeeded: true, Data: not null})
             {
