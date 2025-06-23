@@ -76,7 +76,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
 
     private sealed class SubmittedToProvider() : EnrolmentStatus("Submitted to Provider", 1)
     {
-        protected override EnrolmentStatus[] GetAllowedTransitions() => [ArchivedStatus, EnrollingStatus, SubmittedToAuthorityStatus];
+        protected override EnrolmentStatus[] GetAllowedTransitions() => [EnrollingStatus, SubmittedToAuthorityStatus];
         public override bool SupportsReassessment() => false;
 
         public override bool AllowEnrolmentLocationChange() => true;
