@@ -1,18 +1,22 @@
 ﻿@using Cfo.Cats.Application.Features.Bios.Commands
 @using Cfo.Cats.Application.Features.Bios.DTOs
 @using Cfo.Cats.Application.Features.Bios.Queries
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Server.UI.Components.Stepper
 
 @inherits CatsComponentBase
 
 @page "/pages/participants/{Upci}/bio/{BioId:guid}"
 
-@if (_model != null)
-{
+@if (_model != null && string.IsNullOrEmpty(bioWarningMessage))
+{    
     <div tabindex="-1" @ref="topOfPageElement"></div>
-    <CatsMudStepper @ref="@Stepper" Color="Color.Primary" Variant="Variant.Filled"
-    MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
-    ActiveStepChanged="@OnStepChange" ShowSkipButton="false" ShowPreviousButton="@_showPrevious">
+    <CatsMudStepper @ref="@Stepper" Color="Color.Primary" Variant="Variant.Filled" 
+                    MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
+                    ActiveStepChanged="@OnStepChange" ShowNextButton="_participant!.IsActive"
+                    ShowPreviousButton="(_showPrevious && _participant!.IsActive)">
+
         <ChildContent>
             <MudForm Model="@_model">
                 @*This top-level form is responsible for submission *@
@@ -30,14 +34,36 @@
                 }
 
                 <StatusResultStep Processing="@Processing" SubmissionSuccess="@SubmissionSuccess" SuccessText="Bio Submitted" FailureText="Bio failed to submit" Upci="@Upci" />
-			</MudForm>
-		</ChildContent>
-	</CatsMudStepper>
+            </MudForm>
+        </ChildContent>
+    </CatsMudStepper>
+}
+else
+{
+    //Handle inital load
+    if (!string.IsNullOrEmpty(bioWarningMessage))
+    {
+        <MudContainer Class="d-flex flex-column align-center justify-center">
+
+            <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">
+                @bioWarningMessage
+            </MudAlert>
+
+            <MudContainer Class="d-flex px-0 mt-8 justify-space-between">
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" OnClick="Cancel">
+                    @ConstantString.Cancel
+                </MudButton>
+            </MudContainer>
+
+        </MudContainer>
+    }
 }
 
 @code {
     private bool _showPrevious = false;
     private ElementReference topOfPageElement;
+
+    private ParticipantSummaryDto? _participant = null;
 
     [Parameter]
     public string Upci { get; set; } = string.Empty;
@@ -47,6 +73,8 @@
 
     [Parameter]
     public Cfo.Cats.Application.Features.Bios.DTOs.Bio? Model { get; set; }
+
+    [CascadingParameter] public UserProfile UserProfile { get; set; } = default!;
 
     private Cfo.Cats.Application.Features.Bios.DTOs.Bio? _model;
 
@@ -58,22 +86,32 @@
     private bool Processing { get; set; }
     private bool SubmissionSuccess { get; set; } = false;
 
+    private static string bioWarningMessage { get; set; } = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         _model ??= Model;
 
         if (_model is null)
         {
-            var response = await GetNewMediator().Send(new GetBio.Query()
+            if (await CheckParticipantActive())
             {
-                BioId = BioId,
-                ParticipantId = Upci
-            });
+                var response = await GetNewMediator().Send(new GetBio.Query()
+                    {
+                        BioId = BioId,
+                        ParticipantId = Upci
+                    });
 
-            if (response.Succeeded)
-            {
-                _model = response.Data!;
-            }
+                if (response.Succeeded)
+                {
+                    _model = response.Data!;
+                    bioWarningMessage = string.Empty;
+                }
+                else
+                { 
+                    bioWarningMessage = "No Bio";
+                }
+            }        
         }
     }
 
@@ -82,27 +120,29 @@
         try
         {
             Processing = true;
-
-            var result = await GetNewMediator().Send(new SaveBio.Command()
+            if (await CheckParticipantActive())
             {
-                Bio = _model!
-            });
+                var result = await GetNewMediator().Send(new SaveBio.Command()
+                    {
+                        Bio = _model!
+                    });
 
-            // Do not show the previous step on the first or last steps.
-            _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
+                // Do not show the previous step on the first or last steps.
+                _showPrevious = Stepper.GetActiveIndex() > 0 && Stepper.IsResultStep == false;
 
-            if(result.Succeeded)
-            {
-                await topOfPageElement.FocusAsync();
-
-                if (step == Stepper.Steps.Count())
+                if (result.Succeeded)
                 {
-                    await SubmitBio();
+                    await topOfPageElement.FocusAsync();
+
+                    if (step == Stepper.Steps.Count())
+                    {
+                        await SubmitBio();
+                    }
                 }
-            }
-            else
-            {
-                Snackbar.Add(result.ErrorMessage, Severity.Error);
+                else
+                {
+                    Snackbar.Add(result.ErrorMessage, Severity.Error);
+                }
             }
         }
         finally
@@ -111,24 +151,50 @@
         }        
     }
 
-	private async Task SubmitBio()
-	{
-		if (Stepper.IsAllStepsCompleted())
+    private async Task SubmitBio()
+    {        
+        if (await CheckParticipantActive())
         {
-            var validator = new BioValidator();
-            var result = await validator.ValidateAsync(_model!);
+            if (Stepper.IsAllStepsCompleted())
+            {
+                var validator = new BioValidator();
+                var result = await validator.ValidateAsync(_model!);
 
-			if (result.IsValid)
-			{
-				Processing = true;
-                var response = await GetNewMediator().Send(new SaveBio.Command()
+                if (result.IsValid)
                 {
-                    Bio = _model!,
-                    Submit = true
-                });
-				Processing = false;
-                SubmissionSuccess = response.Succeeded;
-            }			
-		}
-	}
+                    Processing = true;
+                    var response = await GetNewMediator().Send(new SaveBio.Command()
+                        {
+                            Bio = _model!,
+                            Submit = true
+                        });
+                    Processing = false;
+                    SubmissionSuccess = response.Succeeded;
+                }
+            }
+        }        
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo($"/pages/participants/{Upci}");        
+    }
+
+    private async Task<bool> CheckParticipantActive()
+    {
+        _participant = await GetNewMediator().Send(new GetParticipantSummary.Query()
+            {
+                ParticipantId = Upci,
+                CurrentUser = UserProfile
+            });
+
+        if (_participant!.IsActive)
+        {
+            return true;
+        }
+
+        Snackbar.Add("Paricipant is archived", Severity.Error);
+        bioWarningMessage = "Participant is Inactive";
+        return false;
+    }
 }

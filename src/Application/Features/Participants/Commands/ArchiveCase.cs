@@ -39,10 +39,15 @@ public static class ArchiveCase
                 .MaximumLength(9)
                 .WithMessage("Invalid Participant Id")
                 .MustAsync(MustExist)
-                .WithMessage("Participant does not exist");
+                .WithMessage("Participant does not exist")
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived"); 
         }
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
+
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 
     public class Validator : AbstractValidator<Command>

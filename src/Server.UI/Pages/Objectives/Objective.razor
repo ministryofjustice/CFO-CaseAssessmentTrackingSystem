@@ -50,15 +50,16 @@
             .Where(task => task.IsCompleted is false || HideCompletedTasks is false)
             .OrderBy(task => task.Created))
             {
-                <ObjectiveTask Model="task" OnChange="async() => await OnChange.InvokeAsync()" PathwayPlanId="Model.PathwayPlanId" />
+                <ObjectiveTask Model="task" OnChange="async() => await OnChange.InvokeAsync()" ParticipantIsActive="ParticipantIsActive" PathwayPlanId="Model.PathwayPlanId" ParticipantId="@ParticipantId" />
             }
         </CascadingValue>
         <div class="d-flex align-center ml-2 mt-4 mb-2">
-            @if(Model.IsCompleted is false)
+            @if (Model.IsCompleted is false && ParticipantIsActive)
             {
                 <MudTooltip Text="Complete">
                     <MudIconButton OnClick="Complete" Icon="@Icons.Material.Filled.Lock" Disabled="Model.IsCompleted" />
                 </MudTooltip>
+
                 @if(Model.CanBeRenamed)
                 {
                     <MudTooltip Text="Rename">
@@ -75,7 +76,7 @@
                 <MudIconButton OnClick="ShowActivityHistory" Icon="@Icons.Material.Filled.LibraryBooks" />
             </MudTooltip>
 
-            @if(Model.IsCompleted is false)
+            @if (Model.IsCompleted is false && ParticipantIsActive)
             {
                 <MudTooltip Text="New Task">
                     <MudIconButton OnClick="AddTask" Icon="@Icons.Material.Filled.Add" Disabled="Model.IsCompleted" />
@@ -84,152 +85,3 @@
         </div>
     </NestedList>
 </MudListItem>
-
-@code {
-    [CascadingParameter]
-    public required ParticipantSummaryDto ParticipantSummaryDto { get; set; }
-
-    [Parameter, EditorRequired]
-    public required ObjectiveDto Model { get; set; }
-
-    [Parameter, EditorRequired]
-    public required bool HideCompletedTasks { get; set; }
-
-    [Parameter]
-    public EventCallback OnChange { get; set; }
-
-    public async Task Complete()
-    {
-        var command = new CompleteObjective.Command()
-        {
-            PathwayPlanId = Model.PathwayPlanId,
-            ObjectiveId = Model.Id
-        };
-
-        var parameters = new DialogParameters<CompleteObjectiveDialog>()
-        {
-            { x => x.Model, command }
-        };
-
-        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
-        var dialog = await DialogService.ShowAsync<CompleteObjectiveDialog>("Complete objective", parameters, options);
-
-        var state = await dialog.Result;
-
-        if (state!.Canceled is false)
-        {
-            var result = await GetNewMediator().Send(command);
-
-            if (result.Succeeded)
-            {
-                await OnChange.InvokeAsync();
-            }
-        }
-    }
-
-    public async Task AddTask()
-    {
-        var command = new AddTask.Command()
-        {
-            PathwayPlanId = Model.PathwayPlanId,
-            ObjectiveId = Model.Id
-        };
-
-        var parameters = new DialogParameters<AddTaskDialog>()
-        {
-            { x => x.Model, command }
-        };
-
-        var options = SetDialogOptions();        
-        var dialog = await DialogService.ShowAsync<AddTaskDialog>("Add task to objective", parameters, options);
-
-        var state = await dialog.Result;
-
-        if (state!.Canceled is false)
-        {
-            var result = await GetNewMediator().Send(command);
-
-            if (result.Succeeded)
-            {
-                await OnChange.InvokeAsync();
-            }
-        }
-    }
-
-    public async Task Expand()
-    {
-        var options = SetDialogOptions();
-        await DialogService.ShowAsync<ExpandObjectiveDialog>(
-            Model.Description,
-            new DialogParameters<ExpandObjectiveDialog>()
-            {
-                { x => x.Model, Model }
-            },
-            options
-            );
-    }
-
-    public async Task Rename()
-    {
-        var command = new EditObjective.Command()
-        {
-            PathwayPlanId = Model.PathwayPlanId,
-            ObjectiveId = Model.Id,
-            Description = Model.Description
-        };
-
-        var parameters = new DialogParameters<RenameObjectiveDialog>()
-        {
-            { x => x.Model, command }
-        };
-                
-        var options = SetDialogOptions();
-        var dialog = await DialogService.ShowAsync<RenameObjectiveDialog>("Rename objective", parameters, options);
-
-        var state = await dialog.Result;
-
-        if (state!.Canceled is false)
-        {
-            var result = await GetNewMediator().Send(command);
-
-            if (result.Succeeded)
-            {
-                await OnChange.InvokeAsync();
-            }
-        }
-    }
-
-    async Task ShowActivityHistory()
-    {
-        var parameters = new DialogParameters<ActivitiesDialog>()
-        {
-            {
-                x => x.Model, new ActivitiesWithPagination.Query()
-                {
-                    ParticipantId = ParticipantSummaryDto.Id,
-                    ObjectiveId = Model.Id
-                }
-            },
-            { x => x.Objective, Model }
-        };
-
-        var options = SetDialogOptions();
-        var dialog = await DialogService.ShowAsync<ActivitiesDialog>("Activity/ETE history for objective", parameters, options);
-
-        if (await dialog.Result is not { Canceled: true })
-        {
-            await OnChange.InvokeAsync();
-        }
-    }
-
-    private DialogOptions SetDialogOptions()
-    {
-        return new DialogOptions
-            {
-                MaxWidth = MaxWidth.Small,
-                FullWidth = true,
-                CloseButton = true,
-                BackdropClick = false
-            };
-    }
-}

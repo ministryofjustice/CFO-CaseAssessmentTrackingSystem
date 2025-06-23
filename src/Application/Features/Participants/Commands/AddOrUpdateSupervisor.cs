@@ -50,7 +50,9 @@ public class AddOrUpdateSupervisor
                 .WithMessage("Invalid Participant Id")
                 .MustAsync(Exist)
                 .WithMessage("Participant does not exist")
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived"); 
 
             RuleFor(p => p.Supervisor.Name)
                 .MaximumLength(128)
@@ -89,5 +91,8 @@ public class AddOrUpdateSupervisor
 
         private async Task<bool> Exist(string identifier, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
+
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 }

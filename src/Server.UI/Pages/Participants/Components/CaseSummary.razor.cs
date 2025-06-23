@@ -21,10 +21,7 @@ public partial class CaseSummary
     [CascadingParameter]
     public ParticipantSummaryDto ParticipantSummaryDto { get; set; } = default!;
 
-    private string _riskInfo = String.Empty;
-    private string _riskTooltipText = String.Empty;
     private string _riskIcon = String.Empty;
-
 
     private bool _showTTGDue;
     private string _noPriInfo = String.Empty;
@@ -122,15 +119,27 @@ public partial class CaseSummary
             Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessment/{state.Data}");
         }
     }
+
     public void ContinueAssessment()
     {
-        Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessment/{_latestAssessment!.AssessmentId}");
+        if (CanContinueAssessment())
+        {
+            Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/assessment/{_latestAssessment!.AssessmentId}");
+        }
+        else
+        {
+            Snackbar.Add($"Unable to continue Assessment");
+        }
     }
 
     /// <summary>
     /// If true, indicates we are creating our first ever assessment. 
     /// </summary>
-    private bool CanBeginAssessment() => _latestAssessment == null;
+    private bool CanBeginAssessment()
+    {
+        return _latestAssessment == null 
+            && ParticipantSummaryDto.IsActive;
+    }
 
     /// <summary>
     /// If true indicates we have an assessment that is continuable
@@ -139,11 +148,13 @@ public partial class CaseSummary
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     private bool CanContinueAssessment()
-    {
+    {        
         return _latestAssessment is
         {
             AssessmentScored: false
-        };
+        } 
+        && ParticipantSummaryDto.IsActive;
+     
     }
 
     /// <summary>
@@ -155,13 +166,24 @@ public partial class CaseSummary
         return _latestAssessment is
         {
             AssessmentScored: true
-        } &&
-               ParticipantSummaryDto.EnrolmentStatus.SupportsReassessment();
+        }
+        && ParticipantSummaryDto.EnrolmentStatus.SupportsReassessment()
+        && ParticipantSummaryDto.IsActive;        
     }
 
     private bool HasRiskInformation() => ParticipantSummaryDto.LatestRisk is not null;
-    private bool CanAddRiskInformation() => HasRiskInformation() is false;
-    private bool CanReviewRiskInformation() => HasRiskInformation();
+
+    private bool CanAddRiskInformation()
+    { 
+            return HasRiskInformation() is false
+            && ParticipantSummaryDto.IsActive;
+    }
+
+    private bool CanReviewRiskInformation() 
+    { 
+            return HasRiskInformation()
+            && ParticipantSummaryDto.IsActive;
+    }
 
     public async Task ReviewRiskInformation()
     {
@@ -223,16 +245,14 @@ public partial class CaseSummary
 
         if (result.Succeeded is false)
         {
-            return;
-        }
-
-        if (command.ReviewReason.RequiresFurtherInformation)
-        {
-            Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/risk/{result.Data}");
+            Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
         }
         else
         {
-            Navigation.Refresh(true);
+            if (command.ReviewReason.RequiresFurtherInformation)
+            {
+                Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/risk/{result.Data}");
+            }            
         }
     }
 
@@ -282,21 +302,41 @@ public partial class CaseSummary
     /// <summary>
     /// If true, indicates we are creating Bio. 
     /// </summary>
-    private bool CanBeginBio() => _bio == null;
+    private bool CanBeginBio() 
+    {    
+        return _bio == null
+                && ParticipantSummaryDto.IsActive;
+    }
 
-    private bool CanRestartBio() => _bio?.BioStatus == BioStatus.Complete;
+    private bool CanRestartBio()
+    {
+        return _bio?.BioStatus == BioStatus.Complete
+               && ParticipantSummaryDto.IsActive;
+    }
 
     /// <summary>
     /// If true indicates we have a Bio that is continuable
     /// (i.e. Id is not null or do we need a status (Complete or Incomplete etc.))
     /// </summary>
     /// <returns></returns>
-    private bool CanContinueBio() => _bio is not null && (_bio.BioStatus == BioStatus.InProgress || _bio.BioStatus == BioStatus.SkippedForNow);
+    private bool CanContinueBio()
+    { 
+        return _bio is not null 
+            && (_bio.BioStatus == BioStatus.InProgress || _bio.BioStatus == BioStatus.SkippedForNow)
+            && ParticipantSummaryDto.IsActive;
+    }
 
     private bool HasPathwayPlan => ParticipantSummaryDto.PathwayPlan is not null;
+
     private bool HasPathwayBeenReviewed => HasPathwayPlan && ParticipantSummaryDto.PathwayPlan?.LastReviewed is not null;
 
-    private bool CanAddPRI() => _latestPRI == null && ParticipantSummaryDto.LocationType.IsCustody && ParticipantSummaryDto.LocationType.IsMapped;
+    private bool CanAddPRI() 
+    {
+        return _latestPRI == null 
+            && ParticipantSummaryDto.LocationType.IsCustody 
+            && ParticipantSummaryDto.LocationType.IsMapped
+            && ParticipantSummaryDto.IsActive;
+    }
 
     public void BeginPRI()
     {

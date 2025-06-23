@@ -95,8 +95,6 @@ public static class AddOrUpdateContactDetail
 
             RuleFor(c => c)
                 .Must(model => model.EmailAddress is not null || model.MobileNumber is not null);
-            
-
 
             When(c => string.IsNullOrEmpty(c.EmailAddress) is false, () =>
             {
@@ -125,10 +123,7 @@ public static class AddOrUpdateContactDetail
                                 context.AddFailure("You must provide at least one of the following: Address, Email Address, or Phone Number.");
                             }
                         });
-
         }
-
-
     }
 
     public class B_ParticipantMustExist : AbstractValidator<Command>
@@ -164,4 +159,20 @@ public static class AddOrUpdateContactDetail
         bool Exist(Guid? identifier) => _unitOfWork.DbContext.ParticipantContactDetails.Any(e => e.Id == identifier);
     }
 
+    public class D_ParticipantMustBeActive : AbstractValidator<Command>
+    {
+        private IUnitOfWork _unitOfWork;
+
+        public D_ParticipantMustBeActive(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c.ParticipantId)
+                .Must(MustNotBeArchived)
+                 .WithMessage("Participant is archived"); 
+        }
+
+        bool MustNotBeArchived(string participantId)
+                => _unitOfWork.DbContext.Participants.Any(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
+    }
 }

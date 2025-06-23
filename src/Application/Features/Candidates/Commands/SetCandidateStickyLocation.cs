@@ -15,14 +15,18 @@ public static class SetCandidateStickyLocation
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        private readonly IUnitOfWork _unitOfWork;
+        
+        public Validator(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+
             RuleFor(x => x.ParticipantId)
                 .NotNull()
                 .MaximumLength(9)
                 .MinimumLength(9)
                 .Matches(ValidationConstants.AlphaNumeric)
-                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));                
 
             RuleFor(x => x.Region)
                 .NotNull()
@@ -31,6 +35,18 @@ public static class SetCandidateStickyLocation
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Region"));
 
+            
+            RuleFor(x => x.ParticipantId)
+                .MustAsync(Exist)
+                .WithMessage("Participant not found")
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived");
+
         }
+        private async Task<bool> Exist(string? participantId, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId, cancellationToken);
+
+        private async Task<bool> MustNotBeArchived(string? participantId, CancellationToken cancellationToken)
+                => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 }

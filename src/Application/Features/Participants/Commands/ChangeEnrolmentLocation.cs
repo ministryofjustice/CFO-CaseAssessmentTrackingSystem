@@ -45,7 +45,9 @@ public static class ChangeEnrolmentLocation
                 .MaximumLength(9)
                 .MinimumLength(9)
                 .Matches(ValidationConstants.AlphaNumeric)
-                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived"); 
 
             RuleFor(c => c.NewLocationId)
                 .NotNull()
@@ -78,6 +80,9 @@ public static class ChangeEnrolmentLocation
 
             return participant != null;
         }
+
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+         => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
 
         private async Task<bool> BeChangeable(string participantId, CancellationToken cancellationToken)
         {

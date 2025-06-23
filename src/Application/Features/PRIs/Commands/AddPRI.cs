@@ -5,7 +5,6 @@ using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.PRIs.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.PRIs;
-using FluentValidation;
 
 namespace Cfo.Cats.Application.Features.PRIs.Commands;
 
@@ -83,13 +82,16 @@ public static class AddPRI
                     RuleFor(c => c)
                         .MustAsync(BeAuthorised)
                         .WithMessage("Community Support Worker does not have access to the expected release region");
-                });
+                })
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived");
+            
         }
 
-        async Task<bool> NotAlreadyHavePRI(string participantId, CancellationToken cancellationToken)
+        private async Task<bool> NotAlreadyHavePRI(string participantId, CancellationToken cancellationToken)
             => await unitOfWork.DbContext.PRIs.AnyAsync(p => p.ParticipantId == participantId, cancellationToken) is false;
 
-        async Task<bool> BeAuthorised(Command command, CancellationToken cancellationToken)
+        private async Task<bool> BeAuthorised(Command command, CancellationToken cancellationToken)
         {
             string? assigneeTenantId;
 
@@ -116,6 +118,9 @@ public static class AddPRI
                 .Select(l => l.Id)
                 .Contains(command.Release.ExpectedRegion!.Id);
         }
+
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+            => await unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 
     public class PriCodeDto
@@ -197,6 +202,7 @@ public static class AddPRI
                     .WithMessage("Expected date of release must not be more than three months in the future");
             }
         }
+
         private class Mapper : Profile
         {
             public Mapper()
@@ -205,8 +211,7 @@ public static class AddPRI
                  .ForMember(target => target.ExpectedRegion,
                     options => options.MapFrom(source => source.ExpectedReleaseRegion))
                  .ForMember(target => target.ExpectedOn,
-                    options => options.MapFrom(source => source.ExpectedReleaseDate.ToDateTime(TimeOnly.MinValue)))
-    ;
+                    options => options.MapFrom(source => source.ExpectedReleaseDate.ToDateTime(TimeOnly.MinValue)));
             }
         }
     }
@@ -221,7 +226,6 @@ public static class AddPRI
         public string? ReasonCommunityDidNotAttendInPerson { get; set; }
         public string? ReasonParticipantDidNotAttendInPerson { get; set; }
         public string? PostReleaseCommunitySupportInformation { get; set; }
-
 
         public class Validator : AbstractValidator<PriMeetingDto>
         {
@@ -261,6 +265,7 @@ public static class AddPRI
                     .WithMessage("You must provide a reason");
             }
         }
+
         private class Mapper : Profile
         {
             public Mapper()
@@ -274,7 +279,6 @@ public static class AddPRI
                     options => options.MapFrom(source => (source.CommunityAttendedInPerson ? ConfirmationStatus.Yes : ConfirmationStatus.No)))
                  .ForMember(target => target.ParticipantAttendedInPerson,
                     options => options.MapFrom(source => (source.ParticipantAttendedInPerson ? ConfirmationStatus.Yes : ConfirmationStatus.No)));
-
             }
         }
     }

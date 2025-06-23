@@ -140,4 +140,35 @@ public static class CompletePRI
             return true;
         }
     }
+
+    public class E_ParticipantMustBeActive : AbstractValidator<Command>
+    {
+        private IUnitOfWork _unitOfWork;
+
+        public E_ParticipantMustBeActive(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(e => e.ParticipantId)
+                .Must(MustNotBeArchived);
+        }
+
+        bool MustNotBeArchived(string participantId)
+                => _unitOfWork.DbContext.Participants.Any(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
+    }
+
+    public class F_ParticipantMustExist : AbstractValidator<Command>
+    {
+        private IUnitOfWork _unitOfWork;
+
+        public F_ParticipantMustExist(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(f => f.ParticipantId)
+                .Must(Exist);
+        }
+
+        bool Exist(string identifier) => _unitOfWork.DbContext.Participants.Any(e => e.Id == identifier);
+    }
 }    

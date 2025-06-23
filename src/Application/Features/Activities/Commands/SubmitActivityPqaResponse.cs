@@ -160,17 +160,17 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
             }
         }
 
-        public class G_ActivityOccurredWithin3Months : AbstractValidator<Command>
+        public class F_ActivityOccurredWithin3Months : AbstractValidator<Command>
         {
             private readonly IUnitOfWork _unitOfWork;
-            public G_ActivityOccurredWithin3Months(IUnitOfWork unitOfWork)
+            public F_ActivityOccurredWithin3Months(IUnitOfWork unitOfWork)
             {
                 _unitOfWork = unitOfWork;
 
-                RuleFor(g => g)
+                RuleFor(f => f)
                     .Must(NotExpired)
                     .WithMessage("This activity has expired")
-                    .When(g => g.Response == PqaResponse.Accept);
+                    .When(f => f.Response == PqaResponse.Accept);
             }
 
             private bool NotExpired(Command c)
@@ -183,6 +183,28 @@ namespace Cfo.Cats.Application.Features.Activities.Commands
                     return entry != null && DateTime.Today <= entry.Activity!.Expiry;
                 }
                 return false;
+            }
+        }
+
+        public class G_ParticipantMustNotBeArchived : AbstractValidator<Command>
+        {
+            private readonly IUnitOfWork _unitOfWork;
+
+            public G_ParticipantMustNotBeArchived(IUnitOfWork unitOfWork)
+            {
+                _unitOfWork = unitOfWork;
+
+                RuleFor(g => g.QueueEntryId)
+                    .Must(ParticipantMustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            }
+
+            private bool ParticipantMustNotBeArchived(Guid queueEntryId)
+            {
+                var entry = _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Participant)
+                    .FirstOrDefault(a => a.Id == queueEntryId);
+                
+                return entry != null && entry.Participant!.IsActive();
             }
         }
     }

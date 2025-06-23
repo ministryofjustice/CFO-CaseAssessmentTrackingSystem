@@ -14,7 +14,6 @@
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Humanizer
 
-@inject IStringLocalizer<ActivePRIs> L
 @inject ICurrentUserService CurrentUser
 @inject IUserService UserService
 
@@ -39,7 +38,7 @@
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">                                     
                 <MudIcon Icon="@Icons.Material.Filled.Inventory" Size="Size.Large" />
-                <MudText Typo="Typo.caption">@L["Active Pre-Release Inventory (PRI)"]</MudText>
+            <MudText Typo="Typo.caption">@ConstantString.ActivePreReleaseInventoryPRI</MudText>
 
             <div class="d-flex flex-column">                
                 <MudSwitch Class="mt-10" @bind-Value="@Query!.IncludeOutgoing" @bind-Value:after="OnOutgoingChange" Label="@Query?.GetMemberDescription(q => q.IncludeOutgoing)" Color="Color.Primary"></MudSwitch>
@@ -93,30 +92,32 @@
                         @ConstantString.ViewParticipant
                     </MudMenuItem>
 
-                    @if (context.Item.ActualReleaseDate == null)
+                    @if(context.Item.ParticipantIsActive)
                     {
-                        <MudMenuItem OnClick="@(()=> AddActualReleaseDate(context.Item))">
-                            @ConstantString.AddActualReleaseDate
-                        </MudMenuItem>
-                    }
-                    else
-                    {
-                        if (CurrentUser.UserId == context.Item.AssignedTo)
+                        @if (context.Item.ActualReleaseDate == null)
                         {
-                            <MudMenuItem OnClick="@(()=> CompletePRI(context.Item))">
-                                @ConstantString.CompletePRI
+                            <MudMenuItem OnClick="@(()=> AddActualReleaseDate(context.Item))">
+                                @ConstantString.AddActualReleaseDate
                             </MudMenuItem>
                         }
+                        else
+                        {
+                            if (CurrentUser.UserId == context.Item.AssignedTo)
+                            {
+                                <MudMenuItem OnClick="@(()=> CompletePRI(context.Item))">
+                                    @ConstantString.CompletePRI
+                                </MudMenuItem>
+                            }
+                        }
+                        <MudMenuItem OnClick="@(()=> AbandonPRI(context.Item))">
+                            @ConstantString.AbandonPRI
+                        </MudMenuItem>
                     }
-                    <MudMenuItem OnClick="@(()=> AbandonPRI(context.Item))">
-                        @ConstantString.AbandonPRI
-                    </MudMenuItem>
-
                 </MudMenu>
             </CellTemplate>
         </TemplateColumn>
 
-        <PropertyColumn Property="x => x.ParticipantName" Title="@L["Participant"]">
+        <PropertyColumn Property="x => x.ParticipantName" Title="@ConstantString.Participant">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>
@@ -124,21 +125,30 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.CreatedBy" Title="@L["Custody Support Worker"]">
+
+        <PropertyColumn Property="x => x.ParticipantIsActive" Title="@ConstantString.Active">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.ParticipantIsActive</MudText>                    
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="x => x.CreatedBy" Title="@ConstantString.CustodySupportWorker">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">@UserService.GetDisplayName(@context.Item.CreatedBy!)</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.AssignedTo" Title="@L["Community Support Worker"]">
+        <PropertyColumn Property="x => x.AssignedTo" Title="@ConstantString.CommunitySupportWorker">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">@UserService.GetDisplayName(@context.Item.AssignedTo!)</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.ExpectedReleaseRegion" Title="@L["Expected Release Region"]">
+        <PropertyColumn Property="x => x.ExpectedReleaseRegion" Title="@ConstantString.ExpectedReleaseRegion">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2"> @context.Item.ExpectedReleaseRegion!.Name</MudText>
@@ -146,7 +156,7 @@
             </CellTemplate>
         </PropertyColumn>
 
-        <PropertyColumn Property="x => x.ExpectedReleaseDate" Title="@L["Expected Date of Release"]">
+        <PropertyColumn Property="x => x.ExpectedReleaseDate" Title="@ConstantString.ExpectedDateOfRelease">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">
@@ -158,7 +168,7 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.ActualReleaseDate" Title="@L["Actual Release Date"]">
+        <PropertyColumn Property="x => x.ActualReleaseDate" Title="@ConstantString.ActualReleaseDate">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     @if(context.Item.ActualReleaseDate is not null)
@@ -188,187 +198,3 @@
         <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
     </PagerContent>
 </MudDataGrid>
-
-
-@code {
-    [CascadingParameter] private UserProfile? UserProfile { get; set; }
-
-    // [SupplyParameterFromQuery(Name = "ListView")]
-    // public string? ListView { get; set; }
-    [SupplyParameterFromQuery(Name = "ListView")]
-    public string? ListView { get; set; }
-
-    public string? Title { get; private set; }
-    private int _defaultPageSize = 15;
-    private HashSet<PRIPaginationDto> _selectedItems = new();
-    private MudDataGrid<PRIPaginationDto> _table = default!;
-    private bool _loading;
-
-    private GetActivePRIsByUserId.Query? Query { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {        
-        Title = L["Active Pre-Release Inventory"];
-
-        Query = new GetActivePRIsByUserId.Query()
-        {
-            CurrentUser = UserProfile        
-        };        
-
-        await base.OnInitializedAsync();
-    }
-
-    private async Task<GridData<PRIPaginationDto>> ServerReload(GridState<PRIPaginationDto> state)
-    {
-        try
-        {
-            _loading = true;
-            Query!.CurrentUser = UserProfile;
-            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Id";
-            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
-            Query.PageNumber = state.Page + 1;
-            Query.PageSize = state.PageSize;
-            var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
-            return new GridData<PRIPaginationDto> { TotalItems = result.TotalItems, Items = result.Items };
-        }
-        finally
-        {
-            _loading = false;
-        }
-    }
-
-    private async Task OnRefresh()
-    {
-        _selectedItems = [];
-        Query!.Keyword = string.Empty;
-        await _table.ReloadServerData();
-    }
-
-    private async Task OnSearch(string text)
-    {
-        if (_loading)
-        {
-            return;
-        }
-        _selectedItems = new();
-        Query!.Keyword = text;
-        await _table.ReloadServerData();
-    }
-
-    private async Task OnOutgoingChange()
-    {    
-        if (Query!.IncludeOutgoing) // Only toggle the other off if this one is turned on
-        {
-            Query!.IncludeIncoming = false;
-        }
-
-        await _table.ReloadServerData();
-    }
-
-    private async Task OnIncomingChange()
-    {
-        if (Query!.IncludeIncoming) // Only toggle the other off if this one is turned on
-        {
-            Query!.IncludeOutgoing = false;
-        }
-
-        await _table.ReloadServerData();
-    }
-
-    private void ViewParticipant(PRIPaginationDto PRI)
-    {
-        Navigation.NavigateTo($"/pages/Participants/{PRI.ParticipantId}");
-    }
-
-    public async Task CreatePriCode()
-    {        
-        var parameters = new DialogParameters<PriGenerateCodeDialog>()
-        {
-            { x => x.Model, new UpsertPriCode.Command()
-            {
-                ParticipantId = ""
-            } }
-        };
-
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, BackdropClick = false };
-
-        var dialog = await DialogService.ShowAsync<PriGenerateCodeDialog>("Generate PRI Code", parameters, options);
-
-        var state = await dialog.Result;
-
-        if (!state!.Canceled)
-        {
-            await OnRefresh();
-        }
-    }
-
-    private async Task AddActualReleaseDate(PRIPaginationDto PRI)
-    {
-        var parameters = new DialogParameters<AddActualReleaseDateDialog>()
-        {
-            { 
-                x => x.Model, new  AddActualReleaseDate.Command()
-                {
-                    ParticipantId = PRI.ParticipantId
-                } 
-            }
-        };
-
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, BackdropClick = false };
-
-        var dialog = await DialogService.ShowAsync<AddActualReleaseDateDialog>("Add Actual Release Date", parameters, options);
-
-        var state = await dialog.Result;
-
-        if (!state!.Canceled)
-        {
-            await OnRefresh();
-        }
-    }
-
-    private async Task CompletePRI(PRIPaginationDto PRI)
-    {
-        var completePRICommand = new CompletePRI.Command()
-         {
-             ParticipantId = PRI.ParticipantId,
-             CompletedBy = CurrentUser.UserId
-         };
-        
-        var result = await GetNewMediator().Send(completePRICommand);
-
-        if (result.Succeeded)
-        {
-            Snackbar.Add($"{L["PRI successfully completed"]}", Severity.Info);      
-            await OnRefresh();
-        }
-        else
-        {
-            Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
-        }
-    }
-
-    private async Task AbandonPRI(PRIPaginationDto PRI)
-    {
-        var parameters = new DialogParameters<AbandonPriDialog>()
-        {
-            { x => x.Model, new AbandonPRI.Command()
-            {
-                ParticipantId = PRI.ParticipantId,
-                AbandonJustification="",
-                AbandonReason=PriAbandonReason.Other,
-                AbandonedBy=CurrentUser.UserId!
-            } }
-        };
-
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, BackdropClick = false };
-
-        var dialog = await DialogService.ShowAsync<AbandonPriDialog>("Abandon PRI", parameters, options);
-
-        var state = await dialog.Result;
-
-        if (!state!.Canceled)
-        {
-            await OnRefresh();
-        } 
-    }
-}

@@ -27,7 +27,6 @@ public static class UpsertPriCode
 
             return Result<int>.Success(priCode.Code);
         }
-
     }
 
     public class Validator : AbstractValidator<Command>
@@ -44,10 +43,15 @@ public static class UpsertPriCode
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
                 .MustAsync(Exist)
-                .WithMessage("Participant not found");
-
+                .WithMessage("Participant not found")
+                .MustAsync(MustNotBeArchived)
+                .WithMessage("Participant is archived"); 
         }
+
         async Task<bool> Exist(string participantId, CancellationToken cancellationToken)
             => await unitOfWork.DbContext.Participants.AnyAsync(p => p.Id == participantId, cancellationToken);
+
+        async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+        => await unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 }

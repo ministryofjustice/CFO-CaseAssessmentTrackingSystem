@@ -53,4 +53,34 @@ public static class AddActualReleaseDate
                 .WithMessage(ValidationConstants.DateMustBeInPast);
         }
     }
+    public class A_ParticipantMustBeActive : AbstractValidator<Command>
+    {
+        private IUnitOfWork _unitOfWork;
+
+        public A_ParticipantMustBeActive(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(a => a.ParticipantId)
+                .Must(MustNotBeArchived);
+        }
+
+        bool MustNotBeArchived(string participantId)
+                => _unitOfWork.DbContext.Participants.Any(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
+    }
+
+    public class B_ParticipantMustExist : AbstractValidator<Command>
+    {
+        private IUnitOfWork _unitOfWork;
+
+        public B_ParticipantMustExist(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(b => b.ParticipantId)
+                .Must(Exist);
+        }
+
+        bool Exist(string identifier) => _unitOfWork.DbContext.Participants.Any(e => e.Id == identifier);
+    }
 }
