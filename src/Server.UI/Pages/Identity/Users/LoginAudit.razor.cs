@@ -45,7 +45,7 @@ public partial class LoginAudit : CatsComponentBase
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
 
-            var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
+            var result = await GetNewMediator().Send(Query);
             if (result is { Succeeded: true, Data: not null })
             {
                 return new GridData<IdentityAuditTrailDto> { TotalItems = result.Data.TotalItems, Items = result.Data.Items };    

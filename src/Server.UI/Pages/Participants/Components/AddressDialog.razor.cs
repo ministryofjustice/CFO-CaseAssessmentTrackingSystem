@@ -40,7 +40,7 @@ public partial class AddressDialog(IAddressLookupService addressLookupService)
         {
             _saving = true;
 
-            await _form.Validate().ConfigureAwait(false);
+            await _form.Validate()
 
             if (!_form.IsValid)
             {

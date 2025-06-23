@@ -235,7 +235,7 @@
                 PageNumber = state.Page + 1,
                 PageSize = state.PageSize
             };
-            var result = await GetNewMediator().Send(request).ConfigureAwait(false);
+            var result = await GetNewMediator().Send(request)
             return new GridData<KeyValueDto>
             {
                 TotalItems = result.TotalItems,

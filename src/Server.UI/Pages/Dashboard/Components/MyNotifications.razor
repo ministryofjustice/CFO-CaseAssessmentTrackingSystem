@@ -110,7 +110,7 @@
         Query.CurrentUser = UserProfile;
         Query.OrderBy = "NotificationDate";
         Query.SortDirection = SortDirection.Descending.ToString();
-        Results = await GetNewMediator().Send(Query).ConfigureAwait(false);
+        Results = await GetNewMediator().Send(Query);
     }
 
     PaginatedData<NotificationDto>? Results { get; set; }

@@ -46,7 +46,7 @@ namespace Cfo.Cats.Server.UI.Pages.PRIs
                 Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
                 Query.PageNumber = state.Page + 1;
                 Query.PageSize = state.PageSize;
-                var result = await GetNewMediator().Send(Query).ConfigureAwait(false);
+                var result = await GetNewMediator().Send(Query)
                 return new GridData<PRIPaginationDto> { TotalItems = result.TotalItems, Items = result.Items };
             }
             finally
