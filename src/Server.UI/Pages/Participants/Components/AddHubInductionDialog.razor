@@ -63,7 +63,7 @@
         {
             saving = true;
 
-            await form!.Validate().ConfigureAwait(false);
+            await form!.Validate();
 
             if(form!.IsValid == false)
             {

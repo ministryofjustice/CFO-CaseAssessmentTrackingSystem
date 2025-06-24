@@ -38,7 +38,7 @@ public partial class DocumentAuditTrails(IMediator mediator)
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
 
-            var result = await mediator.Send(Query).ConfigureAwait(false);
+            var result = await mediator.Send(Query);
             return new GridData<DocumentAuditTrailDto> { TotalItems = result.TotalItems, Items = result.Items };
         }
         finally
