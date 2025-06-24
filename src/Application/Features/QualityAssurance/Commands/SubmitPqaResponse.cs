@@ -203,7 +203,7 @@ public static class SubmitPqaResponse
             var entry = _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
                 .FirstOrDefault(a => a.Id == queueEntryId);
 
-            return entry != null && entry.Participant!.EnrolmentStatus == EnrolmentStatus.ArchivedStatus;
+            return entry != null && entry.Participant!.EnrolmentStatus != EnrolmentStatus.ArchivedStatus;
         }  
     }
 }
