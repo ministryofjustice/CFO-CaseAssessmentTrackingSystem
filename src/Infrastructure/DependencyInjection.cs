@@ -34,10 +34,12 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Quartz;
 using Quartz.AspNetCore;
-using ZiggyCreatures.Caching.Fusion;
 using Rebus;
+using Rebus.Activation;
+using Rebus.Bus;
 using Rebus.Config;
 using Rebus.Handlers;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure;
 
@@ -90,18 +92,19 @@ public static class DependencyInjection
             );
 
         services.Configure<RabbitSettings>(configuration.GetSection("RabbitSettings"));
-            
 
-        services.AddRebus(configure =>
+        services.AddSingleton<IBus>(_ =>
         {
             var provider = services.BuildServiceProvider();
             var rabbitSettings = provider.GetRequiredService<IOptions<RabbitSettings>>().Value;
 
-            return configure
+            return Configure.With(new BuiltinHandlerActivator())
                 .Transport(t => t.UseRabbitMqAsOneWayClient(configuration.GetConnectionString("rabbit"))
-                    .ExchangeNames(rabbitSettings.DirectExchange, rabbitSettings.TopicExchange));
+                    .ExchangeNames(rabbitSettings.DirectExchange, rabbitSettings.TopicExchange))
+                .Start();
         });
-        
+
+
         var handlerTypes = typeof(SyncParticipantCommandHandler).Assembly
             .GetTypes()
             .Where(t => t.IsAbstract == false && t.GetInterfaces()
