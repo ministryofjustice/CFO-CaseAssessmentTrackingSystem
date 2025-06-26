@@ -71,7 +71,7 @@
                         </MudTabPanel>
 
                         <MudTabPanel Text="About">
-                            <CaseAbout ParticipantId="@Id" />
+                            <CaseAbout ParticipantId="@Id" ParticipantIsActive="@_participant.IsActive" />
                         </MudTabPanel>
                         <MudTabPanel Text="Inductions">
                             <Inductions ParticipantId="@Id" ParticipantIsActive="@_participant.IsActive" />

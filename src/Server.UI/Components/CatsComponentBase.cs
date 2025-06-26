@@ -2,6 +2,10 @@
 
 public abstract class CatsComponentBase : OwningComponentBase
 {
+
+    protected CancellationToken ComponentCancellationToken => _cts.Token;
+    private readonly CancellationTokenSource _cts = new();
+    
     [Inject]
     private IServiceProvider ServiceProvider { get; set; } = default!;
 
@@ -33,6 +37,9 @@ public abstract class CatsComponentBase : OwningComponentBase
         {
             if (disposing)
             {
+                _cts.Cancel();
+                _cts.Dispose();
+                
                 // Dispose all scopes created for Mediatr instances
                 foreach (var scope in _scopes)
                 {
