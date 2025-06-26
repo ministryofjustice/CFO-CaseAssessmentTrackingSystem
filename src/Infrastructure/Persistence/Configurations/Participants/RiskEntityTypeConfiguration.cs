@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Domain.Common.Enums;
+﻿using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -122,6 +123,32 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
 
         builder.Property(x => x.CompletedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
-    }
 
+        builder.Property(x => x.ActivityRecommendations)
+            .HasMaxLength(ValidationConstants.NotesLength);
+
+        builder.Property(x => x.ActivityRestrictions)
+            .HasMaxLength(ValidationConstants.NotesLength);
+
+        builder.Property(x => x.AdditionalInformation)
+            .HasMaxLength(ValidationConstants.NotesLength);
+
+        builder.Property(x => x.LicenseConditions)
+            .HasMaxLength(ValidationConstants.NotesLength);
+
+        builder.Property(x => x.PSFRestrictions)
+            .HasMaxLength(ValidationConstants.NotesLength);
+
+        builder.Property(x => x.ReferrerName)
+            .HasMaxLength(100);
+
+        builder.Property(x => x.ReferrerEmail)
+            .HasMaxLength(256);
+
+        builder.Property(x => x.ReviewJustification)
+          .HasMaxLength(ValidationConstants.NotesLength);
+
+        builder.Property(x => x.RegistrationDetailsJson)
+          .HasMaxLength(1325);        
+    }
 }
