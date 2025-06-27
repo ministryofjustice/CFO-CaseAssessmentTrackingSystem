@@ -1,19 +1,11 @@
 ﻿using System.Data;
-using Cfo.Cats.Application.Common.Interfaces;
-using Cfo.Cats.Application.Common.Models;
 using ClosedXML.Excel;
 using Microsoft.Extensions.Localization;
 
 namespace Cfo.Cats.Infrastructure.Services;
 
-public class ExcelService : IExcelService
+public class ExcelService(IStringLocalizer<ExcelService> localizer) : IExcelService
 {
-    private readonly IStringLocalizer<ExcelService> localizer;
-
-    public ExcelService(IStringLocalizer<ExcelService> localizer)
-    {
-        this.localizer = localizer;
-    }
 
     public async Task<byte[]> CreateTemplateAsync(
         IEnumerable<string> fields,
@@ -90,10 +82,44 @@ public class ExcelService : IExcelService
 
             foreach (var value in result)
             {
-                ws.Cell(rowIndex, colIndex++).Value =
-                    value == null ? Blank.Value : value.ToString();
+                var cell = ws.Cell(rowIndex, colIndex++);
+        
+                if (value == null)
+                {
+                    cell.Value = Blank.Value;
+                    continue;
+                }
+
+                cell.Value = value switch
+                {
+                    DateTime dt => dt,
+                    DateOnly d => d.ToDateTime(TimeOnly.MinValue),
+                    TimeOnly t => t.ToTimeSpan(),
+                    DateTimeOffset dto => dto.DateTime,
+                    TimeSpan ts => ts,
+                    decimal d => d,
+                    double db => db,
+                    float f => f,
+                    int i => i,
+                    long l => l,
+                    short s => s,
+                    bool b => b,
+                    _ => value.ToString()
+                };
+
+                cell.Style.NumberFormat.Format = value switch
+                {
+                    DateTime => "dd/mm/yyyy hh:mm:ss",
+                    DateOnly => "dd/mm/yyyy",
+                    TimeOnly => "hh:mm:ss",
+                    DateTimeOffset => "dd/mm/yyyy hh:mm:ss",
+                    TimeSpan => "hh:mm:ss",
+                    _ => null
+                };
             }
         }
+        
+        ws.ColumnsUsed().AdjustToContents();
 
         using var stream = new MemoryStream();
         workbook.SaveAs(stream);

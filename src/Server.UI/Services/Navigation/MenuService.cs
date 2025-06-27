@@ -79,7 +79,7 @@ public class MenuService : IMenuService
                             new()
                             {
                                 Title = "My Documents",
-                                Href = "/reports/my-documents",
+                                Href = "/pages/analytics/my-documents",
                                 PageStatus = PageStatus.Completed
                             }
                         ]
