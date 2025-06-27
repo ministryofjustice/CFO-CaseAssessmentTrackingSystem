@@ -17,7 +17,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("ProductVersion", "9.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -2579,22 +2579,19 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ActivityRecommendations")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("ActivityRecommendationsReceived")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ActivityRestrictions")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("ActivityRestrictionsReceived")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("AdditionalInformation")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("Completed")
                         .HasColumnType("datetime2");
@@ -2627,8 +2624,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("LicenseConditions")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("LicenseEnd")
                         .HasColumnType("datetime2");
@@ -2640,8 +2636,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("PSFRestrictions")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("PSFRestrictionsReceived")
                         .HasColumnType("datetime2");
@@ -2654,20 +2649,16 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ReferrerEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReferrerName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RegistrationDetailsJson")
-                        .HasMaxLength(1325)
-                        .HasColumnType("nvarchar(1325)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReviewJustification")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReviewReason")
                         .HasColumnType("int");
