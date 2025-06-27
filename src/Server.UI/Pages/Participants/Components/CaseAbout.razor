@@ -1,43 +1,47 @@
 ﻿@inherits CatsComponentBase
 
-@if(loading is false)
+@attribute [StreamRendering]
+
+
+@if (_loading)
+{
+    <MudProgressLinear Indeterminate="true" />
+}
+else
 {
     <MudForm ReadOnly>
         <MudGrid Class="pa-3" Spacing="4">
-            @if (participant is not null)
-            {
-                <MudItem sm="12" md="5">
-                    <MudCard Style="Height: 100%">
-                        <MudCardHeader>
-                            <CardHeaderContent>
-                                <MudText Typo="Typo.h6">Personal Details</MudText>
-                            </CardHeaderContent>
-                            <CardHeaderActions>
-                                @if (participant.IsActive)
-                                {
-                                    <MudTooltip Text="Edit">
-                                        <MudIconButton OnClick="EditPersonalInformation" Icon="@Icons.Material.Filled.Edit" />
-                                    </MudTooltip>
-                                }
-                            </CardHeaderActions>
-                            <CardHeaderAvatar>
-                                <MudAvatar Color="Color.Primary">
-                                    <MudIcon Icon="@Icons.Material.Filled.Person" />
-                                </MudAvatar>
-                            </CardHeaderAvatar>
-                        </MudCardHeader>
-                        <MudCardContent>
-                            <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.PreferredNames" Label="@personalDetails?.GetMemberDescription(x => x.PreferredNames)" />
-                            <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.PreferredPronouns" Label="@personalDetails?.GetMemberDescription(x => x.PreferredPronouns)" Placeholder="i.e. he/him, she/her, they/them" />
-                            <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.PreferredTitle" Label="@personalDetails?.GetMemberDescription(x => x.PreferredTitle)" Placeholder="i.e. Mr, Ms, Mx" />
-                            <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.NINo" Label="@personalDetails?.GetMemberDescription(x => x.NINo)" />
-                            <MudTextField ReadOnly Class="mb-2" Value="personalDetails?.AdditionalNotes" Label="@personalDetails?.GetMemberDescription(x => x.AdditionalNotes)"
-                            Placeholder="e.g. Communication preferences, accessibility needs, or important background information"
-                            Lines="4" />
-                        </MudCardContent>
-                    </MudCard>
-                </MudItem>
-            }
+            <MudItem sm="12" md="5">
+                <MudCard Style="Height: 100%">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Personal Details</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            @if (ParticipantIsActive)
+                            {
+                                <MudTooltip Text="Edit">
+                                    <MudIconButton OnClick="EditPersonalInformation" Icon="@Icons.Material.Filled.Edit" />
+                                </MudTooltip>
+                            }
+                        </CardHeaderActions>
+                        <CardHeaderAvatar>
+                            <MudAvatar Color="Color.Primary">
+                                <MudIcon Icon="@Icons.Material.Filled.Person" />
+                            </MudAvatar>
+                        </CardHeaderAvatar>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudTextField ReadOnly Class="mb-2" Value="_personalDetails?.PreferredNames" Label="@_personalDetails?.GetMemberDescription(x => x.PreferredNames)" />
+                        <MudTextField ReadOnly Class="mb-2" Value="_personalDetails?.PreferredPronouns" Label="@_personalDetails?.GetMemberDescription(x => x.PreferredPronouns)" Placeholder="i.e. he/him, she/her, they/them" />
+                        <MudTextField ReadOnly Class="mb-2" Value="_personalDetails?.PreferredTitle" Label="@_personalDetails?.GetMemberDescription(x => x.PreferredTitle)" Placeholder="i.e. Mr, Ms, Mx" />
+                        <MudTextField ReadOnly Class="mb-2" Value="_personalDetails?.NINo" Label="@_personalDetails?.GetMemberDescription(x => x.NINo)" />
+                        <MudTextField ReadOnly Class="mb-2" Value="_personalDetails?.AdditionalNotes" Label="@_personalDetails?.GetMemberDescription(x => x.AdditionalNotes)"
+                                      Placeholder="e.g. Communication preferences, accessibility needs, or important background information"
+                                      Lines="4" />
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
             <MudItem sm="12" md="7">
                 <MudCard Style="Height: 100%">
                     <MudCardHeader>
@@ -51,17 +55,17 @@
                         </CardHeaderAvatar>
                     </MudCardHeader>
                     <MudCardContent>
-                        @if (contactDetails.Any() is false)
+                        @if (_contactDetails.Any() is false)
                         {
                             <MudText>No contact information recorded.</MudText>
                         }
                         <MudExpansionPanels MultiExpansion>
-                            @foreach (var detail in contactDetails.OrderByDescending(d => d.Primary))
+                            @foreach (var detail in _contactDetails)
                             {
                                 <MudExpansionPanel>
                                     <TitleContent>
                                         <div class="d-flex gap-4">
-                                            @if (!participant!.IsActive)
+                                            @if (ParticipantIsActive)
                                             {
                                                 <div class="d-flex gap-2">
                                                     <MudTooltip Text="Edit">
@@ -98,7 +102,7 @@
                         </MudExpansionPanels>
                     </MudCardContent>
                     <MudCardActions>
-                        @if (participant!.IsActive)
+                        @if (ParticipantIsActive)
                         {
                             <MudTooltip Text="Add Contact Information">
                                 <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="AddContact" />

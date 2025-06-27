@@ -9,54 +9,74 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
 public partial class CaseAbout(IMapper mapper)
 {
+    /// <summary>
+    /// The Id of the participant
+    /// </summary>
     [Parameter, EditorRequired]
     public required string ParticipantId { get; set; }
+    
+    /// <summary>
+    /// Flag to indicate whether the participant is active or not.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required bool ParticipantIsActive { get; set; }
 
-    ParticipantDto? participant;
-    IEnumerable<ParticipantContactDetailDto> contactDetails = [];
-    ParticipantPersonalDetailDto? personalDetails;
-    bool loading = true;
+    private IEnumerable<ParticipantContactDetailDto> _contactDetails = [];
+    private ParticipantPersonalDetailDto? _personalDetails;
+    private bool _loading = true;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await Refresh();
-        await base.OnInitializedAsync();
-    }
+    protected override Task OnInitializedAsync()
+        => Refresh();
 
-    async Task Refresh()
+    private async Task Refresh()
     {
         try
         {
-            loading = true;
-
-            participant = await GetNewMediator().Send(new GetParticipantById.Query()
-            {
-                Id = ParticipantId
-            });
-
-            contactDetails = await GetNewMediator().Send(new GetContactDetails.Query()
-            {
-                ParticipantId = ParticipantId
-            });
-
-            personalDetails = await GetNewMediator().Send(new GetPersonalDetails.Query()
-            {
-                ParticipantId = ParticipantId
-            });
+            _loading = true;
+            await LoadContactDetails();
+            await LoadPersonalDetails();
         }
         finally
         {
-            loading = false;
+            _loading = false;
         }
     }
 
-    async Task AddContact()
+    private async Task LoadContactDetails()
+    {
+        var mediator = GetNewMediator();
+        var result = await mediator.Send(new GetContactDetails.Query()
+        {
+            ParticipantId = ParticipantId
+        }, ComponentCancellationToken);
+        
+        if (!IsDisposed)
+        {
+            _contactDetails = result.OrderByDescending(d => d.Primary);
+        }
+    }
+
+    private async Task LoadPersonalDetails()
+    { 
+        var mediator = GetNewMediator();
+        var result = await mediator.Send(new GetPersonalDetails.Query() 
+        {
+            ParticipantId = ParticipantId
+        }, ComponentCancellationToken);
+
+        if (!IsDisposed)
+        {
+            _personalDetails = result;
+        }
+    }
+
+    private async Task AddContact()
         => await AddOrEditContact(new AddOrUpdateContactDetail.Command { ParticipantId = ParticipantId }, "Add Contact Details");
 
-    async Task EditContact(ParticipantContactDetailDto contact) =>
+    private async Task EditContact(ParticipantContactDetailDto contact) =>
         await AddOrEditContact(mapper.Map<AddOrUpdateContactDetail.Command>(contact), "Edit Contact Details");
 
-    async Task AddOrEditContact(AddOrUpdateContactDetail.Command command, string title)
+    private async Task AddOrEditContact(AddOrUpdateContactDetail.Command command, string title)
     {
         var parameters = new DialogParameters<AddressDialog>()
         {
@@ -73,7 +93,7 @@ public partial class CaseAbout(IMapper mapper)
         }
     }
 
-    async Task DeleteContact(ParticipantContactDetailDto contact)
+    private async Task DeleteContact(ParticipantContactDetailDto contact)
     {
         var parameters = new DialogParameters<DeleteConfirmation>
         {
@@ -91,9 +111,9 @@ public partial class CaseAbout(IMapper mapper)
         }
     }
 
-    async Task EditPersonalInformation()
+    private async Task EditPersonalInformation()
     {
-        var command = new AddOrUpdatePersonalDetail.Command { ParticipantId = ParticipantId, PersonalDetails = personalDetails ?? new() };
+        var command = new AddOrUpdatePersonalDetail.Command { ParticipantId = ParticipantId, PersonalDetails = _personalDetails ?? new() };
 
         var parameters = new DialogParameters<PersonalDetailsDialog>()
         {
