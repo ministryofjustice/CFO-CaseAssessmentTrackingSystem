@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.Pipeline;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
@@ -87,9 +88,12 @@ public static class SubmitPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.QueueEntryId)
-                .Must(MustExist)
-                .WithMessage("Queue item does not exist");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+                RuleFor(c => c.QueueEntryId)
+                    .Must(MustExist)
+                    .WithMessage("Queue item does not exist");
+            });
+            
         }
         private bool MustExist(Guid identifier)
             =>  _unitOfWork.DbContext.EnrolmentPqaQueue.Any(e => e.Id == identifier);
@@ -103,9 +107,11 @@ public static class SubmitPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.QueueEntryId)
-                .Must(MustBeOpen)
-                .WithMessage("Queue item is already completed.");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+                RuleFor(c => c.QueueEntryId)
+                    .Must(MustBeOpen)
+                    .WithMessage("Queue item is already completed.");    
+            });
         }
 
         private bool MustBeOpen(Guid id)
@@ -125,9 +131,11 @@ public static class SubmitPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.QueueEntryId)
-                .Must(MustBeAtPqA)
-                .WithMessage("Queue item is not a PQA stage");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+                RuleFor(c => c.QueueEntryId)
+                    .Must(MustBeAtPqA)
+                    .WithMessage("Queue item is not a PQA stage");    
+            });
         }
 
         private bool MustBeAtPqA(Guid id)
@@ -145,10 +153,12 @@ public static class SubmitPqaResponse
         public E_OwnerShouldNotBeApprover(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-
-            RuleFor(c => c)
-                .Must(OwnerMustNotBeApprover)
-                .WithMessage("This enrolment was assigned to you hence must not be processed at PQA stage by you");
+            
+            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+                RuleFor(c => c)
+                    .Must(OwnerMustNotBeApprover)
+                    .WithMessage("This enrolment was assigned to you hence must not be processed at PQA stage by you");    
+            });
         }
 
         private bool OwnerMustNotBeApprover(Command c)
@@ -167,10 +177,14 @@ public static class SubmitPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(f => f)
-                .Must(EnrolmentOccurredWithin3Months)
-                .WithMessage("The enrolment consent date is over 3 months ago")
-                .When(f => f.Response == PqaResponse.Accept);
+            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+                RuleFor(f => f)
+                    .Must(EnrolmentOccurredWithin3Months)
+                    .WithMessage("The enrolment consent date is over 3 months ago")
+                    .When(f => f.Response == PqaResponse.Accept);
+
+            });
+
         }
 
         private bool EnrolmentOccurredWithin3Months(Command c)
@@ -192,9 +206,12 @@ public static class SubmitPqaResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(g => g.QueueEntryId)
-                .Must(ParticipantMustNotBeArchived)
-                .WithMessage("Participant is archived");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+                RuleFor(g => g.QueueEntryId)
+                    .Must(ParticipantMustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
+
         }
 
         private bool ParticipantMustNotBeArchived(Guid queueEntryId)
