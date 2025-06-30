@@ -78,10 +78,13 @@ public static class SubmitQa1Response
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.QueueEntryId)
-                .MustAsync(MustExist)
-                .WithMessage("Queue item does not exist");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+                RuleFor(c => c.QueueEntryId)
+                    .MustAsync(MustExist)
+                    .WithMessage("Queue item does not exist");
+            });
         }
+        
         private async Task<bool> MustExist(Guid identifier, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.EnrolmentQa1Queue.AnyAsync(e => e.Id == identifier, cancellationToken);
     }
@@ -93,10 +96,12 @@ public static class SubmitQa1Response
         public C_ShouldNotBeComplete(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-
-            RuleFor(c => c.QueueEntryId)
-                .MustAsync(MustBeOpen)
-                .WithMessage("Queue item is already completed.");
+            
+            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+                RuleFor(c => c.QueueEntryId)
+                    .MustAsync(MustBeOpen)
+                    .WithMessage("Queue item is already completed.");
+            });
         }
 
         private async Task<bool> MustBeOpen(Guid id, CancellationToken cancellationToken)
@@ -117,9 +122,11 @@ public static class SubmitQa1Response
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.QueueEntryId)
-                .MustAsync(MustBeAtQa)
-                .WithMessage("Queue item is not a PQA stage");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+                RuleFor(c => c.QueueEntryId)
+                    .MustAsync(MustBeAtQa)
+                    .WithMessage("Queue item is not a PQA stage");
+            });
         }
 
         private async Task<bool> MustBeAtQa(Guid id, CancellationToken cancellationToken)
@@ -138,9 +145,11 @@ public static class SubmitQa1Response
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c)
-                .MustAsync(OwnerMustNotBeApprover)
-                .WithMessage("This enrolment was assigned to you hence must not be processed at QA1 stage by you");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+                RuleFor(c => c)
+                    .MustAsync(OwnerMustNotBeApprover)
+                    .WithMessage("This enrolment was assigned to you hence must not be processed at QA1 stage by you");
+            });
         }
 
         private async Task<bool> OwnerMustNotBeApprover(Command c, CancellationToken cancellationToken)
