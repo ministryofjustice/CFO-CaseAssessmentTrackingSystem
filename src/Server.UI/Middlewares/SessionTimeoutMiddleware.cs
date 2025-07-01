@@ -1,6 +1,4 @@
 ﻿using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Infrastructure.Services;
-using Microsoft.AspNetCore.Authentication;
 
 namespace Cfo.Cats.Server.UI.Middlewares;
 
@@ -34,6 +32,8 @@ public class SessionTimeoutMiddleware(RequestDelegate next, ISessionService sess
                         window.location.replace('/pages/authentication/login?timeout=true');
                     </script>
                     </head><body></body></html>");
+
+                return;
             }
             
             // refresh the activity on a page refresh
