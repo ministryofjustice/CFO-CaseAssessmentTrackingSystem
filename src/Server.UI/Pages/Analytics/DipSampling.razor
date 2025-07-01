@@ -1,0 +1,121 @@
+﻿@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
+
+@page "/pages/analytics/dip-sampling"
+
+@using Cfo.Cats.Application.SecurityConstants
+
+<MudText Typo="Typo.h5">
+    Dip Sampling
+</MudText>
+
+<MudGrid Class="my-2">
+    <MudItem xs="12" md="2">
+        <MudSelect Label="Month" @bind-Value="Month">
+            @foreach (var month in Enumerable.Range(1, 12))
+            {
+                <MudSelectItem Value="month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+    <MudItem xs="12" md="1">
+        <MudSelect Label="Year" @bind-Value="Year">
+            @foreach (var year in Enumerable.Range(2024, DateTime.Now.Year - 2023))
+            {
+                <MudSelectItem Value="year">@year</MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+    <MudItem xs="12" md="2">
+        <ContractAutoComplete TenantId="@(CurrentUser?.TenantId ?? "xxx")" @bind-Value="SelectedContract" />
+    </MudItem>
+    <MudItem  xs="12" md="2">
+        <MudSwitch T="bool" Value="false" Label="Only show in progress" Color="Color.Primary"/>
+    </MudItem>
+</MudGrid>
+
+<MudGrid Class="mt-2">
+    <MudItem xs="12" md="6" lg="4">
+        <MudCard>
+            <MudCardHeader Class="justify-space-between">
+                <MudText Typo="Typo.h4">North West (Mar 2025)</MudText>
+                <MudChip T="string" Color="Color.Warning" Size="Size.Small">In progress</MudChip>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText>Sample size of <b>20</b> participants</MudText>
+                <MudText>Generated on <b>01/07/2025</b></MudText>
+                <div class="d-flex">
+                    <MudText>Contributors</MudText>
+                    <MudAvatarGroup Max="3" Spacing="3">
+                        <MudTooltip Text="John Doe">
+                            <MudAvatar Size="Size.Small">JD</MudAvatar>
+                        </MudTooltip>
+                        <MudTooltip Text="Clark Kent">
+                            <MudAvatar Size="Size.Small">CK</MudAvatar>
+                        </MudTooltip>
+                        <MudTooltip Text="Tyler Durden">
+                            <MudAvatar Size="Size.Small">TD</MudAvatar>
+                        </MudTooltip>
+                    </MudAvatarGroup>
+                </div>
+            </MudCardContent>
+            <MudCardActions Class="justify-space-between">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/dip-sampling/{Guid.NewGuid()}")">Continue</MudButton>
+                <MudTooltip Text="Score will become available after completion">
+                    <MudSkeleton Animation="Animation.Wave" Width="120px" />
+                </MudTooltip>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" md="6" lg="4">
+        <MudCard>
+            <MudCardHeader Class="justify-space-between">
+                <MudText Typo="Typo.h4">West Midlands (Mar 2025)</MudText>
+                <MudChip T="string" Color="Color.Success" Size="Size.Small">Complete</MudChip>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText>Sample size of <b>20</b> participants</MudText>
+                <MudText>Generated on <b>01/07/2025</b></MudText>
+                <div class="d-flex">
+                    <MudText>Contributors</MudText>
+                    <MudAvatarGroup Max="3" Spacing="3">
+                        <MudTooltip Text="Clark Kent">
+                            <MudAvatar Size="Size.Small">CK</MudAvatar>
+                        </MudTooltip>
+                    </MudAvatarGroup>
+                </div>
+            </MudCardContent>
+            <MudCardActions Class="justify-space-between">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/dip-sampling/{Guid.NewGuid()}")">Review</MudButton>
+                    <MudTooltip Text="@($"84%")">
+                        <MudRating SelectedValue="4" ReadOnly />
+                    </MudTooltip>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" md="6" lg="4">
+        <MudCard>
+            <MudCardHeader Class="justify-space-between">
+                <MudText Typo="Typo.h4">South East (Mar 2025)</MudText>
+                <MudChip T="string" Color="Color.Default" Size="Size.Small">Abandoned</MudChip>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText>Sample size of <b>15</b> participants</MudText>
+                <MudText>Generated on <b>01/07/2025</b></MudText>
+                <div class="d-flex">
+                    <MudText>Contributors</MudText>
+                    <MudAvatarGroup Max="3" Spacing="3">
+                        <MudTooltip Text="John Doe">
+                            <MudAvatar Size="Size.Small">JD</MudAvatar>
+                        </MudTooltip>
+                        <MudTooltip Text="Tyler Durden">
+                            <MudAvatar Size="Size.Small">TD</MudAvatar>
+                        </MudTooltip>
+                    </MudAvatarGroup>
+                </div>
+            </MudCardContent>
+            <MudCardActions Class="justify-space-between">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/dip-sampling/{Guid.NewGuid()}")">Review</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>
