@@ -81,6 +81,13 @@ public class MenuService : IMenuService
                                 Title = "My Documents",
                                 Href = "/pages/analytics/my-documents",
                                 PageStatus = PageStatus.Completed
+                            },
+                            new()
+                            {
+                                Title = "Dip Sampling",
+                                Href = "/pages/analytics/dip-sampling",
+                                PageStatus = PageStatus.Wip,
+                                Roles = [RoleNames.SystemSupport, RoleNames.Finance],
                             }
                         ]
                     },                  
