@@ -1,10 +1,12 @@
 ﻿@using Cfo.Cats.Application.Features.Dashboard.Queries
-@using Cfo.Cats.Application.Features.Dashboard.DTOs
 @using Cfo.Cats.Application.Features.Participants.Specifications
+@using Cfo.Cats.Application.Features.Dashboard.DTOs
+@using ChartType=ApexCharts.ChartType
+@using ApexCharts
 @inherits CatsComponentBase
 
 
-@if (_participantSteps is null)
+@if (_loading)
 {
     <MudItem xs="12" md="6" lg="3">
         <LoadingCard Title="Participants" />
@@ -68,9 +70,15 @@
                     <MudText Typo="Typo.h5">Participants Breakdown</MudText>
             </MudCardHeader>
             <MudCardContent>
-                <MudChart ChartType="ChartType.Pie" InputData="@_data" InputLabels="@_labels">
-
-                </MudChart>
+                <ApexChart TItem="ChartData"
+                           Title="Participants Breakdown"
+                           Options="@_options">
+                    <ApexPointSeries 
+                        Items="@_data"
+                        XValue="item => item.Description"
+                        YValue="item => item.Count"
+                        SeriesType="SeriesType.Pie"/>
+                </ApexChart>
 
             </MudCardContent>
             <MudCardActions>
@@ -83,50 +91,76 @@
 
 @code {
 
+    private bool _loading = true;
+
+    private ParticipantCountSummaryDto? _participantSteps;
+    private ChartData[]? _data;
+    private ApexChartOptions<ChartData> _options = new()
+    {
+        Chart = new Chart
+        {
+            Type = ChartType.Pie,
+            Toolbar = new ApexCharts.Toolbar
+            {
+                Show = true,
+                Export = new ExportOptions
+                {
+                    Csv = new ApexCharts.ExportCSV()
+                    {
+                        Filename = "Participants",
+                    },
+                    Png = new ExportPng()
+                    {
+                        Filename = "Particpants-Pie-Chart"
+                    },
+                    Svg = new ExportSvg()
+                    {
+                          Filename  = "Particpants-Pie-Chart"
+                    }
+                }
+            }
+        }
+    };
 
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; }
 
-    private double[] _data = [];
-
-    private readonly string[] _labels =
-    [
-        "Identified",
-        "Enrolling",
-        "Submitted To PQA",
-        "Submitted To Authority",
-        "Approved"
-    ];
-
-    private ParticipantCountSummaryDto? _participantSteps; 
     
     protected override async Task OnInitializedAsync()
     {
-        var query = new GetMyTeamsParticipantsDashboard.Query()
-        {
-            CurrentUser = UserProfile!
-        };
 
-        var result = await GetNewMediator().Send(query);
-
-        if (result.Succeeded)
+        try
         {
-            _participantSteps = result.Data;
-            _data =
-            [
-                _participantSteps!.IdentifiedCases,
-                _participantSteps.EnrollingCases,
-                _participantSteps.CasesAtPqa,
-                _participantSteps.CasesAtCfo,
-                _participantSteps.ApprovedCases
-            ];
+            var query = new GetMyTeamsParticipantsDashboard.Query()
+            {
+                CurrentUser = UserProfile!
+            };
+
+            var result = await GetNewMediator().Send(query);
+
+            if (result is { Succeeded: true, Data: not null })
+            {
+                _participantSteps = result.Data; 
+                _data =
+                [
+                    new("Identified", result.Data.IdentifiedCases),
+                    new("Enrolling", result.Data.EnrollingCases),
+                    new("Submitted to PQA", result.Data.CasesAtPqa),
+                    new("Submitted to Authority", result.Data.CasesAtCfo),
+                    new("Approved", result.Data.ApprovedCases)
+                ];
+            }
+        }
+        finally
+        {
+            _loading = false;
         }
     }
 
-
     private string GetParticipantsUrl(ParticipantListView listView) => $"/pages/participants?listView={listView.ToString()}";
 
-
     private void GotoParticipants() => Navigation.NavigateTo("/pages/participants");
+
+    public record ChartData(string Description, int Count);
 
 }
