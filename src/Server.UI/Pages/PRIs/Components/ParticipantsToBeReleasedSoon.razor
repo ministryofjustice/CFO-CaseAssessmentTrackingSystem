@@ -1,0 +1,164 @@
+﻿@inherits CatsComponentBase
+@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Humanizer
+
+@inject IUserService UserService
+@inject ICurrentUserService CurrentUser
+
+<MudDataGrid ServerData="@(ServerReload)"
+                FixedHeader="true"
+                FixedFooter="true"
+                Virtualize="true"
+                @bind-RowsPerPage="_defaultPageSize"
+                Height="calc(100vh - 260px)"
+                Loading="@_loading"
+                MultiSelection="true"
+            @bind-SelectedItems="_selectedSoonToBeReleasedParticipants"
+                Hover="true"
+            @ref="_SoonToBeReleasedParticipantsTable"
+                Breakpoint="Breakpoint.Sm">
+    <ToolBarContent>
+        <div class="d-flex align-start flex-grow-1">
+            <MudIcon Icon="@Icons.Material.Filled.Inventory" Size="Size.Large" />
+            <MudText Typo="Typo.caption">@ConstantString.SoonToBeReleasedParticipants</MudText>
+
+            <div class="flex-grow-1"></div>
+            <div class="d-flex flex-column justify-end">
+                <div class="d-flex">
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+
+                        <MudButton Variant="Variant.Outlined"
+                                    Size="Size.Small"
+                                    Disabled="@_loading"
+                                    OnClick="@(() => OnRefresh())"
+                                    StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
+                                    Style="margin-right: 4px; margin-bottom:4px">
+                            @ConstantString.Refresh
+                        </MudButton>
+                    </MudHidden>
+                </div>
+            <MudTextField T="string" ValueChanged="@(OnSearchSoonToBeReleasedParticipants)" Value="@SoonToBeReleasedParticipantsQuery!.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                                AdornmentIcon="@Icons.Material.Filled.Yard" IconSize="Size.Small">
+                </MudTextField>
+            </div>
+        </div>
+    </ToolBarContent>
+    <Columns>
+        <TemplateColumn CellClass="width:60px;" Title="@ConstantString.Actions" Sortable="false">
+            <CellTemplate>
+                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                            Dense="true"
+                            EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+
+                    <MudMenuItem OnClick="@(()=> ViewParticipant(context.Item))">
+                        @ConstantString.ViewParticipant
+                    </MudMenuItem>
+
+
+                @*This will need to be modified for the information needed as CFODEV-1253*@
+                    @if (context.Item.ParticipantIsActive)
+                    {
+                        @if (context.Item.ActualReleaseDate == null)
+                        {
+                            @*    <MudMenuItem OnClick="@(()=> AddActualReleaseDate(context.Item))">
+                                @ConstantString.AddActualReleaseDate
+                            </MudMenuItem> *@
+                        }
+                        else
+                        {
+                            if (CurrentUser.UserId == context.Item.AssignedTo)
+                            {
+                                @* <MudMenuItem OnClick="@(()=> CompletePRI(context.Item))">
+                                    @ConstantString.CompletePRI
+                                </MudMenuItem> *@
+                            }
+                        }
+                        @* <MudMenuItem OnClick="@(()=> AbandonPRI(context.Item))">
+                            @ConstantString.AbandonPRI
+                        </MudMenuItem> *@
+                    }
+                </MudMenu>
+            </CellTemplate>
+        </TemplateColumn>
+
+        <PropertyColumn Property="x => x.ParticipantName" Title="@ConstantString.Participant">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>
+                    <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="x => x.ParticipantIsActive" Title="@ConstantString.Active">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.ParticipantIsActive</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="x => x.CreatedBy" Title="@ConstantString.CustodySupportWorker">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@UserService.GetDisplayName(@context.Item.CreatedBy!)</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.AssignedTo" Title="@ConstantString.CommunitySupportWorker">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@UserService.GetDisplayName(@context.Item.AssignedTo!)</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.ExpectedReleaseRegion" Title="@ConstantString.ExpectedReleaseRegion">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2"> @context.Item.ExpectedReleaseRegion!.Name</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="x => x.ExpectedReleaseDate" Title="@ConstantString.ExpectedDateOfRelease">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">
+                        @context.Item.ExpectedReleaseDate
+                    </MudText>
+                    <MudText Typo="Typo.body2">
+                        @(context.Item.ExpectedReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : context.Item.ExpectedReleaseDate.Humanize())
+                    </MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.ActualReleaseDate" Title="@ConstantString.ActualReleaseDate">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    @if (context.Item.ActualReleaseDate is not null)
+                    {
+                        <MudText Typo="Typo.body2">
+                            @context.Item.ActualReleaseDate
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            @(context.Item.ActualReleaseDate == DateOnly.FromDateTime(DateTime.Today) ? "today" : context.Item.ActualReleaseDate.Humanize())
+                        </MudText>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.body2">Not set</MudText>
+                    }
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+    </Columns>
+    <NoRecordsContent>
+        <MudText>@ConstantString.NoRecords</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>@ConstantString.Loading</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
+    </PagerContent>
+</MudDataGrid>

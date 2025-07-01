@@ -1,5 +1,4 @@
-﻿using Cfo.Cats.Domain.Entities.Participants;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Resources;
 
 namespace Cfo.Cats.Infrastructure.Constants;
@@ -219,6 +218,6 @@ public static class ConstantString
     public static string ObjectiveSuccessfullyCompleted =>
     Localize("Objective Successfully Completed");
 
-    
-    
+    public static string SoonToBeReleasedParticipants =>
+     Localize("Soon To Be Released Participants");
 }
