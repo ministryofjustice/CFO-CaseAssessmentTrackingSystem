@@ -58,6 +58,22 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
         return result;
     }
 
+    public override async Task<SignInResult> TwoFactorSignInAsync(string provider, string code, bool isPersistent, bool rememberClient)
+    {
+        SignInResult result = await base.TwoFactorSignInAsync(provider, code, isPersistent, rememberClient);
+        if (result.Succeeded)
+        {
+            // Get user from two-factor info
+            var info = await GetTwoFactorAuthenticationUserAsync();
+            if (info != null)
+            {
+                sessionService.StartSession(info.Id);
+            }
+        }
+        return result;
+    }
+
+
     private bool PasswordCheckSucceededAndTwoFactorDisabledForIpRange(SignInResult passwordCheckResult, string? ipAddress)
     {
         if (passwordCheckResult.Succeeded == false || string.IsNullOrWhiteSpace(ipAddress))
