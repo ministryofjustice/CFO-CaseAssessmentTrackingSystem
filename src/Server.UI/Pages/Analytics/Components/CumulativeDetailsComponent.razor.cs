@@ -5,7 +5,7 @@ using Cfo.Cats.Application.Features.ManagementInformation;
 using Cfo.Cats.Application.Features.ManagementInformation.DTOs;
 using Cfo.Cats.Application.Features.ManagementInformation.Queries;
 
-namespace Cfo.Cats.Server.UI.Pages.Performance.Components;
+namespace Cfo.Cats.Server.UI.Pages.Analytics.Components;
 
 public partial class CumulativeDetailsComponent : CatsComponentBase
 {

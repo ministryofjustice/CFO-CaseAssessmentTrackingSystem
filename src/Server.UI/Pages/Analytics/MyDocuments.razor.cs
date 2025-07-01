@@ -1,7 +1,8 @@
 ﻿using Cfo.Cats.Application.Features.Documents.DTOs;
 using Cfo.Cats.Application.Features.Documents.Queries;
+using Cfo.Cats.Server.UI.Pages.Analytics.Components;
 
-namespace Cfo.Cats.Server.UI.Pages.Reports;
+namespace Cfo.Cats.Server.UI.Pages.Analytics;
 
 public partial class MyDocuments
 {

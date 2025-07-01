@@ -4,7 +4,7 @@ using Cfo.Cats.Application.Features.Contracts.DTOs;
 using Cfo.Cats.Application.Features.ManagementInformation.Commands;
 using Cfo.Cats.Infrastructure.Constants;
 
-namespace Cfo.Cats.Server.UI.Pages.Performance;
+namespace Cfo.Cats.Server.UI.Pages.Analytics;
 
 
 
