@@ -1,5 +1,5 @@
-﻿using Cfo.Cats.Domain.Entities.Documents;
-using System.IO.Packaging;
+﻿using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Domain.Entities.Documents;
 
 namespace Cfo.Cats.Application.Features.Activities.DTOs;
 
@@ -35,15 +35,21 @@ public class IswDto
     public class Validator : AbstractValidator<IswDto>
     {
         private readonly IUnitOfWork unitOfWork;
+
         public Validator(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
 
             RuleFor(c => c.WraparoundSupportStartedOn)
                 .NotNull()
-                .WithMessage("You must enter Wraparound support start date")
-                .Must((command, commencedOn) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId!, commencedOn))
-                .WithMessage("Wraparound support start date cannot take place before the participant gave consent");
+                .WithMessage("You must enter Wraparound support start date");
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.WraparoundSupportStartedOn)
+                    .Must((command, commencedOn) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId!, commencedOn))
+                    .WithMessage("Wraparound support start date cannot take place before the participant gave consent");
+            });
 
             // Backdated up to 3 months
             RuleFor(c => c.BaselineAchievedOn)
@@ -91,7 +97,5 @@ public class IswDto
 
             return commencedOn >= consentDate;
         }
-
     }
-
 }

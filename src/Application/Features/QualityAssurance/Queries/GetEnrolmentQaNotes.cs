@@ -5,20 +5,20 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.QualityAssurance.Queries;
 
-public static class GetEnrolmentQaNotes 
+public static class GetEnrolmentQaNotes
 {
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Query : IRequest<Result<EnrolmentQaNoteDto[]>>
     {
-        public string? ParticipantId { get;set; }
+        public string? ParticipantId { get; set; }
 
         public bool IncludeInternalNotes { get; set; }
 
-        public UserProfile? CurentUser {get;set;}
+        public UserProfile? CurentUser { get; set; }
     }
 
     public class Handler(
-        IUnitOfWork unitOfWork, 
+        IUnitOfWork unitOfWork,
         IMapper mapper) : IRequestHandler<Query, Result<EnrolmentQaNoteDto[]>>
     {
         public async Task<Result<EnrolmentQaNoteDto[]>> Handle(Query request, CancellationToken cancellationToken)
@@ -28,9 +28,7 @@ public static class GetEnrolmentQaNotes
             var qa2 = await GetQa2Notes(request.ParticipantId!, request.IncludeInternalNotes);
             var es = await GetEscalationNotes(request.ParticipantId!, request.IncludeInternalNotes);
 
-
             return Result<EnrolmentQaNoteDto[]>.Success(pqa.Union(qa1).Union(qa2).Union(es).ToArray());
-
         }
 
         private async Task<EnrolmentQaNoteDto[]> GetEscalationNotes(string participantId, bool includeInternalNotes)
@@ -41,9 +39,8 @@ public static class GetEnrolmentQaNotes
                                     .SelectMany(c => c.Notes.Where(n => n.IsExternal || includeInternalNotes))
                                     .ProjectTo<EnrolmentQaNoteDto>(mapper.ConfigurationProvider);
 
-
-             var results = await query1.ToArrayAsync()!;
-             return results;
+            var results = await query1.ToArrayAsync()!;
+            return results;
         }
 
         private async Task<EnrolmentQaNoteDto[]> GetPqaNotes(string participantId)
@@ -54,9 +51,8 @@ public static class GetEnrolmentQaNotes
                                     .SelectMany(c => c.Notes)
                                     .ProjectTo<EnrolmentQaNoteDto>(mapper.ConfigurationProvider);
 
-
-             var results = await query1.ToArrayAsync()!;
-             return results;
+            var results = await query1.ToArrayAsync()!;
+            return results;
         }
 
         private async Task<EnrolmentQaNoteDto[]> GetQa1Notes(string participantId, bool includeInternalNotes)
@@ -67,12 +63,11 @@ public static class GetEnrolmentQaNotes
                                     .SelectMany(c => c.Notes.Where(n => n.IsExternal || includeInternalNotes))
                                     .ProjectTo<EnrolmentQaNoteDto>(mapper.ConfigurationProvider);
 
-
-             var results = await query1.ToArrayAsync()!;
-             return results;
+            var results = await query1.ToArrayAsync()!;
+            return results;
         }
 
-          private async Task<EnrolmentQaNoteDto[]> GetQa2Notes(string participantId, bool includeInternalNotes)
+        private async Task<EnrolmentQaNoteDto[]> GetQa2Notes(string participantId, bool includeInternalNotes)
         {
             var query1 = unitOfWork.DbContext.EnrolmentQa2Queue
                                     .AsNoTracking()
@@ -80,28 +75,40 @@ public static class GetEnrolmentQaNotes
                                     .SelectMany(c => c.Notes.Where(n => n.IsExternal || includeInternalNotes))
                                     .ProjectTo<EnrolmentQaNoteDto>(mapper.ConfigurationProvider);
 
-
-             var results = await query1.ToArrayAsync()!;
-             return results;
+            var results = await query1.ToArrayAsync()!;
+            return results;
         }
-
     }
 
     public class Validator : AbstractValidator<Query>
     {
-        public Validator()
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
         {
-            RuleFor(x => x.ParticipantId)
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c.ParticipantId)
                 .NotNull()
                 .Length(9)
                 .WithMessage("Invalid participant Id")
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
-            
-            RuleFor(x => x.CurentUser)
-                .NotNull();
 
-        }        
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId!)
+                    .MustAsync(MustExist)
+                    .WithMessage("Participant does not exist")
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
+        }
+
+        private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
+
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
-    
 }

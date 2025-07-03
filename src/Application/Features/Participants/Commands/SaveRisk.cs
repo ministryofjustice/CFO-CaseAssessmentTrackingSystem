@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -46,11 +47,16 @@ public static class SaveRisk
             _unitOfWork = unitOfWork;
 
             RuleFor(r => r.RiskId)
-                .NotNull()
-                .MustAsync(NotBeCompleted)
-                .WithMessage("Risk already completed")
-                .MustAsync(ParticipantMustNotBeArchived)
-                .WithMessage("Participant is archived"); ;
+                .NotNull();
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(r => r.RiskId)
+                   .MustAsync(NotBeCompleted)
+                   .WithMessage("Risk already completed")
+                   .MustAsync(ParticipantMustNotBeArchived)
+                   .WithMessage("Participant is archived");
+            });
         }
 
         private async Task<bool> NotBeCompleted(Guid riskId, CancellationToken cancellationToken)

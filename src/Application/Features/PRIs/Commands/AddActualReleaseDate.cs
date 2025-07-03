@@ -61,8 +61,12 @@ public static class AddActualReleaseDate
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(a => a.ParticipantId)
-                .Must(MustNotBeArchived);
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(a => a.ParticipantId)
+                    .Must(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
 
         bool MustNotBeArchived(string participantId)
@@ -77,8 +81,12 @@ public static class AddActualReleaseDate
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(b => b.ParticipantId)
-                .Must(Exist);
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(b => b.ParticipantId)
+                    .Must(Exist)
+                    .WithMessage("Participant does not exist"); 
+            });
         }
 
         bool Exist(string identifier) => _unitOfWork.DbContext.Participants.Any(e => e.Id == identifier);

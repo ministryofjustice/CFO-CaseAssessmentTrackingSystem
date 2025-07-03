@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Outbox.Commands;
@@ -41,17 +42,17 @@ public static class RescheduleOutboxMessage
             RuleFor(x => x.OutboxMessageId)
                 .NotEmpty();
 
-            RuleFor(x => x.OutboxMessageId)
-                .MustAsync(Exist)
-                .WithMessage("Outbox Message not found");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(x => x.OutboxMessageId)
+                    .MustAsync(Exist)
+                    .WithMessage("Outbox Message not found");
+            });
         }
 
         private async Task<bool> Exist(Guid identifier, CancellationToken cancellationToken) 
             => await _unitOfWork.DbContext
                         .OutboxMessages
                         .AnyAsync(e => e.Id == identifier, cancellationToken);
-
     }
-
-
 }

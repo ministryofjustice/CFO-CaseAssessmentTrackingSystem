@@ -64,16 +64,19 @@ public static class SaveBio
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
-            RuleFor(x => x.Bio.ParticipantId)
-                .MustAsync(Exist)
-                .WithMessage("Participant not found")
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(x => x.Bio.ParticipantId)
+                    .MustAsync(Exist)
+                    .WithMessage("Participant not found")
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
 
-            RuleFor(x => x.Bio.Id)
-                .NotEmpty()
-                .MustAsync(NotBeCompleted)
-                .WithMessage("Bio already complete");
+                RuleFor(x => x.Bio.Id)
+                    .NotEmpty()
+                    .MustAsync(NotBeCompleted)
+                    .WithMessage("Bio already complete");
+            });
         }
 
         private async Task<bool> NotBeCompleted(Guid bioId, CancellationToken cancellationToken)

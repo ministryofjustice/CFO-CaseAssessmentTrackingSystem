@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Application.Features.Transfers.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -44,20 +45,24 @@ public static class ProcessIncomingTransfer
     public class Validator : AbstractValidator<Command>
     {
         IUnitOfWork unitOfWork;
-        public Validator(IUnitOfWork unitOfWork) 
+
+        public Validator(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
 
             RuleFor(c => c.IncomingTransfer)
                 .NotNull();
 
-            RuleFor(c => c.IncomingTransfer)
-                .MustAsync(NotBeCompleted)
-                .WithMessage("Transfer already completed");
-
             RuleFor(c => c.Assignee)
                 .NotNull()
                 .WithMessage("You must choose an assignee");
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.IncomingTransfer)
+                    .MustAsync(NotBeCompleted)
+                    .WithMessage("Transfer already completed");
+            });
         }
 
         async Task<bool> NotBeCompleted(IncomingTransferDto transfer, CancellationToken cancellationToken) 

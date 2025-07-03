@@ -1,14 +1,8 @@
-using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
-using Cfo.Cats.Domain.Entities.Bios;
-using Cfo.Cats.Domain.Entities.Participants;
-using Cfo.Cats.Domain.Entities.PRIs;
-using System;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
 
@@ -21,11 +15,10 @@ public static class GetParticipantSummary
         public required UserProfile CurrentUser { get; set; }
 
         public string Identifier() => ParticipantId;
-
     }
+
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper, IRightToWorkSettings rtwSettings) : IRequestHandler<Query, Result<ParticipantSummaryDto>>
     {
-
         public async Task<Result<ParticipantSummaryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var query = from c in unitOfWork.DbContext.Participants
@@ -92,16 +85,28 @@ public static class GetParticipantSummary
 
     public class Validator : AbstractValidator<Query>
     {
-        public Validator()
-        {
-            RuleFor(x => x.ParticipantId)
-                .NotNull();
+        private readonly IUnitOfWork _unitOfWork;
 
-            RuleFor(x => x.ParticipantId)
-                .MinimumLength(9)
-                .MaximumLength(9)
+        public Validator(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c.ParticipantId)
+                .NotNull()
+                .Length(9)
+                .WithMessage("Invalid Participant Id")
                 .Matches(ValidationConstants.AlphaNumeric)
-                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "ParticipantId"));
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));        
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(Exist)
+                    .WithMessage("Participant does not exist");
+            });
         }
+
+        private async Task<bool> Exist(string identifier, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
     }
 }

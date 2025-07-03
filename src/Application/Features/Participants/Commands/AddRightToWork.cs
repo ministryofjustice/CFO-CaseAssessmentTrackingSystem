@@ -78,17 +78,13 @@ public static class AddRightToWork
         public Validator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            
+
             RuleFor(c => c.ParticipantId)
                 .NotNull()
                 .Length(9)
                 .WithMessage("Invalid Participant Id")
-                .MustAsync(Exist)
-                .WithMessage("Participant does not exist")
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived");
-
+                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+            
             When(v => v.RightToWorkRequired, () =>
             {
                 RuleFor(v => v.Document)
@@ -112,6 +108,17 @@ public static class AddRightToWork
                         .WithMessage("You must provide the Valid To date")
                         .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
                         .WithMessage(ValidationConstants.DateMustBeInFuture);
+                });
+
+                RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+                {
+                    RuleFor(c => c.ParticipantId)
+                        .MustAsync(Exist)
+                        .WithMessage("Participant does not exist")
+                        .MustAsync(MustNotBeArchived)
+                        .WithMessage("Participant is archived");
+
+
                 });
             });
         }

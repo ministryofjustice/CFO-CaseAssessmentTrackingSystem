@@ -68,11 +68,14 @@ public static class BeginBio
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
-            RuleFor(c => c.ParticipantId)
-                .MustAsync(Exist)
-                .WithMessage("Participant not found")                
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived");                 
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(Exist)
+                    .WithMessage("Participant not found")
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
 
         private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)

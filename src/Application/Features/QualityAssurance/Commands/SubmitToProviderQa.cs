@@ -27,6 +27,7 @@ public static class SubmitToProviderQa
     public class A_ParticipantMustExistValidator : AbstractValidator<Command> 
     {
         private IUnitOfWork _unitOfWork;
+
         public A_ParticipantMustExistValidator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -36,15 +37,21 @@ public static class SubmitToProviderQa
                 .MinimumLength(9)
                 .MaximumLength(9)
                 .WithMessage("Invalid Participant Id")
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
-                .MustAsync(MustExist)
-                .WithMessage("Participant does not exist")
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived");                 
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));                
 
             RuleFor(c => c.JustificationReason)
                 .Matches(x => ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification Reason"));
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(MustExist)
+                    .WithMessage("Participant does not exist")
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
 
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
@@ -62,9 +69,12 @@ public static class SubmitToProviderQa
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.ParticipantId)
-                .MustAsync(MustExist)
-                .WithMessage($"No assessment found for participant.");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(MustExist)
+                    .WithMessage($"No assessment found for participant.");
+            });
         }
 
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
@@ -79,9 +89,12 @@ public static class SubmitToProviderQa
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.ParticipantId)
-                .MustAsync(MustBeScored)
-                .WithMessage("Assessment has not been submitted and scored.");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(MustBeScored)
+                    .WithMessage("Assessment has not been submitted and scored.");
+            });
         }
 
         private async Task<bool> MustBeScored(string identifier, CancellationToken cancellationToken)
@@ -106,9 +119,12 @@ public static class SubmitToProviderQa
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c)
-                .MustAsync(MustBeJustified)
-                .WithMessage("Eligibility for the programme requires the assessment to have a minimum of one red and one amber. Participants with at least 2 reds do not require justification");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c)
+                    .MustAsync(MustBeJustified)
+                    .WithMessage("Eligibility for the programme requires the assessment to have a minimum of one red and one amber. Participants with at least 2 reds do not require justification");
+            });
         }
 
         private async Task<bool> MustBeJustified(Command command, CancellationToken cancellationToken)
@@ -156,9 +172,12 @@ public static class SubmitToProviderQa
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.ParticipantId)
-                .MustAsync(MustBeInEnrollingStatus)
-                .WithMessage("Participant must be in Enrolling status");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(MustBeInEnrollingStatus)
+                    .WithMessage("Participant must be in Enrolling status");
+            });
         }
 
         private async Task<bool> MustBeInEnrollingStatus(string participantId, CancellationToken cancellationToken)
@@ -176,9 +195,12 @@ public static class SubmitToProviderQa
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.ParticipantId)
-                .MustAsync(HaveGivenConsentWithinLastThreeMonths)
-                .WithMessage("Participant must have given consent within the last 3 months, up to date consent documentation is required");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(HaveGivenConsentWithinLastThreeMonths)
+                    .WithMessage("Participant must have given consent within the last 3 months, up to date consent documentation is required");
+            });
         }
 
         private async Task<bool> HaveGivenConsentWithinLastThreeMonths(string participantId, CancellationToken cancellationToken)

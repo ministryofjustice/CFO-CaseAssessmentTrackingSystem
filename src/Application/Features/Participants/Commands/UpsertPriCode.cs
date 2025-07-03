@@ -41,17 +41,22 @@ public static class UpsertPriCode
                 .NotEmpty()
                 .Length(9)
                 .Matches(ValidationConstants.AlphaNumeric)
-                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
-                .MustAsync(Exist)
-                .WithMessage("Participant not found")
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived"); 
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+            
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(x => x.ParticipantId)
+                    .MustAsync(Exist)
+                    .WithMessage("Participant not found")
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
 
         async Task<bool> Exist(string participantId, CancellationToken cancellationToken)
             => await unitOfWork.DbContext.Participants.AnyAsync(p => p.Id == participantId, cancellationToken);
 
         async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
-        => await unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
+            => await unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 }

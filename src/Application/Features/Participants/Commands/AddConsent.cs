@@ -79,12 +79,8 @@ public static class AddConsent
                 .NotNull()
                 .Length(9)
                 .WithMessage("Invalid Participant Id")
-                .MustAsync(Exist)
-                .WithMessage("Participant does not exist")
                 .Matches(ValidationConstants.AlphaNumeric)
-                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, nameof(Command.ParticipantId)))
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived");
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, nameof(Command.ParticipantId)));                
 
             RuleFor(v => v.ConsentDate)
                 .NotNull()
@@ -111,6 +107,15 @@ public static class AddConsent
             RuleFor(v => v.Certify)
                 .Equal(true)
                 .WithMessage("You must upload a document and certify");
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(Exist)
+                    .WithMessage("Participant does not exist")
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
         
         private async Task<bool> Exist(string identifier, CancellationToken cancellationToken) 

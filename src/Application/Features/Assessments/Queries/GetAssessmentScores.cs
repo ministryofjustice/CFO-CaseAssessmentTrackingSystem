@@ -16,14 +16,11 @@ public static class GetAssessmentScores
 
     public class Handler : IRequestHandler<Query, Result<IEnumerable<ParticipantAssessmentDto>>>
     {
-        
-        private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
-        public Handler(IUnitOfWork unitOfWork, IMapper mapper)
+        public Handler(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            _unitOfWork = unitOfWork;            
         }
 
         public async Task<Result<IEnumerable<ParticipantAssessmentDto>>> Handle(Query request, CancellationToken cancellationToken)
@@ -49,8 +46,11 @@ public static class GetAssessmentScores
     }
     public class Validator : AbstractValidator<Query>
     {
-        public Validator()
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
 
             RuleFor(x => x.ParticipantId)
                 .NotNull();
@@ -60,6 +60,23 @@ public static class GetAssessmentScores
                 .MaximumLength(9)
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(x => x.ParticipantId)
+                    .MustAsync(Exist)
+                    .WithMessage("Participant not found");
+
+                RuleFor(x => x.ParticipantId)
+                    .MustAsync(ParticipantAssessmentExist)
+                    .WithMessage("Participant/Assessment not found");
+            });
         }
+
+        private async Task<bool> Exist(string participantId, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId, cancellationToken);
+
+        private async Task<bool> ParticipantAssessmentExist(string participantId, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.ParticipantAssessments.AnyAsync(e => e.ParticipantId == participantId, cancellationToken);
     }
 }

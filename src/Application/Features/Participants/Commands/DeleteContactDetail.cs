@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
@@ -32,7 +33,8 @@ public static class DeleteContactDetail
             _unitOfWork = unitOfWork;
 
             RuleFor(c => c.ContactDetailId)
-                .Must(Exist);
+                .Must(Exist)
+                .WithMessage("Participant does not exist");
         }
 
         bool Exist(Guid identifier) => _unitOfWork.DbContext.ParticipantContactDetails.Any(pcd => pcd.Id == identifier);
@@ -46,9 +48,12 @@ public static class DeleteContactDetail
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.ContactDetailId)
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ContactDetailId)
                 .Must(ParticipantMustNotBeArchived)
                 .WithMessage("Participant is archived");
+            });
         }
 
         private bool ParticipantMustNotBeArchived(Guid contactDetailId)

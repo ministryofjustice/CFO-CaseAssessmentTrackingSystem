@@ -59,33 +59,35 @@ public static class AddPRI
         readonly ILocationService locationService;
 
         public Validator(
-            IUnitOfWork unitOfWork, 
+            IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService,
             ILocationService locationService,
-            IValidator<PriCodeDto> priCodeValidator, 
-            IValidator<PriReleaseDto> priReleaseValidator, 
+            IValidator<PriCodeDto> priCodeValidator,
+            IValidator<PriReleaseDto> priReleaseValidator,
             IValidator<PriMeetingDto> priMeetingValidator)
         {
             this.unitOfWork = unitOfWork;
             this.currentUserService = currentUserService;
             this.locationService = locationService;
 
-            RuleFor(c => c.ParticipantId)
-                .MustAsync(NotAlreadyHavePRI)
-                .WithMessage("A PRI has already been created for this participant")
-                .DependentRules(() =>
-                {
-                    RuleFor(c => c.Code).SetValidator(priCodeValidator);
-                    RuleFor(c => c.Release).SetValidator(priReleaseValidator);
-                    RuleFor(c => c.Meeting).SetValidator(priMeetingValidator);
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(NotAlreadyHavePRI)
+                    .WithMessage("A PRI has already been created for this participant")
+                    .DependentRules(() =>
+                    {
+                        RuleFor(c => c.Code).SetValidator(priCodeValidator);
+                        RuleFor(c => c.Release).SetValidator(priReleaseValidator);
+                        RuleFor(c => c.Meeting).SetValidator(priMeetingValidator);
 
-                    RuleFor(c => c)
-                        .MustAsync(BeAuthorised)
-                        .WithMessage("Community Support Worker does not have access to the expected release region");
-                })
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived");
-            
+                        RuleFor(c => c)
+                            .MustAsync(BeAuthorised)
+                            .WithMessage("Community Support Worker does not have access to the expected release region");
+                    })
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
 
         private async Task<bool> NotAlreadyHavePRI(string participantId, CancellationToken cancellationToken)
@@ -141,17 +143,21 @@ public static class AddPRI
                 RuleFor(c => c.ParticipantId)
                     .NotNull();
 
-                When(c => c.Value is not null, () =>
+
+                RuleSet(ValidationConstants.RuleSet.MediatR, () =>
                 {
-                    RuleFor(c => c.Value)
-                        .InclusiveBetween(100_000, 999_999)
-                        .WithMessage("Invalid format for code")
-                        .DependentRules(() =>
-                        {
-                            RuleFor(c => c.Value)
-                                .MustAsync(async (command, code, context, canc) => await BeValid(command.ParticipantId, code!.Value, canc))
-                                .WithMessage("Invalid code");
-                        });
+                    When(c => c.Value is not null, () =>
+                    {
+                        RuleFor(c => c.Value)
+                            .InclusiveBetween(100_000, 999_999)
+                            .WithMessage("Invalid format for code")
+                            .DependentRules(() =>
+                            {
+                                RuleFor(c => c.Value)
+                                    .MustAsync(async (command, code, context, canc) => await BeValid(command.ParticipantId, code!.Value, canc))
+                                    .WithMessage("Invalid code");
+                            });
+                    });
                 });
 
                 When(c => c.IsSelfAssignmentAllowed, () =>

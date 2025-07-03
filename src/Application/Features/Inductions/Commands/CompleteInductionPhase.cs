@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Inductions;
 
@@ -46,16 +47,11 @@ public static class CompleteInductionPhase
         public Validator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            
+
             RuleFor(c => c.WingInductionId)
                 .NotEmpty()
-                .MustAsync(MustExist)
-                .WithMessage("No wing induction found")
-                .MustAsync(MustHaveOpenPhase)
-                .WithMessage("No open phases to complete.")
-                .MustAsync(ParticipantMustNotBeArchived)
-                .WithMessage("Participant is archived");
-
+                .MustAsync(MustExist);
+                
             RuleFor(c => c.CompletionDate)
                 .NotNull()
                 .LessThan(DateTime.Today.AddDays(1).Date)
@@ -63,10 +59,21 @@ public static class CompleteInductionPhase
 
             RuleFor(c => c.CurrentUser)
                 .NotNull();
-                        
-            RuleFor(x => x)
-                .MustAsync(CompletionMustBeAfterStartDate)
-                .WithMessage("Completion must be after the start date");
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.WingInductionId)
+                    .MustAsync(MustExist)
+                    .WithMessage("No wing induction found")
+                    .MustAsync(MustHaveOpenPhase)
+                    .WithMessage("No open phases to complete.")
+                    .MustAsync(ParticipantMustNotBeArchived)
+                    .WithMessage("Participant is archived");
+
+                RuleFor(x => x)
+                    .MustAsync(CompletionMustBeAfterStartDate)
+                    .WithMessage("Completion must be after the start date");
+            });
         }
        
         private async Task<bool> MustExist(Guid id, CancellationToken cancellationToken)

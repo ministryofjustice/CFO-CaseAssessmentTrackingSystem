@@ -62,9 +62,7 @@ public class CompleteTask
 
             RuleFor(x => x.PathwayPlanId)
                 .NotNull()
-                .WithMessage("You must provide a Pathway Plan")
-                .MustAsync(ParticipantMustNotBeArchived)
-                .WithMessage("Participant is archived");
+                .WithMessage("You must provide a Pathway Plan");                
 
             When(x => x.Reason.RequiresJustification, () =>
             {
@@ -76,6 +74,13 @@ public class CompleteTask
             RuleFor(x => x.Justification)
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(x => x.PathwayPlanId)
+                    .MustAsync(ParticipantMustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
 
         private async Task<bool> ParticipantMustNotBeArchived(Guid pathwayPlanId, CancellationToken cancellationToken)

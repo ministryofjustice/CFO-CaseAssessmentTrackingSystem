@@ -42,11 +42,16 @@ public static class ConfirmEnrolment
                 .Length(9)
                 .WithMessage("Invalid Participant Id")
                 .Matches(ValidationConstants.AlphaNumeric)
-                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
-                .MustAsync(Exist)
-                .WithMessage("Participant does not exist")
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived"); ;
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(Exist)
+                    .WithMessage("Participant does not exist")
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
 
         private async Task<bool> Exist(string identifier, CancellationToken cancellationToken)

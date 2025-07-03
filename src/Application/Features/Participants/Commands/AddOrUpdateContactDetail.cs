@@ -134,8 +134,12 @@ public static class AddOrUpdateContactDetail
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.ParticipantId)
-                .Must(Exist);
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .Must(Exist)
+                    .WithMessage("Participant does not exist");
+            });
         }
 
         bool Exist(string identifier) => _unitOfWork.DbContext.Participants.Any(e => e.Id == identifier);
@@ -149,10 +153,14 @@ public static class AddOrUpdateContactDetail
         {
             _unitOfWork = unitOfWork;
 
-            When(c => c.Id is not null, () =>
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
-                RuleFor(c => c.Id)
-                    .Must(Exist);
+                When(c => c.Id is not null, () =>
+                {
+                    RuleFor(c => c.Id)
+                        .Must(Exist)
+                        .WithMessage("Contact Detail does not exist");
+                });
             });
         }
 
@@ -167,9 +175,12 @@ public static class AddOrUpdateContactDetail
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.ParticipantId)
-                .Must(MustNotBeArchived)
-                 .WithMessage("Participant is archived"); 
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .Must(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
 
         bool MustNotBeArchived(string participantId)

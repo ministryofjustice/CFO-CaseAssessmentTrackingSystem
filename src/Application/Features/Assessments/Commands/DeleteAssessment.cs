@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Assessments.Commands;
@@ -34,11 +35,14 @@ public static class DeleteAssessment
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.AssessmentId)
-                .Must(ExistAndIncomplete)
-                .WithMessage("Assessment already complete or it doesn't exist!")
-                .MustAsync(ParticipantMustNotBeArchived)
-                .WithMessage("Participant is archived"); 
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.AssessmentId)
+                    .Must(ExistAndIncomplete)
+                    .WithMessage("Assessment already complete or it doesn't exist!")
+                    .MustAsync(ParticipantMustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
 
         bool ExistAndIncomplete(Guid identifier) => _unitOfWork.DbContext.ParticipantAssessments.Any(asmt => asmt.Id == identifier && asmt.Completed.HasValue == false);

@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Inductions;
 
@@ -41,14 +42,8 @@ public static class AddInductionPhase
 
             RuleFor(c => c.WingInductionId)
                 .NotEmpty()
-                .WithMessage("Wing Induction should not be empty")
-                .MustAsync(MustExist)
-                .WithMessage("No wing induction found")
-                .MustAsync(MustHaveNoOpenPhases)
-                .WithMessage("Cannot add a new phase while an existing one is open")
-                .MustAsync(ParticipantMustNotBeArchived)
-                .WithMessage("Participant is archived");
-
+                .WithMessage("Wing Induction should not be empty");
+                
             RuleFor(c => c.StartDate)
                 .NotNull()
                 .LessThan(DateTime.Today.AddDays(1).Date)
@@ -57,9 +52,20 @@ public static class AddInductionPhase
             RuleFor(c => c.CurrentUser)
                 .NotNull();
 
-            RuleFor(x => x)
-                .MustAsync(MustBeAfterPrecedingPhaseClosures)
-                .WithMessage("Phase cannot commence before other phases were completed");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.WingInductionId)      
+                    .MustAsync(MustExist)
+                    .WithMessage("No wing induction found")
+                    .MustAsync(MustHaveNoOpenPhases)
+                    .WithMessage("Cannot add a new phase while an existing one is open")
+                    .MustAsync(ParticipantMustNotBeArchived)
+                    .WithMessage("Participant is archived");
+
+                RuleFor(x => x)
+                    .MustAsync(MustBeAfterPrecedingPhaseClosures)
+                    .WithMessage("Phase cannot commence before other phases were completed");
+            });
         }
 
         private async Task<bool> MustExist(Guid id, CancellationToken cancellationToken)

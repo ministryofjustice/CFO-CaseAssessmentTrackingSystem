@@ -1,10 +1,10 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
 using Humanizer;
 using Newtonsoft.Json;
-using System.Text.Json.Serialization;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
 
@@ -15,7 +15,6 @@ public static class ExportParticipants
     {
         public required ParticipantsWithPagination.Query Query { get; set; }
     }
-
 
     class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUser) : IRequestHandler<Command, Result>
     {
@@ -43,9 +42,12 @@ public static class ExportParticipants
             this.currentUserService = currentUserService;
             this.unitOfWork = unitOfWork;
 
-            RuleFor(c => c)
-                .Must(WaitBeforeRequestingDocumentAgain)
-                .WithMessage($"You must wait {cooldown.Humanize()} between requesting documents.");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c)
+                    .Must(WaitBeforeRequestingDocumentAgain)
+                    .WithMessage($"You must wait {cooldown.Humanize()} between requesting documents.");
+            });
         }
 
         bool WaitBeforeRequestingDocumentAgain(Command c)

@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.PathwayPlans.Commands;
@@ -59,6 +60,13 @@ public static class CompleteObjective
                 RuleFor(x => x.Justification)
                     .NotEmpty()
                     .WithMessage("Justification is required for the selected reason");
+            });
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(x => x.PathwayPlanId)
+                    .MustAsync(ParticipantMustNotBeArchived)
+                    .WithMessage("Participant is archived");
             });
         }
 

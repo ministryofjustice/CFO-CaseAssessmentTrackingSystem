@@ -37,12 +37,18 @@ public static class ArchiveCase
                 .NotNull()
                 .MinimumLength(9)
                 .MaximumLength(9)
-                .WithMessage("Invalid Participant Id")
-                .MustAsync(MustExist)
-                .WithMessage("Participant does not exist")
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived"); 
+                .WithMessage("Invalid Participant Id");
+            
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(MustExist)
+                    .WithMessage("Participant does not exist")
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
+
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
 
