@@ -39,24 +39,37 @@ public class GetParticipantRisk
 
             return mapper.Map<RiskDto>(risk);
         }
-    }
+    }  
 
     public class Validator : AbstractValidator<Query>
     {
-        public Validator()
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
         {
-            RuleFor(x => x.ParticipantId)
-                .NotEmpty()
-                .MinimumLength(9)
-                .MaximumLength(9)
+            _unitOfWork = unitOfWork;
+
+            RuleFor(c => c.ParticipantId)
+                .NotNull()
+                .Length(9)
+                .WithMessage("Invalid Participant Id")
                 .Matches(ValidationConstants.AlphaNumeric)
-                .WithMessage(ValidationConstants.AlphaNumericMessage);
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
             When(x => x.RiskId is not null, () => {
                 RuleFor(x => x.RiskId)
                     .NotEmpty();
             });
 
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(Exist)
+                    .WithMessage("Participant does not exist");
+            });
         }
+
+        private async Task<bool> Exist(string identifier, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
     }
 }

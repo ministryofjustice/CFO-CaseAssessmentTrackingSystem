@@ -41,8 +41,8 @@ public static class CompletePRI
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
             RuleFor(c => c.CompletedBy)
-                    .NotNull()
-                    .MinimumLength(36);
+                .NotNull()
+                .MinimumLength(36);
         }
     }
 
@@ -58,9 +58,15 @@ public static class CompletePRI
                 .NotNull()
                 .Length(9)
                 .WithMessage("Invalid Participant Id")
-                .Must(Exist)
-                .WithMessage("PRI does not exist")
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(p => p.ParticipantId)
+                    .Must(Exist)
+                    .WithMessage("PRI does not exist");
+            });
         }
 
         // Check if the PRI exists in the database
@@ -76,10 +82,14 @@ public static class CompletePRI
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.ParticipantId)
-                .Must(ActualReleaseDateMustExist)
-                .WithMessage("Actual Release Date Required");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .Must(ActualReleaseDateMustExist)
+                    .WithMessage("Actual Release Date Required");
+            });
         }
+
         private bool ActualReleaseDateMustExist(string identifier)
             => _unitOfWork.DbContext.PRIs.Any(p => p.ParticipantId == identifier && p.ActualReleaseDate != null);
     }
@@ -93,9 +103,15 @@ public static class CompletePRI
             _unitOfWork = unitOfWork;
 
             RuleFor(p => p.ParticipantId)
-                .Must(NotBeCompletedRejected)
-                .WithMessage("PRI has been already completed or abandoned")
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(p => p.ParticipantId)
+                    .Must(NotBeCompletedRejected)
+                    .WithMessage("PRI has been already completed or abandoned");                
+            });                
         }
 
         private bool NotBeCompletedRejected(string participantId)
@@ -112,10 +128,15 @@ public static class CompletePRI
             _unitOfWork = unitOfWork;
 
             RuleFor(p => p.ParticipantId)
-                .Must(PRIMustHaveClosedTasks)
-                .WithMessage("PRI must not have open Tasks")
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(p => p.ParticipantId)
+                    .Must(PRIMustHaveClosedTasks)
+                    .WithMessage("PRI must not have open Tasks");                
+            });
         }
 
         private bool PRIMustHaveClosedTasks(string participantId)
@@ -123,13 +144,12 @@ public static class CompletePRI
             var pri = _unitOfWork.DbContext.PRIs.First(p => p.ParticipantId == participantId
                         && (PriStatus.ActiveList.Contains(p.Status)));
 
-
             var tasks = _unitOfWork.DbContext.PathwayPlans
-              .AsNoTracking()
-              .SelectMany(p => p.Objectives)
+                .AsNoTracking()
+                .SelectMany(p => p.Objectives)
                 .SelectMany(o => o.Tasks)
-              .Where(t => t.ObjectiveId == pri.ObjectiveId)
-              .ToArray();
+                .Where(t => t.ObjectiveId == pri.ObjectiveId)
+                .ToArray();
 
             // All mandatory tasks must be complete
             if (tasks.Where(t => t.IsMandatory).Count(t => t.IsCompleted && t.CompletedStatus == CompletionStatus.Done) != 2)
@@ -149,8 +169,12 @@ public static class CompletePRI
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(e => e.ParticipantId)
-                .Must(MustNotBeArchived);
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(e => e.ParticipantId)
+                    .Must(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
 
         bool MustNotBeArchived(string participantId)
@@ -165,8 +189,12 @@ public static class CompletePRI
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(f => f.ParticipantId)
-                .Must(Exist);
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(f => f.ParticipantId)
+                    .Must(Exist)
+                    .WithMessage("Participant does not exist");
+            });
         }
 
         bool Exist(string identifier) => _unitOfWork.DbContext.Participants.Any(e => e.Id == identifier);

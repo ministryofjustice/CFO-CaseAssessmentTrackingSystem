@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Assessments.Caching;
 using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -78,21 +79,22 @@ public static class SaveAssessment
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.Assessment.Id)
-                .MustAsync(Exist)
-                .WithMessage("Assessment not found");
-
-            RuleFor(c => c.Assessment.Id)
-                .MustAsync(NotBeCompleted)
-                .WithMessage("Assessment already complete");
-
-            RuleFor(c => c.Assessment.ParticipantId)
-                .MustAsync(Exist)
-                .WithMessage("Participant not found")
-                .MustAsync(HaveEnrolmentLocation)
-                .WithMessage("Participant must have an enrolment location")
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.Assessment.Id)
+                    .MustAsync(Exist)
+                    .WithMessage("Assessment not found")
+                    .MustAsync(NotBeCompleted)
+                    .WithMessage("Assessment already complete");
+            
+                RuleFor(c => c.Assessment.ParticipantId)
+                    .MustAsync(Exist)
+                    .WithMessage("Participant not found")
+                    .MustAsync(HaveEnrolmentLocation)
+                    .WithMessage("Participant must have an enrolment location")
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
 
         private async Task<bool> Exist(Guid assessmentId, CancellationToken cancellationToken)

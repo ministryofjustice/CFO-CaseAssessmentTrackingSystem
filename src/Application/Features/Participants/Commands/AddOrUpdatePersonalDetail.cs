@@ -85,8 +85,12 @@ public class AddOrUpdatePersonalDetail
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.ParticipantId)
-                .Must(Exist);
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .Must(Exist)
+                    .WithMessage("Participant does not exist");
+            });
         }
 
         private bool Exist(string identifier) => _unitOfWork.DbContext.Participants.Any(e => e.Id == identifier);
@@ -130,9 +134,12 @@ public class AddOrUpdatePersonalDetail
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.ParticipantId)
-                .Must(MustNotBeArchived)
-                 .WithMessage("Participant is archived");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .Must(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
 
         bool MustNotBeArchived(string participantId)

@@ -47,8 +47,8 @@ public static class AbandonPRI
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
             RuleFor(c => c.AbandonedBy)
-                    .NotNull()
-                    .MinimumLength(36);
+                .NotNull()
+                .MinimumLength(36);
 
             RuleFor(c => c.AbandonJustification)
                 .NotEmpty()
@@ -71,9 +71,15 @@ public static class AbandonPRI
                 .NotNull()
                 .Length(9)
                 .WithMessage("Invalid Participant Id")
-                .Must(Exist)
-                .WithMessage("PRI does not exist")
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(p => p.ParticipantId)
+                    .Must(Exist)
+                    .WithMessage("PRI does not exist");
+            });
         }
 
         // Check if the PRI exists in the database
@@ -90,9 +96,15 @@ public static class AbandonPRI
             _unitOfWork = unitOfWork;
 
             RuleFor(p => p.ParticipantId)
-                .Must(NotBeCompletedRejected)
-                .WithMessage("PRI has already been abandoned/rejected")
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+               .Matches(ValidationConstants.AlphaNumeric)
+               .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(p => p.ParticipantId)
+                   .Must(NotBeCompletedRejected)
+                   .WithMessage("PRI has already been abandoned/rejected");
+            });               
         }
 
         // Check if the participant exists in the database
@@ -109,8 +121,12 @@ public static class AbandonPRI
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.ParticipantId)
-                .Must(MustNotBeArchived);
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .Must(MustNotBeArchived)
+                    .WithMessage("Participant is archived"); ;
+            });
         }
 
         bool MustNotBeArchived(string participantId)
@@ -125,8 +141,12 @@ public static class AbandonPRI
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(d => d.ParticipantId)
-                .Must(Exist);
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(d => d.ParticipantId)
+                    .Must(Exist)
+                    .WithMessage("Participant does not exist");
+            });
         }
 
         bool Exist(string identifier) => _unitOfWork.DbContext.Participants.Any(e => e.Id == identifier);

@@ -221,32 +221,42 @@ public static class AddActivity
         {
             this.unitOfWork = unitOfWork;
 
-            When(c => c.ActivityId is not null, () =>
-            {
-                RuleFor(c => c.ActivityId)
-                    .Must(BeInPendingStatus);
-
-                RuleFor(c => c.Definition)
-                    .Must((command, definition) => NotBeDifferentFromTheOriginal(command.ActivityId!.Value, definition!))
-                    .When(c => c.Definition is not null)
-                    .WithMessage("Changing activity type is not permitted");
-            });
-
             RuleFor(c => c.ParticipantId)
                 .NotNull()
                 .Length(9)
-                .WithMessage("Invalid Participant Id")
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived");
+                .WithMessage("Invalid Participant Id");
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                When(c => c.ActivityId is not null, () =>
+                {                    
+                    RuleFor(c => c.ActivityId)
+                        .Must(BeInPendingStatus)
+                        .WithMessage("Activity mut be pending"); ;
+
+                    RuleFor(c => c.Definition)
+                        .Must((command, definition) => NotBeDifferentFromTheOriginal(command.ActivityId!.Value, definition!))
+                        .When(c => c.Definition is not null)
+                        .WithMessage("Changing activity type is not permitted");                   
+                });
+
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
 
             RuleFor(c => c.Location)
                 .NotNull()
                 .WithMessage("You must choose a location");
 
-            RuleFor(c => c.Location)
-                .Must((command, location, token) => HaveAHubInduction(command.ParticipantId, location!))
-                .When(c => c.Location is { LocationType.IsHub: true })
-                .WithMessage("A hub induction is required for the selected location");
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.Location)
+                    .Must((command, location, token) => HaveAHubInduction(command.ParticipantId, location!))
+                    .When(c => c.Location is { LocationType.IsHub: true })
+                    .WithMessage("A hub induction is required for the selected location");
+            });
 
             When(c => c.Location is not null, () =>
             {
@@ -259,9 +269,14 @@ public static class AddActivity
                 .NotNull()
                 .WithMessage("You must provide the date the activity took place")
                 .Must(NotBeCompletedInTheFuture)
-                .WithMessage("The date the activity took place cannot be in the future")
-                .Must((command, commencedOn, token) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId, commencedOn))
-                .WithMessage("The activity cannot take place before the participant gave consent");
+                .WithMessage("The date the activity took place cannot be in the future");
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.CommencedOn)
+                    .Must((command, commencedOn, token) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId, commencedOn))
+                    .WithMessage("The activity cannot take place before the participant gave consent");
+            });
 
             // ISW's can be claimed > 3 months ago. All other types of activity must be completed in last 3 months.
             When(c => c.Definition?.Classification.IsClaimableMoreThanThreeMonthsAgo is false, () =>

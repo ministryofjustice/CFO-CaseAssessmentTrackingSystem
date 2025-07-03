@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -54,8 +55,13 @@ public static class GetUsersWithAccessToLocation
             this.unitOfWork = unitOfWork;
 
             RuleFor(q => q.LocationId)
-                .NotEmpty()
-                .MustAsync(Exist);
+                .NotEmpty();
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(q => q.LocationId)
+                    .MustAsync(Exist);
+            });
         }
 
         async Task<bool> Exist(int locationId, CancellationToken cancellationToken)

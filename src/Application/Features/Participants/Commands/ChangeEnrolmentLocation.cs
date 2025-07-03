@@ -28,7 +28,6 @@ public static class ChangeEnrolmentLocation
             participant.SetEnrolmentLocation(request.NewLocationId.GetValueOrDefault(), request.JustificationReason!);
 
             return Result.Success();
-
         }
     }
 
@@ -45,9 +44,7 @@ public static class ChangeEnrolmentLocation
                 .MaximumLength(9)
                 .MinimumLength(9)
                 .Matches(ValidationConstants.AlphaNumeric)
-                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived"); 
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));                
 
             RuleFor(c => c.NewLocationId)
                 .NotNull()
@@ -57,18 +54,23 @@ public static class ChangeEnrolmentLocation
             RuleFor(c => c.CurrentUser)
                 .NotNull();
 
-            RuleFor(c => c.ParticipantId!)
-                .MustAsync(Exist);
-
-            RuleFor(c => c.ParticipantId!)
-                .MustAsync(BeChangeable);
-
             RuleFor(c => c.JustificationReason)
                 .NotNull()
                 .NotEmpty()
                 .MaximumLength(ValidationConstants.NotesLength)
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification Reason"));
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId!)
+                    .MustAsync(Exist)
+                    .WithMessage("Participant does not exist")
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived")
+                    .MustAsync(BeChangeable)
+                    .WithMessage("Participant must be changeable");
+            });
         }
 
         private async Task<bool> Exist(string participantId, CancellationToken cancellationToken)

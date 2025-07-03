@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
@@ -43,9 +44,12 @@ public static class ExportCaseWorkload
             this.currentUserService = currentUserService;
             this.unitOfWork = unitOfWork;
 
-            RuleFor(c => c)
-                .Must(WaitBeforeRequestingDocumentAgain)
-                .WithMessage($"You must wait {cooldown.Humanize()} between requesting documents.");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c)
+                    .Must(WaitBeforeRequestingDocumentAgain)
+                    .WithMessage($"You must wait {cooldown.Humanize()} between requesting documents.");
+            });
         }
 
         bool WaitBeforeRequestingDocumentAgain(Command c)
@@ -58,5 +62,4 @@ public static class ExportCaseWorkload
             return hasRecentlyRequestedDocument is false;
         }
     }
-
 }

@@ -98,13 +98,16 @@ public static class BeginAssessment
                 .NotNull()
                 .WithMessage("You must choose a location");
 
-            RuleFor(c => c.ParticipantId)
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
                 .MustAsync(Exist)
                 .WithMessage("Participant not found")
                 .MustAsync(HaveEnrolmentLocation)
                 .WithMessage("Participant must have an enrolment location")
                 .MustAsync(MustNotBeArchived)
                 .WithMessage("Participant is archived");
+            });
         }
 
         private async Task<bool> Exist(string participantId, CancellationToken cancellationToken)

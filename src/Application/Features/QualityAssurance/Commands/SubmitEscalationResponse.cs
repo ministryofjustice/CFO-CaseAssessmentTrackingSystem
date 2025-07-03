@@ -17,7 +17,6 @@ public static class SubmitEscalationResponse
 
         public bool IsMessageExternal { get; set; }
         public UserProfile? CurrentUser { get; set; }
-
     }
 
     public enum EscalationResponse
@@ -90,10 +89,14 @@ public static class SubmitEscalationResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.QueueEntryId)
-                .MustAsync(MustExist)
-                .WithMessage("Queue item does not exist");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.QueueEntryId)
+                    .MustAsync(MustExist)
+                    .WithMessage("Queue item does not exist");
+            });
         }
+
         private async Task<bool> MustExist(Guid identifier, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.EnrolmentEscalationQueue.AnyAsync(e => e.Id == identifier, cancellationToken);
     }
@@ -106,9 +109,12 @@ public static class SubmitEscalationResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.QueueEntryId)
-                .MustAsync(MustBeOpen)
-                .WithMessage("Queue item is already completed.");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.QueueEntryId)
+                    .MustAsync(MustBeOpen)
+                    .WithMessage("Queue item is already completed.");
+            });
         }
 
         private async Task<bool> MustBeOpen(Guid id, CancellationToken cancellationToken)
@@ -128,9 +134,12 @@ public static class SubmitEscalationResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.QueueEntryId)
-                .MustAsync(MustBeAtSubmittedToAuthority)
-                .WithMessage("Queue item is not at Submitted to Authority stage");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.QueueEntryId)
+                    .MustAsync(MustBeAtSubmittedToAuthority)
+                    .WithMessage("Queue item is not at Submitted to Authority stage");
+            });
         }
 
         private async Task<bool> MustBeAtSubmittedToAuthority(Guid id, CancellationToken cancellationToken)
@@ -149,9 +158,12 @@ public static class SubmitEscalationResponse
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c)
-                .MustAsync(OwnerMustNotBeApprover)
-                .WithMessage("This enrolment was assigned to you hence must not be processed at Escalation stage by you");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c)
+                    .MustAsync(OwnerMustNotBeApprover)
+                    .WithMessage("This enrolment was assigned to you hence must not be processed at Escalation stage by you");
+            });
         }
 
         private async Task<bool> OwnerMustNotBeApprover(Command c, CancellationToken cancellationToken)
@@ -162,5 +174,4 @@ public static class SubmitEscalationResponse
             return entry != null && entry.SupportWorkerId.Equals(c.CurrentUser!.UserId) == false;
         }
     }
-
 }
