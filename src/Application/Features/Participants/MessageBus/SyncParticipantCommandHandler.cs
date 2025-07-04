@@ -89,21 +89,15 @@ public class SyncParticipantCommandHandler(
             // Dispatch events and commit transaction
             await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, CancellationToken.None);
             await unitOfWork.CommitTransactionAsync();
-
+            logger.LogDebug($"Finished syncing {participant.Id}");
         }
 
         catch (Exception e)
         {
-            logger.LogError(e, e.Message);
+            logger.LogError(e, "Failed to sync participant {ParticipantId}", context.ParticipantId);
             await unitOfWork.RollbackTransactionAsync();
-            throw;
         }
-        finally
-        {
-            logger.LogDebug($"Finished syncing {participant.Id}");
-        }    
-
-            
+           
             
     }
 }

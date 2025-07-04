@@ -8,7 +8,7 @@ using Rebus.Retry.Simple;
 
 namespace Cfo.Cats.Infrastructure.Services.MessageHandling;
 
-internal class OvernightBackgroundService(IServiceProvider provider, IConfiguration configuration, IOptions<RabbitSettings> options) : BackgroundService
+internal class OvernightBackgroundService(IServiceProvider provider, IConfiguration configuration, IOptions<RabbitSettings> options, IOptions<OvernightServiceSettings> overnightServiceOptions) : BackgroundService
 {
     private BuiltinHandlerActivator? _activator;
     private IBus? _bus;
@@ -24,8 +24,8 @@ internal class OvernightBackgroundService(IServiceProvider provider, IConfigurat
             .Options(o =>
             {
                 // no one is using the server at night.
-                o.SetNumberOfWorkers(5);
-                o.SetMaxParallelism(64);
+                o.SetNumberOfWorkers(overnightServiceOptions.Value.Workers);
+                o.SetMaxParallelism(overnightServiceOptions.Value.Parallelism);
                 o.RetryStrategy(maxDeliveryAttempts: options.Value.Retries);
             })
             .Start();
