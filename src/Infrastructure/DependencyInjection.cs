@@ -93,6 +93,8 @@ public static class DependencyInjection
 
         services.Configure<RabbitSettings>(configuration.GetSection("RabbitSettings"));
 
+        services.Configure<OvernightServiceSettings>(configuration.GetSection("OvernightServiceSettings"));
+
         services.AddSingleton<IBus>(_ =>
         {
             var provider = services.BuildServiceProvider();
