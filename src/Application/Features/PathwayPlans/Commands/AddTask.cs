@@ -64,10 +64,8 @@ public static class AddTask
 
             RuleFor(x => x.PathwayPlanId)
                 .NotNull()
-                .WithMessage("You must provide a Pathway Plan")
-                .MustAsync(ParticipantMustNotBeArchived)
-                .WithMessage("Participant is archived");
-
+                .WithMessage("You must provide a Pathway Plan");
+                
             RuleFor(x => x.Description)
                 .NotEmpty()
                 .WithMessage("You must provide a description")
@@ -85,6 +83,13 @@ public static class AddTask
                     .WithMessage(ValidationConstants.DateMustBeInFuture)
                     .Must(x => x!.Value.Day.Equals(1))
                     .WithMessage("Due date must fall on the first day of the month");
+            });
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(x => x.PathwayPlanId)
+                    .MustAsync(ParticipantMustNotBeArchived)
+                    .WithMessage("Participant is archived");
             });
         }
 

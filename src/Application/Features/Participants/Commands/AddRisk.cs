@@ -70,11 +70,14 @@ public static class AddRisk
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
 
-            RuleFor(x => x.ParticipantId)
-                .MustAsync(Exist)
-                .WithMessage("Participant not found")
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived");
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(x => x.ParticipantId)
+                    .MustAsync(Exist)
+                    .WithMessage("Participant not found")
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
                 
         private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)

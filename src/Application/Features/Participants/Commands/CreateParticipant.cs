@@ -1,10 +1,8 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Candidates.DTOs;
-using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.SecurityConstants;
-using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
@@ -100,9 +98,7 @@ public static class CreateParticipant
                 .Length(9)
                 .WithMessage("Invalid Cats Identifier")
                 .Matches(ValidationConstants.AlphaNumeric)
-                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Identifier"))
-                .MustAsync(NotAlreadyExist)
-                .WithMessage("Participant is already enrolled");
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Identifier"));
 
             // Establishment Code is required for Prison (NOMIS) records.
             When(x => x.Candidate.Primary is "NOMIS", () =>
@@ -140,7 +136,8 @@ public static class CreateParticipant
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Referral source"));
 
-            When(x => x.ReferralSource is "Other" or "Healthcare", () => {
+            When(x => x.ReferralSource is "Other" or "Healthcare", () =>
+            {
                 RuleFor(x => x.ReferralComments)
                     .NotEmpty()
                     .WithMessage("Comments are mandatory with this referral source")
@@ -148,8 +145,15 @@ public static class CreateParticipant
             });
 
             RuleFor(x => x.ReferralComments)
-              .MaximumLength(1000)
-              .WithMessage("Referral Comments must be less than 1000 characters");                
+                .MaximumLength(1000)
+                .WithMessage("Referral Comments must be less than 1000 characters");
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(x => x.Identifier)
+                    .MustAsync(NotAlreadyExist)
+                    .WithMessage("Participant is already enrolled");
+            });
         }
 
         private async Task<bool> NotAlreadyExist(string identifier, CancellationToken cancellationToken) 

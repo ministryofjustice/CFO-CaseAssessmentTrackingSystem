@@ -1,4 +1,3 @@
-using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Locations.DTOs;
@@ -38,40 +37,45 @@ public static class AddHubInduction
     public class Validator : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILocationService _locationService;
-
-        public Validator(IUnitOfWork unitOfWork, ILocationService locationService)
+        
+        public Validator(IUnitOfWork unitOfWork)
         {
             this._unitOfWork = unitOfWork;
-            this._locationService = locationService;
-
+            
             RuleFor(x => x.ParticipantId)
                .NotNull()
                .MaximumLength(9)
                .MinimumLength(9)
                .Matches(ValidationConstants.AlphaNumeric)
-               .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
-               .MustAsync(MustExist)
-               .WithMessage("Participant does not exist.")
-               .MustAsync(MustNotBeArchived)
-               .WithMessage("Participant is archived");
+               .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
             RuleFor(x => x.InductionDate)
                 .NotNull()
                 .GreaterThanOrEqualTo(DateTime.Today.AddMonths(-3))
-                .WithMessage("Cannot backdate beyond 3 months")
-                .LessThan(DateTime.Today.AddDays(1).Date)
-                .WithMessage("Cannot be in the future");
-
-            RuleFor(x => x)
-                .MustAsync(BeOnOrAfterConsentDate)
-                .WithMessage("Induction must be on or after the consent date");
-
+                .WithMessage("Cannot backdate beyond 3 months");
+                            
             RuleFor(x => x.Location)
                 .NotNull();
 
             RuleFor(x => x.CurrentUser)
                 .NotNull();
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(x => x.ParticipantId)
+                    .MustAsync(MustExist)
+                    .WithMessage("Participant does not exist.")
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+
+                RuleFor(x => x.InductionDate)
+                    .LessThan(DateTime.Today.AddDays(1).Date)
+                    .WithMessage("Cannot be in the future");
+
+                RuleFor(x => x)
+                    .MustAsync(BeOnOrAfterConsentDate)
+                    .WithMessage("Induction must be on or after the consent date");
+            });
         }
 
         private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)

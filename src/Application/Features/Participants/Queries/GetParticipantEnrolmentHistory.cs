@@ -94,16 +94,29 @@ public static class GetParticipantEnrolmentHistory
 
     public class Validator : AbstractValidator<Query>
     {
-        public Validator()
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+
             RuleFor(x => x.ParticipantId)
                 .NotNull();
 
             RuleFor(x => x.ParticipantId)
-                .MinimumLength(9)
-                .MaximumLength(9)
+                .Length(9)
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(Exist)
+                    .WithMessage("Participant does not exist");
+            });
         }
+
+        private async Task<bool> Exist(string identifier, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
     }
 }

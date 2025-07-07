@@ -55,17 +55,22 @@ public static class AddNote
             RuleFor(c => c.ParticipantId)
                 .NotNull()
                 .Length(9)
-                .WithMessage("Invalid Participant Id")
-                .MustAsync(Exist)
-                .WithMessage("Participant does not exist")
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived");
-
+                .WithMessage("Invalid Participant Id");
+                
             RuleFor(c => c.Message)
                 .NotEmpty()
                 .MaximumLength(ValidationConstants.NotesLength)
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Message"));
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)     
+                    .MustAsync(Exist)
+                    .WithMessage("Participant does not exist")
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
 
         private async Task<bool> Exist(string identifier, CancellationToken cancellationToken)

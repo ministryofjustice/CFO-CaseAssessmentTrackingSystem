@@ -53,13 +53,11 @@ public static class AbandonInductionPhase
         public Validator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            
+
             RuleFor(c => c.WingInductionId)
                 .NotEmpty()
-                .WithMessage("Wing Induction should not be empty")
-                .MustAsync(ParticipantMustNotBeArchived)
-                .WithMessage("Participant is archived");
-            
+                .WithMessage("Wing Induction should not be empty");                
+
             RuleFor(c => c.CompletionDate)
                 .NotNull()
                 .LessThan(DateTime.Today.AddDays(1).Date)
@@ -67,25 +65,32 @@ public static class AbandonInductionPhase
 
             RuleFor(c => c.CurrentUser)
                 .NotNull();
-
-            RuleFor(c => c.WingInductionId)
-                .MustAsync(MustExist)
-                .WithMessage("No wing induction found");
-
-            RuleFor(x => x.WingInductionId)
-                .MustAsync(MustHaveOpenPhase)
-                .WithMessage("No open phases to abandon.");
             
-            RuleFor(x => x)
-                .MustAsync(CompletionMustBeAfterStartDate)
-                .WithMessage("Abandon must be after the start date");
-
             RuleFor(c => c.AbandonJustification)
                 .NotEmpty()
                 .When(c => c.AbandonReason!.RequiresJustification)
                 .WithMessage("You must provide a justification for the selected abandon reason")
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.WingInductionId)
+                    .MustAsync(ParticipantMustNotBeArchived)
+                    .WithMessage("Participant is archived");
+
+                RuleFor(c => c.WingInductionId)
+                    .MustAsync(MustExist)
+                    .WithMessage("No wing induction found");
+
+                RuleFor(x => x.WingInductionId)
+                    .MustAsync(MustHaveOpenPhase)
+                    .WithMessage("No open phases to abandon.");
+
+                RuleFor(x => x)
+                    .MustAsync(CompletionMustBeAfterStartDate)
+                    .WithMessage("Abandon must be after the start date");
+            });
         }
 
         private async Task<bool> MustExist(Guid id, CancellationToken cancellationToken)

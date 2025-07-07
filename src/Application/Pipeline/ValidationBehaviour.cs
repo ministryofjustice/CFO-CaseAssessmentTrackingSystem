@@ -1,4 +1,7 @@
-﻿namespace Cfo.Cats.Application.Pipeline
+﻿using Cfo.Cats.Application.Common.Validators;
+using FluentValidation.Internal;
+
+namespace Cfo.Cats.Application.Pipeline
 {
     public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : class
@@ -13,7 +16,10 @@
 
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
-            var context = new ValidationContext<TRequest>(request);
+            var context = new ValidationContext<TRequest>(request, new PropertyChain(), 
+                new RulesetValidatorSelector([ValidationConstants.RuleSet.Default, 
+                    ValidationConstants.RuleSet.MediatR]));
+            
             var failures = new List<FluentValidation.Results.ValidationFailure>();
 
             foreach (var validator in _validators.OrderBy(c => c.GetType().Name))

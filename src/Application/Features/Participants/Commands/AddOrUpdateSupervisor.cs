@@ -48,12 +48,8 @@ public class AddOrUpdateSupervisor
                 .NotNull()
                 .Length(9)
                 .WithMessage("Invalid Participant Id")
-                .MustAsync(Exist)
-                .WithMessage("Participant does not exist")
-                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived"); 
-
+                .Matches(ValidationConstants.AlphaNumeric).WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+            
             RuleFor(p => p.Supervisor.Name)
                 .MaximumLength(128)
                 .Matches(ValidationConstants.NameCompliantWithDMS)
@@ -87,6 +83,15 @@ public class AddOrUpdateSupervisor
                 .Matches(ValidationConstants.Notes)
                 .When(p => string.IsNullOrEmpty(p.Supervisor.Address) is false)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Participant Id"));
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(p => p.ParticipantId)
+                    .MustAsync(Exist)
+                    .WithMessage("Participant does not exist")
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
 
         private async Task<bool> Exist(string identifier, CancellationToken cancellationToken)

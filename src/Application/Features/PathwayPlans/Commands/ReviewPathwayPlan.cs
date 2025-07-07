@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.PathwayPlans.Commands;
@@ -35,11 +36,17 @@ public static class ReviewPathwayPlan
         public Validator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+
             RuleFor(x => x.PathwayPlanId)
                 .NotNull()
-                .WithMessage("You must provide a Pathway Plan")
-                .MustAsync(ParticipantMustNotBeArchived)
-                .WithMessage("Participant is archived"); 
+                .WithMessage("You must provide a Pathway Plan");
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(x => x.PathwayPlanId)
+                    .MustAsync(ParticipantMustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
 
         private async Task<bool> ParticipantMustNotBeArchived(Guid pathwayPlanId, CancellationToken cancellationToken)

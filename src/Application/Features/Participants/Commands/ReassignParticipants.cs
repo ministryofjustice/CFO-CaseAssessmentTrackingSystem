@@ -68,12 +68,18 @@ namespace Cfo.Cats.Application.Features.Participants.Commands
                    .NotNull()
                    .Length(9)
                    .WithMessage("Invalid Participant Id")
-                   .MustAsync(Exist)
-                   .WithMessage("Participant does not exist")
                    .Matches(ValidationConstants.AlphaNumeric)
-                   .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"))
-                   .MustAsync(MustNotBeArchived)
-                   .WithMessage("Participant is archived"); ;
+                   .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));                   
+
+                RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+                {
+                    // Validate each ParticipantId in the list
+                    RuleForEach(p => p.ParticipantIdsToReassign)                       
+                       .MustAsync(Exist)
+                       .WithMessage("Participant does not exist")                       
+                       .MustAsync(MustNotBeArchived)
+                       .WithMessage("Participant is archived");
+                });
             }
 
             // Check if the participant exists in the database

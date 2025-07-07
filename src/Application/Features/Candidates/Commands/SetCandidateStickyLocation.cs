@@ -35,14 +35,16 @@ public static class SetCandidateStickyLocation
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Region"));
 
-            
-            RuleFor(x => x.ParticipantId)
-                .MustAsync(Exist)
-                .WithMessage("Participant not found")
-                .MustAsync(MustNotBeArchived)
-                .WithMessage("Participant is archived");
-
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(x => x.ParticipantId)
+                    .MustAsync(Exist)
+                    .WithMessage("Participant not found")
+                    .MustAsync(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+            });
         }
+
         private async Task<bool> Exist(string? participantId, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId, cancellationToken);
 

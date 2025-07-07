@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Interfaces.Serialization;
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
 using Humanizer;
@@ -44,10 +45,13 @@ public static class ExportCumulativeFigures
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
-            
-            RuleFor(c => c)
-                .Must(WaitBeforeRequestingDocumentAgain)
-                .WithMessage($"You must wait {_cooldown.Humanize()} between requesting this export.");
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c)
+                    .Must(WaitBeforeRequestingDocumentAgain)
+                    .WithMessage($"You must wait {_cooldown.Humanize()} between requesting this export.");
+            });
         }
 
         private bool WaitBeforeRequestingDocumentAgain(Command c)
