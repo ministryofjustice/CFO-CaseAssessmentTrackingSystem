@@ -10,7 +10,6 @@ public partial class LocationHistory
 
     [Parameter, EditorRequired]
     public required string ParticipantId { get; set; } = string.Empty;
-
     [CascadingParameter]
     public UserProfile UserProfile { get; set; } = default!;
 
@@ -30,7 +29,8 @@ public partial class LocationHistory
                 CurrentUser = UserProfile!
             };
 
-            ParticipantLocationHistory = await GetNewMediator().Send(query);       
+            ParticipantLocationHistory = await GetNewMediator().Send(query);
+       
         }
     }
 }
