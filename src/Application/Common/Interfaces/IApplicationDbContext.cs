@@ -106,4 +106,7 @@ public interface IApplicationDbContext
 
     DbSet<SupportAndReferralPayment> SupportAndReferralPayments { get; }
     DbSet<ReassessmentPayment> ReassessmentPayments { get; }
+
+    DbSet<DipSample> DipSamples { get; }
+    DbSet<DipSampleParticipant> DipSampleParticipants { get; }
 }
