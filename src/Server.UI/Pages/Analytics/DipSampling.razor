@@ -3,6 +3,10 @@
 @page "/pages/analytics/dip-sampling"
 
 @using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Domain.Common.Enums
+@using Humanizer
+
+@inherits CatsComponentBase
 
 <MudText Typo="Typo.h5">
     Dip Sampling
@@ -34,88 +38,68 @@
 </MudGrid>
 
 <MudGrid Class="mt-2">
-    <MudItem xs="12" md="6" lg="4">
-        <MudCard>
-            <MudCardHeader Class="justify-space-between">
-                <MudText Typo="Typo.h4">North West (Mar 2025)</MudText>
-                <MudChip T="string" Color="Color.Warning" Size="Size.Small">In progress</MudChip>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText>Sample size of <b>20</b> participants</MudText>
-                <MudText>Generated on <b>01/07/2025</b></MudText>
-                <div class="d-flex">
-                    <MudText>Contributors</MudText>
-                    <MudAvatarGroup Max="3" Spacing="3">
-                        <MudTooltip Text="John Doe">
-                            <MudAvatar Size="Size.Small">JD</MudAvatar>
-                        </MudTooltip>
-                        <MudTooltip Text="Clark Kent">
-                            <MudAvatar Size="Size.Small">CK</MudAvatar>
-                        </MudTooltip>
-                        <MudTooltip Text="Tyler Durden">
-                            <MudAvatar Size="Size.Small">TD</MudAvatar>
-                        </MudTooltip>
-                    </MudAvatarGroup>
-                </div>
-            </MudCardContent>
-            <MudCardActions Class="justify-space-between">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/dip-sampling/{Guid.NewGuid()}")">Continue</MudButton>
-                <MudTooltip Text="Score will become available after completion">
-                    <MudSkeleton Animation="Animation.Wave" Width="120px" />
-                </MudTooltip>
-            </MudCardActions>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="6" lg="4">
-        <MudCard>
-            <MudCardHeader Class="justify-space-between">
-                <MudText Typo="Typo.h4">West Midlands (Mar 2025)</MudText>
-                <MudChip T="string" Color="Color.Success" Size="Size.Small">Complete</MudChip>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText>Sample size of <b>20</b> participants</MudText>
-                <MudText>Generated on <b>01/07/2025</b></MudText>
-                <div class="d-flex">
-                    <MudText>Contributors</MudText>
-                    <MudAvatarGroup Max="3" Spacing="3">
-                        <MudTooltip Text="Clark Kent">
-                            <MudAvatar Size="Size.Small">CK</MudAvatar>
-                        </MudTooltip>
-                    </MudAvatarGroup>
-                </div>
-            </MudCardContent>
-            <MudCardActions Class="justify-space-between">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/dip-sampling/{Guid.NewGuid()}")">Review</MudButton>
-                    <MudTooltip Text="@($"84%")">
-                        <MudRating SelectedValue="4" ReadOnly />
-                    </MudTooltip>
-            </MudCardActions>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="6" lg="4">
-        <MudCard>
-            <MudCardHeader Class="justify-space-between">
-                <MudText Typo="Typo.h4">South East (Mar 2025)</MudText>
-                <MudChip T="string" Color="Color.Default" Size="Size.Small">Abandoned</MudChip>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText>Sample size of <b>15</b> participants</MudText>
-                <MudText>Generated on <b>01/07/2025</b></MudText>
-                <div class="d-flex">
-                    <MudText>Contributors</MudText>
-                    <MudAvatarGroup Max="3" Spacing="3">
-                        <MudTooltip Text="John Doe">
-                            <MudAvatar Size="Size.Small">JD</MudAvatar>
-                        </MudTooltip>
-                        <MudTooltip Text="Tyler Durden">
-                            <MudAvatar Size="Size.Small">TD</MudAvatar>
-                        </MudTooltip>
-                    </MudAvatarGroup>
-                </div>
-            </MudCardContent>
-            <MudCardActions Class="justify-space-between">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/dip-sampling/{Guid.NewGuid()}")">Review</MudButton>
-            </MudCardActions>
-        </MudCard>
-    </MudItem>
+
+    @if(isLoading)
+    {
+        <MudLoading Loading="isLoading" />
+    }
+    else
+    {
+        foreach(var sample in samples)
+        {
+            <MudItem xs="12" md="6" lg="4">
+                <MudCard>
+                    <MudCardHeader Class="justify-space-between">
+                        <MudText Typo="Typo.h4">@sample.ContractDescription (@($"{sample.PeriodFrom:MMM yyyy}"))</MudText>
+                        @{
+                            var color = sample.Status switch
+                            {
+                                var type when type == DipSampleStatus.InProgress => Color.Warning,
+                                var type when type == DipSampleStatus.Completed => Color.Success,
+                                _ => Color.Primary
+                            };
+                        }
+                        <MudChip T="string" Color="color" Size="Size.Small">
+                            @sample.Status.Name
+                        </MudChip>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText>Sample size of <b>@sample.Size</b> participant(s)</MudText>
+                        <MudText>Generated @sample.CreatedOn.Humanize() (@sample.CreatedOn.ToShortDateString())</MudText>
+                        @*@if(sample.Contributors is { Length: > 0 })
+                        {
+                            <div class="d-flex">
+                                <MudText>Contributors</MudText>
+                                <MudAvatarGroup Max="3" Spacing="3">
+                                    @foreach(var contributor in sample.Contributors)
+                                    {
+                                        <MudTooltip Text="@contributor">
+                                            <MudAvatar Size="Size.Small">@string.Join(string.Empty, contributor!.ToUpper().Split(' ').Select(name => name[0]))</MudAvatar>
+                                        </MudTooltip>
+                                    }
+                                </MudAvatarGroup>
+                            </div>
+                        } *@
+                    </MudCardContent>
+                    <MudCardActions Class="justify-space-between">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/dip-sampling/{sample.Id}")">
+                            Review 
+                        </MudButton>
+                        @if(sample.ScoreAvg.HasValue)
+                        {
+                            <MudTooltip Text="@($"{sample.ScoreAvg}%")">
+                                <MudRating SelectedValue="4" ReadOnly />
+                            </MudTooltip>
+                        }
+                        else
+                        {
+                            <MudTooltip Text="Score will become available after completion">
+                                <MudSkeleton Animation="Animation.Wave" Width="120px" />
+                            </MudTooltip>
+                        }
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    }
 </MudGrid>

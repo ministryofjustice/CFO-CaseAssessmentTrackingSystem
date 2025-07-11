@@ -86,7 +86,7 @@ public class MenuService : IMenuService
                             {
                                 Title = "Dip Sampling",
                                 Href = "/pages/analytics/dip-sampling",
-                                PageStatus = PageStatus.Wip,
+                                PageStatus = PageStatus.Completed,
                                 Roles = [RoleNames.SystemSupport, RoleNames.Finance],
                             }
                         ]
