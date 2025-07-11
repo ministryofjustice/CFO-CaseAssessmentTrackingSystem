@@ -1,0 +1,31 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs;
+@inherits CatsComponentBase
+
+@if (ParticipantLocationHistory.Any() is false)
+{
+    <MudText>No Location History.</MudText>
+}
+else
+{
+    <MudDataGrid Items="@ParticipantLocationHistory" Striped="true">
+        <Columns>
+            <PropertyColumn Property="x => x.MoveDate.ToShortDateOrEmptyString()" SortBy="x => x.MoveDate" Title="Date"
+                        CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                </PropertyColumn>
+                
+                <PropertyColumn Property="x => x.LocationName" Title="Location"
+                                CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                </PropertyColumn>
+
+                <PropertyColumn Property="x => x.SupportWorker" Title="Performed By"
+                                CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                </PropertyColumn>
+                <PropertyColumn Property="x => x.DaysSincePrevious" Title="Days"
+                                CellStyle="width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                </PropertyColumn>
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="ParticipantLocationHistoryDto" />
+        </PagerContent>
+    </MudDataGrid>
+}
