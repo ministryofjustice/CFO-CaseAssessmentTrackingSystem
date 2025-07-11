@@ -515,6 +515,19 @@ public static class DependencyInjection
                     .WithCronSchedule(publishOutboxMessagesOptions.CronSchedule));
             }
 
+            if (options.GetSection(GenerateDipSamplesJob.Key.Name).Get<JobOptions>() is
+                { Enabled: true } generateDipSamplesJobOptions)
+            {
+                quartz.AddJob<GenerateDipSamplesJob>(opts =>
+                    opts.WithIdentity(GenerateDipSamplesJob.Key)
+                        .WithDescription(GenerateDipSamplesJob.Description));
+
+                quartz.AddTrigger(opts => opts
+                    .ForJob(GenerateDipSamplesJob.Key)
+                    .WithIdentity($"{GenerateDipSamplesJob.Key}-trigger")
+                    .WithDescription(GenerateDipSamplesJob.Description)
+                    .WithCronSchedule(generateDipSamplesJobOptions.CronSchedule));
+            }
 
         });
 
