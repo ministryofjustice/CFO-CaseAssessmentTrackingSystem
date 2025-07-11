@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250709095211_Participant_FixRiskColumnWidths")]
+    partial class Participant_FixRiskColumnWidths
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1222,100 +1225,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.HasKey("TheDate");
 
                     b.ToTable("DateDimension", "Mi");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.ManagementInformation.DipSample", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CompletedBy")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<DateTime?>("CompletedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ContractId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(12)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("PeriodFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("PeriodTo")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double?>("ScoreAvg")
-                        .HasColumnType("float");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompletedBy");
-
-                    b.HasIndex("ContractId");
-
-                    b.ToTable("DipSample", "Mi");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.ManagementInformation.DipSampleParticipant", b =>
-                {
-                    b.Property<Guid>("DipSampleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ParticipantId")
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<bool?>("ActivitiesLinkToTasks")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("HasClearParticipantJourney")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsCompliant")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LocationType")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<string>("Remarks")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("ReviewedBy")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<DateTime?>("ReviewedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool?>("ShowsTaskProgression")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("SupportsJourneyAndAlignsWithDoS")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("TTGDemonstratesGoodPRIProcess")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("TemplatesAlignWithREG")
-                        .HasColumnType("bit");
-
-                    b.HasKey("DipSampleId", "ParticipantId");
-
-                    b.HasIndex("IsCompliant");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.HasIndex("ReviewedBy");
-
-                    b.ToTable("DipSampleParticipant", "Mi");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.ManagementInformation.EducationPayment", b =>
@@ -4202,38 +4111,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Navigation("Owner");
 
                     b.Navigation("Phases");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.ManagementInformation.DipSample", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("CompletedBy");
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Contract", null)
-                        .WithMany()
-                        .HasForeignKey("ContractId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.ManagementInformation.DipSampleParticipant", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Entities.ManagementInformation.DipSample", null)
-                        .WithMany()
-                        .HasForeignKey("DipSampleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("ReviewedBy");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Notifications.Notification", b =>

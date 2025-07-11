@@ -103,11 +103,13 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
                 x => x!.Value,
                 x => ConfirmationStatus.FromValue(x)
             );
+
         builder.Property(x => x.RiskToSelfInCommunityNew)
             .HasConversion(
                 x => x!.Value,
                 x => ConfirmationStatus.FromValue(x)
             );
+
         builder.Property(x => x.RiskToSelfInCustodyNew)
             .HasConversion(
                 x => x!.Value,
@@ -122,6 +124,32 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
 
         builder.Property(x => x.CompletedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
-    }
 
+        builder.Property(x => x.ActivityRecommendations)
+         .HasMaxLength(7500);
+
+        builder.Property(x => x.ActivityRestrictions)
+            .HasMaxLength(10500);
+
+        builder.Property(x => x.AdditionalInformation)
+            .HasMaxLength(10500);
+
+        builder.Property(x => x.LicenseConditions)
+            .HasMaxLength(14000);
+
+        builder.Property(x => x.PSFRestrictions)
+            .HasMaxLength(6500);
+
+        builder.Property(x => x.ReferrerName)
+            .HasMaxLength(150);
+
+        builder.Property(x => x.ReferrerEmail)
+            .HasMaxLength(150);
+
+        builder.Property(x => x.ReviewJustification)
+          .HasMaxLength(2500);
+
+        builder.Property(x => x.RegistrationDetailsJson)
+          .HasMaxLength(5000);
+    }
 }
