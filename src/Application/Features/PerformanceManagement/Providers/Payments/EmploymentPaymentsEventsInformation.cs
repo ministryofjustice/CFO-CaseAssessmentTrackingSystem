@@ -9,7 +9,12 @@ public class EmploymentPaymentsEventsInformation : IPertinentEventProvider
     {
         var query = from p in context.EmploymentPayments
             where p.ParticipantId == participantId
-            select p;
+            select new
+            {
+                p.EligibleForPayment,
+                p.IneligibilityReason,
+                p.CreatedOn
+            };
 
         var results = await query
             .AsNoTracking()
@@ -17,7 +22,7 @@ public class EmploymentPaymentsEventsInformation : IPertinentEventProvider
 
         return results.Select(r => new DipEventInformation
         {
-            Title = $"Support and Referral Payment {(r.EligibleForPayment ? "Paid" : "Rejected")}",
+            Title = $"Employment Payment {(r.EligibleForPayment ? "Paid" : "Rejected")}",
             Colour = r.EligibleForPayment ? AppColour.Success : AppColour.Warning,
             Contents =
             [

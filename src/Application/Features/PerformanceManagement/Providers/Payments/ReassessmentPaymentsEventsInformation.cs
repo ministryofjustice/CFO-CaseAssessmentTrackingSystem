@@ -9,7 +9,13 @@ public class ReassessmentPaymentsEventsInformation : IPertinentEventProvider
     {
         var query = from p in context.ReassessmentPayments
             where p.ParticipantId == participantId
-            select p;
+            select new 
+            {
+                p.EligibleForPayment,
+                p.IneligibilityReason,
+                p.AssessmentCompleted,
+                p.AssessmentCreated
+            };
 
         var results = await query
             .AsNoTracking()
@@ -17,11 +23,11 @@ public class ReassessmentPaymentsEventsInformation : IPertinentEventProvider
 
         return results.Select(r => new DipEventInformation
         {
-            Title = $"Support and Referral Payment {(r.EligibleForPayment ? "Paid" : "Rejected")}",
+            Title = $"Reassessment Payment {(r.EligibleForPayment ? "Paid" : "Rejected")}",
             Colour = r.EligibleForPayment ? AppColour.Success : AppColour.Warning,
             Contents =
             [
-                $"Enrolment payment details recorded",
+                $"Reassessment payment details recorded",
                 r.IneligibilityReason ?? string.Empty,
             ],
             ActionedBy = "System",

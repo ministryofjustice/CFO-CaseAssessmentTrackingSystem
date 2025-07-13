@@ -9,7 +9,14 @@ public class ActivityPaymentEventInformation : IPertinentEventProvider
     {
         var query = from p in context.ActivityPayments
             where p.ParticipantId == participantId
-            select p;
+            select new 
+            {
+                p.EligibleForPayment,
+                p.ActivityType,
+                p.ActivityCategory,
+                p.IneligibilityReason,
+                p.CreatedOn
+            };
 
         var results = await query.AsNoTracking().ToArrayAsync();
 

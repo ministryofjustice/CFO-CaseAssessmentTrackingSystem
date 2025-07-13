@@ -9,7 +9,13 @@ public class SupportAndReferralPaymentsEventInformation : IPertinentEventProvide
     {
         var query = from p in context.SupportAndReferralPayments
             where p.ParticipantId == participantId
-            select p;
+            select new
+            {
+                p.EligibleForPayment,
+                p.SupportType,
+                p.IneligibilityReason,
+                p.CreatedOn
+            };
 
         var results = await query
             .AsNoTracking()

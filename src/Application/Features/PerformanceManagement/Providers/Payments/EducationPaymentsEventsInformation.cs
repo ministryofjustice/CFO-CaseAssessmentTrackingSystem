@@ -9,13 +9,20 @@ public class EducationPaymentsEventsInformation : IPertinentEventProvider
     {
         var query = from p in context.EducationPayments
             where p.ParticipantId == participantId
-            select p;
+            select new
+            {
+                p.EligibleForPayment,
+                p.IneligibilityReason,
+                p.CourseTitle,
+                p.CourseLevel,
+                p.CreatedOn
+            };
 
         var results = await query.AsNoTracking().ToArrayAsync();
 
         return results.Select(r => new DipEventInformation
         {
-            Title = $"Support and Referral Payment {(r.EligibleForPayment ? "Paid" : "Rejected")}",
+            Title = $"Education Payment {(r.EligibleForPayment ? "Paid" : "Rejected")}",
             Colour = r.EligibleForPayment ? AppColour.Success : AppColour.Warning,
             Contents =
             [
