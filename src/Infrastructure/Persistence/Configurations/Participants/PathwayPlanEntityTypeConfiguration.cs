@@ -1,8 +1,6 @@
-using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Security.AccessControl;
 
 namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Participants;
 
@@ -14,8 +12,7 @@ public class PathwayPlanEntityTypeConfiguration
     {
         builder.ToTable(
             DatabaseConstants.Tables.PathwayPlan,
-            DatabaseConstants.Schemas.Participant
-        );
+            DatabaseConstants.Schemas.Participant);
 
         builder.HasKey(pathwayPlan => pathwayPlan.Id);
 
@@ -38,90 +35,24 @@ public class PathwayPlanEntityTypeConfiguration
                 DatabaseConstants.Schemas.Participant);
 
             history.WithOwner()
-                .HasForeignKey(history => history.PathwayPlanId);
+                .HasForeignKey(h => h.PathwayPlanId);
 
-            history.HasKey(history => history.Id);
+            history.HasKey(h => h.Id);
 
-            history.Property(history => history.CreatedBy)
+            history.Property(h => h.CreatedBy)
                 .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
-            history.Property(history => history.LastModifiedBy)
+            history.Property(h => h.LastModifiedBy)
                 .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
         });
 
-        builder.Navigation(objective => objective.ReviewHistories).AutoInclude();
+        builder.Navigation(plan => plan.ReviewHistories).AutoInclude();
 
-        builder.OwnsMany(pathwayPlan => pathwayPlan.Objectives, objective =>
-        {
-            objective.ToTable(
-                DatabaseConstants.Tables.Objective,
-                DatabaseConstants.Schemas.Participant);
+        builder.HasMany(pathwayPlan => pathwayPlan.Objectives)
+            .WithOne() // no navigation back
+            .HasForeignKey(objective => objective.PathwayPlanId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-            objective
-                .WithOwner()
-                .HasForeignKey(objective => objective.PathwayPlanId);
-
-            objective.HasKey(objective => objective.Id);
-
-            objective.Property(objective => objective.Id)
-                .ValueGeneratedNever();
-
-            objective.Property(objective => objective.CreatedBy)
-                .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
-
-            objective.Property(objective => objective.LastModifiedBy)
-                .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
-
-            objective.Property(objective => objective.CompletedBy)
-                .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
-
-            objective.HasOne(task => task.CompletedByUser)
-                .WithMany()
-                .HasForeignKey(task => task.CompletedBy);
-
-            objective.Property(objective => objective.CompletedStatus)
-                .HasConversion(
-                    x => x!.Value,
-                    x => CompletionStatus.FromValue(x)
-                );
-
-            objective.OwnsMany(objective => objective.Tasks, task =>
-            {
-                task.ToTable(
-                    DatabaseConstants.Tables.ObjectiveTask,
-                    DatabaseConstants.Schemas.Participant);
-
-                task.WithOwner()
-                    .HasForeignKey(task => task.ObjectiveId);
-
-                task.HasKey(task => task.Id);
-
-                task.Property(task => task.Id)
-                    .ValueGeneratedNever();
-
-                task.Property(task => task.CreatedBy)
-                    .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
-
-                task.Property(task => task.LastModifiedBy)
-                    .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
-
-                task.Property(task => task.CompletedBy)
-                    .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
-
-                task.HasOne(task => task.CompletedByUser)
-                    .WithMany()
-                    .HasForeignKey(task => task.CompletedBy);
-
-                task.Property(task => task.CompletedStatus)
-                    .HasConversion(
-                        x => x!.Value,
-                        x => CompletionStatus.FromValue(x)
-                    );
-            });
-
-            objective.Navigation(objective => objective.Tasks).AutoInclude();
-        });
-
-        builder.Navigation(pathwayPlan => pathwayPlan.Objectives).AutoInclude();
+        builder.Navigation(plan => plan.Objectives).AutoInclude();
     }
 }

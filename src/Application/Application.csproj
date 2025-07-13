@@ -25,6 +25,7 @@
         <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="9.0.6" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Rebus" Version="8.8.0" />
+        <PackageReference Include="Scrutor" Version="6.1.0" />
         <PackageReference Include="Sentry" Version="5.11.0" />
         <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.6" />
     </ItemGroup>

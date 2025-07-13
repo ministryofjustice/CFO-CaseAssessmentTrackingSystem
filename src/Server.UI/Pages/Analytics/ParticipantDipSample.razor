@@ -1,5 +1,161 @@
 ﻿@page "/pages/analytics/dip-sampling/{SampleId:guid}/{ParticipantId}"
+@using Humanizer
+@inherits CatsComponentBase
 
-<MudText Typo="Typo.h5">
-    Dip Sample: North West (Mar 2025)
-</MudText>
+
+<MudContainer Style="min-width: 480px; width: 100%;" MaxWidth="MaxWidth.ExtraLarge">
+    @if (_isLoading)
+    {
+        <MudLoading Text="Loading sample" Color="Color.Primary"/>
+    }
+
+    @if (_isLoading == false && _error is not null)
+    {
+        <MudAlert Severity="Severity.Error">
+            <MudText>
+                @_error
+            </MudText>
+        </MudAlert>
+    }
+
+    @if (_isLoading == false && _participant is not null)
+    {
+        // participant details
+        <MudText Typo="Typo.h5" Class="mb-5">
+            Dip Sample
+        </MudText>
+
+        <MudGrid Style="height: 100vh; width: 100%;">
+            <MudItem xs="2" Style="height: calc(100vh - 150px); width: 100%;">
+                <MudStack style="width: 100%;" Class="mr-2" Wrap="Wrap.Wrap">
+                    <MudTextField ReadOnly="true" Label="Participant Id" Value="_participant.ParticipantId"/>
+                    <MudTextField ReadOnly="true" Label="First Name" Value="_participant.FirstName"/>
+                    <MudTextField ReadOnly="true" Label="Last Name" Value="_participant.LastName"/>
+                    <MudTextField ReadOnly="true" Label="Date Of Birth" Value="_participant.DateOfBirth"/>
+                    <MudTextField ReadOnly="true" Label="Nationality" Value="_participant.Nationality"/>
+                    <MudTextField ReadOnly="true" Label="Current Owner" Value="_participant.SupportWorker"/>
+                    <MudTextField ReadOnly="true" Label="Enrolment Location" Value="_participant.EnrolmentLocation"/>
+                    <MudTextField ReadOnly="true" Label="Current Location" Value="_participant.CurrentLocation"/>
+                </MudStack>
+            </MudItem>
+            <MudItem xs="10" Style="height: 100%; width: 100%;">
+                <MudTabs>
+                    <MudTabPanel Text="Events">
+                        <MudTimeline TimelinePosition="TimelinePosition.Alternate">
+                            @foreach (var group in _participant.PertinentEvents
+                                          .OrderBy(e => e.OccurredOn)
+                                          .GroupBy(e => e.OccurredOn.Date))
+                            {
+                                var date = group.Key;
+                                var consentDate = _participant.ConsentDate.ToDateTime(TimeOnly.MinValue);
+
+                                <MudTimelineItem Size="Size.Medium" Color="Color.Default" Elevation="0">
+                                    <ItemOpposite>
+                                        <MudText Typo="Typo.caption" Color="Color.Default">@date.ToShortDateString()</MudText>
+                                        <MudText Typo="Typo.h6" Color="Color.Default">@date.Humanize()</MudText>
+                                        
+                                        @if (date.Date == DateTime.Now.Date)
+                                        {
+                                            <MudText Typo="Typo.body2">
+                                                Today
+                                            </MudText>    
+                                        }
+                                        else if (date.Date > consentDate.Date)
+                                        {
+                                            <MudText Typo="Typo.body2">
+                                                @((date - consentDate).Humanize()) after consent
+                                            </MudText>
+                                        }
+                                    </ItemOpposite>
+                                    <ItemContent>
+                                        <MudStack Spacing="2">
+                                            @foreach (var item in group)
+                                            {
+                                                <MudCard Outlined="true" Elevation="6">
+                                                    <MudCardHeader>
+                                                        <CardHeaderContent>
+                                                            <MudText Typo="Typo.h6" Color="item.Colour.AsMudColour()">@item.Title</MudText>
+                                                        </CardHeaderContent>
+                                                        <CardHeaderActions>
+                                                            <MudIconButton Icon="@item.Icon.AsMudIcon()" Color="@item.Colour.AsMudColour()" />
+                                                        </CardHeaderActions>
+                                                    </MudCardHeader>
+                                                    <MudCardContent>
+                                                        <MudStack>
+                                                            @foreach (var line in item.Contents)
+                                                            {
+                                                                if (string.IsNullOrWhiteSpace(line) == false)
+                                                                {
+                                                                    <MudText Typo="Typo.subtitle1">@line</MudText>
+                                                                }
+                                                            }
+                                                        </MudStack>
+                                                    </MudCardContent>
+                                                    <MudCardActions>
+                                                        <MudStack AlignItems="AlignItems.End" Justify="Justify.FlexEnd" Style="width: 100%">
+                                                            <MudText Typo="Typo.body2">
+                                                                @item.ActionedBy
+                                                            </MudText>
+                                                            <MudText Typo="Typo.body2">
+                                                                @item.RecordedOn
+                                                            </MudText>
+                                                        </MudStack>
+                                                    </MudCardActions>
+                                                </MudCard>
+                                            }
+                                        </MudStack>
+                                    </ItemContent>
+                                </MudTimelineItem>
+                            }
+                        </MudTimeline>
+
+                        @* <MudTimeline TimelinePosition="TimelinePosition.Alternate">
+                        @foreach (var item in _participant.PertinentEvents.OrderBy(t => t.OccurredOn))
+                        {
+                            var color = item.Colour.AsMudColour();
+
+                            <MudTimelineItem Size="Size.Medium" Color="color" Elevation="0">
+                                <ItemContent>
+                                    <MudCard Outlined="true" Elevation="25">
+                                        <MudCardHeader>
+                                            <CardHeaderContent>
+                                                <MudText Typo="Typo.h6" Color="color">@item.Title</MudText>
+                                            </CardHeaderContent>
+                                            <CardHeaderActions>
+                                                <MudIconButton Icon="@Icons.Material.Filled.Info" Color="color" />
+                                            </CardHeaderActions>
+                                        </MudCardHeader>
+                                        <MudCardContent>
+                                            <MudText Typo="Typo.subtitle1">@item.Description</MudText>
+                                            @if (item.AdditionalInformation is not null)
+                                            {
+                                                <MudText Typo="Typo.subtitle2">@item.AdditionalInformation</MudText>
+                                            }
+                                        </MudCardContent>
+                                        <MudCardActions>
+                                            <MudStack>
+                                                <MudText Typo="Typo.body2">Recorded by @item.ActionedBy (@item.RecordedOn)</MudText>
+                                                <MudText Typo="Typo.body2">@((item.RecordedOn - _participant.ConsentDate.ToDateTime(TimeOnly.MinValue)).Humanize()) after consent</MudText>
+                                            </MudStack>
+                                        </MudCardActions>
+                                    </MudCard>
+                                </ItemContent>
+                                <ItemOpposite>
+                                        <MudText Typo="Typo.h6" Color="color">@item.OccurredOn.Humanize()</MudText>
+                                        <MudStack>
+                                            <MudText Typo="Typo.caption" Color="color">@item.OccurredOn</MudText>
+                                            <MudText Typo="Typo.caption" Color="color">@((item.OccurredOn - _participant.ConsentDate.ToDateTime(TimeOnly.MinValue)).Humanize()) after consent</MudText>
+                                        </MudStack>
+                                </ItemOpposite>
+                            </MudTimelineItem>
+                        }
+                        </MudTimeline> *@
+                    </MudTabPanel>
+                    <MudTabPanel Text="Details">
+
+                    </MudTabPanel>
+                </MudTabs>
+            </MudItem>
+        </MudGrid>
+    }
+</MudContainer>

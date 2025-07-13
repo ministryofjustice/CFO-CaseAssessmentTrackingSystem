@@ -80,5 +80,6 @@ public class Objective : BaseAuditableEntity<Guid>
     }
 
     public virtual ApplicationUser? CompletedByUser { get; set; }
+    public virtual ApplicationUser? CreatedByUser { get; set; }
 
 }

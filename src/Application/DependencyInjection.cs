@@ -2,6 +2,7 @@
 using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Features.ManagementInformation;
 using Cfo.Cats.Application.Features.ManagementInformation.Providers;
+using Cfo.Cats.Application.Features.PerformanceManagement.Providers;
 using Cfo.Cats.Application.Pipeline;
 using Cfo.Cats.Application.Pipeline.PreProcessors;
 using Microsoft.Extensions.Configuration;
@@ -61,6 +62,12 @@ public static class DependencyInjection
         services.AddLazyCache();
 
         services.AddScoped<ICumulativeProvider, CumulativeProvider>();
+
+        services.Scan(scan => scan
+            .FromAssemblyOf<IPertinentEventProvider>()
+            .AddClasses(classes => classes.AssignableTo<IPertinentEventProvider>())
+            .As<IPertinentEventProvider>()
+            .WithScopedLifetime());
 
         return services;
     }
