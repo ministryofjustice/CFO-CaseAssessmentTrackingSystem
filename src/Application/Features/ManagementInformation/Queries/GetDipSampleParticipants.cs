@@ -32,7 +32,14 @@ public static class GetDipSampleParticipants
                 join reviewer in context.Users on sample.ReviewedBy equals reviewer.Id into reviewers
                 from reviewer in reviewers.DefaultIfEmpty()
                 where sample.DipSampleId == request.DipSampleId
-                && (request.OnlyShowInProgress == false || sample.ReviewedOn == null)
+                where request.OnlyShowInProgress == false 
+                    || sample.ReviewedOn == null
+                where string.IsNullOrWhiteSpace(request.Keyword)
+                    || sample.LocationType.Contains(request.Keyword)
+                    || participant.LastName.Contains(request.Keyword)
+                    || participant.Id.Contains(request.Keyword)
+                    || enrolmentLocation.Name.Contains(request.Keyword)
+                    || currentLocation.Name.Contains(request.Keyword)
                 select new
                 {
                     sample.ParticipantId,

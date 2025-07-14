@@ -32,15 +32,40 @@ else
                  Striped="true"
                  Bordered="false">
         <ToolBarContent>
-            <MudForm Model="Query" FieldChanged="RefreshAsync">
+            <MudForm Model="Query" FieldChanged="RefreshAsync" Style="display: contents">
                 <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
                 <MudText Typo="Typo.caption" Class="mr-2">Sample</MudText>
-                <MudSpacer />
                 <MudSwitch Label="Only show in progress" Color="Color.Primary" Class="mr-2" @bind-Value="Query.OnlyShowInProgress" />
+                <MudSpacer />
+                <MudStack>
+                    <MudStack Row="true">
+                        <MudButton Disabled="true"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Download"
+                                   Size="Size.Small"
+                                   OnClick="OnExport"
+                                   IconColor="Color.Surface">
+                            @if (_downloading)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2">@ConstantString.Downloading</MudText>
+                            }
+                            else
+                            {
+                                <MudText>@ConstantString.Export</MudText>
+                            }
+                        </MudButton>
+                    </MudStack>
+                    <MudTextField DebounceInterval="500" @bind-Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                    </MudTextField>
+                </MudStack>
             </MudForm>
         </ToolBarContent>
         <ColGroup>
             <col style="width: 50px;" />
+            <col />
             <col />
             <col />
             <col />
@@ -70,8 +95,11 @@ else
                     </MudStack>
                 </CellTemplate>
             </PropertyColumn>
+            <PropertyColumn Property="x => x.LocationType"
+                            Title="Type"
+                            SortBy="x => x.LocationType" />
             <PropertyColumn Property="x => x.CurrentLocationName"
-                            Title="Location"
+                            Title="Current Location"
                             SortBy="x => x.CurrentLocationName" />
             <PropertyColumn Property="x => x.EnrolmentLocationName"
                             Title="Enrolled At"

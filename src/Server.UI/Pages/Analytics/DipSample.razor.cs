@@ -6,6 +6,7 @@ namespace Cfo.Cats.Server.UI.Pages.Analytics;
 public partial class DipSample
 {
     private bool _loading;
+    private bool _downloading;
     private MudDataGrid<DipSampleParticipantSummaryDto> _table = new();
 
     [Parameter]
@@ -78,4 +79,16 @@ public partial class DipSample
     }
 
     async Task RefreshAsync() => await _table.ReloadServerData();
+    async Task OnExport()
+    {
+        try
+        {
+            _downloading = true;
+            await Task.CompletedTask;
+        }
+        finally
+        {
+            _downloading = false;
+        }
+    }
 }
