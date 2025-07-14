@@ -108,48 +108,6 @@
                                 </MudTimelineItem>
                             }
                         </MudTimeline>
-
-                        @* <MudTimeline TimelinePosition="TimelinePosition.Alternate">
-                        @foreach (var item in _participant.PertinentEvents.OrderBy(t => t.OccurredOn))
-                        {
-                            var color = item.Colour.AsMudColour();
-
-                            <MudTimelineItem Size="Size.Medium" Color="color" Elevation="0">
-                                <ItemContent>
-                                    <MudCard Outlined="true" Elevation="25">
-                                        <MudCardHeader>
-                                            <CardHeaderContent>
-                                                <MudText Typo="Typo.h6" Color="color">@item.Title</MudText>
-                                            </CardHeaderContent>
-                                            <CardHeaderActions>
-                                                <MudIconButton Icon="@Icons.Material.Filled.Info" Color="color" />
-                                            </CardHeaderActions>
-                                        </MudCardHeader>
-                                        <MudCardContent>
-                                            <MudText Typo="Typo.subtitle1">@item.Description</MudText>
-                                            @if (item.AdditionalInformation is not null)
-                                            {
-                                                <MudText Typo="Typo.subtitle2">@item.AdditionalInformation</MudText>
-                                            }
-                                        </MudCardContent>
-                                        <MudCardActions>
-                                            <MudStack>
-                                                <MudText Typo="Typo.body2">Recorded by @item.ActionedBy (@item.RecordedOn)</MudText>
-                                                <MudText Typo="Typo.body2">@((item.RecordedOn - _participant.ConsentDate.ToDateTime(TimeOnly.MinValue)).Humanize()) after consent</MudText>
-                                            </MudStack>
-                                        </MudCardActions>
-                                    </MudCard>
-                                </ItemContent>
-                                <ItemOpposite>
-                                        <MudText Typo="Typo.h6" Color="color">@item.OccurredOn.Humanize()</MudText>
-                                        <MudStack>
-                                            <MudText Typo="Typo.caption" Color="color">@item.OccurredOn</MudText>
-                                            <MudText Typo="Typo.caption" Color="color">@((item.OccurredOn - _participant.ConsentDate.ToDateTime(TimeOnly.MinValue)).Humanize()) after consent</MudText>
-                                        </MudStack>
-                                </ItemOpposite>
-                            </MudTimelineItem>
-                        }
-                        </MudTimeline> *@
                     </MudTabPanel>
                     <MudTabPanel Text="Details">
 
