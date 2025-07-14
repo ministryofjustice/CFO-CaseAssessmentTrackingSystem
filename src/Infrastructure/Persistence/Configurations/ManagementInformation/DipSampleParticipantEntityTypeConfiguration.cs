@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformation;
 
-public class DipSampleParticipantEntityTypeConfiguration : IEntityTypeConfiguration<DipSampleParticipant>
+public class DipSampleParticipantEntityTypeConfiguration : IEntityTypeConfiguration<OutcomeQualityDipSampleParticipant>
 {
-    public void Configure(EntityTypeBuilder<DipSampleParticipant> builder)
+    public void Configure(EntityTypeBuilder<OutcomeQualityDipSampleParticipant> builder)
     {
-        builder.ToTable(nameof(DipSampleParticipant), DatabaseConstants.Schemas.Mi);
+        builder.ToTable(nameof(OutcomeQualityDipSampleParticipant), DatabaseConstants.Schemas.Mi);
 
         builder.HasKey(dsp => new { dsp.DipSampleId, dsp.ParticipantId });
 
@@ -19,7 +19,7 @@ public class DipSampleParticipantEntityTypeConfiguration : IEntityTypeConfigurat
             .WithMany()
             .HasForeignKey(dsp => dsp.ParticipantId);
 
-        builder.HasOne<DipSample>()
+        builder.HasOne<OutcomeQualityDipSample>()
             .WithMany()
             .HasForeignKey(dsp => dsp.DipSampleId);
 

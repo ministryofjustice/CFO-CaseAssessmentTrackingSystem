@@ -1,9 +1,9 @@
 ﻿namespace Cfo.Cats.Domain.Entities.ManagementInformation;
 
-public class DipSampleParticipant
+public class OutcomeQualityDipSampleParticipant
 {
 #pragma warning disable CS8618 
-    public DipSampleParticipant() { /* this is for EF Core */}
+    public OutcomeQualityDipSampleParticipant() { /* this is for EF Core */}
 #pragma warning restore CS8618
 
     public string ParticipantId { get; set; }

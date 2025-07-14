@@ -1,6 +1,6 @@
 ﻿@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
 
-@page "/pages/analytics/dip-sampling"
+@page "/pages/analytics/outcome-quality-dip-sampling"
 
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
@@ -87,7 +87,7 @@
                         } *@
                     </MudCardContent>
                     <MudCardActions Class="justify-space-between">
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/dip-sampling/{sample.Id}")">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/outcome-quality-dip-sampling/{sample.Id}")">
                             Review 
                         </MudButton>
                         @if(sample.ScoreAvg.HasValue)

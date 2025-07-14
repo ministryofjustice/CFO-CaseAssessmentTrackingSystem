@@ -6,7 +6,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 
-public static class GetDipSampleParticipant
+public static class GetOutcomeQualityDipSampleParticipant
 {
     //TODO: This needs a proper policy
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]

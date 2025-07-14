@@ -515,17 +515,17 @@ public static class DependencyInjection
                     .WithCronSchedule(publishOutboxMessagesOptions.CronSchedule));
             }
 
-            if (options.GetSection(GenerateDipSamplesJob.Key.Name).Get<JobOptions>() is
+            if (options.GetSection(GenerateOutcomeQualityDipSamplesJob.Key.Name).Get<JobOptions>() is
                 { Enabled: true } generateDipSamplesJobOptions)
             {
-                quartz.AddJob<GenerateDipSamplesJob>(opts =>
-                    opts.WithIdentity(GenerateDipSamplesJob.Key)
-                        .WithDescription(GenerateDipSamplesJob.Description));
+                quartz.AddJob<GenerateOutcomeQualityDipSamplesJob>(opts =>
+                    opts.WithIdentity(GenerateOutcomeQualityDipSamplesJob.Key)
+                        .WithDescription(GenerateOutcomeQualityDipSamplesJob.Description));
 
                 quartz.AddTrigger(opts => opts
-                    .ForJob(GenerateDipSamplesJob.Key)
-                    .WithIdentity($"{GenerateDipSamplesJob.Key}-trigger")
-                    .WithDescription(GenerateDipSamplesJob.Description)
+                    .ForJob(GenerateOutcomeQualityDipSamplesJob.Key)
+                    .WithIdentity($"{GenerateOutcomeQualityDipSamplesJob.Key}-trigger")
+                    .WithDescription(GenerateOutcomeQualityDipSamplesJob.Description)
                     .WithCronSchedule(generateDipSamplesJobOptions.CronSchedule));
             }
 

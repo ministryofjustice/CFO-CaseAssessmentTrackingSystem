@@ -5,7 +5,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.Queries;
 
-public static class GetDipSample
+public static class GetOutcomeQualityDipSample
 {
     [RequestAuthorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
     public class Query : IRequest<Result<DipSampleSummaryDto>>
@@ -20,7 +20,7 @@ public static class GetDipSample
             var context = unitOfWork.DbContext;
 
             var query =
-                from sample in context.DipSamples
+                from sample in context.OutcomeQualityDipSamples
                 join contract in context.Contracts on sample.ContractId equals contract.Id
                 where sample.Id == request.DipSampleId
                 select new DipSampleSummaryDto(contract.Description, sample.PeriodFrom);
@@ -47,7 +47,7 @@ public static class GetDipSample
             });
         }
 
-        bool Exist(Guid dipSampleId) => unitOfWork.DbContext.DipSamples.Any(d => d.Id == dipSampleId);
+        bool Exist(Guid dipSampleId) => unitOfWork.DbContext.OutcomeQualityDipSamples.Any(d => d.Id == dipSampleId);
     }
 
 }
