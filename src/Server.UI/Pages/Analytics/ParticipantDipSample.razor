@@ -99,6 +99,12 @@
                                                             <MudText Typo="Typo.body2">
                                                                 @item.RecordedOn
                                                             </MudText>
+                                                            @if(item.RecordedOn.Date != item.OccurredOn.Date)
+                                                            {
+                                                                <MudText Typo="Typo.body2">
+                                                                    (Occurred on @item.OccurredOn.ToShortDateString())
+                                                                </MudText>
+                                                            }
                                                         </MudStack>
                                                     </MudCardActions>
                                                 </MudCard>
