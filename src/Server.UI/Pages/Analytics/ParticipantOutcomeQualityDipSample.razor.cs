@@ -27,6 +27,7 @@ public partial class ParticipantOutcomeQualityDipSample
     private ParticipantDipSampleDto? _participant;
     
     private string? _error;
+    private bool _hideDetails = false;
 
     protected override async Task OnInitializedAsync()
     {
