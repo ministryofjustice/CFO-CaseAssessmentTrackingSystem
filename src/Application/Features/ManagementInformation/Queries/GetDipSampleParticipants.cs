@@ -8,14 +8,14 @@ namespace Cfo.Cats.Application.Features.ManagementInformation.Queries;
 public static class GetDipSampleParticipants 
 {
     [RequestAuthorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
-    public class Query : IRequest<Result<IEnumerable<DipSampleParticipantDto>>>
+    public class Query : IRequest<Result<IEnumerable<DipSampleParticipantSummaryDto>>>
     {
         public required Guid DipSampleId { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<IEnumerable<DipSampleParticipantDto>>>
+    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<IEnumerable<DipSampleParticipantSummaryDto>>>
     {
-        public async Task<Result<IEnumerable<DipSampleParticipantDto>>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<IEnumerable<DipSampleParticipantSummaryDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var context = unitOfWork.DbContext;
 
@@ -25,7 +25,7 @@ public static class GetDipSampleParticipants
                 join participant in context.Participants on sample.ParticipantId equals participant.Id
                 join reviewer in context.Users on sample.ReviewedBy equals reviewer.Id
                 where sample.DipSampleId == request.DipSampleId
-                select new DipSampleParticipantDto(
+                select new DipSampleParticipantSummaryDto(
                     sample.ParticipantId, 
                     participant.FullName!, 
                     participant.Owner.DisplayName,
@@ -42,10 +42,10 @@ public static class GetDipSampleParticipants
 
             if(participants is not { Count: > 0 })
             {
-                Result<IEnumerable<DipSampleParticipantDto>>.Failure("No participants found to sample.");
+                Result<IEnumerable<DipSampleParticipantSummaryDto>>.Failure("No participants found to sample.");
             }
 
-            return Result<IEnumerable<DipSampleParticipantDto>>.Success(participants);
+            return Result<IEnumerable<DipSampleParticipantSummaryDto>>.Success(participants);
         }
     }
 
@@ -60,7 +60,8 @@ public static class GetDipSampleParticipants
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
                 RuleFor(q => q.DipSampleId)
-                    .Must(Exist);
+                    .Must(Exist)
+                    .WithMessage("The requested dip sample was not found");
             });
         }
 

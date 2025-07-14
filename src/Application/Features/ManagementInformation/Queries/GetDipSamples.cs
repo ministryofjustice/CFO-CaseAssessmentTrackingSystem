@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.Features.Contracts.DTOs;
 using Cfo.Cats.Application.Features.ManagementInformation.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -10,9 +11,10 @@ public static class GetDipSamples
     [RequestAuthorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
     public class Query : IRequest<Result<IEnumerable<DipSampleDto>>>
     {
-        public required int Month { get; set; }
-        public required int Year { get; set; }
-
+        public int Month { get; set; } = DateTime.Now.AddMonths(-4).Month;
+        public int Year { get; set; } = DateTime.Now.AddMonths(-4).Year;
+        public ContractDto? Contract { get; set; }
+        public bool OnlyShowInProgress { get; set; } = false;
         public DateTime Period => new (Year, Month, day: 1);
     }
 
@@ -29,6 +31,8 @@ public static class GetDipSamples
                 from user in uj.DefaultIfEmpty()
                 join dsp in context.DipSampleParticipants on sample.Id equals dsp.DipSampleId into participants
                 where sample.PeriodFrom == request.Period
+                where request.Contract == null || request.Contract.Id == sample.ContractId
+                where request.OnlyShowInProgress == false || sample.Status == DipSampleStatus.InProgress
                 orderby contract.Description
                 select new DipSampleDto(
                     sample.Id, 

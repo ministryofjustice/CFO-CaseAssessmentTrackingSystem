@@ -12,30 +12,35 @@
     Dip Sampling
 </MudText>
 
-<MudGrid Class="my-2">
-    <MudItem xs="12" md="2">
-        <MudSelect Label="Month" @bind-Value="Month">
-            @foreach (var month in Enumerable.Range(1, 12))
-            {
-                <MudSelectItem Value="month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</MudSelectItem>
-            }
-        </MudSelect>
-    </MudItem>
-    <MudItem xs="12" md="1">
-        <MudSelect Label="Year" @bind-Value="Year">
-            @foreach (var year in Enumerable.Range(2024, DateTime.Now.Year - 2023))
-            {
-                <MudSelectItem Value="year">@year</MudSelectItem>
-            }
-        </MudSelect>
-    </MudItem>
-    <MudItem xs="12" md="2">
-        <ContractAutoComplete TenantId="@(CurrentUser?.TenantId ?? "xxx")" @bind-Value="SelectedContract" />
-    </MudItem>
-    <MudItem  xs="12" md="2">
-        <MudSwitch T="bool" Value="false" Label="Only show in progress" Color="Color.Primary"/>
-    </MudItem>
-</MudGrid>
+@if(Query is not null)
+{
+    <MudForm Model="Query" FieldChanged="ReloadAsync">
+        <MudGrid Class="my-2">
+            <MudItem xs="12" md="2">
+                <MudSelect Label="Month" @bind-Value="Query.Month">
+                    @foreach (var month in Enumerable.Range(1, 12))
+                    {
+                        <MudSelectItem Value="month">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" md="1">
+                <MudSelect Label="Year" @bind-Value="Query.Year">
+                    @foreach (var year in Enumerable.Range(2024, DateTime.Now.Year - 2023))
+                    {
+                        <MudSelectItem Value="year">@year</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" md="2">
+                <ContractAutoComplete TenantId="@(CurrentUser?.TenantId ?? "xxx")" @bind-Value="Query.Contract" />
+            </MudItem>
+            <MudItem xs="12" md="2">
+                <MudSwitch T="bool" Value="false" Label="Only show in progress" Color="Color.Primary" />
+            </MudItem>
+        </MudGrid>
+    </MudForm>
+}
 
 <MudGrid Class="mt-2">
 

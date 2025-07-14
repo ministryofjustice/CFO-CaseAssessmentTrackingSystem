@@ -1,6 +1,6 @@
 ﻿namespace Cfo.Cats.Application.Features.ManagementInformation.DTOs;
 
-public record DipSampleParticipantDto(
+public record DipSampleParticipantSummaryDto(
     string ParticipantId,
     string ParticipantFullName,
     string? ParticipantOwner,

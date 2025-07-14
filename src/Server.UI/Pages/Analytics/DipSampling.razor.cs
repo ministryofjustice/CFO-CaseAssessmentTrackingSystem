@@ -11,26 +11,23 @@ public partial class DipSampling
 
     [CascadingParameter] public UserProfile? CurrentUser { get; set; }
 
-    public int Month { get; set; } = DateTime.Now.AddMonths(-4).Month;
-    public int Year { get; set; } = DateTime.Now.AddMonths(-4).Year;
-
     public DipSampleDto[] samples = [];
 
     public ContractDto? SelectedContract { get; set; }
 
-    public GetDipSamples.Query Query { get; set; } = null!;
+    public GetDipSamples.Query Query { get; set; } = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    async Task ReloadAsync()
     {
         try
         {
             isLoading = true;
 
-            Query = new() { Month = Month, Year = Year };
-
             var result = await GetNewMediator().Send(Query);
 
-            if(result is { Succeeded: true, Data: not null })
+            if (result is { Succeeded: true, Data: not null })
             {
                 samples = result.Data.ToArray();
                 return;
