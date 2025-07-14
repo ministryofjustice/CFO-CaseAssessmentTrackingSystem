@@ -23,12 +23,13 @@ public static class EnumExtensions
     public static string AsMudIcon(this AppIcon appIcon) =>
         appIcon switch
         {
-            AppIcon.Enrolment => Icons.Material.Filled.HowToReg,               // person + check
-            AppIcon.Objective => Icons.Material.Filled.TrackChanges,           // crosshair/target symbol
-            AppIcon.Task => Icons.Material.Filled.Task,                        // checklist
-            AppIcon.Activity => Icons.Material.Filled.EventNote,               // calendar w/ notes
-            AppIcon.Payment => Icons.Material.Filled.CreditCard,     // neutral wallet icon
-            AppIcon.Location => Icons.Material.Filled.LocationOn,              // map pin
+            AppIcon.Enrolment => Icons.Material.Filled.HowToReg,    
+            AppIcon.Objective => Icons.Material.Filled.TrackChanges,
+            AppIcon.Task => Icons.Material.Filled.Task,             
+            AppIcon.Activity => Icons.Material.Filled.EventNote,    
+            AppIcon.Payment => Icons.Material.Filled.CreditCard,    
+            AppIcon.Location => Icons.Material.Filled.LocationOn,
+            AppIcon.Reassignment => Icons.Material.Filled.AssignmentInd,
             _ => throw new ArgumentOutOfRangeException(nameof(appIcon), appIcon, null)
         };
 

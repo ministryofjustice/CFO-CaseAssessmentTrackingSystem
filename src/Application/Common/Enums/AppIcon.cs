@@ -7,5 +7,6 @@ public enum AppIcon
     Task,
     Activity,
     Payment,
-    Location
+    Location,
+    Reassignment
 }
