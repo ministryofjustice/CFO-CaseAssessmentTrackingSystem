@@ -9,5 +9,6 @@ public enum AppIcon
     Payment,
     Location,
     Reassignment,
-    HubInduction
+    HubInduction,
+    WingInduction
 }
