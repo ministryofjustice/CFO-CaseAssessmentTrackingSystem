@@ -4,14 +4,23 @@
 
 @inherits CatsComponentBase
 
+@using Cfo.Cats.Application.Features.ManagementInformation.DTOs
 @using Cfo.Cats.Application.SecurityConstants
 
-<MudText Typo="Typo.h5">
-    Dip Sample: North West (Mar 2025)
-</MudText>
+@if(_loading)
+{
+    <MudLoading Loading="_loading"/>
+}
+else
+{
+    <MudText Typo="Typo.h5">
+        Dip Sample: @sample.ContractName (@($"{sample.PeriodFrom:MMM yyyy}"))
+    </MudText>
+}
 
 <MudContainer Style="height: 100%; width: 100%; min-width: 480px" MaxWidth="MaxWidth.ExtraExtraLarge" Class="my-2">
-    <MudDataGrid T="Cfo.Cats.Application.Features.Participants.DTOs.ParticipantPaginationDto"
+    <MudDataGrid @ref="_table"
+                 T="DipSampleParticipantSummaryDto"
                  ServerData="@(ServerReload)"
                  Loading="@_loading"
                  FixedHeader="true"
@@ -23,15 +32,36 @@
                  Striped="true"
                  Bordered="false">
         <ToolBarContent>
-            <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
-            <MudText Typo="Typo.caption" Class="mr-2">Sample</MudText>
-            <MudSpacer />
-            <MudSwitch T="bool" Value="false" Label="Only show in progress" Color="Color.Primary" Class="mr-2"/>
-            <MudStack>
-                <MudTextField T="string" ValueChanged="@(OnSearch)" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
-                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
-                </MudTextField>
-            </MudStack>
+            <MudForm Model="Query" FieldChanged="RefreshAsync" Style="display: contents">
+                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
+                <MudText Typo="Typo.caption" Class="mr-2">Sample</MudText>
+                <MudSwitch Label="Only show in progress" Color="Color.Primary" Class="mr-2" @bind-Value="Query.OnlyShowInProgress" />
+                <MudSpacer />
+                <MudStack>
+                    <MudStack Row="true">
+                        <MudButton Disabled="true"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Download"
+                                   Size="Size.Small"
+                                   OnClick="OnExport"
+                                   IconColor="Color.Surface">
+                            @if (_downloading)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2">@ConstantString.Downloading</MudText>
+                            }
+                            else
+                            {
+                                <MudText>@ConstantString.Export</MudText>
+                            }
+                        </MudButton>
+                    </MudStack>
+                    <MudTextField DebounceInterval="500" @bind-Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                    </MudTextField>
+                </MudStack>
+            </MudForm>
         </ToolBarContent>
         <ColGroup>
             <col style="width: 50px;" />
@@ -39,7 +69,8 @@
             <col />
             <col />
             <col />
-            <col style="width: 50px;" />
+            <col />
+            <col />
         </ColGroup>
         <Columns>
             <TemplateColumn Title="@ConstantString.Actions" Sortable="false">
@@ -47,66 +78,66 @@
                     <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                              Dense="true"
                              EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
-                        <MudMenuItem Href="@($"/pages/analytics/dip-sampling/{SampleId}/{context.Item.Id}")">
+                        <MudMenuItem Href="@($"/pages/analytics/dip-sampling/{SampleId}/{context.Item.ParticipantId}")">
                             @ConstantString.Review
                         </MudMenuItem>
-                        <MudMenuItem Href="@($"/pages/participants/{context.Item.Id}")">
+                        <MudMenuItem Href="@($"/pages/participants/{context.Item.ParticipantId}")">
                             @ConstantString.ViewParticipant
                         </MudMenuItem>
                     </MudMenu>
                 </CellTemplate>
             </TemplateColumn>
-            <PropertyColumn Property="x => x.ParticipantName" Title="Participant" Sortable="false">
+            <PropertyColumn Property="x => x.ParticipantFullName" Title="Participant" Sortable="false">
                 <CellTemplate>
                     <MudStack>
-                        <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>
-                        <MudText Typo="Typo.body2">@context.Item.Id</MudText>
+                        <MudText Typo="Typo.body2">@context.Item.ParticipantFullName</MudText>
+                        <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
                     </MudStack>
                 </CellTemplate>
             </PropertyColumn>
-            <PropertyColumn Property="x => x.CurrentLocation"
-                            Title="Location"
-                            SortBy="x => x.CurrentLocation.Name">
-                <CellTemplate>
-                    <MudText>@context.Item.CurrentLocation.Name</MudText>
-                </CellTemplate>
-            </PropertyColumn>
-            <PropertyColumn Property="x => x.EnrolmentLocation"
+            <PropertyColumn Property="x => x.LocationType"
+                            Title="Type"
+                            SortBy="x => x.LocationType" />
+            <PropertyColumn Property="x => x.CurrentLocationName"
+                            Title="Current Location"
+                            SortBy="x => x.CurrentLocationName" />
+            <PropertyColumn Property="x => x.EnrolmentLocationName"
                             Title="Enrolled At"
-                            SortBy="x => x.EnrolmentLocation?.Name">
-                <CellTemplate>
-                    <MudText>@context.Item.EnrolmentLocation?.Name</MudText>
-                </CellTemplate>
-            </PropertyColumn>
-            <PropertyColumn Property="x => x.Owner"
-                            Title="Owner"
-                            SortBy="x => x.Owner">
+                            SortBy="x => x.EnrolmentLocationName" />
+            <PropertyColumn Property="x => x.ParticipantOwner"
+                            Title="Support Worker"
+                            SortBy="x => x.ParticipantOwner" />
+            <PropertyColumn Property="x => x.ReviewedBy" Title="Reviewed by" Sortable="false">
                 <CellTemplate>
                     <MudStack>
-                        <MudText Typo="Typo.body2">@context.Item.Owner</MudText>
-                        <MudText Typo="Typo.body2">@context.Item.Tenant</MudText>
+                        <MudText Typo="Typo.body2">@context.Item.ReviewedBy</MudText>
+                        <MudText Typo="Typo.body2">@context.Item.ReviewedOn</MudText>
                     </MudStack>
                 </CellTemplate>
             </PropertyColumn>
-            <TemplateColumn Title="Score">
+            <PropertyColumn Property="x => x.IsCompliant"
+                            Title="Status"
+                            SortBy="x => x.IsCompliant">
                 <CellTemplate>
-                    @{
-                        int percentage = new Random().Next(0, 100);
-                        int score = percentage switch
+                    <MudStack>
+                        @if(context.Item.IsCompliant.HasValue)
                         {
-                            >= 91 => 5,
-                            >= 81 => 4,
-                            >= 71 => 3,
-                            >= 61 => 2,
-                            >= 51 => 1,
-                            _ => 0
-                        };
-                    }
-                    <MudTooltip Text="@($"{percentage}%")">
-                        <MudRating SelectedValue="score" ReadOnly />
-                    </MudTooltip>
+                            if (context.Item.IsCompliant is true)
+                            {
+                                <MudChip Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success"  Size="Size.Small">Compliant</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip Icon="@Icons.Material.Filled.Cancel" Color="Color.Error" Size="Size.Small">Non-Compliant</MudChip>
+                            }
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2">Awaiting review</MudText>
+                        }
+                    </MudStack>
                 </CellTemplate>
-            </TemplateColumn>
+            </PropertyColumn>
         </Columns>
         <NoRecordsContent>
             <MudText>@ConstantString.NoRecords</MudText>
