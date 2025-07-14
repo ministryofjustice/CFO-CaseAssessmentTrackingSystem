@@ -33,6 +33,7 @@ public partial class DipSample
                 : SortDirection.Ascending.ToString();
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
+            Query.JustMyCases = false;
             var result = await GetNewMediator().Send(Query);
 
             if (result is { Succeeded: true, Data: not null })

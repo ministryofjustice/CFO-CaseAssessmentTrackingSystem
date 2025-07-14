@@ -109,4 +109,9 @@ public interface IApplicationDbContext
 
     DbSet<DipSample> DipSamples { get; }
     DbSet<DipSampleParticipant> DipSampleParticipants { get; }
+    
+    DbSet<Objective> Objectives { get; }
+    
+    DbSet<ObjectiveTask> ObjectiveTasks { get; }
+    
 }

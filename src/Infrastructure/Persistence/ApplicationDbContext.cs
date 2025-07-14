@@ -116,7 +116,9 @@ public class ApplicationDbContext
 
     public DbSet<DipSample> DipSamples => Set<DipSample>();
     public DbSet<DipSampleParticipant> DipSampleParticipants => Set<DipSampleParticipant>();
-
+    public DbSet<Objective> Objectives => Set<Objective>();
+    
+    public DbSet<ObjectiveTask> ObjectiveTasks => Set<ObjectiveTask>();
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -130,4 +132,5 @@ public class ApplicationDbContext
         if (!optionsBuilder.IsConfigured) { }
     }
 }
+
 
