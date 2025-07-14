@@ -92,8 +92,18 @@
                         </MudButton>
                         @if(sample.ScoreAvg.HasValue)
                         {
+                            int score = sample.ScoreAvg switch
+                            {
+                                >= 91 => 5,
+                                >= 81 => 4,
+                                >= 71 => 3,
+                                >= 61 => 2,
+                                >= 51 => 1,
+                                _ => 0
+                            };
+
                             <MudTooltip Text="@($"{sample.ScoreAvg}%")">
-                                <MudRating SelectedValue="4" ReadOnly />
+                                <MudRating SelectedValue="score" ReadOnly />
                             </MudTooltip>
                         }
                         else
