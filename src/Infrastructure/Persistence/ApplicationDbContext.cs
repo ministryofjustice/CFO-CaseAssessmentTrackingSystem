@@ -114,6 +114,9 @@ public class ApplicationDbContext
     public DbSet<SupportAndReferralPayment> SupportAndReferralPayments => Set<SupportAndReferralPayment>();
     public DbSet<ReassessmentPayment> ReassessmentPayments => Set<ReassessmentPayment>();
 
+    public DbSet<DipSample> DipSamples => Set<DipSample>();
+    public DbSet<DipSampleParticipant> DipSampleParticipants => Set<DipSampleParticipant>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
