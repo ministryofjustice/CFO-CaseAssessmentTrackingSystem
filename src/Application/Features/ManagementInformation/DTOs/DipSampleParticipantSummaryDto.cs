@@ -5,6 +5,7 @@ public record DipSampleParticipantSummaryDto(
     string ParticipantFullName,
     string? ParticipantOwner,
     string LocationType,
+    string? CurrentLocationName,
     string? EnrolmentLocationName,
     bool? IsCompliant = null,
     DateTime? ReviewedOn = null,
