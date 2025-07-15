@@ -26,7 +26,7 @@ public class EducationPaymentsEventsInformation : IPertinentEventProvider
             Colour = r.EligibleForPayment ? AppColour.Success : AppColour.Warning,
             Contents =
             [
-                $"Eduction payment details recorded",
+                $"Education payment details recorded",
                 r.IneligibilityReason ?? string.Empty,
                 $"Course: {r.CourseTitle}",
                 $"Level: {r.CourseLevel}"
@@ -36,6 +36,5 @@ public class EducationPaymentsEventsInformation : IPertinentEventProvider
             RecordedOn = r.CreatedOn,
             Icon = AppIcon.Payment,
         });
-
     }
 }
