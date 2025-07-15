@@ -40,7 +40,7 @@
             </MudItem>
             <MudItem xs="10" Style="height: 100%; width: 100%;">
                 <MudTabs>
-                    <MudSwitch T="bool" @bind-Value="_hideDetails" Label="Simple View" />
+                    <MudSwitch T="bool" @bind-Value="_hideDetails" Label="Simple View" Color="Color.Primary" />
 
                     <MudTabPanel Text="Events">
                         <MudTimeline TimelinePosition="@(_hideDetails ? TimelinePosition.Start : TimelinePosition.Alternate)">
