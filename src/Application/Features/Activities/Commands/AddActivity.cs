@@ -241,23 +241,26 @@ public static class AddActivity
                 });
 
                 RuleFor(c => c.ParticipantId)
-                    .MustAsync(MustNotBeArchived)
+                    .Must(MustNotBeArchived)
                     .WithMessage("Participant is archived");
+
+                RuleFor(c => c.Location)
+                    .Must((command, location, token) => HaveAHubInduction(command.ParticipantId, location!))
+                    .When(c => c.Location is { LocationType.IsHub: true })
+                    .WithMessage("A hub induction is required for the selected location");
+
+                RuleFor(c => c.CommencedOn)
+                    .Must((command, commencedOn, token) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId, commencedOn))
+                    .WithMessage("The activity cannot take place before the participant gave consent")
+                    .Must((command, commencedOn, token) => BeInductedAtHubForActivity(command.ParticipantId, command.Location!.Id, commencedOn))
+                    .When(c => c.Location is { LocationType.IsHub: true })
+                    .WithMessage("Participant must be inducted at Hub before activity can take place");                 
             });
 
             RuleFor(c => c.Location)
                 .NotNull()
                 .WithMessage("You must choose a location");
-
-
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
-            {
-                RuleFor(c => c.Location)
-                    .Must((command, location, token) => HaveAHubInduction(command.ParticipantId, location!))
-                    .When(c => c.Location is { LocationType.IsHub: true })
-                    .WithMessage("A hub induction is required for the selected location");
-            });
-
+                        
             When(c => c.Location is not null, () =>
             {
                 RuleFor(c => c.Definition)
@@ -270,13 +273,6 @@ public static class AddActivity
                 .WithMessage("You must provide the date the activity took place")
                 .Must(NotBeCompletedInTheFuture)
                 .WithMessage("The date the activity took place cannot be in the future");
-
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
-            {
-                RuleFor(c => c.CommencedOn)
-                    .Must((command, commencedOn, token) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId, commencedOn))
-                    .WithMessage("The activity cannot take place before the participant gave consent");
-            });
 
             // ISW's can be claimed > 3 months ago. All other types of activity must be completed in last 3 months.
             When(c => c.Definition?.Classification.IsClaimableMoreThanThreeMonthsAgo is false, () =>
@@ -310,7 +306,7 @@ public static class AddActivity
                             .MustAsync(BePdfFile)
                             .WithMessage("File is not a PDF");
                 });
-            });
+            });            
         }
 
         private bool NotBeDifferentFromTheOriginal(Guid activityId, ActivityDefinition definition)
@@ -378,7 +374,11 @@ public static class AddActivity
             return commencedOn >= participant.CalculateConsentDate();
         }
 
-        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
-            => await unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
+        private bool MustNotBeArchived(string participantId)
+            =>  unitOfWork.DbContext.Participants.Any(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
+
+        private bool BeInductedAtHubForActivity(string participantId, int locationId, DateTime? commencedOn)
+              => unitOfWork.DbContext.HubInductions.Any(e => e.ParticipantId == participantId
+              && e.LocationId == locationId && commencedOn >= e.InductionDate);
     }
 }
