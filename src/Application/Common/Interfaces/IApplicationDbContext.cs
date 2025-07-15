@@ -107,8 +107,8 @@ public interface IApplicationDbContext
     DbSet<SupportAndReferralPayment> SupportAndReferralPayments { get; }
     DbSet<ReassessmentPayment> ReassessmentPayments { get; }
 
-    DbSet<DipSample> DipSamples { get; }
-    DbSet<DipSampleParticipant> DipSampleParticipants { get; }
+    DbSet<OutcomeQualityDipSample> OutcomeQualityDipSamples { get; }
+    DbSet<OutcomeQualityDipSampleParticipant> OutcomeQualityDipSampleParticipants { get; }
     
     DbSet<Objective> Objectives { get; }
     

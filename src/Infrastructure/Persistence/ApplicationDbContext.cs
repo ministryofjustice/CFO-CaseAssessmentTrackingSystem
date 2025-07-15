@@ -114,8 +114,8 @@ public class ApplicationDbContext
     public DbSet<SupportAndReferralPayment> SupportAndReferralPayments => Set<SupportAndReferralPayment>();
     public DbSet<ReassessmentPayment> ReassessmentPayments => Set<ReassessmentPayment>();
 
-    public DbSet<DipSample> DipSamples => Set<DipSample>();
-    public DbSet<DipSampleParticipant> DipSampleParticipants => Set<DipSampleParticipant>();
+    public DbSet<OutcomeQualityDipSample> OutcomeQualityDipSamples => Set<OutcomeQualityDipSample>();
+    public DbSet<OutcomeQualityDipSampleParticipant> OutcomeQualityDipSampleParticipants => Set<OutcomeQualityDipSampleParticipant>();
     public DbSet<Objective> Objectives => Set<Objective>();
     
     public DbSet<ObjectiveTask> ObjectiveTasks => Set<ObjectiveTask>();

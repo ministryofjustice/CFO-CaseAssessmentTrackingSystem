@@ -1,6 +1,6 @@
 ﻿@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
 
-@page "/pages/analytics/dip-sampling/{SampleId:guid}"
+@page "/pages/analytics/outcome-quality-dip-sampling/{SampleId:guid}"
 
 @inherits CatsComponentBase
 
@@ -14,7 +14,7 @@
 else
 {
     <MudText Typo="Typo.h5">
-        Dip Sample: @sample.ContractName (@($"{sample.PeriodFrom:MMM yyyy}"))
+        Outcome Qualitiy Dip Sample: @sample.ContractName (@($"{sample.PeriodFrom:MMM yyyy}"))
     </MudText>
 }
 
@@ -78,7 +78,7 @@ else
                     <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                              Dense="true"
                              EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
-                        <MudMenuItem Href="@($"/pages/analytics/dip-sampling/{SampleId}/{context.Item.ParticipantId}")">
+                        <MudMenuItem Href="@($"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/{context.Item.ParticipantId}")">
                             @ConstantString.Review
                         </MudMenuItem>
                         <MudMenuItem Href="@($"/pages/participants/{context.Item.ParticipantId}")">

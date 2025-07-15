@@ -6,7 +6,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.Queries;
 
-public static class GetDipSamples
+public static class GetOutcomeQualityDipSamples
 {
     [RequestAuthorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
     public class Query : IRequest<Result<IEnumerable<DipSampleDto>>>
@@ -25,11 +25,11 @@ public static class GetDipSamples
             var context = unitOfWork.DbContext;
 
             var query =
-                from sample in context.DipSamples
+                from sample in context.OutcomeQualityDipSamples
                 join contract in context.Contracts on sample.ContractId equals contract.Id
                 join u in context.Users on sample.CompletedBy equals u.Id into uj
                 from user in uj.DefaultIfEmpty()
-                join dsp in context.DipSampleParticipants on sample.Id equals dsp.DipSampleId into participants
+                join dsp in context.OutcomeQualityDipSampleParticipants on sample.Id equals dsp.DipSampleId into participants
                 where sample.PeriodFrom == request.Period
                 where request.Contract == null || request.Contract.Id == sample.ContractId
                 where request.OnlyShowInProgress == false || sample.Status == DipSampleStatus.InProgress

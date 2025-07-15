@@ -47,5 +47,9 @@
     <ItemGroup>
         <ProjectReference Include="..\Application\Application.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="Migrations\20250714165306_RenameDipSamples.cs" />
+      <Compile Remove="Migrations\20250714165306_RenameDipSamples.Designer.cs" />
+    </ItemGroup>
 
 </Project>

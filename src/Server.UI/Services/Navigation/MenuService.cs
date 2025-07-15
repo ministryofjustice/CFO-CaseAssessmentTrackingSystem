@@ -84,8 +84,8 @@ public class MenuService : IMenuService
                             },
                             new()
                             {
-                                Title = "Dip Sampling",
-                                Href = "/pages/analytics/dip-sampling",
+                                Title = "Outcome Quality Dip Sampling",
+                                Href = "/pages/analytics/outcome-quality-dip-sampling",
                                 PageStatus = PageStatus.Completed,
                                 Roles = [RoleNames.SystemSupport, RoleNames.Finance],
                             }

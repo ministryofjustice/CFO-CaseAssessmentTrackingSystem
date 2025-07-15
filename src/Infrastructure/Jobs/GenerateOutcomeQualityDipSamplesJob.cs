@@ -5,11 +5,11 @@ using System.Linq.Dynamic.Core;
 
 namespace Cfo.Cats.Infrastructure.Jobs;
 
-public class GenerateDipSamplesJob(
-    ILogger<GenerateDipSamplesJob> logger,
+public class GenerateOutcomeQualityDipSamplesJob(
+    ILogger<GenerateOutcomeQualityDipSamplesJob> logger,
     IUnitOfWork unitOfWork) : IJob
 {
-    public static readonly JobKey Key = new(name: nameof(GenerateDipSamplesJob));
+    public static readonly JobKey Key = new(name: nameof(GenerateOutcomeQualityDipSamplesJob));
     public static readonly string Description = "A job to generate dip samples for quality checks.";
 
     public async Task Execute(IJobExecutionContext context)
@@ -92,22 +92,22 @@ public class GenerateDipSamplesJob(
                 var dipSamples = samples.Select(sample => new
                 {
                     Value = sample,
-                    Entity = DipSample.Create(sample.ContractId, periodFrom, periodTo)
+                    Entity = OutcomeQualityDipSample.Create(sample.ContractId, periodFrom, periodTo)
                 }).ToList();
 
-                await unitOfWork.DbContext.DipSamples.AddRangeAsync(dipSamples.Select(x => x.Entity));
+                await unitOfWork.DbContext.OutcomeQualityDipSamples.AddRangeAsync(dipSamples.Select(x => x.Entity));
 
                 var dipSampleParticipants = dipSamples.SelectMany(participant =>
                     participant.Value.Samples.SelectMany(locationSample =>
                         locationSample.ParticipantIds.Select(pid =>
-                            new DipSampleParticipant
+                            new OutcomeQualityDipSampleParticipant
                             {
                                 DipSampleId = participant.Entity.Id,
                                 ParticipantId = pid,
                                 LocationType = locationSample.LocationType
                             })));
 
-                await unitOfWork.DbContext.DipSampleParticipants.AddRangeAsync(dipSampleParticipants);
+                await unitOfWork.DbContext.OutcomeQualityDipSampleParticipants.AddRangeAsync(dipSampleParticipants);
                 
                 await unitOfWork.SaveChangesAsync();
                 await transaction.CommitAsync();

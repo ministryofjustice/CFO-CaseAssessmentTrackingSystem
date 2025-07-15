@@ -8,7 +8,7 @@ using Cfo.Cats.Domain.Common.Enums;
 
 namespace Cfo.Cats.Server.UI.Pages.Analytics;
 
-public partial class ParticipantDipSample
+public partial class ParticipantOutcomeQualityDipSample
 {
     [Parameter]
     public required Guid SampleId { get; set; }
@@ -18,9 +18,6 @@ public partial class ParticipantDipSample
 
     [CascadingParameter]
     public UserProfile UserProfile { get; set; } = null!;
-    
-    [Inject]
-    private ILogger<ParticipantDipSample> Logger { get; set; } = null!;
 
     [Inject]
     public IUserService UserService { get; set; } = null!;
@@ -36,7 +33,7 @@ public partial class ParticipantDipSample
 
         try
         {
-            var query = new GetDipSampleParticipant.Query()
+            var query = new GetOutcomeQualityDipSampleParticipant.Query()
             {
                 ParticipantId = ParticipantId
             };
@@ -63,17 +60,4 @@ public partial class ParticipantDipSample
         
     }
 
-    private Color GetColour(TimelineDto dto) => dto.Title switch
-    {
-        nameof(TimelineEventType.Participant) => Color.Primary,
-        nameof(TimelineEventType.Enrolment) => Color.Success,
-        nameof(TimelineEventType.Consent) => Color.Secondary,
-        nameof(TimelineEventType.Assessment) => Color.Info,
-        nameof(TimelineEventType.PathwayPlan) => Color.Warning,
-        nameof(TimelineEventType.Bio) => Color.Error,
-        nameof(TimelineEventType.Dms) => Color.Dark,
-        _ => Color.Primary
-    };
-
-    
 }

@@ -2,12 +2,10 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.ManagementInformation.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
-using Cfo.Cats.Domain.Entities.Participants;
-using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.Queries;
 
-public static class GetDipSampleParticipants 
+public static class GetOutcomeQualityDipSampleParticipants 
 {
     [RequestAuthorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
     public class Query : PaginationFilter, IRequest<Result<PaginatedData<DipSampleParticipantSummaryDto>>>
@@ -24,7 +22,7 @@ public static class GetDipSampleParticipants
 
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
             var query =
-                from sample in context.DipSampleParticipants
+                from sample in context.OutcomeQualityDipSampleParticipants
                 join participant in context.Participants on sample.ParticipantId equals participant.Id
                 join enrolmentLocation in context.Locations on participant.EnrolmentLocation.Id equals enrolmentLocation.Id
                 join currentLocation in context.Locations on participant.CurrentLocation.Id equals currentLocation.Id
@@ -105,6 +103,6 @@ public static class GetDipSampleParticipants
             });
         }
 
-        bool Exist(Guid dipSampleId) => unitOfWork.DbContext.DipSamples.Any(d => d.Id == dipSampleId);
+        bool Exist(Guid dipSampleId) => unitOfWork.DbContext.OutcomeQualityDipSamples.Any(d => d.Id == dipSampleId);
     }
 }

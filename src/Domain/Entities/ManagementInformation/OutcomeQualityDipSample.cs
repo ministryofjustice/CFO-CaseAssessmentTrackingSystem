@@ -3,13 +3,13 @@ using Cfo.Cats.Domain.Common.Enums;
 
 namespace Cfo.Cats.Domain.Entities.ManagementInformation;
 
-public class DipSample
+public class OutcomeQualityDipSample
 {
 #pragma warning disable CS8618 
-    internal DipSample() { /* this is for EF Core */}
+    internal OutcomeQualityDipSample() { /* this is for EF Core */}
 #pragma warning restore CS8618
 
-    public static DipSample Create(string contractId, DateTime periodFrom, DateTime periodTo) => new()
+    public static OutcomeQualityDipSample Create(string contractId, DateTime periodFrom, DateTime periodTo) => new()
     {
         Id = Guid.CreateVersion7(),
         ContractId = contractId,
@@ -19,7 +19,7 @@ public class DipSample
         PeriodTo = periodTo
     };
 
-    public DipSample Complete(double scoreAvg, string completedBy)
+    public OutcomeQualityDipSample Complete(double scoreAvg, string completedBy)
     {
         if (CompletedOn.HasValue is false)
         {

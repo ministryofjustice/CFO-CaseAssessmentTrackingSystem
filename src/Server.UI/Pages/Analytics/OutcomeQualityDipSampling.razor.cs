@@ -5,7 +5,7 @@ using Cfo.Cats.Application.Features.ManagementInformation.Queries;
 
 namespace Cfo.Cats.Server.UI.Pages.Analytics;
 
-public partial class DipSampling
+public partial class OutcomeQualityDipSampling
 {
     bool isLoading;
 
@@ -15,7 +15,7 @@ public partial class DipSampling
 
     public ContractDto? SelectedContract { get; set; }
 
-    public GetDipSamples.Query Query { get; set; } = new();
+    public GetOutcomeQualityDipSamples.Query Query { get; set; } = new();
 
     protected override async Task OnInitializedAsync() => await ReloadAsync();
 

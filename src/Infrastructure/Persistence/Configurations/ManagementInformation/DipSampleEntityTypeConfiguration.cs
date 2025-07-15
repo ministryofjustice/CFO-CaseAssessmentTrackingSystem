@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformation;
 
-public class DipSampleEntityTypeConfiguration : IEntityTypeConfiguration<DipSample>
+public class DipSampleEntityTypeConfiguration : IEntityTypeConfiguration<OutcomeQualityDipSample>
 {
-    public void Configure(EntityTypeBuilder<DipSample> builder)
+    public void Configure(EntityTypeBuilder<OutcomeQualityDipSample> builder)
     {
-        builder.ToTable(nameof(DipSample), DatabaseConstants.Schemas.Mi);
+        builder.ToTable(nameof(OutcomeQualityDipSample), DatabaseConstants.Schemas.Mi);
 
         builder.HasKey(ds => ds.Id);
 

@@ -3,7 +3,7 @@ using Cfo.Cats.Application.Features.ManagementInformation.Queries;
 
 namespace Cfo.Cats.Server.UI.Pages.Analytics;
 
-public partial class DipSample
+public partial class OutcomeQualityDipSample
 {
     private bool _loading;
     private bool _downloading;
@@ -12,7 +12,7 @@ public partial class DipSample
     [Parameter]
     public required Guid SampleId { get; set; }
 
-    GetDipSampleParticipants.Query Query { get; set; } = default!;
+    GetOutcomeQualityDipSampleParticipants.Query Query { get; set; } = default!;
 
     DipSampleSummaryDto sample = default!;
 
@@ -27,7 +27,7 @@ public partial class DipSample
                 DipSampleId = SampleId
             };
 
-            var result = await GetNewMediator().Send(new GetDipSample.Query()
+            var result = await GetNewMediator().Send(new GetOutcomeQualityDipSample.Query()
             {
                 DipSampleId = SampleId
             });
