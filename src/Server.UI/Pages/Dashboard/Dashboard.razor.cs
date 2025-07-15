@@ -15,6 +15,7 @@ public partial class Dashboard
     private bool _showJobManagement;
     private bool _showCaseWorkload;
     private bool _showRiskDueAggregate;
+    private bool _showSyncComponent;
 
     public string Title { get; } = "Dashboard";
 
@@ -34,6 +35,10 @@ public partial class Dashboard
         _showRiskDueAggregate = _showCaseWorkload;
 
         _showQaPots = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
+        
+        // this follows the same check as QA pots
+        _showSyncComponent = _showQaPots;
+        
         _showJobManagement = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions)).Succeeded;
     }
 
