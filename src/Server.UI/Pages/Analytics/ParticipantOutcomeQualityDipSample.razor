@@ -40,8 +40,10 @@
             </MudItem>
             <MudItem xs="10" Style="height: 100%; width: 100%;">
                 <MudTabs>
+                    <MudSwitch T="bool" @bind-Value="_hideDetails" Label="Simple View" Color="Color.Primary" />
+
                     <MudTabPanel Text="Events">
-                        <MudTimeline TimelinePosition="TimelinePosition.Alternate">
+                        <MudTimeline TimelinePosition="@(_hideDetails ? TimelinePosition.Start : TimelinePosition.Alternate)">
                             @foreach (var group in _participant.PertinentEvents
                                           .OrderBy(e => e.OccurredOn)
                                           .GroupBy(e => e.OccurredOn.Date))
@@ -53,12 +55,12 @@
                                     <ItemOpposite>
                                         <MudText Typo="Typo.caption" Color="Color.Default">@date.ToShortDateString()</MudText>
                                         <MudText Typo="Typo.h6" Color="Color.Default">@date.Humanize()</MudText>
-                                        
+
                                         @if (date.Date == DateTime.Now.Date)
                                         {
                                             <MudText Typo="Typo.body2">
                                                 Today
-                                            </MudText>    
+                                            </MudText>
                                         }
                                         else if (date.Date > consentDate.Date)
                                         {
@@ -77,7 +79,7 @@
                                                             <MudText Typo="Typo.h6" Color="item.Colour.AsMudColour()">@item.Title</MudText>
                                                         </CardHeaderContent>
                                                         <CardHeaderActions>
-                                                            <MudIconButton Icon="@item.Icon.AsMudIcon()" Color="@item.Colour.AsMudColour()" />
+                                                            <MudIconButton Icon="@item.Icon.AsMudIcon()" Color="@item.Colour.AsMudColour()"/>
                                                         </CardHeaderActions>
                                                     </MudCardHeader>
                                                     <MudCardContent>
@@ -99,7 +101,7 @@
                                                             <MudText Typo="Typo.body2">
                                                                 @item.RecordedOn
                                                             </MudText>
-                                                            @if(item.RecordedOn.Date != item.OccurredOn.Date)
+                                                            @if (item.RecordedOn.Date != item.OccurredOn.Date || _hideDetails)
                                                             {
                                                                 <MudText Typo="Typo.body2">
                                                                     (Occurred on @item.OccurredOn.ToShortDateString())
