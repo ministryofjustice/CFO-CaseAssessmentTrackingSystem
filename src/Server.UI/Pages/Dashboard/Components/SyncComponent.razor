@@ -1,0 +1,39 @@
+﻿@inherits CatsComponentBase
+
+@if (_isLoading)
+{
+    <LoadingCard Title="Getting sync data.."  />
+}
+else
+{
+    <MudItem xs="12" md="4">
+        <MudCard style="height:100%">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">
+                        Sync Information
+                    </MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudTable T="SyncRecord" Items="_records" Striped="true">
+                    <HeaderContent>
+                        <MudTh>Date</MudTh>
+                        <MudTh>Records</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Date">@context.TheDate.ToShortDateString()</MudTd>
+                        <MudTd DataLabel="Records">@context.RecordCount</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="[5, 10]" />
+                    </PagerContent>
+                </MudTable>
+            </MudCardContent>
+            <MudCardActions>
+               
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+}
+
