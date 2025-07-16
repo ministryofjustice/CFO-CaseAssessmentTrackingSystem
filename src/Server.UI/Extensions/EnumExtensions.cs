@@ -32,6 +32,7 @@ public static class EnumExtensions
             AppIcon.Reassignment => Icons.Material.Filled.AssignmentInd,
             AppIcon.HubInduction => Icons.Material.Filled.AssignmentInd,
             AppIcon.WingInduction => Icons.Material.Filled.AssignmentInd,
+            AppIcon.WingInductionPhase => Icons.Material.Filled.AssignmentInd,
             _ => throw new ArgumentOutOfRangeException(nameof(appIcon), appIcon, null)
         };
 

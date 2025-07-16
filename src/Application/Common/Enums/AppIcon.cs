@@ -10,5 +10,6 @@ public enum AppIcon
     Location,
     Reassignment,
     HubInduction,
-    WingInduction
+    WingInduction,
+    WingInductionPhase,
 }
