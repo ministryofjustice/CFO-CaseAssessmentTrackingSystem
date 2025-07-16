@@ -71,7 +71,7 @@
                                     </ItemOpposite>
                                     <ItemContent>
                                         <MudStack Spacing="2">
-                                            @foreach (var item in group)
+                                            @foreach (var item in group.OrderBy(i => i.RecordedOn))
                                             {
                                                 <MudCard Outlined="true" Elevation="6">
                                                     <MudCardHeader>
