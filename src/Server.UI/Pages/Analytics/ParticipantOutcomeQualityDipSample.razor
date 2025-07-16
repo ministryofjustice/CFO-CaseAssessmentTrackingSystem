@@ -41,14 +41,15 @@
 
             <MudItem xs="10" Style="height: 100%; width: 100%;">
                 <MudTabs>
-                    <MudSwitch T="bool" @bind-Value="_hideDetails" Label="Simple View" Color="Color.Primary" />
+                    
 
-                    <MudTabPanel Text="Events">
+                    <MudSwitch T="bool" @bind-Value="_hideDetails" Label="Simple View" Color="Color.Primary" />
+                        <MudTabPanel Text="Events">
                         <div style="height: calc(100vh - 250px); overflow-y: auto;">
                             <MudTimeline TimelinePosition="@(_hideDetails ? TimelinePosition.Start : TimelinePosition.Alternate)">
                                 @foreach (var group in _participant.PertinentEvents
-                               .OrderBy(e => e.OccurredOn)
-                               .GroupBy(e => e.OccurredOn.Date))
+                                              .OrderBy(e => e.OccurredOn)
+                                              .GroupBy(e => e.OccurredOn.Date))
                                 {
                                     var date = group.Key;
                                     var consentDate = _participant.ConsentDate.ToDateTime(TimeOnly.MinValue);
