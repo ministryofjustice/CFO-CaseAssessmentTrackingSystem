@@ -33,6 +33,12 @@ public class GenerateOutcomeQualityDipSamplesJob(
             DateTime periodFrom = new(period.Year, period.Month, 1); // i.e. 01/01/1999 00:00:00
             DateTime periodTo = periodFrom.AddMonths(1).AddTicks(-1); // i.e. 31/01/1999 23:59:59
 
+            if (await unitOfWork.DbContext.OutcomeQualityDipSamples.AnyAsync(ds => ds.PeriodFrom == periodFrom))
+            {
+                logger.LogWarning($"Dip sample already exists for {periodFrom:MMM yyyy}, aborting...");
+                return;
+            }
+
             var query =
                 from ep in unitOfWork.DbContext.EnrolmentPayments
                 join t in unitOfWork.DbContext.ParticipantOutgoingTransferQueue on ep.ParticipantId equals t.ParticipantId into tj
