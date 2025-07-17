@@ -22,8 +22,10 @@ public static class GetParticipantLocationHistory
 
             var query = 
                 from plh in db.ParticipantLocationHistories
-                join u in db.Users on plh.CreatedBy equals u.Id
                 join l in db.Locations on plh.LocationId equals l.Id
+                join u in db.Users on plh.CreatedBy equals u.Id into userJoin
+                from u in userJoin.DefaultIfEmpty()
+                
                 where plh.ParticipantId == request.ParticipantId
                 select new ParticipantLocationHistoryDto
                 {
