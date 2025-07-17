@@ -8,5 +8,8 @@ public enum AppIcon
     Activity,
     Payment,
     Location,
-    Reassignment
+    Reassignment,
+    HubInduction,
+    WingInduction,
+    WingInductionPhase,
 }
