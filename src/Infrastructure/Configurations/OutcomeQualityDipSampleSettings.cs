@@ -1,4 +1,6 @@
-﻿namespace Cfo.Cats.Infrastructure.Configurations;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Cfo.Cats.Infrastructure.Configurations;
 
 public class OutcomeQualityDipSampleSettings
 {
@@ -9,4 +11,7 @@ public class OutcomeQualityDipSampleSettings
     public int Satellite { get; set; } = 5;
     public int Community { get; set; } = 10;
     public int WiderCustody { get; set; } = 10;
+
+    [Range(-12, 0)]
+    public int MonthOffset { get; set; } = -4;
 }
