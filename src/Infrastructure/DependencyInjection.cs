@@ -95,6 +95,8 @@ public static class DependencyInjection
 
         services.Configure<OvernightServiceSettings>(configuration.GetSection("OvernightServiceSettings"));
 
+        services.Configure<OutcomeQualityDipSampleSettings>(configuration.GetSection(OutcomeQualityDipSampleSettings.Key));
+
         services.AddSingleton<IBus>(_ =>
         {
             var provider = services.BuildServiceProvider();

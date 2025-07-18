@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
+using Cfo.Cats.Infrastructure.Configurations;
 using Quartz;
 using System.Linq.Dynamic.Core;
 
@@ -7,7 +8,8 @@ namespace Cfo.Cats.Infrastructure.Jobs;
 
 public class GenerateOutcomeQualityDipSamplesJob(
     ILogger<GenerateOutcomeQualityDipSamplesJob> logger,
-    IUnitOfWork unitOfWork) : IJob
+    IUnitOfWork unitOfWork,
+    IOptions<OutcomeQualityDipSampleSettings> options) : IJob
 {
     public static readonly JobKey Key = new(name: nameof(GenerateOutcomeQualityDipSamplesJob));
     public static readonly string Description = "A job to generate dip samples for quality checks.";
@@ -26,7 +28,7 @@ public class GenerateOutcomeQualityDipSamplesJob(
         {
             logger.LogInformation("Generate dip samples");
 
-            var period = DateTime.Today.AddMonths(-4);
+            var period = DateTime.Today.AddMonths(-5);
 
             DateTime periodFrom = new(period.Year, period.Month, 1); // i.e. 01/01/1999 00:00:00
             DateTime periodTo = periodFrom.AddMonths(1).AddTicks(-1); // i.e. 31/01/1999 23:59:59
@@ -56,14 +58,13 @@ public class GenerateOutcomeQualityDipSamplesJob(
                     .GroupBy(g => Group(g.LocationType, g.LocationId))
                     .Select(g =>
                     {
-                        // Move to config
                         int sampleSize = g.Key.LocationType switch
                         {
-                            var type when type == LocationType.Wing.Name => 10,
-                            var type when type == LocationType.Hub.Name => 10,
-                            var type when type == LocationType.Satellite.Name => 5,
-                            var type when type == LocationType.Community.Name => 10,
-                            var type when type == "Wider Custody" => 10,
+                            var type when type == LocationType.Wing.Name => options.Value.Wing,
+                            var type when type == LocationType.Hub.Name => options.Value.Hub,
+                            var type when type == LocationType.Satellite.Name => options.Value.Satellite,
+                            var type when type == LocationType.Community.Name => options.Value.Community,
+                            var type when type == "Wider Custody" => options.Value.WiderCustody,
                             _ => 0
                         };
 
