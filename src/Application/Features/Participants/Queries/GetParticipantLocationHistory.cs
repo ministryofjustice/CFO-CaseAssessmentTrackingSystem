@@ -75,12 +75,6 @@ public static class GetParticipantLocationHistory
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
-            {
-                RuleFor(c => c.ParticipantId)
-                    .MustAsync(Exist)
-                    .WithMessage("Participant does not exist");
-            });
         }
 
         private async Task<bool> Exist(string identifier, CancellationToken cancellationToken)
