@@ -28,7 +28,7 @@ public class GenerateOutcomeQualityDipSamplesJob(
         {
             logger.LogInformation("Generate dip samples");
 
-            var period = DateTime.Today.AddMonths(-5);
+            var period = DateTime.Today.AddMonths(options.Value.MonthOffset);
 
             DateTime periodFrom = new(period.Year, period.Month, 1); // i.e. 01/01/1999 00:00:00
             DateTime periodTo = periodFrom.AddMonths(1).AddTicks(-1); // i.e. 31/01/1999 23:59:59

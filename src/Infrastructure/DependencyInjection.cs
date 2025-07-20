@@ -32,6 +32,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using Quartz.AspNetCore;
 using Rebus;
@@ -95,7 +96,10 @@ public static class DependencyInjection
 
         services.Configure<OvernightServiceSettings>(configuration.GetSection("OvernightServiceSettings"));
 
-        services.Configure<OutcomeQualityDipSampleSettings>(configuration.GetSection(OutcomeQualityDipSampleSettings.Key));
+        services.AddOptions<OutcomeQualityDipSampleSettings>()
+            .BindConfiguration(OutcomeQualityDipSampleSettings.Key)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         services.AddSingleton<IBus>(_ =>
         {
