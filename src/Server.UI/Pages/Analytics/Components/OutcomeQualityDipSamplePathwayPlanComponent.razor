@@ -1,0 +1,165 @@
+
+@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Application.Features.PerformanceManagement.DTOs
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@inherits CatsComponentBase
+
+@inject IUserService UserService
+
+@if (_isLoading)
+{
+    <LoadingCard Title="Loading pathway plan" />
+}
+else if (PathwayPlan is null)
+{
+    <MudAlert Severity="Severity.Error">
+        Pathway plan not found
+    </MudAlert>
+}
+else
+{
+
+    
+        @foreach (var objective in PathwayPlan.Objectives)
+        {
+            
+            <MudPaper Elevation="1" Class="pa-2 ma-2" >
+                
+                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@GetIcon(objective)" Color="@GetColour(objective)" Class="mr-2" />
+                        <MudText Typo="Typo.h5">
+                            Objective <strong>@objective.Index</strong> of <strong>@PathwayPlan.Objectives.Length</strong>
+                        </MudText>
+                    </MudStack>
+                    <MudText>
+                        Completed @objective.Tasks.Count(t => t.Completed.HasValue) / @objective.Tasks.Count() Tasks
+                    </MudText>
+                </MudStack>
+              
+                <MudDivider Class="ma-2" />
+                
+                <MudText Typo="Typo.caption" >
+                    @objective.Description
+                </MudText>
+
+                <MudText>Created by <strong>@objective.CreatedBy</strong> on <strong>@objective.Created</strong></MudText>
+                @if (objective.Status is not null)
+                {
+                    <MudText>Completed (<strong>@objective.Status</strong>) by <strong>@objective.CompletedBy</strong> on <strong>@objective.Completed</strong></MudText>
+                }
+                
+                @if (objective.Justification is not null)
+                {
+                    <MudText>@objective.Justification</MudText>
+                }
+            
+
+                <MudDataGrid Items="objective.Tasks">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Tasks</MudText>
+                        <MudSpacer/>
+                        <MudText>@objective.Tasks.SelectMany(t => t.Activities).Count() activities</MudText>
+                    </ToolBarContent>
+                    <ColGroup>
+                        <col style="width: 50px;" />
+                        <col style="width: 50px;" />
+                        <col />
+                        <col />
+                        <col />
+                    </ColGroup>
+                    <Columns>
+                        <HierarchyColumn ButtonDisabledFunc="@(x => x.Activities.Length == 0)" />
+                        <PropertyColumn Property="x => x.Index" />
+                        <PropertyColumn Property="x => x.Description" Title="Description"/>
+                        <TemplateColumn Title="Created">
+                            <CellTemplate>
+                                <MudStack Row="false">
+                                    <MudText>@context.Item.Created</MudText>
+                                    <MudText>@context.Item.CreatedBy</MudText>
+                                </MudStack>
+                            </CellTemplate>
+                        </TemplateColumn>
+                        <TemplateColumn Title="Completed">
+                            <CellTemplate>
+                                <MudStack Row="true">
+                                    <MudStack Row="false">
+                                        <MudText>@context.Item.Completed</MudText>
+                                        <MudText>@context.Item.CompletedBy</MudText>
+                                    </MudStack>
+                                    <MudIconButton Icon="@GetIcon(context.Item)" Color="@GetColour(context.Item)"/>
+                                </MudStack>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <ChildRowContent>
+                        <MudCard>
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.h6">Activities</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudTable Items="@context.Item.Activities" Context="a" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                    <HeaderContent>
+                                        <MudTh>Category</MudTh>
+                                        <MudTh>Created</MudTh>
+                                        <MudTh>Classification</MudTh>
+                                        <MudTh>Status</MudTh>
+                                        <MudTh>Location</MudTh>
+                                        <MudTh></MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd>
+                                            @a.Category.Name
+                                        </MudTd>
+                                        <MudTd>
+                                            <MudStack>
+                                                <MudText>
+                                                    @a.Created
+                                                </MudText>
+                                                <MudText>
+                                                    @a.CreatedBy
+                                                </MudText>
+                                            </MudStack>
+                                        </MudTd>
+                                        <MudTd>
+                                            <MudStack>
+                                                <MudText>
+                                                    @a.Definition.Classification.Name
+                                                </MudText>
+                                                <MudText>
+                                                    @a.Type.Name
+                                                </MudText>
+                                            </MudStack>
+                                        </MudTd>
+                                        <MudTd>
+                                            <MudStack>
+                                                <MudText>@a.Status.Name</MudText>
+                                                <MudText>@a.ApprovedOn</MudText>
+                                            </MudStack>
+                                        </MudTd>
+                                        <MudTd>
+                                            @a.Location
+                                        </MudTd>
+                                        <MudTd>
+                                            <MudButton Variant="Variant.Text" Color="Color.Primary">Details</MudButton>
+                                        </MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </MudCardContent>
+                        </MudCard>
+
+                    </ChildRowContent>
+                </MudDataGrid>
+                
+
+
+
+            </MudPaper>
+
+        }
+    
+
+  
+}

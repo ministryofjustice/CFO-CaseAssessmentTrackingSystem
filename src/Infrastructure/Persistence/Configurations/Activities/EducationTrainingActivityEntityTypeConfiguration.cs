@@ -26,6 +26,7 @@ public class EducationTrainingActivityEntityTypeConfiguration : IEntityTypeConfi
 
         builder.HasOne(a => a.Document)
             .WithMany()
+            .HasForeignKey(a => a.DocumentId)
             .IsRequired(true);
 
         builder.Property(a => a.CourseCompletionStatus)

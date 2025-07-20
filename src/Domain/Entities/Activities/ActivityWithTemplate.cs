@@ -12,6 +12,10 @@ public abstract class ActivityWithTemplate : Activity
 
     protected ActivityWithTemplate(ActivityContext context) : base(context) { }
 
+    
+    // Foreign key property
+    public Guid DocumentId { get; protected set; }
+
     public virtual Document? Document { get; protected set; }
 
     public abstract string DocumentLocation { get; }

@@ -3,7 +3,7 @@
 @inherits CatsComponentBase
 
 
-<MudContainer Style="min-width: 480px; width: 100%;" MaxWidth="MaxWidth.ExtraLarge">
+<MudContainer Style="min-width: 480px; width: 100%;" MaxWidth="MaxWidth.ExtraExtraLarge">
     @if (_isLoading)
     {
         <MudLoading Text="Loading sample" Color="Color.Primary"/>
@@ -47,7 +47,9 @@
                         </div>
                     </MudTabPanel>
                     <MudTabPanel Text="Details">
-
+                        <div style="height: calc(100vh - 250px); overflow-y: auto;">
+                            <OutcomeQualityDipSamplePathwayPlanComponent ParticipantId="@_participant.ParticipantId"/>
+                        </div>
                     </MudTabPanel>
                 </MudTabs>
             </MudItem>
