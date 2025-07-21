@@ -220,6 +220,7 @@ public static class ConstantString
     public static string ObjectiveSuccessfullyCompleted =>
     Localize("Objective Successfully Completed");
 
-    
-    
+    public static string NotActiveInFeedMessage =>
+ Localize("Please note: the participant is not active on the feed.");
+
 }

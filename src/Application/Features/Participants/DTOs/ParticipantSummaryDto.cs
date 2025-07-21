@@ -76,6 +76,7 @@ public class ParticipantSummaryDto
     public int? BioDueInDays { get; set; }
 
     public bool IsActive { get; set; }
+    public bool ActiveInFeed { get; set; }
 
     /// <summary>
     ///  The risk due reason of the participant
@@ -105,7 +106,8 @@ public class ParticipantSummaryDto
                 .ForMember(dest => dest.LastSync, options => options.MapFrom(src => src.LastSyncDate ?? src.Created))
                 .ForMember(dest => dest.BioDue, opt => opt.MapFrom(src => src.BioDue))
                 .ForMember(dest => dest.BioDueInDays, opt => opt.MapFrom(src => src.BioDueInDays()))
-                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive()));
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive()))
+                .ForMember(dest => dest.ActiveInFeed, opt => opt.MapFrom(src => src.ActiveInFeed));
 
             CreateMap<ParticipantAssessment, AssessmentSummaryDto>()
                 .ForMember(target => target.AssessmentId, options => options.MapFrom(source => source.Id))

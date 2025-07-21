@@ -39,6 +39,7 @@ namespace Cfo.Cats.Server.UI.Pages.Participants
         private string _bioIcon = String.Empty;
         private Color _bioIconColor = Color.Transparent;
 
+        private string _notActiveInFeedAlertMessage = ConstantString.NotActiveInFeedMessage;
         protected override async Task OnInitializedAsync()
         {
             await Refresh();
