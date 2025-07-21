@@ -23,7 +23,10 @@
         <CascadingValue Value="_participant">
 
             <MudPaper Class="pa-2 ma-2" Style="min-height: 90vh;" Elevation="3">
-
+                @if (_participant.ActiveInFeed is false)
+                {
+                    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Square="true" Class="my-2">@_notActiveInFeedAlertMessage</MudAlert>
+                }
                 <MudGrid Class="pa-1" Justify="Justify.FlexStart">
                     <MudItem xs="12">
 
