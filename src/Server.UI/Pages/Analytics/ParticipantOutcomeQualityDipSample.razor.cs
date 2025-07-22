@@ -25,10 +25,9 @@ public partial class ParticipantOutcomeQualityDipSample
     private bool _isLoading = true;
     
     private ParticipantDipSampleDto? _participant;
-    
-    private string? _error;
-    private bool _hideDetails = false;
 
+    private string? _error;
+    
     protected override async Task OnInitializedAsync()
     {
 
@@ -39,17 +38,19 @@ public partial class ParticipantOutcomeQualityDipSample
                 ParticipantId = ParticipantId
             };
 
-            var result = await GetNewMediator().Send(query, ComponentCancellationToken);
+            var mediator = GetNewMediator();
+
+            var dipSampleDtoResult = await mediator.Send(query, ComponentCancellationToken);
 
             if (IsDisposed == false)
             {
-                if (result is { Succeeded: true, Data: not null })
+                if (dipSampleDtoResult is { Succeeded: true, Data: not null })
                 {
-                    _participant = result.Data;
+                    _participant = dipSampleDtoResult.Data;
                 }
                 else
                 {
-                    _error = result.ErrorMessage;
+                    _error = dipSampleDtoResult.ErrorMessage;
                 }
             }
 
