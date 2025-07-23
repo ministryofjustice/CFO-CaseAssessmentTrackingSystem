@@ -18,36 +18,46 @@ public class DisableDormantAccountsJob(
     {
 
         using (logger.BeginScope(Key))
-
             if (context.RefireCount > 3)
             {
                 logger.LogWarning($"Failed to complete Disable Dormant Accounts Job within 3 tries, aborting...");
                 return;
             }
-
         try
         {
             logger.LogInformation("Starting deactivation of dormant accounts");
 
             DateTime thirtyDaysAgo = DateTime.Now.AddDays(-30);
 
-            var usersToDeactivate = userManager.Users
+            var usersToDeactivate = await userManager.Users
                 .IgnoreAutoIncludes()
                 .Where(user => user.IsActive)
                 .Where(user => user.LastLogin < thirtyDaysAgo ||
-                               (user.LastLogin == null && user.Created < thirtyDaysAgo));
+                               (user.LastLogin == null && user.Created < thirtyDaysAgo))
+                .ToListAsync(context.CancellationToken);
 
             if (usersToDeactivate.Any())
             {
+                var auditTrails = new List<IdentityAuditTrail>();
+
                 foreach (var user in usersToDeactivate)
                 {
-                    await DeactivateUser(user, context.CancellationToken);
+                    user.IsActive = false;
+
+                    var audit = IdentityAuditTrail.Create(
+                        user.UserName,
+                        "System.Support@justice.gov.uk",
+                        IdentityActionType.AccountDeactivated,
+                        "Overnight System Job");
+
+                    auditTrails.Add(audit);
+                    logger.LogInformation($"Deactivated {user.UserName} account");
                 }
 
-                int noOfAffectedUsers = await usersToDeactivate.ExecuteUpdateAsync(
-                    p => p.SetProperty(user => user.IsActive, false), context.CancellationToken);
+                await unitOfWork.DbContext.IdentityAuditTrails.AddRangeAsync(auditTrails, context.CancellationToken);
+                await unitOfWork.SaveChangesAsync(context.CancellationToken);
 
-                logger.LogInformation($"Deactivated/Disabled {noOfAffectedUsers} account(s)");
+                logger.LogInformation($"Deactivated/Disabled {usersToDeactivate.Count} account(s)");
             }
             else
             {
@@ -58,17 +68,5 @@ public class DisableDormantAccountsJob(
         {
             throw new JobExecutionException(msg: $"An unexpected error occurred executing Disable Dormant Accounts job", refireImmediately: true, cause: ex);
         }
-    }
-
-    private async Task DeactivateUser(ApplicationUser user, CancellationToken cancellationToken)
-    {
-        const string systemSupportEmail = "System.Support@justice.gov.uk";
-
-        IdentityAuditTrail audit = IdentityAuditTrail.Create(user.UserName, systemSupportEmail, IdentityActionType.AccountDeactivated, "Overnight System Job");
-        await unitOfWork.DbContext.IdentityAuditTrails.AddAsync(audit);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        logger.LogInformation($"Deactivated {user.UserName} account");
-        await Task.CompletedTask;
     }
 }
