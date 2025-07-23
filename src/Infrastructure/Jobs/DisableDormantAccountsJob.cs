@@ -6,7 +6,6 @@ namespace Cfo.Cats.Infrastructure.Jobs;
 
 public class DisableDormantAccountsJob(
                 ILogger<DisableDormantAccountsJob> logger,
-                UserManager<ApplicationUser> userManager,
                 IUnitOfWork unitOfWork
                 ) : IJob
 {
