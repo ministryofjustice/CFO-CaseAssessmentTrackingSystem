@@ -1,5 +1,4 @@
 ﻿using Cfo.Cats.Domain.Identity;
-using FluentValidation;
 using Quartz;
 using System.Linq.Dynamic.Core;
 
