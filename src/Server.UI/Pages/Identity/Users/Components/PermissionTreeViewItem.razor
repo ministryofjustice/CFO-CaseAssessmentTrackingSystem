@@ -1,0 +1,18 @@
+﻿@using Cfo.Cats.Application.Features.Identity.DTOs
+@using Cfo.Cats.Application.Features.Tenants.DTOs
+
+<MudTreeViewItem T="TenantHierarchyDto" Text="@Tenant.Description" Expanded="Tenant.Depth < 3" Icon="@Icons.Material.Filled.Groups">
+    @if(ShowUsers)
+    {
+        foreach (var user in Tenant.Users)
+        {
+            <MudTreeViewItem T="UserSummaryDto" Value="user" Icon="@Icons.Material.Filled.Person" Text="@user.DisplayName"  />
+        }
+    }
+
+    @foreach(var child in Tenant.Children)
+    {
+        <PermissionTreeViewItem Tenant="child" ShowUsers="ShowUsers" />
+    }
+
+</MudTreeViewItem>

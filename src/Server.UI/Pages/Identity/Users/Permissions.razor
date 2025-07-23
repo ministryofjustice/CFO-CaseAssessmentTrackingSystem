@@ -1,0 +1,73 @@
+﻿@using Cfo.Cats.Server.UI.Pages.Identity.Users.Components
+
+@inherits CatsComponentBase
+
+@page "/administration/permissions"
+
+<MudTabs>
+    <MudTabPanel Text="Users">
+        <MudGrid>
+            <MudItem sm="6" md="4">
+                @if (loading == false)
+                {
+                    <MudSwitch @bind-Value="showUsers">
+                        Show users
+                    </MudSwitch>
+                    <MudTreeView Hover SelectionMode="SelectionMode.SingleSelection" @bind-SelectedValue="selected" @bind-SelectedValue:after="OnSelect">
+                        <PermissionTreeViewItem Tenant="tenant" ShowUsers="showUsers" />
+                    </MudTreeView>
+                }
+            </MudItem>
+            <MudItem sm="6" md="8">
+                @if (selected is not null)
+                {
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudStack>
+                                    <MudText Typo="Typo.h3">Permissions</MudText>
+                                    <MudText>@selected.DisplayName (@selected.UserName)</MudText>
+                                </MudStack>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Filled.Cancel" OnClick="@(() => selected = null)">
+                                </MudIconButton>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense Striped>
+                                <thead>
+                                    <tr>
+                                        <th>Permission</th>
+                                        <th style="text-align: center">Read access</th>
+                                        <th style="text-align: center">Read/Write access</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Pre-Release Inventory</td>
+                                        <td style="text-align: center"><MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" /></td>
+                                        <td style="text-align: center"><MudIcon Icon="@Icons.Material.Filled.Cancel" Color="Color.Error" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Outcome Quality Dip Sampling</td>
+                                        <td style="text-align: center"><MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" /></td>
+                                        <td style="text-align: center"><MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Participant Transfers</td>
+                                        <td style="text-align: center"><MudIcon Icon="@Icons.Material.Filled.Cancel" Color="Color.Error" /></td>
+                                        <td style="text-align: center"><MudIcon Icon="@Icons.Material.Filled.Cancel" Color="Color.Error" /></td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                }
+            </MudItem>
+        </MudGrid>
+    </MudTabPanel>
+    <MudTabPanel Text="Roles">
+
+    </MudTabPanel>
+</MudTabs>

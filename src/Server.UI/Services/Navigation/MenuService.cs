@@ -218,8 +218,8 @@ public class MenuService : IMenuService
                             },
                             new()
                             {
-                                Title = "User Audit",
-                                Href = "/identity/users/audit",
+                                Title = "Permissions",
+                                Href = "/administration/permissions",
                                 PageStatus = PageStatus.Completed
                             },
                             new()
