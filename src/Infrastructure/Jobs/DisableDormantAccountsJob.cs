@@ -27,7 +27,7 @@ public class DisableDormantAccountsJob(
 
             DateTime thirtyDaysAgo = DateTime.Now.AddDays(-30);
 
-            var usersToDeactivate = await userManager.Users
+            var usersToDeactivate = await unitOfWork.DbContext.Users
                 .IgnoreAutoIncludes()
                 .Where(user => user.IsActive)
                 .Where(user => user.LastLogin < thirtyDaysAgo ||
