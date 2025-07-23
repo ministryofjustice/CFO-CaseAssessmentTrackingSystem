@@ -8,4 +8,6 @@ public class ParticipantDipSampleIswActivityDto : ParticipantDipSampleActivityDt
     public double HoursPerformedPost { get; init; }
     public DateTime BaselineAchievedOn { get; init; }
     public required Guid DocumentId { get; init; }
+
+    public override bool HasTemplate() => true;
 }

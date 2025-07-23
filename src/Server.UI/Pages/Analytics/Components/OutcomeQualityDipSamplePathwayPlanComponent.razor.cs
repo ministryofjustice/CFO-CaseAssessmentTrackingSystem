@@ -2,6 +2,7 @@
 using Cfo.Cats.Application.Features.PathwayPlans.Queries;
 using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
+using Cfo.Cats.Server.UI.Pages.Activities;
 
 namespace Cfo.Cats.Server.UI.Pages.Analytics.Components;
 
@@ -69,4 +70,23 @@ public partial class OutcomeQualityDipSamplePathwayPlanComponent
             { Completed: not null, Status: "Done" } => Color.Success,
             _ => Color.Error
         };
+    private async Task DisplayActivity(ParticipantDipSampleActivityDto dto)
+    {
+        var parameters = new DialogParameters<ActivitiyDipDialog>()
+        {
+            { x => x.Model, dto }
+        };
+
+        var options = new DialogOptions()
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.ExtraExtraLarge,
+            FullScreen = false,
+            FullWidth = true,
+            CloseButton = true,
+        };
+
+        var dialog = await DialogService.ShowAsync<ActivitiyDipDialog>("Activity Details", parameters, options);
+
+    }
 }

@@ -1,0 +1,84 @@
+﻿@using Cfo.Cats.Application.Features.Documents.Queries
+@inherits CatsComponentBase
+
+<style>
+
+    .document-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+</style>
+
+<MudPaper Class="document-container">
+    
+    @if (_loading)
+    {
+        <MudLoading Text="Getting document" />        
+    }
+    else
+    {
+        @if (_fileBase64 != null && _extension!.Equals("pdf", StringComparison.CurrentCultureIgnoreCase))
+        {
+            <object data="data:application/pdf;base64,@_fileBase64" type="application/pdf" class="full-size-object">
+                <p>PDF cannot be displayed.</p>
+            </object>
+        }
+        else if (IsFileRejected)
+        {
+            <MudText Typo="Typo.caption">
+                File cannot be displayed. Please contact support.
+            </MudText>
+        }
+    }
+    
+
+</MudPaper>
+
+@code {
+    private string? _fileBase64;
+    private string? _extension;
+    private bool _loading = true;
+
+    private bool IsFileRejected { get; set; }
+
+    [Parameter]
+    public Guid DocumentId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var query = new GetDocumentById.Query
+            {
+                Id = DocumentId
+            };
+
+            var result = await GetNewMediator().Send(query);
+            if (result.Succeeded)
+            {
+                IsFileRejected = false;
+                using (var memoryStream = new MemoryStream())
+                {
+                    await result.Data!.FileStream.CopyToAsync(memoryStream);
+                    var bytes = memoryStream.ToArray();
+                    _fileBase64 = Convert.ToBase64String(bytes);
+                }
+                _extension = result.Data!.FileExtension;
+            }
+            else
+            {
+                IsFileRejected = true;
+            }
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    
+}

@@ -9,4 +9,6 @@ public class ParticipantDipSampleEducationAndTrainingActivityDto : ParticipantDi
     public DateTime? CourseCompletedOn { get; init; }
     public required CourseCompletionStatus CompletionStatus { get;init; }
     public required Guid DocumentId { get; init; }
+
+    public override bool HasTemplate() => true;
 }

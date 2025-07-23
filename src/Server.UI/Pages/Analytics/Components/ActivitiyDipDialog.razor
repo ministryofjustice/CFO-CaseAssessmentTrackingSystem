@@ -1,0 +1,126 @@
+@using Cfo.Cats.Application.Features.PerformanceManagement.DTOs
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Components.Documents
+@using Humanizer
+
+<MudDialog>
+    <DialogContent>
+        
+        <MudTabs>
+            <MudTabPanel Icon="@Icons.Material.Filled.Info" Text="Details">
+                
+                <MudStack Class="ma-2">
+                    
+                        <MudCard>
+                            <MudCardHeader>
+                                <MudChip T="string" Color="Color.Primary" Size="Size.Small">@Model.Definition.Type.Name</MudChip>
+
+                                @if(Model.Definition.Type.Name != Model.Definition.Category.Name)
+                                {
+                                    <MudChip T="string" Color="Color.Secondary" Size="Size.Small">@Model.Definition.Category.Name</MudChip>
+                                }
+
+                                <MudSpacer />
+
+                                @{
+                                    Color color = Model.Status switch
+                                    {
+                                        _ when Model.Status == ActivityStatus.ApprovedStatus => Color.Success,
+                                        _ when Model.Status == ActivityStatus.PendingStatus => Color.Warning,
+                                        _ when Model.Status == ActivityStatus.AbandonedStatus => Color.Secondary,
+                                        _ => Color.Default
+                                    };
+                                }
+
+                                <MudChip T="string" Color="@color" Size="Size.Small">@Model.Status</MudChip>
+
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudGrid>
+                                    <MudItem xs="12" md="4">
+                                        <MudTextField Label="Commenced On" Value="@Model.CommencedOn" />
+                                    </MudItem>
+                                    <MudItem xs="12" md="4">
+                                        <MudTextField Label="Location" Value="@Model.Location" />
+                                    </MudItem>
+                                </MudGrid>
+                                <MudTextField Label="Additional Information" Value="@Model.AdditionalInformation" MaxLines="5" AutoGrow Class="mt-2" />
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudStack>
+                                    <MudText>
+                                        Created by <strong>@Model.CreatedBy</strong> on @Model.Created (@Model.Created.Humanize())
+                                    </MudText>
+                                    @if (Model.ApprovedOn.HasValue)
+                                    {
+                                        <MudText>
+                                            Approved <strong>@Model.ApprovedOn</strong>
+                                        </MudText>
+                                    }
+                                </MudStack>
+                            </MudCardActions>
+                        </MudCard>
+
+                        @if(Model.HasTemplate())
+                        {
+                            <MudExpansionPanels>
+                                <MudExpansionPanel Expanded>
+                                    <TitleContent>
+                                        <MudStack Row>
+                                            <MudIcon Icon="@Icons.Material.Filled.Build"/>
+                                            <MudText>Template</MudText>
+                                        </MudStack>
+                                    </TitleContent>
+                                    <ChildContent>
+                                        @if (Model is ParticipantDipSampleEducationAndTrainingActivityDto ete)
+                                        {
+                                            <MudTextField Label="Course Title" Value="@ete.CourseTitle" />
+                                            <MudTextField Label="Course Url" Value="@ete.CourseUrl" />
+                                            <MudTextField Label="Level" Value="@ete.CourseLevel" />
+                                            <MudTextField Label="Course Commenced" Value="@ete.CourseCommencedOn" />
+                                            <MudTextField Label="Course Completed" Value="@ete.CourseCompletedOn" />
+                                            <MudTextField Label="Completion Status" Value="@ete.CompletionStatus" />
+                                        }
+                                        else if (Model is ParticipantDipSampleIswActivityDto isw)
+                                        {
+                                            <MudStack>
+                                                <MudText>Hours Performed</MudText>
+                                                <MudStack Row="true">
+                                                    <MudTextField Label="Pre" Value="@isw.HoursPerformedPre"/>
+                                                    <MudTextField Label="During" Value="@isw.HoursPerformedDuring"/>
+                                                    <MudTextField Label="Post" Value="@isw.HoursPerformedPost"/>
+                                                </MudStack>
+                                            </MudStack>
+                                            <MudTextField Label="Wraparound Started" Value="@isw.WraparoundSupportStartedOn" />
+                                            <MudTextField Label="Baseline Achieved" Value="@isw.BaselineAchievedOn" />
+                                        }
+                                        else if (Model is ParticipantDipSampleEmploymentActivityDto emp)
+                                        {
+                                            <MudTextField Label="Employment Type" Value="@emp.EmploymentType" />
+                                            <MudTextField Label="Employer Name" Value="@emp.EmploymentType" />
+                                            <MudTextField Label="Job Title" Value="@emp.JobTitle" />
+                                            <MudTextField Label="Job Title Code" Value="@emp.JobTitleCode" />
+                                            <MudTextField Label="Salary" Value="@emp.Salary" />
+                                            <MudTextField Label="Frequency" Value="@emp.SalaryFrequency" />
+                                            <MudTextField Label="Employment Commenced" Value="@emp.EmploymentCommenced" />
+                                        }
+                                    </ChildContent>
+                                </MudExpansionPanel>
+                            </MudExpansionPanels>
+                        }       
+
+                </MudStack>
+
+
+            </MudTabPanel>
+            <MudTabPanel Icon="@Icons.Material.Filled.DocumentScanner" Text="Evidence" Disabled="@DisableDocumentTab()">
+                <MudPaper Height="calc(100vh - 100px)">
+                    <DocumentDisplayComponent DocumentId="DocumentId!.Value" />
+                </MudPaper>
+            </MudTabPanel>
+        </MudTabs>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Ok">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
