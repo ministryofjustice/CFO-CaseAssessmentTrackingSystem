@@ -2,4 +2,5 @@
 
 public class ParticipantDipSampleNonIswActivityDto : ParticipantDipSampleActivityDto
 {
+    public override bool HasTemplate() => false;
 }

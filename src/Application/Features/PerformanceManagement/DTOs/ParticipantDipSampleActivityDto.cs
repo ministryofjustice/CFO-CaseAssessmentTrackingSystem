@@ -14,4 +14,6 @@ public abstract class ParticipantDipSampleActivityDto
     public required ActivityType Type { get; init; }
     public required string Location { get; init; }
 
+    public abstract bool HasTemplate();
+
 }

@@ -10,4 +10,7 @@ public class ParticipantDipSampleEmploymentActivityDto : ParticipantDipSampleAct
     public string? SalaryFrequency { get; init; }
     public DateTime EmploymentCommenced { get; init; }
     public Guid DocumentId { get; init; }
+
+    public override bool HasTemplate() => true;
+
 }
