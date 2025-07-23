@@ -30,9 +30,11 @@ public static class GetAssessmentScores
                          where pa.ParticipantId == request.ParticipantId
                          select new ParticipantAssessmentDto
                          {
+                             Id = pa.Id,
                              ParticipantId = pa.ParticipantId,
                              CreatedDate = pa.Created!.Value,
                              Completed = pa.Completed,
+                             CompletedBy = pa.CompletedBy,
                              LocationId = pa.LocationId,
                              LocationName = l.Name, // Directly access LocationName
                              PathwayScore = pa.Scores.Select(s => new PathwayScore(s.Pathway, s.Score)).ToArray()
