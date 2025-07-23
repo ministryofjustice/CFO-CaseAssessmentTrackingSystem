@@ -5,6 +5,7 @@ using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 using Cfo.Cats.Application.Features.Timelines.DTOs;
 using Cfo.Cats.Domain.Common.Enums;
+using Microsoft.JSInterop;
 
 namespace Cfo.Cats.Server.UI.Pages.Analytics;
 
@@ -61,5 +62,8 @@ public partial class ParticipantOutcomeQualityDipSample
         }
         
     }
-
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JSRuntime.InvokeVoidAsync("removeInlineStyle", ".two-columns");
+    }
 }
