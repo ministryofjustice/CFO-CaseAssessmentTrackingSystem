@@ -2,6 +2,24 @@
 @using Cfo.Cats.Server.UI.Pages.Analytics.Components
 @inherits CatsComponentBase
 
+<style>
+    .readonly-toggle {
+        pointer-events: none;
+        filter: grayscale(100%);
+    }
+
+    .two-columns {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Two columns */
+        gap: 10px; /* Adjust the gap between items as needed */
+    }
+
+    .toggle-item {
+        box-sizing: border-box; /* Ensure padding and borders are included in width/height */
+        padding: 10px; /* Add padding if needed */
+        justify-content: left !important;
+    }
+</style>
 
 <MudContainer Style="min-width: 480px; width: 100%;" MaxWidth="MaxWidth.ExtraExtraLarge">
     @if (_isLoading)
