@@ -51,6 +51,11 @@
                             <OutcomeQualityDipSamplePathwayPlanComponent ParticipantId="@_participant.ParticipantId"/>
                         </div>
                     </MudTabPanel>
+                    <MudTabPanel Text="Assessments">
+                        <div style="height: calc(100vh - 250px); overflow-y: auto;">
+                            <OutcomeQualityDipSampleAssessmentComponent ParticipantId="@_participant.ParticipantId" />
+                        </div>
+                    </MudTabPanel>
                 </MudTabs>
             </MudItem>
         </MudGrid>

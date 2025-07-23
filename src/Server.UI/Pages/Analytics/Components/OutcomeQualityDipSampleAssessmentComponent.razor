@@ -1,0 +1,108 @@
+﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@using Cfo.Cats.Application.Features.Assessments.DTOs
+@inherits CatsComponentBase
+
+@inject IUserService UserService
+
+@if (_isLoading)
+{
+    <LoadingCard Title="Assessments loading" />
+}
+else if (_participantAssessments.Any())
+{
+    <MudExpansionPanels MultiExpansion="true" Elevation="2" Outlined="true">
+
+
+        @foreach (var assessment in _participantAssessments)
+        {
+            <MudExpansionPanel ExpandedChanged="@((isExpanded) => LoadAssessmentById(isExpanded, assessment.Id))">
+
+                <TitleContent>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                        <Cfo.Cats.Server.UI.Pages.Participants.Components.RagBar Model="assessment" />
+                    </MudStack>
+                </TitleContent>
+                <ChildContent>
+                    @if (_assessmentLoadingStates.GetValueOrDefault(assessment.Id))
+                    {
+                        <LoadingCard Title="Assessment details loading" />
+                    }
+                    else
+                    {
+                        @if (_assessmentsById.TryGetValue(assessment.Id, out var assessmentById))
+                        {
+                            <MudText Typo="Typo.subtitle2" Class="ma-3">
+                                Completed by <strong>@(UserService.DataSource.SingleOrDefault(x => x.Id == assessment.CompletedBy)?.DisplayName ?? "Unknown")</strong> on <strong>@assessment.Completed</strong>
+                            </MudText>
+                            foreach (var pathway in assessmentById!.Pathways)
+                            {
+
+                                <MudExpansionPanel>
+                                    <TitleContent>
+                                        <div class="d-flex">
+                                            <MudIcon Icon="@pathway.Icon" Color="Color.Primary" class="mr-3" />
+                                            <MudText>@pathway.Title</MudText>
+                                        </div>
+                                    </TitleContent>
+                                    <ChildContent>
+                                        <MudGrid Class="mb-4 px-10">
+
+                                            @foreach (var question in pathway.Questions())
+                                            {
+                                                <MudItem xs="4">
+                                                    <Cfo.Cats.Server.UI.Pages.Assessment.AssessmentComponents.AssessmentQuestion Question="@question.Question" HelperText="@question.OtherInformation" />
+                                                </MudItem>
+
+                                                <MudItem xs="8">
+                                                    @if (question is SingleChoiceQuestion atq)
+                                                    {
+                                                        <MudToggleGroup T="string" Class="readonly-toggle" SelectionMode="SelectionMode.SingleSelection" @bind-Value="@atq.Answer" CheckMark FixedContent Color="Color.Primary">
+                                                            @foreach (var item in atq.Options)
+                                                            {
+                                                                <MudToggleItem Value="@item" Text="@item" />
+                                                            }
+                                                        </MudToggleGroup>
+                                                    }
+
+                                                    @if (question is MultipleChoiceQuestion amcq)
+                                                    {
+                                                        <MudToggleGroup T="string" Class="two-columns readonly-toggle" Vertical SelectionMode="SelectionMode.MultiSelection" @bind-Values="@amcq.Answers" CheckMark Color="Color.Primary" Outlined="false" Delimiters="false">
+                                                            @foreach (var item in amcq.Options)
+                                                            {
+                                                                <MudToggleItem Class="toggle-item" Value="@item" Text="@item" UnselectedIcon="@Icons.Material.Filled.CheckBoxOutlineBlank" SelectedIcon="@Icons.Material.Filled.CheckBox" />
+                                                            }
+                                                        </MudToggleGroup>
+                                                    }
+                                                </MudItem>
+                                                <MudDivider />
+                                            }
+                                        </MudGrid>
+                                    </ChildContent>
+                                </MudExpansionPanel>
+                            }
+                        }
+                        else
+                        {
+                            <MudAlert Severity="Severity.Info">
+                                No assessment details found
+                            </MudAlert>
+
+                        }
+                    }
+
+                </ChildContent>
+
+            </MudExpansionPanel>
+
+        }
+
+    </MudExpansionPanels>
+}
+else
+{
+    <MudAlert Severity="Severity.Error">
+        No assessment found
+    </MudAlert>
+}
