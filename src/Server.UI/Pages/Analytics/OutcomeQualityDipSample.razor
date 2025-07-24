@@ -5,6 +5,8 @@
 @inherits CatsComponentBase
 
 @using Cfo.Cats.Application.Features.ManagementInformation.DTOs
+@using MudBlazor.Utilities
+@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Application.SecurityConstants
 
 @if(_loading)
@@ -115,29 +117,29 @@ else
                     </MudStack>
                 </CellTemplate>
             </PropertyColumn>
-            <PropertyColumn Property="x => x.IsCompliant"
-                            Title="Status"
-                            SortBy="x => x.IsCompliant">
+            <TemplateColumn Title="CSO Status"
+                            SortBy="x => x.CsoComplianceAnswer">
                 <CellTemplate>
                     <MudStack>
-                        @if(context.Item.IsCompliant.HasValue)
-                        {
-                            if (context.Item.IsCompliant is true)
+                    
+                        @{
+                            (string Icon, Color Colour, bool Disabled) chipDetails = context.Item.CsoComplianceAnswer switch
                             {
-                                <MudChip Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success"  Size="Size.Small">Compliant</MudChip>
-                            }
-                            else
-                            {
-                                <MudChip Icon="@Icons.Material.Filled.Cancel" Color="Color.Error" Size="Size.Small">Non-Compliant</MudChip>
-                            }
+                                var a when a == ComplianceAnswer.Unsure => (Icons.Material.Filled.WarningAmber, Color.Warning, a.IsAuto),
+                                { IsAnswer: false } => (Icons.Material.Filled.Pending, Color.Default, false),
+                                { IsAccepted: true } a => (Icons.Material.Filled.CheckCircle, Color.Success, a.IsAuto),
+                                { IsAccepted: false } a => (Icons.Material.Filled.ErrorOutline, Color.Error, a.IsAuto),
+                                var a => (Icons.Material.Filled.ErrorOutline, Color.Error, true)
+                            };
                         }
-                        else
-                        {
-                            <MudText Typo="Typo.body2">Awaiting review</MudText>
-                        }
+                        
+                        <MudChip Icon="@chipDetails.Icon" Color="@chipDetails.Colour" Size="Size.Small" Disabled="@chipDetails.Disabled">
+                            @context.Item.CsoComplianceAnswer.Name  
+                        </MudChip>
+                            
                     </MudStack>
                 </CellTemplate>
-            </PropertyColumn>
+            </TemplateColumn>
         </Columns>
         <NoRecordsContent>
             <MudText>@ConstantString.NoRecords</MudText>

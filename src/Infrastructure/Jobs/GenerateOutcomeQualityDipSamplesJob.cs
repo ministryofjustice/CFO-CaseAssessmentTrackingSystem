@@ -107,12 +107,9 @@ public class GenerateOutcomeQualityDipSamplesJob(
                 var dipSampleParticipants = dipSamples.SelectMany(participant =>
                     participant.Value.Samples.SelectMany(locationSample =>
                         locationSample.ParticipantIds.Select(pid =>
-                            new OutcomeQualityDipSampleParticipant
-                            {
-                                DipSampleId = participant.Entity.Id,
-                                ParticipantId = pid,
-                                LocationType = locationSample.LocationType
-                            })));
+                            OutcomeQualityDipSampleParticipant.Create(participant.Entity.Id,
+                                pid, locationSample.LocationType
+                            ))));
 
                 await unitOfWork.DbContext.OutcomeQualityDipSampleParticipants.AddRangeAsync(dipSampleParticipants);
                 

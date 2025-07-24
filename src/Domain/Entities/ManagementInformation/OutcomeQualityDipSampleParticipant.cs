@@ -1,23 +1,88 @@
-﻿namespace Cfo.Cats.Domain.Entities.ManagementInformation;
+﻿using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Common.Enums;
 
-public class OutcomeQualityDipSampleParticipant
+namespace Cfo.Cats.Domain.Entities.ManagementInformation;
+
+public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
 {
+
 #pragma warning disable CS8618 
-    public OutcomeQualityDipSampleParticipant() { /* this is for EF Core */}
+    private OutcomeQualityDipSampleParticipant() { /* this is for EF Core */}
 #pragma warning restore CS8618
 
-    public string ParticipantId { get; set; }
-    public Guid DipSampleId { get; set; }
+    public static OutcomeQualityDipSampleParticipant Create(Guid sampleId, string participantId, string locationType)
+    {
+        return new OutcomeQualityDipSampleParticipant()
+        {
+            DipSampleId = sampleId,
+            ParticipantId = participantId,
+            LocationType = locationType
+        };
+    }
 
-    public string LocationType { get; set; }
-    public bool? HasClearParticipantJourney { get; set; }
-    public bool? ShowsTaskProgression { get; set; }
-    public bool? ActivitiesLinkToTasks { get; set; }
-    public bool? TTGDemonstratesGoodPRIProcess { get; set; }
-    public bool? TemplatesAlignWithREG { get; set; }
-    public bool? SupportsJourneyAndAlignsWithDoS { get; set; }
-    public string? Remarks { get; set; }
-    public bool? IsCompliant { get; set; }
-    public DateTime? ReviewedOn { get; set; }
-    public string? ReviewedBy { get; set; }
+    public string ParticipantId { get; private set; }
+    public Guid DipSampleId { get; private set; }
+
+    public string LocationType { get; private set; }
+    public DipSampleAnswer HasClearParticipantJourney { get; private set; } = DipSampleAnswer.NotAnswered;
+    public DipSampleAnswer ShowsTaskProgression { get; private set; } = DipSampleAnswer.NotAnswered;
+    public DipSampleAnswer ActivitiesLinkToTasks { get; private set; } = DipSampleAnswer.NotAnswered;
+    public DipSampleAnswer TTGDemonstratesGoodPRIProcess { get; private set; } = DipSampleAnswer.NotAnswered;
+    public DipSampleAnswer TemplatesAlignWithREG { get; private set; } = DipSampleAnswer.NotAnswered;
+    public DipSampleAnswer SupportsJourneyAndAlignsWithDoS { get; private set; } = DipSampleAnswer.NotAnswered;
+    
+    public ComplianceAnswer CsoIsCompliant { get; private set; } = ComplianceAnswer.NotAnswered;
+    public DateTime? CsoReviewedOn { get; private set; }
+    public string? CsoReviewedBy { get; private set; }
+    public string? CsoComments { get; private set; }
+    
+
+    public ComplianceAnswer CpmIsCompliant { get; private set; } = ComplianceAnswer.NotAnswered;
+    public DateTime? CpmReviewedOn { get; private set; }
+    public string? CpmReviewedBy { get; private set; }
+    public string? CpmComments { get; private set; }
+
+
+    public ComplianceAnswer FinalIsCompliant { get; private set; } = ComplianceAnswer.NotAnswered;
+    public DateTime? FinalReviewedOn { get; private set; }
+    public string? FinalReviewedBy { get; private set; }
+    public string? FinalComments { get; private set; }
+
+    public OutcomeQualityDipSampleParticipant CsoAnswer(
+        DipSampleAnswer clearJourney,
+        DipSampleAnswer taskProgression,
+        DipSampleAnswer linksToTasks,
+        DipSampleAnswer alignsWithReg,
+        DipSampleAnswer supportsJourneyAndAlignsWithDos,
+        ComplianceAnswer isCompliant,
+        string comments,
+        string reviewBy,
+        DateTime reviewedOn
+        )
+    {
+
+        if (FinalIsCompliant.IsAnswer)
+        {
+            throw new ApplicationException("Cannot answer a closed sample");
+        }
+        
+        
+        HasClearParticipantJourney = clearJourney;
+        ShowsTaskProgression = taskProgression;
+        ActivitiesLinkToTasks = linksToTasks;
+        TemplatesAlignWithREG = alignsWithReg;
+        SupportsJourneyAndAlignsWithDoS = supportsJourneyAndAlignsWithDos;
+        CsoIsCompliant = isCompliant;
+        CsoComments = comments;
+        CsoReviewedBy = reviewBy;
+        CsoReviewedOn = reviewedOn;
+        
+        //TODO: Add domain events
+        
+        return this;
+    }
+
+
 }
+
+

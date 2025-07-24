@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Identity;
@@ -13,7 +14,10 @@ public class DipSampleParticipantEntityTypeConfiguration : IEntityTypeConfigurat
     {
         builder.ToTable(nameof(OutcomeQualityDipSampleParticipant), DatabaseConstants.Schemas.Mi);
 
-        builder.HasKey(dsp => new { dsp.DipSampleId, dsp.ParticipantId });
+        builder.HasKey(dsp => dsp.Id);
+
+        builder.HasIndex(dsp => new { dsp.DipSampleId, dsp.ParticipantId })
+            .IsUnique(true);
 
         builder.HasOne<Participant>()
             .WithMany()
@@ -25,14 +29,84 @@ public class DipSampleParticipantEntityTypeConfiguration : IEntityTypeConfigurat
 
         builder.HasOne<ApplicationUser>()
             .WithMany()
-            .HasForeignKey(dsp => dsp.ReviewedBy);
+            .HasForeignKey(dsp => dsp.CsoReviewedBy);
+
+        builder.HasOne<ApplicationUser>()
+            .WithMany()
+            .HasForeignKey(dsp => dsp.CpmReviewedBy);
+
+        builder.HasOne<ApplicationUser>()
+            .WithMany()
+            .HasForeignKey(dsp => dsp.FinalReviewedBy);
 
         builder.Property(dsp => dsp.LocationType)
             .HasMaxLength(64);
 
-        builder.Property(dsp => dsp.Remarks)
+        builder.Property(dsp => dsp.CsoComments)
             .HasMaxLength(ValidationConstants.NotesLength);
 
-        builder.HasIndex(dsp => dsp.IsCompliant);
+        builder.Property(s => s.HasClearParticipantJourney)
+            .IsRequired()
+            .HasConversion(
+                dsa => dsa!.Value,
+                dsa => DipSampleAnswer.FromValue(dsa)
+            );
+
+        builder.Property(s => s.ShowsTaskProgression)
+            .IsRequired()
+            .HasConversion(
+                dsa => dsa!.Value,
+                dsa => DipSampleAnswer.FromValue(dsa)
+            );
+
+        builder.Property(s => s.ActivitiesLinkToTasks)
+            .IsRequired()
+            .HasConversion(
+                dsa => dsa!.Value,
+                dsa => DipSampleAnswer.FromValue(dsa)
+            );
+
+        builder.Property(s => s.TTGDemonstratesGoodPRIProcess)
+            .IsRequired()
+            .HasConversion(
+                dsa => dsa!.Value,
+                dsa => DipSampleAnswer.FromValue(dsa)
+            );
+
+        builder.Property(s => s.TemplatesAlignWithREG)
+            .IsRequired()
+            .HasConversion(
+                dsa => dsa!.Value,
+                dsa => DipSampleAnswer.FromValue(dsa)
+            );        
+        
+        builder.Property(s => s.SupportsJourneyAndAlignsWithDoS)
+            .IsRequired()
+            .HasConversion(
+                dsa => dsa!.Value,
+                dsa => DipSampleAnswer.FromValue(dsa)
+            );
+
+        builder.Property(s => s.CsoIsCompliant)
+            .IsRequired()
+            .HasConversion(
+                c => c!.Value,
+                es => ComplianceAnswer.FromValue(es)
+            );
+
+        builder.Property(s => s.CpmIsCompliant)
+            .IsRequired()
+            .HasConversion(
+                c => c!.Value,
+                c => ComplianceAnswer.FromValue(c)
+            );
+        
+        builder.Property(s => s.FinalIsCompliant)
+            .IsRequired()
+            .HasConversion(
+                c => c!.Value,
+                c => ComplianceAnswer.FromValue(c)
+            );
+
     }
 }

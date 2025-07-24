@@ -7,6 +7,6 @@ public record DipSampleParticipantSummaryDto(
     string LocationType,
     string? CurrentLocationName,
     string? EnrolmentLocationName,
-    bool? IsCompliant = null,
+    ComplianceAnswer CsoComplianceAnswer,
     DateTime? ReviewedOn = null,
     string? ReviewedBy = null);

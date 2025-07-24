@@ -11,10 +11,10 @@ public static class GetOutcomeQualityDipSampleParticipants
     public class Query : PaginationFilter, IRequest<Result<PaginatedData<DipSampleParticipantSummaryDto>>>
     {
         public required Guid DipSampleId { get; set; }
-        public bool OnlyShowInProgress { get; set; } = false;
+        public bool OnlyShowInProgress { get; set; } = true;
     }
 
-    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaginatedData<DipSampleParticipantSummaryDto>>>
+    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaginatedData<DipSampleParticipantSummaryDto>>>
     {
         public async Task<Result<PaginatedData<DipSampleParticipantSummaryDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -27,11 +27,11 @@ public static class GetOutcomeQualityDipSampleParticipants
                 join enrolmentLocation in context.Locations on participant.EnrolmentLocation.Id equals enrolmentLocation.Id
                 join currentLocation in context.Locations on participant.CurrentLocation.Id equals currentLocation.Id
                 join owner in context.Users on participant.OwnerId equals owner.Id
-                join reviewer in context.Users on sample.ReviewedBy equals reviewer.Id into reviewers
+                join reviewer in context.Users on sample.CsoReviewedBy equals reviewer.Id into reviewers
                 from reviewer in reviewers.DefaultIfEmpty()
                 where sample.DipSampleId == request.DipSampleId
                 where request.OnlyShowInProgress == false 
-                    || sample.ReviewedOn == null
+                    || sample.CsoReviewedOn == null
                 where string.IsNullOrWhiteSpace(request.Keyword)
                     || sample.LocationType.Contains(request.Keyword)
                     || participant.LastName.Contains(request.Keyword)
@@ -46,8 +46,8 @@ public static class GetOutcomeQualityDipSampleParticipants
                     sample.LocationType,
                     CurrentLocationName = currentLocation.Name,
                     EnrolmentLocationName = enrolmentLocation.Name,
-                    sample.IsCompliant,
-                    sample.ReviewedOn,
+                    sample.CsoIsCompliant,
+                    sample.CsoReviewedOn,
                     ReviewedBy = reviewer.DisplayName
                 };
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
@@ -68,8 +68,8 @@ public static class GetOutcomeQualityDipSampleParticipants
                     dsp.LocationType,
                     dsp.CurrentLocationName,
                     dsp.EnrolmentLocationName,
-                    dsp.IsCompliant,
-                    dsp.ReviewedOn,
+                    dsp.CsoIsCompliant,
+                    dsp.CsoReviewedOn,
                     dsp.ReviewedBy))
                 .ToListAsync(cancellationToken);
 
@@ -87,7 +87,7 @@ public static class GetOutcomeQualityDipSampleParticipants
         }
     }
 
-    class Validator : AbstractValidator<Query>
+    private class Validator : AbstractValidator<Query>
     {
         readonly IUnitOfWork unitOfWork;
 
