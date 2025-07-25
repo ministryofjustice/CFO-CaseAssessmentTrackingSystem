@@ -72,38 +72,40 @@
                                         </MudStack>
                                     </TitleContent>
                                     <ChildContent>
-                                        @if (Model is ParticipantDipSampleEducationAndTrainingActivityDto ete)
-                                        {
-                                            <MudTextField Label="Course Title" Value="@ete.CourseTitle" />
-                                            <MudTextField Label="Course Url" Value="@ete.CourseUrl" />
-                                            <MudTextField Label="Level" Value="@ete.CourseLevel" />
-                                            <MudTextField Label="Course Commenced" Value="@ete.CourseCommencedOn" />
-                                            <MudTextField Label="Course Completed" Value="@ete.CourseCompletedOn" />
-                                            <MudTextField Label="Completion Status" Value="@ete.CompletionStatus" />
-                                        }
-                                        else if (Model is ParticipantDipSampleIswActivityDto isw)
-                                        {
-                                            <MudStack>
-                                                <MudText>Hours Performed</MudText>
-                                                <MudStack Row="true">
-                                                    <MudTextField Label="Pre" Value="@isw.HoursPerformedPre"/>
-                                                    <MudTextField Label="During" Value="@isw.HoursPerformedDuring"/>
-                                                    <MudTextField Label="Post" Value="@isw.HoursPerformedPost"/>
+                                        <MudForm Model="Model" ReadOnly>
+                                            @if (Model is ParticipantDipSampleEducationAndTrainingActivityDto ete)
+                                            {
+                                                <MudTextField Label="Course Title" Value="@ete.CourseTitle" />
+                                                <MudTextField Label="Course Url" Value="@ete.CourseUrl" />
+                                                <MudTextField Label="Level" Value="@ete.CourseLevel" />
+                                                <MudTextField Label="Course Commenced" Value="@ete.CourseCommencedOn" />
+                                                <MudTextField Label="Course Completed" Value="@ete.CourseCompletedOn" />
+                                                <MudTextField Label="Completion Status" Value="@ete.CompletionStatus" />
+                                            }
+                                            else if (Model is ParticipantDipSampleIswActivityDto isw)
+                                            {
+                                                <MudStack>
+                                                    <MudText>Hours Performed</MudText>
+                                                    <MudStack Row="true">
+                                                        <MudTextField Label="Pre" Value="@isw.HoursPerformedPre"/>
+                                                        <MudTextField Label="During" Value="@isw.HoursPerformedDuring"/>
+                                                        <MudTextField Label="Post" Value="@isw.HoursPerformedPost"/>
+                                                    </MudStack>
                                                 </MudStack>
-                                            </MudStack>
-                                            <MudTextField Label="Wraparound Started" Value="@isw.WraparoundSupportStartedOn" />
-                                            <MudTextField Label="Baseline Achieved" Value="@isw.BaselineAchievedOn" />
-                                        }
-                                        else if (Model is ParticipantDipSampleEmploymentActivityDto emp)
-                                        {
-                                            <MudTextField Label="Employment Type" Value="@emp.EmploymentType" />
-                                            <MudTextField Label="Employer Name" Value="@emp.EmploymentType" />
-                                            <MudTextField Label="Job Title" Value="@emp.JobTitle" />
-                                            <MudTextField Label="Job Title Code" Value="@emp.JobTitleCode" />
-                                            <MudTextField Label="Salary" Value="@emp.Salary" />
-                                            <MudTextField Label="Frequency" Value="@emp.SalaryFrequency" />
-                                            <MudTextField Label="Employment Commenced" Value="@emp.EmploymentCommenced" />
-                                        }
+                                                <MudTextField Label="Wraparound Started" Value="@isw.WraparoundSupportStartedOn" />
+                                                <MudTextField Label="Baseline Achieved" Value="@isw.BaselineAchievedOn" />
+                                            }
+                                            else if (Model is ParticipantDipSampleEmploymentActivityDto emp)
+                                            {
+                                                <MudTextField Label="Employment Type" Value="@emp.EmploymentType" />
+                                                <MudTextField Label="Employer Name" Value="@emp.EmploymentType" />
+                                                <MudTextField Label="Job Title" Value="@emp.JobTitle" />
+                                                <MudTextField Label="Job Title Code" Value="@emp.JobTitleCode" />
+                                                <MudTextField Label="Salary" Value="@emp.Salary" />
+                                                <MudTextField Label="Frequency" Value="@emp.SalaryFrequency" />
+                                                <MudTextField Label="Employment Commenced" Value="@emp.EmploymentCommenced" />
+                                            }
+                                        </MudForm>
                                     </ChildContent>
                                 </MudExpansionPanel>
                             </MudExpansionPanels>
