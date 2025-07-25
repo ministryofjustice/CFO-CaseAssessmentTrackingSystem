@@ -17,7 +17,7 @@ public class NotifyAccountDeactivationJob(
 
         if (context.RefireCount > 3)
         {
-            logger.LogWarning($"Failed to complete notify accounts that are due to deactivate within 3 tries, aborting...");
+            logger.LogWarning($"Failed to complete notifying accounts that are due to deactivate within 3 tries, aborting...");
             return;
         }
 
