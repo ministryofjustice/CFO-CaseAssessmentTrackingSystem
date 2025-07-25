@@ -44,7 +44,7 @@ public class NotifyAccountDeactivationJob(
             }
             else
             {
-                logger.LogInformation($"No Accounts need notifying");
+                logger.LogInformation($"No accounts need notifying");
             }
 
             async void Notify(ApplicationUser user) => await communicationsService.SendAccountDeactivationEmail(user.Email!);
