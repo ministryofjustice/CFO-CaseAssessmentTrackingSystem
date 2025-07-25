@@ -51,7 +51,7 @@ public class NotifyAccountDeactivationJob(
         }
         catch (Exception ex)
         {
-            throw new JobExecutionException(msg: $"An unexpected error occurred executing otifying accounts that will be deactivated soon job", refireImmediately: true, cause: ex);
+            throw new JobExecutionException(msg: $"An unexpected error occurred executing notifying accounts that will be deactivated soon job", refireImmediately: true, cause: ex);
         }
     }
 }
