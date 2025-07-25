@@ -10,6 +10,7 @@ public class NotifyAccountDeactivationJob(
 {
     public static readonly JobKey Key = new JobKey(name: nameof(NotifyAccountDeactivationJob));
     public static readonly string Description = "A job to notify accounts that are due to deactivate.";
+    public static readonly DateTime sevenDaysFromDeactivationDate = DateTime.Today.AddDays(-23); // exactly 23 days ago, ignoring time
 
     public async Task Execute(IJobExecutionContext context)
     {
@@ -23,16 +24,15 @@ public class NotifyAccountDeactivationJob(
 
         try
         {
-            logger.LogInformation("Starting notifying accounts that will be deactivated soon");
-
-            DateTime sevenDaysFromDeactivationDate = DateTime.Today.AddDays(-23); // exactly 23 days ago, ignoring time
+            logger.LogInformation("Starting notifying accounts that will be deactivated soon");               
 
             var users = await userManager.Users
                 .IgnoreAutoIncludes()
                 .Where(user => user.IsActive)
                 .Where(user =>
-                    (user.LastLogin.HasValue && user.LastLogin.Value.Date == sevenDaysFromDeactivationDate) ||
-                    (!user.LastLogin.HasValue && user.Created.HasValue && user.Created.Value.Date == sevenDaysFromDeactivationDate))
+                       user.LastLogin.HasValue
+                     ? user.LastLogin.Value.Date == sevenDaysFromDeactivationDate
+                     : user.Created.HasValue && user.Created.Value.Date == sevenDaysFromDeactivationDate)
                 .ToListAsync();
 
             if (users.Any())
