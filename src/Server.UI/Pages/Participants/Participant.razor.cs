@@ -40,35 +40,67 @@ namespace Cfo.Cats.Server.UI.Pages.Participants
         private Color _bioIconColor = Color.Transparent;
 
         private string _notActiveInFeedAlertMessage = ConstantString.NotActiveInFeedMessage;
+
         protected override async Task OnInitializedAsync()
         {
-            await Refresh();
-            await base.OnInitializedAsync();
-            SetRiskDueWarning();
-            ShowRightToWorkWarning();
-            SetPriDueWarning();
-            SetAssessmentDueWarning();
-            SetBioDueWarning();
-            await SetLatestParticipantAssessment();
+            var transaction = SentrySdk.StartTransaction("Participant", "page.load");
+            SentrySdk.ConfigureScope(scope => scope.Transaction = transaction);
+
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
+            try
+            {
+                await Refresh(cts.Token);
+                await SetLatestParticipantAssessment(cts.Token);
+                SetRiskDueWarning();
+                ShowRightToWorkWarning();
+                SetPriDueWarning(); 
+                SetAssessmentDueWarning();
+                SetBioDueWarning();
+                
+            }
+            catch (OperationCanceledException)
+            {
+                transaction.Finish(SpanStatus.DeadlineExceeded);
+                SentrySdk.CaptureMessage("Page initialization timed out");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                transaction.Finish(SpanStatus.InternalError);
+                SentrySdk.CaptureException(ex);
+                throw;
+            }
+            finally
+            {
+                if (transaction.IsFinished == false)
+                {
+                    transaction.Finish();
+                }
+                SentrySdk.ConfigureScope(scope => scope.Transaction = null);
+            }
+
         }
 
-        async Task SetLatestParticipantAssessment(){
-            if (!string.IsNullOrEmpty(Id))
+        private async Task SetLatestParticipantAssessment(CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(Id) == false)
             {
                 var query = new GetAssessmentScores.Query()
                 {
                     ParticipantId = Id
                 };
 
-                var result = await GetNewMediator().Send(query);
+                var result = await GetNewMediator().Send(query, cancellationToken);
 
-                if (result.Succeeded && result.Data != null)
+                if (result is { Succeeded: true, Data: not null })
                 {
                     _latestParticipantAssessment = result.Data.MaxBy(pa => pa.CreatedDate);
                 }
 
             }
         }
+
         void ShowRightToWorkWarning()
         {
             _showRightToWorkWarning = _participant!.IsRightToWorkRequired
@@ -152,13 +184,13 @@ namespace Cfo.Cats.Server.UI.Pages.Participants
             }
         }
 
-        private async Task Refresh()
+        private async Task Refresh(CancellationToken cancellationToken = default)
         {
             _participant = await GetNewMediator().Send(new GetParticipantSummary.Query()
             {
                 ParticipantId = Id,
                 CurrentUser = UserProfile
-            });
+            }, cancellationToken);
         }
 
         void SetAssessmentDueWarning()
