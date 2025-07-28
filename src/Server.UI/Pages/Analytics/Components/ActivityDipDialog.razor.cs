@@ -2,7 +2,7 @@
 
 namespace Cfo.Cats.Server.UI.Pages.Analytics.Components;
 
-public partial class ActivitiyDipDialog
+public partial class ActivityDipDialog
 {
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
