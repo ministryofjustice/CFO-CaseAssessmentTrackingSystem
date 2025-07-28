@@ -48,7 +48,7 @@ namespace Cfo.Cats.Application.Pipeline
                 return (TResponse)(object)Result.Failure(errors);
             }
 
-            return await next();
+            return await next(cancellationToken);
         }
     }
 }

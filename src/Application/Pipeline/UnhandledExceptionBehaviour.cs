@@ -24,7 +24,7 @@ public class UnhandledExceptionBehaviour<TRequest, TResponse>
     {
         try
         {
-            return await next().ConfigureAwait(false);
+            return await next(cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
