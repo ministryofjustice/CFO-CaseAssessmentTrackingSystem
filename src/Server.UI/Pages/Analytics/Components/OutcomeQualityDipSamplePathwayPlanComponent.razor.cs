@@ -72,7 +72,7 @@ public partial class OutcomeQualityDipSamplePathwayPlanComponent
         };
     private async Task DisplayActivity(ParticipantDipSampleActivityDto dto)
     {
-        var parameters = new DialogParameters<ActivitiyDipDialog>()
+        var parameters = new DialogParameters<ActivityDipDialog>()
         {
             { x => x.Model, dto }
         };
@@ -86,7 +86,7 @@ public partial class OutcomeQualityDipSamplePathwayPlanComponent
             CloseButton = true,
         };
 
-        var dialog = await DialogService.ShowAsync<ActivitiyDipDialog>("Activity Details", parameters, options);
+        var dialog = await DialogService.ShowAsync<ActivityDipDialog>("Activity Details", parameters, options);
 
     }
 }
