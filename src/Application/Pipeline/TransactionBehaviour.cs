@@ -12,7 +12,7 @@ public class TransactionBehaviour<TRequest, TResponse>(IUnitOfWork unitOfWork, I
 
         try
         {
-            response = await next();
+            response = await next(cancellationToken);
 
             
             //await unitOfWork.SaveChangesAsync(cancellationToken);
