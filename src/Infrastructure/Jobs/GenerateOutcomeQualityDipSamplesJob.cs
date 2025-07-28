@@ -99,7 +99,11 @@ public class GenerateOutcomeQualityDipSamplesJob(
                 var dipSamples = samples.Select(sample => new
                 {
                     Value = sample,
-                    Entity = OutcomeQualityDipSample.Create(sample.ContractId, periodFrom, periodTo)
+                    Entity = OutcomeQualityDipSample.Create(
+                        sample.ContractId, 
+                        periodFrom, 
+                        periodTo, 
+                        size: sample.Samples.SelectMany(s => s.ParticipantIds).Count())
                 }).ToList();
 
                 await unitOfWork.DbContext.OutcomeQualityDipSamples.AddRangeAsync(dipSamples.Select(x => x.Entity));

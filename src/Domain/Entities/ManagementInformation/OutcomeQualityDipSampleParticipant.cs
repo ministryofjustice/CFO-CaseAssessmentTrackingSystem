@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.ManagementInformation;
 
@@ -76,8 +77,8 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
         CsoComments = comments;
         CsoReviewedBy = reviewBy;
         CsoReviewedOn = reviewedOn;
-        
-        //TODO: Add domain events
+
+        AddDomainEvent(new OutcomeQualityDipSampleParticipantScored(DipSampleId, reviewBy));
         
         return this;
     }
