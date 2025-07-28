@@ -1,4 +1,5 @@
 ﻿@page "/pages/analytics/outcome-quality-dip-sampling/{SampleId:guid}/{ParticipantId}"
+@using Cfo.Cats.Application.Features.ManagementInformation.Commands.AddOutcomeQualityDipSampleCso
 @using Cfo.Cats.Server.UI.Pages.Analytics.Components
 @inherits CatsComponentBase
 
@@ -72,6 +73,11 @@
                     <MudTabPanel Text="Assessments">
                         <div style="height: calc(100vh - 250px); overflow-y: auto;">
                             <OutcomeQualityDipSampleAssessmentComponent ParticipantId="@_participant.ParticipantId" />
+                        </div>
+                    </MudTabPanel>
+                    <MudTabPanel Text="Submission">
+                        <div style="height: calc(100vh - 250px); overflow-y: auto;">
+                            <SubmitCsoResponseComponent Command="@SubmitCommand" OnFormSubmit="CsoResponseSubmitted" />
                         </div>
                     </MudTabPanel>
                 </MudTabs>
