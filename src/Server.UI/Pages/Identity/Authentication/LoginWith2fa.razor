@@ -84,7 +84,7 @@
             var token = await UserManager.GenerateTwoFactorTokenAsync(user!, "Email");
             await Sender.Publish(new SendTwoFactorTextCodeNotification(user!.PhoneNumber!, user.UserName!, token));
             Input.UseSms = false;
-            message = L["Info: A new code has been sent to your registered phone number"];
+            message = L["Info: A new code has been sent to your registered phone number."];
         }
         else
         {
@@ -102,7 +102,7 @@
                 }
                 else
                 {
-                    message = L["Error: Invalid authenticator code."];
+                    message = L["Error: Login failed."];
                 }                
                 return;
             }
@@ -121,7 +121,7 @@
             else
             {
                 await Sender.Publish(IdentityAuditNotification.LoginFailedTwoFactor(user.UserName!, NetworkIpProvider.IpAddress));
-                message = L["Error: Invalid authenticator code."];
+                message = L["Error: Login failed."];
             }
         }
 
@@ -143,11 +143,11 @@
             {
                 if (string.IsNullOrEmpty(TwoFactorCode))
                 {
-                    yield return new ValidationResult("Two factor code is required", [nameof(TwoFactorCode)]);
+                    yield return new ValidationResult("Two factor code is required.", [nameof(TwoFactorCode)]);
                 }
                 else if (TwoFactorCode.Length is > 7 or < 6)
                 {
-                    yield return new ValidationResult("Invalid authenticator code", [nameof(TwoFactorCode)]);
+                    yield return new ValidationResult("Invalid authenticator code.", [nameof(TwoFactorCode)]);
                 }
             }
 
@@ -155,7 +155,7 @@
             {
                 if (string.IsNullOrEmpty(TwoFactorCode) == false)
                 {
-                    yield return new ValidationResult("Authenticator code should not be provided when asking for a text message", [nameof(UseSms)]);
+                    yield return new ValidationResult("Authenticator code should not be provided when asking for a text message.", [nameof(UseSms)]);
                 }
             }
 
