@@ -26,20 +26,42 @@ public partial class Dashboard
 
     protected override async Task OnInitializedAsync()
     {
-        var state = await AuthState;
+        var transaction = SentrySdk.StartTransaction("Dashboard", "page.load");
+        SentrySdk.ConfigureScope(scope => scope.Transaction = transaction);
 
-        _showMyTeamsParticipants = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.UserHasAdditionalRoles)).Succeeded;
+        try
+        {
+            var state = await AuthState;
 
-        // these  follow the same logic for now no need to make the same check.
-        _showCaseWorkload = _showMyTeamsParticipants;
-        _showRiskDueAggregate = _showCaseWorkload;
+            _showMyTeamsParticipants =
+                (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.UserHasAdditionalRoles)).Succeeded;
 
-        _showQaPots = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
-        
-        // this follows the same check as QA pots
-        _showSyncComponent = _showQaPots;
-        
-        _showJobManagement = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions)).Succeeded;
+            // these  follow the same logic for now no need to make the same check.
+            _showCaseWorkload = _showMyTeamsParticipants;
+            _showRiskDueAggregate = _showCaseWorkload;
+
+            _showQaPots = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
+
+            // this follows the same check as QA pots
+            _showSyncComponent = _showQaPots;
+
+            _showJobManagement = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions))
+                .Succeeded;
+        }
+        catch (Exception ex)
+        {
+            transaction.Finish(SpanStatus.InternalError);
+            SentrySdk.CaptureException(ex);
+            throw;
+        }
+        finally
+        {
+            if (transaction.IsFinished == false)
+            {
+                transaction.Finish();
+            }
+            SentrySdk.ConfigureScope(scope => scope.Transaction = null);
+        }
     }
 
   
