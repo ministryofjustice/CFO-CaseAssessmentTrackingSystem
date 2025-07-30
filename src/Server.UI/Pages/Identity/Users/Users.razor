@@ -391,6 +391,11 @@
         {
             _loading = true;
 
+            if (state.SortDefinitions.Count == 0)
+            { 
+                state.SortDefinitions.Add(new SortDefinition<ApplicationUserDto>("Email", false, 1, x => x.Email));
+            }
+
             var query = UserManager.Users.Where(CreateSearchPredicate()) ;
             var items = await query
                 .Where(x => x.TenantId!.StartsWith(CurrentUser!.TenantId!))
