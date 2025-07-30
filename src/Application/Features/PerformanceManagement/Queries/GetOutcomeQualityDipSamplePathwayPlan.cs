@@ -92,7 +92,6 @@ public static class GetOutcomeQualityDipSamplePathwayPlan
 
             var activities = await activityQuery
                 .AsNoTracking()
-                .AsSplitQuery()
                 .ToArrayAsync(cancellationToken);
 
             var dtos = (from a in activities

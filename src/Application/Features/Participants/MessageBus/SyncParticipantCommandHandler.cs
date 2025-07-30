@@ -17,7 +17,6 @@ public class SyncParticipantCommandHandler(
             .Participants
             .IgnoreAutoIncludes()
             .Include(x => x.CurrentLocation)
-            .AsSplitQuery()
             .FirstAsync(x => x.Id == context.ParticipantId);
     
         logger.LogDebug($"Syncing {participant.Id}");
