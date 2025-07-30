@@ -1,9 +1,11 @@
-﻿using Ardalis.SmartEnum;
+using Ardalis.SmartEnum;
 
 namespace Cfo.Cats.Domain.Common.Enums;
 
 public class LocationType : SmartEnum<LocationType>
 {
+    public static readonly LocationType Quarantine = new(nameof(Quarantine), -1, isMapped: false);
+
     public static readonly LocationType Wing = new(nameof(Wing), 0, isCustody: true);
     public static readonly LocationType Feeder = new(nameof(Feeder), 1, isCustody: true);
     public static readonly LocationType Outlying = new(nameof(Outlying), 2, isCustody: true);

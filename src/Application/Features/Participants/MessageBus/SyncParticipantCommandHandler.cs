@@ -37,8 +37,11 @@ public class SyncParticipantCommandHandler(
 
             await unitOfWork.BeginTransactionAsync();
 
-            var location = await unitOfWork.DbContext.Locations.SingleAsync(x => x.Id == candidate.MappedLocationId);
-            participant.MoveToLocation(location);
+            if(participant.CurrentLocation.LocationType != LocationType.Quarantine)
+            {
+                var location = await unitOfWork.DbContext.Locations.SingleAsync(x => x.Id == candidate.MappedLocationId);
+                participant.MoveToLocation(location);
+            }
 
             if (candidate.Crn is not null)
             {
