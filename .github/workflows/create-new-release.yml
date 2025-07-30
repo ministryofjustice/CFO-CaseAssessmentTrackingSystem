@@ -10,6 +10,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 1  # Only get the latest commit - much faster!
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -88,25 +90,13 @@ jobs:
     - name: Create Release
       if: success() && github.ref == 'refs/heads/main'
       id: create_release
-      uses: actions/create-release@v1
+      uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ env.TAG_NAME }}
-        release_name: ${{ env.RELEASE_NAME }}
-        body: ${{ steps.generate_changelog.outputs.changelog }}
+        name: ${{ env.RELEASE_NAME }}
+        files: ./build-artifacts.zip
         draft: false
         prerelease: false
         generate_release_notes: true
-
-    # Upload build artifacts to the release
-    - name: Upload Release Asset
-      if: success() && github.ref == 'refs/heads/main'
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./build-artifacts.zip
-        asset_name: build-artifacts.zip
-        asset_content_type: application/zip
