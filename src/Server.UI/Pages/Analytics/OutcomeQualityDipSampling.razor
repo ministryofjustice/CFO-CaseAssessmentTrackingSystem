@@ -71,6 +71,10 @@
                     <MudCardContent>
                         <MudText>Sample size of <b>@sample.Size</b> participant(s)</MudText>
                         <MudText>Generated @sample.CreatedOn.Humanize() (@sample.CreatedOn.ToShortDateString())</MudText>
+                        <MudProgressLinear Class="mt-4" Rounded Value="@sample.TotalScored" Max="sample.Size" Color="Color.Primary">
+                        </MudProgressLinear>
+                        <MudText Typo="Typo.subtitle1" Style="text-align: center">@sample.TotalScored / @sample.Size complete</MudText>
+
                         @*@if(sample.Contributors is { Length: > 0 })
                         {
                             <div class="d-flex">
@@ -90,27 +94,30 @@
                         <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/outcome-quality-dip-sampling/{sample.Id}")">
                             Review 
                         </MudButton>
-                        @if(sample.ScoreAvg.HasValue)
-                        {
-                            int score = sample.ScoreAvg switch
-                            {
-                                >= 91 => 5,
-                                >= 81 => 4,
-                                >= 71 => 3,
-                                >= 61 => 2,
-                                >= 51 => 1,
-                                _ => 0
-                            };
+                        @{
+                            int? score = sample.FinalScore ?? sample.CpmScore ?? sample.CsoScore;
 
-                            <MudTooltip Text="@($"{sample.ScoreAvg}%")">
-                                <MudRating SelectedValue="score" ReadOnly />
-                            </MudTooltip>
-                        }
-                        else
-                        {
-                            <MudTooltip Text="Score will become available after completion">
-                                <MudSkeleton Animation="Animation.Wave" Width="120px" />
-                            </MudTooltip>
+                            if(score.HasValue)
+                            {
+                                <MudTooltip>
+                                    <TooltipContent>
+                                        <MudStack>
+                                            <MudText>CSO: @(sample.CsoScore.HasValue ? $"{sample.CsoPercentage}% ({sample.CsoScore})" : "Awaiting result")</MudText>
+                                            <MudText>CPM: @(sample.CpmScore.HasValue ? $"{sample.CpmPercentage}% ({sample.CpmScore})" : "Awaiting result")</MudText>
+                                            <MudText>Final: @(sample.FinalScore.HasValue ? $"{sample.FinalPercentage}% ({sample.FinalScore})" : "Awaiting result")</MudText>
+                                        </MudStack>
+                                    </TooltipContent>
+                                    <ChildContent>
+                                        <MudRating SelectedValue="score.Value" ReadOnly  />
+                                    </ChildContent>
+                                </MudTooltip>
+                            }
+                            else
+                            {
+                                <MudTooltip Text="Score will become available after completion">
+                                    <MudSkeleton Animation="Animation.Wave" Width="120px" />
+                                </MudTooltip>
+                            }
                         }
                     </MudCardActions>
                 </MudCard>

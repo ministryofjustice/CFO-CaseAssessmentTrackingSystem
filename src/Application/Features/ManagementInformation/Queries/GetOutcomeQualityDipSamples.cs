@@ -41,7 +41,13 @@ public static class GetOutcomeQualityDipSamples
                     sample.PeriodFrom,
                     sample.CreatedOn,
                     participants.Count(),
-                    sample.ScoreAvg, 
+                    sample.CsoScore, 
+                    sample.CpmScore, 
+                    sample.FinalScore,
+                    sample.CsoPercentage,
+                    sample.CpmPercentage,
+                    sample.FinalPercentage,
+                    participants.Where(p => p.CsoReviewedOn.HasValue).Count(),
                     sample.CompletedOn, 
                     user.DisplayName);
 
