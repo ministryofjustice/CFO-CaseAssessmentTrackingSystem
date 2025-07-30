@@ -7,6 +7,12 @@ public record DipSampleDto(
     DateTime PeriodFrom,
     DateTime CreatedOn,
     int Size,
-    double? ScoreAvg = null,
+    int? CsoScore = null,
+    int? CpmScore = null,
+    int? FinalScore = null,
+    int? CsoPercentage = null,
+    int? CpmPercentage = null,
+    int? FinalPercentage = null,
+    int TotalScored = 0,
     DateTime? CompletedOn = null, 
     string? CompletedBy = null);
