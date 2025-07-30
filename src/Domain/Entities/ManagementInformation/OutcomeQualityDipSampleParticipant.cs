@@ -78,7 +78,7 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
         CsoReviewedBy = reviewBy;
         CsoReviewedOn = reviewedOn;
 
-        AddDomainEvent(new OutcomeQualityDipSampleParticipantScored(DipSampleId, reviewBy));
+        AddDomainEvent(new OutcomeQualityDipSampleParticipantScoredDomainEvent(DipSampleId, reviewBy));
         
         return this;
     }

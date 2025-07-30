@@ -3,9 +3,9 @@
 namespace Cfo.Cats.Application.Features.ManagementInformation.EventHandlers;
 
 public class CalculateSampleScoreOnCompletion(IUnitOfWork unitOfWork)
-    : INotificationHandler<OutcomeQualityDipSampleParticipantScored>
+    : INotificationHandler<OutcomeQualityDipSampleParticipantScoredDomainEvent>
 {
-    public async Task Handle(OutcomeQualityDipSampleParticipantScored notification, CancellationToken cancellationToken)
+    public async Task Handle(OutcomeQualityDipSampleParticipantScoredDomainEvent notification, CancellationToken cancellationToken)
     {
         var db = unitOfWork.DbContext;
 
