@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.ManagementInformation.Commands;
 
 public static class ExportCumulativeFigures
 {
-    [RequestAuthorize(Roles = $"{RoleNames.Finance}, {RoleNames.SystemSupport}")]
+    [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
     public class Command : IRequest<Result>
     {
         public DateOnly EndDate { get; init; }

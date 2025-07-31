@@ -1,4 +1,4 @@
-﻿@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
+﻿@attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
 
 @page "/pages/analytics/outcome-quality-dip-sampling"
 
