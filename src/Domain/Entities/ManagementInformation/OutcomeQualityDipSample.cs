@@ -22,13 +22,11 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
 
     public OutcomeQualityDipSample Complete(string completedBy, int noOfCompliant = 0)
     {
-        if (CompletedOn.HasValue is false)
-        {
-            CompletedOn = DateTime.UtcNow;
-            CompletedBy = completedBy;
-            Status = DipSampleStatus.Completed;
-            SetCsoScores(noOfCompliant);
-        }
+
+        CompletedOn = DateTime.UtcNow;
+        CompletedBy = completedBy;
+        Status = DipSampleStatus.Completed;
+        SetCsoScores(noOfCompliant);
 
         return this;
     }
