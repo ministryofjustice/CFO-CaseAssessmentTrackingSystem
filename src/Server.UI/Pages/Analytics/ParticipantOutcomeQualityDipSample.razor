@@ -1,6 +1,7 @@
 ﻿@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.Analytics.Components
 
+
 @attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
 
 @page "/pages/analytics/outcome-quality-dip-sampling/{SampleId:guid}/{ParticipantId}"
@@ -43,10 +44,7 @@
 
     @if (_isLoading == false && _participant is not null)
     {
-        // participant details
-        <MudText Typo="Typo.h5" Class="mb-5">
-            Outcome Quality Dip Sample
-        </MudText>
+        <CatsBreadcrumbs Items="@Items"></CatsBreadcrumbs>
 
         <MudGrid Style="height: 100vh; width: 100%;">
             <MudItem xs="2">

@@ -9,17 +9,23 @@ namespace Cfo.Cats.Server.UI.Pages.Analytics;
 
 public partial class OutcomeQualityDipSampling
 {
-    bool isLoading;
+    bool _isLoading;
 
     [CascadingParameter] public UserProfile? CurrentUser { get; set; }
 
     [Inject] public required IOptions<OutcomeQualityDipSampleSettings> Options { get; set; }
 
-    public DipSampleDto[] samples = [];
+    public DipSampleDto[] Samples = [];
 
     public ContractDto? SelectedContract { get; set; }
 
     public GetOutcomeQualityDipSamples.Query Query { get; set; } = new();
+
+    private List<BreadcrumbItem> Items =>
+    [
+        new("Outcome Quality", href: "pages/analytics/outcome-quality-dip-sampling", icon: Icons.Material.Filled.Home)
+    ];
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -38,20 +44,20 @@ public partial class OutcomeQualityDipSampling
     {
         try
         {
-            isLoading = true;
+            _isLoading = true;
 
             var result = await GetNewMediator().Send(Query);
 
             if (result is { Succeeded: true, Data: not null })
             {
-                samples = result.Data.ToArray();
+                Samples = result.Data.ToArray();
                 return;
             }
 
             Snackbar.Add(result.ErrorMessage, Severity.Error);
 
         }
-        finally { isLoading = false; }
+        finally { _isLoading = false; }
     }
 
 }
