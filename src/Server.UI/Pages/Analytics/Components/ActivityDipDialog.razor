@@ -38,13 +38,13 @@
                             <MudCardContent>
                                 <MudGrid>
                                     <MudItem xs="12" md="4">
-                                        <MudTextField Label="Commenced On" Value="@Model.CommencedOn" />
+                                        <MudTextField ReadOnly="true" Label="Commenced On" Value="@Model.CommencedOn" />
                                     </MudItem>
                                     <MudItem xs="12" md="4">
-                                        <MudTextField Label="Location" Value="@Model.Location" />
+                                        <MudTextField ReadOnly="true"  Label="Location" Value="@Model.Location" />
                                     </MudItem>
                                 </MudGrid>
-                                <MudTextField Label="Additional Information" Value="@Model.AdditionalInformation" MaxLines="5" AutoGrow Class="mt-2" />
+                                <MudTextField ReadOnly="true" Label="Additional Information" Value="@Model.AdditionalInformation" MaxLines="5" AutoGrow Class="mt-2" />
                             </MudCardContent>
                             <MudCardActions>
                                 <MudStack>
