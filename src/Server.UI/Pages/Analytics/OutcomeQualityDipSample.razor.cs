@@ -9,6 +9,12 @@ public partial class OutcomeQualityDipSample
     private bool _downloading;
     private MudDataGrid<DipSampleParticipantSummaryDto> _table = new();
 
+    private List<BreadcrumbItem> Items =>
+    [
+        new("Outcome Quality", href: "/pages/analytics/outcome-quality-dip-sampling/", icon: Icons.Material.Filled.Home),
+        new($"Sample", href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}", icon: Icons.Material.Filled.List)
+    ];
+
     [Parameter]
     public required Guid SampleId { get; set; }
 

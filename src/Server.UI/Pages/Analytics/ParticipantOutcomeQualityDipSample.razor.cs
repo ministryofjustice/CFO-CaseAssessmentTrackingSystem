@@ -24,6 +24,12 @@ public partial class ParticipantOutcomeQualityDipSample
     [Inject]
     public IUserService UserService { get; set; } = null!;
 
+    private List<BreadcrumbItem> Items =>
+    [
+        new("Outcome Quality", href: "/pages/analytics/outcome-quality-dip-sampling/", icon: Icons.Material.Filled.Home),
+        new("Sample", href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}", icon: Icons.Material.Filled.List),
+        new(ParticipantId, href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/{ParticipantId}", icon: Icons.Material.Filled.Person)
+    ];
 
     private Command? _command;
 

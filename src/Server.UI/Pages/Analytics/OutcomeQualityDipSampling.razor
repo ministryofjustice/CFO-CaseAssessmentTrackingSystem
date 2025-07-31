@@ -8,9 +8,7 @@
 
 @inherits CatsComponentBase
 
-<MudText Typo="Typo.h5">
-    Outcome Quality Dip Sample
-</MudText>
+<CatsBreadcrumbs Items="@Items"></CatsBreadcrumbs>
 
 @if(Query is not null)
 {
@@ -44,13 +42,13 @@
 
 <MudGrid Class="mt-2">
 
-    @if(isLoading)
+    @if(_isLoading)
     {
-        <MudLoading Loading="isLoading" />
+        <MudLoading Loading="_isLoading" />
     }
     else
     {
-        foreach(var sample in samples)
+        foreach(var sample in Samples)
         {
             <MudItem xs="12" md="6" lg="4">
                 <MudCard>
