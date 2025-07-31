@@ -1,7 +1,11 @@
 ﻿namespace Cfo.Cats.Domain.Events;
 
-public sealed class OutcomeQualityDipSampleParticipantScoredDomainEvent(Guid DipSampleId, string ReviewBy) : DomainEvent
+public sealed class OutcomeQualityDipSampleParticipantScoredDomainEvent(
+    Guid dipSampleId,
+    string reviewBy,
+    bool isCompliant) : DomainEvent
 {
-    public Guid DipSampleId { get; set; } = DipSampleId;
-    public string ReviewBy { get; set; } = ReviewBy;
+    public Guid DipSampleId { get; set; } = dipSampleId;
+    public string ReviewBy { get; set; } = reviewBy;
+    public bool IsCompliant { get; set; } = isCompliant;
 }

@@ -2,6 +2,8 @@
 using Cfo.Cats.Application.Features.Assessments.IntegrationEvents;
 using Cfo.Cats.Application.Features.Inductions.IntegrationEvents;
 using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
+using Cfo.Cats.Application.Features.PerformanceManagement.IntegrationEventHandlers;
+using Cfo.Cats.Application.Features.PerformanceManagement.IntegrationEvents;
 using Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
 using Cfo.Cats.Application.Features.QualityAssurance.IntegrationEvents;
 using Microsoft.Extensions.Configuration;
@@ -30,7 +32,8 @@ public class PaymentBackgroundService(IServiceProvider provider, IConfiguration 
             .Handle<RecordPreReleaseSupportPayment>(provider)
             .Handle<RecordThroughTheGatePaymentConsumer>(provider)
             .Handle<RecordWingInductionPaymentConsumer>(provider)
-            .Handle<RecordReassessmentPaymentConsumer>(provider);
+            .Handle<RecordReassessmentPaymentConsumer>(provider)
+            .Handle<RecordCsoScores>(provider);
 
         _bus = Configure.With(_activator)
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.PaymentService)
@@ -50,6 +53,7 @@ public class PaymentBackgroundService(IServiceProvider provider, IConfiguration 
         await _bus.Subscribe<PRIThroughTheGateCompletedIntegrationEvent>();
         await _bus.Subscribe<WingInductionCreatedIntegrationEvent>();
         await _bus.Subscribe<AssessmentScoredIntegrationEvent>();
+        await _bus.Subscribe<OutcomeQualityDipSampleCompletedIntegrationEvent>();
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
