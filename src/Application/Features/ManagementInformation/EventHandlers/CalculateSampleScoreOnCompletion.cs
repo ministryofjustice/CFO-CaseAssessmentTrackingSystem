@@ -9,22 +9,26 @@ public class CalculateSampleScoreOnCompletion(IUnitOfWork unitOfWork)
     {
         var db = unitOfWork.DbContext;
 
-        var query = from dipSample in db.OutcomeQualityDipSamples
-                    where dipSample.Id == notification.DipSampleId
-                    select new
-                    {
-                        SampleSize = dipSample.Size,
-                        CompletedCount = db.OutcomeQualityDipSampleParticipants
-                            .Count(dsp => dsp.DipSampleId == dipSample.Id && dsp.CsoReviewedOn.HasValue)
-                            + 1 // Include the current completion
-                    };
+        var query = db.OutcomeQualityDipSampleParticipants
+            .AsNoTracking()
+            .Where(p => p.DipSampleId == notification.DipSampleId)
+            .GroupBy(p => 1)
+            .Select(g => new
+            {
+                Total = g.Count(),
+                Completed = g.Count(p => p.CsoReviewedOn != null)
+            });
 
         var result = await query.SingleAsync(cancellationToken);
 
-        if(result.SampleSize == result.CompletedCount)
+        if((result.Completed + 1) >= result.Total)
         {
             var sample = await db.OutcomeQualityDipSamples.SingleAsync(ds => ds.Id == notification.DipSampleId, cancellationToken);
-            sample.Complete(notification.ReviewBy, result.CompletedCount);
+            var all = await db.OutcomeQualityDipSampleParticipants
+                .Where(ds => ds.DipSampleId == notification.DipSampleId)
+                .Select(s => s.CsoIsCompliant).ToArrayAsync(cancellationToken);
+            
+            sample.Complete(notification.ReviewBy, all.Count( s => s.IsAccepted ));
         }
 
     }
