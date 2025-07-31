@@ -1,6 +1,10 @@
-﻿@page "/pages/analytics/outcome-quality-dip-sampling/{SampleId:guid}/{ParticipantId}"
-@using Cfo.Cats.Application.Features.ManagementInformation.Commands.AddOutcomeQualityDipSampleCso
+﻿@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.Analytics.Components
+
+@attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
+
+@page "/pages/analytics/outcome-quality-dip-sampling/{SampleId:guid}/{ParticipantId}"
+
 @inherits CatsComponentBase
 
 <style>

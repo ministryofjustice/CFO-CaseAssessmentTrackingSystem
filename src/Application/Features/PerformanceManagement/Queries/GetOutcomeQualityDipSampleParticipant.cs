@@ -8,8 +8,7 @@ namespace Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 
 public static class GetOutcomeQualityDipSampleParticipant
 {
-    //TODO: This needs a proper policy
-    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
+    [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
     public class Query : IRequest<Result<ParticipantDipSampleDto>>
     {
         public required string ParticipantId { get; set; }

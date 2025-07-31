@@ -420,7 +420,12 @@ public static class DependencyInjection
                         RoleNames.SMT
                     );
                 });
-              
+
+                options.AddPolicy(SecurityPolicies.OutcomeQualityDipChecks, policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(ApplicationClaimTypes.CsoFunctions);
+                });
+
             })
             .AddAuthentication(options => {
                 options.DefaultScheme = IdentityConstants.ApplicationScheme;

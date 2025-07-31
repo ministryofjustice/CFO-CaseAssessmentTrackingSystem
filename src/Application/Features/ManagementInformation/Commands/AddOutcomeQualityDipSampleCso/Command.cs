@@ -3,8 +3,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.Commands.AddOutcomeQualityDipSampleCso;
 
-//TODO: fix this
-[RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
+[RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
 public class Command : IRequest<Result>
 {
     public required UserProfile CurrentUser { get; set; }

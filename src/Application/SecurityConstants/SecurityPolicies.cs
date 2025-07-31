@@ -57,4 +57,6 @@ public static class SecurityPolicies
     public const string ViewAudit = nameof(ViewAudit);
 
     public const string SystemSupportFunctions = nameof(SystemSupportFunctions);
+    
+    public const string OutcomeQualityDipChecks = nameof(OutcomeQualityDipChecks);
 }
