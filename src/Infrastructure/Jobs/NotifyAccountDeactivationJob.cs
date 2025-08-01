@@ -14,7 +14,12 @@ public class NotifyAccountDeactivationJob(
 
     public async Task Execute(IJobExecutionContext context)
     {
-        using (logger.BeginScope(Key))
+        using (logger.BeginScope(new Dictionary<string, object>
+        {
+                ["JobName"] = Key.Name,
+                ["JobGroup"] = Key.Group ?? "Default",
+                ["JobInstance"] = Guid.NewGuid().ToString()
+        }))
 
         if (context.RefireCount > 3)
         {
@@ -40,7 +45,7 @@ public class NotifyAccountDeactivationJob(
                 users.ForEach(Notify);
 
                 var userList = string.Join(", ", users.Select(u => u.UserName));
-                logger.LogInformation($"Following users warned they will be deactivated soon: {userList}");                
+                logger.LogInformation("Following users warned they will be deactivated soon: {Users}", userList);                
             }
             else
             {
