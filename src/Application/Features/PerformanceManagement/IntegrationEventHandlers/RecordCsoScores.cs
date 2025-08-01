@@ -7,18 +7,18 @@ public class RecordCsoScores(IUnitOfWork unitOfWork) : IHandleMessages<OutcomeQu
 {
     public async Task Handle(OutcomeQualityDipSampleCompletedIntegrationEvent message)
     {
-
         var db = unitOfWork.DbContext;
 
         var dipSample = await db.OutcomeQualityDipSamples.FirstAsync(s => s.Id == message.DipSampleId);
-        var participants =
-            await db.OutcomeQualityDipSampleParticipants.Where(s => s.DipSampleId == message.DipSampleId)
+        var participants = await db.OutcomeQualityDipSampleParticipants
+                .Where(s => s.DipSampleId == message.DipSampleId)
                 .Select(s => s.CsoIsCompliant)
                 .ToArrayAsync();
 
-        dipSample.Complete(message.ReviewBy, participants.Count(p => p.IsAccepted));
-
-        await unitOfWork.SaveChangesAsync(CancellationToken.None);
-
+        if (participants.All(a => a.IsAnswer))
+        {
+            dipSample.Complete(message.ReviewBy, participants.Count(p => p.IsAccepted));
+            await unitOfWork.SaveChangesAsync(CancellationToken.None);
+        }
     }
 }
