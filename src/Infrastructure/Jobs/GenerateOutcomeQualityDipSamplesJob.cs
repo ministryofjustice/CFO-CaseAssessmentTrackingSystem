@@ -16,11 +16,16 @@ public class GenerateOutcomeQualityDipSamplesJob(
 
     public async Task Execute(IJobExecutionContext context)
     {
-        using (logger.BeginScope(Key))
+        using (logger.BeginScope(new Dictionary<string, object>
+        {
+                ["JobName"] = Key.Name,
+                ["JobGroup"] = Key.Group ?? "Default",
+                ["JobInstance"] = Guid.NewGuid().ToString()
+        }))
 
         if (context.RefireCount > 3)
         {
-            logger.LogWarning($"Failed to complete within 3 tries, aborting...");
+            logger.LogWarning("Quartz Job - {Key}: failed to complete within 3 tries, aborting...", Key.Name);
             return;
         }
 
@@ -35,7 +40,7 @@ public class GenerateOutcomeQualityDipSamplesJob(
 
             if (await unitOfWork.DbContext.OutcomeQualityDipSamples.AnyAsync(ds => ds.PeriodFrom == periodFrom))
             {
-                logger.LogWarning($"Dip sample already exists for {periodFrom:MMM yyyy}, aborting...");
+                logger.LogWarning("Dip sample already exists for {Period}, aborting...", periodFrom.ToString("MMM yyyy"));
                 return;
             }
 

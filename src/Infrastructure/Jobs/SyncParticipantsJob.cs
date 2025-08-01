@@ -18,19 +18,25 @@ public class SyncParticipantsJob(
 
     public async Task Execute(IJobExecutionContext context)
     {
+        using (logger.BeginScope(new Dictionary<string, object>
+        {
+                ["JobName"] = Key.Name,
+                ["JobGroup"] = Key.Group ?? "Default",
+                ["JobInstance"] = Guid.NewGuid().ToString()
+        }))
+
         if (context.RefireCount > 3)
         {
-            logger.LogWarning($"Quartz Job - {Key}: failed to complete within 3 tries, aborting...");
+            logger.LogWarning("Quartz Job - {Key}: failed to complete within 3 tries, aborting...", Key.Name);
             return;
         }
 
-        if (!await _semaphore.WaitAsync(TimeSpan.Zero))
+        if (await _semaphore.WaitAsync(TimeSpan.Zero) == false)
         {
             // Job is already running, skip this execution
+            logger.LogInformation("Quartz Job - {Key}: is already running. Skipping this call", Key.Name);
             return;
         }
-
-        using var outScope = logger.BeginScope($"Starting job {Key}. Re-fire count {context.RefireCount}");
 
         try
         {

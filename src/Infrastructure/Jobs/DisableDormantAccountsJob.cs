@@ -14,13 +14,19 @@ public class DisableDormantAccountsJob(
 
     public async Task Execute(IJobExecutionContext context)
     {
+        using (logger.BeginScope(new Dictionary<string, object>
+        {
+                ["JobName"] = Key.Name,
+                ["JobGroup"] = Key.Group ?? "Default",
+                ["JobInstance"] = Guid.NewGuid().ToString()
+        }))
 
-        using (logger.BeginScope(Key))
-            if (context.RefireCount > 3)
-            {
-                logger.LogWarning($"Failed to complete Disable Dormant Accounts Job within 3 tries, aborting...");
-                return;
-            }
+        if (context.RefireCount > 3)
+        {
+            logger.LogWarning($"Failed to complete Disable Dormant Accounts Job within 3 tries, aborting...");
+            return;
+        }
+
         try
         {
             logger.LogInformation("Starting deactivation of dormant accounts");
@@ -49,13 +55,13 @@ public class DisableDormantAccountsJob(
                         "Overnight System Job");
 
                     auditTrails.Add(audit);
-                    logger.LogInformation($"Deactivated {user.UserName} account");
+                    logger.LogInformation("Deactivated user {Id} account", user.Id);
                 }
 
                 await unitOfWork.DbContext.IdentityAuditTrails.AddRangeAsync(auditTrails, context.CancellationToken);
                 await unitOfWork.SaveChangesAsync(context.CancellationToken);
 
-                logger.LogInformation($"Deactivated/Disabled {usersToDeactivate.Count} account(s)");
+                logger.LogInformation("Deactivated/Disabled {deactivated} account(s)", usersToDeactivate.Count);
             }
             else
             {
@@ -64,7 +70,8 @@ public class DisableDormantAccountsJob(
         }
         catch (Exception ex)
         {
-            throw new JobExecutionException(msg: $"An unexpected error occurred executing Disable Dormant Accounts job", refireImmediately: true, cause: ex);
+            logger.LogError(ex, "Quartz job {Key} failed", Key.Name);
+            throw new JobExecutionException(msg: "An unexpected error occurred executing Disable Dormant Accounts job", refireImmediately: true, cause: ex);
         }
     }
 }
