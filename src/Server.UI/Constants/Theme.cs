@@ -42,13 +42,10 @@ public static class Theme
             },
             Typography = new Typography
             {
-                Body1 = new Body1Typography() { FontFamily = default, FontSize = "16px" },
-                Body2 = new Body2Typography() //Custom body 2 typography with 16px size.
+                Default = new DefaultTypography
                 {
-                    FontFamily = default
-                },
-                Default = { FontFamily = ["Arial", "Helvetica", "sans-serif"] },
-                H4 = { FontSize = "24px" }
+                    FontFamily = ["Arial", "Helvetica", "sans-serif"]
+                }
             }
         };
 

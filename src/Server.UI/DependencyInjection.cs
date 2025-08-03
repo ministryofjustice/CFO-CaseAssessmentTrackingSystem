@@ -3,9 +3,7 @@ using Cfo.Cats.Infrastructure.Constants.Localization;
 using Cfo.Cats.Server.UI.Services;
 using Cfo.Cats.Server.UI.Services.Fusion;
 using Cfo.Cats.Server.UI.Services.JsInterop;
-using Cfo.Cats.Server.UI.Services.Layout;
 using Cfo.Cats.Server.UI.Services.Navigation;
-using Cfo.Cats.Server.UI.Services.UserPreferences;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.FileProviders;
@@ -101,10 +99,8 @@ public static class DependencyInjection
 /*        services.AddScoped<HubClient>(); */
         services.AddMudExtensions()
             .AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>()
-            .AddScoped<LayoutService>()
             .AddScoped<DialogServiceHelper>()
             .AddBlazorDownloadFile()
-            .AddScoped<IUserPreferencesService, UserPreferencesService>()
             .AddScoped<IMenuService, MenuService>();
 
         services.AddApexCharts(e =>

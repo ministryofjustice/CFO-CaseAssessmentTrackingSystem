@@ -72,6 +72,10 @@
       <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Components\Shared\Themes\ThemesDialog.razor" />
+    </ItemGroup>
+
     
 
 

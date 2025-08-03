@@ -1,56 +1,49 @@
 ﻿@inherits LayoutComponentBase
 @using Cfo.Cats.Server.UI.Constants
-@implements IDisposable
 
-@inject LayoutService LayoutService
 @inject NavigationManager NavigationManager
 
-
 <PageTitle>@ApplicationSettings.AppName</PageTitle>
-<MudRTLProvider RightToLeft="@LayoutService.IsRTL">
+<MudRTLProvider RightToLeft="false">
     <MudThemeProvider />
     <MudPopoverProvider />
     <MudDialogProvider />
     <MudSnackbarProvider />
-    <MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="@LayoutService.SetDarkMode"/>
+    <MudThemeProvider 
+        @ref="_mudThemeProvider"
+        Theme="@_theme" 
+        @bind-IsDarkMode="_isDarkMode"/>
     @Body
 </MudRTLProvider>
 
 @code
 {
+    private bool _isDarkMode;
+    private MudThemeProvider _mudThemeProvider = null!;
 
+    private MudTheme _theme = null!;
+    
     [CascadingParameter]
-    private Task<AuthenticationState> AuthenticationState {get;set;} = default!;
-
-
+    private Task<AuthenticationState> AuthenticationState {get;set;} = null!;
 
     private System.Timers.Timer? _timer;
     private DateTime _lastActivity = DateTime.Now;
 
-
-
     [Inject]
     protected IConfiguration Configuration { get; set; } = default!;
-
-    private MudThemeProvider _mudThemeProvider = null!;
-    private bool _defaultDarkMode;
-
-    public void Dispose()
-    {
-        LayoutService.MajorUpdateOccured -= LayoutServiceOnMajorUpdateOccured;
-        GC.SuppressFinalize(this);
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            await ApplyUserPreferences();
-            StateHasChanged();
-
+            _theme = Theme.ApplicationTheme(Configuration["PrimaryColour"] 
+                                                      ?? Theme.DefaultPrimaryColour);
+            _isDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
+            await _mudThemeProvider.WatchSystemDarkModeAsync(OnSystemDarkModeChanged);
+            StateHasChanged();            
+            
             int idleTimeOutMinutes = int.Parse(Configuration["IdleTimeoutMinutes"] ?? "20");
-
 
             _timer = new System.Timers.Timer(60000 * idleTimeOutMinutes); 
             _timer.Elapsed += UpdateTimer;
@@ -58,6 +51,13 @@
             _timer.Start();
             await JSRuntime.InvokeVoidAsync("timeOutCall", DotNetObjectReference.Create(this));
         }
+    }
+
+    private Task OnSystemDarkModeChanged(bool arg)
+    {
+        _isDarkMode = arg;
+        StateHasChanged();
+        return Task.CompletedTask;
     }
 
     [JSInvokable]  
@@ -96,25 +96,4 @@
             }  
         });  
     }
-
-    private async Task ApplyUserPreferences()
-    {
-        _defaultDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
-        await LayoutService.ApplyUserPreferences(_defaultDarkMode);
-    }
-
-    protected override void OnInitialized()
-    {
-        LayoutService.MajorUpdateOccured += LayoutServiceOnMajorUpdateOccured;
-
-        string primaryColour = Configuration["PrimaryColour"] ?? Theme.DefaultPrimaryColour;
-
-        LayoutService.SetBaseTheme(Theme.ApplicationTheme(primaryColour));
-    }
-
-    private void LayoutServiceOnMajorUpdateOccured(object? sender, EventArgs e)
-    {
-        StateHasChanged();
-    }
-
 }
