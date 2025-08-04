@@ -149,7 +149,8 @@
             @if (_loading is false)
             {
                 <ApexChart TItem="EmploymentPaymentSummaryDto"
-                           Title="Employment By Contract">
+                           Title="Employment By Contract"
+                           Options="@Options">
                     <ApexPointSeries TItem="EmploymentPaymentSummaryDto"
                                      Items="SummaryData"
                                      Name="Employments"

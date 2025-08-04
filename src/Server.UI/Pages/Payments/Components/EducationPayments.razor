@@ -147,7 +147,8 @@
             @if (_loading is false)
             {
                 <ApexChart TItem="EducationPaymentSummaryDto"
-                           Title="Education & Training By Contract">
+                           Title="Education & Training By Contract"
+                           Options="@Options">
                     <ApexPointSeries TItem="EducationPaymentSummaryDto"
                                      Items="SummaryData"
                                      Name="Educations"

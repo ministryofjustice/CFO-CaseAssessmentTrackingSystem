@@ -19,7 +19,10 @@ public partial class QaPots
     private List<QueueData> _enrolmentData = new();
     private List<QueueData> _activityData = new();
 
-    private ApexChartOptions<QueueData> _options = new()
+    [CascadingParameter(Name = "IsDarkMode")]
+    public bool IsDarkMode { get; set; }
+
+    private ApexChartOptions<QueueData> Options => new()
     {
         Chart = new Chart
         {
@@ -90,7 +93,11 @@ public partial class QaPots
                     }
                 }
             }
-        ]
+        ],
+        Theme = new Theme()
+        {
+            Mode = IsDarkMode ? Mode.Dark : Mode.Light
+        }
     };
 
     [CascadingParameter] public UserProfile UserProfile { get; set; } = default!;

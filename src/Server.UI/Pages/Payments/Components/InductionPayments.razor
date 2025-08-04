@@ -145,7 +145,8 @@
             @if(_loading is false)
             {
                 <ApexChart TItem="InductionPaymentSummaryDto"
-                           Title="Inductions By Contract">
+                           Title="Inductions By Contract"
+                           Options="@Options">
                     <ApexPointSeries TItem="InductionPaymentSummaryDto"
                                      Items="SummaryData"
                                      Name="Wing"

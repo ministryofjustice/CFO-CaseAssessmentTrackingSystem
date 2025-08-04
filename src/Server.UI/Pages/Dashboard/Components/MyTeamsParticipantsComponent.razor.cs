@@ -13,7 +13,10 @@ public partial class MyTeamsParticipantsComponent
     private ParticipantCountSummaryDto? _participantSteps;
     private ChartData[]? _data;
 
-    private ApexChartOptions<ChartData> _options = new()
+    [CascadingParameter(Name="IsDarkMode")]
+    public bool IsDarkMode { get; set; }
+
+    private ApexChartOptions<ChartData> Options => new()
     {
         Chart = new Chart
         {
@@ -34,9 +37,13 @@ public partial class MyTeamsParticipantsComponent
                     Svg = new ExportSvg()
                     {
                         Filename = "Particpants-Pie-Chart"
-                    }
+                    },
                 }
             }
+        },
+        Theme = new Theme
+        {
+            Mode = IsDarkMode ? Mode.Dark : Mode.Light,
         }
     };
 

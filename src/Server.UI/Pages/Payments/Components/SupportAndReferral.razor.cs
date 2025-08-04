@@ -29,6 +29,17 @@ public partial class SupportAndReferral
 
     GetSupportAndReferralPayments.Query? Query;
 
+    [CascadingParameter(Name = "IsDarkMode")]
+    public bool IsDarkMode { get; set; }
+
+    public ApexChartOptions<SupportAndReferralPaymentSummaryDto> Options => new()
+    {
+        Theme = new Theme
+        {
+            Mode = IsDarkMode ? Mode.Dark : Mode.Light
+        }
+    };
+
     async Task OnRefresh()
     {
         try

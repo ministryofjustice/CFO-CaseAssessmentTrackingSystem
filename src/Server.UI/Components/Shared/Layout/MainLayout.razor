@@ -13,7 +13,10 @@
         @ref="_mudThemeProvider"
         Theme="@_theme" 
         @bind-IsDarkMode="_isDarkMode"/>
-    @Body
+    <CascadingValue Value="@_isDarkMode" Name="IsDarkMode">
+        @Body
+    </CascadingValue>
+    
 </MudRTLProvider>
 
 @code
