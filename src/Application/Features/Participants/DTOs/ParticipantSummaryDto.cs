@@ -30,7 +30,7 @@ public class ParticipantSummaryDto
     /// </summary>
     public required DateOnly DateOfBirth { get; set; }
     public DateTime? RiskDue { get; set; }
-    public int? RiskDueInDays { get; set; }
+    public int? RiskDueInDays => (RiskDue - DateTime.UtcNow.Date)?.Days;
     public string? Nationality { get; set; }
 
     public string? EnrolmentLocationJustification { get; set; }
@@ -50,12 +50,12 @@ public class ParticipantSummaryDto
     /// <summary>
     /// The person who "owns" this participant's case. Usually the support worker.
     /// </summary>
-    public required string OwnerName { get; set; }
+    public string? OwnerName { get; set; }
 
     /// <summary>
     /// The Tenant who "owns" this participant's case. 
     /// </summary>
-    public required string TenantName { get; set; }
+    public string? TenantName { get; set; }
 
     public AssessmentSummaryDto[] Assessments { get; set; } = [];
 
@@ -73,7 +73,7 @@ public class ParticipantSummaryDto
     public DateTime LastSync { get; set; }
 
     public DateTime? BioDue { get; set; }
-    public int? BioDueInDays { get; set; }
+    public int? BioDueInDays => (BioDue - DateTime.UtcNow.Date)?.Days;
 
     public bool IsActive { get; set; }
     public bool ActiveInFeed { get; set; }
@@ -151,7 +151,7 @@ public class AssessmentSummaryDto
     /// <summary>
     /// Date the latest assessment has been complted
     /// </summary>
-    public DateTime? Completed { get; private set; }
+    public DateTime? Completed { get; set; }
 }
 
 public class BioSummaryDto

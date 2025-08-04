@@ -9,13 +9,13 @@ public class PriSummaryDto
 
     public required DateTime Created { get; set; }
     public required string CreatedBy { get; set; }
-    public Guid ObjectiveId { get; private set; }
+    public Guid ObjectiveId { get; set; }
     public ObjectiveTaskDto[] ObjectiveTasks { get; set; } = [];
     public DateOnly? ActualReleaseDate { get; set; }       
     public required PriStatus Status { get; set; }
-    public DateTime? CompletedOn { get; private set; }
-    public string? CompletedBy { get; private set; }
-    public PriAbandonReason? AbandonReason { get; private set; }
+    public DateTime? CompletedOn { get; set; }
+    public string? CompletedBy { get; set; }
+    public PriAbandonReason? AbandonReason { get; set; }
 
     //TTG warning 4 weeks from the actual release date i.e. 4 weeks * 7 days  = 28 days
     public DateOnly? TTGDueDate => ActualReleaseDate?.AddDays(28);
