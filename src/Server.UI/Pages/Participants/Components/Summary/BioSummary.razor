@@ -1,0 +1,71 @@
+﻿@using Humanizer
+
+@inherits CatsComponentBase
+
+<MudCard Style="Height: 100%;">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Bio Information</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+
+        @if (_bio is null)
+        {
+            <MudText>No Bio has been created.</MudText>
+        }
+        else
+        {
+
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText><strong>Date Created</strong></MudText>
+                <MudText>@_bio.BioDate!.Value.ToString("dd/MM/yyyy")</MudText>
+            </MudStack>
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText><strong>Created By</strong></MudText>
+                <MudText>@UserService.DataSource.First(u => u.Id == _bio.BioCreator).DisplayName</MudText>
+            </MudStack>
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText><strong>Status</strong></MudText>
+                <MudText Typo="Typo.body2">@_bio.BioStatus!.Name.Humanize()</MudText>
+            </MudStack>
+        }
+
+        @if (_bioInfo != string.Empty)
+        {
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText><strong>Due</strong></MudText>
+                <MudTooltip Text="@_bioTooltipText">
+                    <MudIcon Icon="@_bioIcon" Size="@Size.Small" Color="@_bioIconColor" />
+                    <MudText Typo="Typo.body2">
+                        @String.Format(_bioInfo)
+                    </MudText>
+                </MudTooltip>
+            </MudStack>
+        }
+
+    </MudCardContent>
+
+    <MudCardActions>
+        @if (CanBeginBio())
+        {
+            <MudTooltip Text="Create Bio">
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginBio" />
+            </MudTooltip>
+        }
+
+        @if (CanContinueBio())
+        {
+            <MudTooltip Text="Continue Bio">
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinueBio" />
+            </MudTooltip>
+        }
+
+        @if (CanRestartBio())
+        {
+            <MudTooltip Text="Restart Bio">
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginBio" />
+            </MudTooltip>
+        }
+    </MudCardActions>
+</MudCard>

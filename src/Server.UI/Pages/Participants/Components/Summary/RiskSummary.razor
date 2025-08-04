@@ -1,0 +1,64 @@
+﻿@using Humanizer
+@inherits CatsComponentBase
+
+<MudCard Style="Height: 100%;">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <div class="d-flex justify-space-between align-center">
+                <MudText Typo="Typo.h6">
+                    Risk Information
+                </MudText>
+                <MudTooltip Text="Expand">
+                    <MudIconButton OnClick="ExpandRiskInformation" Icon="@Icons.Material.Outlined.OpenInNew" />
+                </MudTooltip>
+            </div>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+
+        @if (ParticipantSummaryDto.LatestRisk is not null)
+        {
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText><strong>Last Reviewed</strong></MudText>
+                <MudText>
+                    @ParticipantSummaryDto.LatestRisk.Created.ToShortDateString() (@ParticipantSummaryDto.LatestRisk!.Created.Humanize())
+                </MudText>
+            </MudStack>
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText><strong>Reviewed By</strong></MudText>
+                <MudText>@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.LatestRisk!.CreatedBy).DisplayName</MudText>
+            </MudStack>
+        }
+
+        <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+            <MudText><strong>Next Review Due</strong></MudText>
+            @if (ParticipantSummaryDto.RiskDue.HasValue)
+            {
+                <MudText>@ParticipantSummaryDto.RiskDue.ToShortDateOrEmptyString() (@ParticipantSummaryDto.RiskDue.Value.Humanize())</MudText>
+            }
+        </MudStack>
+        <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+            <MudText><strong>Review Reason</strong></MudText>
+            <MudChip Size="Size.Small"
+                     T="string"
+                     Color="@(ParticipantSummaryDto.RiskDue < DateTime.Today ? Color.Error : Color.Info)">
+                @ParticipantSummaryDto.RiskDueReason
+            </MudChip>
+        </MudStack>
+    </MudCardContent>
+
+    <MudCardActions>
+        @if (CanAddRiskInformation())
+        {
+            <MudTooltip Text="Add Information">
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="OnClickAddRiskInformation" />
+            </MudTooltip>
+        }
+        @if (CanReviewRiskInformation())
+        {
+            <MudTooltip Text="Review Information">
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="ReviewRiskInformation" />
+            </MudTooltip>
+        }
+    </MudCardActions>
+</MudCard>
