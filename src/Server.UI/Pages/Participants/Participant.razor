@@ -87,16 +87,16 @@
                             <CaseSentenceInformation ParticipantId="@Id" ParticipantIsActive="@_participant.IsActive" />
                             <ExternalData ParticipantId="@Id" ConsentStatus="@_participant.ConsentStatus" />
                         </MudTabPanel>
-                        <MudTabPanel Text="Risk" ID="@Id" Icon="@_riskIcon" IconColor="@_riskIconColor" ToolTip="@_riskInfo">
+                        <MudTabPanel Text="Risk">
                             <CaseRisk ParticipantId="@Id" />
                         </MudTabPanel>
-                        <MudTabPanel Text="Assessments" Icon="@_assessmentIcon" IconColor="@_assessmentIconColor" ToolTip="@_assessmentInfo">
+                        <MudTabPanel Text="Assessments">
                             <CaseAssessment ParticipantId="@Id" ConsentDate="@_participant.DateOfFirstConsent"/>
                         </MudTabPanel>
-                        <MudTabPanel Text="PRI" Icon="@_priDueIcon" IconColor="@_priDueIconColor" ToolTip="@_priDueToolTip">
+                        <MudTabPanel Text="PRI">
                             <CasePRI ParticipantId="@Id" OnUpdate="() => Refresh()" />
                         </MudTabPanel>
-                        <MudTabPanel Text="Bio" Icon="@_bioIcon" IconColor="@_bioIconColor" ToolTip="@_bioInfo">
+                        <MudTabPanel Text="Bio">
                             <CaseBio ParticipantId="@Id" />
                         </MudTabPanel>
                         <MudTabPanel Text="Documents">
