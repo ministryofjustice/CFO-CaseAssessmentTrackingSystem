@@ -1,0 +1,55 @@
+﻿@using Humanizer
+<MudCard Style="Height: 100%;">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Pathway Plan</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (HasPathwayPlan)
+        {
+
+            @if (HasPathwayBeenReviewed)
+            {
+                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                    <MudText><strong>Last Reviewed</strong></MudText>
+                    <MudTooltip Text="@ParticipantSummaryDto.PathwayPlan!.LastReviewed!.Value.ToString("dd/MM/yyyy hh:mm")">
+                        <MudText>
+                            @ParticipantSummaryDto.PathwayPlan!.LastReviewed!.Value.Humanize()
+                        </MudText>
+                    </MudTooltip>
+                </MudStack>
+            }
+            else
+            {
+                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                    <MudText><strong>Date Created</strong></MudText>
+                    <MudTooltip Text="@ParticipantSummaryDto.PathwayPlan!.Created.ToString("dd/MM/yyyy hh:mm")">
+                        <MudText>
+                            @ParticipantSummaryDto.PathwayPlan!.Created.Humanize()
+                        </MudText>
+                    </MudTooltip>
+                </MudStack>
+            }
+
+            @if (HasPathwayBeenReviewed)
+            {
+                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                    <MudText><strong>Reviewed By</strong></MudText>
+                    <MudText>@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.LastReviewedBy!).DisplayName</MudText>
+                </MudStack>
+            }
+            else
+            {
+                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                    <MudText><strong>Created By</strong></MudText>
+                    <MudText>@UserService.DataSource.First(u => u.Id == ParticipantSummaryDto.PathwayPlan!.CreatedBy).DisplayName</MudText>
+                </MudStack>
+            }
+        }
+        else
+        {
+            <MudText>No pathway plan found.</MudText>
+        }
+    </MudCardContent>
+</MudCard>

@@ -1,0 +1,92 @@
+﻿@using Cfo.Cats.Domain.Common.Enums
+@inherits CatsComponentBase
+
+<MudCard Style="Height: 100%;">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Latest Pre-Release Inventory (PRI)</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent Class="d-flex justify-space-between align-center">
+
+        @if (_latestPRI is null)
+        {
+            <MudText Typo="Typo.body2">@_noPriInfo</MudText>
+        }
+        else
+        {
+            <div>
+                <dl class="description-list">
+                    <div class="description-pair">
+                        <dt>
+                            <MudText Typo="Typo.subtitle2">Date Created</MudText>
+                        </dt>
+                        <dd>
+                            <MudText Typo="Typo.body2">@_latestPRI.Created.ToString("dd/MM/yyyy")</MudText>
+                        </dd>
+                    </div>
+
+                    @if (_latestPRI.Status == PriStatus.Completed || _latestPRI.Status == PriStatus.Abandoned)
+                    {
+                        <div class="description-pair">
+                            <dt>
+                                <MudText Typo="Typo.subtitle2">Date @_latestPRI.Status.Name</MudText>
+                            </dt>
+                            <dd>
+                                <MudText Typo="Typo.body2">@_latestPRI.CompletedOn?.ToString("dd/MM/yyyy")</MudText>
+                            </dd>
+                        </div>
+
+                        <div class="description-pair">
+                            <dt>
+                                <MudText Typo="Typo.subtitle2">@_latestPRI.Status.Name By</MudText>
+                            </dt>
+                            <dd>
+                                <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == _latestPRI.CompletedBy).DisplayName </MudText>
+                            </dd>
+                        </div>
+
+                        if (_latestPRI.Status == PriStatus.Abandoned)
+                        {
+                            <div class="description-pair">
+                                <dt>
+                                    <MudText Typo="Typo.subtitle2">@_latestPRI.Status.Name Reason</MudText>
+                                </dt>
+                                <dd>
+                                    <MudText Typo="Typo.body2">@_latestPRI.AbandonReason</MudText>
+                                </dd>
+                            </div>
+                        }
+                    }
+
+                    @if (_showTTGDue)
+                    {
+                        <div class="description-pair">
+                            <dt>
+                                <MudText Typo="Typo.subtitle2">TTG Due</MudText>
+                            </dt>
+                            <dd>
+                                <MudTooltip Text="@_priDueTooltipText">
+                                    <MudIcon Icon="@_priDueIcon" Size="@Size.Small" Color="@_priDueIconColor" />
+                                    <MudText Typo="Typo.body2">
+                                        @_priDueInfo
+                                    </MudText>
+                                </MudTooltip>
+                            </dd>
+                        </div>
+                    }
+                </dl>
+            </div>
+        }
+    </MudCardContent>
+    <MudCardActions>
+
+        @if (CanAddPRI())
+        {
+            <MudTooltip Text="Create PRI">
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginPRI" />
+            </MudTooltip>
+        }
+
+    </MudCardActions>
+</MudCard>
