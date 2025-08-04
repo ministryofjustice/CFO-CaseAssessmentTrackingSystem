@@ -3,13 +3,11 @@
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.MessageBus
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
-@using Rebus.Bus
+@using Cfo.Cats.Application.Outbox
 @using Cfo.Cats.Application.SecurityConstants
 
 @inherits CatsComponentBase
-@inject IDialogService DialogService
-@inject NavigationManager NavigationManager
-@inject IBus Bus;
+
 
 <MudMenu ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft">
     <ActivatorContent>
@@ -58,7 +56,8 @@
     </ChildContent>
 </MudMenu>
 
-@code {
+@code
+{
     private bool _canForceUpdate;
 
     [CascadingParameter]
@@ -248,11 +247,12 @@
         var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Force data sync", parameters, options);
         var result = await dialog.Result;
 
-        if (!result!.Canceled)
+        if (result!.Canceled == false)
         {
             var sync = new SyncParticipantCommand(Participant.Id);
-            await Bus.Publish(sync);
-            await OnUpdate.InvokeAsync();
+            var unitOfWork = GetNewUnitOfWork();
+            await unitOfWork.DbContext.InsertOutboxMessage(sync);
+            await unitOfWork.SaveChangesAsync();
         }
     }
 

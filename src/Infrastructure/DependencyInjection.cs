@@ -477,69 +477,86 @@ public static class DependencyInjection
                         .WithDescription(SyncParticipantsJob.Description)
                 );
 
-                quartz.AddTrigger(opts => opts
-                    .ForJob(SyncParticipantsJob.Key)
-                    .WithIdentity($"{SyncParticipantsJob.Key}-trigger")
-                    .WithDescription(SyncParticipantsJob.Description)
-                    .WithCronSchedule(syncParticipantsJobOptions.CronSchedule));
+               foreach(var schedule in syncParticipantsJobOptions.CronSchedules)
+               {
+                   quartz.AddTrigger(opts => opts
+                       .ForJob(SyncParticipantsJob.Key)
+                       .WithDescription(schedule.Description)
+                       .WithCronSchedule(schedule.Chron));
+               }
+
             }
-
-            if (options.GetSection(DisableDormantAccountsJob.Key.Name).Get<JobOptions>() is
-                { Enabled: true } disableDormantAccountsJobOptions)
-            {
-                quartz.AddJob<DisableDormantAccountsJob>(opts => 
-                    opts.WithIdentity(DisableDormantAccountsJob.Key)
-                        .WithDescription(DisableDormantAccountsJob.Description));
-
-                quartz.AddTrigger(opts => opts
-                    .ForJob(DisableDormantAccountsJob.Key)
-                    .WithIdentity($"{DisableDormantAccountsJob.Key}-trigger")
-                    .WithDescription(DisableDormantAccountsJob.Description)
-                    .WithCronSchedule(disableDormantAccountsJobOptions.CronSchedule));
-            }
-
-            if (options.GetSection(NotifyAccountDeactivationJob.Key.Name).Get<JobOptions>() is
-                { Enabled: true } notifyAccountDeactivationJobOptions)
-            {
-                quartz.AddJob<NotifyAccountDeactivationJob>(opts => 
-                    opts.WithIdentity(NotifyAccountDeactivationJob.Key)
-                        .WithDescription(NotifyAccountDeactivationJob.Description));
-
-                quartz.AddTrigger(opts => opts
-                    .ForJob(NotifyAccountDeactivationJob.Key)
-                    .WithIdentity($"{NotifyAccountDeactivationJob.Key}-trigger")
-                    .WithDescription(NotifyAccountDeactivationJob.Description)
-                    .WithCronSchedule(notifyAccountDeactivationJobOptions.CronSchedule));
-            }
-
-            if (options.GetSection(PublishOutboxMessagesJob.Key.Name).Get<JobOptions>() is
-                { Enabled: true } publishOutboxMessagesOptions)
+            
+            if (options.GetSection(PublishOutboxMessagesJob.Key.Name).Get<JobOptions>() is 
+                { Enabled: true } publishOutboxMessagesJob)
             {
                 quartz.AddJob<PublishOutboxMessagesJob>(opts => 
                     opts.WithIdentity(PublishOutboxMessagesJob.Key)
-                        .WithDescription(PublishOutboxMessagesJob.Description));
+                        .WithDescription(PublishOutboxMessagesJob.Description)
+                );
 
-                quartz.AddTrigger(opts => opts
-                    .ForJob(PublishOutboxMessagesJob.Key)
-                    .WithIdentity($"{PublishOutboxMessagesJob.Key}-trigger")
-                    .WithDescription(PublishOutboxMessagesJob.Description)
-                    .WithCronSchedule(publishOutboxMessagesOptions.CronSchedule));
+                foreach(var schedule in publishOutboxMessagesJob.CronSchedules)
+                {
+                    quartz.AddTrigger(opts => opts
+                        .ForJob(PublishOutboxMessagesJob.Key)
+                        .WithDescription(schedule.Description)
+                        .WithCronSchedule(schedule.Chron));
+                }
+
+            }
+            
+            if (options.GetSection(DisableDormantAccountsJob.Key.Name).Get<JobOptions>() is 
+                { Enabled: true } disableDormantAccountsJob)
+            {
+                quartz.AddJob<DisableDormantAccountsJob>(opts => 
+                    opts.WithIdentity(DisableDormantAccountsJob.Key)
+                        .WithDescription(DisableDormantAccountsJob.Description)
+                );
+
+                foreach(var schedule in disableDormantAccountsJob.CronSchedules)
+                {
+                    quartz.AddTrigger(opts => opts
+                        .ForJob(DisableDormantAccountsJob.Key)
+                        .WithDescription(schedule.Description)
+                        .WithCronSchedule(schedule.Chron));
+                }
+
+            }
+            
+            if (options.GetSection(NotifyAccountDeactivationJob.Key.Name).Get<JobOptions>() is 
+                { Enabled: true } notifyAccountDeactivationJob)
+            {
+                quartz.AddJob<NotifyAccountDeactivationJob>(opts => 
+                    opts.WithIdentity(NotifyAccountDeactivationJob.Key)
+                        .WithDescription(NotifyAccountDeactivationJob.Description)
+                );
+
+                foreach(var schedule in notifyAccountDeactivationJob.CronSchedules)
+                {
+                    quartz.AddTrigger(opts => opts
+                        .ForJob(NotifyAccountDeactivationJob.Key)
+                        .WithDescription(schedule.Description)
+                        .WithCronSchedule(schedule.Chron));
+                }
+
             }
 
             if (options.GetSection(GenerateOutcomeQualityDipSamplesJob.Key.Name).Get<JobOptions>() is
-                { Enabled: true } generateDipSamplesJobOptions)
+                { Enabled: true } generateOutcomeQualityDipSamplesJob)
             {
                 quartz.AddJob<GenerateOutcomeQualityDipSamplesJob>(opts =>
                     opts.WithIdentity(GenerateOutcomeQualityDipSamplesJob.Key)
-                        .WithDescription(GenerateOutcomeQualityDipSamplesJob.Description));
+                        .WithDescription(GenerateOutcomeQualityDipSamplesJob.Description)
+                );
 
-                quartz.AddTrigger(opts => opts
-                    .ForJob(GenerateOutcomeQualityDipSamplesJob.Key)
-                    .WithIdentity($"{GenerateOutcomeQualityDipSamplesJob.Key}-trigger")
-                    .WithDescription(GenerateOutcomeQualityDipSamplesJob.Description)
-                    .WithCronSchedule(generateDipSamplesJobOptions.CronSchedule));
+                foreach (var schedule in generateOutcomeQualityDipSamplesJob.CronSchedules)
+                {
+                    quartz.AddTrigger(opts => opts
+                        .ForJob(GenerateOutcomeQualityDipSamplesJob.Key)
+                        .WithDescription(schedule.Description)
+                        .WithCronSchedule(schedule.Chron));
+                }
             }
-
         });
 
         services.AddQuartzServer(options =>
