@@ -13,6 +13,13 @@ public partial class JobManagement
     private bool _isTriggering = false;
     private string? _message = string.Empty;
     private IScheduler? _scheduler;
+    private TableGroupDefinition<JobDetailInfo>? _groupDefinition = new()
+    {
+        GroupName="Job",
+        Indentation = false,
+        Expandable = false,
+        Selector = (e) => e.JobName
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,6 +82,7 @@ public partial class JobManagement
                             TriggerState = triggerState.ToString(),
                             NextFireTime = trigger.GetNextFireTimeUtc()?.DateTime,
                             PreviousFireTime = trigger.GetPreviousFireTimeUtc()?.DateTime,
+                            TriggerDescription = trigger.Description ?? string.Empty,
                         });
                     }
                 }
@@ -135,6 +143,9 @@ public partial class JobManagement
         public string Group { get; set; } = default!;
         public string Description { get; set; } = default!;
         public string TriggerState { get; set; } = default!;
+
+        public string TriggerDescription { get; set; } = default!;
+
         public DateTime? NextFireTime { get; set; } = default!;
         public DateTime? PreviousFireTime { get; set; } = default!;
     }

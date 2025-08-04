@@ -24,7 +24,7 @@ public class SyncParticipantCommandHandler(
 
         try
         {
-            using var scope = logger.BeginScope("Sync for Participant: {Id}", [participant.Id]);
+            using var scope = logger.BeginScope("Sync for Participant: {ParticipantId}", participant.Id);
 
             var result = await candidateService.GetByUpciAsync(participant.Id);
 
@@ -89,7 +89,7 @@ public class SyncParticipantCommandHandler(
             // Dispatch events and commit transaction
             await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, CancellationToken.None);
             await unitOfWork.CommitTransactionAsync();
-            logger.LogDebug($"Finished syncing {participant.Id}");
+            logger.LogDebug("Finished syncing {ParticipantId}", participant.Id);
         }
 
         catch (Exception e)

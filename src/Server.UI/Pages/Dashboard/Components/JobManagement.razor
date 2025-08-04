@@ -1,5 +1,14 @@
 ﻿
+<style>
+    .mud-table-cell-custom-group {
+        font-weight: 500;
+    }
 
+    .mud-table-cell-custom-group-footer {
+        padding-bottom: 50px;
+        text-align: right;
+    }
+</style>
 
 <MudItem xs="12">
     <MudCard style="height:100%">
@@ -18,23 +27,22 @@
         </MudCardHeader>
         <MudCardContent>
 
-            <MudTable Items="JobDetails" Hover="true" Breakpoint="Breakpoint.Sm">
+            <MudTable 
+                Items="JobDetails" 
+                Hover="true" 
+                Breakpoint="Breakpoint.Sm"
+                GroupBy="@_groupDefinition"
+                GroupHeaderStyle="background-color:var(--mud-palette-background-gray)">
                 <HeaderContent>
-                    <MudTh>Name</MudTh>
-                    <MudTh>Description</MudTh>
+                    <MudTh>Trigger</MudTh>
                     <MudTh>State</MudTh>
                     <MudTh>Next Scheduled</MudTh>
                     <MudTh>Last Scheduled</MudTh>
-                    <MudTh>Actions</MudTh>
                 </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel="Name">@context.JobName</MudTd>
-                    <MudTd DataLabel="Description">@context.Description</MudTd>
-                    <MudTd DataLabel="State">@context.TriggerState</MudTd>
-                    <MudTd DataLabel="Next Scheduled">@context.NextFireTime</MudTd>
-                    <MudTd DataLabel="Last Scheduled">@context.PreviousFireTime</MudTd>
-                    <MudTd DataLabel="Actions"> 
-                        <MudButton Disabled="@(_isTriggering || (_scheduler?.InStandbyMode ?? false))" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => TriggerJob(context.JobName!)">
+                <GroupHeaderTemplate>
+                    <MudTh Class="mud-table-cell-custom-group" colspan="3">@context.Key: @context.Items.First().Description</MudTh>
+                    <MudTh Class="mud-table-cell-custom-group">
+                        <MudButton Disabled="@(_isTriggering || (_scheduler?.InStandbyMode ?? false))" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => TriggerJob(context.Key!.ToString()!)">
                             @if(_isTriggering)
                             {
                                 <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
@@ -45,7 +53,13 @@
                                 <MudText>Trigger</MudText>
                             }
                         </MudButton>
-                    </MudTd>
+                    </MudTh>
+                </GroupHeaderTemplate>
+                <RowTemplate>
+                    <MudTd DataLabel="Trigger">@context.TriggerDescription</MudTd>
+                    <MudTd DataLabel="State">@context.TriggerState</MudTd>
+                    <MudTd DataLabel="Next Scheduled">@context.NextFireTime</MudTd>
+                    <MudTd DataLabel="Last Scheduled">@context.PreviousFireTime</MudTd>
                 </RowTemplate>
             </MudTable>
         </MudCardContent>

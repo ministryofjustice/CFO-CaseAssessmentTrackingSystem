@@ -2,7 +2,7 @@
 
 public static class OutboxExtensions
 {
-    internal static async Task InsertOutboxMessage<T>(
+    public static async Task InsertOutboxMessage<T>(
         this IApplicationDbContext context,
         T message)
         where T : notnull

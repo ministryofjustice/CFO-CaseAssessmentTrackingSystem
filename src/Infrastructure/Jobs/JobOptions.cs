@@ -3,5 +3,11 @@
 public class JobOptions
 {
     public bool Enabled { get; set; }
-    public string CronSchedule { get; set; } = string.Empty;
+    public Schedule[] CronSchedules { get; set; } = [];
+}
+
+public class Schedule
+{
+    public string Chron { get; set; } = default!;
+    public string Description { get; set; } = default!;
 }
