@@ -8,6 +8,5 @@ public class SendTwoFactorEmailCodeNotificationHandler(
     public async Task Handle(SendTwoFactorEmailCodeNotification notification, CancellationToken cancellationToken)
     {
         await communicationsService.SendEmailCodeAsync(notification.Email, notification.AuthenticatorCode);
-        logger.LogInformation("Verification Code email sent to {UserName})", notification.UserName);
     }
 }
