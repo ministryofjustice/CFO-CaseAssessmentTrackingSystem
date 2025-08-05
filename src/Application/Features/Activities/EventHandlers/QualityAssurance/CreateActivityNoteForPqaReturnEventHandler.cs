@@ -11,7 +11,10 @@ public class CreateActivityNoteForPqaReturnEventHandler : INotificationHandler<A
         {
             // if the PQA has returned the activity, add the notes to the generic notes for now 
             // so the caseworker has visibility
-            var n = returned.Notes.First();
+
+            var n = returned.Notes
+                .Last();
+
             returned.Participant!.AddNote(new Note
             {
                 Message = n.Message,
