@@ -143,7 +143,11 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>(
             (p, m) => {
                 m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
-                m.UseSqlServer(configuration.GetConnectionString("CatsDb")!);
+                m.UseSqlServer(configuration.GetConnectionString("CatsDb")!,
+                    options =>
+                    {
+                        options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    });
             });
         
         services.AddDbContextFactory<ApplicationDbContext>((serviceProvider, optionsBuilder) =>
@@ -152,7 +156,7 @@ public static class DependencyInjection
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("CatsDb")!,
                 options =>
                 {
-                    // options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                 });
         }, ServiceLifetime.Scoped);
 

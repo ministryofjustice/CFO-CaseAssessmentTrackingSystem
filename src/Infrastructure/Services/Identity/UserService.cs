@@ -26,7 +26,6 @@ public class UserService(IMapper mapper, IServiceScopeFactory scopeFactory, ILog
                         select a;
 
             var list = query
-                        .AsSplitQuery()
                         .ProjectTo<ApplicationUserDto>(mapper.ConfigurationProvider)
                         .ToList();
             return list.AsReadOnly();
