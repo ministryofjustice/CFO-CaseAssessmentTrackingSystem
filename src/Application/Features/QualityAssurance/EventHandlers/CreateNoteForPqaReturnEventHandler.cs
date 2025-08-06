@@ -12,7 +12,10 @@ public class CreateNoteForPqaReturnEventHandler : INotificationHandler<Enrolment
         {
             // if the PQA has returned the submission, add the notes to the generic notes for now 
             // so the caseworker has visibility
-            var n = returned.Notes.First();
+
+            var n = returned.Notes
+                .Last();
+
             returned.Participant!.AddNote(new Note
             {
                 Message = n.Message,
