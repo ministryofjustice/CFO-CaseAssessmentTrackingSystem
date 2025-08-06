@@ -1,5 +1,7 @@
 @using Cfo.Cats.Application.Features.Inductions.Commands
 @using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
 @inherits CatsComponentBase
 
 @inject IValidationService Validator
@@ -18,10 +20,18 @@
                                            ImmediateText="true" Editable="false" MaxDate="DateTime.Today.Date" MinDate="DateTime.Today.AddMonths(-3)" />
                         </MudItem>
                         <MudItem xs="12">
-                            <MudAutocomplete T="LocationDto" Label="@Model.GetMemberDescription(x => x.Location)" @bind-Value="Model.Location" SearchFunc="@SearchLocations"
+                            @if(LocationWarning!=string.Empty)
+                            {
+                                <MudChip T="string" Text=@LocationWarning Size="Size.Medium" Color="Color.Warning"
+                                         Icon="@Icons.Material.Filled.WarningAmber" />
+                            }
+                            <MudAutocomplete T="LocationDto" Label="@Model.GetMemberDescription(x => x.Location)"                                             
+                                             SearchFunc="@SearchLocations"
                                              Required="true" RequiredError="Location is required"
                                              ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
-                                             AdornmentColor="Color.Primary" ToStringFunc="@(e => e == null ? null : e.Name)"/>
+                                             AdornmentColor="Color.Primary" ToStringFunc="@(e => e == null ? null : e.Name)"                                             
+                                             Value="@Model.Location"
+                                             ValueChanged="@OnLocationChanged" />
                         </MudItem>
                     </MudGrid>
                 </MudForm>
@@ -52,6 +62,10 @@
 
     private bool saving;
 
+    private string LocationWarning = String.Empty;
+
+    public Task<bool> CheckParticipantWasAtLocationCheck { get; set; } = default!;
+        
     private void Cancel()
     { 
         MudDialog.Cancel();
@@ -95,4 +109,26 @@
         return await Task.FromResult(Locations!.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)));
     }
 
+    private async Task OnLocationChanged(LocationDto? selected)
+    {
+        Model!.Location = selected;
+
+        if (selected is not null && Model.InductionDate is not null)
+        {
+            var query = new GetParticipantWasAtThisLocationCheck.Query()
+                {
+                    ParticipantId = Model.ParticipantId,
+                    LocationId = selected.Id,
+                    DateAtLoction = Model.InductionDate
+                };
+
+            if (await GetNewMediator().Send(query) == false)
+            {
+                LocationWarning = $"Participant was not at {selected.Name} on selected date.";
+                return;
+            }
+        }
+
+        LocationWarning = string.Empty;
+    }
 }

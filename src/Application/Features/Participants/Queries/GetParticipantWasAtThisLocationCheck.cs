@@ -1,0 +1,62 @@
+﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.SecurityConstants;
+
+namespace Cfo.Cats.Application.Features.Participants.Queries;
+
+public static class GetParticipantWasAtThisLocationCheck
+{
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
+    public class Query : IRequest<bool>
+    {
+        public required string ParticipantId { get; set; }
+        public required int LocationId { get; set; }
+
+        public required DateTime? DateAtLoction { get; set; }
+    }
+
+    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, bool>
+    {
+        public async Task<bool> Handle(Query request, CancellationToken cancellationToken)
+        {
+            var db = unitOfWork.DbContext;
+
+            var locationOnDate = await
+                 db.ParticipantLocationHistories
+                .Where(plh => plh.ParticipantId == request.ParticipantId                 
+                && plh.From <= request.DateAtLoction)
+                .OrderByDescending(x => x.From)
+                 .FirstOrDefaultAsync();
+
+            return locationOnDate != null && locationOnDate.LocationId == request.LocationId;
+        }
+    }
+
+    public class Validator : AbstractValidator<Query>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public Validator(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleFor(x => x.ParticipantId)
+                .NotNull();
+
+            RuleFor(x => x.ParticipantId)
+                .Length(9)
+                .Matches(ValidationConstants.AlphaNumeric)
+                .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                RuleFor(c => c.ParticipantId)
+                    .MustAsync(Exist)
+                    .WithMessage("Participant does not exist");
+            });
+        }
+
+        private async Task<bool> Exist(string identifier, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
+    }
+}
