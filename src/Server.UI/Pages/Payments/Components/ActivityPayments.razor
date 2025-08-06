@@ -216,7 +216,7 @@
         <MudItem xs="12" md="6">
             @if(_loading is false)
             {
-                <ApexChart TItem="ActivityPaymentSummaryDto" Title="Activities By Contract">
+                <ApexChart TItem="ActivityPaymentSummaryDto" Title="Activities By Contract" Options="@Options">
                     <ApexPointSeries TItem="ActivityPaymentSummaryDto"
                                         Items="SummaryData"
                                         Name="@ActivityType.SupportWork.Name"

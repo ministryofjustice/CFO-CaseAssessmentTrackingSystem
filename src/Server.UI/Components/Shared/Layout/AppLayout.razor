@@ -1,8 +1,6 @@
 ﻿@layout MainLayout
-@using Cfo.Cats.Server.UI.Services.UserPreferences
 @inherits LayoutComponentBase
 
-@inject LayoutService LayoutService
 @inject IWebHostEnvironment Env
 
 <MudLayout>
@@ -12,12 +10,8 @@
         </NotAuthorized>
         <Authorized>
             <HeaderMenu NavigationMenuDrawerOpen="_navigationMenuDrawerOpen"
-            OpenSearchDialog="OpenSearchDialog"
-            OpenPreferencesDialog="OpenPreferencesDialog"
-            IsDarkMode="@LayoutService.IsDarkMode"
-            ToggleNavigationMenuDrawer="ToggleNavigationMenuDrawer"
-            RightToLeft="false"
-            RightToLeftToggle="LayoutService.ToggleRightToLeft"/>
+                        OpenSearchDialog="OpenSearchDialog"
+                        ToggleNavigationMenuDrawer="ToggleNavigationMenuDrawer"/>
             <NavigationMenu DrawerOpen="_navigationMenuDrawerOpen" Roles="@_userProfile?.AssignedRoles"
             DrawerOpenChanged="NavigationMenuDrawerOpenChangedHandler"/>
             <MudMainContent>
@@ -55,8 +49,6 @@
         _userProfile = state.User.GetUserProfileFromClaim();
     }
 
-
-
     protected override void OnParametersSet()
     {
         ResetBoundary();
@@ -73,27 +65,9 @@
         _navigationMenuDrawerOpen = state;
     }
 
-
     protected void ToggleNavigationMenuDrawer()
     {
         _navigationMenuDrawerOpen = !_navigationMenuDrawerOpen;
-    }
-
-    private async Task OpenPreferencesDialog()
-    {
-        var options = new DialogOptions()
-        {
-            NoHeader = false,
-            MaxWidth = MaxWidth.Medium,
-            FullWidth = true
-        };
-
-        var parameters = new DialogParameters<ThemesDialog>
-        {
-            { x => x.UserPreferences, @LayoutService.UserPreferences }
-        };
-
-        await DialogService.ShowAsync<ThemesDialog>("", parameters, options);
     }
 
     private async Task OpenSearchDialog()

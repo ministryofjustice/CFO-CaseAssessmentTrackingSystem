@@ -1,4 +1,4 @@
-﻿@attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
+﻿@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
 
 @page "/pages/analytics/outcome-quality-dip-sampling/{SampleId:guid}"
 
@@ -15,139 +15,140 @@
 }
 else
 {
-    <CatsBreadcrumbs Items="@Items"></CatsBreadcrumbs>
-
-
-    <MudContainer Style="height: 100%; width: 100%; min-width: 480px" MaxWidth="MaxWidth.ExtraExtraLarge" Class="my-2">
-        <MudDataGrid @ref="_table"
-                     T="DipSampleParticipantSummaryDto"
-                     ServerData="@(ServerReload)"
-                     Loading="@_loading"
-                     FixedHeader="true"
-                     FixedFooter="true"
-                     Virtualize="true"
-                     Hover="false"
-                     Breakpoint="Breakpoint.Sm"
-                     Dense="true"
-                     Striped="true"
-                     Bordered="false">
-            <ToolBarContent>
-                <MudForm Model="Query" FieldChanged="RefreshAsync" Style="display: contents">
-                    <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large"/>
-                    <MudText Typo="Typo.caption" Class="mr-2">Sample</MudText>
-                    <MudSwitch Label="Only show in progress" Color="Color.Primary" Class="mr-2" @bind-Value="Query.OnlyShowInProgress"/>
-                    <MudSpacer/>
-                    <MudStack>
-                        <MudStack Row="true">
-                            <MudButton Disabled="true"
-                                       Variant="Variant.Outlined"
-                                       Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Download"
-                                       Size="Size.Small"
-                                       OnClick="OnExport"
-                                       IconColor="Color.Surface">
-                                @if (_downloading)
-                                {
-                                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                                    <MudText Class="ms-2">@ConstantString.Downloading</MudText>
-                                }
-                                else
-                                {
-                                    <MudText>@ConstantString.Export</MudText>
-                                }
-                            </MudButton>
-                        </MudStack>
-                        <MudTextField DebounceInterval="500" @bind-Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
-                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
-                        </MudTextField>
-                    </MudStack>
-                </MudForm>
-            </ToolBarContent>
-            <ColGroup>
-                <col style="width: 50px;"/>
-                <col/>
-                <col/>
-                <col/>
-                <col/>
-                <col/>
-                <col/>
-            </ColGroup>
-            <Columns>
-                <TemplateColumn Title="@ConstantString.Actions" Sortable="false">
-                    <CellTemplate>
-                        <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
-                                 Dense="true"
-                                 EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
-                            <MudMenuItem Href="@($"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/{context.Item.ParticipantId}")">
-                                @ConstantString.Review
-                            </MudMenuItem>
-                            <MudMenuItem Href="@($"/pages/participants/{context.Item.ParticipantId}")">
-                                @ConstantString.ViewParticipant
-                            </MudMenuItem>
-                        </MudMenu>
-                    </CellTemplate>
-                </TemplateColumn>
-                <PropertyColumn Property="x => x.ParticipantFullName" Title="Participant" Sortable="false">
-                    <CellTemplate>
-                        <MudStack>
-                            <MudText Typo="Typo.body2">@context.Item.ParticipantFullName</MudText>
-                            <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
-                        </MudStack>
-                    </CellTemplate>
-                </PropertyColumn>
-                <PropertyColumn Property="x => x.LocationType"
-                                Title="Type"
-                                SortBy="x => x.LocationType"/>
-                <PropertyColumn Property="x => x.CurrentLocationName"
-                                Title="Current Location"
-                                SortBy="x => x.CurrentLocationName"/>
-                <PropertyColumn Property="x => x.EnrolmentLocationName"
-                                Title="Enrolled At"
-                                SortBy="x => x.EnrolmentLocationName"/>
-                <PropertyColumn Property="x => x.ParticipantOwner"
-                                Title="Support Worker"
-                                SortBy="x => x.ParticipantOwner"/>
-                <PropertyColumn Property="x => x.ReviewedBy" Title="Reviewed by" Sortable="false">
-                    <CellTemplate>
-                        <MudStack>
-                            <MudText Typo="Typo.body2">@context.Item.ReviewedBy</MudText>
-                            <MudText Typo="Typo.body2">@context.Item.ReviewedOn</MudText>
-                        </MudStack>
-                    </CellTemplate>
-                </PropertyColumn>
-                <TemplateColumn Title="CSO Status"
-                                SortBy="x => x.CsoComplianceAnswer">
-                    <CellTemplate>
-                        <MudStack>
-
-                            @{
-                                (string Icon, Color Colour, bool Disabled) chipDetails = context.Item.CsoComplianceAnswer switch
-                                {
-                                    var a when a == ComplianceAnswer.Unsure => (Icons.Material.Filled.WarningAmber, Color.Warning, a.IsAuto),
-                                    { IsAnswer: false } => (Icons.Material.Filled.Pending, Color.Default, false),
-                                    { IsAccepted: true } a => (Icons.Material.Filled.CheckCircle, Color.Success, a.IsAuto),
-                                    { IsAccepted: false } a => (Icons.Material.Filled.ErrorOutline, Color.Error, a.IsAuto),
-                                    var a => (Icons.Material.Filled.ErrorOutline, Color.Error, true)
-                                };
-                            }
-
-                            <MudChip Icon="@chipDetails.Icon" Color="@chipDetails.Colour" Size="Size.Small" Disabled="@chipDetails.Disabled">
-                                @context.Item.CsoComplianceAnswer.Name
-                            </MudChip>
-
-                        </MudStack>
-                    </CellTemplate>
-                </TemplateColumn>
-            </Columns>
-            <NoRecordsContent>
-                <MudText>@ConstantString.NoRecords</MudText>
-            </NoRecordsContent>
-            <LoadingContent>
-                <MudText>@ConstantString.Loading</MudText>
-            </LoadingContent>
-            <PagerContent>
-                <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })"/>
-            </PagerContent>
-        </MudDataGrid>
-    </MudContainer>
+    <MudText Typo="Typo.h5">
+        Outcome Quality Dip Sample: @sample.ContractName (@($"{sample.PeriodFrom:MMM yyyy}"))
+    </MudText>
 }
+
+<MudContainer Style="height: 100%; width: 100%; min-width: 480px" MaxWidth="MaxWidth.ExtraExtraLarge" Class="my-2">
+    <MudDataGrid @ref="_table"
+                 T="DipSampleParticipantSummaryDto"
+                 ServerData="@(ServerReload)"
+                 Loading="@_loading"
+                 FixedHeader="true"
+                 FixedFooter="true"
+                 Virtualize="true"
+                 Hover="false"
+                 Breakpoint="Breakpoint.Sm"
+                 Dense="true"
+                 Striped="true"
+                 Bordered="false">
+        <ToolBarContent>
+            <MudForm Model="Query" FieldChanged="RefreshAsync" Style="display: contents">
+                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
+                <MudText Typo="Typo.caption" Class="mr-2">Sample</MudText>
+                <MudSwitch Label="Only show in progress" Color="Color.Primary" Class="mr-2" @bind-Value="Query.OnlyShowInProgress" />
+                <MudSpacer />
+                <MudStack>
+                    <MudStack Row="true">
+                        <MudButton Disabled="true"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Download"
+                                   Size="Size.Small"
+                                   OnClick="OnExport"
+                                   IconColor="Color.Surface">
+                            @if (_downloading)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2">@ConstantString.Downloading</MudText>
+                            }
+                            else
+                            {
+                                <MudText>@ConstantString.Export</MudText>
+                            }
+                        </MudButton>
+                    </MudStack>
+                    <MudTextField DebounceInterval="500" @bind-Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                    </MudTextField>
+                </MudStack>
+            </MudForm>
+        </ToolBarContent>
+        <ColGroup>
+            <col style="width: 50px;" />
+            <col />
+            <col />
+            <col />
+            <col />
+            <col />
+            <col />
+        </ColGroup>
+        <Columns>
+            <TemplateColumn Title="@ConstantString.Actions" Sortable="false">
+                <CellTemplate>
+                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                             Dense="true"
+                             EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                        <MudMenuItem Href="@($"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/{context.Item.ParticipantId}")">
+                            @ConstantString.Review
+                        </MudMenuItem>
+                        <MudMenuItem Href="@($"/pages/participants/{context.Item.ParticipantId}")">
+                            @ConstantString.ViewParticipant
+                        </MudMenuItem>
+                    </MudMenu>
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="x => x.ParticipantFullName" Title="Participant" Sortable="false">
+                <CellTemplate>
+                    <MudStack>
+                        <MudText Typo="Typo.body2">@context.Item.ParticipantFullName</MudText>
+                        <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
+                    </MudStack>
+                </CellTemplate>
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.LocationType"
+                            Title="Type"
+                            SortBy="x => x.LocationType" />
+            <PropertyColumn Property="x => x.CurrentLocationName"
+                            Title="Current Location"
+                            SortBy="x => x.CurrentLocationName" />
+            <PropertyColumn Property="x => x.EnrolmentLocationName"
+                            Title="Enrolled At"
+                            SortBy="x => x.EnrolmentLocationName" />
+            <PropertyColumn Property="x => x.ParticipantOwner"
+                            Title="Support Worker"
+                            SortBy="x => x.ParticipantOwner" />
+            <PropertyColumn Property="x => x.ReviewedBy" Title="Reviewed by" Sortable="false">
+                <CellTemplate>
+                    <MudStack>
+                        <MudText Typo="Typo.body2">@context.Item.ReviewedBy</MudText>
+                        <MudText Typo="Typo.body2">@context.Item.ReviewedOn</MudText>
+                    </MudStack>
+                </CellTemplate>
+            </PropertyColumn>
+            <TemplateColumn Title="CSO Status"
+                            SortBy="x => x.CsoComplianceAnswer">
+                <CellTemplate>
+                    <MudStack>
+                    
+                        @{
+                            (string Icon, Color Colour, bool Disabled) chipDetails = context.Item.CsoComplianceAnswer switch
+                            {
+                                var a when a == ComplianceAnswer.Unsure => (Icons.Material.Filled.WarningAmber, Color.Warning, a.IsAuto),
+                                { IsAnswer: false } => (Icons.Material.Filled.Pending, Color.Default, false),
+                                { IsAccepted: true } a => (Icons.Material.Filled.CheckCircle, Color.Success, a.IsAuto),
+                                { IsAccepted: false } a => (Icons.Material.Filled.ErrorOutline, Color.Error, a.IsAuto),
+                                var a => (Icons.Material.Filled.ErrorOutline, Color.Error, true)
+                            };
+                        }
+                        
+                        <MudChip Icon="@chipDetails.Icon" Color="@chipDetails.Colour" Size="Size.Small" Disabled="@chipDetails.Disabled">
+                            @context.Item.CsoComplianceAnswer.Name  
+                        </MudChip>
+                            
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <NoRecordsContent>
+            <MudText>@ConstantString.NoRecords</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>@ConstantString.Loading</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
+        </PagerContent>
+    </MudDataGrid>
+</MudContainer>

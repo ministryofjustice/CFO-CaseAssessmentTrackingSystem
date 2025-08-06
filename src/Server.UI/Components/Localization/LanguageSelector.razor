@@ -2,7 +2,6 @@
 @using Microsoft.Extensions.Options
 @inject NavigationManager Navigation
 @inject IOptions<RequestLocalizationOptions> LocalizationOptions
-@inject LayoutService LayoutService
 @inject IStringLocalizer<HeaderMenu> L
 <MudTooltip Text="@CurrentLanguage">
     <MudMenu Class="mx-1" Icon="@Icons.Material.Outlined.Language" Color="Color.Tertiary" Dense="true">
@@ -39,16 +38,6 @@
     {
         CurrentLanguage = languageCode;
         Navigation.NavigateTo(Navigation.BaseUri + "?culture=" + languageCode, true);
-
-        if (new CultureInfo(languageCode).TextInfo.IsRightToLeft)
-        {
-            await LayoutService.SetRightToLeft();
-        }
-        else
-        {
-            await LayoutService.SetLeftToRight();
-        }
-
         await Task.CompletedTask;
     }
 }

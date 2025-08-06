@@ -14,6 +14,9 @@ public partial class ActivityPayments
     private bool _loading;
     private bool _downloading;
 
+    [CascadingParameter(Name = "IsDarkMode")]
+    public bool IsDarkMode { get; set; }
+
     [Parameter, EditorRequired] public bool DataView { get; set; }
 
     [Parameter, EditorRequired] public int Month { get; set; }
@@ -23,6 +26,14 @@ public partial class ActivityPayments
     [Parameter] public ContractDto? Contract { get; set; }
 
     [CascadingParameter] public UserProfile CurrentUser { get; set; } = default!;
+
+    public ApexChartOptions<ActivityPaymentSummaryDto> Options => new()
+    {
+        Theme = new Theme
+        {
+            Mode = IsDarkMode ? Mode.Dark : Mode.Light
+        }
+    };
 
     ActivityPaymentDto[] Payments = [];
     List<ActivityPaymentSummaryDto> SummaryData = [];

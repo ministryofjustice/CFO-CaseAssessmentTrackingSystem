@@ -144,7 +144,8 @@
             @if(_loading is false)
             {
                 <ApexChart TItem="SupportAndReferralPaymentSummaryDto"
-                           Title="Support &amp; Referral By Contract">
+                           Title="Support &amp; Referral By Contract"
+                           Options="@Options">
                     <ApexPointSeries TItem="SupportAndReferralPaymentSummaryDto"
                                      Items="SummaryData"
                                      Name="Pre-Release Support"

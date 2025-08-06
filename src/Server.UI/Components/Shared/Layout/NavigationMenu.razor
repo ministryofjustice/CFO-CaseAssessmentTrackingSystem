@@ -1,7 +1,6 @@
 ﻿@using Cfo.Cats.Server.UI.Models.NavigationMenu
 @using Cfo.Cats.Server.UI.Services.Navigation
 @inject IMenuService MenuService
-@inject LayoutService LayoutService
 @inject IStringLocalizer<NavigationMenu> L
 
 <MudDrawer Breakpoint="Breakpoint.Md"
@@ -24,7 +23,7 @@
             @if (section is not null)
             {
 
-                <div class="@(LayoutService.IsRTL ? "mr-6" : "ml-6") my-3">
+                <div class="ml-6 my-3">
                     <MudText Typo="Typo.caption">
                         <b>
                             @(L[section.Title])
@@ -88,22 +87,8 @@
 </MudDrawer>
 
 
-@if (LayoutService.IsRTL)
-{
-    <style>
-        .mud-nav-link.active:not(.mud-nav-link-disabled) {
-            border-left: 3px solid var(--mud-palette-primary);
-            background-color: rgba(var(--mud-palette-primary-rgb), 0.1);
-        }
 
-        .side-menu {
-            border-left: 1px solid var(--mud-palette-table-lines)
-        }
-    </style>
-}
-else
-{
-    <style>
+<style>
         .mud-nav-link.active:not(.mud-nav-link-disabled) {
             border-right: 3px solid var(--mud-palette-primary);
         }
@@ -112,7 +97,6 @@ else
             border-right: 1px solid var(--mud-palette-table-lines)
         }
     </style>
-}
 
 @code
 {

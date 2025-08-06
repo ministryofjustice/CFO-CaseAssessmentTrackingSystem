@@ -3,7 +3,8 @@
 @inject IWebHostEnvironment Env
 
 <MudRTLProvider>
-    <MudThemeProvider Theme="Constants.Theme.ApplicationTheme(PrimaryColour)"/>
+    <MudThemeProvider 
+        Theme="_theme" />
     <MudLayout>
         <AuthorizeView>
             <NotAuthorized>
@@ -44,13 +45,3 @@
         </AuthorizeView>
     </MudLayout>
 </MudRTLProvider>
-
-
-
-@code
-{
-   [Inject]
-   protected IConfiguration Configuration { get; set; } = default!;
-
-   protected string PrimaryColour => Configuration["PrimaryColour"] ?? Constants.Theme.DefaultPrimaryColour;
-}

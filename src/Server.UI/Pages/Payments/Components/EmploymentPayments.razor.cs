@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Application.Common.Security;
+﻿using ApexCharts;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
 using Cfo.Cats.Application.Features.Payments.Commands;
 using Cfo.Cats.Application.Features.Payments.DTOs;
@@ -26,6 +27,17 @@ public partial class EmploymentPayments
     List<EmploymentPaymentSummaryDto> SummaryData = [];
 
     GetEmploymentPayments.Query? Query;
+
+    [CascadingParameter(Name = "IsDarkMode")]
+    public bool IsDarkMode { get; set; }
+
+    public ApexChartOptions<EmploymentPaymentSummaryDto> Options => new()
+    {
+        Theme = new Theme
+        {
+            Mode = IsDarkMode ? Mode.Dark : Mode.Light
+        }
+    };
 
     async Task OnRefresh()
     {
