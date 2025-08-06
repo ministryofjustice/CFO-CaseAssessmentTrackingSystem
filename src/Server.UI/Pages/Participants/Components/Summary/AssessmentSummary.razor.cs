@@ -28,10 +28,7 @@ public partial class AssessmentSummary
             ? null
             : ParticipantSummaryDto.Assessments.OrderByDescending(a => a.AssessmentDate)
                 .First();
-    }
 
-    protected override void OnInitialized()
-    {
         if (_latestAssessment is null)
         {
             _noAssessmentInfo = "No assessment has been created.";
@@ -62,8 +59,9 @@ public partial class AssessmentSummary
             _assessmentDueIconColor = Color.Warning;
             _AssessmentNotCompletedInfo = "Assessment not completed.";
         }
-    }
 
+    }
+    
     public async Task BeginAssessment()
     {
         var parameters = new DialogParameters<AddAssessmentDialog>()
