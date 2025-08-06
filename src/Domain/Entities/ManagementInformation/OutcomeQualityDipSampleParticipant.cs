@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Events;
 
@@ -53,6 +53,7 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
         DipSampleAnswer clearJourney,
         DipSampleAnswer taskProgression,
         DipSampleAnswer linksToTasks,
+        DipSampleAnswer ttgDemonstratesGoodPRIProcess,
         DipSampleAnswer alignsWithReg,
         DipSampleAnswer supportsJourneyAndAlignsWithDos,
         ComplianceAnswer isCompliant,
@@ -71,6 +72,7 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
         HasClearParticipantJourney = clearJourney;
         ShowsTaskProgression = taskProgression;
         ActivitiesLinkToTasks = linksToTasks;
+        TTGDemonstratesGoodPRIProcess = ttgDemonstratesGoodPRIProcess;
         TemplatesAlignWithREG = alignsWithReg;
         SupportsJourneyAndAlignsWithDoS = supportsJourneyAndAlignsWithDos;
         CsoIsCompliant = isCompliant;
