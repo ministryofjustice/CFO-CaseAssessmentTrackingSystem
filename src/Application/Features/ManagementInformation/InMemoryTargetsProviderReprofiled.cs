@@ -30,9 +30,15 @@ public class InMemoryTargetsProviderReprofiled : ITargetsProvider
         var useLegacyTargetsProvider = IsBeforeReprofile(month, year);
         return useLegacyTargetsProvider ? _legacyTargetsProvider.GetTarget(contract, month, year) : _targets[contract];
     }
-    
+
     public ContractTargetDto GetTargetById(string contractId, int month, int year)
     {
+        var useLegacyTargetsProvider = IsBeforeReprofile(month, year);
+        if (useLegacyTargetsProvider)
+        {
+            return _legacyTargetsProvider.GetTargetById(contractId, month, year);
+        }
+
         string name = _idMappings[contractId];
         return _targets[name];
     }
