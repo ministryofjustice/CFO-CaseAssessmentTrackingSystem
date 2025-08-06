@@ -50,6 +50,7 @@ public static class GetParticipantSummary
                             DateOfFirstConsent = p.DateOfFirstConsent,
                             EnrolmentStatus = p.EnrolmentStatus,
                             ConsentStatus = p.ConsentStatus,
+                            RiskDueReason = p.RiskDueReason,
                             HasActiveRightToWork =
                                 (from rtw in p.RightToWorks
                                  where rtw.Lifetime.EndDate >= DateTime.UtcNow.Date
