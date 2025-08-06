@@ -22,7 +22,6 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
 
     public OutcomeQualityDipSample Complete(string completedBy, int noOfCompliant = 0)
     {
-
         CompletedOn = DateTime.UtcNow;
         CompletedBy = completedBy;
         Status = DipSampleStatus.Completed;
@@ -84,6 +83,15 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
     /// Derived from <see cref="CpmPercentage"/>, ranges from <c>0</c> (lowest) to <c>5</c> (highest).
     /// </summary>
     public int? CpmScore { get; private set; }
+
+    public OutcomeQualityDipSample SetCpmScores(int noOfCompliant)
+    {
+        CpmCompliant = noOfCompliant;
+        CpmPercentage = CalculatePercentage(noOfCompliant);
+        CpmScore = CalculateScore(CpmPercentage.Value);
+
+        return this;
+    }
     #endregion
 
     #region Calculated business (final) properties

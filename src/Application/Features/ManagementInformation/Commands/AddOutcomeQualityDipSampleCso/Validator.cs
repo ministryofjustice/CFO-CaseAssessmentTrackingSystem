@@ -25,7 +25,7 @@ public class Validator : AbstractValidator<Command>
             .Must(x => x.IsAnswer)
             .WithMessage("Must be answered");
 
-        RuleFor(x => x.ActivitiesLinkToTask)
+        RuleFor(x => x.ActivitiesLinkToTasks)
             .Must(x => x.IsAnswer)
             .WithMessage("Must be answered");
 

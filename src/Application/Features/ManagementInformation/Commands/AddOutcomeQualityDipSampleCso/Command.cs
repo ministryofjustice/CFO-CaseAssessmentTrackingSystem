@@ -3,8 +3,8 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.Commands.AddOutcomeQualityDipSampleCso;
 
-[RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
-public class Command : IRequest<Result>
+[RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipReview)]
+public record Command : IRequest<Result>
 {
     public required UserProfile CurrentUser { get; set; }
     
@@ -18,7 +18,7 @@ public class Command : IRequest<Result>
     public DipSampleAnswer ShowsTaskProgression { get; set; } = DipSampleAnswer.NotAnswered;
 
     [Description("Do activities link to the tasks?")]
-    public DipSampleAnswer ActivitiesLinkToTask { get; set; }= DipSampleAnswer.NotAnswered;
+    public DipSampleAnswer ActivitiesLinkToTasks { get; set; }= DipSampleAnswer.NotAnswered;
 
     [Description("If applicable, does the TTG objective and commencement of work against the tasks show good demonstration of the PRI process?")]
     public DipSampleAnswer TTGDemonstratesGoodPRIProcess { get; set; } = DipSampleAnswer.NotAnswered;

@@ -427,7 +427,17 @@ public static class DependencyInjection
 
                 options.AddPolicy(SecurityPolicies.OutcomeQualityDipChecks, policy => {
                     policy.RequireAuthenticatedUser();
+                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.PerformanceManager);
+                });
+
+                options.AddPolicy(SecurityPolicies.OutcomeQualityDipReview, policy => {
+                    policy.RequireAuthenticatedUser();
                     policy.RequireClaim(ApplicationClaimTypes.CsoFunctions);
+                });
+
+                options.AddPolicy(SecurityPolicies.OutcomeQualityDipVerification, policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(ApplicationClaimTypes.CpmFunctions);
                 });
 
             })

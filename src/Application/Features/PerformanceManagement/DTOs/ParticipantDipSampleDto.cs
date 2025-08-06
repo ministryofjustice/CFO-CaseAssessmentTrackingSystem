@@ -22,4 +22,16 @@ public class ParticipantDipSampleDto
     public DipEventInformation[] PertinentEvents { get; set;} = [];
     
     public DateOnly ConsentDate { get; set; }
+
+    public required ComplianceAnswer CsoAnswer { get; set; }
+    public string? CsoComments { get; set; }
+    public DipSampleAnswer HasClearParticipantJourney { get; set; } = DipSampleAnswer.NotAnswered;
+    public DipSampleAnswer ShowsTaskProgression { get; set; } = DipSampleAnswer.NotAnswered;
+    public DipSampleAnswer ActivitiesLinkToTasks { get; set; } = DipSampleAnswer.NotAnswered;
+    public DipSampleAnswer TTGDemonstratesGoodPRIProcess { get; set; } = DipSampleAnswer.NotAnswered;
+    public DipSampleAnswer SupportsJourneyAndAlignsWithDoS { get; set; } = DipSampleAnswer.NotAnswered;
+    public DipSampleAnswer TemplatesAlignWithREG { get; set; } = DipSampleAnswer.NotAnswered;
+
+    public required ComplianceAnswer CpmAnswer { get; set; }
+    public string? CpmComments { get; set; }
 }

@@ -1,11 +1,9 @@
-﻿
-using Cfo.Cats.Application.Common.Interfaces.Identity;
+﻿using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.ManagementInformation.Commands;
 using Cfo.Cats.Application.Features.ManagementInformation.Commands.AddOutcomeQualityDipSampleCso;
 using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
-using Cfo.Cats.Application.Features.Timelines.DTOs;
-using Cfo.Cats.Domain.Common.Enums;
 using Microsoft.JSInterop;
 
 namespace Cfo.Cats.Server.UI.Pages.Analytics;
@@ -31,20 +29,44 @@ public partial class ParticipantOutcomeQualityDipSample
         new(ParticipantId, href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/{ParticipantId}", icon: Icons.Material.Filled.Person)
     ];
 
-    private Command? _command;
+    private Command? _csoCommand;
 
-    private Command SubmitCommand
+    private Command SubmitCsoCommand
     {
         get
         {
-            return _command ??= new Command
+            return _csoCommand ??= new()
             {
                 CurrentUser = UserProfile,
                 ParticipantId = ParticipantId,
                 DipSampleId = SampleId
             };
         }
+        set
+        {
+            _csoCommand = value;
+        }
     }
+
+    private AddOutcomeQualityDipSampleCpm.Command? _cpmCommand;
+
+    private AddOutcomeQualityDipSampleCpm.Command SubmitCpmCommand
+    {
+        get
+        {
+            return _cpmCommand ??= new()
+            {
+                CurrentUser = UserProfile,
+                ParticipantId = ParticipantId,
+                DipSampleId = SampleId
+            };
+        }
+        set
+        {
+            _cpmCommand = value;
+        }
+    }
+
 
     private bool _isLoading = true;
     
@@ -59,7 +81,8 @@ public partial class ParticipantOutcomeQualityDipSample
         {
             var query = new GetOutcomeQualityDipSampleParticipant.Query()
             {
-                ParticipantId = ParticipantId
+                ParticipantId = ParticipantId,
+                SampleId = SampleId
             };
 
             var mediator = GetNewMediator();
@@ -71,6 +94,26 @@ public partial class ParticipantOutcomeQualityDipSample
                 if (dipSampleDtoResult is { Succeeded: true, Data: not null })
                 {
                     _participant = dipSampleDtoResult.Data;
+
+                    // Saturate answers
+
+                    SubmitCpmCommand = SubmitCpmCommand with
+                    {
+                        Comments = _participant.CpmComments,
+                        ComplianceAnswer = _participant.CpmAnswer
+                    };
+
+                    SubmitCsoCommand = SubmitCsoCommand with
+                    {
+                        Comments = _participant.CsoComments,
+                        ComplianceAnswer = _participant.CsoAnswer,
+                        HasClearParticipantJourney = _participant.HasClearParticipantJourney,
+                        ShowsTaskProgression = _participant.ShowsTaskProgression,
+                        ActivitiesLinkToTasks = _participant.ActivitiesLinkToTasks,
+                        TTGDemonstratesGoodPRIProcess = _participant.TTGDemonstratesGoodPRIProcess,
+                        TemplatesAlignWithREG = _participant.TemplatesAlignWithREG,
+                        SupportsJourneyAndAlignsWithDoS = _participant.SupportsJourneyAndAlignsWithDoS,
+                    };
                 }
                 else
                 {
@@ -91,6 +134,24 @@ public partial class ParticipantOutcomeQualityDipSample
     }
 
     private async Task CsoResponseSubmitted(Command command)
+    {
+        var mediator = GetNewMediator();
+        var result = await mediator.Send(command);
+        if (IsDisposed == false)
+        {
+            if (result is { Succeeded: true })
+            {
+                Snackbar.Add("Submission saved", Severity.Info);
+                Navigation.NavigateTo($"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/");
+            }
+            else
+            {
+                Snackbar.Add($"Failed: {result.ErrorMessage}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task CpmResponseSubmitted(AddOutcomeQualityDipSampleCpm.Command command)
     {
         var mediator = GetNewMediator();
         var result = await mediator.Send(command);

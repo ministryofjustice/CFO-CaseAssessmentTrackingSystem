@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.ManagementInformation.Queries;
 
 public static class GetOutcomeQualityDipSampleParticipants 
 {
-    [RequestAuthorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
+    [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
     public class Query : PaginationFilter, IRequest<Result<PaginatedData<DipSampleParticipantSummaryDto>>>
     {
         public required Guid DipSampleId { get; set; }
@@ -47,6 +47,7 @@ public static class GetOutcomeQualityDipSampleParticipants
                     CurrentLocationName = currentLocation.Name,
                     EnrolmentLocationName = enrolmentLocation.Name,
                     sample.CsoIsCompliant,
+                    sample.CpmIsCompliant,
                     sample.CsoReviewedOn,
                     ReviewedBy = reviewer.DisplayName
                 };
@@ -69,6 +70,7 @@ public static class GetOutcomeQualityDipSampleParticipants
                     dsp.CurrentLocationName,
                     dsp.EnrolmentLocationName,
                     dsp.CsoIsCompliant,
+                    dsp.CpmIsCompliant,
                     dsp.CsoReviewedOn,
                     dsp.ReviewedBy))
                 .ToListAsync(cancellationToken);

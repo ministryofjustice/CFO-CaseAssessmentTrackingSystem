@@ -1,9 +1,17 @@
 @using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.ManagementInformation.Commands.AddOutcomeQualityDipSampleCso
+@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
-<MudForm @ref="_form" Model="Command" Validation="@(Validator.ValidateValue(Command))" Class="ma-2">
-    <MudGrid >
-        
+
+@attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
+
+@inject IAuthorizationService AuthorizationService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@inherits CatsComponentBase
+
+<MudForm @ref="form" Model="Command" Validation="@(Validator.ValidateValue(Command))" Class="ma-2" ReadOnly="ReadOnly">
+    <MudGrid>
         <MudItem xs="12" md="8">
             <MudStack Row="true" AlignItems="AlignItems.Center">
                 <MudAvatar Size="Size.Medium" Color="@Color.Primary">
@@ -47,12 +55,12 @@
                     C
                 </MudAvatar>            
                 <MudText Typo="Typo.subtitle1" id="participant-journey-label">
-                    @Command.GetMemberDescription(x => x.ActivitiesLinkToTask)
+                    @Command.GetMemberDescription(x => x.ActivitiesLinkToTasks)
                 </MudText>
             </MudStack>
         </MudItem>
         <MudItem xs="12" md="4" Class="d-flex align-center">
-            <MudRadioGroup @bind-Value="Command.ActivitiesLinkToTask" For="@(() => Command.ActivitiesLinkToTask)">
+            <MudRadioGroup @bind-Value="Command.ActivitiesLinkToTasks" For="@(() => Command.ActivitiesLinkToTasks)">
                 <MudRadio Value="@DipSampleAnswer.Yes">@DipSampleAnswer.Yes.Name</MudRadio>
                 <MudRadio Value="@DipSampleAnswer.No">@DipSampleAnswer.No.Name</MudRadio>
                 <MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>
@@ -129,11 +137,9 @@
                           RequiredError="Comments is required!"
                           Lines="5"
                           MaxLength=@ValidationConstants.NotesLength
+                          Counter=@ValidationConstants.NotesLength
                           Immediate="true"> 
             </MudTextField>
-            <MudText Color="Color.Secondary">
-                Characters: @(Command.Comments?.Length ?? 0) / @ValidationConstants.NotesLength
-            </MudText>
         </MudItem>
 
         <MudItem xs="12" md="8">
@@ -158,24 +164,37 @@
         <MudItem xs="12">
             <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="OnSubmit">Submit</MudButton>
         </MudItem>
+
     </MudGrid>
 </MudForm>
 
 
 @code {
 
-    private MudForm _form = null!;
+    private MudForm form = new();
 
-    [Parameter] [EditorRequired]  public EventCallback<Command> OnFormSubmit { get; set; }
-    [Parameter] [EditorRequired] public Command Command { get; set; } = null!;
+    bool ReadOnly { get; set; } = true;
+
+    [Parameter] [EditorRequired] public required EventCallback<Command> OnFormSubmit { get; set; }
+    [Parameter] [EditorRequired] public required Command Command { get; set; }
+
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
 
     private async Task OnSubmit()
     {
-        await _form.Validate();
-        if (_form.IsValid)
+        await form.Validate();
+
+        if (form.IsValid)
         {
             await OnFormSubmit.InvokeAsync(Command);
         }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthState;
+        var result = await AuthorizationService.AuthorizeAsync(state.User, SecurityPolicies.OutcomeQualityDipReview);
+        ReadOnly = result is not { Succeeded: true };
     }
 
 }

@@ -8,5 +8,10 @@ public record DipSampleParticipantSummaryDto(
     string? CurrentLocationName,
     string? EnrolmentLocationName,
     ComplianceAnswer CsoComplianceAnswer,
+    ComplianceAnswer CpmComplianceAnswer,
     DateTime? ReviewedOn = null,
-    string? ReviewedBy = null);
+    string? ReviewedBy = null)
+{
+    public ComplianceAnswer ComplianceAnswer => 
+        CpmComplianceAnswer.IsAnswer ? CpmComplianceAnswer : CsoComplianceAnswer;
+}

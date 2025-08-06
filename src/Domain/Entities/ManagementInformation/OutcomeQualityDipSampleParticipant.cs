@@ -1,4 +1,4 @@
-using Cfo.Cats.Domain.Common.Entities;
+﻿using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Events;
 
@@ -85,7 +85,18 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
         return this;
     }
 
+    public OutcomeQualityDipSampleParticipant CpmAnswer(
+        ComplianceAnswer isCompliant,
+        string comments,
+        string reviewBy,
+        DateTime reviewedOn)
+    {
+        CpmIsCompliant = isCompliant;
+        CpmComments = comments;
+        CpmReviewedBy = reviewBy;
+        CpmReviewedOn = reviewedOn;
+
+        return this;
+    }
 
 }
-
-

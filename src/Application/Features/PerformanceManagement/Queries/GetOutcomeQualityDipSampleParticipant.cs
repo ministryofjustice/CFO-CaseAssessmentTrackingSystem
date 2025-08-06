@@ -12,14 +12,19 @@ public static class GetOutcomeQualityDipSampleParticipant
     public class Query : IRequest<Result<ParticipantDipSampleDto>>
     {
         public required string ParticipantId { get; set; }
+        public required Guid SampleId { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork, IEnumerable<IPertinentEventProvider> eventProviders) : IRequestHandler<Query, Result<ParticipantDipSampleDto>>
     {
         public async Task<Result<ParticipantDipSampleDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var participantQuery = from p in unitOfWork.DbContext.Participants
-                where p.Id == request.ParticipantId
+            var db = unitOfWork.DbContext;
+
+            var participantQuery = 
+                from p in db.Participants
+                join dsp in db.OutcomeQualityDipSampleParticipants on p.Id equals dsp.ParticipantId
+                where p.Id == request.ParticipantId && dsp.DipSampleId == request.SampleId
                 select new ParticipantDipSampleDto
                 {
                     ParticipantId = p.Id,
@@ -30,7 +35,17 @@ public static class GetOutcomeQualityDipSampleParticipant
                     SupportWorker = p.Owner!.DisplayName,
                     CurrentLocation = p.CurrentLocation!.Name,
                     EnrolmentLocation = p.EnrolmentLocation!.Name,
-                    ConsentDate = p.DateOfFirstConsent!.Value
+                    ConsentDate = p.DateOfFirstConsent!.Value,
+                    CsoAnswer = dsp.CsoIsCompliant,
+                    CsoComments = dsp.CsoComments,
+                    HasClearParticipantJourney = dsp.HasClearParticipantJourney,
+                    ShowsTaskProgression = dsp.ShowsTaskProgression,
+                    ActivitiesLinkToTasks = dsp.ActivitiesLinkToTasks,
+                    TTGDemonstratesGoodPRIProcess = dsp.TTGDemonstratesGoodPRIProcess,
+                    TemplatesAlignWithREG = dsp.TemplatesAlignWithREG,
+                    SupportsJourneyAndAlignsWithDoS = dsp.SupportsJourneyAndAlignsWithDoS,
+                    CpmAnswer = dsp.CpmIsCompliant,
+                    CpmComments = dsp.CpmComments
                 };
             
             var result = await participantQuery.SingleAsync(cancellationToken);

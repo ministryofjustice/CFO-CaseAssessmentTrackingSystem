@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.ManagementInformation.Queries;
 
 public static class GetOutcomeQualityDipSamples
 {
-    [RequestAuthorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
+    [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
     public class Query : IRequest<Result<IEnumerable<DipSampleDto>>>
     {
         public int Month { get; set; } = DateTime.Now.AddMonths(-4).Month;

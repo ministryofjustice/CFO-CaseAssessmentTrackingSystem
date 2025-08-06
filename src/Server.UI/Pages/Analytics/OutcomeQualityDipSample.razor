@@ -1,4 +1,4 @@
-﻿@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
+﻿@attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
 
 @page "/pages/analytics/outcome-quality-dip-sampling/{SampleId:guid}"
 
@@ -58,6 +58,11 @@ else
                                 <MudText>@ConstantString.Export</MudText>
                             }
                         </MudButton>
+                        <MudButton Variant="Variant.Outlined"
+                                   Color="Color.Primary"
+                                   Size="Size.Small">
+                            <MudText>@ConstantString.Submit</MudText>
+                        </MudButton>
                     </MudStack>
                     <MudTextField DebounceInterval="500" @bind-Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
                                   AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
@@ -113,17 +118,17 @@ else
                 <CellTemplate>
                     <MudStack>
                         <MudText Typo="Typo.body2">@context.Item.ReviewedBy</MudText>
-                        <MudText Typo="Typo.body2">@context.Item.ReviewedOn</MudText>
+                        <MudText Typo="Typo.body2">@context.Item.ReviewedOn?.ToLocalTime()</MudText>
                     </MudStack>
                 </CellTemplate>
             </PropertyColumn>
-            <TemplateColumn Title="CSO Status"
-                            SortBy="x => x.CsoComplianceAnswer">
+            <TemplateColumn Title="Status"
+                            SortBy="x => x.ComplianceAnswer.Value">
                 <CellTemplate>
                     <MudStack>
                     
                         @{
-                            (string Icon, Color Colour, bool Disabled) chipDetails = context.Item.CsoComplianceAnswer switch
+                            (string Icon, Color Colour, bool Disabled) chipDetails(ComplianceAnswer answer) => answer switch
                             {
                                 var a when a == ComplianceAnswer.Unsure => (Icons.Material.Filled.WarningAmber, Color.Warning, a.IsAuto),
                                 { IsAnswer: false } => (Icons.Material.Filled.Pending, Color.Default, false),
@@ -131,12 +136,23 @@ else
                                 { IsAccepted: false } a => (Icons.Material.Filled.ErrorOutline, Color.Error, a.IsAuto),
                                 var a => (Icons.Material.Filled.ErrorOutline, Color.Error, true)
                             };
+
+                            var csoDetails = chipDetails(context.Item.CsoComplianceAnswer);
                         }
                         
-                        <MudChip Icon="@chipDetails.Icon" Color="@chipDetails.Colour" Size="Size.Small" Disabled="@chipDetails.Disabled">
-                            @context.Item.CsoComplianceAnswer.Name  
+                        <MudChip Icon="@csoDetails.Icon" Color="@csoDetails.Colour" Size="Size.Small" Disabled="@csoDetails.Disabled">
+                            @($"CSO {context.Item.CsoComplianceAnswer.Name}")
                         </MudChip>
-                            
+
+                        @if (context.Item.CpmComplianceAnswer.IsAnswer)
+                        {
+                            var cpmDetails = chipDetails(context.Item.CpmComplianceAnswer);
+
+                            <MudChip Icon="@cpmDetails.Icon" Color="@cpmDetails.Colour" Size="Size.Small" Disabled="@cpmDetails.Disabled">
+                                @($"CPM {context.Item.CpmComplianceAnswer.Name}")
+                            </MudChip>
+                        }
+
                     </MudStack>
                 </CellTemplate>
             </TemplateColumn>

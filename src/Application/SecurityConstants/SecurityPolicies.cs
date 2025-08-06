@@ -59,4 +59,9 @@ public static class SecurityPolicies
     public const string SystemSupportFunctions = nameof(SystemSupportFunctions);
     
     public const string OutcomeQualityDipChecks = nameof(OutcomeQualityDipChecks);
+
+    public const string OutcomeQualityDipReview = nameof(OutcomeQualityDipReview);
+
+    public const string OutcomeQualityDipVerification = nameof(OutcomeQualityDipVerification);
+
 }

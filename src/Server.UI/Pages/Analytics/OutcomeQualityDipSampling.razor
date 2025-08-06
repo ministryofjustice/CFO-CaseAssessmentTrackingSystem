@@ -53,18 +53,24 @@
             <MudItem xs="12" md="6" lg="4">
                 <MudCard>
                     <MudCardHeader Class="justify-space-between">
-                        <MudText Typo="Typo.h4">@sample.ContractDescription (@($"{sample.PeriodFrom:MMM yyyy}"))</MudText>
-                        @{
-                            var color = sample.Status switch
-                            {
-                                var type when type == DipSampleStatus.InProgress => Color.Warning,
-                                var type when type == DipSampleStatus.Completed => Color.Success,
-                                _ => Color.Primary
-                            };
-                        }
-                        <MudChip T="string" Color="color" Size="Size.Small">
-                            @sample.Status.Name
-                        </MudChip>
+                        <MudStack Style="width: 100%">
+                            <MudStack Row="true">
+                                <MudText Typo="Typo.h4">@sample.ContractDescription</MudText>
+                                @{
+                                    var color = sample.Status switch
+                                    {
+                                        var type when type == DipSampleStatus.InProgress => Color.Warning,
+                                        var type when type == DipSampleStatus.Completed => Color.Success,
+                                        _ => Color.Primary
+                                    };
+                                }
+                                <MudSpacer />
+                                <MudChip T="string" Color="color" Size="Size.Small">
+                                    @sample.Status.Name
+                                </MudChip>
+                            </MudStack>
+                            <MudText Typo="Typo.h5">(@($"{sample.PeriodFrom:MMM yyyy}"))</MudText>
+                        </MudStack>
                     </MudCardHeader>
                     <MudCardContent>
                         <MudText>Sample size of <b>@sample.Size</b> participant(s)</MudText>
@@ -89,9 +95,18 @@
                         } *@
                     </MudCardContent>
                     <MudCardActions Class="justify-space-between">
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/outcome-quality-dip-sampling/{sample.Id}")">
-                            Review 
-                        </MudButton>
+                        <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
+                            <Authorized>
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/outcome-quality-dip-sampling/{sample.Id}")">
+                                    Verify
+                                </MudButton>
+                            </Authorized>
+                            <NotAuthorized>
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/outcome-quality-dip-sampling/{sample.Id}")">
+                                    Review
+                                </MudButton>
+                            </NotAuthorized>
+                        </AuthorizeView>
                         @{
                             int? score = sample.FinalScore ?? sample.CpmScore ?? sample.CsoScore;
 

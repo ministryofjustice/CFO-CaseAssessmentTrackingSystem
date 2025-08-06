@@ -15,4 +15,5 @@ public static class ApplicationClaimTypes
     public const string Contract = nameof(Contract);
     public const string InternalStaff = nameof(InternalStaff);
     public const string CsoFunctions = nameof(CsoFunctions);
+    public const string CpmFunctions = nameof(CpmFunctions);
 }

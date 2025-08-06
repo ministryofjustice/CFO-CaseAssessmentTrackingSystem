@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.ManagementInformation.Queries;
 
 public static class GetOutcomeQualityDipSample
 {
-    [RequestAuthorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.Finance}")]
+    [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
     public class Query : IRequest<Result<DipSampleSummaryDto>>
     {
         public required Guid DipSampleId { get; set; }
