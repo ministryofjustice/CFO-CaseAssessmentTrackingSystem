@@ -64,4 +64,6 @@ public static class SecurityPolicies
 
     public const string OutcomeQualityDipVerification = nameof(OutcomeQualityDipVerification);
 
+    public const string OutcomeQualityDipSubmission = nameof(OutcomeQualityDipSubmission);
+
 }

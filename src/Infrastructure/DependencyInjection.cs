@@ -427,19 +427,26 @@ public static class DependencyInjection
 
                 options.AddPolicy(SecurityPolicies.OutcomeQualityDipChecks, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.PerformanceManager);
+                    policy.RequireClaim(ApplicationClaimTypes.DipSample, "View"); // CSO + CPM + TBC role
                 });
 
                 options.AddPolicy(SecurityPolicies.OutcomeQualityDipReview, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim(ApplicationClaimTypes.CsoFunctions);
+                    policy.RequireClaim(ApplicationClaimTypes.DipSample, "View");
+                    policy.RequireClaim(ApplicationClaimTypes.DipSample, "Review"); // CSO
                 });
 
                 options.AddPolicy(SecurityPolicies.OutcomeQualityDipVerification, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim(ApplicationClaimTypes.CpmFunctions);
+                    policy.RequireClaim(ApplicationClaimTypes.DipSample, "View");
+                    policy.RequireClaim(ApplicationClaimTypes.DipSample, "Verify"); // CPM
                 });
 
+                options.AddPolicy(SecurityPolicies.OutcomeQualityDipSubmission, policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(ApplicationClaimTypes.DipSample, "View");
+                    policy.RequireClaim(ApplicationClaimTypes.DipSample, "Submit"); // TBC role
+                });
             })
             .AddAuthentication(options => {
                 options.DefaultScheme = IdentityConstants.ApplicationScheme;
