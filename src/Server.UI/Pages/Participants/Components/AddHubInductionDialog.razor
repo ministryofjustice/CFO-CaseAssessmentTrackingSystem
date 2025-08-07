@@ -15,23 +15,29 @@
                     <MudGrid>
                         <MudItem xs="12">
                             <MudDatePicker Label="@Model.GetMemberDescription(x => x.InductionDate)" PickerVariant="PickerVariant.Dialog"
-                                           @bind-Date="Model.InductionDate"
+                                           @bind-Date="Model.InductionDate" @bind-Date:after="CheckParticipantBeenAtThisLocationOnDate"
                                            For="(() => Model.InductionDate)"
                                            ImmediateText="true" Editable="false" MaxDate="DateTime.Today.Date" MinDate="DateTime.Today.AddMonths(-3)" />
                         </MudItem>
-                        <MudItem xs="12">
-                            @if(LocationWarning!=string.Empty)
+
+                        <MudItem xs="12">                   
+                            @if (hasParticpantBeenAtThisLocationOnThisDate is not true && Model.InductionDate is not null && Model.Location is not null)
                             {
-                                <MudChip T="string" Text=@LocationWarning Size="Size.Medium" Color="Color.Warning"
-                                         Icon="@Icons.Material.Filled.WarningAmber" />
-                            }
-                            <MudAutocomplete T="LocationDto" Label="@Model.GetMemberDescription(x => x.Location)"                                             
+                                <MudItem xs="12">
+                                    <MudAlert Severity="Severity.Warning">
+                                        Participant was not at @Model.Location!.Name on selected date.
+                                    </MudAlert>
+                                </MudItem>
+                            }                        
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudAutocomplete T="LocationDto" Label="@Model.GetMemberDescription(x => x.Location)"
+                                             @bind-Value="Model.Location" @bind-Value:after="CheckParticipantBeenAtThisLocationOnDate"
                                              SearchFunc="@SearchLocations"
                                              Required="true" RequiredError="Location is required"
                                              ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
-                                             AdornmentColor="Color.Primary" ToStringFunc="@(e => e == null ? null : e.Name)"                                             
-                                             Value="@Model.Location"
-                                             ValueChanged="@OnLocationChanged" />
+                                             AdornmentColor="Color.Primary" ToStringFunc="@(e => e == null ? null : e.Name)" />
                         </MudItem>
                     </MudGrid>
                 </MudForm>
@@ -44,7 +50,6 @@
         <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>
-
 
 @code {
     private MudForm? form;
@@ -62,9 +67,7 @@
 
     private bool saving;
 
-    private string LocationWarning = String.Empty;
-
-    public Task<bool> CheckParticipantWasAtLocationCheck { get; set; } = default!;
+    bool hasParticpantBeenAtThisLocationOnThisDate;
         
     private void Cancel()
     { 
@@ -109,26 +112,16 @@
         return await Task.FromResult(Locations!.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)));
     }
 
-    private async Task OnLocationChanged(LocationDto? selected)
+    async Task CheckParticipantBeenAtThisLocationOnDate()
     {
-        Model!.Location = selected;
+        if (Model?.InductionDate == null || Model?.Location?.Id == null)
+            return;
 
-        if (selected is not null && Model.InductionDate is not null)
+        hasParticpantBeenAtThisLocationOnThisDate = await GetNewMediator().Send(new GetParticipantWasAtThisLocationCheck.Query()
         {
-            var query = new GetParticipantWasAtThisLocationCheck.Query()
-                {
-                    ParticipantId = Model.ParticipantId,
-                    LocationId = selected.Id,
-                    DateAtLoction = Model.InductionDate
-                };
-
-            if (await GetNewMediator().Send(query) == false)
-            {
-                LocationWarning = $"Participant was not at {selected.Name} on selected date.";
-                return;
-            }
-        }
-
-        LocationWarning = string.Empty;
+            ParticipantId = Model!.ParticipantId,
+            LocationId = Model.Location!.Id,
+            DateAtLoction = Model.InductionDate
+        });
     }
 }

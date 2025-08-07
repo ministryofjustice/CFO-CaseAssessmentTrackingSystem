@@ -2,6 +2,7 @@
 @using Cfo.Cats.Application.Features.Activities.Commands
 @using Cfo.Cats.Application.Features.Activities.Queries
 @using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Activities.Components
 
@@ -43,7 +44,7 @@
         <MudAutocomplete @ref="activityDropdown"
         T="ActivityDefinition"
         @bind-Value="Model.Definition"
-        @bind-Value:after="OnActivityOrDateChanged"
+        @bind-Value:after="OnActivityChanged"
         Disabled="Disabled || Model.CanChangeActivityDefinition is false"
         Label="@Model.GetMemberDescription(x => x.Definition)"
         For="() => Model.Definition"
@@ -70,11 +71,20 @@
         </MudItem>
     }
 
+    @if (hasParticpantBeenAtThisLocationOnThisDate == false && Model?.CommencedOn != null && Model?.Location != null)
+    {
+        <MudItem xs="12">
+            <MudAlert Severity="Severity.Warning">
+                Participant was not at @Model.Location!.Name on selected date.
+            </MudAlert>
+        </MudItem>        
+    }
+
     <MudItem xs="12">
-        <MudDatePicker @bind-Date="Model.CommencedOn" @bind-Date:after="OnActivityOrDateChanged"
-        For="() => Model.CommencedOn"
+        <MudDatePicker @bind-Date="Model.CommencedOn" @bind-Date:after="OnDateChanged"
+        For="() => Model!.CommencedOn"
         MaxDate="DateTime.UtcNow"
-        MinDate="Model.Definition?.Classification.IsClaimableMoreThanThreeMonthsAgo is not true ? DateTime.Today.AddMonths(-3) : null"
+        MinDate="Model!.Definition?.Classification.IsClaimableMoreThanThreeMonthsAgo is not true ? DateTime.Today.AddMonths(-3) : null"
         Label="@Model.GetMemberDescription(x => x.CommencedOn)"
         PickerVariant="PickerVariant.Dialog"
         ImmediateText="true"
@@ -82,7 +92,7 @@
         Disabled="Model.Definition is null" />
     </MudItem>
 
-    @if (Model.Definition is { Classification.RequiresFurtherInformation: true })
+    @if (Model!.Definition is { Classification.RequiresFurtherInformation: true })
     {
         <MudItem xs="12">
             <MudAlert Class="mb-2" Severity="Severity.Info">Further information is required for this type of activity</MudAlert>
@@ -167,6 +177,8 @@
     bool hasSelectedActivityAlreadyBeenAddedOnThisDate;
     bool Disabled => Model.Location is null;
 
+    bool hasParticpantBeenAtThisLocationOnThisDate;
+    
     [Parameter, EditorRequired]
     public required AddActivity.Command Model { get; set; }
 
@@ -188,9 +200,10 @@
         SetActivities();
         filteredTypes = [];
         ClearSelectedActivity();
+        ClearSelectedActivityDate();
     }
 
-    async Task OnActivityOrDateChanged()
+    async Task OnActivityChanged()
     {
         hasSelectedActivityAlreadyBeenAddedOnThisDate = Model.Definition is not null && await GetNewMediator().Send(new ExistsByCategory.Query()
         {
@@ -201,6 +214,30 @@
 
         ClearTemplates();
     }
+
+    async Task OnDateChanged()
+    {
+        hasSelectedActivityAlreadyBeenAddedOnThisDate = Model.Definition is not null && await GetNewMediator().Send(new ExistsByCategory.Query()
+        {
+            Category = Model.Definition.Category,
+            ParticipantId = Model.ParticipantId,
+            CommencedOn = Model.CommencedOn
+        });
+
+        await CheckParticipantBeenAtThisLocationOnDate();
+
+        ClearTemplates();
+    }
+
+    async Task CheckParticipantBeenAtThisLocationOnDate()
+    {
+        hasParticpantBeenAtThisLocationOnThisDate = await GetNewMediator().Send(new GetParticipantWasAtThisLocationCheck.Query()
+        {
+            ParticipantId = Model.ParticipantId,
+            LocationId = Model.Location!.Id,
+            DateAtLoction = Model.CommencedOn
+        });
+    }   
 
     void ClearTemplates()
     {
@@ -214,6 +251,14 @@
         if (activityDropdown.Value is not null)
         {
             activityDropdown.ResetAsync();
+        }
+    }
+    
+    void ClearSelectedActivityDate()
+    {
+        if (Model.CommencedOn is not null)
+        {
+            Model.CommencedOn = null;
         }
     }
 
@@ -235,5 +280,4 @@
 
         return Task.FromResult(result);
     }
-
 }
