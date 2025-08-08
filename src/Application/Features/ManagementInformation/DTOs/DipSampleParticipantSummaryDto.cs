@@ -9,9 +9,29 @@ public record DipSampleParticipantSummaryDto(
     string? EnrolmentLocationName,
     ComplianceAnswer CsoComplianceAnswer,
     ComplianceAnswer CpmComplianceAnswer,
+    ComplianceAnswer FinalComplianceAnswer,
     DateTime? ReviewedOn = null,
     string? ReviewedBy = null)
 {
-    public ComplianceAnswer ComplianceAnswer => 
-        CpmComplianceAnswer.IsAnswer ? CpmComplianceAnswer : CsoComplianceAnswer;
+    public bool CsoAndCpmDisagree =>
+        CpmComplianceAnswer.IsAnswer && CsoComplianceAnswer.IsAnswer 
+        && CpmComplianceAnswer.IsAccepted != CsoComplianceAnswer.IsAccepted;
+
+    public ComplianceAnswer ComplianceAnswer
+    {
+        get
+        {
+            if(FinalComplianceAnswer.IsAnswer)
+            {
+                return FinalComplianceAnswer;
+            }
+
+            if(CpmComplianceAnswer.IsAnswer)
+            {
+                return CpmComplianceAnswer;
+            }
+
+            return CsoComplianceAnswer;
+        }
+    }
 }

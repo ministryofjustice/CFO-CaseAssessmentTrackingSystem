@@ -23,7 +23,7 @@ public static class GetOutcomeQualityDipSample
                 from sample in context.OutcomeQualityDipSamples
                 join contract in context.Contracts on sample.ContractId equals contract.Id
                 where sample.Id == request.DipSampleId
-                select new DipSampleSummaryDto(contract.Description, sample.PeriodFrom);
+                select new DipSampleSummaryDto(contract.Description, sample.PeriodFrom, sample.ReviewedOn);
 
             var dipSample = await query.FirstAsync(cancellationToken);
 

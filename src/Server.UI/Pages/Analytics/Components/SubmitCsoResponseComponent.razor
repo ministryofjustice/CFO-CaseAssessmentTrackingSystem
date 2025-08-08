@@ -129,9 +129,6 @@
             <MudTextField Label=""
                           @bind-Value="@Command.Comments"
                           For="@(() => Command.Comments)"
-                          ReadOnly="false"
-                          Required="true"
-                          RequiredError="Comments is required!"
                           Lines="5"
                           MaxLength=@ValidationConstants.NotesLength
                           Counter=@ValidationConstants.NotesLength

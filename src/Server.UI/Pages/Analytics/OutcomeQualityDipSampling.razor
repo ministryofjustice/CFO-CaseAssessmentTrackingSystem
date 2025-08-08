@@ -60,7 +60,9 @@
                                     var color = sample.Status switch
                                     {
                                         var type when type == DipSampleStatus.InProgress => Color.Warning,
-                                        var type when type == DipSampleStatus.Completed => Color.Success,
+                                        var type when type == DipSampleStatus.Reviewed => Color.Secondary,
+                                        var type when type == DipSampleStatus.Verified => Color.Primary,
+                                        var type when type == DipSampleStatus.Finalised => Color.Success,
                                         _ => Color.Primary
                                     };
                                 }
@@ -95,22 +97,22 @@
                         } *@
                     </MudCardContent>
                     <MudCardActions Class="justify-space-between">
-                        <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
-                            <Authorized>
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/outcome-quality-dip-sampling/{sample.Id}")">
-                                    Verify
+                        <MudStack Row="true">
+                            <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
+                                <MudButton Disabled="@(sample.CompletedOn.HasValue is false)" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/outcome-quality-dip-sampling/{sample.Id}")">
+                                    @ConstantString.Verify
                                 </MudButton>
-                            </Authorized>
-                            <NotAuthorized>
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/outcome-quality-dip-sampling/{sample.Id}")">
-                                    Review
-                                </MudButton>
-                            </NotAuthorized>
-                        </AuthorizeView>
-                        @{
-                            int? score = sample.FinalScore ?? sample.CpmScore ?? sample.CsoScore;
+                            </AuthorizeView>
 
-                            if(score.HasValue)
+                            <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipReview">
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/outcome-quality-dip-sampling/{sample.Id}")">
+                                    @ConstantString.Review
+                                </MudButton>
+                            </AuthorizeView>
+                        </MudStack>
+
+                        @{
+                            if(sample.Score.HasValue)
                             {
                                 <MudTooltip>
                                     <TooltipContent>
@@ -121,7 +123,7 @@
                                         </MudStack>
                                     </TooltipContent>
                                     <ChildContent>
-                                        <MudRating SelectedValue="score.Value" ReadOnly  />
+                                        <MudRating SelectedValue="sample.Score.Value" ReadOnly  />
                                     </ChildContent>
                                 </MudTooltip>
                             }

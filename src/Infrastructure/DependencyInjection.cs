@@ -427,25 +427,22 @@ public static class DependencyInjection
 
                 options.AddPolicy(SecurityPolicies.OutcomeQualityDipChecks, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim(ApplicationClaimTypes.DipSample, "View"); // CSO + CPM + TBC role
+                    policy.RequireRole(RoleNames.CSO, RoleNames.CPM, RoleNames.CMPSM, RoleNames.SMT, RoleNames.SystemSupport);
                 });
 
                 options.AddPolicy(SecurityPolicies.OutcomeQualityDipReview, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim(ApplicationClaimTypes.DipSample, "View");
-                    policy.RequireClaim(ApplicationClaimTypes.DipSample, "Review"); // CSO
+                    policy.RequireRole(RoleNames.CSO, RoleNames.SMT, RoleNames.SystemSupport);
                 });
 
                 options.AddPolicy(SecurityPolicies.OutcomeQualityDipVerification, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim(ApplicationClaimTypes.DipSample, "View");
-                    policy.RequireClaim(ApplicationClaimTypes.DipSample, "Verify"); // CPM
+                    policy.RequireRole(RoleNames.CPM, RoleNames.SMT, RoleNames.SystemSupport);
                 });
 
                 options.AddPolicy(SecurityPolicies.OutcomeQualityDipSubmission, policy => {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim(ApplicationClaimTypes.DipSample, "View");
-                    policy.RequireClaim(ApplicationClaimTypes.DipSample, "Submit"); // TBC role
+                    policy.RequireRole(RoleNames.CMPSM, RoleNames.SMT, RoleNames.SystemSupport);
                 });
             })
             .AddAuthentication(options => {

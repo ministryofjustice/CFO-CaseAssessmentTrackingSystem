@@ -5,6 +5,7 @@
 @inherits CatsComponentBase
 
 @using Cfo.Cats.Application.Features.ManagementInformation.DTOs
+@using Cfo.Cats.Server.UI.Pages.Analytics.Components
 @using MudBlazor.Utilities
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Application.SecurityConstants
@@ -40,7 +41,18 @@ else
                 <MudSwitch Label="Only show in progress" Color="Color.Primary" Class="mr-2" @bind-Value="Query.OnlyShowInProgress" />
                 <MudSpacer />
                 <MudStack>
-                    <MudStack Row="true">
+                    <MudStack Row="true" Class="gap-0">
+                        <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Done"
+                                       Size="Size.Small"
+                                       OnClick="OnVerify"
+                                       Disabled="sample.CompletedOn.HasValue is false"
+                                       IconColor="Color.Surface">
+                                <MudText>@ConstantString.Verify</MudText>
+                            </MudButton>
+                        </AuthorizeView>
                         <MudButton Disabled="true"
                                    Variant="Variant.Outlined"
                                    Color="Color.Primary"
@@ -57,11 +69,6 @@ else
                             {
                                 <MudText>@ConstantString.Export</MudText>
                             }
-                        </MudButton>
-                        <MudButton Variant="Variant.Outlined"
-                                   Color="Color.Primary"
-                                   Size="Size.Small">
-                            <MudText>@ConstantString.Submit</MudText>
                         </MudButton>
                     </MudStack>
                     <MudTextField DebounceInterval="500" @bind-Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
@@ -83,8 +90,8 @@ else
             <TemplateColumn Title="@ConstantString.Actions" Sortable="false">
                 <CellTemplate>
                     <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
-                             Dense="true"
-                             EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                                Dense="true"
+                                EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                         <MudMenuItem Href="@($"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/{context.Item.ParticipantId}")">
                             @ConstantString.Review
                         </MudMenuItem>
@@ -122,37 +129,37 @@ else
                     </MudStack>
                 </CellTemplate>
             </PropertyColumn>
-            <TemplateColumn Title="Status"
-                            SortBy="x => x.ComplianceAnswer.Value">
+            <TemplateColumn Title="Status">
                 <CellTemplate>
-                    <MudStack>
-                    
-                        @{
-                            (string Icon, Color Colour, bool Disabled) chipDetails(ComplianceAnswer answer) => answer switch
-                            {
-                                var a when a == ComplianceAnswer.Unsure => (Icons.Material.Filled.WarningAmber, Color.Warning, a.IsAuto),
-                                { IsAnswer: false } => (Icons.Material.Filled.Pending, Color.Default, false),
-                                { IsAccepted: true } a => (Icons.Material.Filled.CheckCircle, Color.Success, a.IsAuto),
-                                { IsAccepted: false } a => (Icons.Material.Filled.ErrorOutline, Color.Error, a.IsAuto),
-                                var a => (Icons.Material.Filled.ErrorOutline, Color.Error, true)
-                            };
-
-                            var csoDetails = chipDetails(context.Item.CsoComplianceAnswer);
-                        }
-                        
-                        <MudChip Icon="@csoDetails.Icon" Color="@csoDetails.Colour" Size="Size.Small" Disabled="@csoDetails.Disabled">
-                            @($"CSO {context.Item.CsoComplianceAnswer.Name}")
-                        </MudChip>
-
-                        @if (context.Item.CpmComplianceAnswer.IsAnswer)
+                    <MudStack Row="true" Class="gap-1 align-center">
+                        @* Display warning if CSO & CPM disagree *@
+                        @if (context.Item.CsoAndCpmDisagree)
                         {
-                            var cpmDetails = chipDetails(context.Item.CpmComplianceAnswer);
-
-                            <MudChip Icon="@cpmDetails.Icon" Color="@cpmDetails.Colour" Size="Size.Small" Disabled="@cpmDetails.Disabled">
-                                @($"CPM {context.Item.CpmComplianceAnswer.Name}")
-                            </MudChip>
+                            <MudTooltip Text="Disagreement">
+                                <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.Warning" />
+                            </MudTooltip>
                         }
-
+                        <MudMenu ActivationEvent="MouseEvent.MouseOver" Disabled="context.Item.ComplianceAnswer.IsAnswer is false">
+                            <ActivatorContent>
+                                <DipSampleAnswerChip Answer="context.Item.ComplianceAnswer" />
+                            </ActivatorContent>
+                            <ChildContent>
+                                <MudStack>
+                                    @if (context.Item.CsoComplianceAnswer.IsAnswer)
+                                    {
+                                        <DipSampleAnswerChip Answer="context.Item.CsoComplianceAnswer" Prefix="CSO" />
+                                    }
+                                    @if (context.Item.CpmComplianceAnswer.IsAnswer)
+                                    {
+                                        <DipSampleAnswerChip Answer="context.Item.CpmComplianceAnswer" Prefix="CPM" />
+                                    }
+                                    @if (context.Item.FinalComplianceAnswer.IsAnswer)
+                                    {
+                                        <DipSampleAnswerChip Answer="context.Item.FinalComplianceAnswer" Prefix="Final" />
+                                    }
+                                </MudStack>
+                            </ChildContent>
+                        </MudMenu>
                     </MudStack>
                 </CellTemplate>
             </TemplateColumn>

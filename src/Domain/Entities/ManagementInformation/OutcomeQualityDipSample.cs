@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.ManagementInformation;
 
@@ -20,12 +21,41 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
         Size = size
     };
 
-    public OutcomeQualityDipSample Complete(string completedBy, int noOfCompliant = 0)
+    public OutcomeQualityDipSample Review(string reviewedBy, int noOfCompliant = 0)
     {
-        CompletedOn = DateTime.UtcNow;
-        CompletedBy = completedBy;
-        Status = DipSampleStatus.Completed;
+        if (Status != DipSampleStatus.InProgress)
+        {
+            throw new ApplicationException("Cannot review at this stage");
+        }
+
+        ReviewedOn = DateTime.UtcNow;
+        ReviewedBy = reviewedBy;
+        Status = DipSampleStatus.Reviewed;
         SetCsoScores(noOfCompliant);
+
+        return this;
+    }
+
+    public OutcomeQualityDipSample Verify(string userId)
+    {
+        if (Status != DipSampleStatus.Reviewed)
+        {
+            throw new ApplicationException("Cannot verify at this stage");
+        }
+
+        Status = DipSampleStatus.Verifying;
+        AddDomainEvent(new OutcomeQualityDipSampleVerifyingDomainEvent(Id, userId, DateTime.UtcNow));
+        return this;
+    }
+
+    public OutcomeQualityDipSample MarkAsVerified()
+    {
+        if (Status != DipSampleStatus.Verifying)
+        {
+            throw new ApplicationException("Cannot verify at this stage");
+        }
+
+        Status = DipSampleStatus.Verified;
 
         return this;
     }
@@ -34,8 +64,8 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
     public DateTime CreatedOn { get; private set; }
     public DateTime PeriodFrom { get; private set; }
     public DateTime PeriodTo { get; private set; }
-    public DateTime? CompletedOn { get; private set; }
-    public string? CompletedBy { get; private set; }
+    public DateTime? ReviewedOn { get; private set; }
+    public string? ReviewedBy { get; private set; }
     public DipSampleStatus Status { get; private set; }
 
     /// <summary>
@@ -84,7 +114,7 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
     /// </summary>
     public int? CpmScore { get; private set; }
 
-    public OutcomeQualityDipSample SetCpmScores(int noOfCompliant)
+    private OutcomeQualityDipSample SetCpmScores(int noOfCompliant)
     {
         CpmCompliant = noOfCompliant;
         CpmPercentage = CalculatePercentage(noOfCompliant);

@@ -15,4 +15,7 @@ public record DipSampleDto(
     int? FinalPercentage = null,
     int TotalScored = 0,
     DateTime? CompletedOn = null, 
-    string? CompletedBy = null);
+    string? CompletedBy = null)
+{
+    public int? Score => FinalScore ?? CpmScore ?? CsoScore;
+}

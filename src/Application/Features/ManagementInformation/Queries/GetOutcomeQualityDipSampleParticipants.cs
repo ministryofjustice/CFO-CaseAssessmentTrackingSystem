@@ -48,6 +48,7 @@ public static class GetOutcomeQualityDipSampleParticipants
                     EnrolmentLocationName = enrolmentLocation.Name,
                     sample.CsoIsCompliant,
                     sample.CpmIsCompliant,
+                    sample.FinalIsCompliant,
                     sample.CsoReviewedOn,
                     ReviewedBy = reviewer.DisplayName
                 };
@@ -71,6 +72,7 @@ public static class GetOutcomeQualityDipSampleParticipants
                     dsp.EnrolmentLocationName,
                     dsp.CsoIsCompliant,
                     dsp.CpmIsCompliant,
+                    dsp.FinalIsCompliant,
                     dsp.CsoReviewedOn,
                     dsp.ReviewedBy))
                 .ToListAsync(cancellationToken);

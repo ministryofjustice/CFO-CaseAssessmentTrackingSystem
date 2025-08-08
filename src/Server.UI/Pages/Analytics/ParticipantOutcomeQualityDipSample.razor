@@ -79,11 +79,9 @@
                     </AuthorizeView>
 
                     <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
-                        <MudTooltip Disabled="_participant.CsoAnswer.IsAnswer" Text="CSO Review Required">
-                            <MudTabPanel Text="Verification" Disabled="_participant.CsoAnswer.IsAnswer is false">
-                                <SubmitCpmResponseComponent Command="@SubmitCpmCommand" OnFormSubmit="CpmResponseSubmitted" />
-                            </MudTabPanel>
-                        </MudTooltip>
+                        <MudTabPanel Text="Verification" Disabled="_participant.CsoAnswer.IsAnswer is false">
+                            <SubmitCpmResponseComponent Command="@SubmitCpmCommand" OnFormSubmit="CpmResponseSubmitted" />
+                        </MudTabPanel>
                     </AuthorizeView>
 
                 </MudTabs>

@@ -97,4 +97,16 @@ public partial class OutcomeQualityDipSample
             _downloading = false;
         }
     }
+
+    async Task OnVerify()
+    {
+        try
+        {
+            await Task.CompletedTask;
+        }
+        finally
+        {
+
+        }
+    }
 }

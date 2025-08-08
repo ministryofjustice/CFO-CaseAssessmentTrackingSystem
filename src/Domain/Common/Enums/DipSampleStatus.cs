@@ -7,5 +7,8 @@ public class DipSampleStatus : SmartEnum<DipSampleStatus>
     DipSampleStatus(string name, int value) : base(name, value) { }
 
     public static readonly DipSampleStatus InProgress = new("In Progress", 0);
-    public static readonly DipSampleStatus Completed = new(nameof(Completed), 1);
+    public static readonly DipSampleStatus Reviewed = new(nameof(Reviewed), 1);
+    public static readonly DipSampleStatus Verifying = new(nameof(Verifying), 2);
+    public static readonly DipSampleStatus Verified = new(nameof(Verified), 3);
+    public static readonly DipSampleStatus Finalised = new(nameof(Finalised), 4);
 }

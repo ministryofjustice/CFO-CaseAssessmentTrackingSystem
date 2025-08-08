@@ -88,7 +88,7 @@ public class Validator : AbstractValidator<Command>
 
                     return true;
 
-                }).WithMessage("Cannot submit CSO review: {Reason}");
+                }).WithMessage("Cannot review: {Reason}");
 
         });
         

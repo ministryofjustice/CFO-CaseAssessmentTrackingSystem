@@ -27,7 +27,7 @@ public static class GetOutcomeQualityDipSamples
             var query =
                 from sample in context.OutcomeQualityDipSamples
                 join contract in context.Contracts on sample.ContractId equals contract.Id
-                join u in context.Users on sample.CompletedBy equals u.Id into uj
+                join u in context.Users on sample.ReviewedBy equals u.Id into uj
                 from user in uj.DefaultIfEmpty()
                 join dsp in context.OutcomeQualityDipSampleParticipants on sample.Id equals dsp.DipSampleId into participants
                 where sample.PeriodFrom == request.Period
@@ -48,7 +48,7 @@ public static class GetOutcomeQualityDipSamples
                     sample.CpmPercentage,
                     sample.FinalPercentage,
                     participants.Where(p => p.CsoReviewedOn.HasValue).Count(),
-                    sample.CompletedOn, 
+                    sample.ReviewedOn, 
                     user.DisplayName);
 
             var samples = await query
