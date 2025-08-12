@@ -1,6 +1,5 @@
 using Cfo.Cats.Application.Features.Identity.DTOs;
 using Cfo.Cats.Domain.Entities.Notifications;
-using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace Cfo.Cats.Application.Features.Notifications.DTOs;
 

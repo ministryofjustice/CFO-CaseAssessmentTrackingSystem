@@ -1,6 +1,5 @@
 using Ardalis.SmartEnum;
 using Cfo.Cats.Domain.Entities.Administration;
-using DocumentFormat.OpenXml.Drawing;
 
 namespace Cfo.Cats.Application.Features.Assessments.DTOs;
 

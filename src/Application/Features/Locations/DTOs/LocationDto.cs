@@ -1,5 +1,4 @@
 ﻿using Cfo.Cats.Domain.Entities.Administration;
-using DocumentFormat.OpenXml.Bibliography;
 
 namespace Cfo.Cats.Application.Features.Locations.DTOs;
 

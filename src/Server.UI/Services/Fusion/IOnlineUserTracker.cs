@@ -1,7 +1,6 @@
 using System.Runtime.Serialization;
 using ActualLab.Fusion;
 using ActualLab.Fusion.Blazor;
-using Faker.Resources;
 using MemoryPack;
 
 namespace Cfo.Cats.Server.UI.Services.Fusion;

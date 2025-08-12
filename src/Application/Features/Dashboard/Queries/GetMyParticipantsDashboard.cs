@@ -2,7 +2,6 @@ using System.Reflection.Emit;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Dashboard.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
-using DocumentFormat.OpenXml.Math;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 

@@ -30,7 +30,6 @@
         <PackageReference Include="BlazorDownloadFile" />
         <PackageReference Include="BlazorTime" />
         <PackageReference Include="CodeBeam.MudBlazor.Extensions" />
-        <PackageReference Include="Faker.Net" />
         <PackageReference Include="Humanizer" />
         <PackageReference Include="Humanizer.Core.uk" />
         <PackageReference Include="MemoryPack.Generator">

@@ -3,7 +3,6 @@ using Cfo.Cats.Application.Features.AuditTrails.Caching;
 using Cfo.Cats.Application.Features.AuditTrails.DTOs;
 using Cfo.Cats.Application.Features.AuditTrails.Specifications.SystemAuditTrail;
 using Cfo.Cats.Application.SecurityConstants;
-using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Cfo.Cats.Application.Features.AuditTrails.Queries.GetSystemAuditTrailsWithPagination;
 
