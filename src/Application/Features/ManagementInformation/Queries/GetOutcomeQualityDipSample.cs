@@ -13,7 +13,7 @@ public static class GetOutcomeQualityDipSample
         public required Guid DipSampleId { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<DipSampleSummaryDto>>
+    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<DipSampleSummaryDto>>
     {
         public async Task<Result<DipSampleSummaryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -23,31 +23,26 @@ public static class GetOutcomeQualityDipSample
                 from sample in context.OutcomeQualityDipSamples
                 join contract in context.Contracts on sample.ContractId equals contract.Id
                 where sample.Id == request.DipSampleId
-                select new DipSampleSummaryDto(contract.Description, sample.PeriodFrom, sample.ReviewedOn);
+                select new DipSampleSummaryDto(contract.Description, sample.PeriodFrom, sample.ReviewedOn, sample.Status);
 
-            var dipSample = await query.FirstAsync(cancellationToken);
+            var dipSample = await query.FirstOrDefaultAsync(cancellationToken);
 
-            return Result<DipSampleSummaryDto>.Success(dipSample);
+            return dipSample switch
+            {
+                null => Result<DipSampleSummaryDto>.NotFound(),
+                _ => dipSample
+            };
         }
     }
 
-    class Validator : AbstractValidator<Query>
+    public class Validator : AbstractValidator<Query>
     {
-        readonly IUnitOfWork unitOfWork;
-
-        public Validator(IUnitOfWork unitOfWork)
+        public Validator()
         {
-            this.unitOfWork = unitOfWork;
-
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
-            {
-                RuleFor(q => q.DipSampleId)
-                    .Must(Exist)
-                    .WithMessage("The requested dip sample was not found");
-            });
+            RuleFor(x => x.DipSampleId)
+                .NotEmpty()
+                .WithMessage(string.Format(ValidationConstants.GuidMessage, nameof(Query.DipSampleId)));
         }
-
-        bool Exist(Guid dipSampleId) => unitOfWork.DbContext.OutcomeQualityDipSamples.Any(d => d.Id == dipSampleId);
     }
 
 }

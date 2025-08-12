@@ -60,7 +60,7 @@ public class NotFoundResult<T> : Result<T>
     public NotFoundResult()
     {
         Succeeded = false;
-        Data = default(T);
+        Data = default;
         Errors = ["No data found"];
     }
 }

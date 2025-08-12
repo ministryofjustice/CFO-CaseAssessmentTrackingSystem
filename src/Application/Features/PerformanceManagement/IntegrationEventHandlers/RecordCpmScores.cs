@@ -16,24 +16,33 @@ public class RecordCpmScores(IUnitOfWork unitOfWork) : IHandleMessages<OutcomeQu
             .Where(s => s.DipSampleId == message.DipSampleId)
             .ToArrayAsync();
 
-        foreach(var participant in participants.Where(c => c.CpmIsCompliant.IsAnswer is false))
+        foreach(var participant in participants)
         {
-            var cpmAnswer = participant.CsoIsCompliant switch
+            if (participant.CpmIsCompliant.IsAnswer == false)
             {
-                var c when c.Name == ComplianceAnswer.Compliant.Name => ComplianceAnswer.AutoCompliant,
-                var c when c.Name == ComplianceAnswer.NotCompliant.Name => ComplianceAnswer.AutoNotCompliant,
-                _ => throw new ApplicationException("Invalid answer")
-            };
+                var cpmAnswer = participant.CsoIsCompliant switch
+                {
+                    var c when c.Name == ComplianceAnswer.Compliant.Name => ComplianceAnswer.AutoCompliant,
+                    var c when c.Name == ComplianceAnswer.NotCompliant.Name => ComplianceAnswer.AutoNotCompliant,
+                    _ => throw new ApplicationException("Invalid answer")
+                };
 
-            participant.CpmAnswer(
-                cpmAnswer,
-                participant.CsoComments!,
-                message.UserId,
-                message.OccurredOn
-            );
+                participant.CpmAnswer(
+                    cpmAnswer,
+                    participant.CsoComments!,
+                    message.UserId,
+                    message.OccurredOn
+                );
+            }
+
+            if (participant.CsoIsCompliant.IsAccepted == participant.CpmIsCompliant.IsAccepted)
+            {
+                participant.FinalAnswer(participant.CpmIsCompliant, participant.CpmComments!, participant.CpmReviewedBy!,
+                    message.OccurredOn);
+            }
         }
 
-        dipSample.MarkAsVerified();
+        dipSample.MarkAsVerified(participants.Count(c => c.CpmIsCompliant.IsAccepted));
 
         await unitOfWork.SaveChangesAsync();
     }

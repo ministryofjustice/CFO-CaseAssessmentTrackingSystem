@@ -33,7 +33,8 @@ public class PaymentBackgroundService(IServiceProvider provider, IConfiguration 
             .Handle<RecordThroughTheGatePaymentConsumer>(provider)
             .Handle<RecordWingInductionPaymentConsumer>(provider)
             .Handle<RecordReassessmentPaymentConsumer>(provider)
-            .Handle<RecordCsoScores>(provider);
+            .Handle<RecordCsoScores>(provider)
+            .Handle<RecordCpmScores>(provider);
 
         _bus = Configure.With(_activator)
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.PaymentService)

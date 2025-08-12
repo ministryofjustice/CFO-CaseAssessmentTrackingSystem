@@ -99,4 +99,20 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
         return this;
     }
 
+    public OutcomeQualityDipSampleParticipant FinalAnswer(
+        ComplianceAnswer isCompliant,
+        string comments,
+        string reviewedBy,
+        DateTime reviewedOn
+    )
+    {
+        //TODO: Add validation around here
+        FinalIsCompliant = isCompliant;
+        FinalComments = comments;
+        FinalReviewedBy = reviewedBy;
+        FinalReviewedOn = reviewedOn;
+
+        return this;
+    }
+
 }

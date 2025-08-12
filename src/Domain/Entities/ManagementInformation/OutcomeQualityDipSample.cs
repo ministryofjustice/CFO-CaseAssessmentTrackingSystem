@@ -48,15 +48,14 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
         return this;
     }
 
-    public OutcomeQualityDipSample MarkAsVerified()
+    public OutcomeQualityDipSample MarkAsVerified(int noOfCompliant)
     {
         if (Status != DipSampleStatus.Verifying)
         {
             throw new ApplicationException("Cannot verify at this stage");
         }
-
         Status = DipSampleStatus.Verified;
-
+        SetCpmScores(noOfCompliant);
         return this;
     }
 
@@ -73,7 +72,6 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
     /// </summary>
     public int Size { get; private set; }
 
-    #region Calculated CSO properties
     /// <summary>
     /// Count of <see cref="ComplianceAnswer.Compliant"/> records marked by the CSO.
     /// </summary>
@@ -96,9 +94,6 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
         CsoScore = CalculateScore(CsoPercentage.Value);
     }
 
-    #endregion
-
-    #region Calculated CPM properties
     /// <summary>
     /// Count of <see cref="ComplianceAnswer.Compliant"/> or <see cref="ComplianceAnswer.AutoCompliant"/> records marked by the CSO/CPM.
     /// </summary>
@@ -122,7 +117,6 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
 
         return this;
     }
-    #endregion
 
     #region Calculated business (final) properties
     /// <summary>

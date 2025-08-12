@@ -11,7 +11,7 @@ public static class GetOutcomeQualityDipSampleParticipants
     public class Query : PaginationFilter, IRequest<Result<PaginatedData<DipSampleParticipantSummaryDto>>>
     {
         public required Guid DipSampleId { get; set; }
-        public bool OnlyShowInProgress { get; set; } = true;
+        public bool HideReviewed { get; set; } = false;
     }
 
     private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaginatedData<DipSampleParticipantSummaryDto>>>
@@ -30,7 +30,7 @@ public static class GetOutcomeQualityDipSampleParticipants
                 join reviewer in context.Users on sample.CsoReviewedBy equals reviewer.Id into reviewers
                 from reviewer in reviewers.DefaultIfEmpty()
                 where sample.DipSampleId == request.DipSampleId
-                where request.OnlyShowInProgress == false 
+                where request.HideReviewed == false 
                     || sample.CsoReviewedOn == null
                 where string.IsNullOrWhiteSpace(request.Keyword)
                     || sample.LocationType.Contains(request.Keyword)

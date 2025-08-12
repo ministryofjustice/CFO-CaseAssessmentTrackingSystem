@@ -6,9 +6,10 @@ using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 using Microsoft.JSInterop;
 
-namespace Cfo.Cats.Server.UI.Pages.Analytics;
 
-public partial class ParticipantOutcomeQualityDipSample
+namespace Cfo.Cats.Server.UI.Pages.Analytics.OutcomeQualityDipSample;
+
+public partial class ParticipantDetails
 {
     [Parameter]
     public required Guid SampleId { get; set; }
@@ -42,10 +43,7 @@ public partial class ParticipantOutcomeQualityDipSample
                 DipSampleId = SampleId
             };
         }
-        set
-        {
-            _csoCommand = value;
-        }
+        set => _csoCommand = value;
     }
 
     private AddOutcomeQualityDipSampleCpm.Command? _cpmCommand;
@@ -128,10 +126,8 @@ public partial class ParticipantOutcomeQualityDipSample
         }
         
     }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await JSRuntime.InvokeVoidAsync("removeInlineStyle", ".two-columns");
-    }
+    protected override async Task OnAfterRenderAsync(bool firstRender) 
+        => await JSRuntime.InvokeVoidAsync("removeInlineStyle", ".two-columns");
 
     private async Task CsoResponseSubmitted(Command command)
     {

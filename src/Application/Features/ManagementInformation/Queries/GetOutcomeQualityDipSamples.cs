@@ -9,18 +9,18 @@ namespace Cfo.Cats.Application.Features.ManagementInformation.Queries;
 public static class GetOutcomeQualityDipSamples
 {
     [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
-    public class Query : IRequest<Result<IEnumerable<DipSampleDto>>>
+    public class Query : IRequest<Result<DipSampleDto[]>>
     {
         public int Month { get; set; } = DateTime.Now.AddMonths(-4).Month;
         public int Year { get; set; } = DateTime.Now.AddMonths(-4).Year;
         public ContractDto? Contract { get; set; }
         public bool OnlyShowInProgress { get; set; } = false;
-        public DateTime Period => new (Year, Month, day: 1);
+        public DateTime Period => new(Year, Month, 1);
     }
 
-    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<IEnumerable<DipSampleDto>>>
+    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<DipSampleDto[]>>
     {
-        public async Task<Result<IEnumerable<DipSampleDto>>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<DipSampleDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {
             var context = unitOfWork.DbContext;
 
@@ -29,42 +29,42 @@ public static class GetOutcomeQualityDipSamples
                 join contract in context.Contracts on sample.ContractId equals contract.Id
                 join u in context.Users on sample.ReviewedBy equals u.Id into uj
                 from user in uj.DefaultIfEmpty()
-                join dsp in context.OutcomeQualityDipSampleParticipants on sample.Id equals dsp.DipSampleId into participants
+                join dsp in context.OutcomeQualityDipSampleParticipants on sample.Id equals dsp.DipSampleId into
+                    participants
                 where sample.PeriodFrom == request.Period
                 where request.Contract == null || request.Contract.Id == sample.ContractId
                 where request.OnlyShowInProgress == false || sample.Status == DipSampleStatus.InProgress
                 orderby contract.Description
                 select new DipSampleDto(
-                    sample.Id, 
-                    contract.Description, 
-                    sample.Status, 
+                    sample.Id,
+                    contract.Description,
+                    sample.Status,
                     sample.PeriodFrom,
                     sample.CreatedOn,
                     participants.Count(),
-                    sample.CsoScore, 
-                    sample.CpmScore, 
+                    sample.CsoScore,
+                    sample.CpmScore,
                     sample.FinalScore,
                     sample.CsoPercentage,
                     sample.CpmPercentage,
                     sample.FinalPercentage,
-                    participants.Where(p => p.CsoReviewedOn.HasValue).Count(),
-                    sample.ReviewedOn, 
+                    participants.Count(p => p.CsoReviewedOn.HasValue),
+                    sample.ReviewedOn,
                     user.DisplayName);
 
             var samples = await query
                 .AsNoTracking()
-                .ToListAsync(cancellationToken);
+                .ToArrayAsync(cancellationToken);
 
-            if(samples is not { Count: > 0 })
+            return samples switch
             {
-                return Result<IEnumerable<DipSampleDto>>.Failure($"No dip samples have been generated for {request.Period:MMM yyyy}");
-            }
-
-            return Result<IEnumerable<DipSampleDto>>.Success(samples);
+                { Length: 0 } => Result<DipSampleDto[]>.NotFound(),
+                _ => Result<DipSampleDto[]>.Success(samples)
+            };
         }
     }
 
-    class Validator : AbstractValidator<Query>
+    private class Validator : AbstractValidator<Query>
     {
         public Validator()
         {
