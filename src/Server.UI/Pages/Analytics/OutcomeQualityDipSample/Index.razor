@@ -86,20 +86,20 @@
                     </MudProgressLinear>
                     <MudText Typo="Typo.subtitle1" Style="text-align: center">@sample.TotalScored / @sample.Size complete</MudText>
 
-                    @*@if(sample.Contributors is { Length: > 0 })
-                        {
-                            <div class="d-flex">
-                                <MudText>Contributors</MudText>
-                                <MudAvatarGroup Max="3" Spacing="3">
-                                    @foreach(var contributor in sample.Contributors)
-                                    {
-                                        <MudTooltip Text="@contributor">
-                                            <MudAvatar Size="Size.Small">@string.Join(string.Empty, contributor!.ToUpper().Split(' ').Select(name => name[0]))</MudAvatar>
-                                        </MudTooltip>
-                                    }
-                                </MudAvatarGroup>
-                            </div>
-                        } *@
+                    @if (sample.Contributors is { Length: > 0 })
+                    {
+                        <MudStack Row="true" AlignItems="AlignItems.Center">
+                            <MudText>Contributors</MudText>
+                            <MudAvatarGroup Max="3" Spacing="3">
+                                @foreach (var contributor in sample.Contributors)
+                                {
+                                    <MudTooltip Text="@contributor">
+                                        <MudAvatar Size="Size.Small">@string.Join(string.Empty, contributor!.ToUpper().Split(' ').Select(name => name[0]))</MudAvatar>
+                                    </MudTooltip>
+                                }
+                            </MudAvatarGroup>
+                        </MudStack>
+                    }
                 </MudCardContent>
                 <MudCardActions Class="justify-space-between">
                     <MudStack Row="true">

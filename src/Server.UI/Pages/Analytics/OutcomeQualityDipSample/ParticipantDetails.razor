@@ -71,13 +71,9 @@
                     <MudTabPanel Text="Assessments">
                         <OutcomeQualityDipSampleAssessmentComponent ParticipantId="@_participant.ParticipantId" />
                     </MudTabPanel>
-
-                    <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipChecks">
-                        <MudTabPanel Text="Review">
-                            <SubmitCsoResponseComponent Command="@SubmitCsoCommand" OnFormSubmit="CsoResponseSubmitted" />
-                        </MudTabPanel>
-                    </AuthorizeView>
-
+                    <MudTabPanel Text="Review">
+                        <SubmitCsoResponseComponent Command="@SubmitCsoCommand" OnFormSubmit="CsoResponseSubmitted" />
+                    </MudTabPanel>
                     <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
                         <MudTabPanel Text="Verification" Disabled="_participant.CsoAnswer.IsAnswer is false">
                             <SubmitCpmResponseComponent Command="@SubmitCpmCommand" OnFormSubmit="CpmResponseSubmitted" />

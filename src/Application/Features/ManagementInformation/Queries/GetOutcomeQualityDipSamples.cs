@@ -50,7 +50,15 @@ public static class GetOutcomeQualityDipSamples
                     sample.FinalPercentage,
                     participants.Count(p => p.CsoReviewedOn.HasValue),
                     sample.ReviewedOn,
-                    user.DisplayName);
+                    user.DisplayName,
+                    (
+                        from p in context.OutcomeQualityDipSampleParticipants
+                        join u in context.Users on p.CsoReviewedBy equals u.Id
+                        where p.DipSampleId == sample.Id && p.CsoReviewedBy != null
+                        group u by u.DisplayName into g
+                        select g.Key
+                    ).ToArray()
+                    );
 
             var samples = await query
                 .AsNoTracking()

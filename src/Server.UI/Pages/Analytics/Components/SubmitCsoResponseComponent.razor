@@ -10,7 +10,7 @@
 
 @inherits CatsComponentBase
 
-<MudForm @ref="form" Model="Command" Validation="@(Validator.ValidateValue(Command))" Class="ma-2" ReadOnly="ReadOnly">
+<MudForm @ref="_form" Model="Command" Validation="@(Validator.ValidateValue(Command))" Class="ma-2" ReadOnly="ReadOnly">
     <MudGrid>
         <MudItem xs="12" md="8">
             <MudStack Row="true" AlignItems="AlignItems.Center">
@@ -156,39 +156,8 @@
         </MudItem>
         
         <MudItem xs="12">
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="OnSubmit">Submit</MudButton>
+            <MudButton Disabled="@ReadOnly" Variant="Variant.Outlined" Color="Color.Primary" OnClick="OnSubmit">Submit</MudButton>
         </MudItem>
-
+        
     </MudGrid>
 </MudForm>
-
-
-@code {
-
-    private MudForm form = new();
-
-    bool ReadOnly { get; set; } = true;
-
-    [Parameter] [EditorRequired] public required EventCallback<Command> OnFormSubmit { get; set; }
-    [Parameter] [EditorRequired] public required Command Command { get; set; }
-
-    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
-
-    private async Task OnSubmit()
-    {
-        await form.Validate();
-
-        if (form.IsValid)
-        {
-            await OnFormSubmit.InvokeAsync(Command);
-        }
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        var state = await AuthState;
-        var result = await AuthorizationService.AuthorizeAsync(state.User, SecurityPolicies.OutcomeQualityDipReview);
-        ReadOnly = result is not { Succeeded: true };
-    }
-
-}

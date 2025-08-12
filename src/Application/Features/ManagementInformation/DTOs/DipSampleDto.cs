@@ -1,4 +1,6 @@
-﻿namespace Cfo.Cats.Application.Features.ManagementInformation.DTOs;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+
+namespace Cfo.Cats.Application.Features.ManagementInformation.DTOs;
 
 public record DipSampleDto(
     Guid Id,
@@ -15,7 +17,8 @@ public record DipSampleDto(
     int? FinalPercentage = null,
     int TotalScored = 0,
     DateTime? CompletedOn = null, 
-    string? CompletedBy = null)
+    string? CompletedBy = null,
+    string[]? Contributors = null)
 {
     public int? Score => FinalScore ?? CpmScore ?? CsoScore;
 }
