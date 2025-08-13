@@ -72,13 +72,6 @@ public class DipSampleParticipantEntityTypeConfiguration : IEntityTypeConfigurat
                 dsa => dsa!.Value,
                 dsa => DipSampleAnswer.FromValue(dsa)
             );
-
-        builder.Property(s => s.TemplatesAlignWithREG)
-            .IsRequired()
-            .HasConversion(
-                dsa => dsa!.Value,
-                dsa => DipSampleAnswer.FromValue(dsa)
-            );        
         
         builder.Property(s => s.SupportsJourneyAndAlignsWithDoS)
             .IsRequired()

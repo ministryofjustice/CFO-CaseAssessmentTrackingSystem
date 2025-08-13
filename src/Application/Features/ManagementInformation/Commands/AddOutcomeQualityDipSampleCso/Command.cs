@@ -25,9 +25,6 @@ public record Command : IRequest<Result>
 
     [Description("If applicable, do Human Citizenship, Community Social and Intervention Services link to the participant story/journey, do they link to the DoS and do they demonstrate good quality outcomes including VFM?")]
     public DipSampleAnswer SupportsJourneyAndAlignsWithDoS { get; set; } = DipSampleAnswer.NotAnswered;
-   
-    [Description("If applicable are Employment, ETE and ISWS templates in line with the REG?")] 
-    public DipSampleAnswer TemplatesAlignWithREG { get; set; }= DipSampleAnswer.NotAnswered;
 
     [Description("Comments")]
     public string? Comments { get; set; }

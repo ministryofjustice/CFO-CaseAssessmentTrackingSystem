@@ -14,7 +14,6 @@ internal class Handler(IUnitOfWork unitOfWork, IDateTime dateTime) : IRequestHan
             taskProgression: request.ShowsTaskProgression,
             linksToTasks: request.ActivitiesLinkToTasks,
             ttgDemonstratesGoodPRIProcess: request.TTGDemonstratesGoodPRIProcess,
-            alignsWithReg: request.TemplatesAlignWithREG,
             supportsJourneyAndAlignsWithDos: request.SupportsJourneyAndAlignsWithDoS,
             isCompliant: request.ComplianceAnswer,
             comments: request.Comments!,

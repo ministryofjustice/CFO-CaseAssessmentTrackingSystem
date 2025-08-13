@@ -30,7 +30,7 @@ public class ParticipantDipSampleDto
     public DipSampleAnswer ActivitiesLinkToTasks { get; set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer TTGDemonstratesGoodPRIProcess { get; set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer SupportsJourneyAndAlignsWithDoS { get; set; } = DipSampleAnswer.NotAnswered;
-    public DipSampleAnswer TemplatesAlignWithREG { get; set; } = DipSampleAnswer.NotAnswered;
+    
 
     public required ComplianceAnswer CpmAnswer { get; set; }
     public string? CpmComments { get; set; }

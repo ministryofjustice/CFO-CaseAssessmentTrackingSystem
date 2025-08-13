@@ -109,7 +109,6 @@ public partial class ParticipantDetails
                         ShowsTaskProgression = _participant.ShowsTaskProgression,
                         ActivitiesLinkToTasks = _participant.ActivitiesLinkToTasks,
                         TTGDemonstratesGoodPRIProcess = _participant.TTGDemonstratesGoodPRIProcess,
-                        TemplatesAlignWithREG = _participant.TemplatesAlignWithREG,
                         SupportsJourneyAndAlignsWithDoS = _participant.SupportsJourneyAndAlignsWithDoS,
                     };
                 }

@@ -44,10 +44,6 @@ public class Validator : AbstractValidator<Command>
         RuleFor(x => x.TTGDemonstratesGoodPRIProcess)
             .Must(x => x.IsAnswer)
             .WithMessage("Must be answered");
-
-        RuleFor(x => x.TemplatesAlignWithREG)
-            .Must(x => x.IsAnswer)
-            .WithMessage("Must be answered");
         
         RuleFor(x => x.SupportsJourneyAndAlignsWithDoS)
             .Must(x => x.IsAnswer)

@@ -100,25 +100,6 @@
                 <MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>
             </MudRadioGroup>
         </MudItem>
-
-        <MudItem xs="12" md="8">
-            <MudStack Row="true" AlignItems="AlignItems.Center">
-                <MudAvatar Size="Size.Medium" Color="@Color.Primary">
-                    F
-                </MudAvatar> 
-                <MudText Typo="Typo.subtitle1" id="participant-journey-label">
-                    @Command.GetMemberDescription(x => x.TemplatesAlignWithREG)
-                </MudText>
-            </MudStack>
-           
-        </MudItem>
-        <MudItem xs="12" md="4" Class="d-flex align-center">
-            <MudRadioGroup @bind-Value="Command.TemplatesAlignWithREG" For="@(() => Command.TemplatesAlignWithREG)">
-                <MudRadio Value="@DipSampleAnswer.Yes">@DipSampleAnswer.Yes.Name</MudRadio>
-                <MudRadio Value="@DipSampleAnswer.No">@DipSampleAnswer.No.Name</MudRadio>
-                <MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>
-            </MudRadioGroup>
-        </MudItem>
         
         <MudItem xs="12" md="3">
             <MudText Typo="Typo.subtitle1">
