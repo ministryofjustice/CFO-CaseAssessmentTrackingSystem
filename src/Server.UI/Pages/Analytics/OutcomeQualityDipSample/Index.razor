@@ -89,7 +89,7 @@
                     @if (sample.Contributors is { Length: > 0 })
                     {
                         <MudStack Row="true" AlignItems="AlignItems.Center">
-                            <MudText>Contributors</MudText>
+                            <MudText>Reviewers</MudText>
                             <MudAvatarGroup Max="3" Spacing="3">
                                 @foreach (var contributor in sample.Contributors)
                                 {
@@ -120,7 +120,14 @@
                                     </MudStack>
                                 </TooltipContent>
                                 <ChildContent>
-                                    <MudRating SelectedValue="sample.Score.Value" ReadOnly/>
+                                    <MudRating 
+                                        SelectedValue="sample.Score.Value" 
+                                        Class="no-hover-rating" 
+                                        Disabled="true" 
+                                        Color="Color.Primary"
+                                        FullIcon="@Icons.Material.Filled.AssignmentTurnedIn"
+                                        EmptyIcon="@Icons.Material.Outlined.AssignmentTurnedIn"
+                                        />
                                 </ChildContent>
                             </MudTooltip>
                         }
