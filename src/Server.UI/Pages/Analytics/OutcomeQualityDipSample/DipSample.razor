@@ -125,16 +125,11 @@
                     </MudStack>
                 </CellTemplate>
             </PropertyColumn>
-            <TemplateColumn Title="Status">
+            <TemplateColumn Title="Compliance">
                 <CellTemplate>
                     <MudStack Row="true" Class="gap-1 align-center">
                         @* Display warning if CSO & CPM disagree *@
-                        @if (context.Item.CsoAndCpmDisagree)
-                        {
-                            <MudTooltip Text="Disagreement">
-                                <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.Warning" />
-                            </MudTooltip>
-                        }
+                        
                         <MudMenu ActivationEvent="MouseEvent.MouseOver" Disabled="context.Item.ComplianceAnswer.IsAnswer is false">
                             <ActivatorContent>
                                 <DipSampleAnswerChip Answer="context.Item.ComplianceAnswer" />
@@ -156,6 +151,12 @@
                                 </MudStack>
                             </ChildContent>
                         </MudMenu>
+                        @if (context.Item.CsoAndCpmDisagree)
+                        {
+                            <MudTooltip Text="Disagreement">
+                                <MudIcon Color="Color.Warning" Icon="@Icons.Material.Filled.Warning" />
+                            </MudTooltip>
+                        }
                     </MudStack>
                 </CellTemplate>
             </TemplateColumn>

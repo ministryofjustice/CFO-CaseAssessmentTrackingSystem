@@ -49,10 +49,13 @@
 <MudGrid Class="mt-2">
     @if (_errorMessage is not null)
     {
-        <MudAlert Severity="Severity.Warning">
-            @_errorMessage
-        </MudAlert>
+        <MudItem xs="12">
+            <MudAlert Severity="Severity.Warning">
+                @_errorMessage
+            </MudAlert>
+        </MudItem>
     }
+  
     @foreach (var sample in _samples)
     {
         <MudItem xs="12" md="6" lg="4">
@@ -64,8 +67,9 @@
                             @{
                                 var color = sample.Status switch
                                 {
-                                    var type when type == DipSampleStatus.InProgress => Color.Warning,
+                                    var type when type == DipSampleStatus.AwaitingReview => Color.Default,
                                     var type when type == DipSampleStatus.Reviewed => Color.Secondary,
+                                    var type when type == DipSampleStatus.Verifying => Color.Tertiary,
                                     var type when type == DipSampleStatus.Verified => Color.Primary,
                                     var type when type == DipSampleStatus.Finalised => Color.Success,
                                     _ => Color.Primary
@@ -76,40 +80,59 @@
                                 @sample.Status.Name
                             </MudChip>
                         </MudStack>
-                        <MudText Typo="Typo.h5">(@($"{sample.PeriodFrom:MMM yyyy}"))</MudText>
                     </MudStack>
                 </MudCardHeader>
                 <MudCardContent>
-                    <MudText>Sample size of <b>@sample.Size</b> participant(s)</MudText>
-                    <MudText>Generated @sample.CreatedOn.Humanize() (@sample.CreatedOn.ToShortDateString())</MudText>
-                    <MudProgressLinear Class="mt-4" Rounded Value="@sample.TotalScored" Max="sample.Size" Color="Color.Primary">
-                    </MudProgressLinear>
-                    <MudText Typo="Typo.subtitle1" Style="text-align: center">@sample.TotalScored / @sample.Size complete</MudText>
 
-                    @if (sample.Contributors is { Length: > 0 })
-                    {
-                        <MudStack Row="true" AlignItems="AlignItems.Center">
-                            <MudText>Reviewers</MudText>
-                            <MudAvatarGroup Max="3" Spacing="3">
-                                @foreach (var contributor in sample.Contributors)
-                                {
-                                    <MudTooltip Text="@contributor">
-                                        <MudAvatar Size="Size.Small">@string.Join(string.Empty, contributor!.ToUpper().Split(' ').Select(name => name[0]))</MudAvatar>
-                                    </MudTooltip>
-                                }
-                            </MudAvatarGroup>
-                        </MudStack>
-                    }
+                        @if (sample.Reviewers is not null && sample.Verifiers is not null)
+                        {
+                            <MudStack Row="true" Class="ma-2">
+
+                                <MudTooltip Text="@string.Join(",", sample.Reviewers)">
+                                    <MudProgressCircular Style="height: 90px; width: 90px"
+                                                         Color="Color.Secondary"
+                                                         Value="@sample.TotalReviewed"
+                                                         Max="@sample.Size">
+                                        <ChildContent>
+                                            <MudStack Spacing="0" AlignItems="AlignItems.Center" Justify="Justify.Center">
+                                                <MudText Typo="Typo.subtitle2" Color="Color.Secondary">Reviewed</MudText>
+                                                <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@sample.TotalReviewed / @sample.Size</MudText>
+                                            </MudStack>
+                                        </ChildContent>
+                                    </MudProgressCircular>
+                                </MudTooltip>
+
+                                <MudTooltip Text="@string.Join(",", sample.Verifiers)">
+                                    <MudProgressCircular Style="height: 90px; width: 90px" Color="Color.Primary" Value="@sample.TotalVerified" Max="@sample.Size">
+                                        <ChildContent>
+                                            <MudStack Spacing="0" AlignItems="AlignItems.Center" Justify="Justify.Center">
+                                                <MudText Typo="Typo.subtitle2" Color="Color.Primary"> Verified</MudText>
+                                                <MudText Typo="Typo.subtitle2" Color="Color.Primary">@sample.TotalVerified / @sample.Size</MudText>
+                                            </MudStack>
+                                        </ChildContent>
+                                    </MudProgressCircular>
+                                </MudTooltip>
+
+                                <MudTooltip Text="@string.Join(",", sample.Verifiers)">
+                                    <MudProgressCircular Style="height: 90px; width: 90px" Color="Color.Success" Value="@sample.TotalFinalised" Max="@sample.Size">
+                                        <ChildContent>
+                                            <MudStack Spacing="0" AlignItems="AlignItems.Center" Justify="Justify.Center">
+                                                <MudText Typo="Typo.subtitle2" Color="Color.Success">Finalised</MudText>
+                                                <MudText Typo="Typo.subtitle2" Color="Color.Success">@sample.TotalFinalised / @sample.Size</MudText>
+                                            </MudStack>
+                                        </ChildContent>
+                                    </MudProgressCircular>
+                                </MudTooltip>
+
+
+                            </MudStack>
+                        }
                 </MudCardContent>
                 <MudCardActions Class="justify-space-between">
-                    <MudStack Row="true">
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Href="@($"/pages/analytics/outcome-quality-dip-sampling/{sample.Id}")">
-                            @ConstantString.View
-                        </MudButton>
-                    </MudStack>
+                    
+                    
 
-                    @{
-                        if (sample.Score.HasValue)
+                        @if (sample.Score.HasValue)
                         {
                             <MudTooltip>
                                 <TooltipContent>
@@ -122,12 +145,8 @@
                                 <ChildContent>
                                     <MudRating 
                                         SelectedValue="sample.Score.Value" 
-                                        Class="no-hover-rating" 
                                         Disabled="true" 
-                                        Color="Color.Primary"
-                                        FullIcon="@Icons.Material.Filled.AssignmentTurnedIn"
-                                        EmptyIcon="@Icons.Material.Outlined.AssignmentTurnedIn"
-                                        />
+                                        Color="Color.Primary" />
                                 </ChildContent>
                             </MudTooltip>
                         }
@@ -137,7 +156,15 @@
                                 <MudSkeleton Animation="Animation.Wave" Width="120px"/>
                             </MudTooltip>
                         }
-                    }
+
+                        <MudButton Disabled="@(_canReview == false && sample.Status == DipSampleStatus.AwaitingReview)"
+                               Variant="Variant.Filled"
+                               Color="Color.Secondary"
+                               Size="Size.Small"
+                               Href="@($"/pages/analytics/outcome-quality-dip-sampling/{sample.Id}")">
+                        @ConstantString.View
+                    </MudButton>
+
                 </MudCardActions>
             </MudCard>
         </MudItem>

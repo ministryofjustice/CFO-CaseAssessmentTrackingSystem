@@ -32,6 +32,8 @@ public class ParticipantDipSampleDto
     public DipSampleAnswer SupportsJourneyAndAlignsWithDoS { get; set; } = DipSampleAnswer.NotAnswered;
     
 
-    public required ComplianceAnswer CpmAnswer { get; set; }
-    public string? CpmComments { get; set; }
+    public required ComplianceAnswer CpmAnswer { get; init; }
+    public string? CpmComments { get; init; }
+
+    public required DipSampleStatus DipSampleStatus { get; init; }
 }

@@ -90,6 +90,7 @@ BEGIN TRY
     INSERT INTO [Identity].Role (Id, Description, Name, NormalizedName, ConcurrencyStamp, RoleRank) VALUES (N'be470a0e-e5b4-4530-a98a-d93835a7801c', N'Finance User (can access payment screens)', N'Finance', N'FINANCE', N'77a1e519-b3c9-41f5-9680-af92ce34f541', 9999)
     INSERT INTO [Identity].[Role] (Id, Description, Name, NormalizedName, ConcurrencyStamp, RoleRank) VALUES (N'afd11113-9006-4f7e-bd24-f236b8bb90fb', N'Contract Support Officer', 'Contract Support Officer', 'Contract Support Officer', NEWID(), 60)
     INSERT INTO [Identity].[Role] (Id, Description, Name, NormalizedName, ConcurrencyStamp, RoleRank) VALUES ('b1caa941-4185-4877-ad88-78786ac4be46', N'Contract Performance Manager', 'Contract Performance Manager', 'Contract Performance Manager', NEWID(), 60)
+    INSERT INTO [Identity].[Role] (Id, Description, Name, NormalizedName, ConcurrencyStamp, RoleRank) VALUES ('b1caa941-4185-4877-ad88-78786ac4be46', N'Contract Management Process Support Manager', 'Contract Management Process Support Manager', 'Contract Management Process Support Manager', NEWID(), 60)
 
     --INSERT INTO [Identity].[Role] (Id, Description, Name, NormalizedName, ConcurrencyStamp, RoleRank) VALUES (NEWID(), 'Contract Management Process Support Manager', 'CMPSM', 'CMPSM', NEWID(), 60)
 

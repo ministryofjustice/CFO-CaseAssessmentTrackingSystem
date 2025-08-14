@@ -15,7 +15,7 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
         Id = Guid.CreateVersion7(),
         ContractId = contractId,
         CreatedOn = DateTime.UtcNow,
-        Status = DipSampleStatus.InProgress,
+        Status = DipSampleStatus.AwaitingReview,
         PeriodFrom = periodFrom,
         PeriodTo = periodTo,
         Size = size
@@ -23,7 +23,7 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
 
     public OutcomeQualityDipSample Review(string reviewedBy, int noOfCompliant = 0)
     {
-        if (Status != DipSampleStatus.InProgress)
+        if (Status != DipSampleStatus.AwaitingReview)
         {
             throw new ApplicationException("Cannot review at this stage");
         }

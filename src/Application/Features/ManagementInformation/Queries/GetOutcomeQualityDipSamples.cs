@@ -33,7 +33,7 @@ public static class GetOutcomeQualityDipSamples
                     participants
                 where sample.PeriodFrom == request.Period
                 where request.Contract == null || request.Contract.Id == sample.ContractId
-                where request.OnlyShowInProgress == false || sample.Status == DipSampleStatus.InProgress
+                where request.OnlyShowInProgress == false || sample.Status == DipSampleStatus.AwaitingReview
                 orderby contract.Description
                 select new DipSampleDto(
                     sample.Id,
@@ -49,11 +49,20 @@ public static class GetOutcomeQualityDipSamples
                     sample.CpmPercentage,
                     sample.FinalPercentage,
                     participants.Count(p => p.CsoReviewedOn.HasValue),
+                    participants.Count(p => p.CpmReviewedOn.HasValue),
+                    participants.Count(p => p.FinalReviewedOn.HasValue),
                     sample.ReviewedOn,
                     user.DisplayName,
                     (
                         from p in context.OutcomeQualityDipSampleParticipants
                         join u in context.Users on p.CsoReviewedBy equals u.Id
+                        where p.DipSampleId == sample.Id && p.CsoReviewedBy != null
+                        group u by u.DisplayName into g
+                        select g.Key
+                    ).ToArray(),
+                    (
+                        from p in context.OutcomeQualityDipSampleParticipants
+                        join u in context.Users on p.CpmReviewedBy equals u.Id
                         where p.DipSampleId == sample.Id && p.CsoReviewedBy != null
                         group u by u.DisplayName into g
                         select g.Key

@@ -72,7 +72,7 @@
                         <OutcomeQualityDipSampleAssessmentComponent ParticipantId="@_participant.ParticipantId" />
                     </MudTabPanel>
                     <MudTabPanel Text="Review">
-                        <SubmitCsoResponseComponent Command="@SubmitCsoCommand" OnFormSubmit="CsoResponseSubmitted" />
+                        <SubmitCsoResponseComponent Command="@SubmitCsoCommand" OnFormSubmit="CsoResponseSubmitted" Status="_participant.DipSampleStatus" />
                     </MudTabPanel>
                     <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
                         <MudTabPanel Text="Verification" Disabled="_participant.CsoAnswer.IsAnswer is false">

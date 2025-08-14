@@ -81,7 +81,10 @@ internal static class PolicyExtensions
         {
             policy.RequireAuthenticatedUser();
             policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-            policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAFinance, RoleNames.PerformanceManager);
+            policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer, 
+                RoleNames.QASupportManager, RoleNames.QAFinance, 
+                RoleNames.PerformanceManager, RoleNames.CSO, 
+                RoleNames.CPM, RoleNames.CMPSM);
         });
 
         options.AddPolicy(SecurityPolicies.SeniorInternal, policy => {

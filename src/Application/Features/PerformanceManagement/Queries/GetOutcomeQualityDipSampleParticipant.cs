@@ -24,6 +24,7 @@ public static class GetOutcomeQualityDipSampleParticipant
             var participantQuery = 
                 from p in db.Participants
                 join dsp in db.OutcomeQualityDipSampleParticipants on p.Id equals dsp.ParticipantId
+                join dp in db.OutcomeQualityDipSamples on dsp.DipSampleId equals dp.Id
                 where p.Id == request.ParticipantId && dsp.DipSampleId == request.SampleId
                 select new ParticipantDipSampleDto
                 {
@@ -44,7 +45,8 @@ public static class GetOutcomeQualityDipSampleParticipant
                     TTGDemonstratesGoodPRIProcess = dsp.TTGDemonstratesGoodPRIProcess,
                     SupportsJourneyAndAlignsWithDoS = dsp.SupportsJourneyAndAlignsWithDoS,
                     CpmAnswer = dsp.CpmIsCompliant,
-                    CpmComments = dsp.CpmComments
+                    CpmComments = dsp.CpmComments,
+                    DipSampleStatus = dp.Status
                 };
             
             var result = await participantQuery.SingleAsync(cancellationToken);

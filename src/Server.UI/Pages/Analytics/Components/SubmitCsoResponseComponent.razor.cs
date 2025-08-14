@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Features.ManagementInformation.Commands.AddOutcomeQualityDipSampleCso;
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.Common.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -14,6 +15,8 @@ public partial class SubmitCsoResponseComponent
     [Parameter] [EditorRequired] public required Command Command { get; set; }
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
 
+    [Parameter, EditorRequired] public DipSampleStatus Status { get; set; } = default!;
+
     private async Task OnSubmit()
     {
         await _form.Validate();
@@ -26,8 +29,16 @@ public partial class SubmitCsoResponseComponent
 
     protected override async Task OnInitializedAsync()
     {
-        var state = await AuthState;
-        var result = await AuthorizationService.AuthorizeAsync(state.User, SecurityPolicies.OutcomeQualityDipReview);
-        ReadOnly = result is not { Succeeded: true };
+        if (Status == DipSampleStatus.AwaitingReview)
+        {
+            var state = await AuthState;
+            var result =
+                await AuthorizationService.AuthorizeAsync(state.User, SecurityPolicies.OutcomeQualityDipReview);
+            ReadOnly = result is not { Succeeded: true };
+        }
+        else
+        {
+            ReadOnly = true;
+        }
     }
 }

@@ -2,7 +2,10 @@
 using Cfo.Cats.Application.Features.Contracts.DTOs;
 using Cfo.Cats.Application.Features.ManagementInformation.DTOs;
 using Cfo.Cats.Application.Features.ManagementInformation.Queries;
+using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Infrastructure.Configurations;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
 
 namespace Cfo.Cats.Server.UI.Pages.Analytics.OutcomeQualityDipSample;
@@ -13,8 +16,12 @@ public partial class Index
     private bool _isLoading;
     private DipSampleDto[] _samples = [];
     private string? _errorMessage;
+    private bool _canReview;
 
     [CascadingParameter] public UserProfile? CurrentUser { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
 
     [Inject] public required IOptions<OutcomeQualityDipSampleSettings> Options { get; set; }
 
@@ -30,6 +37,10 @@ public partial class Index
 
     protected override async Task OnInitializedAsync()
     {
+        var state = await AuthState;
+        _canReview = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.OutcomeQualityDipReview)).Succeeded;
+
+
         var offset = DateTime.Now.AddMonths(Options.Value.MonthOffset);
 
         Query = new GetOutcomeQualityDipSamples.Query

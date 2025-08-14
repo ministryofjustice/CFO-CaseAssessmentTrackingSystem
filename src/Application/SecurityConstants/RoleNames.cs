@@ -12,5 +12,5 @@ public static class RoleNames
     public const string Finance = "Finance";
     public const string CSO = "Contract Support Officer";
     public const string CPM = "Contract Performance Manager";
-    public const string CMPSM = "CMPSM";
+    public const string CMPSM = "Contract Management Process Support Manager";
 }
