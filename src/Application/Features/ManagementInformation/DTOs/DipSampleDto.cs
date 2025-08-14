@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-
-namespace Cfo.Cats.Application.Features.ManagementInformation.DTOs;
+﻿namespace Cfo.Cats.Application.Features.ManagementInformation.DTOs;
 
 public record DipSampleDto(
     Guid Id,
