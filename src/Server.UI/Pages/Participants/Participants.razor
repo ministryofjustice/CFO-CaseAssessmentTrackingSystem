@@ -5,6 +5,7 @@
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Application.Features.Participants.Specifications
 @using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults
 @inject IStringLocalizer<Participants> L
 
 @inherits CatsComponentBase
@@ -15,13 +16,13 @@
 
 @if (Query is not null)
 {
-    <MudContainer Style="height: 100%; width: 100%; min-width: 480px" MaxWidth="MaxWidth.ExtraExtraLarge">
+    <MudContainer Style="height: 50vh; width: 100%; min-width: 480px" MaxWidth="MaxWidth.ExtraExtraLarge">
         <MudDataGrid ServerData="@(ServerReload)"
         FixedHeader="true"
         FixedFooter="true"
         Virtualize="true"
         @bind-RowsPerPage="_defaultPageSize"
-        Height="calc(100vh - 260px)"
+        Height="100%"
         Loading="@_loading"
         MultiSelection="false"
         @bind-SelectedItems="_selectedItems"
@@ -46,7 +47,6 @@
 
                     @foreach (var item in Locations!)
                     {
-
                         <MudSelectItem T="LocationDto" Value="@item">
                             @item.Name
                         </MudSelectItem>
@@ -202,5 +202,6 @@
     </MudContainer>
 }
 
-
-
+<MudGrid Class="mt-2">
+        <QAActivitiesResults />
+</MudGrid>

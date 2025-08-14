@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Entities.Participants;
+using Cfo.Cats.Domain.Entities.Participants;
 using System.Globalization;
 using System.Resources;
 
@@ -223,8 +223,11 @@ public static class ConstantString
     Localize("Objective Successfully Completed");
 
     public static string NotActiveInFeedMessage =>
- Localize("Please note: the participant is not active on the feed.");
+    Localize("Please note: the participant is not active on the feed.");
 
+    public static string EditParticipant => Localize("Edit Participant");
+
+    public static string EditAchievement => Localize("Edit Achievement");
     public static string Finalise => Localize("Finalise");
 
 }

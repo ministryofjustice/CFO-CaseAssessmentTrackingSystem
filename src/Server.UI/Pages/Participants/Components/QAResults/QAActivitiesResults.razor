@@ -1,0 +1,139 @@
+﻿@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Application.Features.Activities.DTOs;
+@using Humanizer
+
+@inherits CatsComponentBase
+        
+<style>
+    .mud-list-item:focus,
+    .mud-list-item:hover {
+        background-color: initial !important;
+    }
+</style>
+
+@if (_isLoading)
+{
+    <LoadingCard Title="Fetching cumulative data" />
+}
+else
+{
+<MudCard style="height: 100%">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h5">QA Activities Results</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudList T="QAActivitiesResultsSummaryDto" ReadOnly>
+            <MudListSubheader>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudDateRangePicker Label="Commenced from/to range"
+                                        DateRangeChanged="OnDateRangeChanged"
+                                        Clearable
+                                        MaxDate="DateTime.Today" />
+                   </MudItem>
+                    <MudItem xs="12">
+                        <MudSelect @bind-Value="Model.Location"
+                                    @bind-Value:after="OnLocationChanged"
+                                    Label="Location"
+                                    Clearable="true">
+                            @foreach (var location in locations)
+                            {
+                                <MudSelectItem Value="location">@location.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudChipSet T="ActivityType"
+                                    SelectedValuesChanged="OnActivityTypesChanged"
+                                    SelectionMode="SelectionMode.MultiSelection">
+                            @foreach (var type in ActivityType.List.Where(x=>x.Value == 1 || x.Value==2 || x.Value==4))
+                            {
+                                <MudChip Value="type"
+                                            SelectedColor="Color.Info"
+                                            Text="@type.Name" />
+                            }
+                        </MudChipSet>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudCheckBox T="bool" ValueChanged="OnExcludeNotInProgress" Label="Hide activities that don't require my attention" />
+                    </MudItem>
+                </MudGrid>
+            </MudListSubheader>
+            @if (activities is not null)
+            {
+                foreach (var activity in activities.Items)
+                {
+                    var created = activity.Created.ToLocalTime();
+                    var commencedOn = activity.CommencedOn.ToLocalTime();
+                    var today = DateTime.Today.ToLocalTime();
+                    <MudListItem Class="flex-row-reverse">
+                        <ChildContent>
+                            <div class="d-flex justify-space-between align-center ml-2">
+                                <div class="d-flex align-center">                            
+                                    <div class="pr-2">
+                                        <MudText Typo="Typo.body2">
+                                            Participant: @activity.Participant!.FullName
+                                                            @activity.Participant.Id                                                
+                                        </MudText>
+                                        <div class="d-flex gap-2 align-center">
+                                            <MudChip T="string" Size="MudBlazor.Size.Small" Text="@activity.Definition.Type.Name" Color="Color.Secondary" />
+                                            <MudText Typo="Typo.body2">Category:  @activity.Definition.Category.Name</MudText>
+                                                        <MudText Typo="Typo.body2">
+                                                            Added on @created.ToShortDateString() at @created.ToShortTimeString() (@created.Humanize())
+                                                        </MudText>
+                                                        <MudText Typo="Typo.body2" Class="pt-1">
+                                                            Took place on @commencedOn.ToShortDateString() (@(commencedOn == today ? "today" : commencedOn.Humanize()))
+                                                            at @activity.TookPlaceAtLocationName
+                                                        </MudText>
+                                                        @{
+                                                            Color color = activity.Status switch
+                                                            {
+                                                                _ when activity.Status == ActivityStatus.PendingStatus => Color.Warning,
+                                                                _ when activity.Status == ActivityStatus.ApprovedStatus => Color.Success,
+                                                                _ => Color.Default
+                                                            };
+                                                        }
+                                                        <MudChip Color="color" Size="Size.Small">@activity.Status.Name</MudChip>
+                                        </div>
+                                    </div>
+                                </div>
+                                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                                         Dense="true"
+                                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+
+                                    @if (activity.Status.AllowsChanges)
+                                    {
+                                        <MudMenuItem OnClick="@(() => EditActivity(activity))">
+                                            @ConstantString.EditAchievement
+                                        </MudMenuItem>                                  
+                                    }
+
+                                    <MudMenuItem OnClick="@(() => EditParticipant(activity.Participant!.Id))">
+                                            @ConstantString.EditParticipant
+                                    </MudMenuItem>                              
+                                </MudMenu>
+                         
+                            </div>
+                        </ChildContent>
+                        <NestedList>
+                            <MudListItem>
+                                <MudTextField Label="@activity.GetMemberDescription(x => x.AdditionalInformation)"
+                                                Value="@activity.AdditionalInformation"
+                                                Lines="5"
+                                                Class="mt-0"
+                                                Disabled />
+                            </MudListItem>
+                        </NestedList>
+                    </MudListItem>
+                    <MudDivider />
+                }
+                <MudListSubheader Class="d-flex justify-center mt-2">
+                    <MudPagination Count="@activities.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
+                </MudListSubheader>
+            }
+        </MudList>
+    </MudCardContent>
+</MudCard>
+}
