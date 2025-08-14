@@ -1,6 +1,5 @@
 using Cfo.Cats.Application.Features.Documents.DTOs;
 using Cfo.Cats.Domain.Entities.Participants;
-using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Cfo.Cats.Application.Features.Participants.DTOs;
 

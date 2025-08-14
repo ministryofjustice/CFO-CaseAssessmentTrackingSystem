@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2019.Excel.RichData;
-
-namespace Cfo.Cats.Application.Features.Documents.Caching;
+﻿namespace Cfo.Cats.Application.Features.Documents.Caching;
 
 public static class DocumentCacheKey
 {

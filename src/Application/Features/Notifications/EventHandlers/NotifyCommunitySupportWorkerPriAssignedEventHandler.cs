@@ -1,7 +1,6 @@
 ﻿using Cfo.Cats.Domain.Entities.Notifications;
 using Cfo.Cats.Domain.Entities.PRIs;
 using Cfo.Cats.Domain.Events;
-using DocumentFormat.OpenXml.Bibliography;
 
 namespace Cfo.Cats.Application.Features.Notifications.EventHandlers;
 

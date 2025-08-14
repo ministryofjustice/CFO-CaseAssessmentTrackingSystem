@@ -3,7 +3,6 @@ using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Documents.DTOs;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
-using DocumentFormat.OpenXml.InkML;
 using System.Threading.Tasks;
 
 namespace Cfo.Cats.Application.Features.Documents.Queries;
