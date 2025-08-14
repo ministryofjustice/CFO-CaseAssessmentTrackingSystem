@@ -831,6 +831,7 @@ BEGIN TRY
     INSERT INTO Configuration.Location (Id, Name, ContractId, LifetimeStart, LifetimeEnd, ParentLocationId, GenderProvisionId, LocationTypeId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (129, N'Chatham', N'con_24046', @Created, N'2029-03-31 23:59:59.0000000', null, 2, 5, @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.Location (Id, Name, ContractId, LifetimeStart, LifetimeEnd, ParentLocationId, GenderProvisionId, LocationTypeId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (130, N'Southampton', N'con_24046', @Created, N'2029-03-31 23:59:59.0000000', 129, 2, 6, @Created, @CreatedUserId, null, null);
     INSERT INTO Configuration.Location (Id, Name, ContractId, LifetimeStart, LifetimeEnd, ParentLocationId, GenderProvisionId, LocationTypeId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (131, N'Portsmouth', N'con_24046', @Created, N'2029-03-31 23:59:59.0000000', 129, 2, 6, @Created, @CreatedUserId, null, null);
+    INSERT INTO Configuration.Location (Id, Name, ContractId, LifetimeStart, LifetimeEnd, ParentLocationId, GenderProvisionId, LocationTypeId, Created, CreatedBy, LastModified, LastModifiedBy) VALUES (132, N'HMP Leicester', N'con_24042', @Created, N'2029-03-31 23:59:59.0000000', null, 0, 2, @Created, @CreatedUserId, null, null);
 
     SET IDENTITY_INSERT [Configuration].[Location] OFF;
 
@@ -845,7 +846,7 @@ BEGIN TRY
     from [Configuration].[Location]
     where [Name] in ( 'HMP Foston Hall', 'HMP Stocken', 'HMP Lincoln', 'HMP Onley', 'HMP North Sea Camp', 'HMP Whatton',
                       'HMP Ranby', 'HMP Nottingham', 'HMP Five Wells', 'Nottingham', 'Leicester', 'Derby',
-                      'East Midlands Community'
+                      'East Midlands Community','HMP Leicester'
         )
     union
     select Id as [LocationId],
@@ -1072,7 +1073,7 @@ BEGIN TRY
     INSERT INTO Dms.LocationMapping (Code, CodeType, Description, DeliveryRegion, LocationId) VALUES (N'KNT', N'Probation', N'Kent', N'South East Community', 98);
     INSERT INTO Dms.LocationMapping (Code, CodeType, Description, DeliveryRegion, LocationId) VALUES (N'KTI', N'Prison', N'Kennet', N'North West', null);
     INSERT INTO Dms.LocationMapping (Code, CodeType, Description, DeliveryRegion, LocationId) VALUES (N'KVI', N'Prison', N'Kirklevington Grange', N'North East', 18);
-    INSERT INTO Dms.LocationMapping (Code, CodeType, Description, DeliveryRegion, LocationId) VALUES (N'LCI', N'Prison', N'Leicester', N'East Midlands', null);
+    INSERT INTO Dms.LocationMapping (Code, CodeType, Description, DeliveryRegion, LocationId) VALUES (N'LCI', N'Prison', N'Leicester', N'East Midlands', 16);
     INSERT INTO Dms.LocationMapping (Code, CodeType, Description, DeliveryRegion, LocationId) VALUES (N'LCS', N'Probation', N'Lancashire', N'North West Community', 90);
     INSERT INTO Dms.LocationMapping (Code, CodeType, Description, DeliveryRegion, LocationId) VALUES (N'LDN', N'Probation', N'London', N'London Community', 96);
     INSERT INTO Dms.LocationMapping (Code, CodeType, Description, DeliveryRegion, LocationId) VALUES (N'LEI', N'Prison', N'Leeds', N'Yorkshire and Humberside', 24);
