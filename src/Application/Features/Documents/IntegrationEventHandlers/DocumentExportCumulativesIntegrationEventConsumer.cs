@@ -6,7 +6,6 @@ using Cfo.Cats.Application.Features.ManagementInformation.Providers;
 using Cfo.Cats.Domain.Entities.Documents;
 using Rebus.Handlers;
 
-
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
 public class DocumentExportCumulativesIntegrationEventConsumer(
@@ -43,7 +42,6 @@ public class DocumentExportCumulativesIntegrationEventConsumer(
             logger.LogWarning("Document with id {DocumentId} has no search criteria", context.DocumentId);
             return;
         }
-
 
         try
         {

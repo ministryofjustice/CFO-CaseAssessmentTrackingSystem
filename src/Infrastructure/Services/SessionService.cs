@@ -19,7 +19,9 @@ public class SessionService(IMemoryCache cache, IConfiguration configuration) : 
     public bool IsSessionValid(string? userId)
     {
         if (string.IsNullOrEmpty(userId))
+        {
             return false;
+        }
 
         var lastActivity = cache.Get<DateTime?>($"LastActivity_{userId}");
         

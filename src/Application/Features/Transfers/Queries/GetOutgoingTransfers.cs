@@ -12,7 +12,7 @@ public static class GetOutgoingTransfers
         public string? TenantId { get; set; }
     }
 
-    class Handler(
+    private class Handler(
         ICurrentUserService currentUserService,
         IUnitOfWork unitOfWork,
         IMapper mapper) : IRequestHandler<Query, Result<IEnumerable<OutgoingTransferDto>>>
@@ -35,7 +35,7 @@ public static class GetOutgoingTransfers
         }
     }
 
-    class Validator : AbstractValidator<Query>
+    private class Validator : AbstractValidator<Query>
     {
     }
 }

@@ -36,7 +36,6 @@ public static class GetRiskDueDashboard
                 orderby p.RiskDue
                 select new RiskDueDto(p.Id, p.FirstName, p.LastName, p.RiskDue!.Value, risk == null ? null : risk.Completed, p.EnrolmentStatus!, p.RiskDueReason!);
 
-
             return await query.ToArrayAsync(cancellationToken);
         }
     }

@@ -18,7 +18,7 @@ public static class AddPRI
         public PriMeetingDto Meeting { get; set; } = new();
     }
 
-    class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : IRequestHandler<Command, Result>
+    private class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -54,9 +54,9 @@ public static class AddPRI
 
     public class Validator : AbstractValidator<Command>
     {
-        readonly IUnitOfWork unitOfWork;
-        readonly ICurrentUserService currentUserService;
-        readonly ILocationService locationService;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly ICurrentUserService currentUserService;
+        private readonly ILocationService locationService;
 
         public Validator(
             IUnitOfWork unitOfWork,
@@ -134,7 +134,7 @@ public static class AddPRI
 
         public class Validator : AbstractValidator<PriCodeDto>
         {
-            readonly IUnitOfWork unitOfWork;
+            private readonly IUnitOfWork unitOfWork;
 
             public Validator(IUnitOfWork unitOfWork)
             {
@@ -142,7 +142,6 @@ public static class AddPRI
 
                 RuleFor(c => c.ParticipantId)
                     .NotNull();
-
 
                 RuleSet(ValidationConstants.RuleSet.MediatR, () =>
                 {
@@ -176,7 +175,7 @@ public static class AddPRI
                 });
             }
 
-            async Task<bool> BeValid(string participantId, int code, CancellationToken cancellationToken)
+            private async Task<bool> BeValid(string participantId, int code, CancellationToken cancellationToken)
                 => await unitOfWork.DbContext.PriCodes.AnyAsync(pc => pc.Code == code && pc.ParticipantId == participantId, cancellationToken);
         }
     }

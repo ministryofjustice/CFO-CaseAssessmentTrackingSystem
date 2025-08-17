@@ -13,7 +13,6 @@ public class Tenant : BaseAuditableEntity<string>
     public IReadOnlyCollection<Location> Locations => _locations.AsReadOnly();
     public IReadOnlyCollection<TenantDomain> Domains => _domains.AsReadOnly();
 
-
 #pragma warning disable CS8618// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private Tenant()
     {

@@ -9,8 +9,6 @@ public sealed partial class RecentExperiencesPathway
     [JsonIgnore]
     public override string Title => "Recent Experiences";
 
-
-
     [JsonIgnore]
     public override string Icon => CatsIcons.RecentExperiences;
     public override IEnumerable<QuestionBase> Questions()

@@ -6,12 +6,12 @@ namespace Cfo.Cats.Domain.Entities.Activities;
 public class EducationTrainingActivity : ActivityWithTemplate
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    EducationTrainingActivity()
+    private EducationTrainingActivity()
     {
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    EducationTrainingActivity(
+    private EducationTrainingActivity(
         ActivityContext context, 
         string courseTitle, 
         string? courseUrl, 

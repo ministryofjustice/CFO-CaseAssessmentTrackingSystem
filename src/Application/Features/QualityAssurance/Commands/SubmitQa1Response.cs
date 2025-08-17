@@ -70,7 +70,6 @@ public static class SubmitQa1Response
         }
     }
 
-
     public class B_EntryMustExist : AbstractValidator<Command> 
     {
         private IUnitOfWork _unitOfWork;

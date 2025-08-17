@@ -6,7 +6,6 @@ using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 using Microsoft.JSInterop;
 
-
 namespace Cfo.Cats.Server.UI.Pages.Analytics.OutcomeQualityDipSample;
 
 public partial class ParticipantDetails
@@ -64,7 +63,6 @@ public partial class ParticipantDetails
             _cpmCommand = value;
         }
     }
-
 
     private bool _isLoading = true;
     

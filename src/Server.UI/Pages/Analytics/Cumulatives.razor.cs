@@ -6,8 +6,6 @@ using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Server.UI.Pages.Analytics;
 
-
-
 public partial class Cumulatives
 {
     private bool _noAccessToContracts;
@@ -22,7 +20,6 @@ public partial class Cumulatives
     public ContractDto? SelectedContract { get; set; }
 
     [Inject] private IContractService ContractService { get; set; } = default!;
-
 
     protected override void OnInitialized() => _noAccessToContracts = CurrentUser?.Contracts is [];
 

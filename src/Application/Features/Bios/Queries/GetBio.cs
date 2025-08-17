@@ -4,7 +4,6 @@ using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Application.Features.Bios.DTOs;
 using Newtonsoft.Json;
 
-
 namespace Cfo.Cats.Application.Features.Bios.Queries;
 
 public static class GetBio

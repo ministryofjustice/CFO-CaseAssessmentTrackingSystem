@@ -126,7 +126,7 @@ public static class DependencyInjection
         return builder;
     }
 
-    public static WebApplication ConfigureServer(this WebApplication app, IConfiguration configuration)
+    public static WebApplication ConfigureServer(this WebApplication app)
     {
         if (app.Environment.IsDevelopment())
         {
@@ -146,7 +146,6 @@ public static class DependencyInjection
         app.UseMiddleware<SessionTimeoutMiddleware>();
         
         app.UseAuthorization();
-
 
         app.Use((context, next) =>
         {

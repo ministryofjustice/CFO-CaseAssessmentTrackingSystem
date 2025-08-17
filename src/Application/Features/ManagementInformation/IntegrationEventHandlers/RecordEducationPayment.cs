@@ -48,7 +48,6 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
 
             var previousPayments = await previousPaymentsQuery.AsNoTracking().ToListAsync();
 
-
             if (previousPayments.Count > 0)
             {
                 ineligibilityReason = IneligibilityReason.MaximumPaymentLimitReached;
@@ -81,6 +80,5 @@ public class RecordEducationPayment(IUnitOfWork unitOfWork)
         unitOfWork.DbContext.EducationPayments.Add(payment);
         await unitOfWork.SaveChangesAsync(CancellationToken.None);
     }
-
 
 }

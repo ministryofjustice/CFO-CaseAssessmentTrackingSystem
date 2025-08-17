@@ -68,7 +68,6 @@ public class RecordWingInductionPaymentConsumer(IUnitOfWork unitOfWork) : IHandl
 
             var previousPayments = await query.AsNoTracking().ToListAsync();
 
-
             if (previousPayments.Count > 0)
             {
                 ineligibilityReason = IneligibilityReason.MaximumPaymentLimitReached;

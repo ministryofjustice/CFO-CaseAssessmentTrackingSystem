@@ -33,7 +33,7 @@ public static class RescheduleOutboxMessage
 
     public class Validator : AbstractValidator<Command>
     {
-        IUnitOfWork _unitOfWork;
+        private IUnitOfWork _unitOfWork;
 
         public Validator(IUnitOfWork unitOfWork)
         {

@@ -28,7 +28,6 @@ public class CreateQa1QueueEntry(IUnitOfWork unitOfWork) : INotificationHandler<
             var qa1 = new EnrolmentQa1QueueEntry(notification.Item.Id, pqa.TenantId, pqa.SupportWorkerId,
                 pqa.ConsentDate);
 
-
             await unitOfWork.DbContext.EnrolmentQa1Queue.AddAsync(qa1, cancellationToken);    
         }
     }

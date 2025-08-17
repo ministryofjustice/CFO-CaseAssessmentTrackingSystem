@@ -31,7 +31,6 @@ public class PicklistService(IServiceScopeFactory scopeFactory, ILogger<Picklist
         }
     }
 
-
     public void Refresh()
     {
         logger.LogInformation("Refresh of PicklistService called, ignored as this is the none caching service");

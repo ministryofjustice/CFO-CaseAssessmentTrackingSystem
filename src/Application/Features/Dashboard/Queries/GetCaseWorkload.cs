@@ -20,7 +20,6 @@ public static class GetCaseWorkload
             
             var tenantId = $"{request.CurrentUser!.TenantId!}%";
 
-
             var results = await unitOfWork.DbContext.Database
                 .SqlQuery<CaseSummaryDto>(
                     $@"SELECT 
@@ -43,8 +42,6 @@ public static class GetCaseWorkload
             p.EnrolmentStatus,
             l.Name"
                 ).ToArrayAsync(cancellationToken);
-
-
 
             return Result<CaseSummaryDto[]>.Success(results);
 #pragma warning restore CS8602 // Dereference of a possibly null reference.

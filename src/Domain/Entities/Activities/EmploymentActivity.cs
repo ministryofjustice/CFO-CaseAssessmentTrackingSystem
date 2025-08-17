@@ -5,12 +5,12 @@ namespace Cfo.Cats.Domain.Entities.Activities;
 public class EmploymentActivity : ActivityWithTemplate
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    EmploymentActivity()
+    private EmploymentActivity()
     {
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    EmploymentActivity(
+    private EmploymentActivity(
         ActivityContext context,
         string employmentType,
         string employerName,

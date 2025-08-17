@@ -12,7 +12,7 @@ public static class GetIncomingTransferById
         public required Guid IncomingTransferId { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<IncomingTransferDto>>
+    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<IncomingTransferDto>>
     {
         public async Task<Result<IncomingTransferDto>> Handle(Query request, CancellationToken cancellationToken)
         {

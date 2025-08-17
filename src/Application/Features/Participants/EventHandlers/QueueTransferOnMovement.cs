@@ -51,7 +51,7 @@ public class QueueTransferOnMovement(IUnitOfWork unitOfWork) : INotificationHand
         await PublishIncomingTransfer(participantId, from, to, cancellationToken);
     }
 
-    async Task PublishOutgoingTransfer(string participantId, string? participantOwnerIdPreMovement, Location from, Location to, CancellationToken cancellationToken)
+    private async Task PublishOutgoingTransfer(string participantId, string? participantOwnerIdPreMovement, Location from, Location to, CancellationToken cancellationToken)
     {
         // Only publish an outgoing transfer if:
         // The source/original contract exists
@@ -77,7 +77,7 @@ public class QueueTransferOnMovement(IUnitOfWork unitOfWork) : INotificationHand
         }
     }
 
-    async Task PublishIncomingTransfer(string participantId, Location from, Location to, CancellationToken cancellationToken)
+    private async Task PublishIncomingTransfer(string participantId, Location from, Location to, CancellationToken cancellationToken)
     {
         // Only publish incoming transfer if (destination/target) contract exists
         if (to.Contract is not null)
@@ -94,7 +94,7 @@ public class QueueTransferOnMovement(IUnitOfWork unitOfWork) : INotificationHand
         }
     }
 
-    async Task CloseStaleOutgoingTransfers(string participantId, Location from, Location to, CancellationToken cancellationToken)
+    private async Task CloseStaleOutgoingTransfers(string participantId, Location from, Location to, CancellationToken cancellationToken)
     {
         // Find any outgoing transfers which have now become stale. These tranfers are either:
         // Leaving a contract they have left in the past

@@ -23,4 +23,3 @@ public class Note : ValueObject, IAuditable, IMustHaveTenant
     public string TenantId { get; set; } = default!;
 }
 
-

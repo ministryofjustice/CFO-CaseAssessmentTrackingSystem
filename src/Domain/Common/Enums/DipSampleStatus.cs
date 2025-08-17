@@ -1,13 +1,12 @@
-﻿using Ardalis.SmartEnum;
+using Ardalis.SmartEnum;
 
 namespace Cfo.Cats.Domain.Common.Enums;
 
 public class DipSampleStatus : SmartEnum<DipSampleStatus>
 {
-    DipSampleStatus(string name, int value) : base(name, value)
+    private DipSampleStatus(string name, int value) : base(name, value)
     {
     }
-
 
     public static readonly DipSampleStatus AwaitingReview = new("Awaiting Review", 0);
     public static readonly DipSampleStatus Reviewed = new(nameof(Reviewed), 1);

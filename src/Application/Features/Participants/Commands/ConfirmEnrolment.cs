@@ -12,7 +12,7 @@ public static class ConfirmEnrolment
         public required string ParticipantId { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -29,7 +29,7 @@ public static class ConfirmEnrolment
         }
     }
 
-    class Validator : AbstractValidator<Command>
+    private class Validator : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
 

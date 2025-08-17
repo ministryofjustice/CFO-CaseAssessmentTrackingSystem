@@ -1,7 +1,6 @@
 ﻿using Cfo.Cats.Domain.Entities.Participants;
 using Rebus.Handlers;
 
-
 namespace Cfo.Cats.Application.Features.Participants.MessageBus;
 
 public class SyncParticipantCommandHandler(

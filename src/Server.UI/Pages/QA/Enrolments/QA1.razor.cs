@@ -130,8 +130,6 @@ public partial class QA1
         });
     }
 
-
-
     private void UpdateCharacterCount(ChangeEventArgs args)
     {
         Command.Message = args?.Value?.ToString() ?? string.Empty;

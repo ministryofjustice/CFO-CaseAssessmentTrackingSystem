@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ardalis.Specification;
 
-
 namespace Cfo.Cats.Application.Features.Identity.Specifications;
 
 public class IdentityAuditTrailAdvancedSpecification : Specification<IdentityAuditTrail>

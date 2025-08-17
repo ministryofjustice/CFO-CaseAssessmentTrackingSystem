@@ -18,6 +18,4 @@ public class ParticipantAccessAuditTrail
     public string UserId {get; private set;} 
     public DateTime AccessDate {get; private set;} 
 
-
-
 }

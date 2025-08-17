@@ -13,7 +13,7 @@ public static class GetParticipantPRI
         public required string ParticipantId { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PRIDto>>
+    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PRIDto>>
     {
         public async Task<Result<PRIDto>> Handle(Query request, CancellationToken cancellationToken)
         {

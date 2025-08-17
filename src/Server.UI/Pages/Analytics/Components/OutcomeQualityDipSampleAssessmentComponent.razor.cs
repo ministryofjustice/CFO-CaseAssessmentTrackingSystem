@@ -8,10 +8,8 @@ namespace Cfo.Cats.Server.UI.Pages.Analytics.Components;
 public partial class OutcomeQualityDipSampleAssessmentComponent
 {
 
-
     private IEnumerable<ParticipantAssessmentDto> _participantAssessments = Enumerable.Empty<ParticipantAssessmentDto>();
     private bool _isLoading = true;
-
 
     // Dictionaries to hold UI state, keyed by the Assessment's Guid
     private readonly ConcurrentDictionary<Guid, bool> _assessmentLoadingStates = new();

@@ -13,7 +13,7 @@ public static class ExistsByCategory
         public DateTime? CommencedOn { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, bool>
+    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, bool>
     {
         public async Task<bool> Handle(Query request, CancellationToken cancellationToken)
         {

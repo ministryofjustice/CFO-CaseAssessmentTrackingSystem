@@ -37,7 +37,7 @@ public class ActivityQaDetailsDto
     [Description("Upload Template")]
     public Document? Document { get; set; }
 
-    class Mapping : Profile
+    private class Mapping : Profile
     {
         public Mapping()
         {

@@ -3,7 +3,6 @@ using Cfo.Cats.Application.Outbox;
 using Quartz;
 using Rebus.Bus;
 
-
 namespace Cfo.Cats.Infrastructure.Jobs;
 
 public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOutboxMessagesJob> logger, IBus bus)
@@ -13,10 +12,8 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
 
     private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
 
-
     public static readonly JobKey Key = new JobKey(name: nameof(PublishOutboxMessagesJob));
     public static readonly string Description = "A job to publish outbox messages to the queue";
-
 
     public async Task Execute(IJobExecutionContext context)
     {
@@ -27,10 +24,12 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
                 ["JobInstance"] = Guid.NewGuid().ToString()
         }))
 
-        if (context.RefireCount > 3)
         {
-            logger.LogWarning($"Quartz Job - {Key}: failed to complete within 3 tries, aborting...");
-            return;
+            if (context.RefireCount > 3)
+            {
+                logger.LogWarning($"Quartz Job - {Key}: failed to complete within 3 tries, aborting...");
+                return;
+            }
         }
 
         if (await Semaphore.WaitAsync(TimeSpan.Zero) == false)

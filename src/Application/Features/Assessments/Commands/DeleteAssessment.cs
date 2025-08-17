@@ -12,7 +12,7 @@ public static class DeleteAssessment
         public required Guid AssessmentId { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<int>>
+    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<int>>
     {
         public async Task<Result<int>> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -45,7 +45,7 @@ public static class DeleteAssessment
             });
         }
 
-        bool ExistAndIncomplete(Guid identifier) => _unitOfWork.DbContext.ParticipantAssessments.Any(asmt => asmt.Id == identifier && asmt.Completed.HasValue == false);
+        private bool ExistAndIncomplete(Guid identifier) => _unitOfWork.DbContext.ParticipantAssessments.Any(asmt => asmt.Id == identifier && asmt.Completed.HasValue == false);
 
         private async Task<bool> ParticipantMustNotBeArchived(Guid assessmentId, CancellationToken cancellationToken)
         {

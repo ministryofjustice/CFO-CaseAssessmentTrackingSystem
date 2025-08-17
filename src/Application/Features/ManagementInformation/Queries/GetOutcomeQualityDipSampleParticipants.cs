@@ -93,7 +93,7 @@ public static class GetOutcomeQualityDipSampleParticipants
 
     private class Validator : AbstractValidator<Query>
     {
-        readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWork unitOfWork;
 
         public Validator(IUnitOfWork unitOfWork)
         {
@@ -107,6 +107,6 @@ public static class GetOutcomeQualityDipSampleParticipants
             });
         }
 
-        bool Exist(Guid dipSampleId) => unitOfWork.DbContext.OutcomeQualityDipSamples.Any(d => d.Id == dipSampleId);
+        private bool Exist(Guid dipSampleId) => unitOfWork.DbContext.OutcomeQualityDipSamples.Any(d => d.Id == dipSampleId);
     }
 }

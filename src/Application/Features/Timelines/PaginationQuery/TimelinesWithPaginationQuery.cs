@@ -72,6 +72,5 @@ public static class TimelinesWithPaginationQuery
     }
     
 
-
 }
     

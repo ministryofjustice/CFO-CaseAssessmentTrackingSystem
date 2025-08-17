@@ -20,7 +20,6 @@ public class Document : OwnerPropertyEntity<Guid>, IMayHaveTenant, IAuditTrial
         AddDomainEvent(new DocumentCreatedDomainEvent(this));
     }
 
-
     public static Document Create(string title, string description, DocumentType documentType)
     {
         return new(title, description, documentType);

@@ -20,7 +20,6 @@ public class EnrolmentPaymentEntityTypeConfiguration : IEntityTypeConfiguration<
 
         builder.HasIndex(x => x.ParticipantId);
 
-
         builder.Property(x => x.SupportWorker)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId)
             .IsRequired();

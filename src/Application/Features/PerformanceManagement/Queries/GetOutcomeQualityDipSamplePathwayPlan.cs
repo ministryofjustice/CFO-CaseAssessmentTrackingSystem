@@ -68,7 +68,6 @@ public static class GetOutcomeQualityDipSamplePathwayPlan
                     ).ToArray()
                 };
 
-
             var plan = await query
                 .AsNoTracking()
                 .FirstAsync(cancellationToken);
@@ -183,7 +182,6 @@ public static class GetOutcomeQualityDipSamplePathwayPlan
                 // get all the matching activities and project them into this
                 t.Activities = dtos.Where(a => a.TaskId == t.Id).ToArray();
             }
-
 
 #nullable restore
             return plan;

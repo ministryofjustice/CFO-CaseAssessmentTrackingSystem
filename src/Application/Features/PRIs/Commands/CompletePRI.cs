@@ -17,7 +17,7 @@ public static class CompletePRI
         public required string? CompletedBy { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -177,7 +177,7 @@ public static class CompletePRI
             });
         }
 
-        bool MustNotBeArchived(string participantId)
+        private bool MustNotBeArchived(string participantId)
                 => _unitOfWork.DbContext.Participants.Any(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
     }
 
@@ -197,6 +197,6 @@ public static class CompletePRI
             });
         }
 
-        bool Exist(string identifier) => _unitOfWork.DbContext.Participants.Any(e => e.Id == identifier);
+        private bool Exist(string identifier) => _unitOfWork.DbContext.Participants.Any(e => e.Id == identifier);
     }
 }    

@@ -15,7 +15,6 @@ public class NotifyOwnerParticipantHasBeenApproved(IUnitOfWork unitOfWork, ILogg
                 return;
             }
 
-
             const string heading = "Enrolment approved";
 
             string details = "You have enrolments that have been approved";

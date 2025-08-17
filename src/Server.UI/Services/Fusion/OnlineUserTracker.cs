@@ -43,7 +43,6 @@ public class OnlineUserTracker : IOnlineUserTracker
             _ = await GetOnlineUsers(cancellationToken);
         }
 
-
     }
     public virtual Task<UserInfo[]> GetOnlineUsers(CancellationToken cancellationToken = default)
     {

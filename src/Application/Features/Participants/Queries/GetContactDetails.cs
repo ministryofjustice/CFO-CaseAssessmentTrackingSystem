@@ -12,7 +12,7 @@ public static class GetContactDetails
         public required string ParticipantId { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, IEnumerable<ParticipantContactDetailDto>>
+    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, IEnumerable<ParticipantContactDetailDto>>
     {
         public async Task<IEnumerable<ParticipantContactDetailDto>> Handle(Query request, CancellationToken cancellationToken)
         {

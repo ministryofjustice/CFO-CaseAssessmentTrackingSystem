@@ -18,7 +18,10 @@ public class AssessmentsCacheKey
 
     public static CancellationTokenSource SharedExpiryTokenSource()
     {
-        if (tokenSource.IsCancellationRequested) tokenSource = new CancellationTokenSource(RefreshInterval);
+        if (tokenSource.IsCancellationRequested)
+        {
+            tokenSource = new CancellationTokenSource(RefreshInterval);
+        }
 
         return tokenSource;
     }

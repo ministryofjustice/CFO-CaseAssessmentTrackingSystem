@@ -20,7 +20,6 @@ public class ExternalIdentifier : ValueObject
     public static ExternalIdentifier Create(string value, ExternalIdentifierType type)
         => new (value, type);
 
-
     public string Value { get; private set; }
     public ExternalIdentifierType Type { get; private set; }
 

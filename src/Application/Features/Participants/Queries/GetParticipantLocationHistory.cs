@@ -14,7 +14,7 @@ public static class GetParticipantLocationHistory
         public required UserProfile CurrentUser { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, IEnumerable<ParticipantLocationHistoryDto>>
+    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, IEnumerable<ParticipantLocationHistoryDto>>
     {
         public async Task<IEnumerable<ParticipantLocationHistoryDto>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -39,7 +39,9 @@ public static class GetParticipantLocationHistory
                 .ToListAsync(cancellationToken);
             
             if (locationHistories.Any() is false)
+            {
                 return locationHistories;
+            }
 
             var last = locationHistories.Last();
                         

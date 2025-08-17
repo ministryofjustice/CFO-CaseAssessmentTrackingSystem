@@ -5,10 +5,10 @@ namespace Cfo.Cats.Application.Common.Interfaces;
 
 public interface ICandidateService
 {
-    public Task<Result<SearchResult[]>> SearchAsync(CandidateSearchQuery searchQuery);
-    public Task<Result<CandidateDto>> GetByUpciAsync(string upci);
+    Task<Result<SearchResult[]>> SearchAsync(CandidateSearchQuery searchQuery);
+    Task<Result<CandidateDto>> GetByUpciAsync(string upci);
 
-    public Task<Result<bool>> SetStickyLocation(string upci, string location);
+    Task<Result<bool>> SetStickyLocation(string upci, string location);
 }
 
 public record SearchResult(string Upci, int Precedence);

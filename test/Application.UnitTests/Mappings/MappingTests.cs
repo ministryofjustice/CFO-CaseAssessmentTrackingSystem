@@ -55,7 +55,9 @@ public class MappingTests
         // Check for a parameterless constructor, including non-public ones
         ConstructorInfo constructor = type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
         if (constructor != null)
+        {
             return constructor.Invoke(null);
+        }
 
         // Type without parameterless constructor
         return  RuntimeHelpers.GetUninitializedObject(type);

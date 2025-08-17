@@ -41,7 +41,7 @@ public static class AddActivity
         public bool CanChangeLocation => ActivityId is null;
         public bool CanChangeActivityDefinition => ActivityId is null;
 
-        class Mapping : Profile
+        private class Mapping : Profile
         {
             public Mapping()
             {
@@ -80,7 +80,7 @@ public static class AddActivity
         }
     }
 
-    class Handler(
+    private class Handler(
         IUnitOfWork unitOfWork, 
         ICurrentUserService currentUserService, 
         IUploadService uploadService,
@@ -215,7 +215,7 @@ public static class AddActivity
 
     public class Validator : AbstractValidator<Command>
     {
-        readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWork unitOfWork;
 
         public Validator(IUnitOfWork unitOfWork)
         {
@@ -359,7 +359,7 @@ public static class AddActivity
             return header == "%PDF";
         }
 
-        bool NotBeCompletedInTheFuture(DateTime? completed) => completed < DateTime.UtcNow;
+        private bool NotBeCompletedInTheFuture(DateTime? completed) => completed < DateTime.UtcNow;
 
         private bool HaveOccurredOnOrAfterConsentWasGranted(string participantId, DateTime? commencedOn)
         {

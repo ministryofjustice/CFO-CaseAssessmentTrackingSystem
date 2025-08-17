@@ -30,7 +30,10 @@ public static class PaymentExtensions
 
     public static string GetPerformanceClass(this int achieved, int target)
     {
-        if (target == 0) return "performance-error";
+        if (target == 0)
+        {
+            return "performance-error";
+        }
 
         var percentage = (decimal)achieved / target * 100;
 

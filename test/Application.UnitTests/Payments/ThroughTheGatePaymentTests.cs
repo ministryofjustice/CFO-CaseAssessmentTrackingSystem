@@ -9,10 +9,10 @@ namespace Cfo.Cats.Application.UnitTests.Payments;
 
 public class ThroughTheGatePaymentTests
 {
-    static readonly DateTime actualReleaseDate = DateTime.Today.AddDays(-7);
-    static readonly DateTime dateOfConsent = DateTime.Today.AddDays(-21);
-    static readonly DateTime priCreated = DateTime.Today.AddDays(-14);
-    static readonly DateTime meetingAttendedOn = DateTime.Today.AddDays(-15);
+    private static readonly DateTime actualReleaseDate = DateTime.Today.AddDays(-7);
+    private static readonly DateTime dateOfConsent = DateTime.Today.AddDays(-21);
+    private static readonly DateTime priCreated = DateTime.Today.AddDays(-14);
+    private static readonly DateTime meetingAttendedOn = DateTime.Today.AddDays(-15);
 
     [Test]
     public void NoConsent_ShouldNot_BePaid()
@@ -105,7 +105,7 @@ public class ThroughTheGatePaymentTests
         payment.EligibleForPayment.ShouldBe(true);
     }
 
-    static RecordThroughTheGatePaymentConsumer.Data GetData()
+    private static RecordThroughTheGatePaymentConsumer.Data GetData()
     {
         return new RecordThroughTheGatePaymentConsumer.Data
         {

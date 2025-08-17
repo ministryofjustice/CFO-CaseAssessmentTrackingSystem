@@ -2,7 +2,6 @@
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Rebus.Handlers;
 
-
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
 public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMessages<AssessmentScoredIntegrationEvent>
@@ -42,13 +41,13 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IHandle
         return payment;
     }
 
-    static ReassessmentPayment CreatePayable(Data data)
+    private static ReassessmentPayment CreatePayable(Data data)
         => ReassessmentPayment.CreatePayable(data.AssessmentId, data.Completed, data.Created, data.ParticipantId, data.TenantId, data.SupportWorker, data.ContractId, data.LocationId, data.LocationType);
 
-    static ReassessmentPayment CreateNonPayable(Data data, IneligibilityReason ineligibilityReason)
+    private static ReassessmentPayment CreateNonPayable(Data data, IneligibilityReason ineligibilityReason)
         => ReassessmentPayment.CreateNonPayable(data.AssessmentId, data.Completed, data.Created, data.ParticipantId, data.TenantId, data.SupportWorker, data.ContractId, data.LocationId, data.LocationType, ineligibilityReason);
-    
-    async Task<Data> GetData(AssessmentScoredIntegrationEvent context)
+
+    private async Task<Data> GetData(AssessmentScoredIntegrationEvent context)
     {
         var db = unitOfWork.DbContext;
 
@@ -89,7 +88,6 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IHandle
 
         return await query.SingleAsync();
     }
-
 
     public record Data
     {

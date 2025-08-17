@@ -2,7 +2,6 @@ using Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Rebus.Handlers;
 
-
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
 public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
@@ -68,7 +67,6 @@ public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
             tenantId: data.TenantId,
             paymentPeriod: data.PaymentPeriod,
             reason: reason);
-
 
     private async Task<Data> GetData(Guid priId)
     {
@@ -198,7 +196,6 @@ public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
 
                 bool beenInCustody = false;
                 bool beenInCommunityAfter = false;
-
 
                 foreach (var h in Locations.Where(h => h.From < ActualReleaseDate!.ToDateTime(TimeOnly.MinValue)
                                  .AddDays(14)) // add 14 days to allow for DMS sync issues

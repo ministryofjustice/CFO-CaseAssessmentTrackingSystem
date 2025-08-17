@@ -65,7 +65,5 @@ public class SupportAndReferralPaymentEntityTypeConfiguration
             })
             .HasDatabaseName("ix_ActivityPayment_ParticipantId");
 
-
-
     }
 }

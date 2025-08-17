@@ -19,7 +19,7 @@ public partial class ParticipantActiveHistory
         await base.OnInitializedAsync();
     }
 
-    async Task Refresh()
+    private async Task Refresh()
     {
         if (!string.IsNullOrEmpty(ParticipantId))
         {

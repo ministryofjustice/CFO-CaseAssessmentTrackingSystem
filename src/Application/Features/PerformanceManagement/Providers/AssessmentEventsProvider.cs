@@ -34,6 +34,5 @@ public class AssessmentEventsProvider : IPertinentEventProvider
             Icon = AppIcon.Enrolment
         });
 
-
     }
 }

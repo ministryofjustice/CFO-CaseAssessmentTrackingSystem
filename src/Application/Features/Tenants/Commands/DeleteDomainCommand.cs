@@ -43,7 +43,6 @@ public static class DeleteDomainCommand
 
             tenant.RemoveDomain(model);
 
-
             tenantService.Refresh();
 
             return Result<int>.Success(1);

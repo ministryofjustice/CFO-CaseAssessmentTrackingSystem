@@ -6,7 +6,6 @@ using Claim = System.Security.Claims.Claim;
 
 namespace Cfo.Cats.Infrastructure.Services;
 
-
 public class ApplicationUserClaimsPrincipalFactory(
     UserManager<ApplicationUser> userManager,
     RoleManager<ApplicationRole> roleManager,

@@ -104,7 +104,6 @@ public partial class Escalation
                     _ => "Comment added"
                 };
 
-
                 if (result.Succeeded)
                 {
                     Snackbar.Add(message, Severity.Info);

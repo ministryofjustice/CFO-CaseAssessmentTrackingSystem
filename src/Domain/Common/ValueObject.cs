@@ -4,7 +4,10 @@ public abstract class ValueObject
 {
     protected static bool EqualOperator(ValueObject? left, ValueObject? right)
     {
-        if (left is null ^ right is null) return false;
+        if (left is null ^ right is null)
+        {
+            return false;
+        }
 
         return left?.Equals(right) != false;
     }
@@ -18,7 +21,10 @@ public abstract class ValueObject
 
     public override bool Equals(object? obj)
     {
-        if (obj == null || obj.GetType() != GetType()) return false;
+        if (obj == null || obj.GetType() != GetType())
+        {
+            return false;
+        }
 
         var other = (ValueObject)obj;
         return GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());

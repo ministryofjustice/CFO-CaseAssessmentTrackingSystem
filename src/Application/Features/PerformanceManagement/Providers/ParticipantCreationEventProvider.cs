@@ -38,7 +38,6 @@ public class ParticipantCreationEventProvider : IPertinentEventProvider
             additionalInformation = $"Participant was registered at {firstLocation}. {additionalInformation}";
         }
 
-
         return
         [
             new DipEventInformation

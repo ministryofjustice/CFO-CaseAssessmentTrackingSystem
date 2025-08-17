@@ -13,7 +13,6 @@ public class PickUserAutocomplete : MudAutocomplete<ApplicationUserDto>
     [Inject]
     private IUserService UserService { get; set; } = default!;
 
-
     protected override void OnInitialized()
     {
         UserService.OnChange += TenantsService_OnChange;

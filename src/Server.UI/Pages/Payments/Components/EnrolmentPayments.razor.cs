@@ -31,7 +31,7 @@ public partial class EnrolmentPayments
     private EnrolmentPaymentDto[] Payments { get; set; } = [];
     private List<EnrolmentPaymentSummaryDto> SummaryData = [];
 
-    GetEnrolmentPayments.Query? Query;
+    private GetEnrolmentPayments.Query? Query;
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
@@ -44,7 +44,7 @@ public partial class EnrolmentPayments
         }
     };
 
-    async Task OnRefresh()
+    private async Task OnRefresh()
     {
         try
         {
@@ -85,7 +85,7 @@ public partial class EnrolmentPayments
 
     private string _searchString = "";
 
-    async Task OnSearch()
+    private async Task OnSearch()
     {
         Query!.Keyword = _searchString;
         await OnRefresh();

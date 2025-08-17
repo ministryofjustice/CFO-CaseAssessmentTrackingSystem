@@ -15,7 +15,7 @@ public static class ActivitiesWithPagination
         public ActivitiesAdvancedSpecification Specification => new(this);
     }
 
-    class Handler(IUnitOfWork unitOfWork, IMapper mapper) 
+    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) 
         : IRequestHandler<Query, PaginatedData<ActivitySummaryDto>>
     {
         public async Task<PaginatedData<ActivitySummaryDto>> Handle(Query request, CancellationToken cancellationToken)

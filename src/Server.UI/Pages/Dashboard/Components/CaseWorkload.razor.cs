@@ -13,7 +13,6 @@ public partial class CaseWorkload
     private bool _downloading = false;
     private string _searchString = "";
 
-
     [CascadingParameter] 
     public UserProfile UserProfile { get; set; } = default!;
 
@@ -94,6 +93,5 @@ public partial class CaseWorkload
 
         return false;
     }
-
 
 }

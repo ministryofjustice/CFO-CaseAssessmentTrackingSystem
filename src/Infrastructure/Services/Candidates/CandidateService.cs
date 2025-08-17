@@ -133,8 +133,6 @@ public class CandidateService(
             }
         }
 
-
-
         if (location is { Location: not null })
         {
             candidate.MappedLocationId = location.Location.Id;

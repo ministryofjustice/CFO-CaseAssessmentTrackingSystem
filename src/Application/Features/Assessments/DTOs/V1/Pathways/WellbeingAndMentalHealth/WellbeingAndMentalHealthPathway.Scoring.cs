@@ -91,7 +91,4 @@ public partial class WellbeingAndMentalHealthPathway
             _ => throw new ApplicationException("Unknown answer")
         };
 
-
-
-
 }

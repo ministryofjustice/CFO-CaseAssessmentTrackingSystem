@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <!-- Enable Roslyn analyzers -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+
+    <!-- Treat code style violations as errors -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+</Project>

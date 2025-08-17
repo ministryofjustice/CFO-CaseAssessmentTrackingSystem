@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.UnitTests.Payments;
 
 public class ReassessmentPaymentTests
 {
-    static readonly DateTime dateOfConsent = DateTime.Today.AddMonths(-6);
+    private static readonly DateTime dateOfConsent = DateTime.Today.AddMonths(-6);
 
     [Test]
     public void NoConsent_Should_NotBePaid()
@@ -61,8 +61,7 @@ public class ReassessmentPaymentTests
         payment.EligibleForPayment.ShouldBe(true);
     }
 
-
-    static RecordReassessmentPaymentConsumer.Data GetData()
+    private static RecordReassessmentPaymentConsumer.Data GetData()
     {
         var today = DateTime.Today;
 

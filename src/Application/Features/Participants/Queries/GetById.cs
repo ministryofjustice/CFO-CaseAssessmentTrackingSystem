@@ -4,7 +4,6 @@ using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
 
-
 namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetParticipantById
@@ -39,7 +38,6 @@ public static class GetParticipantById
                 .MaximumLength(9)
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
-
 
         }
     }

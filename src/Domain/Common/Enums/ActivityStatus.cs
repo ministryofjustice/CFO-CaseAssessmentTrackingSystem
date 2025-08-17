@@ -2,8 +2,6 @@
 
 namespace Cfo.Cats.Domain.Common.Enums;
 
-
-
 public abstract class ActivityStatus : SmartEnum<ActivityStatus>
 {
     public static readonly ActivityStatus PendingStatus = new Pending();

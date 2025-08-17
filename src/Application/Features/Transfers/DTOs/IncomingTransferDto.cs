@@ -8,7 +8,6 @@ public class IncomingTransferDto
 {
     public required Guid Id { get; set; }
 
-
     public required string ParticipantFullName { get; set; }
     public required string ParticipantId { get; set; }
 
@@ -21,7 +20,7 @@ public class IncomingTransferDto
     public required TransferLocationType TransferType { get; set; }
     public required bool Completed { get; set; }
 
-    class Mapper : Profile
+    private class Mapper : Profile
     {
         public Mapper()
         {

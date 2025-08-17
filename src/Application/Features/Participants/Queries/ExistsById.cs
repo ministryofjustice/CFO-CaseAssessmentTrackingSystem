@@ -34,7 +34,6 @@ public static class CheckParticipantExistsById
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
 
-
         }
     }
 }

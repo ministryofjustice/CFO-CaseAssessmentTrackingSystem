@@ -105,8 +105,6 @@ public class SupportAndReferralPayment
     public required string? IneligibilityReason { get; set; }
     public required DateTime PaymentPeriod { get; set; }
 
-
-
         //public static PaymentType PreReleaseSupport = new("Pre-Release Support");
         //public static PaymentType ThroughTheGate = new("Through the Gate");
 

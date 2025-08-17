@@ -19,7 +19,6 @@ public class EnrolmentQa2QueueEntry : EnrolmentQueueEntry
         AddDomainEvent(new EnrolmentQa2QueueCreatedDomainEvent(this));
     }
 
-
     public override EnrolmentQueueEntry Accept()
     {
         IsAccepted = true;

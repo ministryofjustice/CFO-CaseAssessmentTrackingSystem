@@ -112,7 +112,6 @@ public static class DependencyInjection
                 .Start();
         });
 
-
         var handlerTypes = typeof(SyncParticipantCommandHandler).Assembly
             .GetTypes()
             .Where(t => t.IsAbstract == false && t.GetInterfaces()

@@ -7,7 +7,6 @@ using Cfo.Cats.Application.Outbox;
 
 namespace Cfo.Cats.Application.Features.Outbox.Queries.PaginationQuery;
 
-
 public static class OutboxMessagesWithPagination
 {
     [RequestAuthorize(Roles = RoleNames.SystemSupport)]

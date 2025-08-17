@@ -1,5 +1,4 @@
 ﻿
-
 using MudExtensions;
 
 namespace Cfo.Cats.Server.UI.Components.Stepper;
@@ -22,7 +21,7 @@ public class CatsMudStepper : MudStepperExtended
     {
         base.PreventStepChangeAsync += async (StepChangeDirection direction, int targetIndex) =>
         {
-            var cancelled = await PreventStepChangeAsync(direction, targetIndex);
+            var cancelled = await PreventStepChangeAsync(direction);
 
             if(cancelled is false)
             {
@@ -35,7 +34,7 @@ public class CatsMudStepper : MudStepperExtended
         base.OnInitialized();
     }
 
-    private new async Task<bool> PreventStepChangeAsync(StepChangeDirection direction, int targetIndex)
+    private new async Task<bool> PreventStepChangeAsync(StepChangeDirection direction)
     {
         if (IsResultStep)
         {
@@ -49,7 +48,7 @@ public class CatsMudStepper : MudStepperExtended
         }
 
         // Validate component if required.
-        if (ActiveStep is CatsMudStep step && step.Condition is not null)
+        if (ActiveStep is CatsMudStep { Condition: not null } step)
         {
             var valid = await step.Condition.Invoke();
             return await Task.FromResult(valid is false);

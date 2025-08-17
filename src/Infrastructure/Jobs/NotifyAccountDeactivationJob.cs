@@ -21,10 +21,12 @@ public class NotifyAccountDeactivationJob(
                 ["JobInstance"] = Guid.NewGuid().ToString()
         }))
 
-        if (context.RefireCount > 3)
         {
-            logger.LogWarning($"Failed to complete notifying accounts that are due to deactivate within 3 tries, aborting...");
-            return;
+            if (context.RefireCount > 3)
+            {
+                logger.LogWarning($"Failed to complete notifying accounts that are due to deactivate within 3 tries, aborting...");
+                return;
+            }
         }
 
         try

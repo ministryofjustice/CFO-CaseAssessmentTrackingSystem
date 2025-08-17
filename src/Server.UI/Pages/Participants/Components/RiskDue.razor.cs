@@ -11,7 +11,6 @@ public partial class RiskDue
 
     private RiskDueDto[] Model { get; set; } = [];
 
-
     private bool _approvedOnly = true;
 
     [CascadingParameter]

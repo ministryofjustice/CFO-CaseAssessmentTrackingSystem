@@ -12,7 +12,7 @@ public static class VerifyOutcomeQualityDipSample
         public required Guid SampleId { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUser) : IRequestHandler<Command, Result>
+    private class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUser) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {

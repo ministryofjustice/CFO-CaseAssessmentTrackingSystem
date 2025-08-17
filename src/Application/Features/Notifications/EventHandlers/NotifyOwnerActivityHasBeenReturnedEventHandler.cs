@@ -31,5 +31,3 @@ public class NotifyOwnerActivityHasBeenReturnedEventHandler(IUnitOfWork unitOfWo
     }
 }
 
-
-
