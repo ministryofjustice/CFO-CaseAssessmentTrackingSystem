@@ -132,4 +132,10 @@ public partial class DipSample
             _loading = false;
         }
     }
+
+    private async Task OnFinalise()
+    {
+        //TODO: Implement this functionality
+        await Task.CompletedTask;
+    }
 }

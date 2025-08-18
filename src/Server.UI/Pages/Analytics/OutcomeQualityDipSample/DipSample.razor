@@ -40,18 +40,29 @@
                     <MudStack Row="true" Class="gap-0">
                         <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
                             <MudButton Variant="Variant.Outlined"
-                                       Color="Color.Primary"
+                                       Color="Color.Secondary"
                                        StartIcon="@Icons.Material.Filled.Done"
                                        Size="Size.Small"
                                        OnClick="OnVerify"
                                        Disabled="@(_sample?.Status != DipSampleStatus.Reviewed)"
-                                       IconColor="Color.Surface">
+                                       IconColor="Color.Secondary">
                                 <MudText>@ConstantString.Verify</MudText>
+                            </MudButton>
+                        </AuthorizeView>
+                        <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipFinalise">
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Secondary"
+                                       StartIcon="@Icons.Material.Filled.DoneAll"
+                                       Size="Size.Small"
+                                       OnClick="OnFinalise"
+                                       Disabled="@(_sample?.Status != DipSampleStatus.Verified)"
+                                       IconColor="Color.Secondary">
+                                <MudText>@ConstantString.Finalise</MudText>
                             </MudButton>
                         </AuthorizeView>
                         <MudButton Disabled="true"
                                    Variant="Variant.Outlined"
-                                   Color="Color.Primary"
+                                   Color="Color.Secondary"
                                    StartIcon="@Icons.Material.Filled.Download"
                                    Size="Size.Small"
                                    OnClick="OnExport"

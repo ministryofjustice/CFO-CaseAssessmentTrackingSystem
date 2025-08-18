@@ -224,4 +224,6 @@ public static class ConstantString
     public static string NotActiveInFeedMessage =>
  Localize("Please note: the participant is not active on the feed.");
 
+    public static string Finalise => Localize("Finalise");
+
 }
