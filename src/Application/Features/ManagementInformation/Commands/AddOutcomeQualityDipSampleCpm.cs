@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
+using FluentValidation;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.Commands;
 
@@ -43,8 +44,12 @@ public static class AddOutcomeQualityDipSampleCpm
 
     public class Validator : AbstractValidator<Command>
     {
+        private readonly IUnitOfWork unitOfWork;
+
         public Validator(IUnitOfWork unitOfWork)
         {
+            this.unitOfWork = unitOfWork;
+
             RuleFor(x => x.ParticipantId)
                 .NotNull()
                 .Length(9)
@@ -66,33 +71,34 @@ public static class AddOutcomeQualityDipSampleCpm
                 .Must(x => x.IsAnswer)
                 .WithMessage("Compliance must be answered");
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
+            RuleSet(ValidationConstants.RuleSet.MediatR, () => 
+            {
+                const string message = "Cannot submit CPM review: {0}";
 
-                RuleFor(x => x)
-                    .MustAsync(async (_, answer, context, canc) => {
-                        var dip = await unitOfWork.DbContext.OutcomeQualityDipSampleParticipants
-                            .Where(x => x.ParticipantId == answer.ParticipantId && x.DipSampleId == answer.DipSampleId)
-                            .AsNoTracking()
-                            .Select(x => x.FinalIsCompliant)
-                            .FirstOrDefaultAsync(canc);
-
-                        if (dip == null)
-                        {
-                            context.MessageFormatter.AppendArgument("Reason", "not found");
-                            return false;
-                        }
-
-                        if (dip.IsAnswer)
-                        {
-                            context.MessageFormatter.AppendArgument("Reason", "Already reviewed");
-                            return false;
-                        }
-
-                        return true;
-
-                    }).WithMessage("Cannot submit CPM review: {Reason}");
-
+                RuleFor(c => c)
+                    .Must((c) => Exist(c.DipSampleId, c.ParticipantId))
+                    .WithMessage(string.Format(message, "not found"))
+                    .Must((c) => BeInReviewedStatus(c.DipSampleId))
+                    .WithMessage(string.Format(message, $"sample must be in '{DipSampleStatus.Reviewed}' status"))
+                    .Must((c) => NotHaveFinalisedAnswer(c.DipSampleId, c.ParticipantId))
+                    .WithMessage(string.Format(message, "cannot override a finalised answer"));
             });
+        }
+
+        private bool Exist(Guid dipSampleId, string participantId) 
+            => unitOfWork.DbContext.OutcomeQualityDipSampleParticipants.Any(dsp => dsp.DipSampleId == dipSampleId && dsp.ParticipantId == participantId);
+        
+        private bool BeInReviewedStatus(Guid dipSampleId)
+            => unitOfWork.DbContext.OutcomeQualityDipSamples.Any(ds => ds.Id == dipSampleId && ds.Status == DipSampleStatus.Reviewed);
+        
+        private bool NotHaveFinalisedAnswer(Guid dipSampleId, string participantId)
+        {
+            var dsp = unitOfWork.DbContext.OutcomeQualityDipSampleParticipants
+                .Where(dsp => dsp.DipSampleId == dipSampleId && dsp.ParticipantId == participantId)
+                .Select(dsp => dsp.FinalIsCompliant)
+                .First();
+
+            return dsp.IsAnswer is false;
         }
     }
 }

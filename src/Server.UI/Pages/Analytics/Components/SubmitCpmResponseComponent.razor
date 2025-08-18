@@ -4,7 +4,17 @@
 
 @attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipVerification)]
 
-<MudForm @ref="form" Model="Command" Validation="@(Validator.ValidateValue(Command))" Class="ma-2">
+@inject IAuthorizationService AuthorizationService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@if (Status != DipSampleStatus.Reviewed)
+{
+    <MudAlert Severity="Severity.Info">
+        This information is now readonly because the sample is at the @Status.Name stage.
+    </MudAlert>
+}
+
+<MudForm @ref="form" Model="Command" Validation="@(Validator.ValidateValue(Command))" Class="ma-2" ReadOnly="ReadOnly">
     <MudGrid>
         <MudItem xs="12" md="3">
             <MudText Typo="Typo.subtitle1">

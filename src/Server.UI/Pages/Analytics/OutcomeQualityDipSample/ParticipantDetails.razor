@@ -76,7 +76,7 @@
                     </MudTabPanel>
                     <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
                         <MudTabPanel Text="Verification" Disabled="_participant.CsoAnswer.IsAnswer is false">
-                            <SubmitCpmResponseComponent Command="@SubmitCpmCommand" OnFormSubmit="CpmResponseSubmitted" />
+                            <SubmitCpmResponseComponent Command="@SubmitCpmCommand" OnFormSubmit="CpmResponseSubmitted" Status="_participant.DipSampleStatus" />
                         </MudTabPanel>
                     </AuthorizeView>
 
