@@ -56,18 +56,20 @@
                 </MudItem>
             </MudGrid>
         </MudItem>
-
+ 
         <MudItem xs="12" sm="12" Class="mt-6">
             <MudText Typo="Typo.caption">@L["Additional Roles"]</MudText>
-            <MudGrid Class="mt-1">
-                @for (var i = 0; i < Roles.Count; i++)
-                {
-                    var x = i;
-                    <MudItem xs="6" sm="6" Class="py-0 my=0">
-                        <MudCheckBox T="bool" Value="@Roles[x].Value" Label="@Roles[x].Key" ValueChanged="@(s => Roles[x].Value = s)" Disabled="@(Roles[x].Enabled == false)"></MudCheckBox>
-                    </MudItem>
-                }
-            </MudGrid>
+            <MudPaper Class="mt-1" Style="max-height: 200px; overflow-y: auto;" Elevation="0">
+                <MudGrid Class="mt-1">
+                    @for (var i = 0; i < Roles.Count; i++)
+                    {
+                        var x = i;
+                        <MudItem xs="6" sm="6" Class="py-0 my=0">
+                            <MudCheckBox T="bool" Value="@Roles[x].Value" Label="@Roles[x].Key" ValueChanged="@(s => Roles[x].Value = s)" Disabled="@(Roles[x].Enabled == false)"></MudCheckBox>
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudPaper>
         </MudItem>
 
         <MudItem xs="12" sm="12" Class="mt-6">
