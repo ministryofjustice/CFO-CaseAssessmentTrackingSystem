@@ -19,7 +19,6 @@ public class CreatePqaEntryFromSubmittedToAuthority(IUnitOfWork unitOfWork) : IN
                 throw new ApplicationException("Owner tenant id must be set");
             }
 
-
             //get the values from the LAST PQA
             var lastPqa = await unitOfWork
                 .DbContext.EnrolmentPqaQueue

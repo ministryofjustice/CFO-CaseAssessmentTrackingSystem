@@ -14,7 +14,6 @@ public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMess
             .AsNoTracking()
             .SingleAsync(activity => activity.Id == context.Id);
 
-
         if (activity.Type == ActivityType.Employment || activity.Type == ActivityType.EducationAndTraining)
         {
             // we do not record ETE events here.
@@ -28,7 +27,6 @@ public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMess
         }
 
         IneligibilityReason? ineligibilityReason = null;
-
 
         var history = await unitOfWork.DbContext.ParticipantEnrolmentHistories
             .AsNoTracking()
@@ -65,7 +63,6 @@ public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMess
                 select ap;
 
             var previousPayments = await query.AsNoTracking().ToListAsync();
-
 
             if (previousPayments.Count > 0)
             {

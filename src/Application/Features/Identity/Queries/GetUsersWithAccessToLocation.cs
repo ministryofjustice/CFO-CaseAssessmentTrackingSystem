@@ -13,7 +13,7 @@ public static class GetUsersWithAccessToLocation
         public required int LocationId { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService userService) : IRequestHandler<Query, Result<IEnumerable<ApplicationUserDto>>>
+    private class Handler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService userService) : IRequestHandler<Query, Result<IEnumerable<ApplicationUserDto>>>
     {
         public async Task<Result<IEnumerable<ApplicationUserDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -48,7 +48,7 @@ public static class GetUsersWithAccessToLocation
 
     public class Validator : AbstractValidator<Query>
     {
-        readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWork unitOfWork;
 
         public Validator(IUnitOfWork unitOfWork)
         {
@@ -64,7 +64,7 @@ public static class GetUsersWithAccessToLocation
             });
         }
 
-        async Task<bool> Exist(int locationId, CancellationToken cancellationToken)
+        private async Task<bool> Exist(int locationId, CancellationToken cancellationToken)
         {
             return await unitOfWork.DbContext.Locations
                 .SingleOrDefaultAsync(l => l.Id == locationId, cancellationToken) is not null;

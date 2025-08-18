@@ -27,7 +27,6 @@ public class AddEditKeyValueCommandValidator : AbstractValidator<AddEditKeyValue
             .Matches(ValidationConstants.Keyword)
             .WithMessage(string.Format(ValidationConstants.KeywordMessage, "Value"));
 
-
         RuleFor(c => c.Text!)
             .NotNull()
             .NotEmpty()

@@ -42,7 +42,6 @@ public class ApplicationUserDtoValidator : AbstractValidator<ApplicationUserDto>
             .Equal(x=> x.Email)
             .WithMessage(_localizer["User name must be a valid email address between 6 and 255 characters"]);
 
-
         RuleFor(x => x.UserName)
             .EmailAddress()
             .WithMessage(_localizer["User name should be an email address"]);

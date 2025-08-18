@@ -139,7 +139,7 @@ public static class AddOrUpdateContactDetail
             });
         }
 
-        bool Exist(string identifier) => _unitOfWork.DbContext.Participants.Any(e => e.Id == identifier);
+        private bool Exist(string identifier) => _unitOfWork.DbContext.Participants.Any(e => e.Id == identifier);
     }
 
     public class C_ContactDetailMustExist : AbstractValidator<Command>
@@ -161,7 +161,7 @@ public static class AddOrUpdateContactDetail
             });
         }
 
-        bool Exist(Guid? identifier) => _unitOfWork.DbContext.ParticipantContactDetails.Any(e => e.Id == identifier);
+        private bool Exist(Guid? identifier) => _unitOfWork.DbContext.ParticipantContactDetails.Any(e => e.Id == identifier);
     }
 
     public class D_ParticipantMustBeActive : AbstractValidator<Command>
@@ -180,7 +180,7 @@ public static class AddOrUpdateContactDetail
             });
         }
 
-        bool MustNotBeArchived(string participantId)
+        private bool MustNotBeArchived(string participantId)
                 => _unitOfWork.DbContext.Participants.Any(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
     }
 }

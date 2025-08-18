@@ -20,7 +20,7 @@ public partial class LocationHistory
         await base.OnInitializedAsync();
     }
 
-    async Task Refresh()
+    private async Task Refresh()
     {
         if (!string.IsNullOrEmpty(ParticipantId))
         {

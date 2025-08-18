@@ -12,7 +12,7 @@ public static class GetActivityById
         public required Guid Id { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork)
+    private class Handler(IUnitOfWork unitOfWork)
         : IRequestHandler<Query, Activity?>
     {
         public async Task<Activity?> Handle(Query request, CancellationToken cancellationToken)

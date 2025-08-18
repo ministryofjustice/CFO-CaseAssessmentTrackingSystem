@@ -35,6 +35,5 @@ public class HubInductionEventsProvider: IPertinentEventProvider
             Icon = AppIcon.HubInduction,
         });
 
-
     }
 }

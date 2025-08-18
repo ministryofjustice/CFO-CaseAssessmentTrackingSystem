@@ -118,7 +118,6 @@ public static class AddRightToWork
                         .MustAsync(MustNotBeArchived)
                         .WithMessage("Participant is archived");
 
-
                 });
             });
         }
@@ -135,26 +134,30 @@ public static class AddRightToWork
         private async Task<bool> BePdfFile(IBrowserFile? file, CancellationToken cancellationToken)
         {
             if (file is null)
+            {
                 return false;
+            }
 
             // Check file extension
             if (!Path.GetExtension(file.Name).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+            {
                 return false;
+            }
 
             // Check MIME type
             if (file.ContentType != "application/pdf")
+            {
                 return false;
+            }
 
             long maxSizeBytes = Convert.ToInt64(ByteSize.FromMegabytes(Infrastructure.Constants.Documents.RightToWork.MaximumSizeInMegabytes).Bytes);
 
             // Check file signature (magic numbers)
-            using (var stream = file.OpenReadStream(maxSizeBytes, cancellationToken))
-            {
-                byte[] buffer = new byte[4];
-                await stream.ReadExactlyAsync(buffer.AsMemory(0, 4), cancellationToken);
-                string header = System.Text.Encoding.ASCII.GetString(buffer);
-                return header == "%PDF";
-            }
+            await using var stream = file.OpenReadStream(maxSizeBytes, cancellationToken);
+            var buffer = new byte[4];
+            await stream.ReadExactlyAsync(buffer.AsMemory(0, 4), cancellationToken);
+            var header = System.Text.Encoding.ASCII.GetString(buffer);
+            return header == "%PDF";
         }
     }    
 }

@@ -6,10 +6,10 @@ namespace Cfo.Cats.Domain.Entities.Documents;
 public class DocumentAuditTrail : BaseEntity<Guid>
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    DocumentAuditTrail() { }
+    private DocumentAuditTrail() { }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    DocumentAuditTrail(Guid documentId, string userId, DocumentAuditTrailRequestType requestType, DateTime occurredOn)
+    private DocumentAuditTrail(Guid documentId, string userId, DocumentAuditTrailRequestType requestType, DateTime occurredOn)
     {
         DocumentId = documentId;
         UserId = userId;

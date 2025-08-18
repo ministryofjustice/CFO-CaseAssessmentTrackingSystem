@@ -14,7 +14,7 @@ public static class GetParticipantEnrolmentHistory
         public required UserProfile CurrentUser { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, IEnumerable<ParticipantEnrolmentHistoryDto>>
+    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, IEnumerable<ParticipantEnrolmentHistoryDto>>
     {
         //Hide CFO Users details from providers
         private static readonly string[] HiddenTenantIds = ["1.1.", "1."];
@@ -66,7 +66,9 @@ public static class GetParticipantEnrolmentHistory
                                   .ToListAsync();
 
             if (results.Count == 0)
+            {
                 return results;
+            }
 
             bool hideUser = !request.CurrentUser.AssignedRoles.Any(role => AllowedRoles.Contains(role));
 

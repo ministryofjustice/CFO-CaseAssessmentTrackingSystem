@@ -58,7 +58,3 @@ public static class ParticipantsWithPagination
     }
 }
 
-
-
-
-

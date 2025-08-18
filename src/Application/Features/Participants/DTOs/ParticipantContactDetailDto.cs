@@ -14,7 +14,7 @@ public class ParticipantContactDetailDto
     [Description("Phone Number")] public string? MobileNumber { get; set; }
     public required bool Primary { get; set; }
 
-    class Mapping : Profile
+    private class Mapping : Profile
     {
         public Mapping() => CreateMap<ParticipantContactDetail, ParticipantContactDetailDto>();
     }

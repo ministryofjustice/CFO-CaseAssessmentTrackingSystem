@@ -11,7 +11,6 @@ public class EmploymentPayment
     }
 #pragma warning restore CS8618
 
-
     public static EmploymentPayment CreateNonPayableEmploymentPayment(EmploymentActivity activity, IneligibilityReason ineligibilityReason)
     {
         if (activity.ApprovedOn is null)
@@ -79,10 +78,8 @@ public class EmploymentPayment
 
     }
 
-
     public required Guid Id { get; set; } 
     public required DateTime CreatedOn { get; set; }
-
 
     /// <summary>
     /// The date the activity commenced

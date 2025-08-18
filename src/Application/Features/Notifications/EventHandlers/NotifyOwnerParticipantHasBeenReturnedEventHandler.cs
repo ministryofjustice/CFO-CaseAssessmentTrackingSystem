@@ -15,7 +15,6 @@ public class NotifyOwnerParticipantHasBeenReturnedEventHandler(IUnitOfWork unitO
                 return;
             }
 
-
             const string heading = "Enrolment returned";
 
             string details = "You have enrolments that have been returned by PQA";
@@ -37,6 +36,4 @@ public class NotifyOwnerParticipantHasBeenReturnedEventHandler(IUnitOfWork unitO
         }
     }
 }
-
-
 

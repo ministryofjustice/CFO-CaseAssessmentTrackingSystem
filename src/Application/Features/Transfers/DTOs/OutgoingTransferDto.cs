@@ -18,7 +18,7 @@ public class OutgoingTransferDto
     public required string ParticipantId { get; set; }
     public required string ParticipantFullName { get; set; }
 
-    class Mapper : Profile
+    private class Mapper : Profile
     {
         public Mapper()
         {

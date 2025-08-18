@@ -12,7 +12,7 @@ public static class DeleteContactDetail
         public required Guid ContactDetailId { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<int>>
+    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result<int>>
     {
         public async Task<Result<int>> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -37,7 +37,7 @@ public static class DeleteContactDetail
                 .WithMessage("Participant does not exist");
         }
 
-        bool Exist(Guid identifier) => _unitOfWork.DbContext.ParticipantContactDetails.Any(pcd => pcd.Id == identifier);
+        private bool Exist(Guid identifier) => _unitOfWork.DbContext.ParticipantContactDetails.Any(pcd => pcd.Id == identifier);
     }
 
     public class A_ParticipantMustNotBeArchived : AbstractValidator<Command>

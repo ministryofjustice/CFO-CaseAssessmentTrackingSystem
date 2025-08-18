@@ -46,8 +46,6 @@ public static class GetCommunitySupportWorker
                 .InclusiveBetween(100000, 999999)
                 .WithMessage("Invalid Code");
 
-
-
         }
     }
 }

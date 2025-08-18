@@ -15,7 +15,7 @@ public class GeneratedDocumentDto
 
     public bool IsReadyForDownload => Status == DocumentStatus.Available;
 
-    class Mapping : Profile
+    private class Mapping : Profile
     {
         public Mapping()
         {

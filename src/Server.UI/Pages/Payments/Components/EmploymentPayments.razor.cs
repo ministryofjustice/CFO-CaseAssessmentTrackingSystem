@@ -23,10 +23,10 @@ public partial class EmploymentPayments
 
     [CascadingParameter] public UserProfile CurrentUser { get; set; } = default!;
 
-    EmploymentPaymentDto[] Payments { get; set; } = [];
-    List<EmploymentPaymentSummaryDto> SummaryData = [];
+    private EmploymentPaymentDto[] Payments { get; set; } = [];
+    private List<EmploymentPaymentSummaryDto> SummaryData = [];
 
-    GetEmploymentPayments.Query? Query;
+    private GetEmploymentPayments.Query? Query;
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
@@ -39,7 +39,7 @@ public partial class EmploymentPayments
         }
     };
 
-    async Task OnRefresh()
+    private async Task OnRefresh()
     {
         try
         {
@@ -80,7 +80,7 @@ public partial class EmploymentPayments
 
     private string _searchString = "";
 
-    async Task OnSearch()
+    private async Task OnSearch()
     {
         Query!.Keyword = _searchString;
         await OnRefresh();

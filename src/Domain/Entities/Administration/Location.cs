@@ -66,8 +66,10 @@ public class Location : BaseAuditableEntity<int>, ILifetime
     public void AddChildLocation(Location child)
     {
         if (child == null)
+        {
             throw new ArgumentNullException(nameof(child));
-        
+        }
+
         child.SetParentLocation(this);
         _childLocations.Add(child);
     }
@@ -75,8 +77,10 @@ public class Location : BaseAuditableEntity<int>, ILifetime
     public void RemoveChildLocation(Location child)
     {
         if (child == null)
+        {
             throw new ArgumentNullException(nameof(child));
-        
+        }
+
         if (ChildLocations.Contains(child))
         {
             child.ClearParentLocation();

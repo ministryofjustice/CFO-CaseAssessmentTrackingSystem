@@ -27,10 +27,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     )
     {
         UpdateEntities(eventData.Context!);
-        temporaryAuditTrailList = TryInsertTemporaryAuditTrail(
-            eventData.Context!,
-            cancellationToken
-        );
+        temporaryAuditTrailList = TryInsertTemporaryAuditTrail(eventData.Context!);
         return await base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 
@@ -97,10 +94,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         }
     }
 
-    private List<AuditTrail> TryInsertTemporaryAuditTrail(
-        DbContext context,
-        CancellationToken cancellationToken = default
-    )
+    private List<AuditTrail> TryInsertTemporaryAuditTrail(DbContext context)
     {
         var userId = currentUserService.UserId;
         var tenantId = currentUserService.TenantId;

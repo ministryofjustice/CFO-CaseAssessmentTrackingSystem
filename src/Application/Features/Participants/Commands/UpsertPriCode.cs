@@ -31,7 +31,7 @@ public static class UpsertPriCode
 
     public class Validator : AbstractValidator<Command>
     {
-        readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWork unitOfWork;
 
         public Validator(IUnitOfWork unitOfWork)
         {
@@ -53,10 +53,10 @@ public static class UpsertPriCode
             });
         }
 
-        async Task<bool> Exist(string participantId, CancellationToken cancellationToken)
+        private async Task<bool> Exist(string participantId, CancellationToken cancellationToken)
             => await unitOfWork.DbContext.Participants.AnyAsync(p => p.Id == participantId, cancellationToken);
 
-        async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
+        private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
             => await unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 }

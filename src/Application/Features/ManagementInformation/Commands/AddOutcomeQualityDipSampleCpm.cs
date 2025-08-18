@@ -20,7 +20,7 @@ public static class AddOutcomeQualityDipSampleCpm
         public ComplianceAnswer ComplianceAnswer { get; set; } = ComplianceAnswer.NotAnswered;
     }
 
-    class Handler(IUnitOfWork unitOfWork, IDateTime dateTime) : IRequestHandler<Command, Result>
+    private class Handler(IUnitOfWork unitOfWork, IDateTime dateTime) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {

@@ -1,0 +1,3 @@
+﻿# Naming rule for fields in C# code
+[*.cs]
+csharp_style_namespace_declarations = file_scoped:none

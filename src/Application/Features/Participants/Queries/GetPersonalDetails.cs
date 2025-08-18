@@ -12,7 +12,7 @@ public static class GetPersonalDetails
         public required string ParticipantId { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, ParticipantPersonalDetailDto?>
+    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, ParticipantPersonalDetailDto?>
     {
         public async Task<ParticipantPersonalDetailDto?> Handle(Query request, CancellationToken cancellationToken)
         {

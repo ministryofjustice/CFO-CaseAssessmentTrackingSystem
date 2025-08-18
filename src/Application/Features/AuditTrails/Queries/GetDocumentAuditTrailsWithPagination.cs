@@ -24,7 +24,7 @@ public static class GetDocumentAuditTrailsWithPagination
         }
     }
 
-    class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, PaginatedData<DocumentAuditTrailDto>>
+    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, PaginatedData<DocumentAuditTrailDto>>
     {
         public async Task<PaginatedData<DocumentAuditTrailDto>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -42,7 +42,7 @@ public static class GetDocumentAuditTrailsWithPagination
         }
     }
 
-    class Validator : AbstractValidator<Query>
+    private class Validator : AbstractValidator<Query>
     {
         public Validator()
         {

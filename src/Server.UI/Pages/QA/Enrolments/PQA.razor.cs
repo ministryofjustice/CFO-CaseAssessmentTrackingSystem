@@ -107,7 +107,6 @@ public partial class PQA
                     _ => "Comment added"
                 };
 
-
                 if (result.Succeeded)
                 {
                     Snackbar.Add(message, Severity.Info);
@@ -148,7 +147,7 @@ public partial class PQA
 
     private int CharacterCount => Command.Message?.Length ?? 0;
 
-    void ShowRightToWorkWarning()
+    private void ShowRightToWorkWarning()
     {
         _showRightToWorkWarning = _participantSummaryDto!.IsRightToWorkRequired
                                 && _participantSummaryDto!.ConsentStatus == Domain.Common.Enums.ConsentStatus.GrantedStatus

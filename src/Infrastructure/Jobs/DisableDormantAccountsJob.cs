@@ -21,10 +21,12 @@ public class DisableDormantAccountsJob(
                 ["JobInstance"] = Guid.NewGuid().ToString()
         }))
 
-        if (context.RefireCount > 3)
         {
-            logger.LogWarning($"Failed to complete Disable Dormant Accounts Job within 3 tries, aborting...");
-            return;
+            if (context.RefireCount > 3)
+            {
+                logger.LogWarning($"Failed to complete Disable Dormant Accounts Job within 3 tries, aborting...");
+                return;
+            }
         }
 
         try

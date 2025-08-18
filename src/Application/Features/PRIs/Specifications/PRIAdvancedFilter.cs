@@ -10,7 +10,6 @@ public class PRIAdvancedFilter : PaginationFilter
     /// </summary>
     //public PRIListView ListView { get; set; } = PRIListView.Default;
 
-
     //public required string ParticipantId { get; set; }
     //public Guid? PRIId { get; set; }
     //public DateTime? ExpectedDateOfRelease { get; set; }

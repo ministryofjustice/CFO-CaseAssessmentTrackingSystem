@@ -5,7 +5,6 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Documents.Queries;
 
-
 public static class GetDocumentById
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]

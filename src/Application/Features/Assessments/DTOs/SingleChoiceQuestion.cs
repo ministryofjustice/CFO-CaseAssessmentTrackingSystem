@@ -28,7 +28,6 @@ public abstract class SingleChoiceQuestion : QuestionBase
     {
     }
 
-
     /// <summary>
     ///     The answer the user has provided
     /// </summary>

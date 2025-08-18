@@ -30,7 +30,6 @@ public  class LocationMappingEntityTypeConfiguration : IEntityTypeConfiguration<
             .HasMaxLength(200)
             .IsRequired(false); ;// Adjust the length as needed
 
-
         // Configure the optional relationship with Location
         builder.HasOne(l => l.Location)
             .WithMany(c => c.LocationMappings)

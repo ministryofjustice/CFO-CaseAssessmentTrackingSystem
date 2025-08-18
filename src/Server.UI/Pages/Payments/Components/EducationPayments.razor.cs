@@ -34,12 +34,12 @@ public partial class EducationPayments
         }
     };
 
-    EducationPaymentDto[] Payments = [];
-    List<EducationPaymentSummaryDto> SummaryData = [];
+    private EducationPaymentDto[] Payments = [];
+    private List<EducationPaymentSummaryDto> SummaryData = [];
 
-    GetEducationPayments.Query? Query;
+    private GetEducationPayments.Query? Query;
 
-    async Task OnRefresh()
+    private async Task OnRefresh()
     {
         try
         {
@@ -80,7 +80,7 @@ public partial class EducationPayments
 
     private string _searchString = "";
 
-    async Task OnSearch()
+    private async Task OnSearch()
     {
         Query!.Keyword = _searchString;
         await OnRefresh();

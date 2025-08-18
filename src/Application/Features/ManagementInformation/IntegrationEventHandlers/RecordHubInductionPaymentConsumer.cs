@@ -68,7 +68,6 @@ public class RecordHubInductionPaymentConsumer(IUnitOfWork unitOfWork) : IHandle
 
             var previousPayments = await query.AsNoTracking().ToListAsync();
 
-
             if (previousPayments.Count > 0)
             {
                 ineligibilityReason = IneligibilityReason.MaximumPaymentLimitReached;
@@ -95,7 +94,6 @@ public class RecordHubInductionPaymentConsumer(IUnitOfWork unitOfWork) : IHandle
             not null => InductionPayment.CreateNonPayableInductionPayment(inductionData, ineligibilityReason),
             _ => InductionPayment.CreatePayableInductionPayment(inductionData, history!.Created!.Value)
         };
-
 
         unitOfWork.DbContext.InductionPayments.Add(payment);
         await unitOfWork.SaveChangesAsync(CancellationToken.None);

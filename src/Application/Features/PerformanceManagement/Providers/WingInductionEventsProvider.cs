@@ -35,6 +35,5 @@ public class WingInductionEventsProvider : IPertinentEventProvider
             Icon = AppIcon.HubInduction,
         });
 
-
     }
 }

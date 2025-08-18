@@ -25,8 +25,8 @@ public class IswDto
     [Description("Total Hours pre, during, and after intervention")]
     public double TotalHoursIntervention => HoursPerformedPre + HoursPerformedDuring + HoursPerformedPost;
 
-    string TotalHoursDescription => string.Concat((int)Math.Floor(TotalHoursIntervention), " hour", Math.Floor(TotalHoursIntervention) is 1 ? string.Empty : "s");
-    string TotalMinsDescription => string.Concat((int)(TotalHoursIntervention % 1 * 60), " mins");
+    private string TotalHoursDescription => string.Concat((int)Math.Floor(TotalHoursIntervention), " hour", Math.Floor(TotalHoursIntervention) is 1 ? string.Empty : "s");
+    private string TotalMinsDescription => string.Concat((int)(TotalHoursIntervention % 1 * 60), " mins");
     public string TotalHoursInterventionDescription => $"{TotalHoursDescription} {TotalMinsDescription}";
 
     [Description("Document")]

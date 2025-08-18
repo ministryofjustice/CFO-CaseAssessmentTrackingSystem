@@ -12,7 +12,6 @@ public class SyncParticipantsJob(
 
     private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
-
     public static readonly JobKey Key = new JobKey(name: nameof(SyncParticipantsJob));
     public static readonly string Description = "A job to synchronise participant information retrieved by the Candidate Service";
 
@@ -25,10 +24,12 @@ public class SyncParticipantsJob(
                 ["JobInstance"] = Guid.NewGuid().ToString()
         }))
 
-        if (context.RefireCount > 3)
         {
-            logger.LogWarning("Quartz Job - {Key}: failed to complete within 3 tries, aborting...", Key.Name);
-            return;
+            if (context.RefireCount > 3)
+            {
+                logger.LogWarning("Quartz Job - {Key}: failed to complete within 3 tries, aborting...", Key.Name);
+                return;
+            }
         }
 
         if (await _semaphore.WaitAsync(TimeSpan.Zero) == false)

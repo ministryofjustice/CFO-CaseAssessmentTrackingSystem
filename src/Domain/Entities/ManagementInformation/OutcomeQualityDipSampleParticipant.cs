@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Events;
 
@@ -41,7 +41,6 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
     public DateTime? CpmReviewedOn { get; private set; }
     public string? CpmReviewedBy { get; private set; }
     public string? CpmComments { get; private set; }
-
 
     public ComplianceAnswer FinalIsCompliant { get; private set; } = ComplianceAnswer.NotAnswered;
     public DateTime? FinalReviewedOn { get; private set; }

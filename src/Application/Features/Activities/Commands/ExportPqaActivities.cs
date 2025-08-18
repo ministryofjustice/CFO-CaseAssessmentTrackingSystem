@@ -16,7 +16,7 @@ public static class ExportPqaActivities
         public required ActivityPqaQueueWithPagination.Query Query { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUser) : IRequestHandler<Command, Result>
+    private class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUser) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -33,9 +33,9 @@ public static class ExportPqaActivities
 
     public class Validator : AbstractValidator<Command>
     {
-        readonly ICurrentUserService currentUserService;
-        readonly IUnitOfWork unitOfWork;
-        readonly TimeSpan cooldown = TimeSpan.FromSeconds(30);
+        private readonly ICurrentUserService currentUserService;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly TimeSpan cooldown = TimeSpan.FromSeconds(30);
 
         public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
         {
@@ -50,7 +50,7 @@ public static class ExportPqaActivities
             });
         }
 
-        bool WaitBeforeRequestingDocumentAgain(Command c)
+        private bool WaitBeforeRequestingDocumentAgain(Command c)
         {
             var cooldownPeriod = DateTime.UtcNow - cooldown;
 

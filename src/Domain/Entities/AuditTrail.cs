@@ -26,7 +26,6 @@ public class AuditTrail : IEntity<int>
         };
     }
 
-
     public int Id { get; private set; }
     public string? UserId { get; set; }
     public virtual ApplicationUser? Owner { get; private set; }

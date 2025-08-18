@@ -16,7 +16,6 @@ public static class GetEnrolmentPayments
         public string? ContractId { get; set; }
     }
 
-
     public class Handler(IUnitOfWork unitOfWork, ITargetsProvider targetsProvider) : IRequestHandler<Query, Result<EnrolmentPaymentsDto>>
     {
         public async Task<Result<EnrolmentPaymentsDto>> Handle(Query request, CancellationToken cancellationToken)
@@ -76,7 +75,6 @@ public static class GetEnrolmentPayments
                 .OrderBy(e => e.Contract)
                 .ThenByDescending(e => e.CreatedOn)
                 .ToArrayAsync(cancellationToken);
-
 
             result.ContractSummary = result.Items
                 .Where(e => e.EligibleForPayment)

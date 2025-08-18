@@ -5,14 +5,14 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
 public partial class PersonalDetailsDialog
 {
-    MudForm form = new();
+    private MudForm form = new();
 
     [CascadingParameter] private IMudDialogInstance Dialog { get; set; } = default!;
 
     [Parameter]
     public required AddOrUpdatePersonalDetail.Command Model { get; set; }
 
-    bool saving = false;
+    private bool saving = false;
 
     private async Task Submit()
     {

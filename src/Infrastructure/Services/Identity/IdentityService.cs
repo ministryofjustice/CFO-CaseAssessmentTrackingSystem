@@ -115,8 +115,10 @@ public class IdentityService : IIdentityService
             async (tenantId, token) =>
             {
                 if (string.IsNullOrEmpty(tenantId))
+                {
                     return await _userManager.Users.Include(x => x.UserRoles).ThenInclude(x => x.Role)
                         .ProjectTo<ApplicationUserDto>(_mapper.ConfigurationProvider).ToListAsync();
+                }
                 return await _userManager.Users.Where(x => x.TenantId == tenantId).Include(x => x.UserRoles)
                     .ThenInclude(x => x.Role)
                     .ProjectTo<ApplicationUserDto>(_mapper.ConfigurationProvider).ToListAsync();

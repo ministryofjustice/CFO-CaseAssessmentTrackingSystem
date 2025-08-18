@@ -22,7 +22,6 @@ public abstract class TimelineNotificationHandler<TDomainEvent>(ICurrentUserServ
         await UnitOfWork.DbContext.Timelines.AddAsync(timelineEvent);
     }
 
-
     protected abstract string GetLine1(TDomainEvent notification);
     protected virtual string? GetLine2(TDomainEvent notification) => null;
     protected virtual string? GetLine3(TDomainEvent notification) => null;

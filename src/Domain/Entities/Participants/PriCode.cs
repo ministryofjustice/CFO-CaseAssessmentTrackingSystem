@@ -27,7 +27,7 @@ public class PriCode : BaseAuditableEntity<Guid>
         return priCode.GenerateCode();
     }
 
-    PriCode GenerateCode()
+    private PriCode GenerateCode()
     {
         Code = new Random().Next(100000, 999999);
         return this;

@@ -12,7 +12,7 @@ public class DocumentAuditTrailDto
     public required DocumentAuditTrailRequestType RequestType { get; set; }
     public required DateTime OccurredOn { get; set; }
 
-    class Mapping : Profile
+    private class Mapping : Profile
     {
         public Mapping()
         {

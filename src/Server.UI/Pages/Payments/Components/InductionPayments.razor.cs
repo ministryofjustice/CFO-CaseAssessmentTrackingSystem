@@ -27,7 +27,7 @@ public partial class InductionPayments
     private InductionPaymentDto[] Payments { get; set; } = [];
     private List<InductionPaymentSummaryDto> SummaryData = [];
 
-    GetInductionPayments.Query? Query;
+    private GetInductionPayments.Query? Query;
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
@@ -40,7 +40,7 @@ public partial class InductionPayments
         }
     };
 
-    async Task OnRefresh()
+    private async Task OnRefresh()
     {
         try
         {
@@ -81,7 +81,7 @@ public partial class InductionPayments
 
     private string _searchString = "";
 
-    async Task OnSearch()
+    private async Task OnSearch()
     {
         Query!.Keyword = _searchString;
         await OnRefresh();

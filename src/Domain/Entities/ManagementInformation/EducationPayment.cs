@@ -24,7 +24,6 @@ public class EducationPayment
             new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
         };
 
-
         return new EducationPayment
         {
             Id = Guid.CreateVersion7(),
@@ -110,5 +109,4 @@ public class EducationPayment
 
     public required DateTime PaymentPeriod { get; set; }
 }
-
 

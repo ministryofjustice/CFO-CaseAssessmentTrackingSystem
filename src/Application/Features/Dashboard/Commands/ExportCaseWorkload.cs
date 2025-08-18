@@ -35,9 +35,9 @@ public static class ExportCaseWorkload
 
     public class Validator : AbstractValidator<Command>
     {
-        readonly ICurrentUserService currentUserService;
-        readonly IUnitOfWork unitOfWork;
-        readonly TimeSpan cooldown = TimeSpan.FromSeconds(30);
+        private readonly ICurrentUserService currentUserService;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly TimeSpan cooldown = TimeSpan.FromSeconds(30);
 
         public Validator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
         {
@@ -52,7 +52,7 @@ public static class ExportCaseWorkload
             });
         }
 
-        bool WaitBeforeRequestingDocumentAgain(Command c)
+        private bool WaitBeforeRequestingDocumentAgain(Command c)
         {
             var cooldownPeriod = DateTime.UtcNow - cooldown;
 

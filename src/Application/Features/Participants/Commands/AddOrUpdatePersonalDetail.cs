@@ -16,7 +16,7 @@ public class AddOrUpdatePersonalDetail
         public ParticipantPersonalDetailDto PersonalDetails { get; set; } = new();
     }
 
-    class Mapping : Profile
+    private class Mapping : Profile
     {
         public Mapping()
         {
@@ -142,7 +142,7 @@ public class AddOrUpdatePersonalDetail
             });
         }
 
-        bool MustNotBeArchived(string participantId)
+        private bool MustNotBeArchived(string participantId)
                 => _unitOfWork.DbContext.Participants.Any(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
     }
 }

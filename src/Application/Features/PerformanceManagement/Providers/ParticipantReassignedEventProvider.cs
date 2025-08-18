@@ -50,7 +50,6 @@ public class ParticipantReassignedEventProvider : IPertinentEventProvider
             })
             .ToList();
 
-
         return entries;
 
     }

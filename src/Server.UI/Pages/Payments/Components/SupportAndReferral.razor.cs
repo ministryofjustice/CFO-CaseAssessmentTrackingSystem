@@ -27,7 +27,7 @@ public partial class SupportAndReferral
     private SupportAndReferralPaymentDto[] Payments { get; set; } = [];
     private List<SupportAndReferralPaymentSummaryDto> SummaryData = [];
 
-    GetSupportAndReferralPayments.Query? Query;
+    private GetSupportAndReferralPayments.Query? Query;
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
@@ -40,7 +40,7 @@ public partial class SupportAndReferral
         }
     };
 
-    async Task OnRefresh()
+    private async Task OnRefresh()
     {
         try
         {
@@ -81,7 +81,7 @@ public partial class SupportAndReferral
 
     private string _searchString = "";
 
-    async Task OnSearch()
+    private async Task OnSearch()
     {
         Query!.Keyword = _searchString;
         await OnRefresh();

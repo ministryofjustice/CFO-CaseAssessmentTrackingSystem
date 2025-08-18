@@ -6,9 +6,9 @@ namespace Cfo.Cats.Server.UI.Pages.Analytics;
 
 public partial class MyDocuments
 {
-    GeneratedDocumentDto[] documents = [];
+    private GeneratedDocumentDto[] documents = [];
 
-    bool loading = false;
+    private bool loading = false;
     private string searchString = "";
 
     protected override async Task OnInitializedAsync()
@@ -21,7 +21,7 @@ public partial class MyDocuments
         finally { loading = false; }
     }
 
-    async Task Download(GeneratedDocumentDto document)
+    private async Task Download(GeneratedDocumentDto document)
     {
         var parameters = new DialogParameters<OnExportConfirmationDialog>()
         {

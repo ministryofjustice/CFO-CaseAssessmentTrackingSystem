@@ -8,8 +8,8 @@ namespace Cfo.Cats.Application.UnitTests.Payments;
 
 public class PreReleaseSupportPaymentTests
 {
-    static readonly DateTime dateOfConsent = DateTime.Today.AddDays(-21);
-    static readonly DateTime meetingAttendedOn = DateTime.Today.AddDays(-15);
+    private static readonly DateTime dateOfConsent = DateTime.Today.AddDays(-21);
+    private static readonly DateTime meetingAttendedOn = DateTime.Today.AddDays(-15);
 
     [Test]
     public void NoConsent_Should_NotBePaid()
@@ -55,7 +55,7 @@ public class PreReleaseSupportPaymentTests
         payment.EligibleForPayment.ShouldBe(true);
     }
 
-    static RecordPreReleaseSupportPayment.Data GetData()
+    private static RecordPreReleaseSupportPayment.Data GetData()
     {
         var today = DateTime.Today;
 

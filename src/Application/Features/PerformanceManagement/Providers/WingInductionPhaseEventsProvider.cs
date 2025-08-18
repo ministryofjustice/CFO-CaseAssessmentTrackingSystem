@@ -24,7 +24,6 @@ public class WingInductionPhaseEventsProvider : IPertinentEventProvider
                         CompletedByName = completedUser != null ? completedUser.DisplayName : string.Empty
                     };
 
-
         var results = await query.AsNoTracking().ToArrayAsync();
 
         return results.Select(ph => new DipEventInformation

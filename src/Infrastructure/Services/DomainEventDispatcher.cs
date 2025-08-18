@@ -35,6 +35,5 @@ public class DomainEventDispatcher(IMediator mediator) : IDomainEventDispatcher
                 .ToList();
         }
 
-
     }
 }

@@ -73,7 +73,6 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
         return result;
     }
 
-
     private bool PasswordCheckSucceededAndTwoFactorDisabledForIpRange(SignInResult passwordCheckResult, string? ipAddress)
     {
         if (passwordCheckResult.Succeeded == false || string.IsNullOrWhiteSpace(ipAddress))

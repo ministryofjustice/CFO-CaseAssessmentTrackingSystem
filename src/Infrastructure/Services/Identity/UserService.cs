@@ -32,7 +32,6 @@ public class UserService(IMapper mapper, IServiceScopeFactory scopeFactory, ILog
         }
     }
 
-
     public string? GetDisplayName(string userId)
     {
         logger.LogDebug("GetDisplayName called, getting from the database");

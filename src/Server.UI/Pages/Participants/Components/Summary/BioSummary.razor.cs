@@ -104,6 +104,4 @@ public partial class BioSummary
             && ParticipantSummaryDto.IsActive;
     }
 
-
-
 }

@@ -25,11 +25,18 @@ public abstract partial class MultipleChoiceQuestion : QuestionBase
 
     public override bool IsValid()
     {
-        if (Answers is null || Answers.Any() == false) return false;
+        if (Answers is null || Answers.Any() == false)
+        {
+            return false;
+        }
 
         foreach (var answer in Answers)
+        {
             if (Options.Any(o => o == answer) == false)
+            {
                 return false;
+            }
+        }
 
         return true;
     }

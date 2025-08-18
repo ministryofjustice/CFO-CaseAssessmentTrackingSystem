@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Features.ManagementInformation.Commands;
+using Cfo.Cats.Application.Features.ManagementInformation.Commands;
 using Cfo.Cats.Application.Features.ManagementInformation.DTOs;
 using Cfo.Cats.Application.Features.ManagementInformation.Queries;
 
@@ -19,9 +19,9 @@ public partial class DipSample
     [Parameter]
     public required Guid SampleId { get; set; }
 
-    GetOutcomeQualityDipSampleParticipants.Query Query { get; set; } = default!;
+    private GetOutcomeQualityDipSampleParticipants.Query Query { get; set; } = default!;
 
-    DipSampleSummaryDto? _sample;
+    private DipSampleSummaryDto? _sample;
 
     protected override async Task OnInitializedAsync()
     {
@@ -85,8 +85,8 @@ public partial class DipSample
         }
     }
 
-    async Task RefreshAsync() => await _table.ReloadServerData();
-    async Task OnExport()
+    private async Task RefreshAsync() => await _table.ReloadServerData();
+    private async Task OnExport()
     {
         try
         {

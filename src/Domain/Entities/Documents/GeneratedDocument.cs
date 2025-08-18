@@ -55,7 +55,7 @@ public enum DocumentStatus
 
 public class DocumentTemplate : SmartEnum<DocumentTemplate>
 {
-    DocumentTemplate(string name, int value) : base(name, value) { }
+    private DocumentTemplate(string name, int value) : base(name, value) { }
 
     public static readonly DocumentTemplate CaseWorkload = new(nameof(CaseWorkload), 0);
     public static readonly DocumentTemplate KeyValues = new(nameof(KeyValues), 1);

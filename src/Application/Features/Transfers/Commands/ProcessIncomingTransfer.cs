@@ -17,7 +17,7 @@ public static class ProcessIncomingTransfer
         public ApplicationUserDto? Assignee { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
+    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -44,7 +44,7 @@ public static class ProcessIncomingTransfer
 
     public class Validator : AbstractValidator<Command>
     {
-        IUnitOfWork unitOfWork;
+        private IUnitOfWork unitOfWork;
 
         public Validator(IUnitOfWork unitOfWork)
         {
@@ -65,7 +65,7 @@ public static class ProcessIncomingTransfer
             });
         }
 
-        async Task<bool> NotBeCompleted(IncomingTransferDto transfer, CancellationToken cancellationToken) 
+        private async Task<bool> NotBeCompleted(IncomingTransferDto transfer, CancellationToken cancellationToken) 
             => await unitOfWork.DbContext.ParticipantIncomingTransferQueue
                 .AnyAsync(t => t.Id == transfer.Id && t.Completed == false, cancellationToken);
     }

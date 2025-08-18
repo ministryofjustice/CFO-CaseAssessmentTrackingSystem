@@ -35,12 +35,12 @@ public partial class ActivityPayments
         }
     };
 
-    ActivityPaymentDto[] Payments = [];
-    List<ActivityPaymentSummaryDto> SummaryData = [];
+    private ActivityPaymentDto[] Payments = [];
+    private List<ActivityPaymentSummaryDto> SummaryData = [];
 
-    GetActivityPayments.Query? Query;
+    private GetActivityPayments.Query? Query;
 
-    async Task OnRefresh()
+    private async Task OnRefresh()
     {
         try
         {
@@ -81,7 +81,7 @@ public partial class ActivityPayments
 
     private string _searchString = "";
 
-    async Task OnSearch()
+    private async Task OnSearch()
     {
         Query!.Keyword = _searchString;
         await OnRefresh();

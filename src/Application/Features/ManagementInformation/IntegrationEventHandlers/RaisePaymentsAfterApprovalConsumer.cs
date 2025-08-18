@@ -7,7 +7,6 @@ using Cfo.Cats.Domain.Entities.PRIs;
 using Rebus.Bus;
 using Rebus.Handlers;
 
-
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
 public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork, IBus bus) : IHandleMessages<ParticipantTransitionedIntegrationEvent>

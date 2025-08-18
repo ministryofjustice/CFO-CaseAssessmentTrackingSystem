@@ -33,7 +33,6 @@ public partial class MatchFound
     [Parameter]
     public EventCallback OnParticipantEnrolled { get; set; }
 
-
     protected async override Task OnInitializedAsync()
     {
         _comparisons = [

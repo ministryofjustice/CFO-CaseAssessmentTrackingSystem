@@ -13,7 +13,7 @@ public static class GetIncomingTransfers
         public string? TenantId { get; set; }
     }
 
-    class Handler(
+    private class Handler(
         ICurrentUserService currentUserService,
         IUnitOfWork unitOfWork,
         ILocationService locationService,
@@ -40,7 +40,7 @@ public static class GetIncomingTransfers
         }
     }
 
-    class Validator : AbstractValidator<Query>
+    private class Validator : AbstractValidator<Query>
     {
 
     }

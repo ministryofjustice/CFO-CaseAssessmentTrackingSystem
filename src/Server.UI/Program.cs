@@ -4,9 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Cfo.Cats.Server;
 using Cfo.Cats.Server.UI;
 
-
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.WebHost.UseStaticWebAssets();
 
@@ -34,7 +32,7 @@ if (useSentry)
 
 var app = builder.Build();
 
-app.ConfigureServer(builder.Configuration);
+app.ConfigureServer();
 
 if (app.Environment.IsDevelopment())
 {
@@ -51,6 +49,5 @@ if (useSentry)
 }
 
 app.MapDefaultEndpoints();
-
 
 await app.RunAsync();

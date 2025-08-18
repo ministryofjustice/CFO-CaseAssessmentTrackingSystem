@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
 using Cfo.Cats.Application.Features.ManagementInformation.DTOs;
 using Cfo.Cats.Application.Features.ManagementInformation.Queries;
@@ -34,12 +34,10 @@ public partial class Index
         new("Outcome Quality", "pages/analytics/outcome-quality-dip-sampling", icon: Icons.Material.Filled.Home)
     ];
 
-
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
         _canReview = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.OutcomeQualityDipReview)).Succeeded;
-
 
         var offset = DateTime.Now.AddMonths(Options.Value.MonthOffset);
 

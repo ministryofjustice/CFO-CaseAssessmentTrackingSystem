@@ -43,7 +43,6 @@ public static class SubmitQa2Response
 
             entry.AddNote(request.Message, request.IsMessageExternal);
 
-
             switch (request.Response)
             {
                 case Qa2Response.Accept:
@@ -84,7 +83,6 @@ public static class SubmitQa2Response
 
         }
     }
-
 
     public class B_EntryMustExist : AbstractValidator<Command> 
     {

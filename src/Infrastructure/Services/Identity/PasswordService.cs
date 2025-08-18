@@ -2,7 +2,7 @@
 
 public class PasswordService(IIdentitySettings identitySettings) : IPasswordService
 {
-    readonly Dictionary<char, string> phonetics = new() {
+    private readonly Dictionary<char, string> phonetics = new() {
         { '0', "Zero" },
         { '1', "One" },
         { '2', "Two" },
@@ -44,10 +44,10 @@ public class PasswordService(IIdentitySettings identitySettings) : IPasswordServ
         { '?', "Question-Mark" }, 
         { '*', "Asterisk" }, 
         { '.', "Full-Stop" } };
-    
-    IIdentitySettings IdentitySettings { get; } = identitySettings;
 
-    readonly string[] randomChars = [
+    private IIdentitySettings IdentitySettings { get; } = identitySettings;
+
+    private readonly string[] randomChars = [
         "ABCDEFGHJKLMNOPQRSTUVWXYZ",   // uppercase 
         "abcdefghijkmnopqrstuvwxyz",   // lowercase
         "0123456789",                  // digits
@@ -62,20 +62,28 @@ public class PasswordService(IIdentitySettings identitySettings) : IPasswordServ
         List<char> chars = [];
 
         if (identitySettings.RequireUpperCase)
+        {
             chars.Insert(rand.Next(0, chars.Count),
-                randomChars[0][rand.Next(0, randomChars[0].Length)]);
+            randomChars[0][rand.Next(0, randomChars[0].Length)]);
+        }
 
         if (identitySettings.RequireLowerCase)
+        {
             chars.Insert(rand.Next(0, chars.Count),
-                randomChars[1][rand.Next(0, randomChars[1].Length)]);
+            randomChars[1][rand.Next(0, randomChars[1].Length)]);
+        }
 
         if (identitySettings.RequireDigit)
+        {
             chars.Insert(rand.Next(0, chars.Count),
-                randomChars[2][rand.Next(0, randomChars[2].Length)]);
+            randomChars[2][rand.Next(0, randomChars[2].Length)]);
+        }
 
         if (identitySettings.RequireNonAlphanumeric)
+        {
             chars.Insert(rand.Next(0, chars.Count),
-                randomChars[3][rand.Next(0, randomChars[3].Length)]);
+            randomChars[3][rand.Next(0, randomChars[3].Length)]);
+        }
 
         for (int i = chars.Count; i < identitySettings.RequiredLength; i++)
         {
@@ -112,6 +120,6 @@ public class PasswordService(IIdentitySettings identitySettings) : IPasswordServ
 
 public interface IPasswordService
 {
-    public string GeneratePassword(IIdentitySettings? identitySettings = null);
-    public List<KeyValuePair<char, string>> GetPronunciation(string input);
+    string GeneratePassword(IIdentitySettings? identitySettings = null);
+    List<KeyValuePair<char, string>> GetPronunciation(string input);
 }

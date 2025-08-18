@@ -23,10 +23,12 @@ public class GenerateOutcomeQualityDipSamplesJob(
                 ["JobInstance"] = Guid.NewGuid().ToString()
         }))
 
-        if (context.RefireCount > 3)
         {
-            logger.LogWarning("Quartz Job - {Key}: failed to complete within 3 tries, aborting...", Key.Name);
-            return;
+            if (context.RefireCount > 3)
+            {
+                logger.LogWarning("Quartz Job - {Key}: failed to complete within 3 tries, aborting...", Key.Name);
+                return;
+            }
         }
 
         try
@@ -138,11 +140,11 @@ public class GenerateOutcomeQualityDipSamplesJob(
         }
     }
 
-    static (string LocationType, int? LocationId) Group(string locationType, int locationId) => 
+    private static (string LocationType, int? LocationId) Group(string locationType, int locationId) => 
         new[] { LocationType.Female.Name, LocationType.Feeder.Name,LocationType.Outlying.Name}
         .Contains(locationType) ? ("Wider Custody", null) : (locationType, locationId);
 
+    private record ContractLocationTypeSample(string LocationType, int? LocationId, IEnumerable<string> ParticipantIds);
 
-    record ContractLocationTypeSample(string LocationType, int? LocationId, IEnumerable<string> ParticipantIds);
-    record Sample(string ContractId, List<ContractLocationTypeSample> Samples);
+    private record Sample(string ContractId, List<ContractLocationTypeSample> Samples);
 }

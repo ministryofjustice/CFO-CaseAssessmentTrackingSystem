@@ -18,7 +18,6 @@ public class ActivityPayment
             activity.ApprovedOn!.Value.Date
         };
 
-
         return new ActivityPayment
         {
             Id = Guid.CreateVersion7(),
@@ -71,7 +70,6 @@ public class ActivityPayment
         };
     }
 
-
     public required Guid Id { get; set; } 
     public required Guid ActivityId { get; set; }
     public required string ActivityCategory { get; set; }
@@ -92,7 +90,6 @@ public class ActivityPayment
     /// </summary>
     public required DateTime ActivityInput { get; set; }
 
-
     /// <summary>
     /// The date the activity was approved
     /// </summary>
@@ -105,6 +102,5 @@ public class ActivityPayment
     public required bool EligibleForPayment { get; set; }
     public required string? IneligibilityReason { get; set; }
     public required DateTime PaymentPeriod { get; set; }
-
 
 }

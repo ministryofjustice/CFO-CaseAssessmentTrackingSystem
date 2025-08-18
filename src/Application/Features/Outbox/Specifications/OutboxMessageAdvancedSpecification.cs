@@ -16,7 +16,6 @@ public class OutboxMessageAdvancedSpecification : Specification<OutboxMessage>
             _ => throw new ArgumentOutOfRangeException()
         };
 
-
         Query.Where(p => p.OccurredOnUtc >= start, 
             filter.ListView is not OutboxMessageListView.All);
 

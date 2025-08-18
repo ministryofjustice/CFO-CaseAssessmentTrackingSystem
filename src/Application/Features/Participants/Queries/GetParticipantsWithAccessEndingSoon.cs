@@ -69,7 +69,6 @@ public static class GetParticipantsWithAccessEndingSoon
                                          );
                                      """;
 
-
             var results = await unitOfWork.DbContext.Database
                 .SqlQuery<ParticipantWithAccessEndingSoonDto>(sql)
                 .ToArrayAsync(cancellationToken);

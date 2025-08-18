@@ -135,9 +135,9 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
     public int? FinalScore { get; private set; }
     #endregion
 
-    int CalculatePercentage(int noOfCompliant) => (int)Math.Ceiling((double)noOfCompliant / Size * 100);
+    private int CalculatePercentage(int noOfCompliant) => (int)Math.Ceiling((double)noOfCompliant / Size * 100);
 
-    static int CalculateScore(int percentage) => percentage switch
+    private static int CalculateScore(int percentage) => percentage switch
     {
         >= 91 => 5,
         >= 81 => 4,

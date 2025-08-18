@@ -12,7 +12,6 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
     public static readonly EnrolmentStatus ArchivedStatus = new Archived();
     public static readonly EnrolmentStatus DormantStatus = new Dormant();
 
-
     public static IReadOnlyCollection<EnrolmentStatus> ActiveList =>
         List.Where(e => e.ParticipantIsActive())
         .ToList();

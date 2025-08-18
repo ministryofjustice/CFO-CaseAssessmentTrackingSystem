@@ -72,7 +72,6 @@ public interface IApplicationDbContext
 
     DbSet<DocumentAuditTrail> DocumentAuditTrails { get; }
 
-
     DbSet<HubInduction> HubInductions { get; }
 
     DbSet<WingInduction> WingInductions { get; }

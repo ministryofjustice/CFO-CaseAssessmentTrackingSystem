@@ -30,7 +30,6 @@ public class PRI : BaseAuditableEntity<Guid>
     public string? ReasonParticipantDidNotAttendInPerson { get; private set; }
     public string? PostReleaseCommunitySupportInformation { get; private set; }
 
-
     public virtual Participant? Participant { get; private set; }
 
     public int CustodyLocationId { get; private set; }

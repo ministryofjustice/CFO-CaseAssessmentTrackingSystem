@@ -7,33 +7,33 @@ using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Domain.Common.Enums;
 using FluentValidation;
 
-namespace Cfo.Cats.Server.UI.Pages.Participants.Components
+namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
+
+public partial class Inductions
 {
-    public partial class Inductions
+    [Inject]
+    private ILocationService LocationService { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public string ParticipantId { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public bool ParticipantIsActive { get; set; } = default!;
+
+    [CascadingParameter]
+    public UserProfile? CurrentUser { get; set; }
+
+    private HubInductionDto[]? HubInductions { get; set; }
+    private LocationDto[] HubLocations { get; set; } = [];
+
+    public WingInductionDto[] WingInductions { get; set; } = [];
+    private LocationDto[] WingLocations { get; set; } = [];
+
+    protected override async Task OnInitializedAsync() => await OnRefresh();
+
+    public async Task AddHubInduction()
     {
-        [Inject]
-        private ILocationService LocationService { get; set; } = default!;
-
-        [Parameter, EditorRequired]
-        public string ParticipantId { get; set; } = default!;
-
-        [Parameter, EditorRequired]
-        public bool ParticipantIsActive { get; set; } = default!;
-
-        [CascadingParameter]
-        public UserProfile? CurrentUser { get; set; }
-
-        private HubInductionDto[]? HubInductions { get; set; }
-        private LocationDto[] HubLocations { get; set; } = [];
-
-        public WingInductionDto[] WingInductions { get; set; } = [];
-        private LocationDto[] WingLocations { get; set; } = [];
-
-        protected override async Task OnInitializedAsync() => await OnRefresh();
-
-        public async Task AddHubInduction()
-        {
-            var parameters = new DialogParameters<AddHubInductionDialog>
+        var parameters = new DialogParameters<AddHubInductionDialog>
         {
             { x => x.Model, new AddHubInduction.Command()
             {
@@ -43,22 +43,22 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components
             { x => x.Locations, this.HubLocations }
         };
 
-            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
-            var dialog = await DialogService.ShowAsync<AddHubInductionDialog>
-                ("Add a Hub Induction", parameters, options);
+        var dialog = await DialogService.ShowAsync<AddHubInductionDialog>
+            ("Add a Hub Induction", parameters, options);
 
-            var state = await dialog.Result;
+        var state = await dialog.Result;
 
-            if (!state!.Canceled)
-            {
-                await OnRefresh();
-            }
-        }
-
-        public async Task AddWingInduction()
+        if (!state!.Canceled)
         {
-            var parameters = new DialogParameters<AddWingInductionDialog>
+            await OnRefresh();
+        }
+    }
+
+    public async Task AddWingInduction()
+    {
+        var parameters = new DialogParameters<AddWingInductionDialog>
         {
             { x => x.Model, new AddWingInduction.Command()
             {
@@ -68,22 +68,22 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components
             { x => x.Locations, this.WingLocations }
         };
 
-            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
-            var dialog = await DialogService.ShowAsync<AddWingInductionDialog>
-                ("Add a Wing Induction", parameters, options);
+        var dialog = await DialogService.ShowAsync<AddWingInductionDialog>
+            ("Add a Wing Induction", parameters, options);
 
-            var state = await dialog.Result;
+        var state = await dialog.Result;
 
-            if (!state!.Canceled)
-            {
-                await OnRefresh();
-            }
-        }
-
-        private async Task AddPhase(WingInductionDto induction)
+        if (!state!.Canceled)
         {
-            var parameters = new DialogParameters<AddInductionPhaseDialog>()
+            await OnRefresh();
+        }
+    }
+
+    private async Task AddPhase(WingInductionDto induction)
+    {
+        var parameters = new DialogParameters<AddInductionPhaseDialog>()
         {
             {
                 x => x.Model, new AddInductionPhase.Command()
@@ -98,28 +98,28 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components
             }
         };
 
-            var options = new DialogOptions()
-            {
-                CloseButton = true,
-                MaxWidth = MaxWidth.Small,
-                FullWidth = true
-            };
-            var dialog = await DialogService.ShowAsync<AddInductionPhaseDialog>
-                ("Add a Wing Phase", parameters, options);
-
-            var state = await dialog.Result;
-
-            if (!state!.Canceled)
-            {
-                await OnRefresh();
-            }
-        }
-
-        private async Task CompletePhase(WingInductionDto induction)
+        var options = new DialogOptions()
         {
-            DateTime earliestCompletionDate = induction.Phases.Max(x => x.StartDate);
+            CloseButton = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+        var dialog = await DialogService.ShowAsync<AddInductionPhaseDialog>
+            ("Add a Wing Phase", parameters, options);
 
-            var parameters = new DialogParameters<CompletePhaseDialog>()
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            await OnRefresh();
+        }
+    }
+
+    private async Task CompletePhase(WingInductionDto induction)
+    {
+        DateTime earliestCompletionDate = induction.Phases.Max(x => x.StartDate);
+
+        var parameters = new DialogParameters<CompletePhaseDialog>()
         {
             {
                 x => x.Model, new CompleteInductionPhase.Command()
@@ -134,28 +134,28 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components
             }
         };
 
-            var options = new DialogOptions()
-            {
-                CloseButton = true,
-                MaxWidth = MaxWidth.Small,
-                FullWidth = true
-            };
-            var dialog = await DialogService.ShowAsync<CompletePhaseDialog>
-                ("Complete Wing Phase", parameters, options);
-
-            var state = await dialog.Result;
-
-            if (!state!.Canceled)
-            {
-                await OnRefresh();
-            }
-        }
-
-        private async Task AbandonPhase(WingInductionDto induction)
+        var options = new DialogOptions()
         {
-            DateTime earliestCompletionDate = induction.Phases.Max(x => x.StartDate);
+            CloseButton = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+        var dialog = await DialogService.ShowAsync<CompletePhaseDialog>
+            ("Complete Wing Phase", parameters, options);
 
-            var parameters = new DialogParameters<AbandonPhaseDialog>()
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            await OnRefresh();
+        }
+    }
+
+    private async Task AbandonPhase(WingInductionDto induction)
+    {
+        DateTime earliestCompletionDate = induction.Phases.Max(x => x.StartDate);
+
+        var parameters = new DialogParameters<AbandonPhaseDialog>()
         {
             {
                 x => x.Model, new AbandonInductionPhase.Command()
@@ -173,43 +173,42 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components
             }
         };
 
-            var options = new DialogOptions()
-            {
-                CloseButton = true,
-                MaxWidth = MaxWidth.Small,
-                FullWidth = true
-            };
-
-            var dialog = await DialogService.ShowAsync<AbandonPhaseDialog>
-                ("Abandon Wing Phase", parameters, options);
-
-            var state = await dialog.Result;
-
-            if (!state!.Canceled)
-            {
-                await OnRefresh();
-            }
-        }
-
-        private async Task OnRefresh()
+        var options = new DialogOptions()
         {
-            var mediator = GetNewMediator();
-            var hubQuery = new GetInductionsByParticipantId.Query()
-            {
-                ParticipantId = ParticipantId
-            };
+            CloseButton = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
 
-            var results = await mediator.Send(hubQuery);
+        var dialog = await DialogService.ShowAsync<AbandonPhaseDialog>
+            ("Abandon Wing Phase", parameters, options);
 
-            if (results.Succeeded)
-            {
-                HubInductions = results.Data!.HubInductions;
-                WingInductions = results.Data!.WingInductions;
-            }
-            var locations = LocationService.GetVisibleLocations(CurrentUser?.TenantId ?? string.Empty)
-                .ToArray();
-            HubLocations = locations.Where(x => x.LocationType.IsHub).ToArray();
-            WingLocations = locations.Where(x => x.LocationType == LocationType.Wing).ToArray();
+        var state = await dialog.Result;
+
+        if (!state!.Canceled)
+        {
+            await OnRefresh();
         }
+    }
+
+    private async Task OnRefresh()
+    {
+        var mediator = GetNewMediator();
+        var hubQuery = new GetInductionsByParticipantId.Query()
+        {
+            ParticipantId = ParticipantId
+        };
+
+        var results = await mediator.Send(hubQuery);
+
+        if (results.Succeeded)
+        {
+            HubInductions = results.Data!.HubInductions;
+            WingInductions = results.Data!.WingInductions;
+        }
+        var locations = LocationService.GetVisibleLocations(CurrentUser?.TenantId ?? string.Empty)
+            .ToArray();
+        HubLocations = locations.Where(x => x.LocationType.IsHub).ToArray();
+        WingLocations = locations.Where(x => x.LocationType == LocationType.Wing).ToArray();
     }
 }

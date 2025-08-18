@@ -41,7 +41,9 @@ internal sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> log
         if (exception is not ServerException && exception.InnerException != null)
         {
             while (exception.InnerException != null)
+            {
                 exception = exception.InnerException;
+            }
         }
         return exception switch
         {

@@ -45,7 +45,6 @@ public class InductionPayment
 
     public required DateTime PaymentPeriod { get; set; }
 
-
     public static InductionPayment CreatePayableInductionPayment(HubInduction induction, DateTime enrolmentApprovalDate)
     {
         var dates = new[]
@@ -109,7 +108,6 @@ public class InductionPayment
             induction.InductionDate,
             new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)
         };
-
 
         return new InductionPayment()
         {

@@ -27,7 +27,6 @@ public record ContractTargetDto
         };
     }
 
-
     [SetsRequiredMembers]
     public ContractTargetDto(string contract, int prison, int community, int wings, int hubs, int preReleaseSupport, int throughTheGate, int supportWork,  int humanCitizenship, int communityAndSocial, int interventions, int employment, int trainingAndEducation)
     {

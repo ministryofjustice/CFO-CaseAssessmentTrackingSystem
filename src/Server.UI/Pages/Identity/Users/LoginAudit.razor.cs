@@ -2,7 +2,6 @@
 using Cfo.Cats.Application.Features.Identity.Queries.PaginationQuery;
 using Cfo.Cats.Application.Features.Identity.Specifications;
 
-
 namespace Cfo.Cats.Server.UI.Pages.Identity.Users;
 
 public partial class LoginAudit : CatsComponentBase

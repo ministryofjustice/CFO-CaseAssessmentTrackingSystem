@@ -15,7 +15,7 @@ public static class GetActivePRIsByUserId
         public PRIAdvancedSpecification Specification => new(this);
     }
 
-    class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, PaginatedData<PRIPaginationDto>>
+    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, PaginatedData<PRIPaginationDto>>
     {
         public async Task<PaginatedData<PRIPaginationDto>> Handle(Query request, CancellationToken cancellationToken)
         {
