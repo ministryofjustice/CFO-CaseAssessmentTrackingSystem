@@ -97,12 +97,30 @@
                     E
                 </MudAvatar> 
                 <MudText Typo="Typo.subtitle1" id="participant-journey-label">
-                    @Command.GetMemberDescription(x => x.SupportsJourneyAndAlignsWithDoS)
+                    @Command.GetMemberDescription(x => x.SupportsJourney)
                 </MudText>
             </MudStack>
         </MudItem>
         <MudItem xs="12" md="4" Class="d-flex align-center">
-            <MudRadioGroup @bind-Value="Command.SupportsJourneyAndAlignsWithDoS" For="@(() => Command.SupportsJourneyAndAlignsWithDoS)">
+            <MudRadioGroup @bind-Value="Command.SupportsJourney" For="@(() => Command.SupportsJourney)">
+                <MudRadio Value="@DipSampleAnswer.Yes">@DipSampleAnswer.Yes.Name</MudRadio>
+                <MudRadio Value="@DipSampleAnswer.No">@DipSampleAnswer.No.Name</MudRadio>
+                <MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>
+            </MudRadioGroup>
+        </MudItem>
+
+        <MudItem xs="12" md="8">
+            <MudStack Row="true" AlignItems="AlignItems.Center">
+                <MudAvatar Size="Size.Medium" Color="@Color.Primary">
+                    F
+                </MudAvatar>
+                <MudText Typo="Typo.subtitle1" id="participant-journey-label">
+                    @Command.GetMemberDescription(x => x.AlignsWithDoS)
+                </MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="12" md="4" Class="d-flex align-center">
+            <MudRadioGroup @bind-Value="Command.AlignsWithDoS" For="@(() => Command.AlignsWithDoS)">
                 <MudRadio Value="@DipSampleAnswer.Yes">@DipSampleAnswer.Yes.Name</MudRadio>
                 <MudRadio Value="@DipSampleAnswer.No">@DipSampleAnswer.No.Name</MudRadio>
                 <MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>

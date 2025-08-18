@@ -43,7 +43,8 @@ public static class GetOutcomeQualityDipSampleParticipant
                     ShowsTaskProgression = dsp.ShowsTaskProgression,
                     ActivitiesLinkToTasks = dsp.ActivitiesLinkToTasks,
                     TTGDemonstratesGoodPRIProcess = dsp.TTGDemonstratesGoodPRIProcess,
-                    SupportsJourneyAndAlignsWithDoS = dsp.SupportsJourneyAndAlignsWithDoS,
+                    SupportsJourney = dsp.SupportsJourney,
+                    AlignsWithDoS = dsp.AlignsWithDoS,
                     CpmAnswer = dsp.CpmIsCompliant,
                     CpmComments = dsp.CpmComments,
                     DipSampleStatus = dp.Status

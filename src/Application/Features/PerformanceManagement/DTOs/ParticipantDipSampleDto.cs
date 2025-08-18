@@ -29,8 +29,8 @@ public class ParticipantDipSampleDto
     public DipSampleAnswer ShowsTaskProgression { get; set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer ActivitiesLinkToTasks { get; set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer TTGDemonstratesGoodPRIProcess { get; set; } = DipSampleAnswer.NotAnswered;
-    public DipSampleAnswer SupportsJourneyAndAlignsWithDoS { get; set; } = DipSampleAnswer.NotAnswered;
-    
+    public DipSampleAnswer SupportsJourney { get; set; } = DipSampleAnswer.NotAnswered;
+    public DipSampleAnswer AlignsWithDoS { get; set; } = DipSampleAnswer.NotAnswered;
 
     public required ComplianceAnswer CpmAnswer { get; init; }
     public string? CpmComments { get; init; }

@@ -29,8 +29,9 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
     public DipSampleAnswer ShowsTaskProgression { get; private set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer ActivitiesLinkToTasks { get; private set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer TTGDemonstratesGoodPRIProcess { get; private set; } = DipSampleAnswer.NotAnswered;
-    public DipSampleAnswer SupportsJourneyAndAlignsWithDoS { get; private set; } = DipSampleAnswer.NotAnswered;
-    
+    public DipSampleAnswer SupportsJourney { get; private set; } = DipSampleAnswer.NotAnswered;
+    public DipSampleAnswer AlignsWithDoS { get; private set; } = DipSampleAnswer.NotAnswered;
+
     public ComplianceAnswer CsoIsCompliant { get; private set; } = ComplianceAnswer.NotAnswered;
     public DateTime? CsoReviewedOn { get; private set; }
     public string? CsoReviewedBy { get; private set; }
@@ -52,7 +53,8 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
         DipSampleAnswer taskProgression,
         DipSampleAnswer linksToTasks,
         DipSampleAnswer ttgDemonstratesGoodPRIProcess,
-        DipSampleAnswer supportsJourneyAndAlignsWithDos,
+        DipSampleAnswer supportsJourney,
+        DipSampleAnswer alignsWithDoS,
         ComplianceAnswer isCompliant,
         string comments,
         string reviewBy,
@@ -70,7 +72,8 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
         ShowsTaskProgression = taskProgression;
         ActivitiesLinkToTasks = linksToTasks;
         TTGDemonstratesGoodPRIProcess = ttgDemonstratesGoodPRIProcess;
-        SupportsJourneyAndAlignsWithDoS = supportsJourneyAndAlignsWithDos;
+        SupportsJourney = supportsJourney;
+        AlignsWithDoS = alignsWithDoS;
         CsoIsCompliant = isCompliant;
         CsoComments = comments;
         CsoReviewedBy = reviewBy;

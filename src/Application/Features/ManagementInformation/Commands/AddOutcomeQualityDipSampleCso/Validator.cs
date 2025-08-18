@@ -45,10 +45,14 @@ public class Validator : AbstractValidator<Command>
             .Must(x => x.IsAnswer)
             .WithMessage("Must be answered");
         
-        RuleFor(x => x.SupportsJourneyAndAlignsWithDoS)
+        RuleFor(x => x.SupportsJourney)
             .Must(x => x.IsAnswer)
             .WithMessage("Must be answered");
-        
+
+        RuleFor(x => x.AlignsWithDoS)
+            .Must(x => x.IsAnswer)
+            .WithMessage("Must be answered");
+
         RuleFor(x => x.Comments)
             .NotEmpty()
             .WithMessage("Comments are required")
