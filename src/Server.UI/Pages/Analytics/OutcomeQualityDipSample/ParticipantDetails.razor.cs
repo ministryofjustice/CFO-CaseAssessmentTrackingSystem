@@ -107,7 +107,8 @@ public partial class ParticipantDetails
                         ShowsTaskProgression = _participant.ShowsTaskProgression,
                         ActivitiesLinkToTasks = _participant.ActivitiesLinkToTasks,
                         TTGDemonstratesGoodPRIProcess = _participant.TTGDemonstratesGoodPRIProcess,
-                        SupportsJourneyAndAlignsWithDoS = _participant.SupportsJourneyAndAlignsWithDoS,
+                        SupportsJourney = _participant.SupportsJourney,
+                        AlignsWithDoS = _participant.AlignsWithDoS
                     };
                 }
                 else

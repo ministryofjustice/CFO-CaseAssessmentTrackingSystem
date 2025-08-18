@@ -23,8 +23,11 @@ public record Command : IRequest<Result>
     [Description("If applicable, does the TTG objective and commencement of work against the tasks show good demonstration of the PRI process?")]
     public DipSampleAnswer TTGDemonstratesGoodPRIProcess { get; set; } = DipSampleAnswer.NotAnswered;
 
-    [Description("If applicable, do Human Citizenship, Community Social and Intervention Services link to the participant story/journey, do they link to the DoS and do they demonstrate good quality outcomes including VFM?")]
-    public DipSampleAnswer SupportsJourneyAndAlignsWithDoS { get; set; } = DipSampleAnswer.NotAnswered;
+    [Description("If applicable, do Human Citizenship, Community Social and Intervention Services link to the participant story/journey?")]
+    public DipSampleAnswer SupportsJourney { get; set; } = DipSampleAnswer.NotAnswered;
+
+    [Description("If applicable, do Human Citizenship, Community Social and Intervention Services link to the DoS and demonstrate good quality outcomes including VFM?")]
+    public DipSampleAnswer AlignsWithDoS { get; set; } = DipSampleAnswer.NotAnswered;
 
     [Description("Comments")]
     public string? Comments { get; set; }
