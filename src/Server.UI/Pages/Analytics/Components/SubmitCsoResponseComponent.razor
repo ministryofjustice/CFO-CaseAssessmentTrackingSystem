@@ -1,9 +1,25 @@
 @using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.ManagementInformation.Commands.AddOutcomeQualityDipSampleCso
+@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
-<MudForm @ref="_form" Model="Command" Validation="@(Validator.ValidateValue(Command))" Class="ma-2">
-    <MudGrid >
-        
+
+@attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
+
+@inject IAuthorizationService AuthorizationService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@inherits CatsComponentBase
+
+
+@if (Status != DipSampleStatus.AwaitingReview)
+{
+    <MudAlert Severity="Severity.Info">
+        This information is now readonly because the sample is at the @Status.Name stage.
+    </MudAlert>
+}
+
+<MudForm @ref="_form" Model="Command" Validation="@(Validator.ValidateValue(Command))" Class="ma-2" ReadOnly="ReadOnly">
+    <MudGrid>
         <MudItem xs="12" md="8">
             <MudStack Row="true" AlignItems="AlignItems.Center">
                 <MudAvatar Size="Size.Medium" Color="@Color.Primary">
@@ -19,7 +35,6 @@
             <MudRadioGroup @bind-Value="Command.HasClearParticipantJourney" For="@(() => Command.HasClearParticipantJourney)">
                 <MudRadio Value="@DipSampleAnswer.Yes">@DipSampleAnswer.Yes.Name</MudRadio>
                 <MudRadio Value="@DipSampleAnswer.No">@DipSampleAnswer.No.Name</MudRadio>
-                <MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>
             </MudRadioGroup>
         </MudItem>
 
@@ -37,7 +52,6 @@
             <MudRadioGroup @bind-Value="Command.ShowsTaskProgression" For="@(() => Command.ShowsTaskProgression)">
                 <MudRadio Value="@DipSampleAnswer.Yes">@DipSampleAnswer.Yes.Name</MudRadio>
                 <MudRadio Value="@DipSampleAnswer.No">@DipSampleAnswer.No.Name</MudRadio>
-                <MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>
             </MudRadioGroup>
         </MudItem>
 
@@ -47,15 +61,14 @@
                     C
                 </MudAvatar>            
                 <MudText Typo="Typo.subtitle1" id="participant-journey-label">
-                    @Command.GetMemberDescription(x => x.ActivitiesLinkToTask)
+                    @Command.GetMemberDescription(x => x.ActivitiesLinkToTasks)
                 </MudText>
             </MudStack>
         </MudItem>
         <MudItem xs="12" md="4" Class="d-flex align-center">
-            <MudRadioGroup @bind-Value="Command.ActivitiesLinkToTask" For="@(() => Command.ActivitiesLinkToTask)">
+            <MudRadioGroup @bind-Value="Command.ActivitiesLinkToTasks" For="@(() => Command.ActivitiesLinkToTasks)">
                 <MudRadio Value="@DipSampleAnswer.Yes">@DipSampleAnswer.Yes.Name</MudRadio>
                 <MudRadio Value="@DipSampleAnswer.No">@DipSampleAnswer.No.Name</MudRadio>
-                <MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>
             </MudRadioGroup>
         </MudItem>
 
@@ -95,25 +108,6 @@
                 <MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>
             </MudRadioGroup>
         </MudItem>
-
-        <MudItem xs="12" md="8">
-            <MudStack Row="true" AlignItems="AlignItems.Center">
-                <MudAvatar Size="Size.Medium" Color="@Color.Primary">
-                    F
-                </MudAvatar> 
-                <MudText Typo="Typo.subtitle1" id="participant-journey-label">
-                    @Command.GetMemberDescription(x => x.TemplatesAlignWithREG)
-                </MudText>
-            </MudStack>
-           
-        </MudItem>
-        <MudItem xs="12" md="4" Class="d-flex align-center">
-            <MudRadioGroup @bind-Value="Command.TemplatesAlignWithREG" For="@(() => Command.TemplatesAlignWithREG)">
-                <MudRadio Value="@DipSampleAnswer.Yes">@DipSampleAnswer.Yes.Name</MudRadio>
-                <MudRadio Value="@DipSampleAnswer.No">@DipSampleAnswer.No.Name</MudRadio>
-                <MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>
-            </MudRadioGroup>
-        </MudItem>
         
         <MudItem xs="12" md="3">
             <MudText Typo="Typo.subtitle1">
@@ -124,16 +118,11 @@
             <MudTextField Label=""
                           @bind-Value="@Command.Comments"
                           For="@(() => Command.Comments)"
-                          ReadOnly="false"
-                          Required="true"
-                          RequiredError="Comments is required!"
                           Lines="5"
                           MaxLength=@ValidationConstants.NotesLength
+                          Counter=@ValidationConstants.NotesLength
                           Immediate="true"> 
             </MudTextField>
-            <MudText Color="Color.Secondary">
-                Characters: @(Command.Comments?.Length ?? 0) / @ValidationConstants.NotesLength
-            </MudText>
         </MudItem>
 
         <MudItem xs="12" md="8">
@@ -156,26 +145,8 @@
         </MudItem>
         
         <MudItem xs="12">
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="OnSubmit">Submit</MudButton>
+            <MudButton Disabled="@ReadOnly" Variant="Variant.Outlined" Color="Color.Primary" OnClick="OnSubmit">Submit</MudButton>
         </MudItem>
+        
     </MudGrid>
 </MudForm>
-
-
-@code {
-
-    private MudForm _form = null!;
-
-    [Parameter] [EditorRequired]  public EventCallback<Command> OnFormSubmit { get; set; }
-    [Parameter] [EditorRequired] public Command Command { get; set; } = null!;
-
-    private async Task OnSubmit()
-    {
-        await _form.Validate();
-        if (_form.IsValid)
-        {
-            await OnFormSubmit.InvokeAsync(Command);
-        }
-    }
-
-}

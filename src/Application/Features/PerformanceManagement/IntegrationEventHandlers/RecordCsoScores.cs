@@ -17,7 +17,7 @@ public class RecordCsoScores(IUnitOfWork unitOfWork) : IHandleMessages<OutcomeQu
 
         if (participants.All(a => a.IsAnswer))
         {
-            dipSample.Complete(message.ReviewBy, participants.Count(p => p.IsAccepted));
+            dipSample.Review(message.ReviewBy, participants.Count(p => p.IsAccepted));
             await unitOfWork.SaveChangesAsync(CancellationToken.None);
         }
     }

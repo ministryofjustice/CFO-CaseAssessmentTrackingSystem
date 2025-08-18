@@ -1,9 +1,10 @@
-﻿using Cfo.Cats.Application.Features.ManagementInformation.DTOs;
+﻿using Cfo.Cats.Application.Features.ManagementInformation.Commands;
+using Cfo.Cats.Application.Features.ManagementInformation.DTOs;
 using Cfo.Cats.Application.Features.ManagementInformation.Queries;
 
-namespace Cfo.Cats.Server.UI.Pages.Analytics;
+namespace Cfo.Cats.Server.UI.Pages.Analytics.OutcomeQualityDipSample;
 
-public partial class OutcomeQualityDipSample
+public partial class DipSample
 {
     private bool _loading;
     private bool _downloading;
@@ -20,7 +21,7 @@ public partial class OutcomeQualityDipSample
 
     GetOutcomeQualityDipSampleParticipants.Query Query { get; set; } = default!;
 
-    DipSampleSummaryDto sample = default!;
+    DipSampleSummaryDto? _sample;
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,7 +45,7 @@ public partial class OutcomeQualityDipSample
                 return;
             }
 
-            sample = result.Data;
+            _sample = result.Data;
         }
         finally
         {
@@ -95,6 +96,40 @@ public partial class OutcomeQualityDipSample
         finally
         {
             _downloading = false;
+        }
+    }
+
+    private async Task OnVerify()
+    {
+        try
+        {
+            _loading = true;
+
+            var command = new VerifyOutcomeQualityDipSample.Command()
+            {
+                SampleId = SampleId
+            };
+
+            var result = await GetNewMediator().Send(command);
+
+            if (IsDisposed)
+            {
+                return;
+            }
+
+            if (result is { Succeeded: false })
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add("Verification submitted.");
+            }
+            await RefreshAsync();
+        }
+        finally
+        {
+            _loading = false;
         }
     }
 }

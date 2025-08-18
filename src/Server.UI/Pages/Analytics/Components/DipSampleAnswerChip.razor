@@ -1,0 +1,28 @@
+﻿@using Cfo.Cats.Domain.Common.Enums
+
+<MudChip T="string" Icon="@Details.Icon" Color="@Details.Colour" Size="Size.Small" Disabled="@Details.Disabled">
+    @if(string.IsNullOrEmpty(Prefix) is false)
+    {
+        @($"{Prefix} ")
+    }
+
+    @Answer.Name
+
+</MudChip>
+
+@code {
+    [Parameter, EditorRequired]
+    public required ComplianceAnswer Answer { get; set; }
+
+    [Parameter]
+    public string? Prefix { get; set; }
+
+    (string Icon, Color Colour, bool Disabled) Details => Answer switch
+    {
+        var a when a == ComplianceAnswer.Unsure => (Icons.Material.Filled.WarningAmber, Color.Warning, a.IsAuto),
+        { IsAnswer: false } => (Icons.Material.Filled.Pending, Color.Default, false),
+        { IsAccepted: true } a => (Icons.Material.Filled.CheckCircle, Color.Success, a.IsAuto),
+        { IsAccepted: false } a => (Icons.Material.Filled.ErrorOutline, Color.Error, a.IsAuto),
+        var a => (Icons.Material.Filled.ErrorOutline, Color.Error, true)
+    };
+}

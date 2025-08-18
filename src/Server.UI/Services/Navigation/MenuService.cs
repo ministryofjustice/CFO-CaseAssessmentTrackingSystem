@@ -87,7 +87,7 @@ public class MenuService : IMenuService
                                 Title = "Outcome Quality",
                                 Href = "/pages/analytics/outcome-quality-dip-sampling",
                                 PageStatus = PageStatus.Completed,
-                                Roles = [RoleNames.SystemSupport, RoleNames.SMT, RoleNames.PerformanceManager],
+                                Roles = [RoleNames.SystemSupport, RoleNames.SMT, RoleNames.PerformanceManager, RoleNames.CSO, RoleNames.CPM, RoleNames.CMPSM],
                             }
                         ]
                     },                  

@@ -5,7 +5,7 @@ public static class Theme
     /// <summary>
     /// The default primary colour for the site.
     /// </summary>
-    public const string DefaultPrimaryColour = "#722660";
+    public const string DefaultPrimaryColour = "#6E3562";
 
     public static MudTheme ApplicationTheme(string primaryColour)
     {

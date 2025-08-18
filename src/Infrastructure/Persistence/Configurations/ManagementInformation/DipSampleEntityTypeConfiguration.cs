@@ -20,7 +20,7 @@ public class DipSampleEntityTypeConfiguration : IEntityTypeConfiguration<Outcome
 
         builder.HasOne<ApplicationUser>()
             .WithMany()
-            .HasForeignKey(ds => ds.CompletedBy);
+            .HasForeignKey(ds => ds.ReviewedBy);
 
         builder.HasOne<Contract>()
             .WithMany()

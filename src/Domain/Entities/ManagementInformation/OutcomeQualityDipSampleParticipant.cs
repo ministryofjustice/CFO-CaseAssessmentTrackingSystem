@@ -1,4 +1,4 @@
-using Cfo.Cats.Domain.Common.Entities;
+﻿using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Events;
 
@@ -29,7 +29,6 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
     public DipSampleAnswer ShowsTaskProgression { get; private set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer ActivitiesLinkToTasks { get; private set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer TTGDemonstratesGoodPRIProcess { get; private set; } = DipSampleAnswer.NotAnswered;
-    public DipSampleAnswer TemplatesAlignWithREG { get; private set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer SupportsJourneyAndAlignsWithDoS { get; private set; } = DipSampleAnswer.NotAnswered;
     
     public ComplianceAnswer CsoIsCompliant { get; private set; } = ComplianceAnswer.NotAnswered;
@@ -54,7 +53,6 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
         DipSampleAnswer taskProgression,
         DipSampleAnswer linksToTasks,
         DipSampleAnswer ttgDemonstratesGoodPRIProcess,
-        DipSampleAnswer alignsWithReg,
         DipSampleAnswer supportsJourneyAndAlignsWithDos,
         ComplianceAnswer isCompliant,
         string comments,
@@ -73,7 +71,6 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
         ShowsTaskProgression = taskProgression;
         ActivitiesLinkToTasks = linksToTasks;
         TTGDemonstratesGoodPRIProcess = ttgDemonstratesGoodPRIProcess;
-        TemplatesAlignWithREG = alignsWithReg;
         SupportsJourneyAndAlignsWithDoS = supportsJourneyAndAlignsWithDos;
         CsoIsCompliant = isCompliant;
         CsoComments = comments;
@@ -85,7 +82,34 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
         return this;
     }
 
+    public OutcomeQualityDipSampleParticipant CpmAnswer(
+        ComplianceAnswer isCompliant,
+        string comments,
+        string reviewBy,
+        DateTime reviewedOn)
+    {
+        CpmIsCompliant = isCompliant;
+        CpmComments = comments;
+        CpmReviewedBy = reviewBy;
+        CpmReviewedOn = reviewedOn;
+
+        return this;
+    }
+
+    public OutcomeQualityDipSampleParticipant FinalAnswer(
+        ComplianceAnswer isCompliant,
+        string comments,
+        string reviewedBy,
+        DateTime reviewedOn
+    )
+    {
+        //TODO: Add validation around here
+        FinalIsCompliant = isCompliant;
+        FinalComments = comments;
+        FinalReviewedBy = reviewedBy;
+        FinalReviewedOn = reviewedOn;
+
+        return this;
+    }
 
 }
-
-

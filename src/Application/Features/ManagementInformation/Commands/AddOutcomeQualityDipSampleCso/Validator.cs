@@ -20,20 +20,28 @@ public class Validator : AbstractValidator<Command>
         RuleFor(x => x.HasClearParticipantJourney)
             .Must(x => x.IsAnswer)
             .WithMessage("Must be answered");
-        
+
+        RuleFor(x => x.HasClearParticipantJourney)
+            .Must(x => x == DipSampleAnswer.NotApplicable == false)
+            .WithMessage("Not applicable is not a valid answer for this question");
+
         RuleFor(x => x.ShowsTaskProgression)
             .Must(x => x.IsAnswer)
             .WithMessage("Must be answered");
 
-        RuleFor(x => x.ActivitiesLinkToTask)
+        RuleFor(x => x.ShowsTaskProgression)
+            .Must(x => x == DipSampleAnswer.NotApplicable == false)
+            .WithMessage("Not applicable is not a valid answer for this question");
+
+        RuleFor(x => x.ActivitiesLinkToTasks)
+            .Must(x => x == DipSampleAnswer.NotApplicable == false)
+            .WithMessage("Not applicable is not a valid answer for this question");
+
+        RuleFor(x => x.ActivitiesLinkToTasks)
             .Must(x => x.IsAnswer)
             .WithMessage("Must be answered");
 
         RuleFor(x => x.TTGDemonstratesGoodPRIProcess)
-            .Must(x => x.IsAnswer)
-            .WithMessage("Must be answered");
-
-        RuleFor(x => x.TemplatesAlignWithREG)
             .Must(x => x.IsAnswer)
             .WithMessage("Must be answered");
         
@@ -76,7 +84,7 @@ public class Validator : AbstractValidator<Command>
 
                     return true;
 
-                }).WithMessage("Cannot submit CSO review: {Reason}");
+                }).WithMessage("Cannot review: {Reason}");
 
         });
         

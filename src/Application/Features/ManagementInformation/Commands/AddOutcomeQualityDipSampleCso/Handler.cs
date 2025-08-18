@@ -12,9 +12,8 @@ internal class Handler(IUnitOfWork unitOfWork, IDateTime dateTime) : IRequestHan
         dip.CsoAnswer(
             clearJourney: request.HasClearParticipantJourney,
             taskProgression: request.ShowsTaskProgression,
-            linksToTasks: request.ActivitiesLinkToTask,
+            linksToTasks: request.ActivitiesLinkToTasks,
             ttgDemonstratesGoodPRIProcess: request.TTGDemonstratesGoodPRIProcess,
-            alignsWithReg: request.TemplatesAlignWithREG,
             supportsJourneyAndAlignsWithDos: request.SupportsJourneyAndAlignsWithDoS,
             isCompliant: request.ComplianceAnswer,
             comments: request.Comments!,

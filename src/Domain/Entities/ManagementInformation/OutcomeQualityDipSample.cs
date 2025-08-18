@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.ManagementInformation;
 
@@ -14,20 +15,47 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
         Id = Guid.CreateVersion7(),
         ContractId = contractId,
         CreatedOn = DateTime.UtcNow,
-        Status = DipSampleStatus.InProgress,
+        Status = DipSampleStatus.AwaitingReview,
         PeriodFrom = periodFrom,
         PeriodTo = periodTo,
         Size = size
     };
 
-    public OutcomeQualityDipSample Complete(string completedBy, int noOfCompliant = 0)
+    public OutcomeQualityDipSample Review(string reviewedBy, int noOfCompliant = 0)
     {
+        if (Status != DipSampleStatus.AwaitingReview)
+        {
+            throw new ApplicationException("Cannot review at this stage");
+        }
 
-        CompletedOn = DateTime.UtcNow;
-        CompletedBy = completedBy;
-        Status = DipSampleStatus.Completed;
+        ReviewedOn = DateTime.UtcNow;
+        ReviewedBy = reviewedBy;
+        Status = DipSampleStatus.Reviewed;
         SetCsoScores(noOfCompliant);
 
+        return this;
+    }
+
+    public OutcomeQualityDipSample Verify(string userId)
+    {
+        if (Status != DipSampleStatus.Reviewed)
+        {
+            throw new ApplicationException("Cannot verify at this stage");
+        }
+
+        Status = DipSampleStatus.Verifying;
+        AddDomainEvent(new OutcomeQualityDipSampleVerifyingDomainEvent(Id, userId, DateTime.UtcNow));
+        return this;
+    }
+
+    public OutcomeQualityDipSample MarkAsVerified(int noOfCompliant)
+    {
+        if (Status != DipSampleStatus.Verifying)
+        {
+            throw new ApplicationException("Cannot verify at this stage");
+        }
+        Status = DipSampleStatus.Verified;
+        SetCpmScores(noOfCompliant);
         return this;
     }
 
@@ -35,8 +63,8 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
     public DateTime CreatedOn { get; private set; }
     public DateTime PeriodFrom { get; private set; }
     public DateTime PeriodTo { get; private set; }
-    public DateTime? CompletedOn { get; private set; }
-    public string? CompletedBy { get; private set; }
+    public DateTime? ReviewedOn { get; private set; }
+    public string? ReviewedBy { get; private set; }
     public DipSampleStatus Status { get; private set; }
 
     /// <summary>
@@ -44,7 +72,6 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
     /// </summary>
     public int Size { get; private set; }
 
-    #region Calculated CSO properties
     /// <summary>
     /// Count of <see cref="ComplianceAnswer.Compliant"/> records marked by the CSO.
     /// </summary>
@@ -67,9 +94,6 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
         CsoScore = CalculateScore(CsoPercentage.Value);
     }
 
-    #endregion
-
-    #region Calculated CPM properties
     /// <summary>
     /// Count of <see cref="ComplianceAnswer.Compliant"/> or <see cref="ComplianceAnswer.AutoCompliant"/> records marked by the CSO/CPM.
     /// </summary>
@@ -84,7 +108,15 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
     /// Derived from <see cref="CpmPercentage"/>, ranges from <c>0</c> (lowest) to <c>5</c> (highest).
     /// </summary>
     public int? CpmScore { get; private set; }
-    #endregion
+
+    private OutcomeQualityDipSample SetCpmScores(int noOfCompliant)
+    {
+        CpmCompliant = noOfCompliant;
+        CpmPercentage = CalculatePercentage(noOfCompliant);
+        CpmScore = CalculateScore(CpmPercentage.Value);
+
+        return this;
+    }
 
     #region Calculated business (final) properties
     /// <summary>

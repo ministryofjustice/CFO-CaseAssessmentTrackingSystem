@@ -27,7 +27,7 @@
     }
 </style>
 
-<MudContainer Style="min-width: 480px; width: 100%;" MaxWidth="MaxWidth.ExtraExtraLarge">
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
     @if (_isLoading)
     {
         <MudLoading Text="Loading sample" Color="Color.Primary"/>
@@ -46,7 +46,7 @@
     {
         <CatsBreadcrumbs Items="@Items"></CatsBreadcrumbs>
 
-        <MudGrid Style="height: 100vh; width: 100%;">
+        <MudGrid>
             <MudItem xs="2">
                 <MudStack style="align-self: flex-start; position: sticky; top: 16px; width: 100%;" Class="mr-2" Wrap="Wrap.Wrap">
                     <MudTextField ReadOnly="true" Label="Participant Id" Value="_participant.ParticipantId"/>
@@ -60,28 +60,26 @@
                 </MudStack>
             </MudItem>
 
-            <MudItem xs="10" Style="height: 100%; width: 100%;">
+            <MudItem xs="10">
                 <MudTabs>
                     <MudTabPanel Text="Events">
-                        <div style="height: calc(100vh - 250px); overflow-y: auto;">
-                            <OutcomeQualityDipSampleTimelineComponent Participant="_participant"/>
-                        </div>
+                        <OutcomeQualityDipSampleTimelineComponent Participant="_participant"/>
                     </MudTabPanel>
                     <MudTabPanel Text="Details">
-                        <div style="height: calc(100vh - 250px); overflow-y: auto;">
-                            <OutcomeQualityDipSamplePathwayPlanComponent ParticipantId="@_participant.ParticipantId"/>
-                        </div>
+                        <OutcomeQualityDipSamplePathwayPlanComponent ParticipantId="@_participant.ParticipantId"/>
                     </MudTabPanel>
                     <MudTabPanel Text="Assessments">
-                        <div style="height: calc(100vh - 250px); overflow-y: auto;">
-                            <OutcomeQualityDipSampleAssessmentComponent ParticipantId="@_participant.ParticipantId" />
-                        </div>
+                        <OutcomeQualityDipSampleAssessmentComponent ParticipantId="@_participant.ParticipantId" />
                     </MudTabPanel>
-                    <MudTabPanel Text="Submission">
-                        <div style="height: calc(100vh - 250px); overflow-y: auto;">
-                            <SubmitCsoResponseComponent Command="@SubmitCommand" OnFormSubmit="CsoResponseSubmitted" />
-                        </div>
+                    <MudTabPanel Text="Review">
+                        <SubmitCsoResponseComponent Command="@SubmitCsoCommand" OnFormSubmit="CsoResponseSubmitted" Status="_participant.DipSampleStatus" />
                     </MudTabPanel>
+                    <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
+                        <MudTabPanel Text="Verification" Disabled="_participant.CsoAnswer.IsAnswer is false">
+                            <SubmitCpmResponseComponent Command="@SubmitCpmCommand" OnFormSubmit="CpmResponseSubmitted" />
+                        </MudTabPanel>
+                    </AuthorizeView>
+
                 </MudTabs>
             </MudItem>
         </MudGrid>
