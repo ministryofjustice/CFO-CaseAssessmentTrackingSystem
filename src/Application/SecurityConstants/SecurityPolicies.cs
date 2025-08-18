@@ -58,12 +58,22 @@ public static class SecurityPolicies
 
     public const string SystemSupportFunctions = nameof(SystemSupportFunctions);
     
+    /// <summary>
+    /// Used to allow users to view the outcome quality dip checks
+    /// </summary>
     public const string OutcomeQualityDipChecks = nameof(OutcomeQualityDipChecks);
 
+    /// <summary>
+    /// Used to allow uses to run initial reviews. Aligns with CSO role (though not limited to them)
+    /// </summary>
     public const string OutcomeQualityDipReview = nameof(OutcomeQualityDipReview);
 
+    /// <summary>
+    /// Used to allow a user to verify outcome quality dip samples. Aligns with CPM role (though not limited to them)
+    /// </summary>
     public const string OutcomeQualityDipVerification = nameof(OutcomeQualityDipVerification);
 
-    public const string OutcomeQualityDipSubmission = nameof(OutcomeQualityDipSubmission);
-
+    /// <summary>
+    /// Used to allow a user to finalise outcome quality dip samples. Aligns with CMPSM role (though not limited to them)    
+    public const string OutcomeQualityDipFinalise = nameof(OutcomeQualityDipFinalise);
 }

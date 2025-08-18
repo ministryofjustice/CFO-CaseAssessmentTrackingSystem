@@ -134,7 +134,7 @@ internal static class PolicyExtensions
             policy.RequireRole(RoleNames.CPM, RoleNames.SMT, RoleNames.SystemSupport);
         });
 
-        options.AddPolicy(SecurityPolicies.OutcomeQualityDipSubmission, policy => {
+        options.AddPolicy(SecurityPolicies.OutcomeQualityDipFinalise, policy => {
             policy.RequireAuthenticatedUser();
             policy.RequireRole(RoleNames.CMPSM, RoleNames.SMT, RoleNames.SystemSupport);
         });
