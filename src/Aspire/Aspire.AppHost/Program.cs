@@ -4,6 +4,10 @@ var sqlPassword = builder.AddParameter("sqlPassword", secret: true);
 var rabbitUser = builder.AddParameter("rabbitUser", secret: true);
 var rabbitPassword = builder.AddParameter("rabbitPassword", secret: true);
 
+var k8s = builder.AddKubernetesEnvironment("k8s");
+
+bool publishing = builder.ExecutionContext.IsPublishMode;
+
 #pragma warning disable ASPIREPROXYENDPOINTS001
 var sql = builder.AddSqlServer("sql", sqlPassword, 1433)
     .WithDataVolume("cats-aspire-data")
@@ -22,9 +26,19 @@ var rabbit = builder.AddRabbitMQ("rabbit",
     .WithManagementPlugin(port: 15672)
     .WithLifetime(ContainerLifetime.Persistent);
 
-builder.AddProject<Projects.Server_UI>("cats")
+var cats = builder.AddProject<Projects.Server_UI>("cats", configure: project =>
+    {
+        // Exclude launchSettings on publish
+        project.ExcludeLaunchProfile = publishing;
+    })
     .WithReference(catsDb)
     .WithReference(rabbit)
     .WaitFor(sql);
+
+if (publishing)
+{
+    cats.WithHttpEndpoint(port: 8080, targetPort: 8080)
+        .WithReplicas(3);
+}
 
 builder.Build().Run();

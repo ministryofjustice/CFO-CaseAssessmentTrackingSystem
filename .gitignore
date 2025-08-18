@@ -474,3 +474,6 @@ Files/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Aspire
+aspire-output/
