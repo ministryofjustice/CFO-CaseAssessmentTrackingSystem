@@ -6,7 +6,7 @@ HMPPS Creating Future Opportunities (CFO) utilise the Case Assessment and Tracki
 
 # Interfaces/Systems (Backend interface for surfacing the data to the front end)
 
-* Dotnet Core v8 - https://dotnet.microsoft.com/en-us/download
+* .NET 9 - https://dotnet.microsoft.com/en-us/download
 * ASP.NET Core
 
 # Mechanism (How does it communicate with other systems? Frequency of data pull/push, reporting, events etc) 
@@ -114,6 +114,51 @@ Chaining the commands together it is very easy to refresh your local database by
 
 ```
 
+# Publishing (preview)
 
+This repository uses [Aspire]("https://github.com/dotnet/aspire") for service composition (dependency injection, service discovery, and configuration management). 
 
+Aspire is also used to provide a Kubernetes publishing workflow that is currently in preview: container image build & push, and generation/packaging of Kubernetes manifests & Helm charts.
 
+Prerequisites
+- Docker (for image builds)
+- Access to a container registry (credentials configured)
+- kubectl and a valid kubeconfig with cluster access
+- Helm (for chart-based deployments)
+
+### Build and publish image
+```
+IMAGE_NAME=hmpps-cfo/cats
+TAG=latest
+REGISTRY=registry.mycorp.com:1234
+
+# Locally
+dotnet publish src/Server.UI/Server.UI.csproj \
+    --configuration Release \
+    --os linux \
+    --arch x64 \
+    --target:PublishContainer \
+    --property:ContainerRepository=$IMAGE_NAME \
+    --property:ContainerImageTag=$TAG
+
+# or to a remote registry (with the ContainerRegistry property)
+dotnet publish src/Server.UI/Server.UI.csproj \
+    --configuration Release \
+    --os linux \
+    --arch x64 \
+    --target:PublishContainer \
+    --property:ContainerRegistry=$REGISTRY \
+    --property:ContainerRepository=$IMAGE_NAME \
+    --property:ContainerImageTag=$TAG
+```
+
+### Generate Kubernetes manifests & Helm charts
+```
+dotnet aspire publish -o aspire-output
+```
+
+### Deploy (using Helm upgrade)
+```
+helm upgrade --install aspire ./aspire-output --namespace default \
+    --set parameters.cats.cats_image=$IMAGE
+```
