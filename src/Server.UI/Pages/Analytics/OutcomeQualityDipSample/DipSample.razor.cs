@@ -99,6 +99,36 @@ public partial class DipSample
         }
     }
 
+    private async Task OnReview()
+    {
+        try
+        {
+            _loading = true;
+
+            var command = new Application.Features.ManagementInformation.Commands.ReviewOutcomeQualityDipSample.Command() { SampleId = SampleId };
+            var result = await GetNewMediator().Send(command);
+
+            if (IsDisposed)
+            {
+                return;
+            }
+
+            if (result is { Succeeded: false })
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add("Review submitted");
+            }
+            await RefreshAsync();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
     private async Task OnVerify()
     {
         try
@@ -135,7 +165,15 @@ public partial class DipSample
 
     private async Task OnFinalise()
     {
-        //TODO: Implement this functionality
-        await Task.CompletedTask;
+        try
+        {
+            _loading = true;
+
+            await Task.CompletedTask;
+        }
+        finally
+        {
+            _loading = false;
+        }
     }
 }

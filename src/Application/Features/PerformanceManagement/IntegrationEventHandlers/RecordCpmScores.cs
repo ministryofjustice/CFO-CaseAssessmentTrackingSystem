@@ -42,7 +42,7 @@ public class RecordCpmScores(IUnitOfWork unitOfWork) : IHandleMessages<OutcomeQu
             }
         }
 
-        dipSample.MarkAsVerified(participants.Count(c => c.CpmIsCompliant.IsAccepted));
+        dipSample.Verified(participants.Count(c => c.CpmIsCompliant.IsAccepted));
 
         await unitOfWork.SaveChangesAsync();
     }

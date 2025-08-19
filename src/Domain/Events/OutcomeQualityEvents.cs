@@ -19,3 +19,13 @@ public sealed class OutcomeQualityDipSampleVerifyingDomainEvent(
     public string UserId { get; } = userId;
     public DateTime OccurredOn { get; } = occurredOn;
 }
+
+public sealed class OutcomeQualityDipSampleFinalisingDomainEvent(
+    Guid dipSampleId,
+    string userId,
+    DateTime occurredOn) : DomainEvent
+{
+    public Guid DipSampleId { get; } = dipSampleId;
+    public string UserId { get; } = userId;
+    public DateTime OccurredOn { get; } = occurredOn;
+}

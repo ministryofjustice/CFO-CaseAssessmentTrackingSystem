@@ -33,7 +33,6 @@ public class PaymentBackgroundService(IServiceProvider provider, IConfiguration 
             .Handle<RecordThroughTheGatePaymentConsumer>(provider)
             .Handle<RecordWingInductionPaymentConsumer>(provider)
             .Handle<RecordReassessmentPaymentConsumer>(provider)
-            .Handle<RecordCsoScores>(provider)
             .Handle<RecordCpmScores>(provider);
 
         _bus = Configure.With(_activator)
@@ -54,7 +53,6 @@ public class PaymentBackgroundService(IServiceProvider provider, IConfiguration 
         await _bus.Subscribe<PRIThroughTheGateCompletedIntegrationEvent>();
         await _bus.Subscribe<WingInductionCreatedIntegrationEvent>();
         await _bus.Subscribe<AssessmentScoredIntegrationEvent>();
-        await _bus.Subscribe<OutcomeQualityDipSampleCompletedIntegrationEvent>();
         await _bus.Subscribe<OutcomeQualityDipSampleVerifyingIntegrationEvent>();
     }
 

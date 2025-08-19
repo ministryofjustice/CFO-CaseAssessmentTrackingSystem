@@ -22,11 +22,7 @@ public class DipSampleParticipantEntityTypeConfiguration : IEntityTypeConfigurat
         builder.HasOne<Participant>()
             .WithMany()
             .HasForeignKey(dsp => dsp.ParticipantId);
-
-        builder.HasOne<OutcomeQualityDipSample>()
-            .WithMany()
-            .HasForeignKey(dsp => dsp.DipSampleId);
-
+        
         builder.HasOne<ApplicationUser>()
             .WithMany()
             .HasForeignKey(dsp => dsp.CsoReviewedBy);

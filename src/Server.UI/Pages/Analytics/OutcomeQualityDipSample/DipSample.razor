@@ -38,6 +38,17 @@
                 <MudSpacer />
                 <MudStack>
                     <MudStack Row="true" Class="gap-0">
+                        <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipReview">
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Secondary"
+                                       StartIcon="@Icons.Material.Filled.Reviews"
+                                       Size="Size.Small"
+                                       OnClick="OnReview"
+                                       Disabled="@(_sample?.Status != DipSampleStatus.AwaitingReview)"
+                                       IconColor="Color.Secondary">
+                                <MudText>@ConstantString.Review</MudText>
+                            </MudButton>
+                        </AuthorizeView>
                         <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
                             <MudButton Variant="Variant.Outlined"
                                        Color="Color.Secondary"
