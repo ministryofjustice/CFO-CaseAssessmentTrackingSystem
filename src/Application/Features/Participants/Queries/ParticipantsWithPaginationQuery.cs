@@ -1,7 +1,7 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.Features.Participants.DTOs;
+using Cfo.Cats.Application.Features.Participants.Mappings;
 using Cfo.Cats.Application.Features.Participants.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
@@ -19,12 +19,12 @@ public static class ParticipantsWithPagination
     
     }
     
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PaginatedData<ParticipantPaginationDto>>>
+    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaginatedData<ParticipantPaginationDto>>>
     {
         public async Task<Result<PaginatedData<ParticipantPaginationDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var data = await unitOfWork.DbContext.Participants.OrderBy($"{request.OrderBy} {request.SortDirection}")
-                .ProjectToPaginatedDataAsync<Participant, ParticipantPaginationDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
+                .ProjectToPaginatedDataAsync<Participant, ParticipantPaginationDto>(request.Specification, request.PageNumber, request.PageSize, ParticipantMappings.ToPaginationDto, cancellationToken);
             return data;
         }
     }

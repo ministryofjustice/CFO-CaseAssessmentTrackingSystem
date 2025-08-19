@@ -142,10 +142,10 @@
 
         <PropertyColumn Property="x => x.CurrentLocation"
                         Title="@L[_currentDto.GetMemberDescription(x => x.CurrentLocation)]"
-                        SortBy="x => x.CurrentLocation.Name">
+                        SortBy="x => x.CurrentLocation">
             <CellTemplate>
                 <div class="d-flex align-items-center">
-                    @if (context.Item.CurrentLocation.LocationType.IsCustody)
+                    @if (context.Item.CurrentLocationType.IsCustody)
                     {
                         <MudIcon Icon="@Icons.Material.Filled.Castle" Title="Custody" />
                     }
@@ -153,19 +153,19 @@
                     {
                         <MudIcon Icon="@Icons.Material.Filled.MapsHomeWork" Title="Community" />
                     }
-                    <span class="ml-2">@context.Item.CurrentLocation.Name</span>
+                    <span class="ml-2">@context.Item.CurrentLocation</span>
                 </div>
             </CellTemplate>
         </PropertyColumn>
 
         <PropertyColumn Property="x => x.EnrolmentLocation"
                         Title="@L[_currentDto.GetMemberDescription(x => x.EnrolmentLocation)]"
-                        SortBy="x => x.EnrolmentLocation?.Name">
+                        SortBy="x => x.EnrolmentLocation">
             <CellTemplate>
                 <div class="d-flex align-items-center">
                     @if (context.Item.EnrolmentLocation is not null)
                     {
-                        @if (context.Item.EnrolmentLocation.LocationType.IsCustody)
+                        @if (context.Item.EnrolmentLocationType.IsCustody)
                         {
                             <MudIcon Icon="@Icons.Material.Filled.Castle" Title="Custody" />
                         }
@@ -173,7 +173,7 @@
                         {
                             <MudIcon Icon="@Icons.Material.Filled.MapsHomeWork" Title="Community" />
                         }
-                        <span class="ml-2">@context.Item.EnrolmentLocation?.Name</span>
+                        <span class="ml-2">@context.Item.EnrolmentLocation</span>
                     }
                 </div>
             </CellTemplate>
