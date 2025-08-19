@@ -61,6 +61,7 @@ public static class ConstantString
     public static string Logout => Localize("Logout");
     public static string Signin => Localize("Sign In");
     public static string Review => Localize("Review");
+    public static string Reviewed => Localize("Reviewed");
 
     public static string SaveSuccess => Localize("Save successfully");
     public static string DeleteSuccess => Localize("Delete successfully");

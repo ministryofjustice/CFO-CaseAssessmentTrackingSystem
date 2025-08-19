@@ -13,7 +13,7 @@ public partial class DipSample
     private List<BreadcrumbItem> Items =>
     [
         new("Outcome Quality", href: "/pages/analytics/outcome-quality-dip-sampling/", icon: Icons.Material.Filled.Home),
-        new($"Sample", href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}", icon: Icons.Material.Filled.List)
+        new($"{_sample?.ContractName} ({_sample?.PeriodFromDesc})", href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}", icon: Icons.Material.Filled.List)
     ];
 
     [Parameter]
@@ -23,36 +23,7 @@ public partial class DipSample
 
     private DipSampleSummaryDto? _sample;
 
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            _loading = true;
-
-            Query = new()
-            {
-                DipSampleId = SampleId
-            };
-
-            var result = await GetNewMediator().Send(new GetOutcomeQualityDipSample.Query()
-            {
-                DipSampleId = SampleId
-            });
-
-            if (result is not { Succeeded: true, Data: not null })
-            {
-                Snackbar.Add(result.ErrorMessage, Severity.Error);
-                return;
-            }
-
-            _sample = result.Data;
-        }
-        finally
-        {
-            _loading = false;
-            await base.OnInitializedAsync();
-        }
-    }
+    protected override Task OnInitializedAsync() => RefreshAsync();
 
     private async Task<GridData<DipSampleParticipantSummaryDto>> ServerReload(GridState<DipSampleParticipantSummaryDto> state)
     {
@@ -85,7 +56,33 @@ public partial class DipSample
         }
     }
 
-    private async Task RefreshAsync() => await _table.ReloadServerData();
+    private async Task RefreshAsync()
+    {
+        Query = new()
+        {
+            DipSampleId = SampleId
+        };
+
+        var result = await GetNewMediator().Send(new GetOutcomeQualityDipSample.Query()
+        {
+            DipSampleId = SampleId
+        });
+
+        if(IsDisposed)
+        {
+            return;
+        }
+
+        if (result is not { Succeeded: true, Data: not null })
+        {
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+            return;
+        }
+
+        _sample = result.Data;
+        await _table.ReloadServerData();
+    }
+
     private async Task OnExport()
     {
         try
@@ -103,7 +100,7 @@ public partial class DipSample
     {
         try
         {
-            _loading = true;
+                _loading = true;
 
             var command = new Application.Features.ManagementInformation.Commands.ReviewOutcomeQualityDipSample.Command() { SampleId = SampleId };
             var result = await GetNewMediator().Send(command);

@@ -17,6 +17,7 @@ public static class VerifyOutcomeQualityDipSample
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var sample = await unitOfWork.DbContext.OutcomeQualityDipSamples
+                .Include(ds => ds.Participants)
                 .SingleAsync(s => s.Id == request.SampleId, cancellationToken);
 
             sample.Verify(currentUser.UserId!);

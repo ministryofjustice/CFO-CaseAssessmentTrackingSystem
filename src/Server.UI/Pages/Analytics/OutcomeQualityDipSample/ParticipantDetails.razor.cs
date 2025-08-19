@@ -25,7 +25,7 @@ public partial class ParticipantDetails
     private List<BreadcrumbItem> Items =>
     [
         new("Outcome Quality", href: "/pages/analytics/outcome-quality-dip-sampling/", icon: Icons.Material.Filled.Home),
-        new("Sample", href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}", icon: Icons.Material.Filled.List),
+        new($"{_participant?.ContractName} ({_participant?.PeriodFromDesc})", href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}", icon: Icons.Material.Filled.List),
         new(ParticipantId, href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/{ParticipantId}", icon: Icons.Material.Filled.Person)
     ];
 

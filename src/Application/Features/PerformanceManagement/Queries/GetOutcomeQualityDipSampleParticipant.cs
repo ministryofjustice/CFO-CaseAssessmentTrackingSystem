@@ -3,6 +3,7 @@ using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Providers;
 using Cfo.Cats.Application.SecurityConstants;
+using System.Runtime.Intrinsics.Arm;
 
 namespace Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 
@@ -25,6 +26,7 @@ public static class GetOutcomeQualityDipSampleParticipant
                 from p in db.Participants
                 join dsp in db.OutcomeQualityDipSampleParticipants on p.Id equals dsp.ParticipantId
                 join dp in db.OutcomeQualityDipSamples on dsp.DipSampleId equals dp.Id
+                join c in db.Contracts on dp.ContractId equals c.Id
                 where p.Id == request.ParticipantId && dsp.DipSampleId == request.SampleId
                 select new ParticipantDipSampleDto
                 {
@@ -47,7 +49,9 @@ public static class GetOutcomeQualityDipSampleParticipant
                     AlignsWithDoS = dsp.AlignsWithDoS,
                     CpmAnswer = dsp.CpmIsCompliant,
                     CpmComments = dsp.CpmComments,
-                    DipSampleStatus = dp.Status
+                    DipSampleStatus = dp.Status,
+                    ContractName = c.Description,
+                    PeriodFrom = dp.PeriodFrom
                 };
             
             var result = await participantQuery.SingleAsync(cancellationToken);
