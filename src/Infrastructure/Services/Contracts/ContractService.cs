@@ -1,11 +1,10 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Cfo.Cats.Application.Common.Interfaces.Contracts;
+﻿using Cfo.Cats.Application.Common.Interfaces.Contracts;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
+using Cfo.Cats.Application.Features.Contracts.Mapping;
 
 namespace Cfo.Cats.Infrastructure.Services.Contracts;
 
-public class ContractService(IServiceScopeFactory scopeFactory, IMapper mapper, ILogger<ContractService> logger) 
+public class ContractService(IServiceScopeFactory scopeFactory, ILogger<ContractService> logger) 
     : IContractService
 {
     public IReadOnlyList<ContractDto> DataSource
@@ -17,10 +16,9 @@ public class ContractService(IServiceScopeFactory scopeFactory, IMapper mapper, 
             using var scope = scopeFactory.CreateScope();
             var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-            var data = unitOfWork.DbContext
-                .Contracts
+            var data = unitOfWork.DbContext.Contracts
                 .OrderBy(e => e.Description)
-                .ProjectTo<ContractDto>(mapper.ConfigurationProvider)
+                .Select(ContractMappings.ToDto)
                 .ToList();
 
             return data.AsReadOnly();
@@ -45,7 +43,7 @@ public class ContractService(IServiceScopeFactory scopeFactory, IMapper mapper, 
             .Contracts
             .Where(c => c.Tenant!.Id.StartsWith(tenantId))
             .OrderBy(e => e.Description)
-            .ProjectTo<ContractDto>(mapper.ConfigurationProvider)
+            .Select(ContractMappings.ToDto)
             .ToList();
 
         return data.AsReadOnly();
