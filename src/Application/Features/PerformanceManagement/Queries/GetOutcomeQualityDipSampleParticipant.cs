@@ -84,22 +84,13 @@ public static class GetOutcomeQualityDipSampleParticipant
                     {
                         var participant = await unitOfWork.DbContext.Participants
                             .Where(e => e.Id == id)
-                            .Select(e => new
-                            {
-                                e.EnrolmentStatus, e.DateOfFirstConsent
-                            })
+                            .Select(e => new { e.DateOfFirstConsent })
                             .AsNoTracking()
                             .FirstOrDefaultAsync(ct);
                         
                         if (participant is null)
                         {
                             context.MessageFormatter.AppendArgument("Reason", "participant not found");
-                            return false;
-                        }
-
-                        if (participant.EnrolmentStatus == EnrolmentStatus.ArchivedStatus)
-                        {
-                            context.MessageFormatter.AppendArgument("Reason", "participant has been archived");
                             return false;
                         }
 
