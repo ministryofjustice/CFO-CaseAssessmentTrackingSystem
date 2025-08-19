@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Features.ManagementInformation.Commands.AddOutcomeQualityDipSampleCso;
+﻿using Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Common.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -11,8 +11,8 @@ public partial class SubmitCsoResponseComponent
     private MudForm _form = new();
     private bool ReadOnly { get; set; } = true;
 
-    [Parameter] [EditorRequired] public required EventCallback<Command> OnFormSubmit { get; set; }
-    [Parameter] [EditorRequired] public required Command Command { get; set; }
+    [Parameter] [EditorRequired] public required EventCallback<SubmitCsoResponse.Command> OnFormSubmit { get; set; }
+    [Parameter] [EditorRequired] public required SubmitCsoResponse.Command Command { get; set; }
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
 
     [Parameter, EditorRequired] public DipSampleStatus Status { get; set; } = default!;

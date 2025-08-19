@@ -1,20 +1,14 @@
 ﻿@using Cfo.Cats.Application.Common.Validators
-@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 
-@attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipVerification)]
-
-@inject IAuthorizationService AuthorizationService
-@inject AuthenticationStateProvider AuthenticationStateProvider
-
-@if (Status != DipSampleStatus.Reviewed)
+@if (Status != DipSampleStatus.Verified)
 {
     <MudAlert Severity="Severity.Info">
         This information is now readonly because the sample is at the @Status.Name stage.
     </MudAlert>
 }
 
-<MudForm @ref="form" Model="Command" Validation="@(Validator.ValidateValue(Command))" Class="ma-2" ReadOnly="ReadOnly">
+<MudForm @ref="_form" Model="Command" Validation="@(Validator.ValidateValue(Command))" Class="ma-2" ReadOnly="ReadOnly">
     <MudGrid>
         <MudItem xs="12" md="3">
             <MudText Typo="Typo.subtitle1">
@@ -53,6 +47,7 @@
                 }
             </MudRadioGroup>
         </MudItem>
+
         <MudItem xs="12">
             <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="OnSubmit">Submit</MudButton>
         </MudItem>

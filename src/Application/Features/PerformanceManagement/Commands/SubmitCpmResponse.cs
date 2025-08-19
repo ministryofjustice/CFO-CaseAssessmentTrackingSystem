@@ -1,11 +1,10 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
-using FluentValidation;
 
-namespace Cfo.Cats.Application.Features.ManagementInformation.Commands;
+namespace Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 
-public static class AddOutcomeQualityDipSampleCpm
+public static class SubmitCpmResponse
 {
     [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipVerification)]
     public record Command : IRequest<Result>

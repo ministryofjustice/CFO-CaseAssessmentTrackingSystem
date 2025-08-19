@@ -1,7 +1,6 @@
 ﻿@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.Analytics.Components
 
-
 @attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
 
 @page "/pages/analytics/outcome-quality-dip-sampling/{SampleId:guid}/{ParticipantId}"
@@ -77,6 +76,11 @@
                     <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
                         <MudTabPanel Text="Verification" Disabled="_participant.CsoAnswer.IsAnswer is false">
                             <SubmitCpmResponseComponent Command="@SubmitCpmCommand" OnFormSubmit="CpmResponseSubmitted" Status="_participant.DipSampleStatus" />
+                        </MudTabPanel>
+                    </AuthorizeView>
+                    <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
+                        <MudTabPanel Text="Finalise" Disabled="_participant.CpmAnswer.IsAnswer is false">
+                            <SubmitFinalResponseComponent Command="@SubmitFinalCommand" Status="_participant.DipSampleStatus" OnFormSubmit="FinalResponseSubmitted" />
                         </MudTabPanel>
                     </AuthorizeView>
 

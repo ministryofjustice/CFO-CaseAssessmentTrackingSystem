@@ -1,6 +1,6 @@
-using Cfo.Cats.Application.Features.ManagementInformation.Commands;
-using Cfo.Cats.Application.Features.ManagementInformation.DTOs;
-using Cfo.Cats.Application.Features.ManagementInformation.Queries;
+using Cfo.Cats.Application.Features.PerformanceManagement.Commands;
+using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
+using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 
 namespace Cfo.Cats.Server.UI.Pages.Analytics.OutcomeQualityDipSample;
 

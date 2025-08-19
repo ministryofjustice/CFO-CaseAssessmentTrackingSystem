@@ -2,7 +2,7 @@
 using Cfo.Cats.Application.Outbox;
 using Cfo.Cats.Domain.Events;
 
-namespace Cfo.Cats.Application.Features.ManagementInformation.EventHandlers;
+namespace Cfo.Cats.Application.Features.PerformanceManagement.EventHandlers;
 
 public class PublishOutcomeDipSampleVerifyingEvent(IUnitOfWork unitOfWork) : INotificationHandler<OutcomeQualityDipSampleVerifyingDomainEvent>
 {

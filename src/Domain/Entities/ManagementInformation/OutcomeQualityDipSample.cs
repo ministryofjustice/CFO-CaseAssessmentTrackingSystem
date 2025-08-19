@@ -54,7 +54,9 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
         ReviewedOn = DateTime.UtcNow;
         ReviewedBy = reviewedBy;
         Status = DipSampleStatus.Reviewed;
-        SetCsoScores(Participants.Count(p => p.CsoIsCompliant.IsAccepted));
+        CsoCompliant = Participants.Count(c => c.CsoIsCompliant.IsAccepted);
+        CsoPercentage = CalculatePercentage(CsoCompliant.Value);
+        CsoScore = CalculateScore(CsoPercentage.Value);
 
         return this;
     }
@@ -156,46 +158,24 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
     /// <exception cref="InvalidDipSampleTransitionException">If the status change is not valid</exception>
     public OutcomeQualityDipSample Finalise(string userId)
     {
+        if (Participants.Count == 0)
+        {
+            throw new MissingParticipantDetailsException();
+        }
+
         if (Status != DipSampleStatus.Verified)
         {
             throw new InvalidDipSampleTransitionException(Status, DipSampleStatus.Finalising);
         }
 
-        Status = DipSampleStatus.Finalising;
-        AddDomainEvent(new OutcomeQualityDipSampleFinalisingDomainEvent(Id, userId, DateTime.UtcNow));
-        return this;
-    }
-
-    /// <summary>
-    /// Reverts the sample from finalising to Verified in the event of a failure
-    /// </summary>
-    /// <param name="userId">The user performing the verification</param>
-    /// <returns>This item with it's status change</returns>
-    /// <exception cref="InvalidDipSampleTransitionException">If the status change is not valid</exception>
-    public OutcomeQualityDipSample FinalisationFailed()
-    {
-        if (Status != DipSampleStatus.Finalising)
+        if (Participants.Any(p => p.FinalIsCompliant.IsAnswer == false))
         {
-            throw new InvalidDipSampleTransitionException(Status, DipSampleStatus.Verified);
+            throw new InvalidDipSampleTransitionException("All participants must have an answer to be finalised");
         }
-        Status = DipSampleStatus.Verified;
-        return this;
-    }
 
-    /// <summary>
-    /// Marks the sample as finalised.
-    /// </summary>
-    /// <param name="noOfCompliant">The no of participants who's state is "finalised"</param>
-    /// <returns>This item with it's status change</returns>
-    /// <exception cref="InvalidDipSampleTransitionException">If the status change is not valid</exception>
-    public OutcomeQualityDipSample Finalised(int noOfCompliant)
-    {
-        if (Status != DipSampleStatus.Finalising)
-        {
-            throw new InvalidDipSampleTransitionException(Status, DipSampleStatus.Finalised);
-        }
         Status = DipSampleStatus.Finalised;
-        SetFinalScores(noOfCompliant);
+        SetFinalScores(Participants.Count(p => p.FinalIsCompliant.IsAccepted));
+        AddDomainEvent(new OutcomeQualityDipSampleFinalisedDomainEvent(Id, userId, DateTime.UtcNow));
         return this;
     }
 
@@ -250,15 +230,6 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
     /// Derived from <see cref="CpmPercentage"/>, ranges from <c>0</c> (lowest) to <c>5</c> (highest).
     /// </summary>
     public int? CpmScore { get; private set; }
-
-    private void SetCsoScores(int noOfCompliant)
-    {
-        CsoCompliant = noOfCompliant;
-        CsoPercentage = CalculatePercentage(noOfCompliant);
-        CsoScore = CalculateScore(CsoPercentage.Value);
-    }
-    
-    
 
     #region Calculated business (final) properties
     /// <summary>

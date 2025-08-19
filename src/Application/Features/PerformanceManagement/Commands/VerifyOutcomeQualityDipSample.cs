@@ -2,7 +2,7 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
-namespace Cfo.Cats.Application.Features.ManagementInformation.Commands;
+namespace Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 
 public static class VerifyOutcomeQualityDipSample
 {

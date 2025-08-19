@@ -51,7 +51,9 @@ public static class GetOutcomeQualityDipSampleParticipant
                     CpmComments = dsp.CpmComments,
                     DipSampleStatus = dp.Status,
                     ContractName = c.Description,
-                    PeriodFrom = dp.PeriodFrom
+                    PeriodFrom = dp.PeriodFrom,
+                    FinalAnswer = dsp.FinalIsCompliant,
+                    FinalComments = dsp.FinalComments,
                 };
             
             var result = await participantQuery.SingleAsync(cancellationToken);
