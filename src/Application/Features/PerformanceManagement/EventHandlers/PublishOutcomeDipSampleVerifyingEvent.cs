@@ -6,8 +6,6 @@ namespace Cfo.Cats.Application.Features.PerformanceManagement.EventHandlers;
 
 public class PublishOutcomeDipSampleVerifyingEvent(IUnitOfWork unitOfWork) : INotificationHandler<OutcomeQualityDipSampleVerifyingDomainEvent>
 {
-    public async Task Handle(OutcomeQualityDipSampleVerifyingDomainEvent notification, CancellationToken cancellationToken)
-    {
-        await unitOfWork.DbContext.InsertOutboxMessage(new OutcomeQualityDipSampleVerifyingIntegrationEvent(notification.DipSampleId, notification.UserId, notification.OccurredOn));
-    }
+    public Task Handle(OutcomeQualityDipSampleVerifyingDomainEvent notification, CancellationToken cancellationToken)
+        => unitOfWork.DbContext.InsertOutboxMessage(new OutcomeQualityDipSampleVerifyingIntegrationEvent(notification.DipSampleId, notification.UserId, notification.OccurredOn));
 }

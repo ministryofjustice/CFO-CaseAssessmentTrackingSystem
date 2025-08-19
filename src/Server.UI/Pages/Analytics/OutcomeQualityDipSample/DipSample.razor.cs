@@ -102,7 +102,7 @@ public partial class DipSample
         {
                 _loading = true;
 
-            var command = new Application.Features.ManagementInformation.Commands.ReviewOutcomeQualityDipSample.Command() { SampleId = SampleId };
+            var command = new ReviewDipSampleOutcome.Command() { SampleId = SampleId };
             var result = await GetNewMediator().Send(command);
 
             if (IsDisposed)
@@ -166,7 +166,27 @@ public partial class DipSample
         {
             _loading = true;
 
-            await Task.CompletedTask;
+            var command = new FinaliseOutcomeQualityDipSample.Command()
+            {
+                SampleId = SampleId
+            };
+
+            var result = await GetNewMediator().Send(command);
+
+            if (IsDisposed)
+            {
+                return;
+            }
+
+            if (result is { Succeeded: false })
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add("Finalisation submitted.");
+            }
+            await RefreshAsync();
         }
         finally
         {
