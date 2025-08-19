@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Activities.DTOs;
+using Cfo.Cats.Application.Features.Activities.Mappings;
 using Cfo.Cats.Application.Features.Activities.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Activities;
@@ -15,7 +16,7 @@ public static class ActivitiesWithPagination
         public ActivitiesAdvancedSpecification Specification => new(this);
     }
 
-    private class Handler(IUnitOfWork unitOfWork, IMapper mapper) 
+    private class Handler(IUnitOfWork unitOfWork) 
         : IRequestHandler<Query, PaginatedData<ActivitySummaryDto>>
     {
         public async Task<PaginatedData<ActivitySummaryDto>> Handle(Query request, CancellationToken cancellationToken)
@@ -24,7 +25,7 @@ public static class ActivitiesWithPagination
                 .Include(a => a.TookPlaceAtLocation)
                 .OrderByDescending(a => a.Status == ActivityStatus.PendingStatus.Value) // push "Pending" activities to top
                 .ThenBy($"{request.OrderBy} {request.SortDirection}")
-                .ProjectToPaginatedDataAsync<Activity, ActivitySummaryDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
+                .ProjectToPaginatedDataAsync<Activity, ActivitySummaryDto>(request.Specification, request.PageNumber, request.PageSize, ActivityMappings.ToSummaryDto, cancellationToken);
         }
     }
 

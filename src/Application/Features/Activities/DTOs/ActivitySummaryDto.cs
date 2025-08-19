@@ -1,6 +1,4 @@
-﻿using Cfo.Cats.Domain.Entities.Activities;
-
-namespace Cfo.Cats.Application.Features.Activities.DTOs;
+﻿namespace Cfo.Cats.Application.Features.Activities.DTOs;
 
 public class ActivitySummaryDto
 {
@@ -15,14 +13,4 @@ public class ActivitySummaryDto
 
     [Description("Additional Information")]
     public string? AdditionalInformation { get; set; }
-
-    public class Mapping : Profile
-    {
-        public Mapping()
-        {
-            CreateMap<Activity, ActivitySummaryDto>()
-                .ForMember(dest => dest.TookPlaceAtLocationName, opts => opts.MapFrom(src => src.TookPlaceAtLocation.Name));
-        }
-    }
-
 }
