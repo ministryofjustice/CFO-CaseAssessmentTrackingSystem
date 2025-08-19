@@ -15,7 +15,7 @@ public static class GetParticipantWasAtThisLocationCheck
         public required DateTime? DateAtLoction { get; set; }
     }
 
-    class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, bool>
+    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, bool>
     {
         public async Task<bool> Handle(Query request, CancellationToken cancellationToken)
         {
