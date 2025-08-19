@@ -12,7 +12,7 @@ public static class GetParticipantWasAtThisLocationCheck
         public required string ParticipantId { get; set; }
         public required int LocationId { get; set; }
 
-        public required DateTime? DateAtLoction { get; set; }
+        public required DateTime? DateAtLocation { get; set; }
     }
 
     private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, bool>
@@ -21,12 +21,12 @@ public static class GetParticipantWasAtThisLocationCheck
         {
             var db = unitOfWork.DbContext;
 
-            var locationOnDate = await
-                 db.ParticipantLocationHistories
-                .Where(plh => plh.ParticipantId == request.ParticipantId                 
-                && plh.From <= request.DateAtLoction)
+            var locationOnDate = await db.ParticipantLocationHistories
+                .Where(plh => 
+                    plh.ParticipantId == request.ParticipantId && 
+                    plh.From <= request.DateAtLocation)
                 .OrderByDescending(x => x.From)
-                 .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
 
             return locationOnDate != null && locationOnDate.LocationId == request.LocationId;
         }

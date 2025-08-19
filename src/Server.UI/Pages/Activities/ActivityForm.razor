@@ -1,4 +1,4 @@
-﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Common.Interfaces.Locations
 @using Cfo.Cats.Application.Features.Activities.Commands
 @using Cfo.Cats.Application.Features.Activities.Queries
 @using Cfo.Cats.Application.Features.Locations.DTOs
@@ -217,14 +217,17 @@
 
     async Task OnDateChanged()
     {
-        hasSelectedActivityAlreadyBeenAddedOnThisDate = Model.Definition is not null && await GetNewMediator().Send(new ExistsByCategory.Query()
+        if(Model.CommencedOn.HasValue)
         {
-            Category = Model.Definition.Category,
-            ParticipantId = Model.ParticipantId,
-            CommencedOn = Model.CommencedOn
-        });
+            hasSelectedActivityAlreadyBeenAddedOnThisDate = Model.Definition is not null && await GetNewMediator().Send(new ExistsByCategory.Query()
+            {
+                Category = Model.Definition.Category,
+                ParticipantId = Model.ParticipantId,
+                CommencedOn = Model.CommencedOn
+            });
 
-        await CheckParticipantBeenAtThisLocationOnDate();
+            await CheckParticipantBeenAtThisLocationOnDate();
+        }
 
         ClearTemplates();
     }
@@ -235,7 +238,7 @@
         {
             ParticipantId = Model.ParticipantId,
             LocationId = Model.Location!.Id,
-            DateAtLoction = Model.CommencedOn
+            DateAtLocation = Model.CommencedOn
         });
     }   
 
