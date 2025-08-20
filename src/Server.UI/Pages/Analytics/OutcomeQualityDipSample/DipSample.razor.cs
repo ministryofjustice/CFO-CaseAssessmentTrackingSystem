@@ -1,6 +1,6 @@
-using Cfo.Cats.Application.Features.ManagementInformation.Commands;
-using Cfo.Cats.Application.Features.ManagementInformation.DTOs;
-using Cfo.Cats.Application.Features.ManagementInformation.Queries;
+using Cfo.Cats.Application.Features.PerformanceManagement.Commands;
+using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
+using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 
 namespace Cfo.Cats.Server.UI.Pages.Analytics.OutcomeQualityDipSample;
 
@@ -13,7 +13,7 @@ public partial class DipSample
     private List<BreadcrumbItem> Items =>
     [
         new("Outcome Quality", href: "/pages/analytics/outcome-quality-dip-sampling/", icon: Icons.Material.Filled.Home),
-        new($"Sample", href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}", icon: Icons.Material.Filled.List)
+        new($"{_sample?.ContractName} ({_sample?.PeriodFromDesc})", href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}", icon: Icons.Material.Filled.List)
     ];
 
     [Parameter]
@@ -23,36 +23,7 @@ public partial class DipSample
 
     private DipSampleSummaryDto? _sample;
 
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            _loading = true;
-
-            Query = new()
-            {
-                DipSampleId = SampleId
-            };
-
-            var result = await GetNewMediator().Send(new GetOutcomeQualityDipSample.Query()
-            {
-                DipSampleId = SampleId
-            });
-
-            if (result is not { Succeeded: true, Data: not null })
-            {
-                Snackbar.Add(result.ErrorMessage, Severity.Error);
-                return;
-            }
-
-            _sample = result.Data;
-        }
-        finally
-        {
-            _loading = false;
-            await base.OnInitializedAsync();
-        }
-    }
+    protected override Task OnInitializedAsync() => RefreshAsync();
 
     private async Task<GridData<DipSampleParticipantSummaryDto>> ServerReload(GridState<DipSampleParticipantSummaryDto> state)
     {
@@ -85,7 +56,33 @@ public partial class DipSample
         }
     }
 
-    private async Task RefreshAsync() => await _table.ReloadServerData();
+    private async Task RefreshAsync()
+    {
+        Query = new()
+        {
+            DipSampleId = SampleId
+        };
+
+        var result = await GetNewMediator().Send(new GetOutcomeQualityDipSample.Query()
+        {
+            DipSampleId = SampleId
+        });
+
+        if(IsDisposed)
+        {
+            return;
+        }
+
+        if (result is not { Succeeded: true, Data: not null })
+        {
+            Snackbar.Add(result.ErrorMessage, Severity.Error);
+            return;
+        }
+
+        _sample = result.Data;
+        await _table.ReloadServerData();
+    }
+
     private async Task OnExport()
     {
         try
@@ -96,6 +93,36 @@ public partial class DipSample
         finally
         {
             _downloading = false;
+        }
+    }
+
+    private async Task OnReview()
+    {
+        try
+        {
+                _loading = true;
+
+            var command = new ReviewDipSampleOutcome.Command() { SampleId = SampleId };
+            var result = await GetNewMediator().Send(command);
+
+            if (IsDisposed)
+            {
+                return;
+            }
+
+            if (result is { Succeeded: false })
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add("Review submitted");
+            }
+            await RefreshAsync();
+        }
+        finally
+        {
+            _loading = false;
         }
     }
 
@@ -124,6 +151,40 @@ public partial class DipSample
             else
             {
                 Snackbar.Add("Verification submitted.");
+            }
+            await RefreshAsync();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task OnFinalise()
+    {
+        try
+        {
+            _loading = true;
+
+            var command = new FinaliseOutcomeQualityDipSample.Command()
+            {
+                SampleId = SampleId
+            };
+
+            var result = await GetNewMediator().Send(command);
+
+            if (IsDisposed)
+            {
+                return;
+            }
+
+            if (result is { Succeeded: false })
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add("Finalisation submitted.");
             }
             await RefreshAsync();
         }

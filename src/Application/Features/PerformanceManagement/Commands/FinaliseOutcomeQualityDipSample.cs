@@ -1,25 +1,27 @@
-﻿using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Interfaces;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
-namespace Cfo.Cats.Application.Features.ManagementInformation.Commands;
+namespace Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 
-public static class VerifyOutcomeQualityDipSample
+public static class FinaliseOutcomeQualityDipSample
 {
-    [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipVerification)]
-    public class Command : IRequest<Result>
+    [RequestAuthorize(Policy = SecurityPolicies.OutcomeQualityDipFinalise)]
+    public record Command : IRequest<Result>
     {
         public required Guid SampleId { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUser) : IRequestHandler<Command, Result>
+    public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUser) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var sample = await unitOfWork.DbContext.OutcomeQualityDipSamples
+                .Include(s => s.Participants)
                 .SingleAsync(s => s.Id == request.SampleId, cancellationToken);
 
-            sample.Verify(currentUser.UserId!);
+            sample.Finalise(currentUser.UserId!);
 
             return Result.Success();
         }
@@ -30,8 +32,8 @@ public static class VerifyOutcomeQualityDipSample
         public Validator(IUnitOfWork unitOfWork)
         {
             RuleFor(c => c.SampleId)
-                .NotNull()
-                .WithMessage("SampleId is required");
+               .NotNull()
+               .WithMessage("SampleId is required");
 
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
@@ -42,26 +44,25 @@ public static class VerifyOutcomeQualityDipSample
                         var sample = await unitOfWork.DbContext.OutcomeQualityDipSamples
                             .SingleOrDefaultAsync(s => s.Id == command.SampleId, canc);
 
-                        if(sample is null)
+                        if (sample is null)
                         {
                             context.MessageFormatter.AppendArgument("Reason", "not found");
                             return false;
                         }
 
-                        if(sample.Status != DipSampleStatus.Reviewed)
+                        if (sample.Status != DipSampleStatus.Verified)
                         {
-                            context.MessageFormatter.AppendArgument("Reason", $"must be in a {DipSampleStatus.Reviewed} state");
+                            context.MessageFormatter.AppendArgument("Reason", $"must be in a {DipSampleStatus.Verified} state");
                             return false;
                         }
 
-                        var cpmUnanswered = unitOfWork.DbContext.OutcomeQualityDipSampleParticipants
+                        var finalUnanswered = unitOfWork.DbContext.OutcomeQualityDipSampleParticipants
                             .Where(dsp => dsp.DipSampleId == command.SampleId)
-                            .Where(dsp => dsp.CsoIsCompliant == ComplianceAnswer.Unsure)
-                            .Where(dsp => dsp.CpmIsCompliant == ComplianceAnswer.NotAnswered);
+                            .Where(dsp => dsp.FinalIsCompliant == ComplianceAnswer.NotAnswered);
 
-                        if(await cpmUnanswered.AnyAsync(canc))
+                        if (await finalUnanswered.AnyAsync(canc))
                         {
-                            context.MessageFormatter.AppendArgument("Reason", $"some '{ComplianceAnswer.Unsure}' responses still need your decision, choose '{ComplianceAnswer.Compliant}' or '{ComplianceAnswer.NotCompliant}' to proceed");
+                            context.MessageFormatter.AppendArgument("Reason", $"some responses still need your decision, choose '{ComplianceAnswer.Compliant}' or '{ComplianceAnswer.NotCompliant}' to proceed");
                             return false;
                         }
 
@@ -72,3 +73,4 @@ public static class VerifyOutcomeQualityDipSample
         }
     }
 }
+

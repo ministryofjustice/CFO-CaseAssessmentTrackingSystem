@@ -1,3 +1,6 @@
+using Cfo.Cats.Domain.Common.Exceptions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
 namespace Cfo.Cats.Application.Pipeline;
 
 public class UnhandledExceptionBehaviour<TRequest, TResponse>
@@ -26,6 +29,36 @@ public class UnhandledExceptionBehaviour<TRequest, TResponse>
         {
             return await next(cancellationToken).ConfigureAwait(false);
         }
+        catch (DomainException de)
+        {
+            var requestName = typeof(TRequest).Name;
+            var userName = _currentUserService.UserName;
+            _logger.LogError(
+                de,
+                "{Name}: {Exception} with {@Request} by {@UserName}",
+                requestName,
+                de.Message,
+                request,
+                userName
+            );
+
+            if (typeof(TResponse).IsGenericType && typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>))
+            {
+                var resultType = typeof(TResponse).GetGenericArguments()[0];
+                var invalidResultType = typeof(Result<>).MakeGenericType(resultType);
+                var invalidResult = Activator.CreateInstance(invalidResultType);
+                var invalidResultMethod = invalidResultType.GetMethod("Failure", [typeof(string[])]);
+                return (TResponse)invalidResultMethod!.Invoke(invalidResult, [de.Message])!;
+            }
+
+            if (typeof(TResponse).IsAssignableFrom(typeof(Result)))
+            {
+                return (TResponse)(object)Result.Failure(de.Message);
+            }
+
+            // if we get to here we are not a RESULT type, therefore we need to throw.
+            throw;
+        }
         catch (Exception ex)
         {
             var requestName = typeof(TRequest).Name;
@@ -38,6 +71,7 @@ public class UnhandledExceptionBehaviour<TRequest, TResponse>
                 request,
                 userName
             );
+
             throw;
         }
     }

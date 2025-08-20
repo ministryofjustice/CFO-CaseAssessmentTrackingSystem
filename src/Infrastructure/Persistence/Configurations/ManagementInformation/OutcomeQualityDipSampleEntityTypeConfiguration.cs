@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformation;
 
-public class DipSampleEntityTypeConfiguration : IEntityTypeConfiguration<OutcomeQualityDipSample>
+public class OutcomeQualityDipSampleEntityTypeConfiguration : IEntityTypeConfiguration<OutcomeQualityDipSample>
 {
     public void Configure(EntityTypeBuilder<OutcomeQualityDipSample> builder)
     {
@@ -31,5 +31,11 @@ public class DipSampleEntityTypeConfiguration : IEntityTypeConfiguration<Outcome
                 x => x!.Value,
                 x => DipSampleStatus.FromValue(x)
             ).IsRequired();
+
+        builder.HasMany(ds => ds.Participants)
+            .WithOne() // no navigation back
+            .HasForeignKey(ds => ds.DipSampleId) 
+            .OnDelete(DeleteBehavior.Cascade);
+
     }
 }

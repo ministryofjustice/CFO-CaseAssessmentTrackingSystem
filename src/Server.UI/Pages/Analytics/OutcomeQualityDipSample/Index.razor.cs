@@ -1,7 +1,7 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
-using Cfo.Cats.Application.Features.ManagementInformation.DTOs;
-using Cfo.Cats.Application.Features.ManagementInformation.Queries;
+using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
+using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Infrastructure.Configurations;
 using Microsoft.AspNetCore.Authorization;

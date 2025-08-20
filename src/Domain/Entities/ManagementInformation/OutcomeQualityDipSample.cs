@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Common.Exceptions;
 using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.ManagementInformation;
@@ -9,6 +10,8 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
 #pragma warning disable CS8618 
     private OutcomeQualityDipSample() { /* this is for EF Core */}
 #pragma warning restore CS8618
+
+    private List<OutcomeQualityDipSampleParticipant> _participants = new();
 
     public static OutcomeQualityDipSample Create(string contractId, DateTime periodFrom, DateTime periodTo, int size = 0) => new()
     {
@@ -21,26 +24,65 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
         Size = size
     };
 
-    public OutcomeQualityDipSample Review(string reviewedBy, int noOfCompliant = 0)
+    public IReadOnlyCollection<OutcomeQualityDipSampleParticipant> Participants => _participants.AsReadOnly();
+
+    /// <summary>
+    /// Marks the dip sample as reviewd
+    /// </summary>
+    /// <param name="reviewedBy">The user who performed the review</param>
+    /// <param name="noOfCompliant">The number of participants that are compliant</param>
+    /// <returns>This item, with it's status changed</returns>
+    /// <exception cref="MissingParticipantDetailsException">If the participants have not been loaded</exception>
+    /// <exception cref="InvalidDipSampleTransitionException">If current status is not awaiting review, or any CSO answer is not answered</exception>
+    public OutcomeQualityDipSample Review(string reviewedBy)
     {
+        if(Participants.Count == 0)
+        {
+            throw new MissingParticipantDetailsException();
+        }
+                
         if (Status != DipSampleStatus.AwaitingReview)
         {
-            throw new ApplicationException("Cannot review at this stage");
+            throw new InvalidDipSampleTransitionException(Status, DipSampleStatus.Reviewed);
+        }
+
+        if (Participants.Any(p => p.CsoIsCompliant.IsAnswer == false))
+        {
+            throw new InvalidDipSampleTransitionException("All participants must have an answer to be reviewed");
         }
 
         ReviewedOn = DateTime.UtcNow;
         ReviewedBy = reviewedBy;
         Status = DipSampleStatus.Reviewed;
-        SetCsoScores(noOfCompliant);
+        CsoCompliant = Participants.Count(c => c.CsoIsCompliant.IsAccepted);
+        CsoPercentage = CalculatePercentage(CsoCompliant.Value);
+        CsoScore = CalculateScore(CsoPercentage.Value);
 
         return this;
     }
 
+    /// <summary>
+    /// Marks the record as verifying.
+    /// </summary>
+    /// <param name="reviewedBy">The user who performed the review</param>
+    /// <returns>This item, with it's status changed</returns>
+    /// <exception cref="MissingParticipantDetailsException">If the participants have not been loaded</exception>
+    /// <exception cref="InvalidDipSampleTransitionException">If current status is not awaiting review, or any CPM answer is not answered</exception>
     public OutcomeQualityDipSample Verify(string userId)
     {
+        if (Participants.Count == 0)
+        {
+            throw new MissingParticipantDetailsException();
+        }
+
         if (Status != DipSampleStatus.Reviewed)
         {
-            throw new ApplicationException("Cannot verify at this stage");
+            throw new InvalidDipSampleTransitionException(Status, DipSampleStatus.Verifying);
+        }
+
+        if (Participants.Any(p => p.CpmIsCompliant.IsAnswer == false && p.CsoIsCompliant == ComplianceAnswer.Unsure))
+        {
+            throw new InvalidDipSampleTransitionException("All participants must have an answer to be reviewed");
         }
 
         Status = DipSampleStatus.Verifying;
@@ -48,14 +90,101 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
         return this;
     }
 
-    public OutcomeQualityDipSample MarkAsVerified(int noOfCompliant)
+    /// <summary>
+    /// Marks the sample as verified.
+    /// </summary>
+    /// <returns>This item, with it's status changed</returns>
+    /// <exception cref="MissingParticipantDetailsException">If the participants have not been loaded</exception>
+    /// <exception cref="InvalidDipSampleTransitionException">If current status is not awaiting review, or any CPM answer is not answered</exception>
+    public OutcomeQualityDipSample Verified(string userId)
     {
+        if (Participants.Count == 0)
+        {
+            throw new MissingParticipantDetailsException();
+        }
+
         if (Status != DipSampleStatus.Verifying)
         {
-            throw new ApplicationException("Cannot verify at this stage");
+            throw new InvalidDipSampleTransitionException(Status, DipSampleStatus.Verified);
         }
+
+        if (Participants.Any(p => p.CpmIsCompliant.IsAnswer == false && p.CsoIsCompliant == ComplianceAnswer.Unsure))
+        {
+            throw new InvalidDipSampleTransitionException("All participants must have an answer to be reviewed");
+        }
+
+        foreach (var participant in Participants)
+        {
+            if (participant.CpmIsCompliant.IsAnswer == false)
+            {
+                if (participant.CpmIsCompliant.IsAnswer == false)
+                {
+                    var cpmAnswer = participant.CsoIsCompliant switch
+                    {
+                        var c when c.Name == ComplianceAnswer.Compliant.Name => ComplianceAnswer.AutoCompliant,
+                        var c when c.Name == ComplianceAnswer.NotCompliant.Name => ComplianceAnswer.AutoNotCompliant,
+                        _ => throw new ApplicationException("Invalid answer")
+                    };
+
+                    participant.CpmAnswer(
+                        cpmAnswer,
+                        participant.CsoComments!,
+                        userId,
+                        DateTime.UtcNow
+                    );
+                }
+
+            }
+
+            if (participant.CsoIsCompliant.IsAccepted == participant.CpmIsCompliant.IsAccepted)
+            {
+                participant.FinalAnswer(participant.CpmIsCompliant, participant.CpmComments!, participant.CpmReviewedBy!,
+                    DateTime.UtcNow);
+            }
+        }
+
         Status = DipSampleStatus.Verified;
-        SetCpmScores(noOfCompliant);
+        CpmCompliant = Participants.Count(p => p.CpmIsCompliant.IsAccepted);
+        CpmPercentage = CalculatePercentage(CpmCompliant.Value);
+        CpmScore = CalculateScore(CpmPercentage.Value);
+        return this;
+    }
+
+    /// <summary>
+    /// Marks the sample as finalising
+    /// </summary>
+    /// <param name="userId">The user performing the verification</param>
+    /// <returns>This item with it's status change</returns>
+    /// <exception cref="InvalidDipSampleTransitionException">If the status change is not valid</exception>
+    public OutcomeQualityDipSample Finalise(string userId)
+    {
+        if (Participants.Count == 0)
+        {
+            throw new MissingParticipantDetailsException();
+        }
+
+        if (Status != DipSampleStatus.Verified)
+        {
+            throw new InvalidDipSampleTransitionException(Status, DipSampleStatus.Finalising);
+        }
+
+        if (Participants.Any(p => p.FinalIsCompliant.IsAnswer == false))
+        {
+            throw new InvalidDipSampleTransitionException("All participants must have an answer to be finalised");
+        }
+
+        Status = DipSampleStatus.Finalised;
+        SetFinalScores(Participants.Count(p => p.FinalIsCompliant.IsAccepted));
+        AddDomainEvent(new OutcomeQualityDipSampleFinalisedDomainEvent(Id, userId, DateTime.UtcNow));
+        return this;
+    }
+
+    private OutcomeQualityDipSample SetFinalScores(int noOfCompliant)
+    {
+        FinalCompliant = noOfCompliant;
+        FinalPercentage = CalculatePercentage(noOfCompliant);
+        FinalScore = CalculateScore(FinalPercentage.Value);
+
         return this;
     }
 
@@ -87,13 +216,6 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
     /// </summary>
     public int? CsoScore { get; private set; }
 
-    private void SetCsoScores(int noOfCompliant)
-    {
-        CsoCompliant = noOfCompliant;
-        CsoPercentage = CalculatePercentage(noOfCompliant);
-        CsoScore = CalculateScore(CsoPercentage.Value);
-    }
-
     /// <summary>
     /// Count of <see cref="ComplianceAnswer.Compliant"/> or <see cref="ComplianceAnswer.AutoCompliant"/> records marked by the CSO/CPM.
     /// </summary>
@@ -108,15 +230,6 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
     /// Derived from <see cref="CpmPercentage"/>, ranges from <c>0</c> (lowest) to <c>5</c> (highest).
     /// </summary>
     public int? CpmScore { get; private set; }
-
-    private OutcomeQualityDipSample SetCpmScores(int noOfCompliant)
-    {
-        CpmCompliant = noOfCompliant;
-        CpmPercentage = CalculatePercentage(noOfCompliant);
-        CpmScore = CalculateScore(CpmPercentage.Value);
-
-        return this;
-    }
 
     #region Calculated business (final) properties
     /// <summary>
@@ -146,5 +259,4 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
         >= 51 => 1,
         _ => 0
     };
-
 }

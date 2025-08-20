@@ -19,6 +19,12 @@ public class ParticipantDipSampleDto
 
     public required string CurrentLocation { get; init; }
 
+    public required string ContractName { get; init; }
+
+    public required DateTime PeriodFrom { get; init; }
+
+    public string PeriodFromDesc => PeriodFrom.ToString("MMM yyyy");
+
     public DipEventInformation[] PertinentEvents { get; set;} = [];
     
     public DateOnly ConsentDate { get; set; }
@@ -34,6 +40,9 @@ public class ParticipantDipSampleDto
 
     public required ComplianceAnswer CpmAnswer { get; init; }
     public string? CpmComments { get; init; }
+
+    public required ComplianceAnswer FinalAnswer { get; init; }
+    public required string? FinalComments { get; init; }
 
     public required DipSampleStatus DipSampleStatus { get; init; }
 }

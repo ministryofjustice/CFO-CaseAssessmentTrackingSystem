@@ -28,7 +28,6 @@ public class Result : IResult
     {
         return new Result(false, errors);
     }
-
 }
 
 public class Result<T> : Result, IResult<T>

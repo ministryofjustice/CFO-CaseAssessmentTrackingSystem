@@ -33,8 +33,8 @@ public class PaymentBackgroundService(IServiceProvider provider, IConfiguration 
             .Handle<RecordThroughTheGatePaymentConsumer>(provider)
             .Handle<RecordWingInductionPaymentConsumer>(provider)
             .Handle<RecordReassessmentPaymentConsumer>(provider)
-            .Handle<RecordCsoScores>(provider)
-            .Handle<RecordCpmScores>(provider);
+            .Handle<RecordCpmScores>(provider)
+            .Handle<GenerateDipSampleDocument>(provider);
 
         _bus = Configure.With(_activator)
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.PaymentService)
@@ -54,8 +54,8 @@ public class PaymentBackgroundService(IServiceProvider provider, IConfiguration 
         await _bus.Subscribe<PRIThroughTheGateCompletedIntegrationEvent>();
         await _bus.Subscribe<WingInductionCreatedIntegrationEvent>();
         await _bus.Subscribe<AssessmentScoredIntegrationEvent>();
-        await _bus.Subscribe<OutcomeQualityDipSampleCompletedIntegrationEvent>();
         await _bus.Subscribe<OutcomeQualityDipSampleVerifyingIntegrationEvent>();
+        await _bus.Subscribe<OutcomeQualityDipSampleFinalisingIntegrationEvent>();
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)

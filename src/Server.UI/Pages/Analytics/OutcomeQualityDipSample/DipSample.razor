@@ -5,12 +5,16 @@
 @inherits CatsComponentBase
 
 @using Cfo.Cats.Application.Features.ManagementInformation.DTOs
+@using Cfo.Cats.Application.Features.PerformanceManagement.DTOs
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Analytics.Components
 @using MudBlazor.Utilities
-@using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Application.SecurityConstants
 
-<CatsBreadcrumbs Items="@Items" />
+@if (_sample is not null)
+{
+    <CatsBreadcrumbs Items="@Items" />
+}
 
 @if(_loading)
 {
@@ -19,17 +23,17 @@
 
 <MudContainer Style="height: 100%; width: 100%; min-width: 480px" MaxWidth="MaxWidth.ExtraExtraLarge" Class="my-2">
     <MudDataGrid @ref="_table"
-                 T="DipSampleParticipantSummaryDto"
-                 ServerData="@(ServerReload)"
-                 Loading="@_loading"
-                 FixedHeader="true"
-                 FixedFooter="true"
-                 Virtualize="true"
-                 Hover="false"
-                 Breakpoint="Breakpoint.Sm"
-                 Dense="true"
-                 Striped="true"
-                 Bordered="false">
+                    T="DipSampleParticipantSummaryDto"
+                    ServerData="@(ServerReload)"
+                    Loading="@_loading"
+                    FixedHeader="true"
+                    FixedFooter="true"
+                    Virtualize="true"
+                    Hover="false"
+                    Breakpoint="Breakpoint.Sm"
+                    Dense="true"
+                    Striped="true"
+                    Bordered="false">
         <ToolBarContent>
             <MudForm Model="Query" FieldChanged="RefreshAsync" Style="display: contents">
                 <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
@@ -38,24 +42,46 @@
                 <MudSpacer />
                 <MudStack>
                     <MudStack Row="true" Class="gap-0">
+                        <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipReview">
+                            <MudButton Variant="Variant.Outlined"
+                                        Color="Color.Secondary"
+                                        StartIcon="@Icons.Material.Filled.Reviews"
+                                        Size="Size.Small"
+                                        OnClick="OnReview"
+                                        Disabled="@(_sample?.Status != DipSampleStatus.AwaitingReview)"
+                                        IconColor="Color.Secondary">
+                                <MudText>@ConstantString.Reviewed</MudText>
+                            </MudButton>
+                        </AuthorizeView>
                         <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
                             <MudButton Variant="Variant.Outlined"
-                                       Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Done"
-                                       Size="Size.Small"
-                                       OnClick="OnVerify"
-                                       Disabled="@(_sample?.Status != DipSampleStatus.Reviewed)"
-                                       IconColor="Color.Surface">
+                                        Color="Color.Secondary"
+                                        StartIcon="@Icons.Material.Filled.Done"
+                                        Size="Size.Small"
+                                        OnClick="OnVerify"
+                                        Disabled="@(_sample?.Status != DipSampleStatus.Reviewed)"
+                                        IconColor="Color.Secondary">
                                 <MudText>@ConstantString.Verify</MudText>
                             </MudButton>
                         </AuthorizeView>
+                        <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipFinalise">
+                            <MudButton Variant="Variant.Outlined"
+                                        Color="Color.Secondary"
+                                        StartIcon="@Icons.Material.Filled.DoneAll"
+                                        Size="Size.Small"
+                                        OnClick="OnFinalise"
+                                        Disabled="@(_sample?.Status != DipSampleStatus.Verified)"
+                                        IconColor="Color.Secondary">
+                                <MudText>@ConstantString.Finalise</MudText>
+                            </MudButton>
+                        </AuthorizeView>
                         <MudButton Disabled="true"
-                                   Variant="Variant.Outlined"
-                                   Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.Download"
-                                   Size="Size.Small"
-                                   OnClick="OnExport"
-                                   IconColor="Color.Surface">
+                                    Variant="Variant.Outlined"
+                                    Color="Color.Secondary"
+                                    StartIcon="@Icons.Material.Filled.Download"
+                                    Size="Size.Small"
+                                    OnClick="OnExport"
+                                    IconColor="Color.Surface">
                             @if (_downloading)
                             {
                                 <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
@@ -68,7 +94,7 @@
                         </MudButton>
                     </MudStack>
                     <MudTextField DebounceInterval="500" @bind-Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
-                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                                    AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
                     </MudTextField>
                 </MudStack>
             </MudForm>
@@ -129,7 +155,7 @@
                 <CellTemplate>
                     <MudStack Row="true" Class="gap-1 align-center">
                         @* Display warning if CSO & CPM disagree *@
-                        
+
                         <MudMenu ActivationEvent="MouseEvent.MouseOver" Disabled="context.Item.ComplianceAnswer.IsAnswer is false">
                             <ActivatorContent>
                                 <DipSampleAnswerChip Answer="context.Item.ComplianceAnswer" />
@@ -171,4 +197,5 @@
             <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
         </PagerContent>
     </MudDataGrid>
+    
 </MudContainer>

@@ -1,9 +1,9 @@
 ﻿using Cfo.Cats.Application.Common.Interfaces.Identity;
 using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Features.ManagementInformation.Commands;
-using Cfo.Cats.Application.Features.ManagementInformation.Commands.AddOutcomeQualityDipSampleCso;
+using Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
+
 using Microsoft.JSInterop;
 
 namespace Cfo.Cats.Server.UI.Pages.Analytics.OutcomeQualityDipSample;
@@ -25,13 +25,13 @@ public partial class ParticipantDetails
     private List<BreadcrumbItem> Items =>
     [
         new("Outcome Quality", href: "/pages/analytics/outcome-quality-dip-sampling/", icon: Icons.Material.Filled.Home),
-        new("Sample", href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}", icon: Icons.Material.Filled.List),
+        new($"{_participant?.ContractName} ({_participant?.PeriodFromDesc})", href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}", icon: Icons.Material.Filled.List),
         new(ParticipantId, href: $"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/{ParticipantId}", icon: Icons.Material.Filled.Person)
     ];
 
-    private Command? _csoCommand;
+    private SubmitCsoResponse.Command? _csoCommand;
 
-    private Command SubmitCsoCommand
+    private SubmitCsoResponse.Command SubmitCsoCommand
     {
         get
         {
@@ -45,9 +45,9 @@ public partial class ParticipantDetails
         set => _csoCommand = value;
     }
 
-    private AddOutcomeQualityDipSampleCpm.Command? _cpmCommand;
+    private SubmitCpmResponse.Command? _cpmCommand;
 
-    private AddOutcomeQualityDipSampleCpm.Command SubmitCpmCommand
+    private SubmitCpmResponse.Command SubmitCpmCommand
     {
         get
         {
@@ -61,6 +61,21 @@ public partial class ParticipantDetails
         set
         {
             _cpmCommand = value;
+        }
+    }
+
+    private SubmitFinalResponse.Command? _finalCommand;
+
+    private SubmitFinalResponse.Command SubmitFinalCommand
+    {
+        get => _finalCommand ??= new()
+        {
+            ParticipantId = ParticipantId,
+            DipSampleId = SampleId
+        };
+        set
+        {
+            _finalCommand = value;
         }
     }
 
@@ -110,6 +125,12 @@ public partial class ParticipantDetails
                         SupportsJourney = _participant.SupportsJourney,
                         AlignsWithDoS = _participant.AlignsWithDoS
                     };
+
+                    SubmitFinalCommand = SubmitFinalCommand with
+                    {
+                        Comments = _participant.FinalComments,
+                        ComplianceAnswer = _participant.FinalAnswer
+                    };
                 }
                 else
                 {
@@ -127,7 +148,7 @@ public partial class ParticipantDetails
     protected override async Task OnAfterRenderAsync(bool firstRender) 
         => await JSRuntime.InvokeVoidAsync("removeInlineStyle", ".two-columns");
 
-    private async Task CsoResponseSubmitted(Command command)
+    private async Task CsoResponseSubmitted(SubmitCsoResponse.Command command)
     {
         var mediator = GetNewMediator();
         var result = await mediator.Send(command);
@@ -145,11 +166,29 @@ public partial class ParticipantDetails
         }
     }
 
-    private async Task CpmResponseSubmitted(AddOutcomeQualityDipSampleCpm.Command command)
+    private async Task CpmResponseSubmitted(SubmitCpmResponse.Command command)
     {
         var mediator = GetNewMediator();
         var result = await mediator.Send(command);
         if (IsDisposed == false)
+        {
+            if (result is { Succeeded: true })
+            {
+                Snackbar.Add("Submission saved", Severity.Info);
+                Navigation.NavigateTo($"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/");
+            }
+            else
+            {
+                Snackbar.Add($"Failed: {result.ErrorMessage}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task FinalResponseSubmitted(SubmitFinalResponse.Command command)
+    {
+        var mediator = GetNewMediator();
+        var result = await mediator.Send(command);
+        if(IsDisposed == false)
         {
             if (result is { Succeeded: true })
             {

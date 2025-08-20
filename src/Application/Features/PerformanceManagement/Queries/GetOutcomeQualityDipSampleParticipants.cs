@@ -1,9 +1,9 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Application.Features.ManagementInformation.DTOs;
+using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
-namespace Cfo.Cats.Application.Features.ManagementInformation.Queries;
+namespace Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 
 public static class GetOutcomeQualityDipSampleParticipants 
 {
