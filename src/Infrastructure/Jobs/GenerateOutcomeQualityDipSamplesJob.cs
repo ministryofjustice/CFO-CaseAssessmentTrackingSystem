@@ -46,6 +46,7 @@ public class GenerateOutcomeQualityDipSamplesJob(
                 return;
             }
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             var query =
                 from ep in unitOfWork.DbContext.EnrolmentPayments
                 join t in unitOfWork.DbContext.ParticipantOutgoingTransferQueue on ep.ParticipantId equals t.ParticipantId into tj
@@ -56,8 +57,10 @@ public class GenerateOutcomeQualityDipSamplesJob(
                     && ep.EligibleForPayment
                     && ep.Approved >= periodFrom
                     && ep.Approved <= periodTo
+                    && p.EnrolmentLocation.Contract.Id == p.CurrentLocation.Contract.Id
                     && sub == null // Exclude cross-contract transfers
                 select new { ep.ParticipantId, ep.LocationId, ep.LocationType, ep.ContractId };
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
             var enrolments = await query
                 .AsNoTracking()
