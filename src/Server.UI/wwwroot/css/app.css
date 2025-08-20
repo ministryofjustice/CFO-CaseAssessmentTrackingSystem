@@ -56,3 +56,7 @@
 .pointer-cursor {
     cursor: pointer;
 }
+
+.mud-rating-item.mud-disabled * {
+    color: inherit !important;
+}
