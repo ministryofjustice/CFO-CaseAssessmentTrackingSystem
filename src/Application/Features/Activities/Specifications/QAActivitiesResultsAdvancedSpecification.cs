@@ -6,7 +6,7 @@ public class QAActivitiesResultsAdvancedSpecification : Specification<Activity>
 {
     public QAActivitiesResultsAdvancedSpecification(QAActivitiesResultsAdvancedFilter filter)
     {
-        Query.Where(a => a.OwnerId == filter.CurrentUser)            
+        Query.Where(a => a.OwnerId == filter.CurentActiveUser.UserId)            
              .Where(a => a.ParticipantId == filter.ParticipantId, filter.ParticipantId is not null)
              .Where(a => a.TaskId == filter.TaskId, filter.TaskId is not null)
              .Where(a => a.ObjectiveId == filter.ObjectiveId, filter.ObjectiveId is not null)

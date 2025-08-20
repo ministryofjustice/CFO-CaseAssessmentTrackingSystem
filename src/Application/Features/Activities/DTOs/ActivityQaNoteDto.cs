@@ -4,6 +4,7 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs;
 #nullable disable
 public class ActivityQaNoteDto
 {
+    public Guid ActivityId { get; set; }
     public required DateTime Created { get; set; }
     public required string Message { get; set; }
     public required string CreatedBy { get; set; }
@@ -14,7 +15,7 @@ public class ActivityQaNoteDto
     {
         public Mapper()
         {
-            CreateMap<ActivityQueueEntryNote, ActivityQaNoteDto>()
+            CreateMap<ActivityQueueEntryNote, ActivityQaNoteDto>()                
                 .ForMember(target => target.CreatedBy, options => options.MapFrom(source => source.CreatedByUser.DisplayName))
                 .ForMember(target => target.Message, options => options.MapFrom(source => source.Message))
                 .ForMember(target => target.Created, options => options.MapFrom(source => source.Created))

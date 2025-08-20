@@ -17,7 +17,9 @@ public class QAActivitiesResultsSummaryDto
 
     [Description("Additional Information")]
     public string? AdditionalInformation { get; set; }
-  
+
+    public ActivityQaNoteDto[] Notes { get; set; } = [];
+
     public class Mapping : Profile
     {
         public Mapping()

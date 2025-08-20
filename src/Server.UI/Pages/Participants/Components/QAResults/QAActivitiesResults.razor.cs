@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Interfaces.Locations;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Queries;
 using Cfo.Cats.Application.Features.Locations.DTOs;
@@ -9,23 +10,23 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults;
 
 public partial class QAActivitiesResults
 {
-    IEnumerable<LocationDto> locations = [];
-    PaginatedData<QAActivitiesResultsSummaryDto>? activities;
-    bool _loading;
+    private IEnumerable<LocationDto> _locations = [];
+    private PaginatedData<QAActivitiesResultsSummaryDto>? _activities;
+    private bool _loading;
 
     public required QAActivitiesResultsWithPagination.Query Model { get; set; }
     
     [Inject]
     private ILocationService LocationService { get; set; } = default!;
-
-    [Inject]
-    private ICurrentUserService CurrentUser { get; set; } = default!;
+        
+    [CascadingParameter]
+    public UserProfile CurrentUser { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
         Model = new QAActivitiesResultsWithPagination.Query()
         {
-            CurrentUser = CurrentUser.UserId!,
+            CurentActiveUser = CurrentUser,
             PageSize = 5,
             OrderBy = "Created",
             SortDirection = $"{SortDirection.Descending}"
@@ -34,8 +35,8 @@ public partial class QAActivitiesResults
         try
         {
             _loading = true;
-            activities = await GetNewMediator().Send(Model);
-            locations = LocationService
+            _activities = await GetNewMediator().Send(Model);
+            _locations = LocationService
                 .GetVisibleLocations(CurrentUser.TenantId!)
                 .ToList();
 
@@ -49,43 +50,43 @@ public partial class QAActivitiesResults
         await base.OnInitializedAsync();
     }
 
-    async Task OnRefresh()
+    private async Task OnRefresh()
     {
         Model.PageSize = 5;
         Model.OrderBy = "Created";
         Model.SortDirection = $"{SortDirection.Descending}";
 
-        activities = await GetNewMediator().Send(Model);
+        _activities = await GetNewMediator().Send(Model);
     }
 
-    Task OnPaginationChanged(int arg)
+    private Task OnPaginationChanged(int arg)
     {
         Model.PageNumber = arg;
         return OnRefresh();
     }
 
-    Task OnDateRangeChanged(DateRange range)
+    private Task OnDateRangeChanged(DateRange range)
     {
         Model.CommencedStart = range.Start;
         Model.CommencedEnd = range.End;
         return OnRefresh();
     }
 
-    Task OnLocationChanged() => OnRefresh();
+    private Task OnLocationChanged() => OnRefresh();
 
-    Task OnActivityTypesChanged(IReadOnlyCollection<ActivityType>? types)
+    private Task OnActivityTypesChanged(IReadOnlyCollection<ActivityType>? types)
     {
         Model.IncludeTypes = types?.ToList();
         return OnRefresh();
     }
 
-    Task OnExcludeNotInProgress(bool exclude)
+    private Task OnExcludeNotInProgress(bool exclude)
     {
         Model.Status = exclude ? ActivityStatus.PendingStatus : null;
         return OnRefresh();
     }
 
-    async Task EditActivity(QAActivitiesResultsSummaryDto activity)
+    private async Task EditActivity(QAActivitiesResultsSummaryDto activity)
     {   
         var parameters = new DialogParameters<EditActivityDialog>()
         {

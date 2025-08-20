@@ -1,10 +1,11 @@
-﻿using Cfo.Cats.Application.Features.Locations.DTOs;
+﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Locations.DTOs;
 
 namespace Cfo.Cats.Application.Features.Activities.Specifications;
 
 public class QAActivitiesResultsAdvancedFilter : PaginationFilter
 {
-    public required string CurrentUser { get; set; }
+    public required UserProfile CurentActiveUser { get; set; }
     public string? ParticipantId { get; set; }
     public Guid? TaskId { get; set; }
     public Guid? ObjectiveId { get; set; }
