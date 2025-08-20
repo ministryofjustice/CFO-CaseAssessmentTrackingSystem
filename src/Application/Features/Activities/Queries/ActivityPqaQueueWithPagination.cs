@@ -4,7 +4,7 @@ using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Activities;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Activities.Queries;
 
