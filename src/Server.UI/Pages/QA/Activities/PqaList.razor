@@ -5,9 +5,10 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Humanizer
 
-@inherits CatsComponentBase;
+@inherits CatsComponentBase
 
 @inject IStringLocalizer<PQA> L
+@inject ILogger<PqaList> Logger
 
 @attribute [Authorize(Policy = SecurityPolicies.Pqa)]
 
@@ -194,7 +195,7 @@
     {
         Navigation.NavigateTo($"/pages/qa/activities/pqa/{args.Item.Id}");
     }
-    
+
     private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state)
     {
         try
@@ -214,7 +215,7 @@
             _loading = false;
         }
     }
-    
+
     private async Task OnSearch(string text)
     {
         if (_loading)
@@ -225,7 +226,7 @@
         Query.Keyword = text;
         await _table.ReloadServerData();
     }
-    
+
     private async Task OnRefresh()
     {
         _selectedItems = new ();
@@ -252,8 +253,9 @@
             Snackbar.Add(result.ErrorMessage, Severity.Error);
 
         }
-        catch
+        catch(Exception ex)
         {
+            Logger.LogError(ex, "An error has occurred while generating the PQA Export");
             Snackbar.Add($"An error occurred while generating your document.", Severity.Error);
         }
         finally
