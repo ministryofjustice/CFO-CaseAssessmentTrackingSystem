@@ -1,0 +1,83 @@
+﻿@using Cfo.Cats.Application.Features.Dashboard.DTOs
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@using Humanizer
+
+@inherits CatsComponentBase
+
+<MudItem md="12" lg="6">
+    @if (_loading)
+    {
+        <LoadingCard Title="Latest Engagements" />
+    }
+    else if (Model is { Succeeded: true, Data: not null })
+    {
+        <MudCard style="height:100%">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">Latest Engagements</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudTable Items="Model.Data" Hover Striped Bordered="false" Dense SortLabel="Sort by">
+                    <HeaderContent>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object>(x => x.FullName)">
+                                Participant
+                            </MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object>(x => x.Category)">
+                                Category
+                            </MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object>(x => x.LastEngagedOn)">
+                                Engaged On
+                            </MudTableSortLabel>
+                        </MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Participant">
+                            <MudStack Spacing="0">
+                                <MudText>@context.FullName</MudText>
+                                <MudLink Typo="Typo.body2" Href=@($"/pages/participants/{context.ParticipantId}")>
+                                    @context.ParticipantId
+                                </MudLink>
+                            </MudStack>
+                        </MudTd>
+                        <MudTd DataLabel="Category">
+                            <MudStack Row="true">
+                                <MudTooltip Text="@context.Description">
+                                    <MudChip T="string" Icon="@Icons.Material.Rounded.Info" Size="Size.Small">
+                                        @context.Category
+                                    </MudChip>
+                                </MudTooltip>
+                            </MudStack>
+                        </MudTd>
+                        <MudTd DataLabel="Engaged On">
+                            <MudStack Row AlignItems="AlignItems.Center">
+                                <MudStack AlignItems="AlignItems.Center" Spacing="0">
+                                    <MudText>@context.LastEngagedOn.ToShortDateString()</MudText>
+                                    <MudText Typo="Typo.body2">(@context.LastEngagedOn.Humanize())</MudText>
+                                </MudStack>
+                                @if (context.HasNotEngagedRecently)
+                                {
+                                    <MudTooltip Text="This participant has not engaged recently. Consider archiving.">
+                                        <MudIcon Icon="@Icons.Material.Rounded.Warning" Color="Color.Warning" Size="Size.Small" />
+                                    </MudTooltip>
+                                }
+                            </MudStack>
+                        </MudTd>
+                    </RowTemplate>
+                    <NoRecordsContent>
+                        <MudText>@ConstantString.NoRecords</MudText>
+                    </NoRecordsContent>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new[] { 5, 10, 50 }" />
+                    </PagerContent>
+                </MudTable>
+            </MudCardContent>
+        </MudCard>
+    }
+</MudItem>

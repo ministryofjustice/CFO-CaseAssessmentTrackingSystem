@@ -35,6 +35,14 @@
             <MyRiskDueComponent />
         }
 
+        @if (_showMyTeamsParticipants)
+        {
+            <MyTeamsParticipantsLatestEngagementComponent />
+        }
+        else
+        {
+            <MyParticipantsLatestEngagementComponent />
+        }
         
         @if (_showQaPots)
         {
