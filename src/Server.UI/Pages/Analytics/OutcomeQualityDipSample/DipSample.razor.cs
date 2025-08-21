@@ -1,6 +1,7 @@
 using Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
+using Cfo.Cats.Server.UI.Components.Dialogs;
 
 namespace Cfo.Cats.Server.UI.Pages.Analytics.OutcomeQualityDipSample;
 
@@ -68,7 +69,7 @@ public partial class DipSample
             DipSampleId = SampleId
         });
 
-        if(IsDisposed)
+        if (IsDisposed)
         {
             return;
         }
@@ -96,29 +97,52 @@ public partial class DipSample
         }
     }
 
-    private async Task OnReview()
+    private Task OnReview() => PerformAction(
+        new ReviewDipSampleOutcome.Command() { SampleId = SampleId },
+        "Are you sure you are ready to mark this sample as reviewed? This cannot be undone.",
+        "Review Sample",
+        "Review submitted"
+    );
+
+    private Task OnVerify() => PerformAction(
+        new VerifyOutcomeQualityDipSample.Command() { SampleId = SampleId },
+        "Are you sure you are ready to mark this sample as verified? This cannot be undone.",
+        "Verify Sample",
+        "Verification submitted"
+    );
+
+    private  Task OnFinalise() => PerformAction(
+        new FinaliseOutcomeQualityDipSample.Command() { SampleId = SampleId },
+        "Are you sure you are ready to mark this sample as finalised? This cannot be undone.",
+        "Finalise Sample",
+        "Finalisation submitted"
+    );
+    
+    private async Task PerformAction(IRequest<Result> command, string confirmationMessage, string confirmationTitle, string successMessage)
     {
         try
         {
+            if (await ShowConfirmation(confirmationMessage, confirmationTitle))
+            {
                 _loading = true;
 
-            var command = new ReviewDipSampleOutcome.Command() { SampleId = SampleId };
-            var result = await GetNewMediator().Send(command);
+                var result = await GetNewMediator().Send(command);
 
-            if (IsDisposed)
-            {
-                return;
-            }
+                if (IsDisposed)
+                {
+                    return;
+                }
 
-            if (result is { Succeeded: false })
-            {
-                Snackbar.Add(result.ErrorMessage, Severity.Error);
+                if (result is { Succeeded: false })
+                {
+                    Snackbar.Add(result.ErrorMessage, Severity.Error);
+                }
+                else
+                {
+                    Snackbar.Add(successMessage);
+                }
+                await RefreshAsync();
             }
-            else
-            {
-                Snackbar.Add("Review submitted");
-            }
-            await RefreshAsync();
         }
         finally
         {
@@ -126,71 +150,21 @@ public partial class DipSample
         }
     }
 
-    private async Task OnVerify()
+    private async Task<bool> ShowConfirmation(string message, string title)
     {
-        try
+        var parameters = new DialogParameters<ConfirmationDialog>
         {
-            _loading = true;
+            { x => x.ContentText, message }
+        };
+        
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>(title, parameters);
+        var result = await dialog.Result;
 
-            var command = new VerifyOutcomeQualityDipSample.Command()
-            {
-                SampleId = SampleId
-            };
-
-            var result = await GetNewMediator().Send(command);
-
-            if (IsDisposed)
-            {
-                return;
-            }
-
-            if (result is { Succeeded: false })
-            {
-                Snackbar.Add(result.ErrorMessage, Severity.Error);
-            }
-            else
-            {
-                Snackbar.Add("Verification submitted.");
-            }
-            await RefreshAsync();
-        }
-        finally
+        return result switch
         {
-            _loading = false;
-        }
+            { Canceled: false } => true,
+            _ => false,
+        };
     }
 
-    private async Task OnFinalise()
-    {
-        try
-        {
-            _loading = true;
-
-            var command = new FinaliseOutcomeQualityDipSample.Command()
-            {
-                SampleId = SampleId
-            };
-
-            var result = await GetNewMediator().Send(command);
-
-            if (IsDisposed)
-            {
-                return;
-            }
-
-            if (result is { Succeeded: false })
-            {
-                Snackbar.Add(result.ErrorMessage, Severity.Error);
-            }
-            else
-            {
-                Snackbar.Add("Finalisation submitted.");
-            }
-            await RefreshAsync();
-        }
-        finally
-        {
-            _loading = false;
-        }
-    }
 }
