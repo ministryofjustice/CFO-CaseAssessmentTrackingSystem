@@ -100,8 +100,8 @@ public partial class DipSample
     private Task OnReview() => PerformAction(
         new ReviewDipSampleOutcome.Command() { SampleId = SampleId },
         "Are you sure you are ready to mark this sample as reviewed? This cannot be undone.",
-        "Mark Reviewed",
-        "Review Submitted"
+        "Review Sample",
+        "Review submitted"
     );
 
     private Task OnVerify() => PerformAction(
