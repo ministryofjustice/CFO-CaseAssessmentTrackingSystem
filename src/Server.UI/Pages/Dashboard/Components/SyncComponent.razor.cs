@@ -19,9 +19,12 @@ public partial class SyncComponent
             var query = from p in uow.DbContext.Participants
                 where p.LastSyncDate.HasValue
                 group p by p.LastSyncDate!.Value.Date into g
+                orderby g.Key descending
                 select new SyncRecord(g.Key, g.Count());
                 
-            var results = await query.ToArrayAsync();
+            var results = await query.AsNoTracking()
+                .ToArrayAsync();
+
             if (IsDisposed == false)
             {
                 _records = results;
@@ -34,5 +37,5 @@ public partial class SyncComponent
         
     }
 
-    public record SyncRecord(DateTime TheDate, int RecordCount);
+    private record SyncRecord(DateTime TheDate, int RecordCount);
 }
