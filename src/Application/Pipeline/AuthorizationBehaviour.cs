@@ -24,88 +24,100 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
         CancellationToken cancellationToken
     )
     {
-        var authorizeAttributes = request
-            .GetType()
-            .GetCustomAttributes<RequestAuthorizeAttribute>()
-            .ToArray();
-        
-        if (authorizeAttributes.Any() == false)
-        {
-            // if we have no authorization attribute, then we must explicitly allow all or error
-            var anyUserAttributes = request.GetType()
-                .GetCustomAttributes<AllowAnonymousAttribute>()
-                .SingleOrDefault();
+        var span = SentrySdk.GetSpan()?
+            .StartChild("authorization", "Authorization checks");
 
-            if (anyUserAttributes == null)
+        try
+        {
+            var authorizeAttributes = request
+           .GetType()
+           .GetCustomAttributes<RequestAuthorizeAttribute>()
+           .ToArray();
+
+            if (authorizeAttributes.Any() == false)
             {
-                throw new UnauthorizedAccessException("Invalid authorization configuration.");
-            }
-        }
+                // if we have no authorization attribute, then we must explicitly allow all or error
+                var anyUserAttributes = request.GetType()
+                    .GetCustomAttributes<AllowAnonymousAttribute>()
+                    .SingleOrDefault();
 
-        // Must be authenticated user
-        var userId = _currentUserService.UserId;
-        if (string.IsNullOrEmpty(userId))
-        {
-            throw new UnauthorizedAccessException();
-        }
-
-        // DefaultRole-based authorization
-        var authorizeAttributesWithRoles = authorizeAttributes
-            .Where(a => !string.IsNullOrWhiteSpace(a.Roles))
-            .ToArray();
-
-        if (authorizeAttributesWithRoles.Any())
-        {
-            var authorized = false;
-
-            foreach (var roles in authorizeAttributesWithRoles.Select(a => a.Roles.Split(',')))
-            {
-                foreach (var role in roles)
+                if (anyUserAttributes == null)
                 {
-                    var isInRole = await _identityService.IsInRoleAsync(
+                    throw new UnauthorizedAccessException("Invalid authorization configuration.");
+                }
+            }
+
+            // Must be authenticated user
+            var userId = _currentUserService.UserId;
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            // DefaultRole-based authorization
+            var authorizeAttributesWithRoles = authorizeAttributes
+                .Where(a => !string.IsNullOrWhiteSpace(a.Roles))
+                .ToArray();
+
+            if (authorizeAttributesWithRoles.Any())
+            {
+                var authorized = false;
+
+                foreach (var roles in authorizeAttributesWithRoles.Select(a => a.Roles.Split(',')))
+                {
+                    foreach (var role in roles)
+                    {
+                        var isInRole = await _identityService.IsInRoleAsync(
+                            userId,
+                            role.Trim(),
+                            cancellationToken
+                        );
+                        if (isInRole)
+                        {
+                            authorized = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Must be a member of at least one role in roles
+                if (!authorized)
+                {
+                    throw new ForbiddenException("You are not authorized to access this resource.");
+                }
+            }
+
+            // Policy-based authorization
+            var authorizeAttributesWithPolicies = authorizeAttributes
+                .Where(a => !string.IsNullOrWhiteSpace(a.Policy))
+                .ToArray();
+            if (authorizeAttributesWithPolicies.Any())
+            {
+                foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
+                {
+                    var authorized = await _identityService.AuthorizeAsync(
                         userId,
-                        role.Trim(),
+                        policy,
                         cancellationToken
                     );
-                    if (isInRole)
+
+                    if (!authorized)
                     {
-                        authorized = true;
-                        break;
+                        throw new ForbiddenException(
+                            "You are not authorized to access this resource."
+                        );
                     }
                 }
             }
 
-            // Must be a member of at least one role in roles
-            if (!authorized)
-            {
-                 throw new ForbiddenException("You are not authorized to access this resource.");
-            }
+            // User is authorized / authorization not required
+            return await next(cancellationToken).ConfigureAwait(false);
         }
-
-        // Policy-based authorization
-        var authorizeAttributesWithPolicies = authorizeAttributes
-            .Where(a => !string.IsNullOrWhiteSpace(a.Policy))
-            .ToArray();
-        if (authorizeAttributesWithPolicies.Any())
+        finally
         {
-            foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
-            {
-                var authorized = await _identityService.AuthorizeAsync(
-                    userId,
-                    policy,
-                    cancellationToken
-                );
-
-                if (!authorized)
-                {
-                    throw new ForbiddenException(
-                        "You are not authorized to access this resource."
-                    );
-                }
-            }
+            span?.Finish();
         }
 
-        // User is authorized / authorization not required
-        return await next(cancellationToken).ConfigureAwait(false);
+       
     }
 }

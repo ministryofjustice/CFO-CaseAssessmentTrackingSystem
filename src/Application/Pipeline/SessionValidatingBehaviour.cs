@@ -8,19 +8,29 @@ public class SessionValidatingBehaviour<TRequest, TResponse>(ISessionService ses
     
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        var userId = currentUserService.UserId;
-        if (string.IsNullOrEmpty(userId))
-        {
-            throw new UnauthorizedAccessException("Session is not valid");
-        }
+        var span = SentrySdk.GetSpan()?
+            .StartChild("session validation", "Validating session");
 
-        if (sessionService.IsSessionValid(userId) == false)
+        try
         {
-            throw new UnauthorizedAccessException("Session is not valid");
-        }
+            var userId = currentUserService.UserId;
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new UnauthorizedAccessException("Session is not valid");
+            }
 
-        // session is valid
-        sessionService.UpdateActivity(userId);
-        return await next(cancellationToken).ConfigureAwait(false);
+            if (sessionService.IsSessionValid(userId) == false)
+            {
+                throw new UnauthorizedAccessException("Session is not valid");
+            }
+
+            // session is valid
+            sessionService.UpdateActivity(userId);
+            return await next(cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            span?.Finish();
+        }
     }
 }
