@@ -56,7 +56,9 @@ public class IswDto
                 .NotNull()
                 .WithMessage("You must enter Baseline achieved date")
                 .GreaterThanOrEqualTo(DateTime.Today.AddMonths(-3))
-                .WithMessage("The baseline achieved date must be within the last three months");
+                .WithMessage("The baseline achieved date must be within the last three months")
+                .Must(NotBeInTheFuture)
+                .WithMessage("The baseline achieved date cannot be in the future");
 
             RuleFor(x => x.HoursPerformedPre)
                 .Must(BeValidNumber)
@@ -97,5 +99,6 @@ public class IswDto
 
             return commencedOn >= consentDate;
         }
+        private bool NotBeInTheFuture(DateTime? date) => date < DateTime.UtcNow;
     }
 }
