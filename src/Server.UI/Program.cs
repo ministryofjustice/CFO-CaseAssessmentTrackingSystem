@@ -26,7 +26,8 @@ if (useSentry)
     {
         builder.Configuration.GetSection("Sentry").Bind(options);
         options.AddExceptionFilterForType<NavigationException>();
-        options.AddEntityFramework(); // If you use EF
+
+        options.AddEntityFramework(); 
     });
 }
 
@@ -39,13 +40,6 @@ if (app.Environment.IsDevelopment())
     using var scope = app.Services.CreateScope();
     var applicationDbContextInitializer = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitializer>();
     await applicationDbContextInitializer.InitialiseAsync();
-}
-
-// Add this middleware for tracing
-
-if (useSentry)
-{
-    app.UseSentryTracing();
 }
 
 app.MapDefaultEndpoints();

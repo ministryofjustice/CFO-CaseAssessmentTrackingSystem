@@ -6,6 +6,9 @@ public class AccessAuditingBehaviour<TRequest, TResponse>(IUnitOfWork unitOfWork
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
+        var span = SentrySdk.GetSpan()?
+            .StartChild("auditing", "Participant access auditing");
+
         var response = await next(cancellationToken);
         try
         {
@@ -21,6 +24,10 @@ public class AccessAuditingBehaviour<TRequest, TResponse>(IUnitOfWork unitOfWork
         catch
         {
             // do nothing. We do not want audit to break the system.
+        }
+        finally
+        {
+            span?.Finish();
         }
 
         return response;

@@ -24,39 +24,9 @@ public partial class Participant
 
     protected override async Task OnInitializedAsync()
     {
-        var transaction = SentrySdk.StartTransaction("Participant", "page.load");
-        SentrySdk.ConfigureScope(scope => scope.Transaction = transaction);
-
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
-
-        try
-        {
-            await Refresh(cts.Token);
-            await SetLatestParticipantAssessment(cts.Token);
-            ShowRightToWorkWarning();
-                
-        }
-        catch (OperationCanceledException)
-        {
-            transaction.Finish(SpanStatus.DeadlineExceeded);
-            SentrySdk.CaptureMessage("Page initialization timed out");
-            throw;
-        }
-        catch (Exception ex)
-        {
-            transaction.Finish(SpanStatus.InternalError);
-            SentrySdk.CaptureException(ex);
-            throw;
-        }
-        finally
-        {
-            if (transaction.IsFinished == false)
-            {
-                transaction.Finish();
-            }
-            SentrySdk.ConfigureScope(scope => scope.Transaction = null);
-        }
-
+        await Refresh(ComponentCancellationToken);
+        await SetLatestParticipantAssessment(ComponentCancellationToken);
+        ShowRightToWorkWarning();
     }
 
     private async Task SetLatestParticipantAssessment(CancellationToken cancellationToken)

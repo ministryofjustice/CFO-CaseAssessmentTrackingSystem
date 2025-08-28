@@ -24,42 +24,22 @@ public partial class Dashboard
 
     protected override async Task OnInitializedAsync()
     {
-        var transaction = SentrySdk.StartTransaction("Dashboard", "page.load");
-        SentrySdk.ConfigureScope(scope => scope.Transaction = transaction);
+        var state = await AuthState;
 
-        try
-        {
-            var state = await AuthState;
+        _showMyTeamsParticipants =
+            (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.UserHasAdditionalRoles)).Succeeded;
 
-            _showMyTeamsParticipants =
-                (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.UserHasAdditionalRoles)).Succeeded;
+        // these  follow the same logic for now no need to make the same check.
+        _showCaseWorkload = _showMyTeamsParticipants;
+        _showRiskDueAggregate = _showCaseWorkload;
 
-            // these  follow the same logic for now no need to make the same check.
-            _showCaseWorkload = _showMyTeamsParticipants;
-            _showRiskDueAggregate = _showCaseWorkload;
+        _showQaPots = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
 
-            _showQaPots = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
+        // this follows the same check as QA pots
+        _showSyncComponent = _showQaPots;
 
-            // this follows the same check as QA pots
-            _showSyncComponent = _showQaPots;
-
-            _showJobManagement = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions))
-                .Succeeded;
-        }
-        catch (Exception ex)
-        {
-            transaction.Finish(SpanStatus.InternalError);
-            SentrySdk.CaptureException(ex);
-            throw;
-        }
-        finally
-        {
-            if (transaction.IsFinished == false)
-            {
-                transaction.Finish();
-            }
-            SentrySdk.ConfigureScope(scope => scope.Transaction = null);
-        }
+        _showJobManagement = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions))
+            .Succeeded;
     }
 
   

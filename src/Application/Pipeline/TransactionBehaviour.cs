@@ -6,27 +6,29 @@ public class TransactionBehaviour<TRequest, TResponse>(IUnitOfWork unitOfWork, I
    
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        TResponse response;
-
-        await unitOfWork.BeginTransactionAsync();
+        var span = SentrySdk.GetSpan()?
+            .StartChild("transaction", "Database transaction pipeline");
 
         try
         {
-            response = await next(cancellationToken);
+            await unitOfWork.BeginTransactionAsync();
+            var response = await next(cancellationToken);
 
-            
             //await unitOfWork.SaveChangesAsync(cancellationToken);
             await eventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, cancellationToken);
 
             await unitOfWork.CommitTransactionAsync();
+            return response;
         }
         catch
         {
             await unitOfWork.RollbackTransactionAsync();
             throw;
         }
-
-        return response;
+        finally
+        {
+            span?.Finish();
+        }
     }
     
 }
