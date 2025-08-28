@@ -53,6 +53,7 @@ Task("Build")
              Arguments = "ef migrations script --no-build " +
                          "--project ./src/Infrastructure/Infrastructure.csproj " +
                          "--startup-project ./src/Server.UI/Server.UI.csproj " +
+                         "--configuration Release " +
                          "--output ./artifacts/migrations.sql --idempotent",
              WorkingDirectory = Context.Environment.WorkingDirectory // force repo root
          };
