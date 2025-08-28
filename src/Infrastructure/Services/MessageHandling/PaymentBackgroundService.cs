@@ -36,7 +36,7 @@ public class PaymentBackgroundService(IServiceProvider provider, IConfiguration 
             .Handle<RecordReassessmentPaymentConsumer>(provider)
             .Handle<RecordCpmScores>(provider)
             .Handle<GenerateDipSampleDocument>(provider)
-            .Handle<RecordLatestParticipantEngagementConsumer>(provider);
+            .Handle<RecordParticipantEngagementConsumer>(provider);
 
         _bus = Configure.With(_activator)
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.PaymentService)

@@ -10,7 +10,7 @@ public class PublishRiskEngagementEventHandler(IUnitOfWork unitOfWork, ICurrentU
     INotificationHandler<RiskInformationReviewedDomainEvent>    
 {
     public async Task Handle(RiskInformationCompletedDomainEvent notification, CancellationToken cancellationToken)
-        => await Handle(notification.Item, notification.DateOccurred.DateTime, "completed");
+        => await Handle(notification.Item, notification.DateOccurred.DateTime, "added");
 
     public async Task Handle(RiskInformationReviewedDomainEvent notification, CancellationToken cancellationToken)
         => await Handle(notification.Item, notification.DateOccurred.DateTime, "reviewed");

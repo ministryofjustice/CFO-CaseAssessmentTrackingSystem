@@ -11,8 +11,8 @@ public class PublishActivityEngagementEventHandler(IUnitOfWork unitOfWork, ICurr
     {
         var e = new ParticipantEngagedIntegrationEvent(
             ParticipantId: notification.Entity.ParticipantId,
-            Description: $"'{notification.Entity.Definition.Name}' at {notification.Entity.TookPlaceAtLocation.Name}",
-            Category: notification.Entity.Definition.Classification.Name,
+            Description: $"{notification.Entity.Category.Name} at {notification.Entity.TookPlaceAtLocation.Name}",
+            Category: notification.Entity.Definition.Type.Name,
             EngagedOn: DateOnly.FromDateTime(notification.Entity.CommencedOn),
             UserId: currentUserService.UserId!,
             TenantId: currentUserService.TenantId!);

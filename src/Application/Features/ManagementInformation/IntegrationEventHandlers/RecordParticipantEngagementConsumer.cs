@@ -4,7 +4,7 @@ using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordLatestParticipantEngagementConsumer(IUnitOfWork unitOfWork)
+public class RecordParticipantEngagementConsumer(IUnitOfWork unitOfWork)
     : IHandleMessages<ParticipantEngagedIntegrationEvent>
 {
     public async Task Handle(ParticipantEngagedIntegrationEvent message)
