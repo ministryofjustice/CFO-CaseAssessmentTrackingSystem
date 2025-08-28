@@ -70,5 +70,6 @@ public class DocumentTemplate : SmartEnum<DocumentTemplate>
     public static readonly DocumentTemplate EnrolmentPayments = new(nameof(EnrolmentPayments), 10);
     public static readonly DocumentTemplate InductionPayments = new(nameof(InductionPayments), 11);
     public static readonly DocumentTemplate SupportAndReferralPayments = new(nameof(SupportAndReferralPayments), 12);
+    public static readonly DocumentTemplate ParticipantsLatestEngagement = new(nameof(ParticipantsLatestEngagement), 13);
     public static readonly DocumentTemplate CumulativeFigures = new(nameof(CumulativeFigures), 100);
 }

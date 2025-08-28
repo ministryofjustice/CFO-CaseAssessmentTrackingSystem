@@ -9,12 +9,11 @@ public static class GetParticipantsLatestEngagement
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Query : IRequest<Result<IEnumerable<ParticipantEngagementDto>>>
     {
+        public required UserProfile CurrentUser { get; set; }
         public bool JustMyCases { get; set; } = false;
     }
 
-    private class Handler(
-        IUnitOfWork unitOfWork, 
-        ICurrentUserService currentUserService) : IRequestHandler<Query, Result<IEnumerable<ParticipantEngagementDto>>>
+    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<IEnumerable<ParticipantEngagementDto>>>
     {
         public async Task<Result<IEnumerable<ParticipantEngagementDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -31,8 +30,8 @@ public static class GetParticipantsLatestEngagement
                     .Take(1)
                     .DefaultIfEmpty()
                 join supportWorker in db.Users on engagement.UserId equals supportWorker.Id
-                where participant.Owner.TenantId.StartsWith(currentUserService.TenantId)
-                where (request.JustMyCases && participant.Owner.Id == currentUserService.UserId) || true
+                where participant.Owner.TenantId.StartsWith(request.CurrentUser.TenantId)
+                where (request.JustMyCases && participant.Owner.Id == request.CurrentUser.UserId) || true
                 where participant.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
                 orderby engagement.CreatedOn descending
                 select new ParticipantEngagementDto(
