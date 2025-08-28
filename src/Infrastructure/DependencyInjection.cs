@@ -29,6 +29,7 @@ using Cfo.Cats.Infrastructure.Services.Ordnance;
 using Cfo.Cats.Infrastructure.Services.Serialization;
 using MediatR;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -48,10 +49,10 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        IConfiguration configuration
-    )
+        IConfiguration configuration,
+        IWebHostEnvironment environment)
     {
-        services.AddSettings(configuration)
+        services.AddSettings(configuration, environment)
             .AddDatabase(configuration)
             .AddServices(configuration);
 
@@ -68,8 +69,8 @@ public static class DependencyInjection
 
     private static IServiceCollection AddSettings(
         this IServiceCollection services,
-        IConfiguration configuration
-    )
+        IConfiguration configuration,
+        IWebHostEnvironment environment)
     {
         services
             .Configure<IdentitySettings>(configuration.GetSection(IdentitySettings.Key))
@@ -100,6 +101,15 @@ public static class DependencyInjection
             .BindConfiguration(OutcomeQualityDipSampleSettings.Key)
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+        services.Configure<DocumentExportOptions>(options => {
+            options.TemplateDirectory = Path.Combine(
+                    environment.ContentRootPath,
+                    "Files",
+                    "Templates"
+                );
+        });
+            
 
         services.AddSingleton<IBus>(_ =>
         {
@@ -258,7 +268,7 @@ public static class DependencyInjection
         });
 
         services.AddQuartzJobsAndTriggers(configuration);
-        
+
         return services
             .AddSingleton<ISerializer, SystemTextJsonSerializer>()
             .AddScoped<ICurrentUserService, CurrentUserService>()
@@ -268,6 +278,7 @@ public static class DependencyInjection
             .AddScoped<ICommunicationsService, CommunicationsService>()
             .AddScoped<IExcelService, ExcelService>()
             .AddScoped<ICumulativeExcelService, CumulativeExcelService>()
+            .AddScoped<IOutcomeQualityDispSampleExcelService, OutcomeQualityDispSampleExcelService>()
             .AddScoped<IUploadService, UploadService>();
     }
 

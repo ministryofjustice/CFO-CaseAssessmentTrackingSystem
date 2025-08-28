@@ -22,6 +22,10 @@ public class OutcomeQualityDipSampleEntityTypeConfiguration : IEntityTypeConfigu
             .WithMany()
             .HasForeignKey(ds => ds.ReviewedBy);
 
+        builder.HasOne<ApplicationUser>()
+            .WithMany()
+            .HasForeignKey(ds => ds.VerifiedBy);
+
         builder.HasOne<Contract>()
             .WithMany()
             .HasForeignKey(ds => ds.ContractId);

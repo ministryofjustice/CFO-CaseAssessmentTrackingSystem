@@ -144,6 +144,8 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
         }
 
         Status = DipSampleStatus.Verified;
+        VerifiedBy = userId;
+        VerifiedOn = DateTime.UtcNow;
         CpmCompliant = Participants.Count(p => p.CpmIsCompliant.IsAccepted);
         CpmPercentage = CalculatePercentage(CpmCompliant.Value);
         CpmScore = CalculateScore(CpmPercentage.Value);
@@ -195,6 +197,8 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
     public DateTime? ReviewedOn { get; private set; }
     public string? ReviewedBy { get; private set; }
     public DipSampleStatus Status { get; private set; }
+    public string? VerifiedBy { get; private set; }
+    public DateTime? VerifiedOn { get; private set; }
 
     /// <summary>
     /// The size of the sample.

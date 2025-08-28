@@ -18,7 +18,9 @@ Task("AddMigration")
     var settings = new ProcessSettings {
         Arguments = $"ef migrations add {migrationName} " +
                     $"--project {infraProject} " +
-                    $"--startup-project {startupProject}",
+                    $"--startup-project {startupProject} " + 
+                    $"--configuration Debug " + 
+                    "--no-build",
         WorkingDirectory = MakeAbsolute(Directory("./"))
     };
 

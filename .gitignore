@@ -468,7 +468,7 @@ tools/
 
 # Ignore user uploaded files (Documents Service)
 Uploads/
-Files/
+
 
 /.vscode/settings.json
 /playwright-report/
