@@ -47,8 +47,12 @@ public class IswDto
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
                 RuleFor(c => c.WraparoundSupportStartedOn)
-                    .Must((command, commencedOn) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId!, commencedOn))
+                    .Must((command, wraparoundSupportStartedOn) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId!, wraparoundSupportStartedOn))
                     .WithMessage("Wraparound support start date cannot take place before the participant gave consent");
+
+                RuleFor(c => c.BaselineAchievedOn)
+                    .Must((command, baselineAchievedOn) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId!, baselineAchievedOn))
+                    .WithMessage("Baseline achieved date cannot take place before the participant gave consent");
             });
 
             // Backdated up to 3 months
@@ -86,9 +90,9 @@ public class IswDto
             return fractionalPart == 0.0 || fractionalPart == 0.25 || fractionalPart == 0.5 || fractionalPart == 0.75;
         }
 
-        private bool HaveOccurredOnOrAfterConsentWasGranted(string participantId, DateTime? commencedOn)
+        private bool HaveOccurredOnOrAfterConsentWasGranted(string participantId, DateTime? date)
         {
-            if (commencedOn is null)
+            if (date is null)
             {
                 return false;
             }
@@ -97,7 +101,7 @@ public class IswDto
 
             var consentDate = participant.CalculateConsentDate();
 
-            return commencedOn >= consentDate;
+            return date >= consentDate;
         }
         private bool NotBeInTheFuture(DateTime? date) => date < DateTime.UtcNow;
     }
