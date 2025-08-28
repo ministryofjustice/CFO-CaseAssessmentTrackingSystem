@@ -22,10 +22,7 @@ jobs:
       run: dotnet tool restore
 
     - name: Build, Test & Publish
-      run: dotnet cake --target=Publish --configuration=Release
-
-    - name: Generate Migration Script
-      run: dotnet cake --target=Script --configuration=Release
+      run: dotnet cake build.cake 
 
     # Upload build artifacts
     - name: Upload Published App
@@ -33,26 +30,15 @@ jobs:
       if: success()
       with:
         name: published-app
-        path: ./publish/
-        retention-days: 90
-
-    # Upload test results
-    - name: Upload Test Results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-results
-        path: |
-          **/TestResults/
-          **/*.trx
+        path: ./artifacts/
         retention-days: 90
 
     # Create zip archive of build artifacts for release
     - name: Create Build Artifacts Archive
       if: success() && github.ref == 'refs/heads/main'
       run: |
-        cd ./publish
-        zip -r ../build-artifacts.zip .
+        cd ./artifacts
+        zip -r ../artifacts.zip .
         cd ..
 
     # Generate tag and release names with daily build numbers
@@ -96,7 +82,7 @@ jobs:
       with:
         tag_name: ${{ env.TAG_NAME }}
         name: ${{ env.RELEASE_NAME }}
-        files: ./build-artifacts.zip
+        files: ./artifacts.zip
         draft: false
-        prerelease: false
+        prerelease: true
         generate_release_notes: true

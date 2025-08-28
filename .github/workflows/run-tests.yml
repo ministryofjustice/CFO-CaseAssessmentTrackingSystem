@@ -20,4 +20,4 @@ jobs:
       run: dotnet tool restore
 
     - name: Build, Test
-      run: dotnet cake --target=Test --configuration=Release
+      run: dotnet cake build.cake --target=Test 
