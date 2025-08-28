@@ -14,6 +14,8 @@ public class QAActivitiesResultsSummaryDto
     public required ActivityStatus Status { get; set; }
     public required DateTime Expiry { get; set; }
     public virtual Participant? Participant { get; protected set; }
+    public required DateTime ApprovedOn { get; set; }
+    public required DateTime LastModified { get; set; }
 
     [Description("Additional Information")]
     public string? AdditionalInformation { get; set; }
@@ -25,7 +27,8 @@ public class QAActivitiesResultsSummaryDto
         public Mapping()
         {
             CreateMap<Activity, QAActivitiesResultsSummaryDto>()
-                .ForMember(dest => dest.TookPlaceAtLocationName, opts => opts.MapFrom(src => src.TookPlaceAtLocation.Name));
+                .ForMember(dest => dest.TookPlaceAtLocationName,
+                           opts => opts.MapFrom(src => src.TookPlaceAtLocation.Name));
         }
     }
 }

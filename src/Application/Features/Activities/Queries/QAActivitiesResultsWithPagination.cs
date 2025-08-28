@@ -24,11 +24,26 @@ public static class QAActivitiesResultsWithPagination
                 .Include(a => a.Participant)
                 .ToListAsync(cancellationToken);
 
-            var filtered = data.Where(a => a.RequiresQa && (a.Status == ActivityStatus.PendingStatus || a.Status == ActivityStatus.ApprovedStatus));
+            var oneMonthAgo = DateTime.UtcNow.AddMonths(-1);
 
+            var filtered = data.Where(a => a.RequiresQa &&
+                (a.Status == ActivityStatus.PendingStatus ||
+                (a.Status == ActivityStatus.ApprovedStatus &&
+                (
+                    // If no commenced filter was applied, enforce last month restriction
+                    (!request.CommencedStart.HasValue
+                    && !request.CommencedEnd.HasValue
+                    && a.ApprovedOn >= oneMonthAgo) ||
+
+                    // If commenced filter was applied, just allow (since pre-filter already handled it)
+                    (request.CommencedStart.HasValue || request.CommencedEnd.HasValue)
+            ))));
+               
             var filteredDto = filtered
                   .AsQueryable()
                   .OrderByDescending(a => a.Status == ActivityStatus.PendingStatus.Value)
+                  .ThenByDescending(a => a.ApprovedOn)
+                  .ThenBy(a => a.LastModified)
                   .ThenBy($"{request.OrderBy} {request.SortDirection}")
                   .ProjectToPaginatedData<Activity, QAActivitiesResultsSummaryDto>(
                       request.Specification,
@@ -97,8 +112,7 @@ public static class QAActivitiesResultsWithPagination
                 .ThenInclude(n => n.CreatedByUser)
                 .ToListAsync(cancellationToken);
 
-            IEnumerable<ActivityQaNoteDto> MapNotes<T>(IEnumerable<T> queues,
-                                                        bool forceExternal = false) where T : class
+            IEnumerable<ActivityQaNoteDto> MapNotes<T>(IEnumerable<T> queues, bool forceExternal = false) where T : class
             {
                 foreach (dynamic q in queues)
                 {
