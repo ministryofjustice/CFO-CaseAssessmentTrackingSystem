@@ -10,55 +10,63 @@
     {
         <LoadingCard Title="Latest Engagements" />
     }
-    else if (Model is { Succeeded: true, Data: not null })
+    else
     {
         <MudCard style="height:100%">
             <MudCardHeader>
                 <CardHeaderContent>
-                    <MudStack Row="true">
-                        <MudText Typo="Typo.h5">Latest Engagements</MudText>
-                        <MudSpacer />
-                        <MudButton Disabled="@_downloading"
-                                   Variant="Variant.Outlined"
-                                   Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.Download"
-                                   Size="Size.Small"
-                                   Style="margin-right: 4px; margin-bottom: 4px"
-                                   OnClick="OnExport"
-                                   IconColor="Color.Surface">
-                            @if (_downloading)
-                            {
-                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                                <MudText Class="ms-2"> @ConstantString.Downloading</MudText>
-                            }
-                            else
-                            {
-                                <MudText>@ConstantString.Export</MudText>
-                            }
-                        </MudButton>
-                    </MudStack>
+                    <MudForm Model="Query" FieldChanged="RefreshAsync" Style="display: contents">
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.h5">Latest Engagements</MudText>
+                            <MudSpacer />
+                            <MudStack>
+                                <MudSwitch @bind-Value="Query.HideRecentEngagements" Label="Hide Recent" Color="Color.Info" />
+                                <MudButton Disabled="@_downloading"
+                                           Variant="Variant.Outlined"
+                                           Color="Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.Download"
+                                           Size="Size.Small"
+                                           Style="margin-right: 4px; margin-bottom: 4px"
+                                           OnClick="OnExport"
+                                           IconColor="Color.Surface">
+                                    @if (_downloading)
+                                    {
+                                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                        <MudText Class="ms-2"> @ConstantString.Downloading</MudText>
+                                    }
+                                    else
+                                    {
+                                        <MudText>@ConstantString.Export</MudText>
+                                    }
+                                </MudButton>
+                                <MudTextField DebounceInterval="500" @bind-Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                                </MudTextField>
+                            </MudStack>
+                        </MudStack>
+                    </MudForm>
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
-                <MudTable Items="Model.Data" Hover Striped Bordered="false" Dense SortLabel="Sort by">
+                <MudTable @ref="_table" ServerData="@(ServerReload)" Hover Striped Bordered="false" Dense SortLabel="Sort by" Loading="_loading">
                     <HeaderContent>
                         <MudTh>
-                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object>(x => x.FullName)">
+                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object>(x => x.FullName)" SortLabel="FullName">
                                 Participant
                             </MudTableSortLabel>
                         </MudTh>
                         <MudTh>
-                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object>(x => x.Category)">
+                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object?>(x => x.Category)" SortLabel="Category">
                                 Category
                             </MudTableSortLabel>
                         </MudTh>
                         <MudTh>
-                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object>(x => x.EngagedWithDisplayName)">
+                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object?>(x => x.EngagedWithDisplayName)" SortLabel="EngagedWith">
                                 Engaged With
                             </MudTableSortLabel>
                         </MudTh>
                         <MudTh>
-                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object>(x => x.EngagedOn)">
+                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object?>(x => x.EngagedOn)" SortLabel="EngagedOn">
                                  Engaged On
                             </MudTableSortLabel>
                         </MudTh>
@@ -73,13 +81,16 @@
                             </MudStack>
                         </MudTd>
                         <MudTd DataLabel="Category">
-                            <MudStack Row="true">
-                                <MudTooltip Text="@context.Description">
-                                    <MudChip T="string" Icon="@Icons.Material.Rounded.Info" Size="Size.Small">
-                                        @context.Category
-                                    </MudChip>
-                                </MudTooltip>
-                            </MudStack>
+                            @if(context.HasEngaged)
+                            {
+                                <MudStack Row="true">
+                                    <MudTooltip Text="@context.Description">
+                                        <MudChip T="string" Icon="@Icons.Material.Rounded.Info" Size="Size.Small">
+                                            @context.Category
+                                        </MudChip>
+                                    </MudTooltip>
+                                </MudStack>
+                            }
                         </MudTd>
                         <MudTd DataLabel="Engaged With">
                             <MudStack AlignItems="AlignItems.Start" Spacing="0">
@@ -89,15 +100,27 @@
                         </MudTd>
                         <MudTd DataLabel="Engaged On">
                             <MudStack Row AlignItems="AlignItems.Center">
-                                <MudStack AlignItems="AlignItems.Center" Spacing="0">
-                                    <MudText>@context.EngagedOn.ToShortDateString()</MudText>
-                                    <MudText Typo="Typo.body2">(@context.EngagedOn.Humanize())</MudText>
-                                </MudStack>
-                                @if (context.HasNotEngagedRecently)
+                                @if (context.HasEngaged)
                                 {
-                                    <MudTooltip Text="This participant has not engaged recently. Consider archiving.">
-                                        <MudIcon Icon="@Icons.Material.Rounded.Warning" Color="Color.Warning" Size="Size.Small" />
-                                    </MudTooltip>
+                                    <MudStack AlignItems="AlignItems.Center" Spacing="0">
+                                        <MudText>@context.EngagedOn?.ToShortDateString()</MudText>
+                                        <MudText Typo="Typo.body2">@context.EngagedOn?.Humanize()</MudText>
+                                    </MudStack>
+
+                                    if (context.HasEngagedRecently is false)
+                                    {
+                                        <MudTooltip Text="This participant has not engaged recently. Consider archiving.">
+                                            <MudIcon Icon="@Icons.Material.Rounded.Warning" Color="Color.Warning" Size="Size.Small" />
+                                        </MudTooltip>
+                                    }
+
+                                }
+                                else
+                                {
+                                    <MudText>Never</MudText>
+                                    <MudTooltip Text="This participant has never engaged.">
+                                        <MudIcon Icon="@Icons.Material.Rounded.Error" Color="Color.Error" Size="Size.Small" />
+                                    </MudTooltip>                                    
                                 }
                             </MudStack>
                         </MudTd>

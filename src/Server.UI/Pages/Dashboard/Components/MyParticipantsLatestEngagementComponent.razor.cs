@@ -11,31 +11,59 @@ public partial class MyParticipantsLatestEngagementComponent
 {
     private bool _loading;
     private bool _downloading;
-
-    private Result<IEnumerable<ParticipantEngagementDto>>? Model { get; set; }
+    private MudTable<ParticipantEngagementDto> _table = new();
 
     [CascadingParameter] public UserProfile CurrentUser { get; set; } = default!;
 
     private GetParticipantsLatestEngagement.Query Query { get; set; } = default!;
+    protected override Task OnInitializedAsync() => RefreshAsync();
 
-    protected override async Task OnInitializedAsync()
+    private async Task<TableData<ParticipantEngagementDto>> ServerReload(TableState state, CancellationToken cancellationToken)
     {
         try
         {
             _loading = true;
 
-            Query = new GetParticipantsLatestEngagement.Query()
-            {
-                JustMyCases = true,
-                CurrentUser = CurrentUser
-            };
+            Query.OrderBy = state.SortLabel ?? "EngagedOn";
+            Query.PageSize = state.PageSize;
+            Query.PageNumber = state.Page + 1;
+            Query.SortDirection = state.SortDirection == SortDirection.Ascending
+                ? SortDirection.Ascending.ToString()
+                : SortDirection.Descending.ToString();
 
-            Model = await GetNewMediator().Send(Query);
+            var result = await GetNewMediator().Send(Query, cancellationToken);
+
+            if (result is { Succeeded: true, Data: not null })
+            {
+                return new TableData<ParticipantEngagementDto> { TotalItems = result.Data.TotalItems, Items = result.Data.Items };
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Warning);
+                return new TableData<ParticipantEngagementDto> { TotalItems = 0, Items = [] };
+            }
         }
         finally
         {
             _loading = false;
+            StateHasChanged();
         }
+    }
+
+    private async Task RefreshAsync()
+    {
+        Query ??= new()
+        {
+            JustMyCases = true,
+            CurrentUser = CurrentUser
+        };
+
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        await _table.ReloadServerData();
     }
 
     private async Task OnExport()

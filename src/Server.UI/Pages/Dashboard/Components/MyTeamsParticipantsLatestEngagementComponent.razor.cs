@@ -1,40 +1,72 @@
-﻿using Cfo.Cats.Application.Common.Security;
+﻿using ActualLab.Fusion;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
+using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
+using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
 
 public partial class MyTeamsParticipantsLatestEngagementComponent
 {
-    private bool _loading;
+    private bool _loading = false;
     private bool _downloading;
-
-    private Result<IEnumerable<ParticipantEngagementDto>>? Model { get; set; }
+    private MudTable<ParticipantEngagementDto> _table = new();
 
     [CascadingParameter] public UserProfile CurrentUser { get; set; } = default!;
 
     private GetParticipantsLatestEngagement.Query Query { get; set; } = default!;
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync() => RefreshAsync();
+
+    private async Task<TableData<ParticipantEngagementDto>> ServerReload(TableState state, CancellationToken cancellationToken)
     {
         try
         {
             _loading = true;
 
-            Query = new GetParticipantsLatestEngagement.Query()
-            {
-                JustMyCases = false,
-                CurrentUser = CurrentUser
-            };
+            Query.OrderBy = state.SortLabel ?? "EngagedOn";
+            Query.PageSize = state.PageSize;
+            Query.PageNumber = state.Page + 1;
+            Query.SortDirection = state.SortDirection == SortDirection.Ascending
+                ? SortDirection.Ascending.ToString()
+                : SortDirection.Descending.ToString();
 
-            Model = await GetNewMediator().Send(Query);
+            var result = await GetNewMediator().Send(Query, cancellationToken);
+
+            if (result is { Succeeded: true, Data: not null })
+            {
+                return new TableData<ParticipantEngagementDto> { TotalItems = result.Data.TotalItems, Items = result.Data.Items };
+            }
+            else
+            {
+                Snackbar.Add(result.ErrorMessage, Severity.Warning);
+                return new TableData<ParticipantEngagementDto> { TotalItems = 0, Items = [] };
+            }
         }
         finally
         {
             _loading = false;
+            StateHasChanged();
         }
+    }
+
+    private async Task RefreshAsync()
+    {
+        Query ??= new()
+        {
+            JustMyCases = false,
+            CurrentUser = CurrentUser
+        };
+
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        await _table.ReloadServerData();
     }
 
     private async Task OnExport()

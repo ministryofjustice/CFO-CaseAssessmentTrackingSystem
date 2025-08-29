@@ -34,6 +34,8 @@ public class DocumentExportLatestParticipantEngagementsIntegrationEventConsumer(
             var request = JsonConvert.DeserializeObject<GetParticipantsLatestEngagement.Query>(context.SearchCriteria!)
                 ?? throw new Exception();
 
+            request.PageSize = int.MaxValue;
+
             // Hack: call handler directly (skips Authorization pipeline, as we're outside of the HttpContext).
             var data = await new GetParticipantsLatestEngagement.Handler(unitOfWork).Handle(request!, CancellationToken.None);
 
@@ -42,7 +44,7 @@ public class DocumentExportLatestParticipantEngagementsIntegrationEventConsumer(
                 throw new Exception(data.ErrorMessage);
             }
 
-            var results = await excelService.ExportAsync(data.Data ?? [],
+            var results = await excelService.ExportAsync(data.Data?.Items ?? [],
                 new Dictionary<string, Func<ParticipantEngagementDto, object?>>
                 {
                     { "Participant Id", item => item.ParticipantId },
@@ -51,8 +53,9 @@ public class DocumentExportLatestParticipantEngagementsIntegrationEventConsumer(
                     { "Description", item => item.Description },
                     { "Engaged at (Location)", item => item.EngagedAtLocationName },
                     { "Engaged at (Contract)", item => item.EngagedAtContractName },
-                    { "Engaged on", item => item.EngagedOn.ToShortDateString() },
-                    { "Has Engaged Recently", item => item.HasNotEngagedRecently ? "No" : "Yes" },
+                    { "Engaged on", item => item.EngagedOn?.ToShortDateString() },
+                    { "Has Engaged Recently", item => item.HasEngagedRecently ? "Yes" : "No" },
+                    { "Has Engaged", item => item.HasEngaged ? "Yes" : "No" },
                     { "Engaged With", item => item.EngagedWithDisplayName },
                     { "Engaged With (Tenant)", item => item.EngagedWithTenantName },
                     { "Support Worker", item => item.SupportWorkerDisplayName }
