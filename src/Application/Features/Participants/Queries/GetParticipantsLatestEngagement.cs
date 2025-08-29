@@ -37,12 +37,15 @@ public static class GetParticipantsLatestEngagement
                 where participant.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
                 where request.HideRecentEngagements == false || (engagement == null || engagement.EngagedOn < DateOnly.FromDateTime(DateTime.Today).AddMonths(-3))
                 where string.IsNullOrWhiteSpace(request.Keyword)
-                    || engagement.Description.Contains(request.Keyword)
-                    || engagement.Category.Contains(request.Keyword)
-                    || engagement.EngagedAtLocation.Contains(request.Keyword)
-                    || participant.FirstName.Contains(request.Keyword)
-                    || participant.LastName.Contains(request.Keyword)
-                    || participant.Id.Contains(request.Keyword)
+                    || new[] 
+                    { 
+                        engagement.Description, 
+                        engagement.Category, 
+                        engagement.EngagedAtLocation, 
+                        participant.FirstName, 
+                        participant.LastName, 
+                        participant.Id 
+                    }.Any(f => f.Contains(request.Keyword))
                 select new
                 {
                     participant.Id,
