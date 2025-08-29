@@ -11,11 +11,13 @@ public class PublishActivityEngagementEventHandler(IUnitOfWork unitOfWork, ICurr
     {
         var e = new ParticipantEngagedIntegrationEvent(
             ParticipantId: notification.Entity.ParticipantId,
-            Description: $"{notification.Entity.Category.Name} at {notification.Entity.TookPlaceAtLocation.Name}",
+            Description: $"{notification.Entity.Category.Name} at {notification.Entity.TookPlaceAtLocation.Name} by {currentUserService.DisplayName}",
             Category: notification.Entity.Definition.Type.Name,
             EngagedOn: DateOnly.FromDateTime(notification.Entity.CommencedOn),
-            UserId: currentUserService.UserId!,
-            TenantId: currentUserService.TenantId!);
+            EngagedAtLocation: notification.Entity.TookPlaceAtLocation.Name,
+            EngagedAtContract: notification.Entity.TookPlaceAtContract.Description,
+            EngagedWith: currentUserService.DisplayName!,
+            EngagedWithTenant: currentUserService.TenantName!);
 
         await unitOfWork.DbContext.InsertOutboxMessage(e);
     }

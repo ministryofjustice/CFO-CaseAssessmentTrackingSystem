@@ -16,8 +16,10 @@ public class ParticipantEngagement : BaseEntity<Guid>
     public string Description { get; set; }
     public string Category { get; set; }
     public DateOnly EngagedOn { get; set; }
-    public string UserId { get; set; }
-    public string TenantId { get; set; }
+    public string EngagedAtLocation { get; set; }
+    public string EngagedAtContract { get; set; }
+    public string EngagedWith { get; set; }
+    public string EngagedWithTenant { get; set; }
     public DateTime CreatedOn { get; set; }
 }
 

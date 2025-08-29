@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformation;
 
-public class LatestParticipantEngagementEntityTypeConfiguration : IEntityTypeConfiguration<ParticipantEngagement>
+public class ParticipantEngagementEntityTypeConfiguration : IEntityTypeConfiguration<ParticipantEngagement>
 {
     public void Configure(EntityTypeBuilder<ParticipantEngagement> builder)
     {
@@ -24,16 +24,24 @@ public class LatestParticipantEngagementEntityTypeConfiguration : IEntityTypeCon
             .IsRequired()
             .HasMaxLength(256);
 
-        builder.Property(x => x.UserId)
+        builder.Property(x => x.EngagedWith)
             .IsRequired()
-            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+            .HasMaxLength(DatabaseConstants.FieldLengths.UserDisplayName);
 
-        builder.Property(x => x.TenantId)
+        builder.Property(x => x.EngagedWithTenant)
             .IsRequired()
-            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
+            .HasMaxLength(DatabaseConstants.FieldLengths.TenantName);
 
         builder.Property(x => x.EngagedOn)
             .IsRequired();
+
+        builder.Property(x => x.EngagedAtLocation)
+            .IsRequired()
+            .HasMaxLength(DatabaseConstants.FieldLengths.LocationName);
+
+        builder.Property(x => x.EngagedAtContract)
+            .IsRequired()
+            .HasMaxLength(DatabaseConstants.FieldLengths.ContractDescription);
 
         builder.HasIndex(x => new { x.EngagedOn, x.ParticipantId });
     }

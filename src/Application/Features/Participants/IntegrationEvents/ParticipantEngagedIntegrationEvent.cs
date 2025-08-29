@@ -5,5 +5,7 @@ public record ParticipantEngagedIntegrationEvent(
     string Description, 
     string Category, 
     DateOnly EngagedOn,
-    string UserId,
-    string TenantId);
+    string EngagedAtLocation,
+    string EngagedAtContract,
+    string EngagedWith,
+    string EngagedWithTenant);

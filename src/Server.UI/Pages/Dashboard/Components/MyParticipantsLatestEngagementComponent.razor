@@ -53,7 +53,7 @@
                             </MudTableSortLabel>
                         </MudTh>
                         <MudTh>
-                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object>(x => x.LastEngagedOn)">
+                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object>(x => x.EngagedOn)">
                                 Engaged On
                             </MudTableSortLabel>
                         </MudTh>
@@ -79,8 +79,8 @@
                         <MudTd DataLabel="Engaged On">
                             <MudStack Row AlignItems="AlignItems.Center">
                                 <MudStack AlignItems="AlignItems.Center" Spacing="0">
-                                    <MudText>@context.LastEngagedOn.ToShortDateString()</MudText>
-                                    <MudText Typo="Typo.body2">(@context.LastEngagedOn.Humanize())</MudText>
+                                    <MudText>@context.EngagedOn.ToShortDateString()</MudText>
+                                    <MudText Typo="Typo.body2">(@context.EngagedOn.Humanize())</MudText>
                                 </MudStack>
                                 @if (context.HasNotEngagedRecently)
                                 {

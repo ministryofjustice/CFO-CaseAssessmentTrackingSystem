@@ -125,6 +125,26 @@ internal static class DatabaseConstants
         /// </summary>
         public const int ExternalIdentifier = 16;
 
+        /// <summary>
+        /// The maximum length for the name of a location.
+        /// </summary>
+        public const int LocationName = 200;
+
+        /// <summary>
+        /// The maximum length for the name of a tenant.
+        /// </summary>
+        public const int TenantName = 50;
+
+        /// <summary>
+        /// The maximum length for the display name of a user.
+        /// </summary>
+        public const int UserDisplayName = 100;
+
+        /// <summary>
+        /// The maximum length for the description of a contract.
+        /// </summary>
+        public const int ContractDescription = 50;
+
     }
 
 }

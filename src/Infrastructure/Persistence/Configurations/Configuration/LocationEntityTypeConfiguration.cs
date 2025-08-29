@@ -21,7 +21,7 @@ public class LocationEntityTypeConfiguration : IEntityTypeConfiguration<Location
         // Configure properties
         builder.Property(l => l.Name)
             .IsRequired()
-            .HasMaxLength(200);// Adjust the length as needed
+            .HasMaxLength(DatabaseConstants.FieldLengths.LocationName);// Adjust the length as needed
 
         builder.Property<int>("_genderProvisionId")
             .HasColumnName("GenderProvisionId")

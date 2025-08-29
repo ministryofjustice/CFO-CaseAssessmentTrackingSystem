@@ -9,18 +9,24 @@ public class PublishHubInductionEngagementEventHandler(IUnitOfWork unitOfWork, I
 {
     public async Task Handle(HubInductionCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var location = await unitOfWork.DbContext.Locations
-            .Where(l => l.Id == notification.Item.LocationId)
-            .Select(l => l.Name)
-            .SingleAsync(cancellationToken);
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+        var query = from l in unitOfWork.DbContext.Locations
+                    join c in unitOfWork.DbContext.Contracts on l.Contract.Id equals c.Id
+                    where l.Id == notification.Item.LocationId
+                    select new { l.Name, Contract = c.Description };
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+
+        var location = await query.SingleAsync(cancellationToken);
 
         var e = new ParticipantEngagedIntegrationEvent(
             ParticipantId: notification.Item.ParticipantId,
-            Description: $"Took place at {location}",
+            Description: $"Took place at {location.Name} by {currentUserService.DisplayName}",
             Category: "Hub Induction",
             EngagedOn: DateOnly.FromDateTime(notification.Item.InductionDate),
-            UserId: currentUserService.UserId!,
-            TenantId: currentUserService.TenantId!);
+            EngagedAtLocation: location.Name,
+            EngagedAtContract: location.Contract,
+            EngagedWith: currentUserService.DisplayName!,
+            EngagedWithTenant: currentUserService.TenantName!);
 
         await unitOfWork.DbContext.InsertOutboxMessage(e);
     }

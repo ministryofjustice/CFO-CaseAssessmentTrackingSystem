@@ -10,4 +10,5 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
     public string? UserName => httpContextAccessor.HttpContext?.User.GetUserName();
     public string? TenantId => httpContextAccessor.HttpContext?.User.GetTenantId();
     public string? TenantName => httpContextAccessor.HttpContext?.User.GetTenantName();
+    public string? DisplayName => httpContextAccessor.HttpContext?.User.GetDisplayName();
 }

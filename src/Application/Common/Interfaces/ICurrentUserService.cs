@@ -6,4 +6,5 @@ public interface ICurrentUserService
     string? UserName { get; }
     string? TenantId { get; }
     string? TenantName { get; }
+    string? DisplayName { get; }
 }

@@ -15,8 +15,10 @@ public class RecordParticipantEngagementConsumer(IUnitOfWork unitOfWork)
             Description = message.Description,
             Category = message.Category,
             EngagedOn = message.EngagedOn,
-            UserId = message.UserId,
-            TenantId = message.TenantId
+            EngagedAtLocation = message.EngagedAtLocation,
+            EngagedAtContract = message.EngagedAtContract,
+            EngagedWith = message.EngagedWith,
+            EngagedWithTenant = message.EngagedWithTenant
         };
 
         unitOfWork.DbContext.ParticipantEngagements.Add(engagement);

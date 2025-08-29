@@ -29,7 +29,7 @@ public static class GetParticipantsLatestEngagement
                     .ThenByDescending(pe => pe.CreatedOn)
                     .Take(1)
                     .DefaultIfEmpty()
-                join supportWorker in db.Users on engagement.UserId equals supportWorker.Id
+                join owner in db.Users on participant.OwnerId equals owner.Id
                 where participant.Owner.TenantId.StartsWith(request.CurrentUser.TenantId)
                 where (request.JustMyCases && participant.Owner.Id == request.CurrentUser.UserId) || true
                 where participant.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
@@ -39,7 +39,11 @@ public static class GetParticipantsLatestEngagement
                     $"{participant.FirstName} {participant.LastName}",
                     engagement.Category,
                     engagement.Description,
-                    supportWorker.DisplayName,
+                    engagement.EngagedAtLocation,
+                    engagement.EngagedAtContract,
+                    engagement.EngagedWith,
+                    engagement.EngagedWithTenant,
+                    owner.DisplayName,
                     engagement.EngagedOn);
 #pragma warning restore CS8602, CS8604
 

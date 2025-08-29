@@ -53,12 +53,12 @@
                             </MudTableSortLabel>
                         </MudTh>
                         <MudTh>
-                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object>(x => x.SupportWorkerDisplayName)">
+                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object>(x => x.EngagedWithDisplayName)">
                                 Engaged With
                             </MudTableSortLabel>
                         </MudTh>
                         <MudTh>
-                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object>(x => x.LastEngagedOn)">
+                            <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object>(x => x.EngagedOn)">
                                  Engaged On
                             </MudTableSortLabel>
                         </MudTh>
@@ -82,13 +82,16 @@
                             </MudStack>
                         </MudTd>
                         <MudTd DataLabel="Engaged With">
-                            <MudText>@context.SupportWorkerDisplayName</MudText>
+                            <MudStack AlignItems="AlignItems.Start" Spacing="0">
+                                <MudText>@context.EngagedWithDisplayName</MudText>
+                                <MudText Typo="Typo.body2">@context.EngagedWithTenantName</MudText>
+                            </MudStack>
                         </MudTd>
                         <MudTd DataLabel="Engaged On">
                             <MudStack Row AlignItems="AlignItems.Center">
                                 <MudStack AlignItems="AlignItems.Center" Spacing="0">
-                                    <MudText>@context.LastEngagedOn.ToShortDateString()</MudText>
-                                    <MudText Typo="Typo.body2">(@context.LastEngagedOn.Humanize())</MudText>
+                                    <MudText>@context.EngagedOn.ToShortDateString()</MudText>
+                                    <MudText Typo="Typo.body2">(@context.EngagedOn.Humanize())</MudText>
                                 </MudStack>
                                 @if (context.HasNotEngagedRecently)
                                 {
