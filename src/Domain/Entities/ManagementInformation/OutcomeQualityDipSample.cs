@@ -181,6 +181,12 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
         return this;
     }
 
+    public OutcomeQualityDipSample WithDocument(Guid documentId)
+    {
+        DocumentId = documentId;
+        return this;
+    }
+
     private OutcomeQualityDipSample SetFinalScores(int noOfCompliant)
     {
         FinalCompliant = noOfCompliant;
@@ -199,6 +205,7 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
     public DipSampleStatus Status { get; private set; }
     public string? VerifiedBy { get; private set; }
     public DateTime? VerifiedOn { get; private set; }
+    public Guid? DocumentId { get; private set; }
 
     /// <summary>
     /// The size of the sample.

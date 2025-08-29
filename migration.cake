@@ -2,17 +2,17 @@ var migrationName = Argument("name", "NewMigration");
 var infraProject  = "./src/Infrastructure/Infrastructure.csproj";
 var startupProject = "./src/Server.UI/Server.UI.csproj";
 
-Task("BuildInfra")
+Task("BuildServerUi")
     .Does(() =>
 {
-    DotNetBuild(infraProject, new DotNetBuildSettings {
+    DotNetBuild(startupProject, new DotNetBuildSettings {
         Configuration = "Debug",
         NoRestore = false
     });
 });
 
 Task("AddMigration")
-    .IsDependentOn("BuildInfra")
+    .IsDependentOn("BuildServerUi")
     .Does(() =>
 {
     var settings = new ProcessSettings {

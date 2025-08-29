@@ -4,6 +4,7 @@ using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Infrastructure.Configurations;
+using Cfo.Cats.Server.UI.Pages.Analytics.Components;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
@@ -78,5 +79,22 @@ public partial class Index
         {
             _isLoading = false;
         }
+    }
+    private async Task Download(Guid? sampleDocumentId)
+    {
+        if (sampleDocumentId is null)
+        {
+            return;
+        }
+
+        var parameters = new DialogParameters<OnExportConfirmationDialog>()
+        {
+            {
+                x => x.DocumentId, sampleDocumentId.Value
+            }
+        };
+
+        var dialog = await DialogService.ShowAsync<OnExportConfirmationDialog>("Download Sample", parameters);
+        await dialog.Result;
     }
 }

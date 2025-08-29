@@ -46,7 +46,7 @@ public class DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
             var query = from ds in db.OutcomeQualityDipSamples
                         join c in db.Contracts on ds.ContractId equals c.Id
-                        join cpm in db.Users on ds.ReviewedBy equals cpm.Id
+                        join cpm in db.Users on ds.VerifiedBy equals cpm.Id
                         where ds.Id == dipSampleId
                         select new
                         {

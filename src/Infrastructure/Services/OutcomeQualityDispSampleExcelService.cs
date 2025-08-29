@@ -57,8 +57,13 @@ public class OutcomeQualityDispSampleExcelService(IOptions<DocumentExportOptions
             ws.Cell(rowIndex, 5).Value = p.SupportWorker;
             ws.Cell(rowIndex, 6).Value = p.Compliant;
             ws.Cell(rowIndex, 7).Value = p.Feedback;
+
             rowIndex++;
         }
+
+        var tableRange = ws.Range(16, 1, rowIndex, 7);
+        tableRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+        tableRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
         using var stream = new MemoryStream();
 

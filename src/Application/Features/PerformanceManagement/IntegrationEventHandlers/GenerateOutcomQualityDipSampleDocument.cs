@@ -1,8 +1,6 @@
-﻿using Cfo.Cats.Application.Common.Interfaces.Identity;
-using Cfo.Cats.Application.Features.PerformanceManagement.IntegrationEvents;
+﻿using Cfo.Cats.Application.Features.PerformanceManagement.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.Documents;
 using Rebus.Handlers;
-using System.Runtime.Intrinsics.Arm;
 
 namespace Cfo.Cats.Application.Features.PerformanceManagement.IntegrationEventHandlers;
 
@@ -14,8 +12,6 @@ public class GenerateOutcomQualityDipSampleDocument(IUnitOfWork unitOfWork,
     {
         try
         {
-            // we need some additional information from the database
-
             var db = unitOfWork.DbContext;
 
             var contractQuery = from dp in db.OutcomeQualityDipSamples
@@ -46,6 +42,12 @@ public class GenerateOutcomQualityDipSampleDocument(IUnitOfWork unitOfWork,
                   );
 
             unitOfWork.DbContext.GeneratedDocuments.Add(document);
+
+            var ds = await unitOfWork.DbContext.OutcomeQualityDipSamples
+                .FirstAsync(i => i.Id == message.DipSampleId);
+
+            ds.WithDocument(document.Id);
+
             await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, default);
             await unitOfWork.CommitTransactionAsync();
         }

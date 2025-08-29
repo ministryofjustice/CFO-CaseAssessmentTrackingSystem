@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants.Database;
@@ -38,8 +39,12 @@ public class OutcomeQualityDipSampleEntityTypeConfiguration : IEntityTypeConfigu
 
         builder.HasMany(ds => ds.Participants)
             .WithOne() // no navigation back
-            .HasForeignKey(ds => ds.DipSampleId) 
+            .HasForeignKey(ds => ds.DipSampleId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne<Document>()
+            .WithMany()
+            .HasForeignKey(ds => ds.DocumentId);
 
     }
 }

@@ -19,7 +19,8 @@ public record DipSampleDto(
     DateTime? CompletedOn = null, 
     string? CompletedBy = null,
     string[]? Reviewers = null,
-    string[]? Verifiers  = null)
+    string[]? Verifiers  = null,
+    Guid? DocumentId = null)
 {
     public int? Score => FinalScore ?? CpmScore ?? CsoScore;
 }
