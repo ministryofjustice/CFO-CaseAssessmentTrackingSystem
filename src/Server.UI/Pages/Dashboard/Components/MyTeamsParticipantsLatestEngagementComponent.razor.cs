@@ -11,6 +11,7 @@ namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
 
 public partial class MyTeamsParticipantsLatestEngagementComponent
 {
+    private bool _initialising = true;
     private bool _loading = false;
     private bool _downloading;
     private MudTable<ParticipantEngagementDto> _table = new();
@@ -34,7 +35,7 @@ public partial class MyTeamsParticipantsLatestEngagementComponent
                 ? SortDirection.Ascending.ToString()
                 : SortDirection.Descending.ToString();
 
-            var result = await GetNewMediator().Send(Query, cancellationToken);
+            var result = await GetNewMediator().Send(Query, CancellationToken.None);
 
             if (result is { Succeeded: true, Data: not null })
             {
@@ -49,6 +50,7 @@ public partial class MyTeamsParticipantsLatestEngagementComponent
         finally
         {
             _loading = false;
+            _initialising = false;
             StateHasChanged();
         }
     }

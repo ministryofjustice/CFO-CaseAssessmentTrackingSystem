@@ -35,7 +35,7 @@ public static class GetParticipantsLatestEngagement
                 where participant.Owner.TenantId.StartsWith(request.CurrentUser.TenantId)
                 where request.JustMyCases == false || participant.Owner.Id == request.CurrentUser.UserId
                 where participant.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
-                where request.HideRecentEngagements == false || engagement.EngagedOn < DateOnly.FromDateTime(DateTime.Today).AddMonths(-3)
+                where request.HideRecentEngagements == false || (engagement == null || engagement.EngagedOn < DateOnly.FromDateTime(DateTime.Today).AddMonths(-3))
                 where string.IsNullOrWhiteSpace(request.Keyword)
                     || engagement.Description.Contains(request.Keyword)
                     || engagement.Category.Contains(request.Keyword)

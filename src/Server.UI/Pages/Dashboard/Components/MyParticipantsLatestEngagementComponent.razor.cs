@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Dashboard.Export;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
@@ -9,7 +9,8 @@ namespace Cfo.Cats.Server.UI.Pages.Dashboard.Components;
 
 public partial class MyParticipantsLatestEngagementComponent
 {
-    private bool _loading;
+    private bool _initialising = true;
+    private bool _loading = false;
     private bool _downloading;
     private MudTable<ParticipantEngagementDto> _table = new();
 
@@ -31,7 +32,7 @@ public partial class MyParticipantsLatestEngagementComponent
                 ? SortDirection.Ascending.ToString()
                 : SortDirection.Descending.ToString();
 
-            var result = await GetNewMediator().Send(Query, cancellationToken);
+            var result = await GetNewMediator().Send(Query, CancellationToken.None);
 
             if (result is { Succeeded: true, Data: not null })
             {
@@ -46,6 +47,7 @@ public partial class MyParticipantsLatestEngagementComponent
         finally
         {
             _loading = false;
+            _initialising = false;
             StateHasChanged();
         }
     }
@@ -94,5 +96,4 @@ public partial class MyParticipantsLatestEngagementComponent
             _downloading = false;
         }
     }
-
 }
