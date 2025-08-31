@@ -1,7 +1,10 @@
-﻿@using System.Globalization
+﻿
+
+@using System.Globalization
+@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Humanizer
 
-@inherits ParticipantComponent<Cats.Application.Features.Participants.Queries.GetParticipantDetails.ParticipantDetails>
+@inherits ParticipantComponent<ParticipantHeaderDetailsDto>
 
 <MudCard Style="height: 100%">
     <MudCardHeader>
@@ -31,7 +34,16 @@
                     <strong>DOB</strong>
                 </MudText>
                 <MudText>
-                    @Data.DateOfBirth (@Data.DateOfBirth.CalculateAge())
+                    @Data.DateOfBirth
+                </MudText>
+            </MudStack>
+            
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText>
+                    <strong>Age</strong>
+                </MudText>
+                <MudText>
+                    @Data.DateOfBirth.CalculateAge()
                 </MudText>
             </MudStack>
 

@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
@@ -7,19 +8,19 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetParticipantDetails
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : ParticipantDetailsQuery<ParticipantDetails>
+    public class Query : ParticipantDetailsQuery<ParticipantHeaderDetailsDto>
     {
 
     }
     
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<ParticipantDetails>>
+    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<ParticipantHeaderDetailsDto>>
     {
 
-        public async Task<Result<ParticipantDetails>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<ParticipantHeaderDetailsDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var query = from p in unitOfWork.DbContext.Participants.AsNoTracking()
                 where p.Id == request.ParticipantId
-                select new ParticipantDetails
+                select new ParticipantHeaderDetailsDto
                 {
                     DateOfBirth = p.DateOfBirth,
                     EnrolmentLocation = p.EnrolmentLocation!.Name,
@@ -32,10 +33,10 @@ public static class GetParticipantDetails
 
             if (result == null)
             {
-                return Result<ParticipantDetails>.NotFound();
+                return Result<ParticipantHeaderDetailsDto>.NotFound();
             }
 
-            return Result<ParticipantDetails>.Success(result);
+            return Result<ParticipantHeaderDetailsDto>.Success(result);
         }
     }
     
@@ -56,14 +57,4 @@ public static class GetParticipantDetails
                 .WithMessage("Current user details required");
         }
     }
-    
-    public record ParticipantDetails
-    {
-        public required DateOnly DateOfBirth { get; init; }
-        public required string EnrolmentLocation { get; init; }
-        public required string? Nationality { get; init; }
-        public required DateOnly? DateOfFirstConsent { get; init; }
-        public required DateTime LastSync { get; init; }
-    }
-    
 }
