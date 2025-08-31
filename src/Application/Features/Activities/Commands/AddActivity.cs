@@ -250,11 +250,17 @@ public static class AddActivity
                     .WithMessage("A hub induction is required for the selected location");
 
                 RuleFor(c => c.CommencedOn)
-                    .Must((command, commencedOn, token) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId, commencedOn))
-                    .WithMessage("The activity cannot take place before the participant gave consent")
                     .Must((command, commencedOn, token) => BeInductedAtHubForActivity(command.ParticipantId, command.Location!.Id, commencedOn))
-                    .When(c => c.Location is { LocationType.IsHub: true })
-                    .WithMessage("Participant must be inducted at Hub before activity can take place");                 
+                    .When(c => 
+                        c.Location is { LocationType.IsHub: true } 
+                        && c.Definition is not null 
+                        && c.Definition.Classification != ClassificationType.ISWActivity)
+                    .WithMessage("Participant must be inducted at Hub before activity can take place");
+
+                RuleFor(c => c.CommencedOn)
+                    .Must((command, commencedOn, token) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId, commencedOn))
+                    .WithMessage("The activity cannot take place before the participant gave consent");
+
             });
 
             RuleFor(c => c.Location)
