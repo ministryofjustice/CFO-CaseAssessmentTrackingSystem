@@ -19,7 +19,14 @@ public class ParticipantLocationHistory : BaseAuditableEntity<int>
 
     public static ParticipantLocationHistory Create(string participantId, int locationId, DateTime from) => new(participantId, locationId, from);
 
+    public ParticipantLocationHistory WithTo(DateTime to)
+    {
+        To = to;
+        return this;
+    }
+
     public string ParticipantId { get; private set; }
     public int LocationId { get; private set; }
     public DateTime From { get; private set; }
+    public DateTime? To { get; private set; }
 }
