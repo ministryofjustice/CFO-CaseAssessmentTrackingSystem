@@ -91,7 +91,7 @@ public partial class QAActivitiesResults
         var parameters = new DialogParameters<EditActivityDialog>()
         {
             {
-                x => x.ActivityId, activity.Id
+                x => x.ActivityId, activity.ActivityId
             }
         };
 

@@ -66,8 +66,10 @@
                     {
                         foreach (var activity in _activities.Items)
                         {
-                            var created = activity.Created.ToLocalTime();
-                            var commencedOn = activity.CommencedOn.ToLocalTime();
+                            @* var created = activity.Created.ToLocalTime();
+                            var commencedOn = activity.CommencedOn.ToLocalTime();*@
+                             var created = activity.Created;
+                            var commencedOn = activity.CommencedOn;
                             var today = DateTime.Today.ToLocalTime();
 
                             <MudListItem Class="flex-row-reverse">
@@ -76,8 +78,8 @@
                                         <div class="d-flex align-center">                            
                                             <div class="pr-2">
                                                 <MudText Typo="Typo.body2">
-                                                    Participant: @activity.Participant!.FullName
-                                                                    @activity.Participant.Id                                                
+                                                    Participant: @activity.Participant
+                                                                    @activity.ParticipantId
                                                 </MudText>
                                                 <div class="d-flex gap-2 align-center">
                                                     <MudChip T="string" Size="MudBlazor.Size.Small" Text="@activity.Definition.Type.Name" Color="Color.Secondary" />
@@ -97,10 +99,10 @@
                                                         Category:  @activity.Definition.Category.Name
                                                     </MudText>
                                                         <MudText Typo="Typo.body2">
-                                                            Added on @created.ToShortDateString() at @created.ToShortTimeString() (@created.Humanize())
+                                                        Added on @created.ToShortDateOrEmptyString() at @created.ToShortDateOrEmptyString() (@created.Humanize())
                                                         </MudText>
                                                         <MudText Typo="Typo.body2" Class="pt-1">
-                                                            Took place on @commencedOn.ToShortDateString() (@(commencedOn == today ? "today" : commencedOn.Humanize()))
+                                                        Took place on @commencedOn.ToShortDateOrEmptyString() (@(commencedOn == today ? "today" : commencedOn.Humanize()))
                                                             at @activity.TookPlaceAtLocationName
                                                         </MudText>
                                                         @{
@@ -126,7 +128,7 @@
                                                 </MudMenuItem>                                  
                                             }
 
-                                            <MudMenuItem OnClick="@(() => EditParticipant(activity.Participant!.Id))">
+                                            <MudMenuItem OnClick="@(() => EditParticipant(activity.ParticipantId))">
                                                     @ConstantString.EditParticipant
                                             </MudMenuItem>                              
                                         </MudMenu>
