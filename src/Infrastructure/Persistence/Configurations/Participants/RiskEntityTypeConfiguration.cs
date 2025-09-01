@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -122,6 +123,11 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
 
         builder.Property(x => x.CompletedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
+        builder.HasOne<Location>()
+            .WithMany()
+            .HasForeignKey(r => r.LocationId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 
 }

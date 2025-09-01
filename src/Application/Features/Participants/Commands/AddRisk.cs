@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Participants;
 
@@ -11,6 +12,8 @@ public static class AddRisk
     public class Command : IRequest<Result<Guid>>
     {
         public required string ParticipantId { get; set; }
+        [Description("Risk location")]
+        public LocationDto? Location { get; set; }
         [Description("Reason for review")] public RiskReviewReason ReviewReason { get; set; } = RiskReviewReason.ChangeToCircumstances;
         [Description("Justification for reason")] public string? Justification { get; set; }
     }
@@ -36,11 +39,11 @@ public static class AddRisk
 
             if (risk is null)
             {
-                risk = Risk.Create(Guid.CreateVersion7(), request.ParticipantId, request.ReviewReason, request.Justification);
+                risk = Risk.Create(Guid.CreateVersion7(), request.ParticipantId, request.ReviewReason, request.Location!.Id, request.Justification);
             }
             else
             {
-                risk = Risk.Review(risk, request.ReviewReason, request.Justification);
+                risk = Risk.Review(risk, request.ReviewReason, request.Justification, request.Location!.Id);
             }
 
             await _unitOfWork.DbContext.Risks.AddAsync(risk, cancellationToken);
@@ -69,6 +72,9 @@ public static class AddRisk
                 .WithMessage("You must provide a justification for the selected review reason")
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
+            RuleFor(x => x.Location)
+                .NotNull()
+                .WithMessage("You must choose a location");
 
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
