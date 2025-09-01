@@ -18,12 +18,8 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
 
         builder.Property(x => x.DisplayName)
             .IsRequired()
-            .HasMaxLength(100);
+            .HasMaxLength(DatabaseConstants.FieldLengths.UserDisplayName);
         
-        builder.Property(x => x.DisplayName)
-            .IsRequired()
-            .HasMaxLength(100);
-
         builder.Property(x => x.ProviderId)
             .IsRequired()
             .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
@@ -38,7 +34,7 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
 
         builder.Property(x => x.TenantName)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(DatabaseConstants.FieldLengths.TenantName);
         
         builder.Property(x => x.MemorablePlace)
             .IsRequired()

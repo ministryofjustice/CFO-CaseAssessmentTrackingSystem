@@ -1,0 +1,19 @@
+﻿namespace Cfo.Cats.Application.Features.Participants.DTOs;
+
+public record ParticipantEngagementDto(
+    string ParticipantId, 
+    string FullName,
+    string? Category, 
+    string? Description,
+    string? EngagedAtLocationName,
+    string? EngagedAtContractName,
+    string? EngagedWithDisplayName, 
+    string? EngagedWithTenantName,
+    string SupportWorkerDisplayName,
+    string CurrentLocationName,
+    DateOnly? EngagedOn)
+{
+    public bool HasEngaged => EngagedOn.HasValue;
+    public bool HasEngagedRecently => EngagedOn > DateOnly.FromDateTime(DateTime.Today).AddMonths(-3);
+    public bool LastEngagedWithCurrentSupportWorker => SupportWorkerDisplayName == EngagedWithDisplayName;
+}

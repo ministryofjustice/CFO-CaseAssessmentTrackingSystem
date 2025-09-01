@@ -14,9 +14,9 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
         builder.HasKey(t => t.Id);
 
         builder.Property(t => t.Id)
-            .HasMaxLength(50);
+            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
 
-        builder.Property(t => t.Name).IsRequired().HasMaxLength(50);
+        builder.Property(t => t.Name).IsRequired().HasMaxLength(DatabaseConstants.FieldLengths.TenantName);
 
         builder.Property(t => t.Description).IsRequired().HasMaxLength(150);
 

@@ -22,7 +22,7 @@ public class ContractEntityTypeConfiguration : IEntityTypeConfiguration<Contract
             .IsRequired();
         builder.Property(c => c.Description)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(DatabaseConstants.FieldLengths.ContractDescription);
 
         builder.HasOne(c => c.Tenant)
             .WithMany()

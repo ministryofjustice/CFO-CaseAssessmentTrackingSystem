@@ -32,6 +32,7 @@ internal class DocumentsBackgroundService(IServiceProvider provider, IConfigurat
        _activator.Handle<DocumentExportEnrolmentPaymentsIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportInductionPaymentsIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportSupportAndReferralPaymentsIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportLatestParticipantEngagementsIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportCumulativesIntegrationEventConsumer>(provider);
 
         _bus = Configure.With(_activator)
