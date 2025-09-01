@@ -35,7 +35,7 @@ public class PaymentBackgroundService(IServiceProvider provider, IConfiguration 
             .Handle<RecordWingInductionPaymentConsumer>(provider)
             .Handle<RecordReassessmentPaymentConsumer>(provider)
             .Handle<RecordCpmScores>(provider)
-            .Handle<GenerateOutcomQualityDipSampleDocument>(provider)
+            .Handle<GenerateOutcomeQualityDipSampleDocument>(provider)
             .Handle<RecordParticipantEngagementConsumer>(provider);
 
         _bus = Configure.With(_activator)

@@ -4,9 +4,9 @@ using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.PerformanceManagement.IntegrationEventHandlers;
 
-public class GenerateOutcomQualityDipSampleDocument(IUnitOfWork unitOfWork, 
+public class GenerateOutcomeQualityDipSampleDocument(IUnitOfWork unitOfWork, 
     IDomainEventDispatcher domainEventDispatcher, 
-    ILogger<GenerateOutcomQualityDipSampleDocument> logger) : IHandleMessages<OutcomeQualityDipSampleFinalisedIntegrationEvent>
+    ILogger<GenerateOutcomeQualityDipSampleDocument> logger) : IHandleMessages<OutcomeQualityDipSampleFinalisedIntegrationEvent>
 {
     public async Task Handle(OutcomeQualityDipSampleFinalisedIntegrationEvent message)
     {
