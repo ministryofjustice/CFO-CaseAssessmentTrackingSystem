@@ -6,6 +6,8 @@ namespace Cfo.Cats.Domain.Entities.ManagementInformation;
 
 public class ParticipantEngagement : BaseEntity<Guid>
 { 
+    private ParticipantEngagement() { }
+
     public static ParticipantEngagement Create() => new()
     {
         Id = Guid.CreateVersion7(),
