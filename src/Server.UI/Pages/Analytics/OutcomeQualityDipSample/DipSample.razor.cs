@@ -2,13 +2,13 @@ using Cfo.Cats.Application.Features.PerformanceManagement.Commands;
 using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 using Cfo.Cats.Application.Features.PerformanceManagement.Queries;
 using Cfo.Cats.Server.UI.Components.Dialogs;
+using Cfo.Cats.Server.UI.Pages.Analytics.Components;
 
 namespace Cfo.Cats.Server.UI.Pages.Analytics.OutcomeQualityDipSample;
 
 public partial class DipSample
 {
     private bool _loading;
-    private bool _downloading;
     private MudDataGrid<DipSampleParticipantSummaryDto> _table = new();
 
     private List<BreadcrumbItem> Items =>
@@ -86,15 +86,20 @@ public partial class DipSample
 
     private async Task OnExport()
     {
-        try
+        if (_sample?.DocumentId is null)
         {
-            _downloading = true;
-            await Task.CompletedTask;
+            return;
         }
-        finally
+
+        var parameters = new DialogParameters<OnExportConfirmationDialog>()
         {
-            _downloading = false;
-        }
+            {
+                x => x.DocumentId, _sample.DocumentId.Value
+            }
+        };
+
+        var dialog = await DialogService.ShowAsync<OnExportConfirmationDialog>("Download Sample", parameters);
+        await dialog.Result;
     }
 
     private Task OnReview() => PerformAction(

@@ -153,15 +153,28 @@
                                 <MudSkeleton Animation="Animation.Wave" Width="120px"/>
                             </MudTooltip>
                         }
+                        <MudStack Row="true">
+                            <MudButton Disabled="@(_canReview == false && sample.Status == DipSampleStatus.AwaitingReview)"
+                                       Variant="Variant.Outlined"
+                                       Color="Color.Secondary"
+                                       Size="Size.Small"
+                                       StartIcon="@Icons.Material.Filled.Pageview"
+                                       IconColor="Color.Surface"
+                                       Href="@($"/pages/analytics/outcome-quality-dip-sampling/{sample.Id}")">
+                                @ConstantString.View
+                            </MudButton>
+                        
+                            <MudButton Disabled="@(sample.DocumentId is null)" Variant="Variant.Outlined"
+                                       Color="Color.Secondary"
+                                       Size="Size.Small"
+                                       StartIcon="@Icons.Material.Filled.Download"
+                                       IconColor="Color.Surface"
+                                       OnClick="@(() => Download(sample.DocumentId))">
+                                @ConstantString.Export  
+                            </MudButton>
+                        </MudStack>
 
-                        <MudButton Disabled="@(_canReview == false && sample.Status == DipSampleStatus.AwaitingReview)"
-                               Variant="Variant.Filled"
-                               Color="Color.Secondary"
-                               Size="Size.Small"
-                               Href="@($"/pages/analytics/outcome-quality-dip-sampling/{sample.Id}")">
-                        @ConstantString.View
-                    </MudButton>
-
+                        
                 </MudCardActions>
             </MudCard>
         </MudItem>

@@ -2,23 +2,25 @@ var migrationName = Argument("name", "NewMigration");
 var infraProject  = "./src/Infrastructure/Infrastructure.csproj";
 var startupProject = "./src/Server.UI/Server.UI.csproj";
 
-Task("BuildInfra")
+Task("BuildServerUi")
     .Does(() =>
 {
-    DotNetBuild(infraProject, new DotNetBuildSettings {
+    DotNetBuild(startupProject, new DotNetBuildSettings {
         Configuration = "Debug",
         NoRestore = false
     });
 });
 
 Task("AddMigration")
-    .IsDependentOn("BuildInfra")
+    .IsDependentOn("BuildServerUi")
     .Does(() =>
 {
     var settings = new ProcessSettings {
         Arguments = $"ef migrations add {migrationName} " +
                     $"--project {infraProject} " +
-                    $"--startup-project {startupProject}",
+                    $"--startup-project {startupProject} " + 
+                    $"--configuration Debug " + 
+                    "--no-build",
         WorkingDirectory = MakeAbsolute(Directory("./"))
     };
 

@@ -66,7 +66,8 @@ public static class GetOutcomeQualityDipSamples
                         where p.DipSampleId == sample.Id && p.CsoReviewedBy != null
                         group u by u.DisplayName into g
                         select g.Key
-                    ).ToArray()
+                    ).ToArray(),
+                    sample.DocumentId
                     );
 
             var samples = await query

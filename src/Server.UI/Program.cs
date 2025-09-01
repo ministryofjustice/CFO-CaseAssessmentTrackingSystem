@@ -12,7 +12,7 @@ builder.AddServerUi();
 
 builder.Services
     .AddApplication()
-    .AddInfrastructure(builder.Configuration);
+    .AddInfrastructure(builder.Configuration, builder.Environment);
 
 builder.AddServiceDefaults();
 

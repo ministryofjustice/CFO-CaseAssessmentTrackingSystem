@@ -2,6 +2,7 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Documents.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.Entities.Documents;
 
 namespace Cfo.Cats.Application.Features.Documents.Queries;
 
@@ -23,6 +24,11 @@ public static class GetDocumentById
             if(document is null)
             {
                 return Result<DownloadDocumentDto>.Failure("Document not found.");
+            }
+
+            if(document is GeneratedDocument { Status: not DocumentStatus.Available } generatedDocument)
+            {
+                return Result<DownloadDocumentDto>.Failure($"Document is not available. Status: {Enum.GetName(generatedDocument.Status)}");
             }
 
             var streamResult = await uploadService.DownloadAsync(document);

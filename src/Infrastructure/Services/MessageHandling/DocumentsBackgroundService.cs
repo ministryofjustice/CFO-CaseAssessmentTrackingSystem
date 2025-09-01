@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
+using Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -34,6 +34,7 @@ internal class DocumentsBackgroundService(IServiceProvider provider, IConfigurat
        _activator.Handle<DocumentExportSupportAndReferralPaymentsIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportLatestParticipantEngagementsIntegrationEventConsumer>(provider);
        _activator.Handle<DocumentExportCumulativesIntegrationEventConsumer>(provider);
+       _activator.Handle<DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer>(provider);
 
         _bus = Configure.With(_activator)
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.DocumentService)

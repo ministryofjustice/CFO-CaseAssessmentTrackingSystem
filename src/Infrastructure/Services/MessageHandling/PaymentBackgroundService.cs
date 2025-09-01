@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
+using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
 using Cfo.Cats.Application.Features.Assessments.IntegrationEvents;
 using Cfo.Cats.Application.Features.Inductions.IntegrationEvents;
 using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
@@ -35,7 +35,7 @@ public class PaymentBackgroundService(IServiceProvider provider, IConfiguration 
             .Handle<RecordWingInductionPaymentConsumer>(provider)
             .Handle<RecordReassessmentPaymentConsumer>(provider)
             .Handle<RecordCpmScores>(provider)
-            .Handle<GenerateDipSampleDocument>(provider)
+            .Handle<GenerateOutcomeQualityDipSampleDocument>(provider)
             .Handle<RecordParticipantEngagementConsumer>(provider);
 
         _bus = Configure.With(_activator)
@@ -57,8 +57,7 @@ public class PaymentBackgroundService(IServiceProvider provider, IConfiguration 
         await _bus.Subscribe<WingInductionCreatedIntegrationEvent>();
         await _bus.Subscribe<AssessmentScoredIntegrationEvent>();
         await _bus.Subscribe<OutcomeQualityDipSampleVerifyingIntegrationEvent>();
-        await _bus.Subscribe<OutcomeQualityDipSampleFinalisingIntegrationEvent>();
-        await _bus.Subscribe<ParticipantEngagedIntegrationEvent>();
+        await _bus.Subscribe<OutcomeQualityDipSampleFinalisedIntegrationEvent>();
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
