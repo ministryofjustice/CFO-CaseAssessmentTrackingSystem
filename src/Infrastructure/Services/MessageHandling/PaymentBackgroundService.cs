@@ -57,7 +57,7 @@ public class PaymentBackgroundService(IServiceProvider provider, IConfiguration 
         await _bus.Subscribe<WingInductionCreatedIntegrationEvent>();
         await _bus.Subscribe<AssessmentScoredIntegrationEvent>();
         await _bus.Subscribe<OutcomeQualityDipSampleVerifyingIntegrationEvent>();
-        await _bus.Subscribe<OutcomeQualityDipSampleFinalisingIntegrationEvent>();
+        await _bus.Subscribe<OutcomeQualityDipSampleFinalisedIntegrationEvent>();
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
