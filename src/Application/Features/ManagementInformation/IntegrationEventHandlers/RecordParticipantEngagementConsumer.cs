@@ -9,17 +9,16 @@ public class RecordParticipantEngagementConsumer(IUnitOfWork unitOfWork)
 {
     public async Task Handle(ParticipantEngagedIntegrationEvent message)
     {
-        var engagement = new ParticipantEngagement() 
-        { 
-            ParticipantId = message.ParticipantId,
-            Description = message.Description,
-            Category = message.Category,
-            EngagedOn = message.EngagedOn,
-            EngagedAtLocation = message.EngagedAtLocation,
-            EngagedAtContract = message.EngagedAtContract,
-            EngagedWith = message.EngagedWith,
-            EngagedWithTenant = message.EngagedWithTenant
-        };
+        var engagement = ParticipantEngagement.Create();
+
+        engagement.ParticipantId = message.ParticipantId;
+        engagement.Description = message.Description;
+        engagement.Category = message.Category;
+        engagement.EngagedOn = message.EngagedOn;
+        engagement.EngagedAtLocation = message.EngagedAtLocation;
+        engagement.EngagedAtContract = message.EngagedAtContract;
+        engagement.EngagedWith = message.EngagedWith;
+        engagement.EngagedWithTenant = message.EngagedWithTenant;
 
         unitOfWork.DbContext.ParticipantEngagements.Add(engagement);
 

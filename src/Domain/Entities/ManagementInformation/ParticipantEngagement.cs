@@ -6,11 +6,11 @@ namespace Cfo.Cats.Domain.Entities.ManagementInformation;
 
 public class ParticipantEngagement : BaseEntity<Guid>
 { 
-    public ParticipantEngagement()
+    public static ParticipantEngagement Create() => new()
     {
-        Id = Guid.CreateVersion7();
-        CreatedOn = DateTime.UtcNow;
-    }
+        Id = Guid.CreateVersion7(),
+        CreatedOn = DateTime.UtcNow
+    };
 
     public string ParticipantId { get; set; }
     public string Description { get; set; }
