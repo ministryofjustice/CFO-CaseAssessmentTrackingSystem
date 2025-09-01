@@ -32,6 +32,7 @@ public static class GetParticipantsLatestEngagement
                     .Take(1)
                     .DefaultIfEmpty()
                 join owner in db.Users on participant.OwnerId equals owner.Id
+                join currentLocation in db.Locations on participant.CurrentLocation.Id equals currentLocation.Id
                 where participant.Owner.TenantId.StartsWith(request.CurrentUser.TenantId)
                 where request.JustMyCases == false || participant.Owner.Id == request.CurrentUser.UserId
                 where participant.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
@@ -57,6 +58,7 @@ public static class GetParticipantsLatestEngagement
                     engagement.EngagedWith,
                     engagement.EngagedWithTenant,
                     owner.DisplayName,
+                    CurrentLocationName = currentLocation.Name,
                     engagement.EngagedOn 
                 };
 #pragma warning restore CS8602, CS8604
@@ -78,6 +80,7 @@ public static class GetParticipantsLatestEngagement
                     e.EngagedWith,
                     e.EngagedWithTenant,
                     e.DisplayName,
+                    e.CurrentLocationName,
                     e.EngagedOn
                 )).ToListAsync(cancellationToken);
 

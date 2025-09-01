@@ -10,6 +10,7 @@ public record ParticipantEngagementDto(
     string? EngagedWithDisplayName, 
     string? EngagedWithTenantName,
     string SupportWorkerDisplayName,
+    string CurrentLocationName,
     DateOnly? EngagedOn)
 {
     public bool HasEngaged => EngagedOn.HasValue;

@@ -58,7 +58,8 @@ public class DocumentExportLatestParticipantEngagementsIntegrationEventConsumer(
                     { "Has Engaged", item => item.HasEngaged ? "Yes" : "No" },
                     { "Engaged With", item => item.EngagedWithDisplayName },
                     { "Engaged With (Tenant)", item => item.EngagedWithTenantName },
-                    { "Support Worker", item => item.SupportWorkerDisplayName }
+                    { "Support Worker", item => item.SupportWorkerDisplayName },
+                    { "Current Location", item => item.CurrentLocationName },
                 }
             );
 
