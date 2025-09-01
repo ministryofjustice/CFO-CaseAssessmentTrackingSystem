@@ -18,7 +18,7 @@
                         <MudText Typo="Typo.h5">Latest Engagements</MudText>
                         <MudSpacer />
                         <MudStack>
-                            <MudSwitch @bind-Value="Query.HideRecentEngagements" Label="Hide Recent" Color="Color.Info" />
+                            <MudSwitch @bind-Value="Query.HideRecentEngagements" Label="Only 3+ Month Inactive" Color="Color.Info" />
                             <MudButton Disabled="@_downloading"
                                         Variant="Variant.Outlined"
                                         Color="Color.Primary"
@@ -46,7 +46,7 @@
             </CardHeaderContent>
         </MudCardHeader>
         <MudCardContent>
-            <MudTable @ref="_table" ServerData="@(ServerReload)" Hover Striped Bordered="false" Dense SortLabel="Sort by" Loading="_loading">
+            <MudTable @ref="_table" ServerData="@(ServerReload)" Hover Striped Bordered="false" SortLabel="Sort by" Loading="_loading">
                 <HeaderContent>
                     <MudTh>
                         <MudTableSortLabel SortBy="new Func<ParticipantEngagementDto, object>(x => x.FullName)" SortLabel="FullName">
