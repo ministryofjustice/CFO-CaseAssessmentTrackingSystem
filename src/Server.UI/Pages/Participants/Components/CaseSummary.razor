@@ -2,6 +2,7 @@
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.Summary
 @using Humanizer
+@using Cfo.Cats.Server.UI.Components.Participants
 
 @inherits CatsComponentBase
 
@@ -9,7 +10,8 @@
     <MudGrid Class="pa-3" Spacing="4">
         <!-- Details -->
         <MudItem xs="12" md="4">
-            <DetailsSummary />
+            <!-- This will need moving out from here when the rest of the components are done. -->
+            <ParticipantDetailsCardComponent ParticipantId="@ParticipantSummaryDto.Id"/>
         </MudItem>
 
         <!-- Assessment -->

@@ -20,6 +20,8 @@ public class RequestTests
             .That()
             .AreNotInterfaces()
             .And()
+            .AreNotAbstract()
+            .And()
             .ImplementInterface(typeof(IRequest<>))
             .Or()
             .ImplementInterface(typeof(ICacheableRequest<>))
