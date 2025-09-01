@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 public class DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer
     (
         IUnitOfWork unitOfWork,
-        IOutcomeQualityDispSampleExcelService excelService,
+        IOutcomeQualityDipSampleExcelService excelService,
         IUploadService uploadService,
         IDomainEventDispatcher domainEventDispatcher,
         ILogger<DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer> logger
@@ -75,7 +75,7 @@ public class DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer
 
             if (summary == null) 
             {
-                logger.LogError("Document with id {DocumentId} references a dip sample {DipSampleId} that does not exits", message.DocumentId, dipSampleId);
+                logger.LogError("Document with id {DocumentId} references a dip sample {DipSampleId} that does not exist", message.DocumentId, dipSampleId);
                 return;
             }
 

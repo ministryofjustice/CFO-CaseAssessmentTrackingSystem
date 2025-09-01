@@ -4,18 +4,18 @@ using System.Runtime.CompilerServices;
 
 namespace Cfo.Cats.Infrastructure.Services;
 
-public class OutcomeQualityDispSampleExcelService(IOptions<DocumentExportOptions> options) : IOutcomeQualityDispSampleExcelService
+public class OutcomeQualityDipSampleExcelService(IOptions<DocumentExportOptions> options) : IOutcomeQualityDipSampleExcelService
 {
     private (string Region, DateTime Date, string Cpm, int Score)? _summary;
     private List<(string Participant, string Type, string CurrentLocation, string EnrolledAt, string SupportWorker, string Compliant, string Feedback)> _participants = [];
 
-    public IOutcomeQualityDispSampleExcelService AddParticipant(string participant, string type, string currentLocation, string enrolledAt, string supportWorker, bool compliant, string feedBack)
+    public IOutcomeQualityDipSampleExcelService AddParticipant(string participant, string type, string currentLocation, string enrolledAt, string supportWorker, bool compliant, string feedBack)
     {
         _participants.Add((participant, type, currentLocation, enrolledAt, supportWorker, compliant ? "Y" : "N", feedBack));
         return this;
     }
 
-    public IOutcomeQualityDispSampleExcelService WithDipSampleSummary(string region, DateTime date, string cpm, int score)
+    public IOutcomeQualityDipSampleExcelService WithDipSampleSummary(string region, DateTime date, string cpm, int score)
     {
         _summary = (region, date, cpm, score);
         return this;

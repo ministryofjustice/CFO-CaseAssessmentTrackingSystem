@@ -278,7 +278,7 @@ public static class DependencyInjection
             .AddScoped<ICommunicationsService, CommunicationsService>()
             .AddScoped<IExcelService, ExcelService>()
             .AddScoped<ICumulativeExcelService, CumulativeExcelService>()
-            .AddScoped<IOutcomeQualityDispSampleExcelService, OutcomeQualityDispSampleExcelService>()
+            .AddScoped<IOutcomeQualityDipSampleExcelService, OutcomeQualityDipSampleExcelService>()
             .AddScoped<IUploadService, UploadService>();
     }
 
