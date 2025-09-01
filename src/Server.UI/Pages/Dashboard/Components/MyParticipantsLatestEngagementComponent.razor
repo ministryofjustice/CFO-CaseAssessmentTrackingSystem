@@ -66,11 +66,19 @@
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Participant">
-                        <MudStack Spacing="0">
-                            <MudText>@context.FullName</MudText>
-                            <MudLink Typo="Typo.body2" Href=@($"/pages/participants/{context.ParticipantId}")>
-                                @context.ParticipantId
-                            </MudLink>
+                        <MudStack Row="true" AlignItems="AlignItems.Center">
+                            <MudStack Spacing="0">
+                                <MudText>@context.FullName</MudText>
+                                <MudLink Typo="Typo.body2" Href=@($"/pages/participants/{context.ParticipantId}")>
+                                    @context.ParticipantId
+                                </MudLink>
+                            </MudStack>
+                            @if (context.HasEngaged && context.LastEngagedWithCurrentSupportWorker is false)
+                            {
+                                <MudTooltip Text="@($"This participant is assigned to you, but last engaged with {context.EngagedWithDisplayName}")">
+                                    <MudIcon Icon="@Icons.Material.Rounded.Info" Color="Color.Info" Size="Size.Small" />
+                                </MudTooltip>
+                            }                                
                         </MudStack>
                     </MudTd>
                     <MudTd DataLabel="Category">

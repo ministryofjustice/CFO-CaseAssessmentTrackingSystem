@@ -91,10 +91,21 @@
                         }
                     </MudTd>
                     <MudTd DataLabel="Engaged With">
-                        <MudStack AlignItems="AlignItems.Start" Spacing="0">
-                            <MudText>@context.EngagedWithDisplayName</MudText>
-                            <MudText Typo="Typo.body2">@context.EngagedWithTenantName</MudText>
-                        </MudStack>
+                        @if (context.HasEngaged)
+                        {
+                            <MudStack Row AlignItems="AlignItems.Center">
+                                <MudStack AlignItems="AlignItems.Start" Spacing="0">
+                                    <MudText>@context.EngagedWithDisplayName</MudText>
+                                    <MudText Typo="Typo.body2">@context.EngagedWithTenantName</MudText>
+                                </MudStack>
+                                @if (context.LastEngagedWithCurrentSupportWorker is false)
+                                {
+                                    <MudTooltip Text="@($"This participant is assigned to {context.SupportWorkerDisplayName}, but last engaged with {context.EngagedWithDisplayName}")">
+                                        <MudIcon Icon="@Icons.Material.Rounded.Info" Color="Color.Info" Size="Size.Small" />
+                                    </MudTooltip>
+                                }
+                            </MudStack>
+                        }
                     </MudTd>
                     <MudTd DataLabel="Engaged On">
                         <MudStack Row AlignItems="AlignItems.Center">
