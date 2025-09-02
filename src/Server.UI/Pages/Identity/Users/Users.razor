@@ -262,7 +262,7 @@
                                             <td>@note.Message</td>
                                             <td>@(UserService.DataSource.SingleOrDefault(x => x.Id == note.CreatedBy)?.DisplayName ?? "Unknown")</td>
                                             <td>
-                                                <ToLocal DateTime="@note.Created.ToLocalTime()" Format="dd/mm/yyyy HH:MM:ss"></ToLocal>
+                                                @note.Created?.ToLocalTime()
                                             </td>
                                         </tr>
                                     }
