@@ -1,6 +1,9 @@
 ﻿@using Cfo.Cats.Application.Features.Activities.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Activities.Components
+
+@inherits CatsComponentBase
 
 <style>
     .force-break {
@@ -17,8 +20,7 @@
     
     <MudText Typo="Typo.h6" Color="Color.Primary">
         Participant Details
-    </MudText>
-    
+    </MudText>    
    
     <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
         <MudText Typo="Typo.body1"><strong>Participant</strong></MudText>
@@ -35,11 +37,21 @@
         <MudText Typo="Typo.body1"><strong>Type</strong></MudText>
         <MudText Typo="Typo.body1">@Activity.Definition!.Name</MudText>
     </MudStack>
-    
+
     <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+
         <MudText Typo="Typo.body1"><strong>Activity Location</strong></MudText>
         <MudText Typo="Typo.body1">@Activity.Location!.Name</MudText>
     </MudStack>
+
+    @if (hasParticpantBeenAtThisLocationOnThisDate == false)
+    {
+        <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
+            <MudAlert Severity="Severity.Warning">
+                Participant was not at @Activity.Location!.Name on this date.
+            </MudAlert>
+        </MudStack>
+    }
 
     <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
         <MudText Typo="Typo.body1"><strong>Date activity took place</strong></MudText>
@@ -95,11 +107,9 @@
                 <MudText Typo="Typo.body1"><strong>Passed</strong></MudText>
                 <MudText Typo="Typo.body1">@Activity.EducationTrainingTemplate.CourseCompletionStatus!.Name</MudText>
             </MudStack>
-
         }
         else if (Activity.Definition.Classification == ClassificationType.Employment)
         {                
-
             <MudDivider />
 
             <MudText Typo="Typo.h6" Color="Color.Primary">
@@ -135,11 +145,9 @@
                 <MudText Typo="Typo.body1"><strong>Start Date of employment</strong></MudText>
                 <MudText Typo="Typo.body1">@Activity.EmploymentTemplate.EmploymentCommenced.ToShortDateOrEmptyString()</MudText>
             </MudStack>
-
         }
         else if (Activity.Definition.Classification == ClassificationType.ISWActivity)
-        {                    
-            
+        {                                
             <MudDivider />
 
             <MudText Typo="Typo.h6" Color="Color.Primary">
@@ -175,7 +183,6 @@
                 <MudText Typo="Typo.body1"><strong>Total hours </strong></MudText>
                 <MudText Typo="Typo.body1">@Activity.ISWTemplate.TotalHoursInterventionDescription</MudText>
             </MudStack>
-
         }      
 
         <MudDivider />
@@ -183,12 +190,28 @@
         <MudStack Row="true" AlignItems="AlignItems.End" Breakpoint="Breakpoint.Md">
             <MudLink Href="@($"/pages/participants/{Activity.ParticipantId}")" Color="Color.Primary">View Participant</MudLink>
         </MudStack>
-
     }
-
 </MudStack>
     
 @code{
     [Parameter, EditorRequired]
     public ActivityQaDetailsDto Activity { get; set; } = default!;
+
+    bool hasParticpantBeenAtThisLocationOnThisDate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckParticipantBeenAtThisLocationOnDate();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task CheckParticipantBeenAtThisLocationOnDate()
+    {
+        hasParticpantBeenAtThisLocationOnThisDate = await GetNewMediator().Send(new GetParticipantWasAtThisLocationCheck.Query()
+        {
+            ParticipantId = Activity.ParticipantId,
+            LocationId = Activity.Location!.Id,
+            DateAtLocation = Activity.CommencedOn
+        });
+    }
 }

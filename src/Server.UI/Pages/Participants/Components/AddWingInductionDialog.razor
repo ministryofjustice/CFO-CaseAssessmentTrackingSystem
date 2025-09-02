@@ -1,5 +1,6 @@
 @using Cfo.Cats.Application.Features.Inductions.Commands
 @using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
 @inherits CatsComponentBase
 
 @inject IValidationService Validator
@@ -13,16 +14,28 @@
                     <MudGrid>
                         <MudItem xs="12">
                             <MudDatePicker Label="@Model.GetMemberDescription(x => x.InductionDate)"
-                                           @bind-Date="Model.InductionDate"
+                                           @bind-Date="Model.InductionDate" @bind-Date:after="CheckParticipantBeenAtThisLocationOnDate"
                                            For="(() => Model.InductionDate)"
                                            ImmediateText="true" Editable="false" MaxDate="DateTime.Today.Date" MinDate="DateTime.Today.AddMonths(-3)" PickerVariant="PickerVariant.Dialog" />
                         </MudItem>
+                        
+                        @if (hasParticpantBeenAtThisLocationOnThisDate is not true && Model.InductionDate is not null && Model.Location is not null)
+                        {
+                            <MudItem xs="12">
+                                <MudAlert Severity="Severity.Warning">
+                                    Participant was not at @Model.Location!.Name on selected date.
+                                </MudAlert>
+                            </MudItem>
+                        }
+
                         <MudItem xs="12">
-                            <MudAutocomplete T="LocationDto" Label="@Model.GetMemberDescription(x => x.Location)" @bind-Value="Model.Location" SearchFunc="@SearchLocations"
-                                             Required="true" RequiredError="Location is required"
-                                             ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
-                                             AdornmentColor="Color.Primary" ToStringFunc="@(e => e == null ? null : e.Name)"/>
-                        </MudItem>
+                                <MudAutocomplete T="LocationDto" Label="@Model.GetMemberDescription(x => x.Location)" 
+                                                @bind-Value="Model.Location" @bind-Value:after="CheckParticipantBeenAtThisLocationOnDate"
+                                                SearchFunc="@SearchLocations"
+                                                 Required="true" RequiredError="Location is required"
+                                                 ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                                                 AdornmentColor="Color.Primary" ToStringFunc="@(e => e == null ? null : e.Name)" />
+                        </MudItem>                        
                     </MudGrid>
                 </MudForm>
             }
@@ -50,6 +63,8 @@
     public AddWingInduction.Command? Model { get; set; }
 
     private bool saving;
+
+    bool hasParticpantBeenAtThisLocationOnThisDate;
 
     private void Cancel()
     { 
@@ -94,4 +109,16 @@
         return await Task.FromResult(Locations!.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)));
     }
 
+    async Task CheckParticipantBeenAtThisLocationOnDate()
+    {
+        if (Model?.InductionDate == null || Model?.Location?.Id == null)
+            return;
+        
+        hasParticpantBeenAtThisLocationOnThisDate = await GetNewMediator().Send(new GetParticipantWasAtThisLocationCheck.Query()
+            {
+                ParticipantId = Model!.ParticipantId,
+                LocationId = Model.Location!.Id,
+                DateAtLocation = Model.InductionDate
+            });        
+    }
 }

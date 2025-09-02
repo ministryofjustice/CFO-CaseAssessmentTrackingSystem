@@ -1,5 +1,6 @@
 ﻿@using Cfo.Cats.Application.Features.Activities.DTOs
 @using Cfo.Cats.Application.Features.Activities.Queries
+@using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Activities.Components
 
@@ -10,6 +11,7 @@
         <HeaderContent>            
             <MudTh>Activity</MudTh>
             <MudTh>Location</MudTh>
+            <MudTh>Participant at location</MudTh>
             <MudTh>Date activity took place</MudTh>
         </HeaderContent>
         <RowTemplate>      
@@ -19,6 +21,23 @@
             <MudTd DataLabel="Location">
                 @context.Location!.Name (@context.Location.LocationType.Name)                
             </MudTd>
+
+            <MudTd DataLabel="Participant at location">
+                @if (context.ActivityId is Guid id && participantLocationCheckResults.TryGetValue(id, out var wasAtLocation))
+                {
+                    <MudIcon Icon="@(
+                                     wasAtLocation
+                                         ? Icons.Material.Filled.Check
+                                                 : Icons.Material.Filled.Close
+                                    )"
+                     Color="@(wasAtLocation ? Color.Success : Color.Error)" />
+                }
+                else
+                {
+                    <MudProgressCircular Indeterminate Size="Size.Small" Color="Color.Info" />
+                }
+            </MudTd>
+
             <MudTd DataLabel="Date activity took place">                
                 <MudText Typo="Typo.body2">@context.CommencedOn</MudText>
             </MudTd>            
@@ -61,6 +80,8 @@
 
     private ActivityQaDetailsDto? _activityQaDetailsDto ;
 
+    private Dictionary<Guid, bool> participantLocationCheckResults = new();
+
     protected override async Task OnInitializedAsync()
     {
         previousActivities = await GetPreviousActivities();            
@@ -70,12 +91,32 @@
     private async Task<List<ActivityQaDetailsDto>> GetPreviousActivities()
     {
         isLoadingPreviousActivities = true;
-        var query = await GetNewMediator().Send(new GetPreviousSameTypeActivitiesById.Query()
+        var result = await GetNewMediator().Send(new GetPreviousSameTypeActivitiesById.Query()
             {
                 Id = ActivityId
             });
+
+        var activities = result.ToList() ?? [];
+
+        // Precompute participant-location checks
+        participantLocationCheckResults.Clear();
+
+        var checks = await Task.WhenAll(
+            activities
+                .Where(a => a.ActivityId.HasValue)
+                .Select(async a =>
+                {
+                    var result = await CheckParticipantBeenAtThisLocationOnDate(a);
+                    return (a.ActivityId!.Value, result);
+                }
+                )
+        );
+
+        participantLocationCheckResults = checks.ToDictionary(x => x.Item1, x => x.result);
+
+
         isLoadingPreviousActivities = false;
-        return query.ToList() ?? [];
+        return activities;
     }
 
     async Task Display(ActivityQaDetailsDto previousActivity)
@@ -83,4 +124,14 @@
         _activityQaDetailsDto = previousActivity;      
         await Task.CompletedTask;  
     }    
+
+    private async Task<bool> CheckParticipantBeenAtThisLocationOnDate(ActivityQaDetailsDto? activityQaDetailsDto)
+    {
+        return await GetNewMediator().Send(new GetParticipantWasAtThisLocationCheck.Query()
+        {
+            ParticipantId = activityQaDetailsDto!.ParticipantId,
+            LocationId = activityQaDetailsDto.Location!.Id,
+            DateAtLocation = activityQaDetailsDto.CommencedOn
+        });
+    }
 }

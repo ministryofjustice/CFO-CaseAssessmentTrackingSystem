@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Activities;
@@ -37,8 +37,9 @@ public static class GetPreviousSameTypeActivitiesById
                 {
                     await unitOfWork.DbContext.Activities.Entry(x).Reference(a => (a as ActivityWithTemplate)!.Document).LoadAsync();
                 }
+
                 var _activityQaDetailsDto = mapper.Map<ActivityQaDetailsDto>(act);
-                _activityQaDetailsDto.ActivityId = activity!.Id;
+                _activityQaDetailsDto.ActivityId = act.Id;
                 listOfPreviousActivities.Add(_activityQaDetailsDto);
             }
 
