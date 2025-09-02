@@ -18,24 +18,26 @@ public static class GetParticipantWasAtThisLocationCheck
     private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, bool>
     {
         public async Task<bool> Handle(Query request, CancellationToken cancellationToken)
-        {                   
-            if (request.DateAtLocation == null)
+        {
+
+            var dateAtLocation = request.DateAtLocation?.Date;
+
+            if (dateAtLocation == null)
             {
                 return false;
             }
 
-            var db = unitOfWork.DbContext;
-            var startOfDay = request.DateAtLocation.Value.Date;
-            var endOfDay = startOfDay.AddDays(1);
-
+            var db = unitOfWork.DbContext;       
+            
             var locationOnDate = await db.ParticipantLocationHistories
-                .Where(plh =>
-                    plh.ParticipantId == request.ParticipantId &&
-                    plh.LocationId == request.LocationId &&
-                    plh.From >= startOfDay &&
-                    plh.From < endOfDay)
-                .OrderByDescending(x => x.From)
-                .FirstOrDefaultAsync(cancellationToken);
+                  .Where(plh =>
+                      plh.ParticipantId == request.ParticipantId &&
+                      plh.LocationId == request.LocationId &&
+                      plh.From.Date <= dateAtLocation &&
+                      (!plh.To.HasValue || plh.To.Value.Date >= dateAtLocation)
+                  )
+                  .OrderByDescending(x => x.From)
+                  .FirstOrDefaultAsync(cancellationToken);
 
             return locationOnDate != null;
         }
