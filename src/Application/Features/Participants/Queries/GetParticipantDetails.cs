@@ -26,7 +26,7 @@ public static class GetParticipantDetails
                     EnrolmentLocation = p.EnrolmentLocation!.Name,
                     Nationality = p.Nationality,
                     DateOfFirstConsent = p.DateOfFirstConsent,
-                    LastSync = p.LastSyncDate!.Value
+                    LastSync = p.LastSyncDate ?? p.Created!.Value
                 };
 
             var result = await query.FirstOrDefaultAsync(cancellationToken);
