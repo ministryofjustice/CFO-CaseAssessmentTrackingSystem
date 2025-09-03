@@ -6,6 +6,12 @@ public class QAActivitiesResultsAdvancedSpecification : Specification<Activity>
 {
     public QAActivitiesResultsAdvancedSpecification(QAActivitiesResultsAdvancedFilter filter)
     {
+        var requiresQa = ActivityDefinition.List
+            .Where(def => def.RequiresQa)
+            .GroupBy(def => def.Type)
+            .Select(def => def.Key)
+            .ToArray();
+
         Query.Where(a => a.OwnerId == filter.CurentActiveUser.UserId)
              .Where(a => a.ParticipantId == filter.ParticipantId, filter.ParticipantId is not null)
              .Where(a => a.TaskId == filter.TaskId, filter.TaskId is not null)
@@ -28,7 +34,8 @@ public class QAActivitiesResultsAdvancedSpecification : Specification<Activity>
                                 )
                             )
                         )
-                    ));
+                    ))
+             .Where(a => requiresQa.Contains(a.Type));
 
         Query
             .OrderByDescending(a => a.Status == ActivityStatus.PendingStatus.Value)
