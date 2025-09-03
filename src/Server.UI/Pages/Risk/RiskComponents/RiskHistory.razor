@@ -1,0 +1,51 @@
+﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Application.Features.Participants.DTOs;
+@using Cfo.Cats.Domain.Common.Enums;
+@using Humanizer
+
+@inherits CatsComponentBase
+@inject IUserService UserService
+
+@if (_isLoading)
+{
+    <MudLoading Text="Risk history loading" />
+}
+else if (_participantRisks.Any() == true)
+{
+    <MudDataGrid Items="@_participantRisks" Striped="true" ExpandSingleRow="true">
+        <Columns>
+            <HierarchyColumn T="RiskHistoryDto" ButtonDisabledFunc="@(x => x.RiskReviewReason == RiskReviewReason.NoChange || x.RiskReviewReason == RiskReviewReason.NoRiskInformationAvailable)" />
+            <TemplateColumn Title="Completed" Sortable="true" SortBy="x => x.Completed">
+                <CellTemplate>
+                    <MudStack>
+                        @if (context.Item.Completed.HasValue)
+                        {
+                            <MudText Typo="Typo.subtitle2" Class="ma-3">
+                                <strong>@context.Item.Completed.Value.ToShortDateString()</strong>, <strong>@(UserService.DataSource.SingleOrDefault(x => x.Id == @context.Item.CompletedBy)?.DisplayName ?? "Unknown")</strong>
+                            </MudText>
+                        }
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="x => x.LocationName" Title="Location">
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.RiskReviewReason" Title="Review Reason">
+            </PropertyColumn>
+        </Columns>
+        <ChildRowContent >
+            @{
+                var riskHistoryItem = context.Item;
+            }
+            <ViewRisk ParticipantId="@ParticipantId" RiskId="@riskHistoryItem.Id" />
+        </ChildRowContent>
+        <PagerContent>
+            <MudDataGridPager T="RiskHistoryDto" />
+        </PagerContent>
+    </MudDataGrid>
+}
+else if (_notFound)
+{
+<MudAlert>
+    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No risk history found.</MudAlert>
+</MudAlert>
+}

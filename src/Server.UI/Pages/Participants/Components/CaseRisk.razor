@@ -1,4 +1,4 @@
-﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Risk.RiskComponents
@@ -11,115 +11,63 @@
         filter: grayscale(100%);
     }
 </style>
+<MudTabs Outlined="true" Border="true" Class="mt-2" >
+    <MudTabPanel Text="Latest">
+        <ViewRisk ParticipantId="@ParticipantId" />
+    </MudTabPanel>
 
-@if (_notFound)
-{
-    <MudAlert>
-        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No risk information found.</MudAlert>
-    </MudAlert>
-}
-
-@if(_model is not null)
-{
-    <MudForm @ref="form" ReadOnly Disabled>
-        <CascadingValue Value="form">
-            <MudExpansionPanels MultiExpansion="true">
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <MudText>License Conditions</MudText>
-                    </TitleContent>
-                    <ChildContent>
-                        <LicenseConditions Model="_model" />
-                    </ChildContent>
-                </MudExpansionPanel>
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <MudText>Risk Overview</MudText>
-                    </TitleContent>
-                    <ChildContent>
-                        <RiskOverview Model="_model"/>
-                    </ChildContent>
-                </MudExpansionPanel>
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <MudText>Registration Details / MAPPA</MudText>
-                    </TitleContent>
-                    <ChildContent>
-                        <Mappa Model="_model"/>
-                    </ChildContent>
-                </MudExpansionPanel>
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <MudText>Specific Risk(s)</MudText>
-                    </TitleContent>
-                    <ChildContent>
-                        <SpecificRisk Model="_model" />
-                    </ChildContent>
-                </MudExpansionPanel>
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <MudText>Recommendations</MudText>
-                    </TitleContent>
-                    <ChildContent>
-                        <Recommendations Model="_model" />
-                    </ChildContent>
-                </MudExpansionPanel>
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <MudText>Restrictions</MudText>
-                    </TitleContent>
-                    <ChildContent>
-                        <Restrictions Model="_model"/>
-                    </ChildContent>
-                </MudExpansionPanel>
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <MudText>Additional Information</MudText>
-                    </TitleContent>
-                    <ChildContent>
-                        <AdditionalInformation Model="_model" />
-                    </ChildContent>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-        </CascadingValue>
-    </MudForm>
-}
+    <MudTabPanel Text="History">
+        <!--show Risk History-->
+        <RiskHistory ParticipantId="@ParticipantId" />
+    </MudTabPanel>
+</MudTabs>
 
 @code {
     [Parameter]
     [EditorRequired]
     public string ParticipantId { get; set; } = default!;
 
-    private MudForm? form;
-    private RiskDto? _model;
-    private bool _notFound = false;
+    //private MudForm? form;
+    // private RiskDto? _model;
+    // private bool _notFound = false;
+    //private IEnumerable<RiskHistoryDto> _participantRisks = Enumerable.Empty<RiskHistoryDto>();
 
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            var result = await GetNewMediator().Send(new GetParticipantRisk.Query()
-            {
-                ParticipantId = ParticipantId
-            });
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     try
+    //     {
+    //         var result = await GetNewMediator().Send(new GetParticipantRisk.Query()
+    //         {
+    //             ParticipantId = ParticipantId
+    //         });
 
-            if(result.Succeeded && result.Data is not null)
-            {
-                _model = result.Data;
-            }
-            else
-            {
-                _notFound = true;
-            }
-        }
-        catch (NotFoundException)
-        {
-            _notFound = true;
-        }
-        finally
-        {
-            await base.OnInitializedAsync();
-        }
+    //         if(result.Succeeded && result.Data is not null)
+    //         {
+    //             _model = result.Data;
+    //         }
+    //         else
+    //         {
+    //             _notFound = true;
+    //         }
+    //         var historyResult = await GetNewMediator().Send(new GetParticipantRiskHistory.Query()
+    //         {
+    //             ParticipantId = ParticipantId
+    //         });
+            
+    //         if(historyResult.Succeeded && historyResult.Data is not null)
+    //         {
+    //             _participantRisks = historyResult.Data
+    //                                     .OrderByDescending(r => r.Completed);
+    //         }
+    //     }
+    //     catch (NotFoundException)
+    //     {
+    //         _notFound = true;
+    //     }
+    //     finally
+    //     {
+    //         await base.OnInitializedAsync();
+    //     }
 
-    }
+    // }
 }
