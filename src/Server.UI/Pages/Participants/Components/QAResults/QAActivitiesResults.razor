@@ -68,9 +68,10 @@
                         {
                             @* var created = activity.Created.ToLocalTime();
                             var commencedOn = activity.CommencedOn.ToLocalTime();*@
-                             var created = activity.Created;
+                            var created = activity.Created;
                             var commencedOn = activity.CommencedOn;
                             var today = DateTime.Today.ToLocalTime();
+                            var notes = activity.GetNotes();
 
                             <MudListItem Class="flex-row-reverse">
                                 <ChildContent>
@@ -141,9 +142,12 @@
                                             <MudText Typo="Typo.body1">
                                                 Notes
                                             </MudText>
-                                            @if (activity.Notes != null && activity.Notes.Any())
+
+                                        @* @if (notes != null && activity.Notes.Any()) *@
+                                        @if (notes != null && notes.Any())
                                             {
-                                                @foreach (var note in activity.Notes)
+                                            @* @foreach (var note in activity.Notes) *@
+                                                @foreach (var note in notes)
                                                 {
                                                     <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
                                                         <MudCard Outlined="false" Elevation="25">

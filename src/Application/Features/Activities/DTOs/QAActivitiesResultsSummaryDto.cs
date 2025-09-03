@@ -29,7 +29,8 @@ public class QAActivitiesResultsSummaryDto
     {
         return (PQA.Union(QA1).Union(QA2).Union(Escalations)).OrderBy(x => x.Created).ToArray();
     }
-    public record ActSummaryNote(string Message, string CreatedBy, string TenantId, DateTime Created)
+
+    public record ActSummaryNote(string Message, string CreatedBy, string TenantId, string TenantName, DateTime Created)
     {
 
     }
