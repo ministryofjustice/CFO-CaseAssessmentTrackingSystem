@@ -72,10 +72,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Components\Shared\Themes\ThemesDialog.razor" />
-    </ItemGroup>
-
-    
+        <Content Include="Files\**\*.*" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+    </ItemGroup>   
 
 
 </Project>
