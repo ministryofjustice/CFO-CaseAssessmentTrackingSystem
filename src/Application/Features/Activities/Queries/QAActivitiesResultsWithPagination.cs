@@ -23,31 +23,9 @@ public static class QAActivitiesResultsWithPagination
 
             bool hideUser = ShouldHideUser(request.CurentActiveUser);
             var CFOTenantNames = new HashSet<string> { "CFO", "CFO Evolution" };
-            var oneMonthAgo = DateTime.UtcNow.AddMonths(-1);
 
-            var qaDefinitionIds = ActivityDefinition
-                .List
-                .Where(ad => ad.CheckType == CheckType.QA)
-                .Select(ad => ad.Value)
-                .ToList();
-           
-            var query = from a in db.Activities.AsNoTracking()
-                        join p in db.Participants.AsNoTracking() on a.ParticipantId equals p.Id
-                        where a.OwnerId == request.CurentActiveUser.UserId
-                        && (
-                            a.Status == ActivityStatus.PendingStatus.Value 
-                            || (
-                                a.Status == ActivityStatus.ApprovedStatus.Value &&
-                                (
-                                    (!request.CommencedStart.HasValue && !request.CommencedEnd.HasValue && a.ApprovedOn >= oneMonthAgo)
-                                    || (
-                                          (!request.CommencedStart.HasValue || a.CommencedOn >= request.CommencedStart) &&
-                                          (!request.CommencedEnd.HasValue || a.CommencedOn <= request.CommencedEnd)
-                                       )
-                                    )
-                                )
-                            )
-
+            var query = from a in db.Activities.ApplySpecification(request.Specification)
+                        join p in db.Participants on a.ParticipantId equals p.Id
                         select new QAActivitiesResultsSummaryDto
                         {
                             ParticipantId = p.Id,
@@ -60,9 +38,9 @@ public static class QAActivitiesResultsWithPagination
                             CommencedOn = a.CommencedOn,
                             TookPlaceAtLocationName = a.TookPlaceAtLocation.Name,
                             AdditionalInformation = a.AdditionalInformation!,
-                            PQA = (from pqa in db.ActivityPqaQueue.AsNoTracking()
+                            PQA = (from pqa in db.ActivityPqaQueue
                                    from n in pqa.Notes
-                                   join t in db.Tenants.AsNoTracking() on n.CreatedByUser!.TenantId equals t.Id
+                                   join t in db.Tenants on n.CreatedByUser!.TenantId equals t.Id
                                    where pqa.ActivityId == a.Id 
                                    select new ActSummaryNote(
                                        n.Message,
@@ -120,21 +98,12 @@ public static class QAActivitiesResultsWithPagination
                             ActivityId = a.Id
                         };
 
-            var ordered = query
-              .OrderByDescending(a => a.Status == ActivityStatus.PendingStatus.Value)
-              .ThenByDescending(a => a.ApprovedOn)
-              .ThenBy(a => a.LastModified)
-              .OrderBy($"{request.OrderBy} {request.SortDirection}");
+            var count = await query.CountAsync(cancellationToken);
 
-            var list = await ordered.ToListAsync(cancellationToken);
-
-            var qaActivities = list.Where(a => a.Definition.CheckType == CheckType.QA).ToList();
-
-            var count = qaActivities.Count;
-            var results = qaActivities
+            var results = await query
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
-                .ToList();
+                .ToListAsync(cancellationToken);
 
             return new PaginatedData<QAActivitiesResultsSummaryDto>(results, count, request.PageNumber, request.PageSize);
         }
