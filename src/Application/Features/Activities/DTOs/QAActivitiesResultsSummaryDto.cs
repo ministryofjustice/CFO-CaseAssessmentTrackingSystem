@@ -14,9 +14,10 @@ public class QAActivitiesResultsSummaryDto
    // public required Guid TaskId { get; set; }
     public required DateTime? Created { get; set; }
     public required DateTime? CommencedOn { get; set; }
-    public required DateTime Expiry { get; set; }
     public required DateTime? ApprovedOn { get; set; }
     public required DateTime? LastModified { get; set; }
+
+    public required string SubmittedBy { get; set; }
 
     public ActivityQaNoteDto[] Notes { get; set; } = [];
 

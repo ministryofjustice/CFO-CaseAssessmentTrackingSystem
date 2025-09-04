@@ -15,6 +15,9 @@ public partial class QAActivitiesResults
     private bool _loading;
 
     public required QAActivitiesResultsWithPagination.Query Model { get; set; }
+
+    [Parameter, EditorRequired]
+    public bool JustMyParticipants { get; set; } = false;
     
     [Inject]
     private ILocationService LocationService { get; set; } = default!;
@@ -26,10 +29,11 @@ public partial class QAActivitiesResults
     {
         Model = new QAActivitiesResultsWithPagination.Query()
         {
-            CurentActiveUser = CurrentUser,
+            UserProfile = CurrentUser,
             PageSize = 5,
             OrderBy = "Created",
-            SortDirection = $"{SortDirection.Descending}"
+            SortDirection = $"{SortDirection.Descending}",
+            JustMyParticipants = JustMyParticipants
         };
                 
         try

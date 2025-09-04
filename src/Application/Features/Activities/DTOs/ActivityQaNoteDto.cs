@@ -4,7 +4,6 @@ namespace Cfo.Cats.Application.Features.Activities.DTOs;
 #nullable disable
 public class ActivityQaNoteDto
 {
-    public Guid ActivityId { get; set; }
     public required DateTime Created { get; set; }
     public required string Message { get; set; }
     public required string CreatedBy { get; set; }

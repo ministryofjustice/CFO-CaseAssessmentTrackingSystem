@@ -66,8 +66,6 @@
                     {
                         foreach (var activity in _activities.Items)
                         {
-                            @* var created = activity.Created.ToLocalTime();
-                            var commencedOn = activity.CommencedOn.ToLocalTime();*@
                             var created = activity.Created;
                             var commencedOn = activity.CommencedOn;
                             var today = DateTime.Today.ToLocalTime();
@@ -84,7 +82,11 @@
                                                 </MudText>
                                                 <div class="d-flex gap-2 align-center">
                                                     <MudChip T="string" Size="MudBlazor.Size.Small" Text="@activity.Definition.Type.Name" Color="Color.Secondary" />
-                                                    @if(activity.Status==ActivityStatus.ApprovedStatus)
+                                                    <MudText Typo="Typo.body2">
+                                                        Submitted by: @activity.SubmittedBy
+                                                    </MudText>
+                                                    
+                                                    @if(activity.Status == ActivityStatus.ApprovedStatus)
                                                     {
                                                         <MudText Typo="Typo.body2">
                                                             Approved On:  @activity.ApprovedOn
@@ -99,22 +101,22 @@
                                                     <MudText Typo="Typo.body2">                                                    
                                                         Category:  @activity.Definition.Category.Name
                                                     </MudText>
-                                                        <MudText Typo="Typo.body2">
+                                                    <MudText Typo="Typo.body2">
                                                         Added on @created.ToShortDateOrEmptyString() at @created.ToShortDateOrEmptyString() (@created.Humanize())
-                                                        </MudText>
-                                                        <MudText Typo="Typo.body2" Class="pt-1">
+                                                    </MudText>
+                                                    <MudText Typo="Typo.body2">
                                                         Took place on @commencedOn.ToShortDateOrEmptyString() (@(commencedOn == today ? "today" : commencedOn.Humanize()))
-                                                            at @activity.TookPlaceAtLocationName
-                                                        </MudText>
-                                                        @{
-                                                            Color color = activity.Status switch
-                                                            {
-                                                                _ when activity.Status == ActivityStatus.PendingStatus => Color.Warning,
-                                                                _ when activity.Status == ActivityStatus.ApprovedStatus => Color.Success,
-                                                                _ => Color.Default
-                                                            };
-                                                        }
-                                                        <MudChip Color="color" Size="Size.Small">@activity.Status.Name</MudChip>
+                                                        at @activity.TookPlaceAtLocationName
+                                                    </MudText>
+                                                    @{
+                                                        Color color = activity.Status switch
+                                                        {
+                                                            _ when activity.Status == ActivityStatus.PendingStatus => Color.Warning,
+                                                            _ when activity.Status == ActivityStatus.ApprovedStatus => Color.Success,
+                                                            _ => Color.Default
+                                                        };
+                                                    }
+                                                    <MudChip Color="color" Size="Size.Small">@activity.Status.Name</MudChip>
                                                 </div>
                                             </div>
                                         </div>
@@ -138,33 +140,31 @@
                                         <MudDivider />
                                 </ChildContent>  
                                 <NestedList>
-                                        <MudListItem Icon="@Icons.Material.Filled.EditNote" Text="Notes" Expanded>
-                                            <MudText Typo="Typo.body1">
-                                                Notes
-                                            </MudText>
+                                    <MudListItem Icon="@Icons.Material.Filled.EditNote" Text="Notes" Expanded>
+                                        <MudText Typo="Typo.body1">
+                                            Notes
+                                        </MudText>
 
-                                        @* @if (notes != null && activity.Notes.Any()) *@
                                         @if (notes != null && notes.Any())
+                                        {
+                                            @foreach (var note in notes)
                                             {
-                                            @* @foreach (var note in activity.Notes) *@
-                                                @foreach (var note in notes)
-                                                {
-                                                    <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
-                                                        <MudCard Outlined="false" Elevation="25">
-                                                            <MudCardContent>
-                                                                <MudText Typo="Typo.body1">
-                                                                    @note.Message
-                                                                </MudText>
-                                                                <MudText Typo="Typo.caption">
-                                                                    @note.CreatedBy (@note.TenantName)  @note.Created.Humanize()
-                                                                </MudText>
-                                                            </MudCardContent>
-                                                        </MudCard>
-                                                    </MudTooltip>
-                                                }
+                                                <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
+                                                    <MudCard Outlined="false" Elevation="25">
+                                                        <MudCardContent>
+                                                            <MudText Typo="Typo.body1">
+                                                                @note.Message
+                                                            </MudText>
+                                                            <MudText Typo="Typo.caption">
+                                                                @note.CreatedBy (@note.TenantName)  @note.Created.Humanize()
+                                                            </MudText>
+                                                        </MudCardContent>
+                                                    </MudCard>
+                                                </MudTooltip>
                                             }
-                                        </MudListItem>
-                                        <MudDivider />
+                                        }
+                                    </MudListItem>
+                                    <MudDivider />
                                     <MudListItem>
                                         <MudTextField Label="@activity.GetMemberDescription(x => x.AdditionalInformation)"
                                                         Value="@activity.AdditionalInformation"

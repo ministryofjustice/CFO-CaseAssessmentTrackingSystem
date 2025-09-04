@@ -21,15 +21,15 @@ public static class QAActivitiesResultsWithPagination
         {
             var db = unitOfWork.DbContext;
 
-            bool hideUser = ShouldHideUser(request.CurentActiveUser);
+            bool hideUser = ShouldHideUser(request.UserProfile);
             var CFOTenantNames = new HashSet<string> { "CFO", "CFO Evolution" };
 
+#pragma warning disable CS8602
             var query = from a in db.Activities.ApplySpecification(request.Specification)
-                        join p in db.Participants on a.ParticipantId equals p.Id
                         select new QAActivitiesResultsSummaryDto
                         {
-                            ParticipantId = p.Id,
-                            Participant = $"{p.FirstName} {p.LastName}",
+                            ParticipantId = a.Participant.Id,
+                            Participant = $"{a.Participant.FirstName} {a.Participant.LastName}",
                             Status = a.Status,
                             Definition = a.Definition,
                             ApprovedOn = a.ApprovedOn,
@@ -40,63 +40,59 @@ public static class QAActivitiesResultsWithPagination
                             AdditionalInformation = a.AdditionalInformation!,
                             PQA = (from pqa in db.ActivityPqaQueue
                                    from n in pqa.Notes
-                                   join t in db.Tenants on n.CreatedByUser!.TenantId equals t.Id
                                    where pqa.ActivityId == a.Id 
                                    select new ActSummaryNote(
                                        n.Message,
-                                       CFOTenantNames.Contains(n.TenantId) && hideUser 
+                                       CFOTenantNames.Contains(n.CreatedByUser.TenantName!) && hideUser 
                                             ? "Hidden" 
                                             : n.CreatedByUser!.DisplayName!,
-                                       t.Id, 
-                                       t.Name!, 
+                                       n.CreatedByUser.TenantId!,
+                                       n.CreatedByUser.TenantName!,
                                        n.Created!.Value
                                    )).ToArray(),
                                                                         
                             QA1 = (from qa1 in db.ActivityQa1Queue 
                                    from n in qa1.Notes
-                                   join t in db.Tenants on n.CreatedByUser!.TenantId equals t.Id
                                    where qa1.ActivityId == a.Id
                                    select new ActSummaryNote(
                                         n.Message,
-                                        CFOTenantNames.Contains(n.TenantId) && hideUser
+                                        CFOTenantNames.Contains(n.CreatedByUser.TenantName!) && hideUser
                                              ? "Hidden"
                                              : n.CreatedByUser!.DisplayName!,
-                                        t.Id,
-                                        t.Name!,
+                                        n.CreatedByUser.TenantId!,
+                                        n.CreatedByUser.TenantName!,
                                         n.Created!.Value
                                     )).ToArray(),
 
                             QA2 = (from qa2 in db.ActivityQa2Queue 
                                    from n in qa2.Notes
-                                   join t in db.Tenants on n.CreatedByUser!.TenantId equals t.Id
                                    where qa2.ActivityId == a.Id
                                    select new ActSummaryNote(
                                          n.Message,
-                                         CFOTenantNames.Contains(n.TenantId) && hideUser
+                                         CFOTenantNames.Contains(n.CreatedByUser.TenantName!) && hideUser
                                               ? "Hidden"
                                               : n.CreatedByUser!.DisplayName!,
-                                         t.Id,
-                                         t.Name!,
+                                        n.CreatedByUser.TenantId!,
+                                        n.CreatedByUser.TenantName!,
                                          n.Created!.Value
                                     )).ToArray(),
 
                             Escalations = (from esc in db.ActivityEscalationQueue 
                                            from n in esc.Notes
-                                           join t in db.Tenants on n.CreatedByUser!.TenantId equals t.Id
                                            where esc.ActivityId == a.Id
                                            select new ActSummaryNote(
                                                n.Message,
-                                               CFOTenantNames.Contains(n.TenantId) && hideUser
+                                               CFOTenantNames.Contains(n.CreatedByUser.TenantName!) && hideUser
                                                     ? "Hidden"
                                                     : n.CreatedByUser!.DisplayName!,
-                                               t.Id,
-                                               t.Name!,
+                                               n.CreatedByUser.TenantId!,
+                                               n.CreatedByUser.TenantName!,
                                                n.Created!.Value
                                           )).ToArray(),
-
-                            Expiry = a.Expiry,
-                            ActivityId = a.Id
+                            ActivityId = a.Id,
+                            SubmittedBy = request.JustMyParticipants ? "You" : $"{a.Owner.DisplayName!} ({a.Owner.TenantName})"
                         };
+#pragma warning restore CS8602
 
             var count = await query.CountAsync(cancellationToken);
 
@@ -126,7 +122,7 @@ public static class QAActivitiesResultsWithPagination
         {
             public Validator()
             {
-                RuleFor(x => x.CurentActiveUser.UserId)
+                RuleFor(x => x.UserProfile.UserId)
                     .NotNull();
             }
         }
