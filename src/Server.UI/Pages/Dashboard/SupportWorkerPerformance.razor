@@ -1,0 +1,57 @@
+@using Cfo.Cats.Application.Features.Identity.DTOs
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Components.Users
+
+@page "/pages/dashboard/supportworker/performance"
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+<MudText Typo="Typo.h3">
+    Support Worker Performance Dashboard
+</MudText>
+
+<MudStack>
+
+    @if (_showSelect)
+    {
+        <UserSelectComponent ValueChanged="dto => { OnUserSelectedChanged(dto);  }" />    
+    }
+
+    @if(SelectedUserId is null)
+    {
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+            Please select a user.
+        </MudAlert>
+    }
+
+    @if (SelectedUserId is not null)
+    {
+        <MudGrid>
+            <MudItem xs="12" sm="4" lg="3">
+                <MudStack>
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="500px" Animation="Animation.Wave" />
+                    <MudText>Panel A</MudText>
+                </MudStack>
+            </MudItem>
+            <MudItem xs="12" sm="4" lg="3">
+                <MudStack>
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="500px" Animation="Animation.Wave" />
+                    <MudText>Panel B</MudText>
+                </MudStack>
+            </MudItem>
+            <MudItem xs="12" sm="4" lg="3">
+                <MudStack>
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="500px" Animation="Animation.Wave" />
+                    <MudText>Panel C</MudText>
+                </MudStack>
+            </MudItem>
+            <MudItem xs="12" sm="4" lg="3">
+                <MudStack>
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="500px" Animation="Animation.Wave" />
+                    <MudText>Panel D</MudText>
+                </MudStack>
+            </MudItem>
+        </MudGrid>
+        
+    }
+    
+</MudStack>

@@ -1,0 +1,38 @@
+@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Application.Features.Identity.DTOs
+@inject IUserService UserService
+
+<MudSelectExtended T="ApplicationUserDto"
+                   ItemCollection="@_users"
+                   Value="Value"
+                   ValueChanged="HandleValueChanged"
+                   Label="@Label"
+                   Placeholder="@Placeholder"
+                   Required="Required"
+                   Disabled="Disabled"
+                   Variant="Variant"
+                   ToStringFunc="@GetDisplayName"
+                   SearchBox="true"
+                   SearchBoxAutoFocus="true"
+                   SearchBoxClearable="true"
+                   SearchFunc="@(new Func<ApplicationUserDto?, string, bool>(Search))"
+                   ValuePresenter="ValuePresenter.ItemContent">
+                    <ItemTemplate>
+                        <MudStack Class="mud-width-full" Justify="Justify.SpaceBetween">
+                            <MudText><b>@context.Value?.TenantName</b></MudText>
+                            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                <MudStack Row="true">
+                                    <MudIcon Icon="@Icons.Material.Outlined.Person" />
+                                    <MudText>@(context.Value?.DisplayName)</MudText>
+                                </MudStack>
+                                <MudStack Row="true">
+                                    @foreach(var role in context.Value?.AssignedRoles ?? [])
+                                    {
+                                        <MudChip T="string" Color="Color.Info" Variant="Variant.Outlined" Size="Size.Small">@role</MudChip>
+                                    }
+                                </MudStack>
+                               
+                            </MudStack>
+                        </MudStack>
+                    </ItemTemplate>
+                   </MudSelectExtended>
