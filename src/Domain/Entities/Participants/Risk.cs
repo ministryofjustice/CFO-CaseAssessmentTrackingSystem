@@ -53,6 +53,10 @@ public class Risk : BaseAuditableEntity<Guid>
         from.Completed = null;
         from.CompletedBy = null;
         from.RegistrationDetailsJson = null;
+        from.Created = null;
+        from.CreatedBy = null;
+        from.LastModified = null;
+        from.LastModifiedBy = null;
         if (reason == RiskReviewReason.NoChange || reason ==RiskReviewReason.NoRiskInformationAvailable)
         {
             from.AddDomainEvent(new RiskInformationReviewedDomainEvent(from));

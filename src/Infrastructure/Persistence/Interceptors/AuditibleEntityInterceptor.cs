@@ -118,7 +118,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                 _ => throw new ArgumentOutOfRangeException($"No audit setup for {entry.State}")
             };
 
-            var auditEntry = AuditTrail.Create(entry.Entity.GetType().Name, userId, auditType);
+            var auditEntry = AuditTrail.Create(entry.Entity.GetType().Name, userId, auditType, dateTime.Now);
   
             foreach (var property in entry.Properties)
             {

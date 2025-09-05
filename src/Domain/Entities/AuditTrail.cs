@@ -12,13 +12,13 @@ public class AuditTrail : IEntity<int>
     {
     }
 
-    public static AuditTrail Create(string tableName, string? userId, AuditType auditType)
+    public static AuditTrail Create(string tableName, string? userId, AuditType auditType, DateTime dateTime)
     {
         return new AuditTrail()
         {
             TableName = tableName,
             UserId = userId,
-            DateTime = DateTime.Now,
+            DateTime = dateTime,
             AuditType = auditType,
             AffectedColumns = new List<string>(),
             NewValues = new Dictionary<string, object?>(),
