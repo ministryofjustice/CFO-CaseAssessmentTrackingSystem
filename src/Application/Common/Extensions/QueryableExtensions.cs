@@ -39,32 +39,5 @@ public static class QueryableExtensions
             .ProjectTo<TResult>(configuration)
             .ToListAsync(cancellationToken);
         return new PaginatedData<TResult>(data, count, pageNumber, pageSize);
-    }
-
-    public static PaginatedData<TResult> ProjectToPaginatedData<T, TResult>(
-    this IOrderedQueryable<T> query,
-    ISpecification<T> spec,
-    int pageNumber,
-    int pageSize,
-    IConfigurationProvider configuration
-)
-    where T : class
-    {
-        var specificationEvaluator = SpecificationEvaluator.Default;
-
-        // Count synchronously
-        var count = specificationEvaluator
-            .GetQuery(query, spec)
-            .Count();
-
-        // Fetch page data synchronously
-        var data = specificationEvaluator
-            .GetQuery(query.AsNoTracking(), spec)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ProjectTo<TResult>(configuration)
-            .ToList();
-
-        return new PaginatedData<TResult>(data, count, pageNumber, pageSize);
-    }
+    }       
 }
