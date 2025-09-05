@@ -27,9 +27,19 @@ public static class GetParticipantWasAtThisLocationCheck
                 return false;
             }
 
-            var db = unitOfWork.DbContext;       
-            
-            var locationOnDate = await db.ParticipantLocationHistories
+            var db = unitOfWork.DbContext;
+
+            var isHub = await db.Locations
+           .Where(l => l.Id == request.LocationId)
+           .Select(l => l.LocationType.IsHub)
+           .FirstOrDefaultAsync(cancellationToken);
+
+            if (isHub)
+            {
+                return true;
+            }
+
+            var locationOnDate = await db.ParticipantLocationHistories                            
                   .Where(plh =>
                       plh.ParticipantId == request.ParticipantId &&
                       plh.LocationId == request.LocationId &&
