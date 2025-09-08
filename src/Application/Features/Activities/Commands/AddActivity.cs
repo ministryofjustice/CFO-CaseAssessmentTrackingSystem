@@ -55,6 +55,7 @@ public static class AddActivity
 
                 // Self-mapping for updates
                 CreateMap<Activity, Activity>()
+                    .IncludeAllDerived()
                     .ForMember(dest => dest.Id, opt => opt.Ignore())
                     .ForMember(dest => dest.Created, opt => opt.Ignore())
                     .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
@@ -65,12 +66,9 @@ public static class AddActivity
                     .AfterMap((_, destination) => destination.ClearDomainEvents());
 
                 CreateMap<ActivityWithTemplate, ActivityWithTemplate>()
+                    .IncludeAllDerived()
                     .IncludeBase<Activity, Activity>()
-                    .ForMember(dest => dest.Document, opt =>
-                    {
-                        opt.PreCondition((source, destination, context) => source.Document is not null);
-                        opt.MapFrom(source => source.Document);
-                    });
+                    .ForMember(dest => dest.DocumentId, opt => opt.Condition(src => src.DocumentId != Guid.Empty));
 
                 CreateMap<EducationTrainingActivity, EducationTrainingActivity>().IncludeBase<Activity, Activity>();
                 CreateMap<EmploymentActivity, EmploymentActivity>().IncludeBase<Activity, Activity>();
