@@ -71,7 +71,7 @@
         </MudItem>
     }
 
-    @if (hasParticpantBeenAtThisLocationOnThisDate == false && Model?.CommencedOn != null && Model?.Location != null)
+    @if (hasParticpantBeenAtThisLocationOnThisDate == false && Model?.CommencedOn is not null && Model?.Location is not null)
     {
         <MudItem xs="12">
             <MudAlert Severity="Severity.Warning">
@@ -177,7 +177,7 @@
     bool hasSelectedActivityAlreadyBeenAddedOnThisDate;
     bool Disabled => Model.Location is null;
 
-    bool hasParticpantBeenAtThisLocationOnThisDate;
+    bool hasParticpantBeenAtThisLocationOnThisDate = true;
     
     [Parameter, EditorRequired]
     public required AddActivity.Command Model { get; set; }

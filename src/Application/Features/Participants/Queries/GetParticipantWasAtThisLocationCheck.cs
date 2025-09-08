@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public static class GetParticipantWasAtThisLocationCheck
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<bool>
+    public class Query : IRequest<Result<bool>>
     {
         public required string ParticipantId { get; set; }
         public required int LocationId { get; set; }
@@ -15,41 +15,44 @@ public static class GetParticipantWasAtThisLocationCheck
         public required DateTime? DateAtLocation { get; set; }
     }
 
-    private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, bool>
+    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<bool>>
     {
-        public async Task<bool> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<bool>> Handle(Query request, CancellationToken cancellationToken)
         {
-
             var dateAtLocation = request.DateAtLocation?.Date;
 
             if (dateAtLocation == null)
             {
-                return false;
+                return Result<bool>.Failure("Location date required");
             }
 
             var db = unitOfWork.DbContext;
 
-            var isHub = await db.Locations
-           .Where(l => l.Id == request.LocationId)
-           .Select(l => l.LocationType.IsHub)
-           .FirstOrDefaultAsync(cancellationToken);
+            var isHubAndHasInduction = await db.HubInductions
+                                                .Where(hi => hi.ParticipantId == request.ParticipantId
+                                                    && hi.LocationId == request.LocationId
+                                                    && hi.InductionDate >= request.DateAtLocation)
+                                                .AnyAsync(cancellationToken);
 
-            if (isHub)
+            if (isHubAndHasInduction is false)
             {
-                return true;
+                var locationOnDate = await db.ParticipantLocationHistories
+                                               .Where(plh =>
+                                                   plh.ParticipantId == request.ParticipantId &&
+                                                   plh.LocationId == request.LocationId &&
+                                                   plh.From.Date <= dateAtLocation &&
+                                                   (!plh.To.HasValue || plh.To.Value.Date >= dateAtLocation)
+                                               )
+                                               .OrderByDescending(x => x.From)
+                                               .FirstOrDefaultAsync(cancellationToken);
+
+                if (locationOnDate is null)
+                {
+                    return Result<bool>.Failure("Participant was not at location on date");
+                }
             }
 
-            var locationOnDate = await db.ParticipantLocationHistories                            
-                  .Where(plh =>
-                      plh.ParticipantId == request.ParticipantId &&
-                      plh.LocationId == request.LocationId &&
-                      plh.From.Date <= dateAtLocation &&
-                      (!plh.To.HasValue || plh.To.Value.Date >= dateAtLocation)
-                  )
-                  .OrderByDescending(x => x.From)
-                  .FirstOrDefaultAsync(cancellationToken);
-
-            return locationOnDate != null;
+            return Result<bool>.Success(true);
         }
     }
 
