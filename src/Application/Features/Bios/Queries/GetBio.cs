@@ -25,7 +25,7 @@ public static class GetBio
         private readonly IUnitOfWork _unitOfWork;
         public Handler(IUnitOfWork unitOfWork)
         {
-            this._unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Result<Bio>> Handle(Query request, CancellationToken cancellationToken)

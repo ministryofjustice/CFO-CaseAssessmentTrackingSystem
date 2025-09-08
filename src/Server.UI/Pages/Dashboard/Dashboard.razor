@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@using Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults
 @inherits CatsComponentBase
 
 
@@ -8,57 +9,59 @@
     Dashboard
 </MudText>
 
-    <MudGrid Class="mt-2">
+<MudGrid Class="mt-2">
         
-        @if (_showMyTeamsParticipants)
-        {
-            <MyTeamsParticipantsComponent/>
-        }
-        else
-        {
-            <MyParticipantsComponent />
-        }
+    @if (_showMyTeamsParticipants)
+    {
+        <MyTeamsParticipantsComponent/>
+    }
+    else
+    {
+        <MyParticipantsComponent />
+    }
         
-        <MyNotifications />
+    <MyNotifications />
 
-        @if (_showCaseWorkload)
-        {
-            <CaseWorkload/>
-        }
+    @if (_showCaseWorkload)
+    {
+        <CaseWorkload/>
+    }
 
-        @if (_showRiskDueAggregate)
-        {
-            <RiskDueAggregateComponent />
-        }
-        else
-        {
-            <MyRiskDueComponent />
-        }
+    @if (_showRiskDueAggregate)
+    {
+        <RiskDueAggregateComponent />
+    }
+    else
+    {
+        <MyRiskDueComponent />
+    }
 
-        @if (_showMyTeamsParticipants)
-        {
-            <MyTeamsParticipantsLatestEngagementComponent />
-        }
-        else
-        {
-            <MyParticipantsLatestEngagementComponent />
-        }
+    @if (_showMyTeamsParticipants)
+    {
+        <MyTeamsParticipantsLatestEngagementComponent />
+    }
+    else
+    {
+        <MyParticipantsLatestEngagementComponent />
+    }
         
-        @if (_showQaPots)
-        {
-            <QaPots />
+    @if (_showQaPots)
+    {
+        <QaPots />
             
-        }
+    }
         
-        @if (_showSyncComponent)
-        {
-            <SyncComponent />
-        }
+    @if (_showSyncComponent)
+    {
+        <SyncComponent />
+    }
         
-        @if(_showJobManagement)
-        {
-            <CacheControl />
-            <JobManagement />
-        }
-
-    </MudGrid>
+    @if(_showJobManagement)
+    {
+        <CacheControl />
+        <JobManagement />
+    }
+    
+    <QAActivitiesResults JustMyParticipants="_showMyTeamsParticipants is false"/>  
+    
+</MudGrid>
