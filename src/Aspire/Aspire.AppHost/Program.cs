@@ -1,8 +1,6 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
 var sqlPassword = builder.AddParameter("sqlPassword", secret: true);
-var rabbitUser = builder.AddParameter("rabbitUser", secret: true);
-var rabbitPassword = builder.AddParameter("rabbitPassword", secret: true);
 
 var k8s = builder.AddKubernetesEnvironment("k8s");
 
@@ -19,12 +17,8 @@ var sql = builder.AddSqlServer("sql", sqlPassword, 1433)
 var catsDb = sql.AddDatabase("CatsDb");
 
 var rabbit = builder.AddRabbitMQ("rabbit",
-        userName: rabbitUser,
-        password: rabbitPassword,
         port: 5672)
-    .WithDataVolume("cats-aspire-rabbit")
-    .WithManagementPlugin(port: 15672)
-    .WithLifetime(ContainerLifetime.Persistent);
+    .WithManagementPlugin(port: 15672);
 
 var cats = builder.AddProject<Projects.Server_UI>("cats", configure: project =>
     {
