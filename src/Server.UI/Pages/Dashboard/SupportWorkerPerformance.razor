@@ -1,5 +1,6 @@
 @using Cfo.Cats.Application.Features.Identity.DTOs
 @using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Components.Dashboard
 @using Cfo.Cats.Server.UI.Components.Users
 
 @page "/pages/dashboard/supportworker/performance"
@@ -26,11 +27,8 @@
     @if (SelectedUserId is not null)
     {
         <MudGrid>
-            <MudItem xs="12" sm="4" lg="3">
-                <MudStack>
-                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="500px" Animation="Animation.Wave" />
-                    <MudText>Panel A</MudText>
-                </MudStack>
+            <MudItem xs="12" sm="6">
+                <CasesPerLocationPerSupportWorkerCardComponent UserId="@SelectedUserId" @key="@SelectedUserId" />
             </MudItem>
             <MudItem xs="12" sm="4" lg="3">
                 <MudStack>
