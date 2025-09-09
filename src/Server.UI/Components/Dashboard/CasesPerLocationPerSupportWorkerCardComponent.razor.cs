@@ -8,5 +8,9 @@ public partial class CasesPerLocationPerSupportWorkerCardComponent
     public string UserId { get; set; } = null!;
 
     protected override IRequest<Result<CasesPerLocationSupportWorkerDto>> CreateQuery()
-     => new GetCasesPerLocationBySupportWorker.Query() { CurrentUser = this.CurrentUser, UserId = this.UserId };
+     => new GetCasesPerLocationBySupportWorker.Query()
+     {
+         CurrentUser = CurrentUser, 
+         UserId = UserId
+     };
 }

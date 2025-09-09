@@ -1,10 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 
