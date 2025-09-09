@@ -118,11 +118,20 @@
                                         <MudChip Color="color" Size="Size.Small">@activity.Status.Name</MudChip>
                                     </div>
                                 </div>
+
                                 @if (activity.Status.AllowsChanges)
                                 {
-                                    <MudTooltip Text="Edit">
-                                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" OnClick="() => Edit(activity)" />
-                                    </MudTooltip>
+                                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                                                Dense="true"
+                                                EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+
+                                        <MudMenuItem OnClick="() => Edit(activity)">
+                                            @ConstantString.Edit
+                                        </MudMenuItem>
+                                        <MudMenuItem OnClick="() => Edit(activity)">
+                                            @ConstantString.AbandonAchievement
+                                        </MudMenuItem>                                                                                
+                                    </MudMenu>
                                 }
                             </div>
                         </ChildContent>
@@ -248,4 +257,33 @@
         }
     }
 
+    async Task Abandon(ActivitySummaryDto activity)
+    {
+        await OnRefresh();
+        
+        //TO DO - implement abandon activity
+
+        // Dialog.Close();
+
+        // var parameters = new DialogParameters<EditActivityDialog>()
+        // {
+        //     {
+        //         x => x.ActivityId, activity.Id
+        //     }
+        // };
+
+        // var dialog = await DialogService.ShowAsync<EditActivityDialog>("Edit Activity/ETE", parameters, new DialogOptions
+        // {
+        //     MaxWidth = MaxWidth.Small,
+        //     FullWidth = true,
+        //     CloseButton = true
+        // });
+
+         //var result = await dialog.Result;
+
+        // if (result!.Canceled == false)
+        // {
+        //await Task.CompletedTask;
+        // }
+    }
 }
