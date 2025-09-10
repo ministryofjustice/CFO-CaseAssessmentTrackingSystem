@@ -1,0 +1,86 @@
+﻿@using Cfo.Cats.Application.Features.Activities.Commands
+@using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Domain.Common.Enums
+@using Humanizer
+
+@inherits CatsComponentBase
+@inject IStringLocalizer<AbandonActivityDialog> L
+
+<MudDialog>
+
+    <DialogContent>
+        @if (Model is not null)
+        {
+            <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                <MudSelect @bind-Value="Model.AbandonReason"
+                               Label="@Model.GetMemberDescription(x => x.AbandonReason)"
+                               For="@(() => Model.AbandonReason)">
+                    <MudSelectItem Value="ActivityAbandonReason.CreatedByAccident">@ActivityAbandonReason.CreatedByAccident.Name</MudSelectItem>
+                    <MudSelectItem Value="ActivityAbandonReason.Other">@ActivityAbandonReason.Other.Name</MudSelectItem>
+
+            </MudSelect>
+                <MudTextField @bind-Value="Model.AbandonJustification"
+                              Label="@Model.GetMemberDescription(x => x.AbandonJustification)"
+                              For="@(() => Model.AbandonJustification)"
+                          Lines="5"
+                          Class="mt-4" />
+            </MudForm>        
+        }
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@saving" Color="Color.Primary" OnClick="Submit">@ConstantString.AbandonAchievement</MudLoadingButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+    MudForm? form = new();
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [EditorRequired]
+    [Parameter]
+    public AbandonActivity.Command? Model { get; set; }
+
+    bool saving;
+
+    public async Task Submit()
+    {
+        try
+        {
+            saving = true;
+            await form!.Validate();
+
+            if (form.IsValid is false)
+            {
+                saving = false;
+                return;
+            }
+
+            var result = await GetNewMediator().Send(Model!);
+
+            if (result.Succeeded)
+            {
+                Snackbar.Add($"{L["Activity successfully abandoned"]}", Severity.Info);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
+            }
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

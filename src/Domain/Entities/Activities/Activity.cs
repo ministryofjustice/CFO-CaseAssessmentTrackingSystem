@@ -71,6 +71,21 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
     public DateTime? ApprovedOn { get; protected set; }
     public string? CompletedBy { get; private set; }
 
+    /// <summary>
+    /// The justification for Abandoning Activity
+    /// </summary>
+    public string? AbandonJustification { get; private set; }
+
+    /// <summary>
+    /// The reason for Abandoning Activity
+    /// </summary>
+    public ActivityAbandonReason? AbandonReason { get; private set; }
+
+    /// <summary>
+    /// Who completed the Activity
+    /// </summary>
+    public string? CompletedBy { get; private set; }
+
     public virtual DateTime Expiry => CommencedOn.AddMonths(3);
 
     public Activity TransitionTo(ActivityStatus to)
@@ -97,6 +112,18 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
 
         TransitionTo(ActivityStatus.ApprovedStatus);
         
+        return this;
+    }
+
+    public Activity Abandon(ActivityAbandonReason abandonReason, string? abandonJustification, string abandonedBy)
+    {
+        Status = ActivityStatus.AbandonedStatus;
+        //CompletedOn = DateTime.UtcNow;
+        AbandonReason = abandonReason;
+        AbandonJustification = abandonJustification;
+        CompletedBy = abandonedBy;
+        ApprovedOn = DateTime.UtcNow;
+        AddDomainEvent(new ActivityAbandonedDomainEvent(this));        
         return this;
     }
 

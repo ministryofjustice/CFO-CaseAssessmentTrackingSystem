@@ -253,7 +253,7 @@
 
         if (result!.Canceled == false)
         {
-            // await OnChange.InvokeAsync();
+            await OnRefresh();
         }
     }
 
@@ -261,29 +261,27 @@
     {
         await OnRefresh();
         
-        //TO DO - implement abandon activity
+        Dialog.Close();
 
-        // Dialog.Close();
+        var parameters = new DialogParameters<AbandonActivityDialog>()
+        {
+            {
+                x => x.Model!.ActivityId, activity.Id
+            }
+        };
 
-        // var parameters = new DialogParameters<EditActivityDialog>()
-        // {
-        //     {
-        //         x => x.ActivityId, activity.Id
-        //     }
-        // };
+        var dialog = await DialogService.ShowAsync<AbandonActivityDialog>("Abandon Activity/ETE", parameters, new DialogOptions
+        {
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true,
+            CloseButton = true
+        });
 
-        // var dialog = await DialogService.ShowAsync<EditActivityDialog>("Edit Activity/ETE", parameters, new DialogOptions
-        // {
-        //     MaxWidth = MaxWidth.Small,
-        //     FullWidth = true,
-        //     CloseButton = true
-        // });
+         var result = await dialog.Result;
 
-         //var result = await dialog.Result;
-
-        // if (result!.Canceled == false)
-        // {
-        //await Task.CompletedTask;
-        // }
+        if (result!.Canceled == false)
+        {
+            await OnRefresh();
+        }
     }
 }

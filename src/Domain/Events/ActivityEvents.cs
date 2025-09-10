@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Common.Events;
 using Cfo.Cats.Domain.Entities.Activities;
 
@@ -14,4 +14,14 @@ public sealed class ActivityTransitionedDomainEvent(Activity activity, ActivityS
     public Activity Item { get; } = activity;
     public ActivityStatus From { get; } = from;
     public ActivityStatus To { get; } = to;
+}
+
+public sealed class ActivityApprovedDomainEvent(Activity activity) : DomainEvent
+{
+    public Activity Item { get; } = activity;
+}
+
+public sealed class ActivityAbandonedDomainEvent(Activity activity) : DomainEvent
+{
+    public Activity Item { get; } = activity;
 }

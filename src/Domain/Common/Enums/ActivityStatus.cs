@@ -9,7 +9,7 @@ public abstract class ActivityStatus : SmartEnum<ActivityStatus>
     public static readonly ActivityStatus SubmittedToAuthorityStatus = new SubmittedToAuthority();
     public static readonly ActivityStatus ApprovedStatus = new Approved();
     public static readonly ActivityStatus AbandonedStatus = new Abandoned();
-
+    
     private ActivityStatus(string name, int value, bool allowsChanges = false)
     : base(name, value)
     {
@@ -52,6 +52,6 @@ public abstract class ActivityStatus : SmartEnum<ActivityStatus>
 
     private sealed class Abandoned() : ActivityStatus("Abandoned", 4)
     {
-        protected override ActivityStatus[] GetAllowedTransitions() => [ApprovedStatus];
+        protected override ActivityStatus[] GetAllowedTransitions() => [PendingStatus];
     }
 }
