@@ -136,7 +136,7 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
 
             }
 
-            if (participant.CsoIsCompliant.IsAccepted == participant.CpmIsCompliant.IsAccepted)
+            if (participant.CsoIsCompliant.IsAnswer && (participant.CsoIsCompliant.IsAccepted == participant.CpmIsCompliant.IsAccepted))
             {
                 participant.FinalAnswer(participant.CpmIsCompliant, participant.CpmComments!, participant.CpmReviewedBy!,
                     DateTime.UtcNow);
