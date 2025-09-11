@@ -22,6 +22,7 @@ public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
         var ineligibilityReason = data switch
         {
             { DateOfFirstConsent: null } => IneligibilityReason.NotYetApproved,
+            { CountOfApprovals: 0 } => IneligibilityReason.NotYetApproved,
             { CountOfPayments: > 0 } => IneligibilityReason.MaximumPaymentLimitReached,
             { MeetingTookPlaceOnOrAfterConsent: false } => IneligibilityReason.BeforeConsent,
             { AllTasksCompleted: false } => IneligibilityReason.RequiredTasksNotCompleted,
@@ -119,7 +120,13 @@ public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
                                 From = h.From
                             }
                         ).ToArray()
-                )
+                ),
+                CountOfApprovals = (
+                   from h in db.ParticipantEnrolmentHistories
+                   where h.ParticipantId == p.Id 
+                    && h.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value
+                   select h.Id
+                ).Count()
             };
         return await query.FirstAsync();
     }
@@ -166,6 +173,7 @@ public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
 
         public required TaskData[] Tasks { get; init; }
         public required LocationData[] Locations { get; init; }
+        public required int CountOfApprovals { get; init; }
 
         public bool AllTasksCompleted
             => Tasks.All(t => t.CompletionStatus == CompletionStatus.Done);

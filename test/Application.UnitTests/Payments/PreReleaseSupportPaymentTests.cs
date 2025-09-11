@@ -25,7 +25,7 @@ public class PreReleaseSupportPaymentTests
     [Test]
     public void MultiplePayments_Should_NotBePaid()
     {
-        var data = GetData() with { CountOfPayments = 1 };
+        var data = GetData() with { CountOfPayments = 1, CountOfApprovals = 1 };
 
         var payment = RecordPreReleaseSupportPayment.GeneratePayment(data);
 
@@ -36,7 +36,7 @@ public class PreReleaseSupportPaymentTests
     [Test]
     public void MeetingBeforeConsent_Should_NotBePaid()
     {
-        var data = GetData() with { MeetingAttendedOn = DateOnly.FromDateTime(dateOfConsent.AddDays(-1)) };
+        var data = GetData() with { MeetingAttendedOn = DateOnly.FromDateTime(dateOfConsent.AddDays(-1)), CountOfApprovals = 1 };
 
         var payment = RecordPreReleaseSupportPayment.GeneratePayment(data);
 
@@ -45,9 +45,42 @@ public class PreReleaseSupportPaymentTests
     }
 
     [Test]
+    public void NoApprovals_ShouldNot_BePaid()
+    {
+        var data = GetData() with { DateOfFirstConsent = null, CountOfApprovals = 0 };
+
+        var payment = RecordPreReleaseSupportPayment.GeneratePayment(data);
+
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.NotYetApproved.Value);
+        payment.EligibleForPayment.ShouldBe(false);
+    }
+
+    [Test]
+    public void NoApprovalsButConsentGranted_ShouldNot_BePaid()
+    {
+        var data = GetData() with { DateOfFirstConsent = DateOnly.FromDateTime(DateTime.Now), CountOfApprovals = 0 };
+
+        var payment = RecordPreReleaseSupportPayment.GeneratePayment(data);
+
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.NotYetApproved.Value);
+        payment.EligibleForPayment.ShouldBe(false);
+    }
+
+    [Test]
+    public void Approvals_Should_BePaid()
+    {
+        var data = GetData() with { DateOfFirstConsent = DateOnly.FromDateTime(meetingAttendedOn), CountOfApprovals = 1 };
+
+        var payment = RecordPreReleaseSupportPayment.GeneratePayment(data);
+
+        payment.IneligibilityReason.ShouldBeNull();
+        payment.EligibleForPayment.ShouldBe(true);
+    }
+
+    [Test]
     public void ValidPayment_Should_BePaid()
     {
-        var data = GetData();
+        var data = GetData() with { CountOfApprovals = 1 };
 
         var payment = RecordPreReleaseSupportPayment.GeneratePayment(data);
 
@@ -72,7 +105,8 @@ public class PreReleaseSupportPaymentTests
             MeetingAttendedOn = DateOnly.FromDateTime(meetingAttendedOn),
             TenantId = "1.",
             DateOfFirstConsent = DateOnly.FromDateTime(dateOfConsent),
-            CountOfPayments = 0
+            CountOfPayments = 0,
+            CountOfApprovals = 0,
         };
     }
 }

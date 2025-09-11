@@ -26,7 +26,8 @@ public class ReassessmentPaymentTests
     {
         var data = GetData() with 
         { 
-            PreviouslyPaidAssessments = [ new(DateTime.Today.AddMonths(-2)) ] 
+            PreviouslyPaidAssessments = [ new(DateTime.Today.AddMonths(-2)) ],
+            CountOfApprovals = 1,
         };
 
         var payment = RecordReassessmentPaymentConsumer.GeneratePayment(data);
@@ -36,12 +37,35 @@ public class ReassessmentPaymentTests
     }
 
     [Test]
+    public void NoApprovals_ShouldNot_BePaid()
+    {
+        var data = GetData() with { DateOfFirstConsent = null, CountOfApprovals = 0 };
+
+        var payment = RecordReassessmentPaymentConsumer.GeneratePayment(data);
+
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.NotYetApproved.Value);
+        payment.EligibleForPayment.ShouldBe(false);
+    }
+
+    [Test]
+    public void NoApprovalsButConsentGranted_ShouldNot_BePaid()
+    {
+        var data = GetData() with { DateOfFirstConsent = DateOnly.FromDateTime(DateTime.Now), CountOfApprovals = 0 };
+
+        var payment = RecordReassessmentPaymentConsumer.GeneratePayment(data);
+
+        payment.IneligibilityReason.ShouldBe(IneligibilityReason.NotYetApproved.Value);
+        payment.EligibleForPayment.ShouldBe(false);
+    }
+
+    [Test]
     public void InitialAssessmentCompletedInLastTwoPaymentMonths_Should_NotBePaid()
     {
         var data = GetData() with
         {
             InitialAssessmentCompletedOn = DateTime.Today.AddDays(-14),
-            PreviouslyPaidAssessments = []
+            PreviouslyPaidAssessments = [],
+            CountOfApprovals = 1,
         };
 
         var payment = RecordReassessmentPaymentConsumer.GeneratePayment(data);
@@ -53,7 +77,7 @@ public class ReassessmentPaymentTests
     [Test]
     public void ValidPayment_Should_BePaid()
     {
-        var data = GetData();
+        var data = GetData() with { CountOfApprovals = 1 };
 
         var payment = RecordReassessmentPaymentConsumer.GeneratePayment(data);
 

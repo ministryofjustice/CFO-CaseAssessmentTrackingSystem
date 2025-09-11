@@ -27,6 +27,7 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IHandle
         var ineligibilityReason = data switch
         {
             { DateOfFirstConsent: null } => IneligibilityReason.NotYetApproved,
+            { CountOfApprovals: 0 } => IneligibilityReason.NotYetApproved,
             { HaveAnyPaymentsBeenMadeInLastTwoPaymentMonths: true } => IneligibilityReason.MaximumPaymentLimitReached,
             { WasInitialAssessmentCompletedInLastTwoPaymentMonths: true } => IneligibilityReason.InitialAssessmentCompletedInLastTwoMonths,
             _ => null,
@@ -83,7 +84,13 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IHandle
                         Created = a.Created!.Value,
                         ParticipantId = a.ParticipantId,
                         TenantId = a.TenantId!,
-                        SupportWorker = a.CompletedBy!
+                        SupportWorker = a.CompletedBy!,
+                        CountOfApprovals = (
+                            from h in db.ParticipantEnrolmentHistories
+                            where h.ParticipantId == p.Id
+                            && h.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value
+                            select h.Id
+                        ).Count()
                     };
 
         return await query.SingleAsync();
@@ -108,6 +115,7 @@ public class RecordReassessmentPaymentConsumer(IUnitOfWork unitOfWork) : IHandle
         public required int LocationId { get; set; }
         public required string LocationType { get; set; }
         public required DateOnly? DateOfFirstConsent { get; init; }
+        public int CountOfApprovals { get; init; }
 
         public record Assessment(DateTime PaidOn);
     }

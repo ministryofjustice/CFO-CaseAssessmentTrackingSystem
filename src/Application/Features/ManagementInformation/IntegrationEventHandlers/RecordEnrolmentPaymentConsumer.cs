@@ -8,32 +8,40 @@ public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMes
 {
     public async Task Handle(EnrolmentApprovedAtQaIntegrationEvent context)
     {
-            // get participant information
-            var participantInfo = await unitOfWork.DbContext
-                .Participants
-                .IgnoreAutoIncludes()
-                .AsNoTracking()
-                .Where(p => p.Id == context.ParticipantId)
-                .Select(p => new
-                {
-                    ParticipantId = p.Id,
-                    LocationId = p.EnrolmentLocation!.Id,
-                    LocationType = p.EnrolmentLocation!.LocationType.Name,
-                    p.ReferralSource,
-                    ContractId = p.EnrolmentLocation.Contract!.Id,
-                    Consent = p.Consents.OrderByDescending(c => c.Created)
-                        .Select(x => new
-                        {
-                            ConsentAdded = x.Created,
-                            ConsentSigned = x.Lifetime.StartDate
-                        }).First()
-                })
-                .SingleAsync();
+        // get participant information
+        var participantInfo = await unitOfWork.DbContext
+            .Participants
+            .IgnoreAutoIncludes()
+            .AsNoTracking()
+            .Where(p => p.Id == context.ParticipantId)
+            .Select(p => new
+            {
+                ParticipantId = p.Id,
+                LocationId = p.EnrolmentLocation!.Id,
+                LocationType = p.EnrolmentLocation!.LocationType.Name,
+                p.ReferralSource,
+                ContractId = p.EnrolmentLocation.Contract!.Id,
+                Consent = p.Consents.OrderByDescending(c => c.Created)
+                    .Select(x => new
+                    {
+                        ConsentAdded = x.Created,
+                        ConsentSigned = x.Lifetime.StartDate
+                    }).First(),
+                CountOfApprovals = (
+                            from h in unitOfWork.DbContext.ParticipantEnrolmentHistories
+                            where h.ParticipantId == p.Id
+                            && h.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value
+                            select h.Id
+                        ).Count()
+            })
+            .SingleAsync();
 
+        if (participantInfo.CountOfApprovals > 0)
+        {
             var submissionToAuthority = await unitOfWork.DbContext
-                .EnrolmentQa1Queue
-                .Where(p => p.ParticipantId == context.ParticipantId)
-                .MaxAsync(p => p.Created);
+            .EnrolmentQa1Queue
+            .Where(p => p.ParticipantId == context.ParticipantId)
+            .MaxAsync(p => p.Created);
 
             var submissionsToAuthority = await unitOfWork.DbContext
                 .EnrolmentQa1Queue
@@ -52,7 +60,7 @@ public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMes
                 .FirstAsync();
 
             // do we already have a payment?
-            var exists = unitOfWork.DbContext.EnrolmentPayments
+            var alreadyPaid = unitOfWork.DbContext.EnrolmentPayments
                 .Any(p => p.ParticipantId == context.ParticipantId && p.EligibleForPayment);
 
             var payment = new EnrolmentPaymentBuilder()
@@ -69,12 +77,12 @@ public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMes
                 .WithLocationType(participantInfo.LocationType)
                 .WithTenantId(supportWorker.TenantId)
                 .WithReferralRoute(participantInfo.ReferralSource)
-                .WithEligibleForPayment(exists == false)
-                .WithIneligibilityReason(exists == false ? null : "Already paid")
+                .WithEligibleForPayment(alreadyPaid == false)
+                .WithIneligibilityReason(alreadyPaid == false ? null : "Already paid")
                 .Build();
 
             unitOfWork.DbContext.EnrolmentPayments.Add(payment);
             await unitOfWork.SaveChangesAsync(CancellationToken.None);
-
+        }
     }
 }
