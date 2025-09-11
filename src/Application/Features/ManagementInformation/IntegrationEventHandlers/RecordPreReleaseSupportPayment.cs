@@ -21,6 +21,7 @@ public class RecordPreReleaseSupportPayment(IUnitOfWork unitOfWork) : IHandleMes
         var ineligibilityReason = data switch
         {
             { DateOfFirstConsent: null } => IneligibilityReason.NotYetApproved,
+            { CountOfApprovals: 0 } => IneligibilityReason.NotYetApproved,
             { CountOfPayments: > 0 } => IneligibilityReason.MaximumPaymentLimitReached,
             { MeetingTookPlaceOnOrAfterConsent: false } => IneligibilityReason.BeforeConsent,
             _ => null,
@@ -94,6 +95,12 @@ public class RecordPreReleaseSupportPayment(IUnitOfWork unitOfWork) : IHandleMes
                           && sp.EligibleForPayment
                           && sp.SupportType == "Pre-Release Support"
                     select 1
+                ).Count(),
+                CountOfApprovals = (
+                   from h in db.ParticipantEnrolmentHistories
+                   where h.ParticipantId == p.Id
+                    && h.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value
+                   select h.Id
                 ).Count()
             };
         return await query.FirstAsync();
@@ -118,7 +125,7 @@ public class RecordPreReleaseSupportPayment(IUnitOfWork unitOfWork) : IHandleMes
         public required string TenantId { get; init; }
 
         public required DateOnly? DateOfFirstConsent { get; init; }
-        public required int? CountOfPayments { get; init; }
+        public required int CountOfPayments { get; init; }
 
         public DateOnly PaymentPeriod
         {
@@ -139,6 +146,8 @@ public class RecordPreReleaseSupportPayment(IUnitOfWork unitOfWork) : IHandleMes
         }
 
         public bool MeetingTookPlaceOnOrAfterConsent => MeetingAttendedOn >= DateOfFirstConsent;
+
+        public required int CountOfApprovals { get; init; }
     }
 
 }
