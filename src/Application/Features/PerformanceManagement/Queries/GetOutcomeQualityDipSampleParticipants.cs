@@ -26,7 +26,8 @@ public static class GetOutcomeQualityDipSampleParticipants
                 join participant in context.Participants on sample.ParticipantId equals participant.Id
                 join enrolmentLocation in context.Locations on participant.EnrolmentLocation.Id equals enrolmentLocation.Id
                 join currentLocation in context.Locations on participant.CurrentLocation.Id equals currentLocation.Id
-                join owner in context.Users on participant.OwnerId equals owner.Id
+                join owner in context.Users on participant.OwnerId equals owner.Id into owners
+                from owner in owners.DefaultIfEmpty()
                 join reviewer in context.Users on sample.CsoReviewedBy equals reviewer.Id into reviewers
                 from reviewer in reviewers.DefaultIfEmpty()
                 where sample.DipSampleId == request.DipSampleId
