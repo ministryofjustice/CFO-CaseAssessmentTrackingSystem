@@ -16,10 +16,13 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
         List.Where(e => e.ParticipantIsActive())
         .ToList();
 
-    private EnrolmentStatus(string name, int value)
-        : base(name, value)
-    {
-    }
+    private EnrolmentStatus(string name, int value, int logicalOrder)
+        : base(name, value) => LogicalOrder = logicalOrder;
+
+    /// <summary>
+    /// The logical order (i.e. where in the expected workflow this status stands)
+    /// </summary>
+    public int LogicalOrder { get;}
 
     /// <summary>
     ///     Statuses that we can transition to.
@@ -61,7 +64,7 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
     public virtual bool SupportsReassessment() => true;
 
     /// <summary>
-    ///     Indicates that a participant at this enrolment stage is allowed to have assesmsment access.
+    ///     Indicates that a participant at this enrolment stage is allowed to have assessment access.
     /// </summary>
     /// <returns>True if the current status allows user to add/continue/reassessment</returns>
     public virtual bool ParticipantIsActive() => true;
@@ -72,12 +75,12 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
     /// <returns>True if we allow addition of Right to Work documentation</returns>
     public virtual bool AllowRightToWorkAddition() => false;
 
-    private sealed class Identified() : EnrolmentStatus("Identified", 0)
+    private sealed class Identified() : EnrolmentStatus("Identified", 0, 0)
     {
         protected override EnrolmentStatus[] GetAllowedTransitions() => [ArchivedStatus, EnrollingStatus];
     }
 
-    private sealed class SubmittedToProvider() : EnrolmentStatus("Submitted to Provider", 1)
+    private sealed class SubmittedToProvider() : EnrolmentStatus("Submitted to Provider", 1, 2)
     {
         protected override EnrolmentStatus[] GetAllowedTransitions() => [EnrollingStatus, SubmittedToAuthorityStatus];
         public override bool SupportsReassessment() => false;
@@ -85,33 +88,33 @@ public abstract class EnrolmentStatus : SmartEnum<EnrolmentStatus>
         public override bool AllowEnrolmentLocationChange() => true;
     }
 
-    private sealed class SubmittedToAuthority() : EnrolmentStatus("Submitted to Authority", 2)
+    private sealed class SubmittedToAuthority() : EnrolmentStatus("Submitted to Authority", 2, 3)
     {
         public override bool SupportsReassessment() => false;
 
         protected override EnrolmentStatus[] GetAllowedTransitions() => [SubmittedToProviderStatus, ApprovedStatus];
     }
 
-    private sealed class Approved() : EnrolmentStatus("Approved", 3)
+    private sealed class Approved() : EnrolmentStatus("Approved", 3, 4)
     {
         protected override EnrolmentStatus[] GetAllowedTransitions() => [ArchivedStatus, DormantStatus];
 
         public override bool AllowRightToWorkAddition() => true;
     }
 
-    private sealed class Archived() : EnrolmentStatus("Archived", 4)
+    private sealed class Archived() : EnrolmentStatus("Archived", 4, 5)
     {
         public override bool ParticipantIsActive() => false;        
 
         protected override EnrolmentStatus[] GetAllowedTransitions() => [IdentifiedStatus, EnrollingStatus, ApprovedStatus];
     }
 
-    private sealed class Dormant() : EnrolmentStatus("Dormant", 5)
+    private sealed class Dormant() : EnrolmentStatus("Dormant", 5, 6)
     {
         protected override EnrolmentStatus[] GetAllowedTransitions() => [ArchivedStatus, ApprovedStatus];
     }
 
-    private sealed class Enrolling() : EnrolmentStatus("Enrolling", 6)
+    private sealed class Enrolling() : EnrolmentStatus("Enrolling", 6, 1)
     {
         protected override EnrolmentStatus[] GetAllowedTransitions() => [ArchivedStatus, SubmittedToProviderStatus];
 

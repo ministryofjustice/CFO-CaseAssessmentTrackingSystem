@@ -6,7 +6,7 @@ namespace Cfo.Cats.Server.UI.Pages.Dashboard;
 public partial class SupportWorkerPerformance
 {
     private bool _showSelect;
-    private ApplicationUserDto? SelectedUser { get; set; }
+    private bool _visualMode = true;
     public string? SelectedUserId { get; set; }
     
     [CascadingParameter]
@@ -21,7 +21,6 @@ public partial class SupportWorkerPerformance
 
     private void OnUserSelectedChanged(ApplicationUserDto? dto)
     {
-        SelectedUser = dto;
         SelectedUserId = dto?.Id;
     }
 }

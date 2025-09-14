@@ -6,9 +6,21 @@
 @page "/pages/dashboard/supportworker/performance"
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 
-<MudText Typo="Typo.h3">
-    Support Worker Performance Dashboard
-</MudText>
+
+<MudStack Row="true" Justify="Justify.SpaceBetween">
+    <MudText Typo="Typo.h3">
+        Support Worker Performance Dashboard
+    </MudText>
+    <MudSwitch 
+        @bind-Value="_visualMode"
+        T="bool" 
+        ThumbIcon="@Icons.Material.Filled.StackedBarChart" 
+        Color="Color.Primary">
+        Visual Mode
+    </MudSwitch>
+</MudStack>
+
+
 
 <MudStack>
 
@@ -27,8 +39,8 @@
     @if (SelectedUserId is not null)
     {
         <MudGrid>
-            <MudItem xs="12" sm="6">
-                <CasesPerLocationPerSupportWorkerCardComponent UserId="@SelectedUserId" @key="@SelectedUserId" />
+            <MudItem sm="12" md="6">
+                <CasesPerLocationPerSupportWorkerCardComponent UserId="@SelectedUserId" @key="@SelectedUserId" VisualMode="@_visualMode" />
             </MudItem>
             <MudItem xs="12" sm="4" lg="3">
                 <MudStack>

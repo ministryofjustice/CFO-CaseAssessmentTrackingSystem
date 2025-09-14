@@ -23,26 +23,20 @@ public static class GetCasesPerLocationBySupportWorker
                 where p.OwnerId == request.UserId
                       && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
                 group p by new { p.CurrentLocation.Name, p.EnrolmentStatus } into g
-                select new
-                {
+                select new Details
+                (
                     g.Key.Name,
                     g.Key.EnrolmentStatus,
-                    Count = g.Count()
-                };
+                    g.Count()
+                );
 
             var result = await query.AsNoTracking()
                 .ToArrayAsync(cancellationToken);
 
-            CasesPerLocationSupportWorkerDto dto = new CasesPerLocationSupportWorkerDto()
+            return new CasesPerLocationSupportWorkerDto()
             {
                 Records = result
-                .OrderBy(r => r.Name)
-                .ThenBy(r => r.EnrolmentStatus.Name)
-                .Select(r => (r.Name, r.EnrolmentStatus.Name, r.Count))
-                .ToArray()
             };
-
-            return dto;
 
         }
     }
@@ -50,5 +44,7 @@ public static class GetCasesPerLocationBySupportWorker
 
 public record CasesPerLocationSupportWorkerDto
 {
-    public required (string Location, string Status, int Count)[] Records { get; init; }
+    public required Details[] Records { get; init; }
 }
+
+public record Details(string Location, EnrolmentStatus Status, int Count);
