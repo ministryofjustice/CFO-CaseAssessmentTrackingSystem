@@ -47,14 +47,15 @@ public class GetParticipantRiskHistory
             var queryResultList = await baseQuery.ToListAsync(cancellationToken);
 
             var result = queryResultList.Select((item, index) => {
-                var daysDifference = 0;
+                int daysDifference = 0;
                 var nextItem = index < queryResultList.Count - 1 ? queryResultList[index + 1] : null;
 
                 if (nextItem != null)
                 {
-                    var laterDate = item.CreatedDate;
-                    var earlierDate = nextItem.CreatedDate;
-                    daysDifference = (laterDate - earlierDate).Days;
+                    var laterDate = DateOnly.FromDateTime(item.CreatedDate);
+                    var earlierDate = DateOnly.FromDateTime(nextItem.CreatedDate);
+                    // daysDifference = (laterDate - earlierDate).Days;
+                    daysDifference = (laterDate.ToDateTime(TimeOnly.MinValue) - earlierDate.ToDateTime(TimeOnly.MinValue)).Days;
                 }
 
                 return new RiskHistoryDto

@@ -44,16 +44,20 @@ else if (_participantRisks.Any() == true)
             </TemplateColumn>
             <TemplateColumn Title="Since last review">
                 <CellTemplate>
-                    <MudText>
-                        @if (context.Item.DaysSinceLastReview > 0)
+                    
+                        @if (context.Item.DaysSinceLastReview > 6)
                         {
-                            @TimeSpan.FromDays(context.Item.DaysSinceLastReview).Humanize(minUnit: Humanizer.Localisation.TimeUnit.Week)
+                            <MudText>
+                                @TimeSpan.FromDays(context.Item.DaysSinceLastReview).Humanize(minUnit: Humanizer.Localisation.TimeUnit.Week)
+                            </MudText>
                         }
                         else
                         {
-                            <MudText> - </MudText>
+                            <MudText> 
+                                @(context.Item.DaysSinceLastReview > 1 ? $"{context.Item.DaysSinceLastReview} days" : $"{context.Item.DaysSinceLastReview} day")
+                            </MudText>
                         }
-                    </MudText>
+                    
                 </CellTemplate>
             </TemplateColumn>
             <PropertyColumn Property="x => x.LocationName" Title="Location" Sortable="false"/>
