@@ -26,23 +26,51 @@ public class GetParticipantRiskHistory
 
         public async Task<Result<IEnumerable<RiskHistoryDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var query = (from r in _unitOfWork.DbContext.Risks
-                         join l in _unitOfWork.DbContext.Locations on r.LocationId equals l.Id
-                         where r.ParticipantId == request.ParticipantId
-                         select new RiskHistoryDto
-                         {
-                             Id = r.Id,
-                             ParticipantId = r.ParticipantId,
-                             CreatedDate = r.Created!.Value,
-                             Completed = r.Completed,
-                             CompletedBy = r.CompletedBy,
-                             LocationId = r.LocationId,
-                             LocationName = l.Name,
-                             RiskReviewReason = r.ReviewReason
-                         })
-                         .AsNoTracking();
+            var baseQuery = (from r in _unitOfWork.DbContext.Risks
+                             join l in _unitOfWork.DbContext.Locations on r.LocationId equals l.Id
+                             where r.ParticipantId == request.ParticipantId
+                             select new RiskHistoryDto
+                             {
+                                 Id = r.Id,
+                                 ParticipantId = r.ParticipantId,
+                                 CreatedDate = r.Created!.Value,
+                                 CreatedBy = r.CreatedBy!,
+                                 Completed = r.Completed,
+                                 CompletedBy = r.CompletedBy,
+                                 LocationId = r.LocationId,
+                                 LocationName = l.Name,
+                                 RiskReviewReason = r.ReviewReason
+                             })
+                             .AsNoTracking()
+                             .OrderByDescending(r => r.CreatedDate);
 
-            var result = await query.ToListAsync(cancellationToken);
+            var queryResultList = await baseQuery.ToListAsync(cancellationToken);
+
+            var result = queryResultList.Select((item, index) => {
+                var daysDifference = 0;
+                var nextItem = index < queryResultList.Count - 1 ? queryResultList[index + 1] : null;
+
+                if (nextItem != null)
+                {
+                    var laterDate = item.CreatedDate;
+                    var earlierDate = nextItem.CreatedDate;
+                    daysDifference = (laterDate - earlierDate).Days;
+                }
+
+                return new RiskHistoryDto
+                {
+                    Id = item.Id,
+                    ParticipantId = item.ParticipantId,
+                    CreatedDate = item.CreatedDate,
+                    CreatedBy = item.CreatedBy,
+                    Completed = item.Completed,
+                    CompletedBy = item.CompletedBy,
+                    LocationId = item.LocationId,
+                    LocationName = item.LocationName,
+                    RiskReviewReason = item.RiskReviewReason,
+                    DaysSinceLastReview = daysDifference
+                };
+            }).ToList();
 
             return Result<IEnumerable<RiskHistoryDto>>.Success(result);
         }
