@@ -1,4 +1,7 @@
-﻿@using Cfo.Cats.Application.Features.Dashboard.Queries
+﻿@using ActualLab.Fusion.Extensions
+@using ApexCharts
+@using Cfo.Cats.Application.Features.Dashboard.Queries
+@using Cfo.Cats.Domain.Common.Enums
 
 @inherits CatsComponent<CasesPerLocationSupportWorkerDto>
 
@@ -24,36 +27,60 @@
 
         @if(Data is not null)
         {
-            <MudTable 
-                Items="Data.Records" 
-                Hover="true" 
-                Striped="true">
-                <HeaderContent>
-                    <MudTh>
-                        <MudTableSortLabel SortBy="new Func<(string Location, string Status, int Count), object>(x => x.Location)">
-                            Location
-                        </MudTableSortLabel>
-                    </MudTh>
-                    <MudTh>
-                        <MudTableSortLabel SortBy="new Func<(string Location, string Status, int Count), object>(x => x.Status)">
-                            Status
-                        </MudTableSortLabel>
-                    </MudTh>
-                    <MudTh>
-                        <MudTableSortLabel SortBy="new Func<(string Location, string Status, int Count), object>(x => x.Count)">
-                            Count
-                        </MudTableSortLabel>
-                    </MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel="Location">@context.Location</MudTd>
-                    <MudTd DataLabel="Status">@context.Status</MudTd>
-                    <MudTd DataLabel="Count">@context.Count</MudTd>
-                </RowTemplate>
-                <PagerContent>
-                    <MudTablePager PageSizeOptions="new int[] { 5, 10, 15, 20, 50 }" />
-                </PagerContent>
-            </MudTable>
+            @if(VisualMode)
+            {
+                <ApexChart TItem="Details"
+                Options="Options">
+                    
+                    @{
+                        var chartData = ChartData();
+                        var statuses = chartData.Select(x => x.Status).OrderBy(x => x.LogicalOrder).Distinct();
+                    }
+                    @foreach (var status in statuses)
+                    {
+                        <ApexPointSeries TItem="Details"
+                                         Name="@status.Name"
+                                         Items="@chartData.Where(x => x.Status == status).ToList()"
+                                         XValue="@(x => x.Location)"
+                                         YValue="@(x => x.Count)"
+                                         SeriesType="SeriesType.Bar"
+                                         ShowDataLabels
+                                         Color="@status.Colour"/>
+                    }
+               </ApexChart>
+            }
+            else
+            {
+                <MudTable Items="Data.Records"
+                          Hover="true"
+                          Striped="true">
+                    <HeaderContent>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<(string Location, string Status, int Count), object>(x => x.Location)">
+                                Location
+                            </MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<(string Location, string Status, int Count), object>(x => x.Status)">
+                                Status
+                            </MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<(string Location, string Status, int Count), object>(x => x.Count)">
+                                Count
+                            </MudTableSortLabel>
+                        </MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Location">@context.Location</MudTd>
+                        <MudTd DataLabel="Status">@context.Status</MudTd>
+                        <MudTd DataLabel="Count">@context.Count</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new int[] { 5, 10, 15, 20, 50 }" />
+                    </PagerContent>
+                </MudTable>
+            }
         }
 
     </MudCardContent>
