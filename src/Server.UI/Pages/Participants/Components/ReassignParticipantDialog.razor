@@ -11,7 +11,7 @@
         <MudForm Model="Model" @ref="_form" Validation="@(Validator.ValidateValue(Model))">
             <MudGrid>
                 <MudItem xs="12">
-                    <MudText Typo="Typo.caption">
+                    <MudText Typo="Typo.body2">
                         Reassign @Model!.ParticipantIdsToReassign.Length @(Model.ParticipantIdsToReassign.Length == 1 ? "participant" : "participants")
                     </MudText>
                 </MudItem>
