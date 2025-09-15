@@ -72,11 +72,11 @@ public partial class CasesPerLocationPerSupportWorkerCardComponent
 
     private string GetStatusColour(string status) => status switch
     {
-        var s when s == EnrolmentStatus.IdentifiedStatus.Name => "#22C55E",
-        var s when s == EnrolmentStatus.EnrollingStatus.Name => "#F59E0B",
-        var s when s == EnrolmentStatus.SubmittedToProviderStatus.Name => "#EF4444",
-        var s when s == EnrolmentStatus.SubmittedToAuthorityStatus.Name => "#A855F7",
-        var s when s == EnrolmentStatus.ApprovedStatus.Name => "#06B6D4",
+        _ when status == EnrolmentStatus.IdentifiedStatus.Name => "#22C55E",
+        _ when status == EnrolmentStatus.EnrollingStatus.Name => "#F59E0B",
+        _ when status == EnrolmentStatus.SubmittedToProviderStatus.Name => "#EF4444",
+        _ when status == EnrolmentStatus.SubmittedToAuthorityStatus.Name => "#A855F7",
+        _ when status == EnrolmentStatus.ApprovedStatus.Name => "#06B6D4",
         _ => "#64748B"
     };
 }
