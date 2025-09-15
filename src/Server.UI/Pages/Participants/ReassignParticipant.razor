@@ -249,7 +249,7 @@
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
             Query.JustMyCases = false;
-            
+
             var result = await GetNewMediator().Send(Query);
             if (result is {Succeeded: true, Data: not null})
             {
@@ -292,7 +292,7 @@
         ParticipantIdsToReassign.Clear();
         await _table.ReloadServerData();
     }
-        
+
     private async Task ReassignSelectedItems()
     {
         var parameters = new DialogParameters<ReassignParticipantDialog>
@@ -316,9 +316,9 @@
 
         var state = await dialog.Result;
 
-        if (!state!.Canceled)
+        if (state?.Canceled == false)
         {
-            
+            ParticipantIdsToReassign.Clear();
             await _table.ReloadServerData();
         }
 
