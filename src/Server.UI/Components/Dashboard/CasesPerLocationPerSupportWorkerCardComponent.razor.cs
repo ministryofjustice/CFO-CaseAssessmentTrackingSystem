@@ -40,11 +40,12 @@ public partial class CasesPerLocationPerSupportWorkerCardComponent
                     {
                         Style = new BarDataLabelsStyle
                         {
-                            FontWeight = "800"
+                            FontWeight = "800",
+                            Color = IsDarkMode ? "#FFFFFF" :  "#000000", 
                         }
                     }
-                }
-            }
+                },
+            },
         },
         Theme = new Theme
         {
@@ -69,14 +70,4 @@ public partial class CasesPerLocationPerSupportWorkerCardComponent
             .ToList();
           
     }
-
-    private string GetStatusColour(string status) => status switch
-    {
-        _ when status == EnrolmentStatus.IdentifiedStatus.Name => "#22C55E",
-        _ when status == EnrolmentStatus.EnrollingStatus.Name => "#F59E0B",
-        _ when status == EnrolmentStatus.SubmittedToProviderStatus.Name => "#EF4444",
-        _ when status == EnrolmentStatus.SubmittedToAuthorityStatus.Name => "#A855F7",
-        _ when status == EnrolmentStatus.ApprovedStatus.Name => "#06B6D4",
-        _ => "#64748B"
-    };
 }
