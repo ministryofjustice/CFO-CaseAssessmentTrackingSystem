@@ -44,7 +44,8 @@
                                          XValue="@(x => x.Location)"
                                          YValue="@(x => x.Count)"
                                          SeriesType="SeriesType.Bar"
-                                         ShowDataLabels />
+                                         ShowDataLabels
+                                         Color="@GetStatusColour(status.Name)"/>
                     }
                </ApexChart>
             }
