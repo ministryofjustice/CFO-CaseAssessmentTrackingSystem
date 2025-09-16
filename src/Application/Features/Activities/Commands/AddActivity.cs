@@ -224,47 +224,10 @@ public static class AddActivity
                 .Length(9)
                 .WithMessage("Invalid Participant Id");
 
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
-            {
-                When(c => c.ActivityId is not null, () =>
-                {                    
-                    RuleFor(c => c.ActivityId)
-                        .Must(BeInPendingStatus)
-                        .WithMessage("Activity mut be pending"); ;
-
-                    RuleFor(c => c.Definition)
-                        .Must((command, definition) => NotBeDifferentFromTheOriginal(command.ActivityId!.Value, definition!))
-                        .When(c => c.Definition is not null)
-                        .WithMessage("Changing activity type is not permitted");                   
-                });
-
-                RuleFor(c => c.ParticipantId)
-                    .Must(MustNotBeArchived)
-                    .WithMessage("Participant is archived");
-
-                RuleFor(c => c.Location)
-                    .Must((command, location, token) => HaveAHubInduction(command.ParticipantId, location!))
-                    .When(c => c.Location is { LocationType.IsHub: true })
-                    .WithMessage("A hub induction is required for the selected location");
-
-                RuleFor(c => c.CommencedOn)
-                    .Must((command, commencedOn, token) => BeInductedAtHubForActivity(command.ParticipantId, command.Location!.Id, commencedOn))
-                    .When(c => 
-                        c.Location is { LocationType.IsHub: true } 
-                        && c.Definition is not null 
-                        && c.Definition.Classification != ClassificationType.ISWActivity)
-                    .WithMessage("Participant must be inducted at Hub before activity can take place");
-
-                RuleFor(c => c.CommencedOn)
-                    .Must((command, commencedOn, token) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId, commencedOn))
-                    .WithMessage("The activity cannot take place before the participant gave consent");
-
-            });
-
             RuleFor(c => c.Location)
                 .NotNull()
                 .WithMessage("You must choose a location");
-                        
+
             When(c => c.Location is not null, () =>
             {
                 RuleFor(c => c.Definition)
@@ -284,6 +247,51 @@ public static class AddActivity
                 RuleFor(c => c.CommencedOn)
                     .GreaterThanOrEqualTo(DateTime.Today.AddMonths(-3))
                     .WithMessage("The activity must have taken place within the last three months");
+            });
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                When(c => c.ActivityId is not null, () =>
+                {
+                    RuleFor(c => c.ActivityId)
+                        .Must(BeInPendingStatus)
+                        .WithMessage("Activity mut be pending"); ;
+
+                    RuleFor(c => c.Definition)
+                        .Must((command, definition) => NotBeDifferentFromTheOriginal(command.ActivityId!.Value, definition!))
+                        .When(c => c.Definition is not null)
+                        .WithMessage("Changing activity type is not permitted");
+                });
+
+                RuleFor(c => c.ParticipantId)
+                    .Must(MustNotBeArchived)
+                    .WithMessage("Participant is archived");
+
+                RuleFor(c => c.Location)
+                    .Must((command, location, token) => HaveAHubInduction(command.ParticipantId, location!))
+                    .When(c => c.Location is { LocationType.IsHub: true })
+                    .WithMessage("A hub induction is required for the selected location");
+
+                RuleFor(c => c.CommencedOn)
+                    .Must((command, commencedOn, token) => BeInductedAtHubForActivity(command.ParticipantId, command.Location!.Id, commencedOn))
+                    .When(c =>
+                        c.Location is { LocationType.IsHub: true }
+                        && c.Definition is not null
+                        && c.Definition.Classification != ClassificationType.ISWActivity)
+                    .WithMessage("Participant must be inducted at Hub before activity can take place");
+
+                RuleFor(c => c.CommencedOn)
+                    .Must((command, commencedOn, token) => HaveOccurredOnOrAfterConsentWasGranted(command.ParticipantId, commencedOn))
+                    .WithMessage("The activity cannot take place before the participant gave consent");
+
+                RuleFor(c => c.ISWTemplate.BaselineAchievedOn)
+                .Must((command, baselineAchievedOn, token) => BeInductedAtHubForActivity(command.ParticipantId, command.Location!.Id, baselineAchievedOn))
+                .When(c =>
+                    c.Location is { LocationType.IsHub: true }
+                    && c.Definition is not null
+                    && c.Definition.Classification == ClassificationType.ISWActivity)
+                .WithMessage("Participant must be inducted at Hub before baseline can be achieved");
+
             });
 
             RuleFor(c => c.AdditionalInformation)
@@ -310,7 +318,7 @@ public static class AddActivity
                             .MustAsync(BePdfFile)
                             .WithMessage("File is not a PDF");
                 });
-            });            
+            });
         }
 
         private bool NotBeDifferentFromTheOriginal(Guid activityId, ActivityDefinition definition)
@@ -381,8 +389,8 @@ public static class AddActivity
         private bool MustNotBeArchived(string participantId)
             =>  unitOfWork.DbContext.Participants.Any(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
 
-        private bool BeInductedAtHubForActivity(string participantId, int locationId, DateTime? commencedOn)
+        private bool BeInductedAtHubForActivity(string participantId, int locationId, DateTime? date)
               => unitOfWork.DbContext.HubInductions.Any(e => e.ParticipantId == participantId
-              && e.LocationId == locationId && commencedOn >= e.InductionDate);
+              && e.LocationId == locationId && date >= e.InductionDate);
     }
 }
