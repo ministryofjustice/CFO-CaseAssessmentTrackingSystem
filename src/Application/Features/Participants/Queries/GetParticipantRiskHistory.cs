@@ -1,9 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
-using Cfo.Cats.Domain.ValueObjects;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
 
@@ -54,7 +52,6 @@ public class GetParticipantRiskHistory
                 {
                     var laterDate = DateOnly.FromDateTime(item.CreatedDate);
                     var earlierDate = DateOnly.FromDateTime(nextItem.CreatedDate);
-                    // daysDifference = (laterDate - earlierDate).Days;
                     daysDifference = (laterDate.ToDateTime(TimeOnly.MinValue) - earlierDate.ToDateTime(TimeOnly.MinValue)).Days;
                 }
 

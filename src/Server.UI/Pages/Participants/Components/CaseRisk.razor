@@ -15,59 +15,7 @@
     <MudTabPanel Text="Latest">
         <ViewRisk ParticipantId="@ParticipantId" />
     </MudTabPanel>
-
     <MudTabPanel Text="History">
-        <!--show Risk History-->
         <RiskHistory ParticipantId="@ParticipantId" />
     </MudTabPanel>
 </MudTabs>
-
-@code {
-    [Parameter]
-    [EditorRequired]
-    public string ParticipantId { get; set; } = default!;
-
-    //private MudForm? form;
-    // private RiskDto? _model;
-    // private bool _notFound = false;
-    //private IEnumerable<RiskHistoryDto> _participantRisks = Enumerable.Empty<RiskHistoryDto>();
-
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     try
-    //     {
-    //         var result = await GetNewMediator().Send(new GetParticipantRisk.Query()
-    //         {
-    //             ParticipantId = ParticipantId
-    //         });
-
-    //         if(result.Succeeded && result.Data is not null)
-    //         {
-    //             _model = result.Data;
-    //         }
-    //         else
-    //         {
-    //             _notFound = true;
-    //         }
-    //         var historyResult = await GetNewMediator().Send(new GetParticipantRiskHistory.Query()
-    //         {
-    //             ParticipantId = ParticipantId
-    //         });
-            
-    //         if(historyResult.Succeeded && historyResult.Data is not null)
-    //         {
-    //             _participantRisks = historyResult.Data
-    //                                     .OrderByDescending(r => r.Completed);
-    //         }
-    //     }
-    //     catch (NotFoundException)
-    //     {
-    //         _notFound = true;
-    //     }
-    //     finally
-    //     {
-    //         await base.OnInitializedAsync();
-    //     }
-
-    // }
-}
