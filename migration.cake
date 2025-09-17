@@ -20,6 +20,7 @@ Task("AddMigration")
                     $"--project {infraProject} " +
                     $"--startup-project {startupProject} " + 
                     $"--configuration Debug " + 
+                    $"--output-dir Persistence/Migrations " +
                     "--no-build",
         WorkingDirectory = MakeAbsolute(Directory("./"))
     };
