@@ -45,7 +45,7 @@ public static class GetParticipantSummary
                             Nationality = p.Nationality,
                             BioDue = p.BioDue,
                             IsActive = EnrolmentStatus.ActiveList.Contains(p.EnrolmentStatus),
-                            ActiveInFeed = p.ActiveInFeed,
+                            ActiveInFeed = p.DeactivatedInFeed.HasValue == false,
                             LastSync = p.LastSyncDate ?? p.Created!.Value,
                             DateOfFirstConsent = p.DateOfFirstConsent,
                             EnrolmentStatus = p.EnrolmentStatus,

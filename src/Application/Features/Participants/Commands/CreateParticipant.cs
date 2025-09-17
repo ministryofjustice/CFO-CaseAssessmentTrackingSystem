@@ -56,7 +56,6 @@ public static class CreateParticipant
                 gender: candidate.Gender,
                 dateOfBirth: candidate.DateOfBirth,
                 registrationDetailsJson: candidate.RegistrationDetailsJson,
-                activeInFeed: candidate.IsActive,
                 referralSource: request.ReferralSource!,
                 referralComments: request.ReferralComments,
                 locationId: candidate.MappedLocationId,
@@ -99,6 +98,10 @@ public static class CreateParticipant
                 .WithMessage("Invalid Cats Identifier")
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Identifier"));
+
+            RuleFor(x => x.Candidate.IsActive)
+                .Equal(true)
+                .WithMessage("Participant must be active");
 
             // Establishment Code is required for Prison (NOMIS) records.
             When(x => x.Candidate.Primary is "NOMIS", () =>
