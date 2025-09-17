@@ -69,6 +69,7 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
     public string TenantId { get; protected set; }
     public ActivityStatus Status { get; protected set; }
     public DateTime? ApprovedOn { get; protected set; }
+    public string? CompletedBy { get; private set; }
 
     public virtual DateTime Expiry => CommencedOn.AddMonths(3);
 
@@ -84,7 +85,7 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
         throw new InvalidActivityTransition(Status, to);
     }
 
-    public Activity Approve()
+    public Activity Approve(string? completedBy)
     {
         if (ApprovedOn.HasValue)
         {
@@ -92,11 +93,12 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
         }
 
         ApprovedOn = DateTime.UtcNow;
-        AddDomainEvent(new ActivityApprovedDomainEvent(this));
+        CompletedBy = completedBy;
 
+        TransitionTo(ActivityStatus.ApprovedStatus);
+        
         return this;
     }
 
     public bool RequiresQa => Definition.RequiresQa;
-
 }

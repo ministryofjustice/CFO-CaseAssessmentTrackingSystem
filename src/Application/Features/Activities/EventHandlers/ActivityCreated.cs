@@ -12,7 +12,8 @@ public class ActivityCreated : INotificationHandler<ActivityCreatedDomainEvent>
         }
         else
         {
-            notification.Entity.TransitionTo(ActivityStatus.ApprovedStatus);
+            //Auto approve if no QA required
+            notification.Entity.Approve(null);                
         }
 
         return Task.CompletedTask;

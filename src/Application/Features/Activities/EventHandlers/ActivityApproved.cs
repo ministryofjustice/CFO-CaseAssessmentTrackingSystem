@@ -8,7 +8,7 @@ public class ActivityApproved : INotificationHandler<ActivityTransitionedDomainE
     {
         if(notification.Item.Status == ActivityStatus.ApprovedStatus)
         {
-            notification.Item.Approve();
+            //Do something when activity is approved
         }
 
         return Task.CompletedTask;

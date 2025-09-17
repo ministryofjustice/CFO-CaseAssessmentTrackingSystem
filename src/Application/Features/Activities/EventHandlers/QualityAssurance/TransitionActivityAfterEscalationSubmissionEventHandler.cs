@@ -2,16 +2,14 @@
 
 namespace Cfo.Cats.Application.Features.Activities.EventHandlers.QualityAssurance;
 
-public class TransitionActivityAfterEscalationSubmissionEventHandler
+public class TransitionActivityAfterEscalationSubmissionEventHandler(ICurrentUserService currentUserService) 
     : INotificationHandler<ActivityEscalationEntryCompletedDomainEvent>
 {
     public Task Handle(ActivityEscalationEntryCompletedDomainEvent notification, CancellationToken cancellationToken)
     {
         if (notification.Entry.IsAccepted)
         {
-            notification.Entry
-                .Activity!
-                .TransitionTo(ActivityStatus.ApprovedStatus);
+            notification.Entry.Activity!.Approve(currentUserService.UserId);
         }
         else
         {

@@ -3,14 +3,12 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Activities.EventHandlers;
 
-public class NotifyUserOnActivityApproved(IUnitOfWork unitOfWork) : INotificationHandler<ActivityApprovedDomainEvent>
-
+public class NotifyUserOnActivityApproved(IUnitOfWork unitOfWork) : INotificationHandler<ActivityTransitionedDomainEvent>
 {
-    public async Task Handle(ActivityApprovedDomainEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(ActivityTransitionedDomainEvent notification, CancellationToken cancellationToken)
     {
-        if (notification.Item.RequiresQa == true)
+        if (notification.From == ActivityStatus.ApprovedStatus && notification.Item.RequiresQa == true)
         {
-            // Do some stuff        
             const string heading = "Activity approved";
 
             string details = "You have activities that have been approved";

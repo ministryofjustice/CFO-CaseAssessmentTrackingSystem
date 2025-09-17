@@ -15,7 +15,3 @@ public sealed class ActivityTransitionedDomainEvent(Activity activity, ActivityS
     public ActivityStatus From { get; } = from;
     public ActivityStatus To { get; } = to;
 }
-public sealed class ActivityApprovedDomainEvent(Activity activity) : DomainEvent
-{
-    public Activity Item { get; } = activity;
-}
