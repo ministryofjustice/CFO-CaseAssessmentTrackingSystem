@@ -17,6 +17,7 @@ public class QAActivitiesResultsAdvancedSpecification : Specification<Activity>
              .Where(a => filter.IncludeTypes!.Contains(a.Type), filter.IncludeTypes is { Count: > 0 })
              .Where(a => a.CommencedOn >= filter.CommencedStart, filter.CommencedStart.HasValue)
              .Where(a => a.CommencedOn <= filter.CommencedEnd, filter.CommencedEnd.HasValue)
+             .Where(a => a.TookPlaceAtLocation.Id == filter.Location!.Id, filter.Location is not null)             
              .Where(a =>
                 a.Status == ActivityStatus.PendingStatus.Value ||
                 (
