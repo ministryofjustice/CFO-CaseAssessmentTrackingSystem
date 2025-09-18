@@ -62,13 +62,14 @@ public static class UnarchiveCase
                     {
                         var participant = await (from p in unitOfWork.DbContext.Participants
                                           where p.Id == command.ParticipantId
-                                          select new { p.Id, p.EnrolmentStatus })
+                                          select new { p.Id, p.EnrolmentStatus, p.DeactivatedInFeed })
                                           .FirstOrDefaultAsync(canc);
 
                         var reason = participant switch
                         {
                             null => "participant does not exist",
                             { EnrolmentStatus: var status } when status != EnrolmentStatus.ArchivedStatus => "participant is not archived",
+                            { DeactivatedInFeed: var date } when date < DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-30) => "post license case closure period has elapsed",
                             _ => null
                         };
 
