@@ -32,7 +32,7 @@ public class ArchiveParticipantsJob(
 
             var participantsToDeactivate = await unitOfWork.DbContext.Participants
                 .IgnoreAutoIncludes()
-                .Where(p => p.DeactivatedInFeed > thirtyDaysAgo)
+                .Where(p => p.DeactivatedInFeed < thirtyDaysAgo)
                 .Where(p => p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
                 .ToListAsync(context.CancellationToken);
 
