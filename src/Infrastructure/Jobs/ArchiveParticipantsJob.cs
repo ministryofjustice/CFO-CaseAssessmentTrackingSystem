@@ -4,7 +4,8 @@ using Quartz;
 namespace Cfo.Cats.Infrastructure.Jobs;
 public class ArchiveParticipantsJob(
     ILogger<ArchiveParticipantsJob> logger,
-    IUnitOfWork unitOfWork) : IJob
+    IUnitOfWork unitOfWork,
+    IDomainEventDispatcher domainEventDispatcher) : IJob
 {
     public static readonly JobKey Key = new JobKey(name: nameof(ArchiveParticipantsJob));
     public static readonly string Description = "A job to archive participants that have been inactive in the data feed for the last 30 days.";
@@ -30,10 +31,18 @@ public class ArchiveParticipantsJob(
 
             var thirtyDaysAgo = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-30));
 
+            // Don't attempt to archive participants who: are currently archived or are undergoing QA checks.
+            int[] exclusions =
+            [
+                EnrolmentStatus.ArchivedStatus.Value, 
+                EnrolmentStatus.SubmittedToProviderStatus.Value, 
+                EnrolmentStatus.SubmittedToAuthorityStatus.Value 
+            ];
+
             var participantsToDeactivate = await unitOfWork.DbContext.Participants
                 .IgnoreAutoIncludes()
                 .Where(p => p.DeactivatedInFeed < thirtyDaysAgo)
-                .Where(p => p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
+                .Where(p => exclusions.Contains(p.EnrolmentStatus) == false)
                 .ToListAsync(context.CancellationToken);
 
             if(participantsToDeactivate is not { Count: > 0 })
@@ -44,10 +53,11 @@ public class ArchiveParticipantsJob(
 
             foreach (var participant in participantsToDeactivate)
             {
-                participant.TransitionTo(EnrolmentStatus.ArchivedStatus, "Post license case closure period (30 days) elapsed", null);
+                participant.TransitionTo(EnrolmentStatus.ArchivedStatus, ArchiveReason.LicenceEnd.Name, null);
                 logger.LogInformation("Archived participant {Id}", participant.Id);
             }
 
+            await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, context.CancellationToken);
             await unitOfWork.SaveChangesAsync(context.CancellationToken);
 
             logger.LogInformation("Archived {deactivated} participant(s)", participantsToDeactivate.Count);
