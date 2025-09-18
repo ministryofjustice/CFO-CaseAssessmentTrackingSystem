@@ -18,87 +18,66 @@ public static class UnarchiveCase
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
+            var participant = await unitOfWork.DbContext.Participants
+                .SingleAsync(p => p.Id == request.ParticipantId, cancellationToken);
 
-            //need to get previous status
+            // Get previous status
             var previousStatus = await unitOfWork.DbContext.ParticipantEnrolmentHistories
                     .Where(eh => eh.ParticipantId == request.ParticipantId)
                     .OrderByDescending(eh => eh.Created)
                     .Skip(1)
-                    .Select(eh => (int?)eh.EnrolmentStatus)
-                    .FirstOrDefaultAsync();
+                    .Select(eh => eh.EnrolmentStatus)
+                    .FirstOrDefaultAsync(cancellationToken);
 
             if (previousStatus == null)
             {
                 throw new Exception("The participant does not have enough history to unarchive.");
             }
 
-            EnrolmentStatus enrolmentStatus = EnrolmentStatus.FromValue(previousStatus.GetValueOrDefault());
-
-            //need to check been archived more than 6 to reset risk due
-            var archivedCount = await unitOfWork.DbContext.ParticipantEnrolmentHistories
-                    .Where(eh => eh.ParticipantId == request.ParticipantId && eh.EnrolmentStatus == 4)
-                    .CountAsync();
-                        
-            var dateOfArchive = await unitOfWork.DbContext.ParticipantEnrolmentHistories
-                    .Where(eh => eh.ParticipantId == request.ParticipantId && eh.EnrolmentStatus == 4)
-                    .OrderByDescending(eh => eh.Created)
-                    .Select(eh => eh.Created)
-                    .FirstOrDefaultAsync();
-
-            if ((archivedCount > 0 && archivedCount % 7 == 0)
-                || (dateOfArchive.HasValue && dateOfArchive.Value < DateTime.UtcNow.AddMonths(-6)))
-            {
-                participant!.SetRiskDue(DateTime.UtcNow, RiskDueReason.RemovedFromArchive);
-            }
-
-            participant!.TransitionTo(enrolmentStatus, request.UnarchiveReason.Name, request.AdditionalInformation);
+            participant!.TransitionTo(previousStatus, request.UnarchiveReason.Name, request.AdditionalInformation);
 
             // ReSharper disable once MethodHasAsyncOverload
             return Result.Success();
         }
     }
 
-    public class A_ParticipantMustExistValidator : AbstractValidator<Command>
+    public class Validator : AbstractValidator<Command>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public A_ParticipantMustExistValidator(IUnitOfWork unitOfWork)
+        public Validator(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork;
-
-            RuleFor(c => c.ParticipantId)
-                .NotNull()
-                .MinimumLength(9)
-                .MaximumLength(9)
-                .WithMessage("Invalid Participant Id");                
+            RuleSet(ValidationConstants.RuleSet.Default, () =>
+            {
+                RuleFor(c => c.AdditionalInformation)
+                    .NotEmpty()
+                    .When(c => c.UnarchiveReason.RequiresFurtherInformation)
+                    .WithMessage("You must provide additional information for the selected unarchive reason")
+                    .Matches(ValidationConstants.Notes)
+                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "Additional Information"));
+            });
 
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
-                RuleFor(c => c.ParticipantId)
-                    .MustAsync(MustExist)
-                    .WithMessage("Participant does not exist")
-                    .MustAsync(MustBeArchived)
-                    .WithMessage("Participant is not archived");
+                RuleFor(c => c)
+                    .MustAsync(async(_, command, context, canc) =>
+                    {
+                        var participant = await (from p in unitOfWork.DbContext.Participants
+                                          where p.Id == command.ParticipantId
+                                          select new { p.Id, p.EnrolmentStatus })
+                                          .FirstOrDefaultAsync(canc);
+
+                        var reason = participant switch
+                        {
+                            null => "participant does not exist",
+                            { EnrolmentStatus: var status } when status != EnrolmentStatus.ArchivedStatus => "participant is not archived",
+                            _ => null
+                        };
+
+                        context.MessageFormatter.AppendArgument("Reason", reason);
+
+                        return reason is null;
+                    })
+                    .WithMessage("Cannot unarchive: {Reason}");
             });
-        }
-
-        private async Task<bool> MustExist(string identifier, CancellationToken cancellationToken)
-            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
-
-        private async Task<bool> MustBeArchived(string participantId, CancellationToken cancellationToken)
-           => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus == EnrolmentStatus.ArchivedStatus.Value);
-    }
-
-    public class Validator : AbstractValidator<Command>
-    {
-        public Validator()
-        {
-            RuleFor(c => c.AdditionalInformation)
-                .NotEmpty()
-                .When(c => c.UnarchiveReason.RequiresFurtherInformation)
-                .WithMessage("You must provide additional information for the selected unarchive reason")
-                .Matches(ValidationConstants.Notes)
-                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Addtional Information"));
         }
     }
 }
