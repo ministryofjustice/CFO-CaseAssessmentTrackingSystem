@@ -49,10 +49,14 @@
                         </CardHeaderAvatar>
                     </MudCardHeader>
                     <MudCardContent>
-                        @if (Model.OffenderManagerSummary is not null)
+                        @if (_isOffenderManagerSummaryLoading)
                         {
-                            <MudTextField Class="mb-2" Value="Model.OffenderManagerSummary.OrganistationDescription" Label="Organisation" />
-                            <MudTextField Class="mb-2" Value="Model.OffenderManagerSummary.TeamDescription" Label="Team" />
+                            <MudLoading Text="Loading.." />
+                        }
+                        else if (Model is not null && Model.OffenderManagerSummary is not null)
+                        {
+                            <MudTextField Class="mb-2" Value="Model.OffenderManagerSummary!.OrganistationDescription" Label="Organisation" />
+                            <MudTextField Class="mb-2" Value="Model.OffenderManagerSummary!.TeamDescription" Label="Team" />
                         }
                         else
                         {

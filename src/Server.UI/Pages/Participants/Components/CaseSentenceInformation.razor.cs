@@ -15,6 +15,8 @@ public partial class CaseSentenceInformation
     public bool ParticipantIsActive { get; set; } = default!;
 
     [Inject] public IDeliusService DeliusService { get; set; } = default!;
+
+    private bool _isOffenderManagerSummaryLoading;
     public SentenceDetail? Model { get; private set; }
     public record SentenceDetail(
         ParticipantIdentifierDto[] Identifiers,
@@ -37,15 +39,23 @@ public partial class CaseSentenceInformation
                 ParticipantId = ParticipantId
             });
 
-            var offenderManagerSummary = await GetOffenderManagerSummaryAsync(identifiers);
-
+            // Populate Model with internal data first
             Model = new(
-            Identifiers: identifiers,
-            Supervisor: supervisor?.Data
-                        ?? new ParticipantSupervisorDto(),
-            OffenderManagerSummary: offenderManagerSummary
+                Identifiers: identifiers,
+                Supervisor: supervisor?.Data ?? new ParticipantSupervisorDto(),
+                OffenderManagerSummary: null
             );
 
+            // Trigger the Delius service call separately
+            _ = Task.Run(async () =>
+            {
+                var offenderManagerSummary = await GetOffenderManagerSummaryAsync(identifiers);
+                if (Model != null)
+                {
+                    Model = Model with { OffenderManagerSummary = offenderManagerSummary };
+                    await InvokeAsync(StateHasChanged);
+                }
+            });
         }
         finally
         {
@@ -75,17 +85,24 @@ public partial class CaseSentenceInformation
     }
     private async Task<OffenderManagerSummaryDto?> GetOffenderManagerSummaryAsync(ParticipantIdentifierDto[] identifiers)
     {
-        var crn = identifiers.FirstOrDefault(i => i.Type == ExternalIdentifierType.Crn)?.Value;
-
-        if (!string.IsNullOrWhiteSpace(crn))
+        try
         {
-            var result = await DeliusService.GetOffenderManagerSummaryAsync(crn);
-            if (result.Succeeded)
+            _isOffenderManagerSummaryLoading = true;
+            var crn = identifiers.FirstOrDefault(i => i.Type == ExternalIdentifierType.Crn)?.Value;
+
+            if (!string.IsNullOrWhiteSpace(crn))
             {
-                return result.Data;
+                var result = await DeliusService.GetOffenderManagerSummaryAsync(crn);
+                if (result.Succeeded)
+                {
+                    return result.Data;
+                }
             }
         }
-
+        finally
+        {
+            _isOffenderManagerSummaryLoading = false;
+        }
         return null;
     }
 }
