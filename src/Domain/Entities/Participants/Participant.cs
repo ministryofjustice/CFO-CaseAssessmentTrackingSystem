@@ -321,8 +321,9 @@ public class Participant : OwnerPropertyEntity<string>
 
         if(currentActiveInFeed != activeInFeed)
         {
-            AddDomainEvent(new ParticipantActiveStatusChangedDomainEvent(this, currentActiveInFeed, activeInFeed));
-            DeactivatedInFeed = activeInFeed ? null : DateOnly.FromDateTime(DateTime.UtcNow);
+            var occurred = DateOnly.FromDateTime(DateTime.UtcNow);
+            DeactivatedInFeed = activeInFeed ? null : occurred;
+            AddDomainEvent(new ParticipantActiveStatusChangedDomainEvent(this, currentActiveInFeed, activeInFeed, occurred));
         }
 
         return this;
