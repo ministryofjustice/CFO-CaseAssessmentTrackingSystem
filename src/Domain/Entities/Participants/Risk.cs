@@ -12,18 +12,20 @@ public class Risk : BaseAuditableEntity<Guid>
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    private Risk(Guid id, string participantId, RiskReviewReason reviewReason)
+    private Risk(Guid id, string participantId, RiskReviewReason reviewReason, int locationId)
     {
         Id = id;
         ParticipantId = participantId;
         ReviewReason = reviewReason;
+        LocationId = locationId;
     }
 
-    public static Risk Create(Guid id, string participantId, RiskReviewReason reviewReason, string? justification = null) 
+    public static Risk Create(Guid id, string participantId, RiskReviewReason reviewReason, int locationId, string? justification = null) 
     {
-        Risk risk = new(id, participantId, reviewReason)
+        Risk risk = new(id, participantId, reviewReason, locationId)
         {
-            ReviewJustification = justification
+            ReviewJustification = justification,
+            LocationId = locationId
         };
         
         if(reviewReason == RiskReviewReason.NoRiskInformationAvailable)
@@ -42,14 +44,15 @@ public class Risk : BaseAuditableEntity<Guid>
     {
         Completed = DateTime.UtcNow;
         CompletedBy = completedBy;
-        this.AddDomainEvent(new RiskInformationCompletedDomainEvent(this));
+        AddDomainEvent(new RiskInformationCompletedDomainEvent(this));
     }
 
-    public static Risk Review(Risk from, RiskReviewReason reason, string? justification)
+    public static Risk Review(Risk from, RiskReviewReason reason, string? justification, int locationId)
     {
         from.Id = Guid.CreateVersion7();
         from.ReviewReason = reason;
         from.ReviewJustification = justification;
+        from.LocationId = locationId;
         from.Completed = null;
         from.CompletedBy = null;
         from.RegistrationDetailsJson = null;
@@ -102,4 +105,5 @@ public class Risk : BaseAuditableEntity<Guid>
     public ConfirmationStatus? RiskToSelfInCommunityNew { get; private set; }
     public string? SpecificRisk { get; private set; }
     public virtual Participant? Participant { get; private set; }
+    public int LocationId { get; private set; }
 }

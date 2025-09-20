@@ -1,6 +1,10 @@
-﻿@using Cfo.Cats.Application.Features.Participants.Commands
+﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Participants.Commands
 @using Cfo.Cats.Domain.Common.Enums
 
+@inject ILocationService Locations;
+@inject ICurrentUserService CurrentUser;
 @inject IValidationService Validator
 
 <MudDialog>
@@ -27,6 +31,18 @@
             For="@(() => Model.Justification)"
             Lines="5" 
             Class="mt-4" />
+
+            <MudSelect @bind-Value="Model.Location"
+                        Label="@Model.GetMemberDescription(x => x.Location)"
+                        For="() => Model.Location"
+                        Clearable="true"
+                        ToStringFunc="location => location?.Name">
+                @foreach (var location in locations)
+                {
+                    <MudSelectItem Value="location">@location.Name</MudSelectItem>
+                }
+            </MudSelect>
+
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -47,6 +63,16 @@
     [Parameter]
     public bool AddReviewRequest { get; set; }
 
+    IEnumerable<LocationDto> locations = [];
+
+    protected override void OnInitialized()
+    {
+        locations = Locations
+            .GetVisibleLocations(CurrentUser.TenantId!)
+            .ToList();
+
+        base.OnInitialized();
+    }
     private void Cancel()
     {
         MudDialog.Cancel();

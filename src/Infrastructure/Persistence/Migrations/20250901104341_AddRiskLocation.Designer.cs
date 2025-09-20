@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250901104341_AddRiskLocation")]
+    partial class AddRiskLocation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1539,9 +1542,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<int?>("CsoScore")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("DocumentId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int?>("FinalCompliant")
                         .HasColumnType("int");
 
@@ -1575,21 +1575,11 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<string>("VerifiedBy")
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<DateTime?>("VerifiedOn")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ContractId");
 
-                    b.HasIndex("DocumentId");
-
                     b.HasIndex("ReviewedBy");
-
-                    b.HasIndex("VerifiedBy");
 
                     b.ToTable("OutcomeQualityDipSample", "Mi");
                 });
@@ -1695,60 +1685,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("OutcomeQualityDipSampleParticipant", "Mi");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.ManagementInformation.ParticipantEngagement", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("EngagedAtContract")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("EngagedAtLocation")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateOnly>("EngagedOn")
-                        .HasColumnType("date");
-
-                    b.Property<string>("EngagedWith")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("EngagedWithTenant")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EngagedOn", "ParticipantId");
-
-                    b.ToTable("ParticipantEngagement", "Mi");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.ManagementInformation.ReassessmentPayment", b =>
@@ -2741,9 +2677,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<string>("ParticipantId")
                         .IsRequired()
                         .HasColumnType("nvarchar(9)");
-
-                    b.Property<DateTime?>("To")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -4478,17 +4411,9 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Cfo.Cats.Domain.Entities.Documents.Document", null)
-                        .WithMany()
-                        .HasForeignKey("DocumentId");
-
                     b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("ReviewedBy");
-
-                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("VerifiedBy");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.ManagementInformation.OutcomeQualityDipSampleParticipant", b =>
