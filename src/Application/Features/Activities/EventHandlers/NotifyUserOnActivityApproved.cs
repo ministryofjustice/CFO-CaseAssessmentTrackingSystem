@@ -3,19 +3,16 @@ using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Application.Features.Activities.EventHandlers;
 
-public class NotifyUserOnActivityApproved(IUnitOfWork unitOfWork) : INotificationHandler<ActivityApprovedDomainEvent>
-
+public class NotifyUserOnActivityApproved(IUnitOfWork unitOfWork) : INotificationHandler<ActivityTransitionedDomainEvent>
 {
-    public async Task Handle(ActivityApprovedDomainEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(ActivityTransitionedDomainEvent notification, CancellationToken cancellationToken)
     {
-        if (notification.Item.RequiresQa == true)
+        if (notification.To == ActivityStatus.ApprovedStatus && notification.Item.RequiresQa)
         {
-            // Do some stuff        
             const string heading = "Activity approved";
+            const string details = "You have activities that have been approved";
 
-            string details = "You have activities that have been approved";
-
-            Notification? previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
+            var previous = unitOfWork.DbContext.Notifications.FirstOrDefault(
                 n => n.Heading == heading
                 && n.OwnerId == notification.Item.OwnerId
                 && n.ReadDate == null
@@ -29,7 +26,5 @@ public class NotifyUserOnActivityApproved(IUnitOfWork unitOfWork) : INotificatio
                 await unitOfWork.DbContext.Notifications.AddAsync(n, cancellationToken);
             }
         }
-
-        await Task.CompletedTask;
     }
 }

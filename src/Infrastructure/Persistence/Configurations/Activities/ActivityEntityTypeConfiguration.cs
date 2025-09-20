@@ -83,5 +83,8 @@ internal class ActivityEntityTypeConfiguration : IEntityTypeConfiguration<Activi
 
         builder.Property(a => a.LastModifiedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
+        builder.Property(a => a.CompletedBy)
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
     }
 }
