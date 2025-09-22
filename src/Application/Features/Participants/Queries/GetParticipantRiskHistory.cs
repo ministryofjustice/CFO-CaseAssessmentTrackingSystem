@@ -8,12 +8,12 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 public class GetParticipantRiskHistory
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<IEnumerable<RiskHistoryDto>>>
+    public class Query : IRequest<Result<RiskHistoryDto[]>>
     {
         public required string ParticipantId { get; set; }
     }
 
-    public class Handler : IRequestHandler<Query, Result<IEnumerable<RiskHistoryDto>>>
+    public class Handler : IRequestHandler<Query, Result<RiskHistoryDto[]>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -22,7 +22,7 @@ public class GetParticipantRiskHistory
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Result<IEnumerable<RiskHistoryDto>>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<RiskHistoryDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {
             var baseQuery = (from r in _unitOfWork.DbContext.Risks
                              join l in _unitOfWork.DbContext.Locations on r.LocationId equals l.Id
@@ -68,9 +68,9 @@ public class GetParticipantRiskHistory
                     RiskReviewReason = item.RiskReviewReason,
                     DaysSinceLastReview = daysDifference
                 };
-            }).ToList();
+            }).ToArray();
 
-            return Result<IEnumerable<RiskHistoryDto>>.Success(result);
+            return Result<RiskHistoryDto[]>.Success(result);
         }
     }
     public class Validator : AbstractValidator<Query>

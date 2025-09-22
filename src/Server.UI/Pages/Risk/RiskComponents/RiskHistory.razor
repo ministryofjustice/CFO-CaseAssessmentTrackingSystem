@@ -10,7 +10,7 @@
 {
     <MudLoading Text="Risk history loading" />
 }
-else if (_participantRisks.Any() == true)
+else if (_participantRisks is { Length: > 0 })
 {
     <MudDataGrid Items="@_participantRisks" Striped="true" ExpandSingleRow="true">
         <Columns>

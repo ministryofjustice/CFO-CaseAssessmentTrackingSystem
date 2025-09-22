@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Exceptions;
+using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 
@@ -8,7 +9,7 @@ public partial class RiskHistory
     [Parameter, EditorRequired]
     public string ParticipantId { get; set; } = default!;
 
-    private IEnumerable<RiskHistoryDto> _participantRisks = Enumerable.Empty<RiskHistoryDto>();
+    private RiskHistoryDto[]? _participantRisks = null;
     private bool _notFound = false;
     private bool _isLoading = true;
     protected override async Task OnInitializedAsync()
@@ -23,7 +24,7 @@ public partial class RiskHistory
             if (historyResult.Succeeded && historyResult.Data is not null)
             {
                 _participantRisks = historyResult.Data
-                                        .OrderByDescending(r => r.CreatedDate);
+                                        .OrderByDescending(r => r.CreatedDate).ToArray();
             }
             else
             {
