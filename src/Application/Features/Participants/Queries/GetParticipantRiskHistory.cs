@@ -5,27 +5,21 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
 
-public class GetParticipantRiskHistory
+public static class GetParticipantRiskHistory
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<RiskHistoryDto[]>>
+    public class Query : ParticipantDetailsQuery<RiskHistoryDto[]>
     {
-        public required string ParticipantId { get; set; }
+
     }
 
-    public class Handler : IRequestHandler<Query, Result<RiskHistoryDto[]>>
+    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<RiskHistoryDto[]>>
     {
-        private readonly IUnitOfWork _unitOfWork;
-
-        public Handler(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
 
         public async Task<Result<RiskHistoryDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var baseQuery = (from r in _unitOfWork.DbContext.Risks
-                             join l in _unitOfWork.DbContext.Locations on r.LocationId equals l.Id
+            var baseQuery = (from r in unitOfWork.DbContext.Risks
+                             join l in unitOfWork.DbContext.Locations on r.LocationId equals l.Id
                              where r.ParticipantId == request.ParticipantId
                              select new RiskHistoryDto
                              {
@@ -96,16 +90,11 @@ public class GetParticipantRiskHistory
                     .MustAsync(Exist)
                     .WithMessage("Participant not found");
 
-                RuleFor(x => x.ParticipantId)
-                    .MustAsync(ParticipantRiskExist)
-                    .WithMessage("Participant/Risk not found");
             });
         }
 
         private async Task<bool> Exist(string participantId, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId, cancellationToken);
 
-        private async Task<bool> ParticipantRiskExist(string participantId, CancellationToken cancellationToken)
-            => await _unitOfWork.DbContext.Risks.AnyAsync(e => e.ParticipantId == participantId, cancellationToken);
     }
 }

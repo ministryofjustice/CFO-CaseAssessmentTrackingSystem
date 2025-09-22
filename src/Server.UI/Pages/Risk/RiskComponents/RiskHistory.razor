@@ -1,18 +1,28 @@
 ﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Server.UI.Components.Participants;
 @using Cfo.Cats.Application.Features.Participants.DTOs;
 @using Cfo.Cats.Domain.Common.Enums;
 @using Humanizer
 
-@inherits CatsComponentBase
+@* @inherits CatsComponentBase *@
+@inherits ParticipantComponent<RiskHistoryDto[]>
 @inject IUserService UserService
 
-@if (_isLoading)
+@if (Loading)
 {
-    <MudLoading Text="Risk history loading" />
+    <MudLoading Text="Loading"/>
 }
-else if (_participantRisks is { Length: > 0 })
+
+@if (ErrorMessage is not null)
 {
-    <MudDataGrid Items="@_participantRisks" Striped="true" ExpandSingleRow="true">
+    <MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@if (Data is { Length: > 0 })
+{
+    <MudDataGrid Items="@Data" Striped="true" ExpandSingleRow="true">
         <Columns>
             <HierarchyColumn T="RiskHistoryDto" ButtonDisabledFunc="@(x => x.RiskReviewReason == RiskReviewReason.NoChange || x.RiskReviewReason == RiskReviewReason.NoRiskInformationAvailable)" />
             <TemplateColumn Title="Completed" Sortable="false" SortBy="x => x.Completed">
@@ -74,7 +84,7 @@ else if (_participantRisks is { Length: > 0 })
         </PagerContent>
     </MudDataGrid>
 }
-else if (_notFound)
+else
 {
     <MudAlert>
         <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No risk history found.</MudAlert>
