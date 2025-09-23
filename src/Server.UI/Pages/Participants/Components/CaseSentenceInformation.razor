@@ -40,7 +40,7 @@
                 <MudCard Style="Height: 50%">
                     <MudCardHeader>
                         <CardHeaderContent>
-                            <MudText Typo="Typo.h6">Offender Manager (Delius Feed)</MudText>
+                            <MudText Typo="Typo.h6">@ConstantString.OffenderManagerDeliusFeed</MudText>
                         </CardHeaderContent>
                         <CardHeaderAvatar>
                             <MudAvatar Color="Color.Primary">
@@ -49,19 +49,15 @@
                         </CardHeaderAvatar>
                     </MudCardHeader>
                     <MudCardContent>
-                        @if (_isOffenderManagerSummaryLoading)
+                        @if (string.IsNullOrWhiteSpace(Crn))
                         {
-                            <MudLoading Text="Loading.." />
-                        }
-                        else if (Model is not null && Model.OffenderManagerSummary is not null)
-                        {
-                            <MudTextField Class="mb-2" Value="Model.OffenderManagerSummary!.OrganistationDescription" Label="Organisation" />
-                            <MudTextField Class="mb-2" Value="Model.OffenderManagerSummary!.TeamDescription" Label="Team" />
+                            <MudText>No Crn found.</MudText>
                         }
                         else
                         {
-                            <MudText>No information found.</MudText>
+                            <Cfo.Cats.Server.UI.Pages.Participants.Components.DMS.Delius.OffenderManagerSummary Crn="@Crn" />
                         }
+
                     </MudCardContent>
                 </MudCard>
             </MudItem>
