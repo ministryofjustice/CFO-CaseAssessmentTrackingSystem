@@ -1,0 +1,29 @@
+﻿@using Cfo.Cats.Application.Features.Delius.DTOs
+
+
+@if (isLoading)
+{
+    <MudProgressLinear Color="Color.Info" Indeterminate="true" Class="my-7">
+        <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+            Loading
+        </MudText>
+    </MudProgressLinear>
+}
+else
+{
+    if (OffenderManagerSummaryResult is { Succeeded: false } e)
+    {
+        <MudAlert Severity="Severity.Warning">
+            <MudText>
+                @e.ErrorMessage
+            </MudText>
+        </MudAlert>
+
+    }
+
+    if (OffenderManagerSummaryResult is { Succeeded: true, Data: not null })
+    {
+        <MudTextField Class="mb-2" Value="OffenderManagerSummaryResult.Data.OrganistationDescription" Label="Organisation" />
+        <MudTextField Class="mb-2" Value="OffenderManagerSummaryResult.Data.TeamDescription" Label="Team" />
+    }
+}

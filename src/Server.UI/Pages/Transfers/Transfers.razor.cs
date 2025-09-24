@@ -1,6 +1,7 @@
 using Cfo.Cats.Application.Features.Transfers.Commands;
 using Cfo.Cats.Application.Features.Transfers.DTOs;
 using Cfo.Cats.Application.Features.Transfers.Queries;
+using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Pages.Transfers.Components;
 
 namespace Cfo.Cats.Server.UI.Pages.Transfers;
@@ -81,7 +82,7 @@ public partial class Transfers
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
 
-        await DialogService.ShowAsync<OffenderManagerSummaryDialog>("Offender Manager Summary", parameters, options);
+        await DialogService.ShowAsync<OffenderManagerSummaryDialog>(ConstantString.OffenderManagerDeliusFeed, parameters, options);
 
     }
 

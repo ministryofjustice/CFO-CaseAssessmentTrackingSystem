@@ -9,8 +9,8 @@
 {
     <MudForm Model="Model" ReadOnly>
         <MudGrid Class="pa-3" Spacing="4">
-            <MudItem sm="12" md="4">
-                <MudCard Style="Height: 100%">
+            <MudItem sm="12" md="4" >
+                <MudCard Style="Height: 50%" Class="mb-2">
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">Record</MudText>
@@ -35,6 +35,29 @@
                         {
                             <MudText>No information found.</MudText>
                         }
+                    </MudCardContent>
+                </MudCard>
+                <MudCard Style="Height: 50%">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">@ConstantString.OffenderManagerDeliusFeed</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderAvatar>
+                            <MudAvatar Color="Color.Primary">
+                                <MudIcon Icon="@Icons.Material.Filled.Person" />
+                            </MudAvatar>
+                        </CardHeaderAvatar>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        @if (string.IsNullOrWhiteSpace(Crn))
+                        {
+                            <MudText>No Crn found.</MudText>
+                        }
+                        else
+                        {
+                            <Cfo.Cats.Server.UI.Pages.Participants.Components.DMS.Delius.OffenderManagerSummary Crn="@Crn" />
+                        }
+
                     </MudCardContent>
                 </MudCard>
             </MudItem>

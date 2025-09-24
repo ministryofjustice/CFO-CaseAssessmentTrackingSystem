@@ -1,6 +1,8 @@
+using Cfo.Cats.Application.Features.Delius.DTOs;
 using Cfo.Cats.Application.Features.Participants.Commands;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
+using Cfo.Cats.Domain.Common.Enums;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
@@ -12,12 +14,12 @@ public partial class CaseSentenceInformation
     [Parameter, EditorRequired]
     public bool ParticipantIsActive { get; set; } = default!;
 
-    public SentenceDetail? Model { get; private set; }
+    public string? Crn { get; set; } = default!;
 
+    public SentenceDetail? Model { get; private set; }
     public record SentenceDetail(
         ParticipantIdentifierDto[] Identifiers,
         ParticipantSupervisorDto Supervisor);
-
     protected override async Task OnInitializedAsync()
     {
         try
@@ -35,11 +37,10 @@ public partial class CaseSentenceInformation
             });
 
             Model = new(
-            Identifiers: identifiers,
-            Supervisor: supervisor?.Data
-                        ?? new ParticipantSupervisorDto()
+                Identifiers: identifiers,
+                Supervisor: supervisor?.Data ?? new ParticipantSupervisorDto()
             );
-
+            Crn = identifiers.Data?.FirstOrDefault(i => i.Type == ExternalIdentifierType.Crn)?.Value;
         }
         finally
         {
