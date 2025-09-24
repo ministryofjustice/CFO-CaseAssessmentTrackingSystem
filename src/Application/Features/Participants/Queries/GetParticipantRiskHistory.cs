@@ -20,15 +20,18 @@ public static class GetParticipantRiskHistory
         {
             var baseQuery = (from r in unitOfWork.DbContext.Risks
                              join l in unitOfWork.DbContext.Locations on r.LocationId equals l.Id
+                             join createdBy in unitOfWork.DbContext.Users on r.CreatedBy equals createdBy.Id
+                             join u in unitOfWork.DbContext.Users on r.CompletedBy equals u.Id into completedBy
+                             from cb in completedBy.DefaultIfEmpty()
                              where r.ParticipantId == request.ParticipantId
                              select new RiskHistoryDto
                              {
                                  Id = r.Id,
                                  ParticipantId = r.ParticipantId,
                                  CreatedDate = r.Created!.Value,
-                                 CreatedBy = r.CreatedBy!,
+                                 CreatedBy = createdBy.DisplayName!,
                                  Completed = r.Completed,
-                                 CompletedBy = r.CompletedBy,
+                                 CompletedBy = cb.DisplayName,
                                  LocationId = r.LocationId,
                                  LocationName = l.Name,
                                  RiskReviewReason = r.ReviewReason
@@ -83,18 +86,6 @@ public static class GetParticipantRiskHistory
                 .MaximumLength(9)
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
-
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
-            {
-                RuleFor(x => x.ParticipantId)
-                    .MustAsync(Exist)
-                    .WithMessage("Participant not found");
-
-            });
         }
-
-        private async Task<bool> Exist(string participantId, CancellationToken cancellationToken)
-            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId, cancellationToken);
-
     }
 }

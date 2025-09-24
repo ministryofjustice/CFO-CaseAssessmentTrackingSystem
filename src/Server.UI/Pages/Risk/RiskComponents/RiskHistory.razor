@@ -1,12 +1,9 @@
-﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
-@using Cfo.Cats.Server.UI.Components.Participants;
+﻿@using Cfo.Cats.Server.UI.Components.Participants;
 @using Cfo.Cats.Application.Features.Participants.DTOs;
 @using Cfo.Cats.Domain.Common.Enums;
 @using Humanizer
 
-@* @inherits CatsComponentBase *@
 @inherits ParticipantComponent<RiskHistoryDto[]>
-@inject IUserService UserService
 
 @if (Loading)
 {
@@ -20,41 +17,37 @@
     </MudAlert>
 }
 
-@if (Data is { Length: > 0 })
+@if (Data is not null)
 {
     <MudDataGrid Items="@Data" Striped="true" ExpandSingleRow="true">
         <Columns>
             <HierarchyColumn T="RiskHistoryDto" ButtonDisabledFunc="@(x => x.RiskReviewReason == RiskReviewReason.NoChange || x.RiskReviewReason == RiskReviewReason.NoRiskInformationAvailable)" />
-            <TemplateColumn Title="Completed" Sortable="false" SortBy="x => x.Completed">
+            <TemplateColumn Title="Created" Sortable="true" SortBy="x => x.CreatedDate">
                 <CellTemplate>
                     <MudStack>
-                            <MudText Typo="Typo.subtitle2" Class="ma-3">
-                                <strong>@context.Item.CreatedDate.ToShortDateString()</strong>
-                            </MudText>
+                        <MudText>
+                            @context.Item.CreatedBy 
+                        </MudText>
+                        <MudText>
+                            @context.Item.CreatedDate.ToShortDateString()
+                        </MudText>
                     </MudStack>
                 </CellTemplate>
             </TemplateColumn>
-            <TemplateColumn Title="Completed By" Sortable="false">
+            <TemplateColumn Title="Completed" Sortable="true" SortBy="x => x.Completed">
                 <CellTemplate>
                     <MudStack>
-                        @if (context.Item.Completed.HasValue)
-                        {
-                            <MudText Typo="Typo.subtitle2" Class="ma-3">
-                                <strong>@(UserService.DataSource.SingleOrDefault(x => x.Id == @context.Item.CompletedBy)?.DisplayName ?? "Unknown")</strong>
-                            </MudText>
-                        }
-                        else
-                        {
-                            <MudText Typo="Typo.subtitle2" Class="ma-3">
-                                <strong>@(UserService.DataSource.SingleOrDefault(x => x.Id == @context.Item.CreatedBy)?.DisplayName ?? "Unknown")</strong>
-                            </MudText>
-                        }
+                        <MudText>
+                            @context.Item.CompletedBy 
+                        </MudText>
+                        <MudText>
+                            @context.Item.Completed
+                        </MudText>
                     </MudStack>
                 </CellTemplate>
             </TemplateColumn>
-            <TemplateColumn Title="Since last review">
+            <TemplateColumn Title="Since Last Review" Sortable="true" SortBy="x => x.DaysSinceLastReview">
                 <CellTemplate>
-                    
                         @if (context.Item.DaysSinceLastReview > 6)
                         {
                             <MudText>
@@ -67,11 +60,16 @@
                                 @(context.Item.DaysSinceLastReview > 1 ? $"{context.Item.DaysSinceLastReview} days" : $"{context.Item.DaysSinceLastReview} day")
                             </MudText>
                         }
-                    
                 </CellTemplate>
             </TemplateColumn>
-            <PropertyColumn Property="x => x.LocationName" Title="Location" Sortable="false"/>
-            <PropertyColumn Property="x => x.RiskReviewReason" Title="Review Reason" Sortable="false" />
+            <PropertyColumn Property="x => x.LocationName" Title="Location" Sortable="true"/>
+            <TemplateColumn Title="Review Reason" Sortable="true" SortBy="x => x.RiskReviewReason?.Name">
+                <CellTemplate>
+                    <MudChip Size="Size.Small" Color="Color.Primary">
+                        @context.Item.RiskReviewReason  
+                    </MudChip>
+                </CellTemplate>
+            </TemplateColumn>
         </Columns>
         <ChildRowContent>
             @{
@@ -79,14 +77,11 @@
             }
             <ViewRisk ParticipantId="@ParticipantId" RiskId="@riskHistoryItem.Id" />
         </ChildRowContent>
+        <NoRecordsContent>
+            <MudText>@ConstantString.NoRecords</MudText>
+        </NoRecordsContent>
         <PagerContent>
             <MudDataGridPager T="RiskHistoryDto" />
         </PagerContent>
     </MudDataGrid>
-}
-else
-{
-    <MudAlert>
-        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No risk history found.</MudAlert>
-    </MudAlert>
 }
