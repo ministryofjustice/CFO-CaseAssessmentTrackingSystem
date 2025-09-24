@@ -1,41 +1,34 @@
-﻿@using Cfo.Cats.Application.Features.Participants.Commands
-@using Cfo.Cats.Application.Features.Participants.DTOs
-@using Cfo.Cats.Application.Features.Participants.Queries
-@using Humanizer;
+﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Server.UI.Components.Participants
+@using Cfo.Cats.Application.Features.Participants.DTOs;
+@using Humanizer
 
-@inherits CatsComponentBase
+@inherits ParticipantComponent<ParticipantNoteDto[]>
 
-@if(_notes is not null)
+@if (Loading)
 {
-    <MudTimeline TimelinePosition="TimelinePosition.Start" Modifiers="true">
-        @if (AllowAddNote)
-        {
-            <MudTimelineItem TimelineAlign="TimelineAlign.Start">
-                <div class="d-flex gap-4 align-center mud-list-subheader">
-                    <MudTooltip Text="New">
-                        <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="OnAddNote" Class="rounded-circle"></MudIconButton>
-                    </MudTooltip>
-                    <MudText>New note</MudText>
-                </div>
-            </MudTimelineItem>
-        }
-        @* else
-        {
-            if (!_notes.Any())
-            {
-                <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
-                    <MudCard>
-                        <MudCardContent>
-                            <MudText Typo="Typo.body1">
-                                No Notes
-                            </MudText>
-                        </MudCardContent>
-                    </MudCard>
-                </MudTimelineItem>
-            }
-        }
+    <MudLoading Text="Loading" />
+}
+else
+{
 
-        @foreach (var note in _notes.OrderByDescending(x => x.Created))
+    @if (ErrorMessage is not null)
+    {
+        <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
+            <MudCard>
+                <MudCardContent>
+                    <MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+                        @ErrorMessage
+                    </MudAlert>
+                </MudCardContent>
+            </MudCard>
+        </MudTimelineItem>
+
+    }
+
+    @if (Data is { Length: > 0 })
+    {
+        @foreach (var note in Data.OrderByDescending(x => x.Created))
         {
             <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
                 <MudCard>
@@ -46,6 +39,7 @@
                             </CardHeaderAvatar>
                             <CardHeaderContent>
                                 <MudText Typo="Typo.body1">
+
                                     @note.CreatedBy
                                 </MudText>
                                 <MudText Typo="Typo.body2">@note.CreatedByEmail</MudText>
@@ -68,8 +62,20 @@
                         </MudCardActions>
                     </MudCardContent>
                 </MudCard>
+
             </MudTimelineItem>
-        } *@
-        <ViewNotes ParticipantId="@ParticipantId"/>
-    </MudTimeline>
+        }
+    }
+    else
+    {
+        <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.body1">
+                        No Notes
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudTimelineItem>
+    }
 }
