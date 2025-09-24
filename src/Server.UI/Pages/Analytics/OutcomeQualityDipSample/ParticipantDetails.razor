@@ -70,6 +70,9 @@
                     <MudTabPanel Text="Assessments">
                         <OutcomeQualityDipSampleAssessmentComponent ParticipantId="@_participant.ParticipantId" />
                     </MudTabPanel>
+                    <MudTabPanel Text="Notes">
+                        <OutcomeQualityDipSampleNotesComponent ParticipantId="@_participant.ParticipantId" />
+                    </MudTabPanel>
                     <MudTabPanel Text="Review">
                         <SubmitCsoResponseComponent Command="@SubmitCsoCommand" OnFormSubmit="CsoResponseSubmitted" Status="_participant.DipSampleStatus" />
                     </MudTabPanel>
