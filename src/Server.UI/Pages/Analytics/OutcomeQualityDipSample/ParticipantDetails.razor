@@ -1,4 +1,4 @@
-﻿@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.Analytics.Components
 
 @attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
@@ -71,7 +71,7 @@
                         <OutcomeQualityDipSampleAssessmentComponent ParticipantId="@_participant.ParticipantId" />
                     </MudTabPanel>
                     <MudTabPanel Text="Notes">
-                        <Cfo.Cats.Server.UI.Pages.Participants.Components.CaseNotes ParticipantId="@_participant.ParticipantId" />
+                        <OutcomeQualityDipSampleNotesComponent ParticipantId="@_participant.ParticipantId" />
                     </MudTabPanel>
                     <MudTabPanel Text="Review">
                         <SubmitCsoResponseComponent Command="@SubmitCsoCommand" OnFormSubmit="CsoResponseSubmitted" Status="_participant.DipSampleStatus" />
