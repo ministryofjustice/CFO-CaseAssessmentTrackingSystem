@@ -166,7 +166,8 @@
         {
             BackdropClick = false,
             CloseOnEscapeKey = true,
-            MaxWidth = MaxWidth.Medium
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
         };
 
         var dialog = await DialogService.ShowAsync<ConfirmationWithNotesDialog>("Submit to Provider QA", parameters, options);
