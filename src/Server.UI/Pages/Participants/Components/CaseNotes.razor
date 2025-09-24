@@ -19,7 +19,7 @@
                 </div>
             </MudTimelineItem>
         }
-        else
+        @* else
         {
             if (_notes.Count() == 0)
             {
@@ -71,6 +71,7 @@
                 </MudCard>
 
             </MudTimelineItem>
-        }
+        } *@
+        <ViewNotes ParticipantId="@ParticipantId"/>
     </MudTimeline>
 }

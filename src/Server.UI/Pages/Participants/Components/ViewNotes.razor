@@ -1,0 +1,81 @@
+﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Server.UI.Components.Participants
+@using Cfo.Cats.Application.Features.Participants.DTOs;
+@using Humanizer
+
+@inherits ParticipantComponent<ParticipantNoteDto[]>
+
+@if (Loading)
+{
+    <MudLoading Text="Loading" />
+}
+else
+{
+
+    @if (ErrorMessage is not null)
+    {
+        <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
+            <MudCard>
+                <MudCardContent>
+                    <MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+                        @ErrorMessage
+                    </MudAlert>
+                </MudCardContent>
+            </MudCard>
+        </MudTimelineItem>
+
+    }
+
+    @if (Data is { Length: > 0 })
+    {
+        @foreach (var note in Data.OrderByDescending(x => x.Created))
+        {
+            <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
+                <MudCard>
+                    <MudCardContent>
+                        <MudCardHeader>
+                            <CardHeaderAvatar>
+                                <MudAvatar Color="Color.Secondary">@note.CreatedBy.Substring(0, 1)</MudAvatar>
+                            </CardHeaderAvatar>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.body1">
+
+                                    @note.CreatedBy
+                                </MudText>
+                                <MudText Typo="Typo.body2">@note.CreatedByEmail</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudText Typo="Typo.body1">
+                                <div class="word-wrap">
+                                    @note.Message
+                                </div>
+                            </MudText>
+
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
+                                <MudText Typo="Typo.body2">
+                                    @note.Created.Humanize()
+                                </MudText>
+                            </MudTooltip>
+                        </MudCardActions>
+                    </MudCardContent>
+                </MudCard>
+
+            </MudTimelineItem>
+        }
+    }
+    else
+    {
+        <MudTimelineItem Size="Size.Medium" Color="Color.Info" Elevation="25">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.body1">
+                        No Notes
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudTimelineItem>
+    }
+}
