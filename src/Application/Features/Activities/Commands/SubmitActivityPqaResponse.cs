@@ -212,9 +212,12 @@ public static class SubmitActivityPqaResponse
 
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
-                RuleFor(g => g.QueueEntryId)
-                    .Must(ParticipantMustNotBeArchived)
-                    .WithMessage("Participant is archived");
+                When(g => g.Response is PqaResponse.Accept, () =>
+                {
+                    RuleFor(g => g.QueueEntryId)
+                        .Must(ParticipantMustNotBeArchived)
+                        .WithMessage("Participant is archived");
+                });
             });
         }
 
@@ -223,7 +226,7 @@ public static class SubmitActivityPqaResponse
             var entry = _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Participant)
                 .FirstOrDefault(a => a.Id == queueEntryId);
             
-            return entry != null && entry.Participant!.IsActive();
+            return entry != null && entry.Participant!.EnrolmentStatus!.ParticipantIsActive();
         }
     }
 }
