@@ -10,44 +10,10 @@
              TransformOrigin="Origin.TopRight">
              <MudMenuItem Icon="@Icons.Material.Filled.Web" Href="https://www.creatingfutureopportunities.gov.uk/" Target="_blank">CFO Website</MudMenuItem>
              <MudMenuItem Icon="@Icons.Material.Filled.Map" Href="https://www.creatingfutureopportunities.gov.uk/map/" Target="_blank">CFO Delivery Map</MudMenuItem>
-             @if (_isInternalStaff)
-             {
-                 <MudMenuItem Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/" Target="_blank">Github Repository</MudMenuItem>
-             }
+             <MudMenuItem Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/" Target="_blank">Github Repository</MudMenuItem>
     </MudMenu>
     <form method="post" hidden>
         <AntiforgeryToken />
     </form>
 </MudTooltip>
 
-@code
-{
-
-    private bool _isInternalStaff = false;
-
-    [Parameter] public EventCallback<EventArgs> OnSettingClick { get; set; }
-    
-    [CascadingParameter]
-    private Task<AuthenticationState>? AuthenticationState { get; set; }
-
-    private string? DisplayName { get; set; }
-    private string? Email { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (AuthenticationState is not null)
-        {
-            var authState = await AuthenticationState;
-            var user = authState?.User;
-
-            if (user?.Identity is not null && user.Identity.IsAuthenticated)
-            {
-                Email = user.GetEmail();
-                DisplayName = user.GetDisplayName();
-                string tenantId = user.GetTenantId()!;
-                _isInternalStaff = tenantId is "1." or "1.1.";
-            }
-        }
-    }
-
-}
