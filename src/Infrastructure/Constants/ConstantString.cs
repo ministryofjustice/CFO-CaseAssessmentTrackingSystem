@@ -222,8 +222,7 @@ public static class ConstantString
     public static string ObjectiveSuccessfullyCompleted =>
     Localize("Objective Successfully Completed");
 
-    public static string NotActiveInFeedMessage =>
-    Localize("Please note: the participant is not active on the feed.");
+    public static string LicenceEndedWarning => Localize("Participants licence has ended. This 30-day period should be used to complete activities and submit any associated claims. New activity should not be started during this period. Archive date: {0}.");
 
     public static string EditParticipant => Localize("Edit Participant");
 

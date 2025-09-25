@@ -20,7 +20,7 @@ public partial class Participant
     private bool _showRightToWorkWarning = false;
     private string _rightToWorkAlertMessage = ConstantString.RightToWorkIsRequiredMessage;
 
-    private string _notActiveInFeedAlertMessage = ConstantString.NotActiveInFeedMessage;
+    private string _notActiveInFeedAlertMessage = ConstantString.LicenceEndedWarning;
 
     protected override async Task OnInitializedAsync()
     {
