@@ -107,7 +107,7 @@ public class ParticipantSummaryDto
                 .ForMember(dest => dest.BioDue, opt => opt.MapFrom(src => src.BioDue))
                 .ForMember(dest => dest.BioDueInDays, opt => opt.MapFrom(src => src.BioDueInDays()))
                 .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive()))
-                .ForMember(dest => dest.ActiveInFeed, opt => opt.MapFrom(src => src.ActiveInFeed));
+                .ForMember(dest => dest.ActiveInFeed, opt => opt.MapFrom(src => !src.DeactivatedInFeed.HasValue));
 
             CreateMap<ParticipantAssessment, AssessmentSummaryDto>()
                 .ForMember(target => target.AssessmentId, options => options.MapFrom(source => source.Id))

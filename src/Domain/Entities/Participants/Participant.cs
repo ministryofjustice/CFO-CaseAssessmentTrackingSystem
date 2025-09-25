@@ -29,7 +29,6 @@ public class Participant : OwnerPropertyEntity<string>
         string lastName, 
         string? gender, 
         DateTime dateOfBirth, 
-        bool activeInFeed, 
         string? registrationDetailsJson, 
         string referralSource, 
         string? referralComments, 
@@ -47,7 +46,6 @@ public class Participant : OwnerPropertyEntity<string>
             MiddleName = middleName,
             LastName = lastName,
             Gender = gender,
-            ActiveInFeed = activeInFeed,
             RegistrationDetailsJson = registrationDetailsJson,
             ReferralSource = referralSource,
             ReferralComments = referralComments,
@@ -74,10 +72,11 @@ public class Participant : OwnerPropertyEntity<string>
 
     public int? RiskDueInDays() => (RiskDue.HasValue ? (RiskDue!.Value.Date - DateTime.UtcNow.Date).Days:null);
     public string? Nationality { get; set; }
+
     /// <summary>
-    /// Whether the participant is active in the DMS feed.
+    /// The date the participant was deactivated in the DMS feed, if applicable.
     /// </summary>
-    public bool ActiveInFeed { get; private set; }
+    public DateOnly? DeactivatedInFeed { get; set; }
 
     public string ReferralSource { get; private set; }
 
@@ -318,10 +317,13 @@ public class Participant : OwnerPropertyEntity<string>
 
     public Participant UpdateActiveStatus(bool activeInFeed)
     {
-        if(ActiveInFeed != activeInFeed)
+        var currentActiveInFeed = DeactivatedInFeed.HasValue is false;
+
+        if(currentActiveInFeed != activeInFeed)
         {
-            AddDomainEvent(new ParticipantActiveStatusChangedDomainEvent(this, ActiveInFeed, activeInFeed));
-            ActiveInFeed = activeInFeed;
+            var occurred = DateOnly.FromDateTime(DateTime.UtcNow);
+            DeactivatedInFeed = activeInFeed ? null : occurred;
+            AddDomainEvent(new ParticipantActiveStatusChangedDomainEvent(this, currentActiveInFeed, activeInFeed, occurred));
         }
 
         return this;

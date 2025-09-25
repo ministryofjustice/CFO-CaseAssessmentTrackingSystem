@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250919094236_Participant_ActiveStatusHistory")]
+    partial class Participant_ActiveStatusHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,10 +77,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTime>("CommencedOn")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("CompletedBy")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime?>("Created")
                         .HasColumnType("datetime2");
@@ -3037,9 +3036,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("LicenseEnd")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("NSDCase")
                         .HasColumnType("int");
 
@@ -3117,8 +3113,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
 
                     b.HasIndex("ParticipantId");
 
@@ -5664,12 +5658,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.Risk", b =>
                 {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", null)
-                        .WithMany()
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", "Participant")
                         .WithMany()
                         .HasForeignKey("ParticipantId")

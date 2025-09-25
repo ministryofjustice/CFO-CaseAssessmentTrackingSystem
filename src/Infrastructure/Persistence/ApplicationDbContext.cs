@@ -56,7 +56,8 @@ public class ApplicationDbContext
     public DbSet<ParticipantEnrolmentHistory> ParticipantEnrolmentHistories => Set<ParticipantEnrolmentHistory>();
     public DbSet<ParticipantLocationHistory> ParticipantLocationHistories => Set<ParticipantLocationHistory>();
     public DbSet<ParticipantOwnershipHistory> ParticipantOwnershipHistories => Set<ParticipantOwnershipHistory>();
-    
+    public DbSet<ParticipantActiveStatusHistory> ParticipantActiveStatusHistories => Set<ParticipantActiveStatusHistory>();
+
     public DbSet<ParticipantContactDetail> ParticipantContactDetails => Set<ParticipantContactDetail>();
 
     public DbSet<Location> Locations => Set<Location>();

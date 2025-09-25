@@ -42,9 +42,6 @@ public class ParticipantEntityTypeConfiguration : IEntityTypeConfiguration<Parti
         builder.Property(p => p.Nationality)
             .HasMaxLength(50);
 
-        builder.Property(p => p.ActiveInFeed)
-            .IsRequired();
-
         builder.Property(p => p.ReferralSource)
             .IsRequired()
             .HasMaxLength(100);

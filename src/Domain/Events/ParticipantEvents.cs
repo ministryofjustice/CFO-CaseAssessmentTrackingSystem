@@ -76,12 +76,13 @@ public sealed class ParticipantNameChangedDomainEvent(Participant participant, s
     public string? To { get; } = to;
 }
 
-public sealed class ParticipantActiveStatusChangedDomainEvent(Participant item, bool from, bool to) 
+public sealed class ParticipantActiveStatusChangedDomainEvent(Participant item, bool from, bool to, DateOnly occured) 
     : DomainEvent
 {
     public Participant Item { get; } = item;
     public bool From { get; } = from;
     public bool To { get; } = to;
+    public DateOnly Occurred { get; } = occured;
 }
 
 public sealed class ParticipantRegistrationDetailsChangedDomainEvent(Participant item)

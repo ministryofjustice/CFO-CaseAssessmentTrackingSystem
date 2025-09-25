@@ -460,6 +460,23 @@ public static class DependencyInjection
                         .WithCronSchedule(schedule.Chron));
                 }
             }
+
+            if (options.GetSection(ArchiveParticipantsJob.Key.Name).Get<JobOptions>() is
+                { Enabled: true } archiveParticipantsJob)
+            {
+                quartz.AddJob<ArchiveParticipantsJob>(opts =>
+                    opts.WithIdentity(ArchiveParticipantsJob.Key)
+                        .WithDescription(ArchiveParticipantsJob.Description)
+                );
+
+                foreach (var schedule in archiveParticipantsJob.CronSchedules)
+                {
+                    quartz.AddTrigger(opts => opts
+                        .ForJob(ArchiveParticipantsJob.Key)
+                        .WithDescription(schedule.Description)
+                        .WithCronSchedule(schedule.Chron));
+                }
+            }
         });
 
         services.AddQuartzServer(options =>
