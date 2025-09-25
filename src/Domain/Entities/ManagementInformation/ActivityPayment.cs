@@ -1,6 +1,4 @@
-﻿using Cfo.Cats.Domain.Common.Enums;
-using Cfo.Cats.Domain.Entities.Activities;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+﻿using Cfo.Cats.Domain.Entities.Activities;
 
 namespace Cfo.Cats.Domain.Entities.ManagementInformation;
 
@@ -15,7 +13,7 @@ public class ActivityPayment
         var dates = new[]
         {
             new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
-            activity.ApprovedOn!.Value.Date
+            activity.CompletedOn!.Value.Date
         };
 
         return new ActivityPayment
@@ -25,7 +23,7 @@ public class ActivityPayment
             ActivityCategory = activity.Category.Name,
             ActivityType = activity.Type.Name,
             CreatedOn = DateTime.UtcNow,
-            ActivityApproved = activity.ApprovedOn!.Value.Date,
+            ActivityApproved = activity.CompletedOn!.Value.Date,
             ParticipantId = activity.ParticipantId,
             ContractId = activity.TookPlaceAtContract.Id,
             LocationId = activity.TookPlaceAtLocation.Id,
@@ -44,7 +42,7 @@ public class ActivityPayment
     {
         var dates = new []
         {
-            activity.ApprovedOn!.Value.Date, 
+            activity.CompletedOn!.Value.Date, 
             enrolmentApprovalDate.Date,
             new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
         };
@@ -56,7 +54,7 @@ public class ActivityPayment
             ActivityCategory = activity.Category.Name,
             ActivityType = activity.Type.Name,
             CreatedOn = DateTime.UtcNow,
-            ActivityApproved = activity.ApprovedOn!.Value.Date,
+            ActivityApproved = activity.CompletedOn!.Value.Date,
             ParticipantId = activity.ParticipantId,
             ContractId = activity.TookPlaceAtContract.Id,
             LocationId = activity.TookPlaceAtLocation.Id,
@@ -102,5 +100,4 @@ public class ActivityPayment
     public required bool EligibleForPayment { get; set; }
     public required string? IneligibilityReason { get; set; }
     public required DateTime PaymentPeriod { get; set; }
-
 }

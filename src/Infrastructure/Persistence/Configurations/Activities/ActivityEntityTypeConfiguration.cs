@@ -1,6 +1,8 @@
-﻿using Cfo.Cats.Domain.Common.Enums;
+﻿using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Activities;
 using Cfo.Cats.Domain.Entities.Administration;
+using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -83,8 +85,18 @@ internal class ActivityEntityTypeConfiguration : IEntityTypeConfiguration<Activi
 
         builder.Property(a => a.LastModifiedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+                
+        builder.HasOne<ApplicationUser>()
+            .WithMany()            
+            .HasForeignKey(p => p.CompletedBy)
+            .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(a => a.CompletedBy)
-            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+        builder.Property(e => e.AbandonReason)
+           .HasConversion(
+                ar => ar!.Value,
+                ar => ActivityAbandonReason.FromValue(ar));
+
+        builder.Property(p => p.AbandonJustification)
+            .HasMaxLength(ValidationConstants.NotesLength);
     }
 }

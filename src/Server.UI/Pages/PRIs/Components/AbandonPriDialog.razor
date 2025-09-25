@@ -65,7 +65,7 @@
 
             if (result.Succeeded)
             {
-                Snackbar.Add($"{L["PRI successfully abandoned"]}", Severity.Info);
+                Snackbar.Add(ConstantString.AbandonSuccess, Severity.Info);                
                 MudDialog.Close(DialogResult.Ok(true));
             }
             else

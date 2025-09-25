@@ -28,8 +28,8 @@ public static class AbandonActivity
         {
             var activity = await unitOfWork.DbContext.Activities
                 .SingleOrDefaultAsync(a => a.Id == request.ActivityId
-                && a.Status == ActivityStatus.PendingStatus, cancellationToken);
-
+                , cancellationToken);
+            
             activity!.Abandon(request.AbandonReason, request.AbandonJustification, request.AbandonedBy);
 
             return Result.Success();

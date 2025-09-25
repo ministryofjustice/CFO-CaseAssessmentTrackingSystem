@@ -227,7 +227,8 @@ public static class ConstantString
 
     public static string EditAchievement => Localize("Edit Achievement");
 
-    public static string AbandonAchievement => Localize("Abandon Achievement");
+    public static string AbandonActivity => Localize("Abandon Activity");
+    public static string AbandonSuccess => Localize("Abandoned successfully");
 
     public static string Finalise => Localize("Finalise");
     public static string OffenderManagerDeliusFeed => Localize("Offender Manager (Delius Feed)");

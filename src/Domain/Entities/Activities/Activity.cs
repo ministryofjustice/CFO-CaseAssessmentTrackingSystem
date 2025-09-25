@@ -68,7 +68,7 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
     public DateTime CommencedOn { get; protected set; }
     public string TenantId { get; protected set; }
     public ActivityStatus Status { get; protected set; }
-    public DateTime? ApprovedOn { get; protected set; }
+    public DateTime? CompletedOn { get; protected set; }
     public string? CompletedBy { get; private set; }
 
     /// <summary>
@@ -79,12 +79,7 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
     /// <summary>
     /// The reason for Abandoning Activity
     /// </summary>
-    public ActivityAbandonReason? AbandonReason { get; private set; }
-
-    /// <summary>
-    /// Who completed the Activity
-    /// </summary>
-    public string? CompletedBy { get; private set; }
+    public ActivityAbandonReason? AbandonReason { get; private set; }   
 
     public virtual DateTime Expiry => CommencedOn.AddMonths(3);
 
@@ -102,12 +97,12 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
 
     public Activity Approve(string? completedBy)
     {
-        if (ApprovedOn.HasValue)
+        if (CompletedOn.HasValue)
         {
             return this;
         }
 
-        ApprovedOn = DateTime.UtcNow;
+        CompletedOn = DateTime.UtcNow;
         CompletedBy = completedBy;
 
         TransitionTo(ActivityStatus.ApprovedStatus);
@@ -117,13 +112,19 @@ public abstract class Activity : OwnerPropertyEntity<Guid>
 
     public Activity Abandon(ActivityAbandonReason abandonReason, string? abandonJustification, string abandonedBy)
     {
-        Status = ActivityStatus.AbandonedStatus;
-        //CompletedOn = DateTime.UtcNow;
-        AbandonReason = abandonReason;
-        AbandonJustification = abandonJustification;
+        if (CompletedOn.HasValue)
+        {
+            return this;
+        }
+
+        CompletedOn = DateTime.UtcNow;
         CompletedBy = abandonedBy;
-        ApprovedOn = DateTime.UtcNow;
-        AddDomainEvent(new ActivityAbandonedDomainEvent(this));        
+        
+        AbandonReason = abandonReason;
+        AbandonJustification = abandonJustification;        
+
+        TransitionTo(ActivityStatus.AbandonedStatus);
+        
         return this;
     }
 

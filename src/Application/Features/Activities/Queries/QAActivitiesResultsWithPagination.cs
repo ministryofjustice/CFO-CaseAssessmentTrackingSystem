@@ -32,7 +32,7 @@ public static class QAActivitiesResultsWithPagination
                             Participant = $"{a.Participant.FirstName} {a.Participant.LastName}",
                             Status = a.Status,
                             Definition = a.Definition,
-                            ApprovedOn = a.ApprovedOn,
+                            ApprovedOn = a.CompletedOn,
                             LastModified = a.LastModified,
                             Created = a.Created,
                             CommencedOn = a.CommencedOn,

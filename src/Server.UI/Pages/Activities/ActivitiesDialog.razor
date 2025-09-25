@@ -1,4 +1,5 @@
 ﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Features.Activities.Commands
 @using Cfo.Cats.Application.Features.Activities.DTOs
 @using Cfo.Cats.Application.Features.Activities.Queries
 @using Cfo.Cats.Application.Features.Locations.DTOs
@@ -128,8 +129,8 @@
                                         <MudMenuItem OnClick="() => Edit(activity)">
                                             @ConstantString.Edit
                                         </MudMenuItem>
-                                        <MudMenuItem OnClick="() => Edit(activity)">
-                                            @ConstantString.AbandonAchievement
+                                        <MudMenuItem OnClick="() => Abandon(activity)">
+                                            @ConstantString.AbandonActivity
                                         </MudMenuItem>                                                                                
                                     </MudMenu>
                                 }
@@ -259,23 +260,22 @@
 
     async Task Abandon(ActivitySummaryDto activity)
     {
-        await OnRefresh();
-        
         Dialog.Close();
 
         var parameters = new DialogParameters<AbandonActivityDialog>()
         {
+            { x => x.model, new AbandonActivity.Command()
             {
-                x => x.Model!.ActivityId, activity.Id
-            }
+                ActivityId= activity.Id,
+                AbandonJustification="",
+                AbandonReason=ActivityAbandonReason.Other,
+                AbandonedBy=CurrentUser.UserId!
+            } }            
         };
 
-        var dialog = await DialogService.ShowAsync<AbandonActivityDialog>("Abandon Activity/ETE", parameters, new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small,
-            FullWidth = true,
-            CloseButton = true
-        });
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, BackdropClick = false };
+
+        var dialog = await DialogService.ShowAsync<AbandonActivityDialog>("Abandon Activity/ETE", parameters, options);
 
          var result = await dialog.Result;
 
