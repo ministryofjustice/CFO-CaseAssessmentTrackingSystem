@@ -12,8 +12,8 @@ public partial class CaseNotes
     [Parameter, EditorRequired]
     public string ParticipantId { get; set; } = default!;
 
-    [Parameter, EditorRequired]
-    public bool ParticipantIsActive { get; set; } = default!;
+    [Parameter]
+    public bool AllowAddNote { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {

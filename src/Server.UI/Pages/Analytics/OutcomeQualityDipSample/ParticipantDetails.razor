@@ -71,7 +71,7 @@
                         <OutcomeQualityDipSampleAssessmentComponent ParticipantId="@_participant.ParticipantId" />
                     </MudTabPanel>
                     <MudTabPanel Text="Notes">
-                        <OutcomeQualityDipSampleNotesComponent ParticipantId="@_participant.ParticipantId" />
+                        <Cfo.Cats.Server.UI.Pages.Participants.Components.CaseNotes ParticipantId="@_participant.ParticipantId" />
                     </MudTabPanel>
                     <MudTabPanel Text="Review">
                         <SubmitCsoResponseComponent Command="@SubmitCsoCommand" OnFormSubmit="CsoResponseSubmitted" Status="_participant.DipSampleStatus" />
