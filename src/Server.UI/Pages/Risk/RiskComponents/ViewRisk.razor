@@ -1,0 +1,89 @@
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Risk.RiskComponents
+
+@inherits CatsComponentBase
+
+<style>
+    .readonly-toggle {
+        pointer-events: none;
+        filter: grayscale(100%);
+    }
+</style>
+
+@if (_isLoading)
+{
+    <MudLoading Text="Risk loading" />
+}
+else if (_model is not null)
+{
+    <MudForm @ref="form" ReadOnly Disabled>
+        <CascadingValue Value="form">
+            <MudExpansionPanels MultiExpansion="true">
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <MudText>License Conditions</MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <LicenseConditions Model="_model" />
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <MudText>Risk Overview</MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <RiskOverview Model="_model" />
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <MudText>Registration Details / MAPPA</MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <Mappa Model="_model" />
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <MudText>Specific Risk(s)</MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <SpecificRisk Model="_model" />
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <MudText>Recommendations</MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <Recommendations Model="_model" />
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <MudText>Restrictions</MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <Restrictions Model="_model" />
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <MudText>Additional Information</MudText>
+                    </TitleContent>
+                    <ChildContent>
+                        <AdditionalInformation Model="_model" />
+                    </ChildContent>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        </CascadingValue>
+    </MudForm>
+}
+else if (_notFound)
+{
+    <MudAlert>
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" Class="my-2">No risk information found.</MudAlert>
+    </MudAlert>
+}
