@@ -5,84 +5,71 @@
 
 @inherits CatsComponent<CasesPerLocationSupportWorkerDto>
 
-<MudCard Style="height: 100%">
-    <MudCardHeader>
-        <CardHeaderContent>
-            <MudText Typo="Typo.h6">Cases Per Location</MudText>
-        </CardHeaderContent>
-    </MudCardHeader>
-    <MudCardContent>
+@if (Loading)
+{
+    <MudLoading Text="Loading" />
+}
 
-        @if (Loading)
-        {
-            <MudLoading Text="Loading" />
-        }
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
 
-        @if (ErrorMessage is not null)
-        {
-            <MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
-                @ErrorMessage
-            </MudAlert>
-        }
+@if(Data is not null)
+{
+    @if(VisualMode)
+    {
+		<ApexChart TItem="Details" Options="Options" Height="700">
+			@{
+				var chartData = ChartData();
+				var statuses = chartData.Select(x => x.Status).OrderBy(x => x.LogicalOrder).Distinct();
+			}
+			@foreach (var status in statuses)
+			{
+				<ApexPointSeries TItem="Details"
+									Name="@status.Name"
+									Items="@chartData.Where(x => x.Status == status).ToList()"
+									XValue="@(x => x.Location)"
+									YValue="@(x => x.Count)"
+									SeriesType="SeriesType.Bar"
+									ShowDataLabels
+									Color="@status.Colour" />
+			}
+		</ApexChart>
+    }
+    else
+    {
+        <MudTable Items="Data.Records"
+                    Hover="true"
+                    Striped="true"
+					>
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<(string Location, string Status, int Count), object>(x => x.Location)">
+                        Location
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<(string Location, string Status, int Count), object>(x => x.Status)">
+                        Status
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<(string Location, string Status, int Count), object>(x => x.Count)">
+                        Count
+                    </MudTableSortLabel>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Location">@context.Location</MudTd>
+                <MudTd DataLabel="Status">@context.Status</MudTd>
+                <MudTd DataLabel="Count">@context.Count</MudTd>
+            </RowTemplate>
 
-        @if(Data is not null)
-        {
-            @if(VisualMode)
-            {
-                <ApexChart TItem="Details"
-                Options="Options">
-                    
-                    @{
-                        var chartData = ChartData();
-                        var statuses = chartData.Select(x => x.Status).OrderBy(x => x.LogicalOrder).Distinct();
-                    }
-                    @foreach (var status in statuses)
-                    {
-                        <ApexPointSeries TItem="Details"
-                                         Name="@status.Name"
-                                         Items="@chartData.Where(x => x.Status == status).ToList()"
-                                         XValue="@(x => x.Location)"
-                                         YValue="@(x => x.Count)"
-                                         SeriesType="SeriesType.Bar"
-                                         ShowDataLabels
-                                         Color="@status.Colour"/>
-                    }
-               </ApexChart>
-            }
-            else
-            {
-                <MudTable Items="Data.Records"
-                          Hover="true"
-                          Striped="true">
-                    <HeaderContent>
-                        <MudTh>
-                            <MudTableSortLabel SortBy="new Func<(string Location, string Status, int Count), object>(x => x.Location)">
-                                Location
-                            </MudTableSortLabel>
-                        </MudTh>
-                        <MudTh>
-                            <MudTableSortLabel SortBy="new Func<(string Location, string Status, int Count), object>(x => x.Status)">
-                                Status
-                            </MudTableSortLabel>
-                        </MudTh>
-                        <MudTh>
-                            <MudTableSortLabel SortBy="new Func<(string Location, string Status, int Count), object>(x => x.Count)">
-                                Count
-                            </MudTableSortLabel>
-                        </MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd DataLabel="Location">@context.Location</MudTd>
-                        <MudTd DataLabel="Status">@context.Status</MudTd>
-                        <MudTd DataLabel="Count">@context.Count</MudTd>
-                    </RowTemplate>
-                    <PagerContent>
-                        <MudTablePager PageSizeOptions="new int[] { 5, 10, 15, 20, 50 }" />
-                    </PagerContent>
-                </MudTable>
-            }
-        }
+        </MudTable>
+    }
+}
 
-    </MudCardContent>
-</MudCard>
 

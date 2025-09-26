@@ -1,7 +1,5 @@
 using ApexCharts;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
-using Cfo.Cats.Domain.Common.Enums;
-using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard;
 
@@ -50,7 +48,7 @@ public partial class CasesPerLocationPerSupportWorkerCardComponent
         Theme = new Theme
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light
-        },
+        }        
     };
 
     private List<Details> ChartData()

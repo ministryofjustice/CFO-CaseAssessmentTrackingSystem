@@ -2,6 +2,7 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Components.Dashboard
 @using Cfo.Cats.Server.UI.Components.Users
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 
 @page "/pages/dashboard/supportworker/performance"
 @attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
@@ -41,30 +42,30 @@
 
     @if (SelectedUserId is not null)
     {
-        <MudGrid>
-            <MudItem sm="12" md="6">
+
+        <MudTabs Outlined="true" ApplyEffectsToContainer="true">
+            <MudTabPanel Text="Performance Overview" Icon="@Icons.Material.Filled.DataExploration">
+				<MudDateRangePicker DateFormat="dddd, dd MMMM, yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="@_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2" />
+				
+                <MudTabs Outlined="true" ApplyEffectsToContainer="true" Centered="true" Color="Color.Primary">
+                    <MudTabPanel Text="Enrolments" Class="pa-3">
+                        <SupportWorkerEnrolmentDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                    <MudTabPanel Text="Inductions">
+                    </MudTabPanel>
+                    <MudTabPanel Text="Activities">
+                    </MudTabPanel>
+                    <MudTabPanel Text="ETE">
+                    </MudTabPanel>
+                    <MudTabPanel Text="PRI">
+                    </MudTabPanel>
+                </MudTabs>
+            </MudTabPanel>
+            <MudTabPanel Text="Cases Location Breakdown" Icon="@Icons.Material.Filled.People">
                 <CasesPerLocationPerSupportWorkerCardComponent UserId="@SelectedUserId" @key="@SelectedUserId" VisualMode="@_visualMode" />
-            </MudItem>
-            <MudItem xs="12" sm="4" lg="3">
-                <MudStack>
-                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="500px" Animation="Animation.Wave" />
-                    <MudText>Panel B</MudText>
-                </MudStack>
-            </MudItem>
-            <MudItem xs="12" sm="4" lg="3">
-                <MudStack>
-                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="500px" Animation="Animation.Wave" />
-                    <MudText>Panel C</MudText>
-                </MudStack>
-            </MudItem>
-            <MudItem xs="12" sm="4" lg="3">
-                <MudStack>
-                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="500px" Animation="Animation.Wave" />
-                    <MudText>Panel D</MudText>
-                </MudStack>
-            </MudItem>
-        </MudGrid>
-        
+            </MudTabPanel>
+        </MudTabs>
+
     }
     
 </MudStack>

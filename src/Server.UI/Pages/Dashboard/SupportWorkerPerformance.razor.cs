@@ -8,6 +8,8 @@ public partial class SupportWorkerPerformance
     private bool _showSelect;
     private bool _visualMode = true;
     public string? SelectedUserId { get; set; }
+
+    private DateRange _dateRange { get; set; } = new DateRange(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1), DateTime.Today);
     
     [CascadingParameter]
     public UserProfile CurrentUser { get; set; } = null!;
