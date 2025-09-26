@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Common.Events;
 using Cfo.Cats.Domain.Entities.Activities;
 

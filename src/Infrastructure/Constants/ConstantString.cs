@@ -1,4 +1,3 @@
-using Cfo.Cats.Domain.Entities.Participants;
 using System.Globalization;
 using System.Resources;
 
@@ -227,7 +226,12 @@ public static class ConstantString
     public static string EditParticipant => Localize("Edit Participant");
 
     public static string EditAchievement => Localize("Edit Achievement");
+
+    public static string AbandonActivity => Localize("Abandon Activity");
+    public static string AbandonSuccess => Localize("Abandoned successfully");
+
     public static string Finalise => Localize("Finalise");
     public static string OffenderManagerDeliusFeed => Localize("Offender Manager (Delius Feed)");
 
+    public static string EditActivity => Localize("Edit Activity");
 }

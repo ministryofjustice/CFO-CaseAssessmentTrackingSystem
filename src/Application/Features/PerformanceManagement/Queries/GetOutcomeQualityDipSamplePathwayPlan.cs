@@ -72,8 +72,9 @@ public static class GetOutcomeQualityDipSamplePathwayPlan
                 .AsNoTracking()
                 .FirstAsync(cancellationToken);
 
-            var activityQuery = from a in db.Activities
+            var activityQuery = from a in db.Activities                                
                     .Include(a => a.TookPlaceAtLocation)
+                where a.Status == ActivityStatus.ApprovedStatus
                 join t in (
                     from p in db.PathwayPlans
                     where p.ParticipantId == request.ParticipantId
@@ -101,7 +102,7 @@ public static class GetOutcomeQualityDipSamplePathwayPlan
                                  {
                                      TaskId = n.TaskId, 
                                      AdditionalInformation = n.AdditionalInformation,
-                                     ApprovedOn = n.ApprovedOn,
+                                     ApprovedOn = n.CompletedOn,
                                      Category = n.Category,
                                      CommencedOn = n.CommencedOn,
                                      Created = n.Created.Value,
@@ -115,7 +116,7 @@ public static class GetOutcomeQualityDipSamplePathwayPlan
                                  {
                                      TaskId = eta.TaskId,
                                      AdditionalInformation = eta.AdditionalInformation,
-                                     ApprovedOn = eta.ApprovedOn,
+                                     ApprovedOn = eta.CompletedOn,
                                      Category = eta.Category,
                                      CommencedOn = eta.CommencedOn,
                                      Created = eta.Created.Value,
@@ -136,7 +137,7 @@ public static class GetOutcomeQualityDipSamplePathwayPlan
                                  {
                                      TaskId = isw.TaskId,
                                      AdditionalInformation = isw.AdditionalInformation,
-                                     ApprovedOn = isw.ApprovedOn,
+                                     ApprovedOn = isw.CompletedOn,
                                      Category = isw.Category,
                                      CommencedOn = isw.CommencedOn,
                                      Created = isw.Created.Value,
@@ -156,7 +157,7 @@ public static class GetOutcomeQualityDipSamplePathwayPlan
                                  {
                                      TaskId = ea.TaskId,
                                      AdditionalInformation = ea.AdditionalInformation,
-                                     ApprovedOn = ea.ApprovedOn,
+                                     ApprovedOn = ea.CompletedOn,
                                      Category = ea.Category,
                                      CommencedOn = ea.CommencedOn,
                                      Created = ea.Created.Value,

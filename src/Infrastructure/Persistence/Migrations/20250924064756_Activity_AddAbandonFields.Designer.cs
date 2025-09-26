@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250924064756_Activity_AddAbandonFields")]
+    partial class Activity_AddAbandonFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2455,6 +2458,9 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasMaxLength(9)
                         .HasColumnType("nvarchar(9)");
 
+                    b.Property<bool>("ActiveInFeed")
+                        .HasColumnType("bit");
+
                     b.Property<string>("AssessmentJustification")
                         .HasColumnType("nvarchar(max)");
 
@@ -2475,9 +2481,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("date");
 
                     b.Property<DateOnly?>("DateOfFirstConsent")
-                        .HasColumnType("date");
-
-                    b.Property<DateOnly?>("DeactivatedInFeed")
                         .HasColumnType("date");
 
                     b.Property<string>("EditorId")
@@ -2568,46 +2571,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.HasIndex("_enrolmentLocationId");
 
                     b.ToTable("Participant", "Participant");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantActiveStatusHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<bool>("From")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<DateOnly>("OccurredOn")
-                        .HasColumnType("date");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<bool>("To")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.ToTable("ActiveStatusHistory", "Participant");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantContactDetail", b =>
@@ -5482,15 +5445,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Navigation("RightToWorks");
 
                     b.Navigation("Supervisor");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantActiveStatusHistory", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.ParticipantContactDetail", b =>

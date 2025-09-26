@@ -22,7 +22,7 @@ public class QAActivitiesResultsAdvancedSpecification : Specification<Activity>
                 a.Status == ActivityStatus.PendingStatus.Value ||
                 (
                     filter.CommencedEnd.HasValue == false &&
-                    a.ApprovedOn >= DateTime.UtcNow.AddMonths(-1)
+                    a.CompletedOn >= DateTime.UtcNow.AddMonths(-1)
                 )
              )
              .Where(a => a.Status == filter.Status, filter.Status is not null)
@@ -32,7 +32,7 @@ public class QAActivitiesResultsAdvancedSpecification : Specification<Activity>
 
         Query
             .OrderByDescending(a => a.Status == ActivityStatus.PendingStatus.Value)
-            .ThenByDescending(a => a.ApprovedOn)
+            .ThenByDescending(a => a.CompletedOn)
             .ThenBy(a => a.LastModified);
     }
 }

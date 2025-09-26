@@ -20,9 +20,15 @@ public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMess
             return;
         }
 
-        if (activity.ApprovedOn is null)
+        if (activity.CompletedOn is null)
         {
             // we do not record "payment" events if the activity is not approved
+            return;
+        }
+
+        if (activity.Status==ActivityStatus.AbandonedStatus)
+        {
+            // we do not record "payment" events if the activity has been abandoned
             return;
         }
 
@@ -95,5 +101,4 @@ public class RecordActivityPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMess
         unitOfWork.DbContext.ActivityPayments.Add(payment);
         await unitOfWork.SaveChangesAsync(CancellationToken.None);
     }
-
 }

@@ -1,5 +1,5 @@
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Activities;
-using Cfo.Cats.Domain.Exceptions;
 
 namespace Cfo.Cats.Domain.Entities.ManagementInformation;
 
@@ -13,14 +13,19 @@ public class EmploymentPayment
 
     public static EmploymentPayment CreateNonPayableEmploymentPayment(EmploymentActivity activity, IneligibilityReason ineligibilityReason)
     {
-        if (activity.ApprovedOn is null)
+        if (activity.CompletedOn is null)
         {
             throw new ArgumentException("Cannot record MI for an unapproved item");
         }
 
+        if (activity.Status == ActivityStatus.AbandonedStatus)
+        {
+            throw new ArgumentException("Cannot record MI for an abandoned item");
+        }
+
         var dates = new[]
         {
-            activity.ApprovedOn.Value,
+            activity.CompletedOn.Value,
             new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
         };
 
@@ -31,7 +36,7 @@ public class EmploymentPayment
             CommencedDate = activity.CommencedOn.Date,
             ActivityInput = activity.Created!.Value,
             ActivityId = activity.Id,
-            ActivityApproved = activity.ApprovedOn.Value.Date,
+            ActivityApproved = activity.CompletedOn.Value.Date,
             ParticipantId = activity.ParticipantId,
             ContractId = activity.TookPlaceAtContract.Id,
             LocationId = activity.TookPlaceAtLocation.Id,
@@ -46,14 +51,19 @@ public class EmploymentPayment
     public static EmploymentPayment CreateEmploymentPayment(EmploymentActivity activity,
         DateTime enrolmentApprovalDate)
     {
-        if (activity.ApprovedOn is null)
+        if (activity.CompletedOn is null)
         {
             throw new ArgumentException("Cannot record MI for an unapproved item");
         }
 
+        if (activity.Status == ActivityStatus.AbandonedStatus)
+        {
+            throw new ArgumentException("Cannot record MI for an abandoned item");
+        }
+
         var dates = new[]
         {
-            activity.ApprovedOn!.Value.Date,
+            activity.CompletedOn!.Value.Date,
             enrolmentApprovalDate.Date,
             new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
         };
@@ -65,7 +75,7 @@ public class EmploymentPayment
             CommencedDate = activity.CommencedOn.Date,
             ActivityInput = activity.Created!.Value,
             ActivityId = activity.Id,
-            ActivityApproved = activity.ApprovedOn.Value.Date,
+            ActivityApproved = activity.CompletedOn.Value.Date,
             ParticipantId = activity.ParticipantId,
             ContractId = activity.TookPlaceAtContract.Id,
             LocationId = activity.TookPlaceAtLocation.Id,
@@ -75,7 +85,6 @@ public class EmploymentPayment
             IneligibilityReason = null,
             PaymentPeriod = dates.Max()
         };
-
     }
 
     public required Guid Id { get; set; } 
@@ -102,5 +111,4 @@ public class EmploymentPayment
     public required string? IneligibilityReason { get; set; }
 
     public required DateTime PaymentPeriod { get; set; }
-
 }

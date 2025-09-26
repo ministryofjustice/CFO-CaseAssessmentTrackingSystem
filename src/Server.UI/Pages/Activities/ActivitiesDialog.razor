@@ -1,4 +1,5 @@
 ﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Features.Activities.Commands
 @using Cfo.Cats.Application.Features.Activities.DTOs
 @using Cfo.Cats.Application.Features.Activities.Queries
 @using Cfo.Cats.Application.Features.Locations.DTOs
@@ -118,11 +119,20 @@
                                         <MudChip Color="color" Size="Size.Small">@activity.Status.Name</MudChip>
                                     </div>
                                 </div>
+
                                 @if (activity.Status.AllowsChanges)
                                 {
-                                    <MudTooltip Text="Edit">
-                                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" OnClick="() => Edit(activity)" />
-                                    </MudTooltip>
+                                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                                                Dense="true"
+                                                EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+
+                                        <MudMenuItem OnClick="() => Edit(activity)">
+                                            @ConstantString.EditActivity
+                                        </MudMenuItem>
+                                        <MudMenuItem OnClick="() => Abandon(activity)">
+                                            @ConstantString.AbandonActivity
+                                        </MudMenuItem>                                                                                
+                                    </MudMenu>
                                 }
                             </div>
                         </ChildContent>
@@ -244,8 +254,34 @@
 
         if (result!.Canceled == false)
         {
-            // await OnChange.InvokeAsync();
+            await OnRefresh();
         }
     }
 
+    async Task Abandon(ActivitySummaryDto activity)
+    {
+        Dialog.Close();
+
+        var parameters = new DialogParameters<AbandonActivityDialog>()
+        {
+            { x => x.model, new AbandonActivity.Command()
+            {
+                ActivityId= activity.Id,
+                AbandonJustification="",
+                AbandonReason=ActivityAbandonReason.Other,
+                AbandonedBy=CurrentUser.UserId!
+            } }            
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, BackdropClick = false };
+
+        var dialog = await DialogService.ShowAsync<AbandonActivityDialog>("Abandon Activity/ETE", parameters, options);
+
+         var result = await dialog.Result;
+
+        if (result!.Canceled == false)
+        {
+            await OnRefresh();
+        }
+    }
 }

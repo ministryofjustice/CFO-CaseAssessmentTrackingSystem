@@ -26,7 +26,8 @@ public static class GetPreviousSameTypeActivitiesById
                 .Where(a => a.ParticipantId == activity!.ParticipantId
                             && a.Type == activity!.Type
                             && a.Id != request.Id
-                            && a.ApprovedOn != null)
+                            && a.CompletedOn != null
+                            && a.Status == ActivityStatus.ApprovedStatus)
                 .ToListAsync(cancellationToken);
 
             List<ActivityQaDetailsDto> listOfPreviousActivities = new List<ActivityQaDetailsDto>();
