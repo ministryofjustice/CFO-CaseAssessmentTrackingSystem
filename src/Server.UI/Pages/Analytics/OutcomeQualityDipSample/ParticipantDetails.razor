@@ -70,6 +70,9 @@
                     <MudTabPanel Text="Assessments">
                         <OutcomeQualityDipSampleAssessmentComponent ParticipantId="@_participant.ParticipantId" />
                     </MudTabPanel>
+                    <MudTabPanel Text="Risk">
+                        <Cfo.Cats.Server.UI.Pages.Risk.RiskComponents.RiskHistory ParticipantId="@_participant.ParticipantId" />
+                    </MudTabPanel>
                     <MudTabPanel Text="Notes">
                         <Cfo.Cats.Server.UI.Pages.Participants.Components.CaseNotes ParticipantId="@_participant.ParticipantId" />
                     </MudTabPanel>
