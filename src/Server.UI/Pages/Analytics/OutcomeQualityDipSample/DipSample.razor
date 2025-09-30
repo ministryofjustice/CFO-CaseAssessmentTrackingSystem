@@ -38,7 +38,7 @@
             <MudForm Model="Query" FieldChanged="RefreshAsync" Style="display: contents">
                 <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
                 <MudText Typo="Typo.caption" Class="mr-2">Sample</MudText>
-                <MudSwitch Label="Only show in progress" Color="Color.Primary" Class="mr-2" @bind-Value="Query.HideReviewed" />
+                <MudSwitch T="bool" Label="Only show in progress" Color="Color.Primary" Class="mr-2" @bind-Value="_hideReviewed" />
                 <MudSpacer />
                 <MudStack>
                     <MudStack Row="true" Class="gap-0">

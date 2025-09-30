@@ -23,6 +23,7 @@ public partial class DipSample
     private GetOutcomeQualityDipSampleParticipants.Query Query { get; set; } = default!;
 
     private DipSampleSummaryDto? _sample;
+    private bool _hideReviewed = false;
 
     protected override Task OnInitializedAsync() => RefreshAsync();
 
@@ -38,6 +39,7 @@ public partial class DipSample
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true
                 ? SortDirection.Descending.ToString()
                 : SortDirection.Ascending.ToString();
+            Query.HideReviewed = _hideReviewed;
 
             var result = await GetNewMediator().Send(Query);
 
