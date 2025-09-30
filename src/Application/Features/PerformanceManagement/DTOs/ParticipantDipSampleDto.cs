@@ -19,6 +19,7 @@ public class ParticipantDipSampleDto
 
     public required string CurrentLocation { get; init; }
 
+    public string? EnrolmentJustification { get; init; }
     public required string ContractName { get; init; }
 
     public required DateTime PeriodFrom { get; init; }

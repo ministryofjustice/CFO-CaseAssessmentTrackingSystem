@@ -38,6 +38,7 @@ public static class GetOutcomeQualityDipSampleParticipant
                     SupportWorker = p.Owner!.DisplayName,
                     CurrentLocation = p.CurrentLocation!.Name,
                     EnrolmentLocation = p.EnrolmentLocation!.Name,
+                    EnrolmentJustification = p.AssessmentJustification,
                     ConsentDate = p.DateOfFirstConsent!.Value,
                     CsoAnswer = dsp.CsoIsCompliant,
                     CsoComments = dsp.CsoComments,
