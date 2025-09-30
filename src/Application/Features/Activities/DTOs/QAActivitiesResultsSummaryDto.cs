@@ -11,7 +11,6 @@ public class QAActivitiesResultsSummaryDto
     public required ActSummaryNote[] QA1 { get; set; }
     public required ActSummaryNote[] QA2 { get; set; }
     public required ActSummaryNote[] Escalations { get; set; }
-   // public required Guid TaskId { get; set; }
     public required DateTime? Created { get; set; }
     public required DateTime? CommencedOn { get; set; }
     public required DateTime? ApprovedOn { get; set; }
