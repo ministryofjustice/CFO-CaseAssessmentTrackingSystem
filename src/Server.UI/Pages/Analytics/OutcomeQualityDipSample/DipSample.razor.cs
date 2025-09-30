@@ -59,7 +59,7 @@ public partial class DipSample
 
     private async Task RefreshAsync()
     {
-        Query = new()
+        Query ??= new()
         {
             DipSampleId = SampleId
         };
