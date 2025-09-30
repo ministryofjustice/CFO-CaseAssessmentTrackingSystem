@@ -206,7 +206,7 @@ public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
                 bool beenInCommunityAfter = false;
 
                 foreach (var h in Locations.Where(h => h.From < ActualReleaseDate!.ToDateTime(TimeOnly.MinValue)
-                                 .AddDays(28)) // add 14 days to allow for DMS sync issues
+                                 .AddDays(28)) // add 28 days to allow for DMS sync issues
                              .OrderBy(h => h.From))
                 {
                     if (h.LocationId == CustodyLocationId)
