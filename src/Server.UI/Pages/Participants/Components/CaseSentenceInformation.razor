@@ -9,8 +9,8 @@
 {
     <MudForm Model="Model" ReadOnly>
         <MudGrid Class="pa-3" Spacing="4">
-            <MudItem sm="12" md="4" >
-                <MudCard Style="Height: 50%" Class="mb-2">
+            <MudItem sm="12" md="4" Style="height: 100%; display: flex; flex-direction: column;">
+                <MudCard Class="mb-4" Style="flex-grow: 1; overflow-y: auto;">
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">Record</MudText>
@@ -37,7 +37,7 @@
                         }
                     </MudCardContent>
                 </MudCard>
-                <MudCard Style="Height: 50%">
+                <MudCard Style="flex-grow: 1; overflow-y: auto;">
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">@ConstantString.OffenderManagerDeliusFeed</MudText>
