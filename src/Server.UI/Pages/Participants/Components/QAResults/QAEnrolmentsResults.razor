@@ -1,10 +1,13 @@
-﻿@using Cfo.Cats.Domain.Common.Enums
+﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 @using Humanizer
 
 @inherits CatsComponentBase
-        
+
+@inject IUserService UserService
+
 <style>
     .mud-list-item:focus,
     .mud-list-item:hover {
@@ -87,7 +90,7 @@
                                                         </MudText>
                                                     }                                                    
                                                     <MudText Typo="Typo.body2">
-                                                        Added on @created.ToShortDateOrEmptyString() at @created.ToShortDateOrEmptyString() (@created.Humanize())
+														Added on @created.ToShortDateOrEmptyString() at @created.ToShortDateOrEmptyString() (@created.Humanize()) by @UserService.GetDisplayName(enrolment.SubmittedBy)
                                                     </MudText>
                                   @*                   <MudText Typo="Typo.body2">
                                                         Took place on @commencedOn.ToShortDateOrEmptyString() (@(commencedOn == today ? "today" : commencedOn.Humanize()))

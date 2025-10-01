@@ -30,6 +30,11 @@ public static class QAEnrolmentsResultsWithPagination
             var query =
            from p in db.Participants.ApplySpecification(request.Specification)
 
+           let firstEnrolment = db.ParticipantEnrolmentHistories
+                .Where(e => e.ParticipantId == p.Id)
+                .OrderBy(e => e.Created)
+                .FirstOrDefault()
+
            let lastEnrolment = db.ParticipantEnrolmentHistories
                .Where(e => e.ParticipantId == p.Id)
                .OrderByDescending(e => e.Created)
@@ -39,11 +44,7 @@ public static class QAEnrolmentsResultsWithPagination
                .Where(e => e.ParticipantId == p.Id 
                         && e.Created < lastEnrolment.Created)
                .OrderByDescending(e => e.Created)
-               .FirstOrDefault()
-
-           let firstCreated = db.ParticipantEnrolmentHistories
-               .Where(e => e.ParticipantId == p.Id)
-               .Min(e => (DateTime?)e.Created)
+               .FirstOrDefault()                         
 
            where (
                     lastEnrolment.EnrolmentStatus == EnrolmentStatus.EnrollingStatus.Value
@@ -60,10 +61,20 @@ public static class QAEnrolmentsResultsWithPagination
             {
                 ParticipantId = p.Id,
                 Participant = $"{p.FirstName} {p.LastName}",
-                Status = lastEnrolment.EnrolmentStatus,
-                Created = lastEnrolment.Created,
-                CommencedOn = firstCreated,
+
+                //submitted/created - firstenrolment date
+                Created = firstEnrolment.Created,
+                CommencedOn = firstEnrolment.Created,
+
+//                SubmittedBy = request.JustMyParticipants ? "You" : $"{firstEnrolment.CreatedBy})",
+                SubmittedBy =  $"{firstEnrolment.CreatedBy})",
+
+                //approved/returned lastenrolment.created
                 ApprovedOn = lastEnrolment.Created,
+                
+                //correct
+                Status = lastEnrolment.EnrolmentStatus,                             
+               
                 LastModified = p.LastModified, //this is wrong
                 //EnrolmentCommenced = firstCreated,
                 //LastEnrolment = lastEnrolment
@@ -120,11 +131,9 @@ public static class QAEnrolmentsResultsWithPagination
                                    n.CreatedByUser.TenantId!,
                                    n.CreatedByUser.TenantName!,
                                    n.Created!.Value
-                              )).ToArray(),
+                              )).ToArray()
 
-                SubmittedBy = request.JustMyParticipants ? "You" : $"{ lastEnrolment.CreatedByUser.DisplayName})"
                 
-                // $"{lastEnrolment.CreatedBy.DisplayName!} ({lastEnrolment.CreatedBy.TenantName})"
             };
 
 #pragma warning restore CS8602

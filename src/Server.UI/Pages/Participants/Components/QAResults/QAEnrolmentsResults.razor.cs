@@ -3,11 +3,10 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Application.Features.QualityAssurance.Queries;
-using Cfo.Cats.Domain.Common.Enums;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults;
 
-public partial class QAEnrolmentsResults
+public partial class QAEnrolmentsResults 
 {
     private IEnumerable<LocationDto> _locations = [];
     private PaginatedData<QAEnrolmentsResultsSummaryDto>? _enrolments;
