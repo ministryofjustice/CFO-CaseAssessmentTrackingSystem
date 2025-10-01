@@ -73,8 +73,7 @@ public static class GetOutcomeQualityDipSamplePathwayPlan
                 .FirstAsync(cancellationToken);
 
             var activityQuery = from a in db.Activities                                
-                    .Include(a => a.TookPlaceAtLocation)
-                where a.Status == ActivityStatus.ApprovedStatus
+                    .Include(a => a.TookPlaceAtLocation)                
                 join t in (
                     from p in db.PathwayPlans
                     where p.ParticipantId == request.ParticipantId
