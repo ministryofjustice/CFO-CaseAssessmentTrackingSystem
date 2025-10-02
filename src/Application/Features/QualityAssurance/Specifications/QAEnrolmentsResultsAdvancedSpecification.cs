@@ -13,7 +13,8 @@ public class QAEnrolmentsResultsAdvancedSpecification : Specification<Participan
                 .Where(e => e.EnrolmentLocation.Id == filter.Location!.Id, filter.Location is not null)
                 .Where(e => e.EnrolmentStatus == filter.Status, filter.Status is not null)
                 .Where(e => e.OwnerId == filter.UserProfile.UserId, filter.JustMyParticipants);
-
+        // Order by enrolment status, with 'Approved' appearing towards the bottom of the list
+        Query   .OrderBy(x => x.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value ? 1 : 0)            
         Query   .OrderBy(x => x.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value ? 1 : 0)            
                 .ThenByDescending(x => x.Created)
                 .ThenBy(x => x.LastModified);
