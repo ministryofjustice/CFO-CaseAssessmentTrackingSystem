@@ -138,8 +138,11 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
 
             if (participant.CsoIsCompliant.IsAnswer && (participant.CsoIsCompliant.IsAccepted == participant.CpmIsCompliant.IsAccepted))
             {
-                participant.FinalAnswer(participant.CpmIsCompliant, participant.CpmComments!, participant.CpmReviewedBy!,
-                    DateTime.UtcNow);
+                var finalAnswer = participant.CpmIsCompliant.IsAccepted ? 
+                    ComplianceAnswer.AutoCompliant : 
+                    ComplianceAnswer.AutoNotCompliant;
+
+                participant.FinalAnswer(finalAnswer, participant.CpmComments!, participant.CpmReviewedBy!, DateTime.UtcNow);
             }
         }
 
