@@ -26,7 +26,7 @@ public static class QAEnrolmentsResultsWithPagination
             var CFOTenantNames = new HashSet<string> { "CFO", "CFO Evolution" };
 
             var cutoffDate = DateTime.UtcNow.AddDays(-30);
-
+            
 #pragma warning disable CS8602
             var query =
 
@@ -82,7 +82,7 @@ public static class QAEnrolmentsResultsWithPagination
 
                     PQA = (from pqa in db.EnrolmentPqaQueue
                            from n in pqa.Notes
-                           where pqa.ParticipantId == p.Id
+                           where pqa.ParticipantId == p.Id                                                
                            select new EnrolmentSummaryNote(
                                n.Message,
                                CFOTenantNames.Contains(n.CreatedByUser!.TenantName!) && hideUser
@@ -96,6 +96,7 @@ public static class QAEnrolmentsResultsWithPagination
                     QA1 = (from qa1 in db.EnrolmentQa1Queue
                            from n in qa1.Notes
                            where qa1.ParticipantId == p.Id
+                           && (n.IsExternal || request.IncludeInternalNotes)
                            select new EnrolmentSummaryNote(
                                 n.Message,
                                 CFOTenantNames.Contains(n.CreatedByUser!.TenantName!) && hideUser
@@ -109,6 +110,7 @@ public static class QAEnrolmentsResultsWithPagination
                     QA2 = (from qa2 in db.EnrolmentQa2Queue
                            from n in qa2.Notes
                            where qa2.ParticipantId == p.Id
+                           && (n.IsExternal || request.IncludeInternalNotes)
                            select new EnrolmentSummaryNote(
                                  n.Message,
                                  CFOTenantNames.Contains(n.CreatedByUser!.TenantName!) && hideUser
@@ -122,6 +124,7 @@ public static class QAEnrolmentsResultsWithPagination
                     Escalations = (from esc in db.EnrolmentEscalationQueue
                                    from n in esc.Notes
                                    where esc.ParticipantId == p.Id
+                                   && (n.IsExternal || request.IncludeInternalNotes)
                                    select new EnrolmentSummaryNote(
                                        n.Message,
                                        CFOTenantNames.Contains(n.CreatedByUser!.TenantName!) && hideUser

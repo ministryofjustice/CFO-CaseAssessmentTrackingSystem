@@ -9,9 +9,10 @@ public class QAEnrolmentsResultsAdvancedFilter : PaginationFilter
     public LocationDto? Location { get; set; }
     public EnrolmentStatus? Status { get; set; }    
     public bool JustMyParticipants { get; set; }
+    public bool IncludeInternalNotes { get; set; }
 }
 
 public enum QAEnrolmentsResultsListView
 {
-    [Description("Default")] Default = 0,
+    [Description("Default")] Default = 0
 }

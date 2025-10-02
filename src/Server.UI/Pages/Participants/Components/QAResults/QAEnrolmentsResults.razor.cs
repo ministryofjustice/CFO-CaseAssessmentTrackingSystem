@@ -3,7 +3,10 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Application.Features.QualityAssurance.Queries;
+using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Common.Enums;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults;
 
@@ -14,6 +17,9 @@ public partial class QAEnrolmentsResults
     private bool _loading;
 
     public required QAEnrolmentsResultsWithPagination.Query Model { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public bool JustMyParticipants { get; set; } = false;
@@ -26,13 +32,19 @@ public partial class QAEnrolmentsResults
 
     protected override async Task OnInitializedAsync()
     {
+
+        var state = await AuthState;
+
+        bool includeInternalNotes = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
+
         Model = new QAEnrolmentsResultsWithPagination.Query()
         {
             UserProfile = CurrentUser,
             PageSize = 5,
             OrderBy = "Created",
             SortDirection = $"{SortDirection.Descending}",
-            JustMyParticipants = JustMyParticipants
+            JustMyParticipants = JustMyParticipants,
+            IncludeInternalNotes = includeInternalNotes
         };
                 
         try
