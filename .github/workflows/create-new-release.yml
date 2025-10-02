@@ -35,7 +35,7 @@ jobs:
 
     # Create zip archive of build artifacts for release
     - name: Create Build Artifacts Archive
-      if: success() && github.ref == 'refs/heads/main'
+      if: success()
       run: |
         cd ./artifacts
         zip -r ../artifacts.zip .
@@ -43,7 +43,7 @@ jobs:
 
     # Generate tag and release names with daily build numbers
     - name: Set Release Version
-      if: success() && github.ref == 'refs/heads/main'
+      if: success()
       id: set_release_version
       run: |
         # Get current date in YYYY.MM.DD format
@@ -72,9 +72,9 @@ jobs:
         
         echo "Generated tag: $TAG_NAME"
 
-    # Create a new release on main
+    # Create a new release
     - name: Create Release
-      if: success() && github.ref == 'refs/heads/main'
+      if: success()
       id: create_release
       uses: softprops/action-gh-release@v1
       env:
