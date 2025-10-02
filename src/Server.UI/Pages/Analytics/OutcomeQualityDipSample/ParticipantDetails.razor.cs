@@ -120,10 +120,11 @@ public partial class ParticipantDetails
                         ComplianceAnswer = _participant.CsoAnswer,
                         HasClearParticipantJourney = _participant.HasClearParticipantJourney,
                         ShowsTaskProgression = _participant.ShowsTaskProgression,
-                        ActivitiesLinkToTasks = _participant.ActivitiesLinkToTasks,
                         TTGDemonstratesGoodPRIProcess = _participant.TTGDemonstratesGoodPRIProcess,
                         SupportsJourney = _participant.SupportsJourney,
-                        AlignsWithDoS = _participant.AlignsWithDoS
+                        AlignsWithDoS = _participant.AlignsWithDoS,
+                        TTGObjectiveTasks = _participant.TtgObjectiveTasks,
+                        PreReleasePractical = _participant.PreReleasePractical
                     };
 
                     SubmitFinalCommand = SubmitFinalCommand with

@@ -27,10 +27,11 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
     public string LocationType { get; private set; }
     public DipSampleAnswer HasClearParticipantJourney { get; private set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer ShowsTaskProgression { get; private set; } = DipSampleAnswer.NotAnswered;
-    public DipSampleAnswer ActivitiesLinkToTasks { get; private set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer TTGDemonstratesGoodPRIProcess { get; private set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer SupportsJourney { get; private set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer AlignsWithDoS { get; private set; } = DipSampleAnswer.NotAnswered;
+    public DipSampleAnswer PreReleasePractical { get; private set; } = DipSampleAnswer.NotAnswered;
+    public DipSampleAnswer TtgObjectiveTasks { get; private set; } = DipSampleAnswer.NotAnswered;
 
     public ComplianceAnswer CsoIsCompliant { get; private set; } = ComplianceAnswer.NotAnswered;
     public DateTime? CsoReviewedOn { get; private set; }
@@ -51,26 +52,24 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
     public OutcomeQualityDipSampleParticipant CsoAnswer(
         DipSampleAnswer clearJourney,
         DipSampleAnswer taskProgression,
-        DipSampleAnswer linksToTasks,
         DipSampleAnswer ttgDemonstratesGoodPRIProcess,
         DipSampleAnswer supportsJourney,
         DipSampleAnswer alignsWithDoS,
+        DipSampleAnswer preReleasePractical,
+        DipSampleAnswer ttgObjectiveTasks,
         ComplianceAnswer isCompliant,
         string comments,
         string reviewBy,
-        DateTime reviewedOn
-        )
+        DateTime reviewedOn)
     {
 
         if (FinalIsCompliant.IsAnswer)
         {
             throw new ApplicationException("Cannot answer a closed sample");
-        }
-        
+        }        
         
         HasClearParticipantJourney = clearJourney;
         ShowsTaskProgression = taskProgression;
-        ActivitiesLinkToTasks = linksToTasks;
         TTGDemonstratesGoodPRIProcess = ttgDemonstratesGoodPRIProcess;
         SupportsJourney = supportsJourney;
         AlignsWithDoS = alignsWithDoS;
@@ -78,6 +77,8 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
         CsoComments = comments;
         CsoReviewedBy = reviewBy;
         CsoReviewedOn = reviewedOn;
+        PreReleasePractical = preReleasePractical;
+        TtgObjectiveTasks = ttgObjectiveTasks;
 
         AddDomainEvent(new OutcomeQualityDipSampleParticipantScoredDomainEvent(DipSampleId, reviewBy, isCompliant.IsAccepted));
         

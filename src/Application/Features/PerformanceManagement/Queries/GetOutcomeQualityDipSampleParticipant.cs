@@ -44,7 +44,6 @@ public static class GetOutcomeQualityDipSampleParticipant
                     CsoComments = dsp.CsoComments,
                     HasClearParticipantJourney = dsp.HasClearParticipantJourney,
                     ShowsTaskProgression = dsp.ShowsTaskProgression,
-                    ActivitiesLinkToTasks = dsp.ActivitiesLinkToTasks,
                     TTGDemonstratesGoodPRIProcess = dsp.TTGDemonstratesGoodPRIProcess,
                     SupportsJourney = dsp.SupportsJourney,
                     AlignsWithDoS = dsp.AlignsWithDoS,
@@ -55,6 +54,8 @@ public static class GetOutcomeQualityDipSampleParticipant
                     PeriodFrom = dp.PeriodFrom,
                     FinalAnswer = dsp.FinalIsCompliant,
                     FinalComments = dsp.FinalComments,
+                    PreReleasePractical = dsp.PreReleasePractical,
+                    TtgObjectiveTasks = dsp.TtgObjectiveTasks
                 };
             
             var result = await participantQuery.SingleAsync(cancellationToken);
