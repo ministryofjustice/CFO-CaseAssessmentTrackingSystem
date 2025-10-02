@@ -1,4 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
@@ -40,7 +40,7 @@ public static class QAActivitiesResultsWithPagination
                             AdditionalInformation = a.AdditionalInformation!,
                             PQA = (from pqa in db.ActivityPqaQueue
                                    from n in pqa.Notes
-                                   where pqa.ActivityId == a.Id 
+                                   where pqa.ActivityId == a.Id
                                    select new ActSummaryNote(
                                        n.Message,
                                        CFOTenantNames.Contains(n.CreatedByUser.TenantName!) && hideUser 
@@ -53,7 +53,7 @@ public static class QAActivitiesResultsWithPagination
                                                                         
                             QA1 = (from qa1 in db.ActivityQa1Queue 
                                    from n in qa1.Notes
-                                   where qa1.ActivityId == a.Id
+                                   where qa1.ActivityId == a.Id && (n.IsExternal || request.IncludeInternalNotes)
                                    select new ActSummaryNote(
                                         n.Message,
                                         CFOTenantNames.Contains(n.CreatedByUser.TenantName!) && hideUser
@@ -66,7 +66,7 @@ public static class QAActivitiesResultsWithPagination
 
                             QA2 = (from qa2 in db.ActivityQa2Queue 
                                    from n in qa2.Notes
-                                   where qa2.ActivityId == a.Id
+                                   where qa2.ActivityId == a.Id && (n.IsExternal || request.IncludeInternalNotes)
                                    select new ActSummaryNote(
                                          n.Message,
                                          CFOTenantNames.Contains(n.CreatedByUser.TenantName!) && hideUser
@@ -79,7 +79,7 @@ public static class QAActivitiesResultsWithPagination
 
                             Escalations = (from esc in db.ActivityEscalationQueue 
                                            from n in esc.Notes
-                                           where esc.ActivityId == a.Id
+                                           where esc.ActivityId == a.Id && (n.IsExternal || request.IncludeInternalNotes)
                                            select new ActSummaryNote(
                                                n.Message,
                                                CFOTenantNames.Contains(n.CreatedByUser.TenantName!) && hideUser
