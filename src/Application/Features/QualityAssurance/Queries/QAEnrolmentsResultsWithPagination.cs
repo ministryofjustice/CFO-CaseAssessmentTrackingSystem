@@ -106,7 +106,7 @@ public static class QAEnrolmentsResultsWithPagination
                                 n.Created!.Value
                             )).ToArray(),
 
-                    QA2 = (from qa2 in db.EnrolmentPqaQueue
+                    QA2 = (from qa2 in db.EnrolmentQa2Queue
                            from n in qa2.Notes
                            where qa2.ParticipantId == p.Id
                            select new EnrolmentSummaryNote(
