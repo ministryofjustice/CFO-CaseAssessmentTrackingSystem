@@ -7,8 +7,6 @@ public class QAEnrolmentsResultsAdvancedSpecification : Specification<Participan
 {
     public QAEnrolmentsResultsAdvancedSpecification(QAEnrolmentsResultsAdvancedFilter filter)
     {        
-        var x = filter.Location;
-
         Query   .Where(e => e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
                 .Where(e => e.EnrolmentLocation.Id == filter.Location!.Id, filter.Location is not null)
                 .Where(e => e.EnrolmentStatus == filter.Status, filter.Status is not null)
