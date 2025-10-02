@@ -9,19 +9,15 @@ public class QAEnrolmentsResultsSummaryDto
     public required EnrolmentSummaryNote[] QA1 { get; set; }
     public required EnrolmentSummaryNote[] QA2 { get; set; }
     public required EnrolmentSummaryNote[] Escalations { get; set; }
-    public required DateTime? Created { get; set; }
-    public required DateTime? CommencedOn { get; set; }
-    public required DateTime? ApprovedOn { get; set; }
-    public required DateTime? LastModified { get; set; }
-
+    public required DateTime? OriginallySubmitted { get; set; }
+    public required DateTime? SubmittedOn { get; set; }
+    public required DateTime? CompletedOn { get; set; }
+    
     public required string SubmittedBy { get; set; }
 
+    public required string TookPlaceAtLocationName { get; set; }
+
     public EnrolmentQaNoteDto[] Notes { get; set; } = [];
-
-    //[Description("Additional Information")]
-    //public required string AdditionalInformation { get; set; }
-
-    //public required string TookPlaceAtLocationName { get; set; }
 
     public EnrolmentSummaryNote[] GetNotes()
     {
@@ -30,6 +26,5 @@ public class QAEnrolmentsResultsSummaryDto
 
     public record EnrolmentSummaryNote(string Message, string CreatedBy, string TenantId, string TenantName, DateTime Created)
     {
-
     }
 }

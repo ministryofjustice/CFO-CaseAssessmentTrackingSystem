@@ -3,6 +3,7 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Application.Features.QualityAssurance.Queries;
+using Cfo.Cats.Domain.Common.Enums;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults;
 
@@ -67,20 +68,13 @@ public partial class QAEnrolmentsResults
         return OnRefresh();
     }
 
-    private Task OnDateRangeChanged(DateRange range)
+    private Task OnLocationChanged() => OnRefresh();
+
+    private Task OnExcludeEnrolmentsNotInProgress(bool excludeEnrolment)
     {
-        Model.CommencedStart = range.Start;
-        Model.CommencedEnd = range.End;
+        Model.Status = excludeEnrolment ? EnrolmentStatus.EnrollingStatus : null; 
         return OnRefresh();
     }
-
-    private Task OnLocationChanged() => OnRefresh();
-       
-    //private Task OnExcludeNotInProgress(bool exclude)
-    //{
-    //    Model.Status = exclude ? EnrolmentStatus.ApprovedStatus : null;
-    //    return OnRefresh();
-    //}
 
     private void EditParticipant(string participantId)
     {

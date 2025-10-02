@@ -32,12 +32,6 @@
                     <MudListSubheader>
                         <MudGrid>
                             <MudItem xs="12">
-                                <MudDateRangePicker Label="Commenced from/to range"
-                                                DateRangeChanged="OnDateRangeChanged"
-                                                Clearable
-                                                MaxDate="DateTime.Today" />
-                           </MudItem>
-                            <MudItem xs="12">
                                 <MudSelect @bind-Value="Model.Location"
                                             @bind-Value:after="OnLocationChanged"
                                             Label="Location"
@@ -49,7 +43,7 @@
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="12">
-                             @*    <MudCheckBox T="bool" ValueChanged="OnExcludeNotInProgress" Label="Hide enrolments that don't require my attention" /> *@
+                                 <MudCheckBox T="bool" ValueChanged="OnExcludeEnrolmentsNotInProgress" Label="Hide enrolments that don't require my attention" /> 
                             </MudItem>
                         </MudGrid>
                     </MudListSubheader>
@@ -57,8 +51,7 @@
                     {
                         foreach (var enrolment in _enrolments.Items)
                         {
-                            var created = enrolment.Created;
-                            var commencedOn = enrolment.CommencedOn;
+                            var created = enrolment.OriginallySubmitted;
                             var today = DateTime.Today.ToLocalTime();
                             var notes = enrolment.GetNotes();
 
@@ -71,31 +64,27 @@
                                                     Participant: @enrolment.Participant
                                                     @enrolment.ParticipantId
                                                 </MudText>
-                                                <div class="d-flex gap-2 align-center">
-                                                    @* <MudChip T="string" Size="MudBlazor.Size.Small" Text="@activity.Definition.Type.Name" Color="Color.Secondary" /> *@
+                                                <div class="d-flex gap-2 align-center">                                                    
                                                     <MudText Typo="Typo.body2">
-                                                        Submitted by: @enrolment.SubmittedBy
+                                                        Submitted by: @UserService.GetDisplayName(@enrolment.SubmittedBy) on @enrolment.SubmittedOn.
                                                     </MudText>
 
                                                     @if (enrolment.Status == EnrolmentStatus.ApprovedStatus)
                                                     {
                                                         <MudText Typo="Typo.body2">
-                                                            Approved On:  @enrolment.ApprovedOn
+                                                            Approved On:  @enrolment.CompletedOn.
                                                         </MudText>
                                                     }
                                                     else
                                                     {
                                                         <MudText Typo="Typo.body2">
-                                                            Returned On:  @enrolment.LastModified
+															Returned On:  @enrolment.CompletedOn.
                                                         </MudText>
-                                                    }                                                    
+                                                    }     
+													
                                                     <MudText Typo="Typo.body2">
-														Added on @created.ToShortDateOrEmptyString() at @created.ToShortDateOrEmptyString() (@created.Humanize()) by @UserService.GetDisplayName(enrolment.SubmittedBy)
-                                                    </MudText>
-                                  @*                   <MudText Typo="Typo.body2">
-                                                        Took place on @commencedOn.ToShortDateOrEmptyString() (@(commencedOn == today ? "today" : commencedOn.Humanize()))
-                                                        at @activity.TookPlaceAtLocationName
-                                                    </MudText> *@
+														Originally submitted on @created.ToShortDateOrEmptyString() (@created.Humanize()) at @enrolment.TookPlaceAtLocationName.
+                                                    </MudText>                             
                                                     @{
                                                         Color color = enrolment.Status switch
                                                         {
@@ -145,15 +134,7 @@
                                                 </MudTooltip>
                                             }
                                         }
-                                    </MudListItem>
-                                    <MudDivider />
-                                    <MudListItem>
-                               @*          <MudTextField Label="@activity.GetMemberDescription(x => x.AdditionalInformation)"
-                                                        Value="@activity.AdditionalInformation"
-                                                        Lines="5"
-                                                        Class="mt-0"
-                                                        Disabled /> *@
-                                    </MudListItem>
+                                    </MudListItem>                                    
                                 </NestedList>
                             </MudListItem>
                             <MudDivider />

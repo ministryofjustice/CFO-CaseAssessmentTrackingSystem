@@ -2,6 +2,7 @@
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Application.Features.QualityAssurance.Specifications;
 using Cfo.Cats.Application.SecurityConstants;
+
 using static Cfo.Cats.Application.Features.QualityAssurance.DTOs.QAEnrolmentsResultsSummaryDto;
 
 namespace Cfo.Cats.Application.Features.QualityAssurance.Queries;
@@ -28,123 +29,119 @@ public static class QAEnrolmentsResultsWithPagination
 
 #pragma warning disable CS8602
             var query =
-           from p in db.Participants.ApplySpecification(request.Specification)
 
-           let firstEnrolment = db.ParticipantEnrolmentHistories
-                .Where(e => e.ParticipantId == p.Id)
-                .OrderBy(e => e.Created)
-                .FirstOrDefault()
+                from p in db.Participants.ApplySpecification(request.Specification)
 
-           let lastEnrolment = db.ParticipantEnrolmentHistories
-               .Where(e => e.ParticipantId == p.Id)
-               .OrderByDescending(e => e.Created)
-               .FirstOrDefault()
+                let firstEnrolment = db.ParticipantEnrolmentHistories
+                     .Where(e => e.ParticipantId == p.Id && e.EnrolmentStatus == 1)
+                     .OrderBy(e => e.Created)
+                     .FirstOrDefault()
 
-           let previousEnrolment = db.ParticipantEnrolmentHistories
-               .Where(e => e.ParticipantId == p.Id 
-                        && e.Created < lastEnrolment.Created)
-               .OrderByDescending(e => e.Created)
-               .FirstOrDefault()                         
+                let lastEnrolment = db.ParticipantEnrolmentHistories
+                    .Where(e => e.ParticipantId == p.Id)
+                    .OrderByDescending(e => e.Created)
+                    .FirstOrDefault()
 
-           where (
-                    lastEnrolment.EnrolmentStatus == EnrolmentStatus.EnrollingStatus.Value
-                    && previousEnrolment.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus.Value
-                    && lastEnrolment.Created >= cutoffDate
-                )
-                ||
-                (
-                    lastEnrolment.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value
-                    && lastEnrolment.Created >= cutoffDate
-                )
-                    
-            select new QAEnrolmentsResultsSummaryDto
-            {
-                ParticipantId = p.Id,
-                Participant = $"{p.FirstName} {p.LastName}",
+                let previousEnrolment = db.ParticipantEnrolmentHistories
+                     .Where(e => e.ParticipantId == p.Id
+                             && e.Created < lastEnrolment.Created)
+                     .OrderByDescending(e => e.Created)
+                     .FirstOrDefault()
 
-                //submitted/created - firstenrolment date
-                Created = firstEnrolment.Created,
-                CommencedOn = firstEnrolment.Created,
+                let resubmissionEnrolment = db.ParticipantEnrolmentHistories
+                     .Where(e => e.ParticipantId == p.Id
+                             && e.Created < lastEnrolment.Created
+                             && e.EnrolmentStatus == 1)
+                     .OrderByDescending(e => e.Created)
+                     .FirstOrDefault()
 
-//                SubmittedBy = request.JustMyParticipants ? "You" : $"{firstEnrolment.CreatedBy})",
-                SubmittedBy =  $"{firstEnrolment.CreatedBy})",
+                where (
+                         lastEnrolment.EnrolmentStatus == EnrolmentStatus.EnrollingStatus.Value
+                         && previousEnrolment.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus.Value
+                     )
+                     ||
+                     (
+                         lastEnrolment.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value
+                         && lastEnrolment.Created >= cutoffDate
+                     )
 
-                //approved/returned lastenrolment.created
-                ApprovedOn = lastEnrolment.Created,
-                
-                //correct
-                Status = lastEnrolment.EnrolmentStatus,                             
-               
-                LastModified = p.LastModified, //this is wrong
-                //EnrolmentCommenced = firstCreated,
-                //LastEnrolment = lastEnrolment
-                //TookPlaceAtLocationName = a.TookPlaceAtLocation.Name,
-                //AdditionalInformation =  a.AdditionalInformation!             
+                select new QAEnrolmentsResultsSummaryDto
+                {
+                    ParticipantId = p.Id,
+                    Participant = $"{p.FirstName} {p.LastName}",
 
-                PQA = (from pqa in db.EnrolmentPqaQueue
-                       from n in pqa.Notes
-                       where pqa.ParticipantId == p.Id
-                       select new EnrolmentSummaryNote(
-                           n.Message,
-                           CFOTenantNames.Contains(n.CreatedByUser!.TenantName!) && hideUser
-                                ? "Hidden"
-                                : n.CreatedByUser!.DisplayName!,
-                           n.CreatedByUser.TenantId!,
-                           n.CreatedByUser.TenantName!,
-                           n.Created!.Value
-                       )).ToArray(),
+                    SubmittedBy = resubmissionEnrolment.CreatedBy!,
+                    SubmittedOn = resubmissionEnrolment.Created,
 
-                QA1 = (from qa1 in db.EnrolmentPqaQueue
-                       from n in qa1.Notes
-                       where qa1.ParticipantId == p.Id
-                       select new EnrolmentSummaryNote(
-                            n.Message,
-                            CFOTenantNames.Contains(n.CreatedByUser!.TenantName!) && hideUser
-                                 ? "Hidden"
-                                 : n.CreatedByUser!.DisplayName!,
-                            n.CreatedByUser.TenantId!,
-                            n.CreatedByUser.TenantName!,
-                            n.Created!.Value
-                        )).ToArray(),
+                    OriginallySubmitted = firstEnrolment.Created,
+                    TookPlaceAtLocationName = p.EnrolmentLocation.Name,
 
-                QA2 = (from qa2 in db.EnrolmentPqaQueue
-                       from n in qa2.Notes
-                       where qa2.ParticipantId == p.Id
-                       select new EnrolmentSummaryNote(
-                             n.Message,
-                             CFOTenantNames.Contains(n.CreatedByUser!.TenantName!) && hideUser
-                                  ? "Hidden"
-                                  : n.CreatedByUser!.DisplayName!,
-                            n.CreatedByUser.TenantId!,
-                            n.CreatedByUser.TenantName!,
-                             n.Created!.Value
-                        )).ToArray(),
+                    CompletedOn = lastEnrolment.Created,
 
-                Escalations = (from esc in db.EnrolmentEscalationQueue
-                               from n in esc.Notes
-                               where esc.ParticipantId == p.Id
-                               select new EnrolmentSummaryNote(
-                                   n.Message,
-                                   CFOTenantNames.Contains(n.CreatedByUser!.TenantName!) && hideUser
-                                        ? "Hidden"
-                                        : n.CreatedByUser!.DisplayName!,
-                                   n.CreatedByUser.TenantId!,
-                                   n.CreatedByUser.TenantName!,
-                                   n.Created!.Value
-                              )).ToArray()
+                    Status = lastEnrolment.EnrolmentStatus,
 
-                
-            };
+                    PQA = (from pqa in db.EnrolmentPqaQueue
+                           from n in pqa.Notes
+                           where pqa.ParticipantId == p.Id
+                           select new EnrolmentSummaryNote(
+                               n.Message,
+                               CFOTenantNames.Contains(n.CreatedByUser!.TenantName!) && hideUser
+                                    ? "Hidden"
+                                    : n.CreatedByUser!.DisplayName!,
+                               n.CreatedByUser.TenantId!,
+                               n.CreatedByUser.TenantName!,
+                               n.Created!.Value
+                           )).ToArray(),
+
+                    QA1 = (from qa1 in db.EnrolmentPqaQueue
+                           from n in qa1.Notes
+                           where qa1.ParticipantId == p.Id
+                           select new EnrolmentSummaryNote(
+                                n.Message,
+                                CFOTenantNames.Contains(n.CreatedByUser!.TenantName!) && hideUser
+                                     ? "Hidden"
+                                     : n.CreatedByUser!.DisplayName!,
+                                n.CreatedByUser.TenantId!,
+                                n.CreatedByUser.TenantName!,
+                                n.Created!.Value
+                            )).ToArray(),
+
+                    QA2 = (from qa2 in db.EnrolmentPqaQueue
+                           from n in qa2.Notes
+                           where qa2.ParticipantId == p.Id
+                           select new EnrolmentSummaryNote(
+                                 n.Message,
+                                 CFOTenantNames.Contains(n.CreatedByUser!.TenantName!) && hideUser
+                                      ? "Hidden"
+                                      : n.CreatedByUser!.DisplayName!,
+                                n.CreatedByUser.TenantId!,
+                                n.CreatedByUser.TenantName!,
+                                 n.Created!.Value
+                            )).ToArray(),
+
+                    Escalations = (from esc in db.EnrolmentEscalationQueue
+                                   from n in esc.Notes
+                                   where esc.ParticipantId == p.Id
+                                   select new EnrolmentSummaryNote(
+                                       n.Message,
+                                       CFOTenantNames.Contains(n.CreatedByUser!.TenantName!) && hideUser
+                                            ? "Hidden"
+                                            : n.CreatedByUser!.DisplayName!,
+                                       n.CreatedByUser.TenantId!,
+                                       n.CreatedByUser.TenantName!,
+                                       n.Created!.Value
+                                  )).ToArray()
+                };
 
 #pragma warning restore CS8602
 
             var count = await query.CountAsync(cancellationToken);
-                        
+
             var results = await query
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .ToListAsync(cancellationToken);
-       
+
             return new PaginatedData<QAEnrolmentsResultsSummaryDto>(results, count, request.PageNumber, request.PageSize);
         }
 
@@ -160,7 +157,7 @@ public static class QAEnrolmentsResultsWithPagination
             ];
 
             return !user.AssignedRoles.Any(r => allowed.Contains(r));
-        }    
+        }
 
         public class Validator : AbstractValidator<Query>
         {
