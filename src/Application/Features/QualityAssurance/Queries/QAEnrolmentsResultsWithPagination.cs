@@ -33,7 +33,7 @@ public static class QAEnrolmentsResultsWithPagination
                 from p in db.Participants.ApplySpecification(request.Specification)
 
                 let firstEnrolment = db.ParticipantEnrolmentHistories
-                     .Where(e => e.ParticipantId == p.Id && e.EnrolmentStatus == 1)
+                     .Where(e => e.ParticipantId == p.Id && e.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus.Value)
                      .OrderBy(e => e.Created)
                      .FirstOrDefault()
 
