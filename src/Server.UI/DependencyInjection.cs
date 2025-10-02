@@ -157,13 +157,15 @@ public static class DependencyInjection
         {
             if (context.Response.Headers.IsReadOnly == false)
             {
-                context.Response.Headers.Append("Content-Security-Policy",
-                    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'self' data:; frame-src 'self' data:;");
+                string csp = app.Configuration["Content-Security-Policy"] ??
+                                      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'self' data:; frame-src 'self' data:;";
+
+                context.Response.Headers.Append("Content-Security-Policy", csp);
             }
 
             await next();
         });
-        
+
         app.UseAntiforgery();
         
         //app.UseHttpsRedirection();
