@@ -12,6 +12,7 @@ public class QAActivitiesResultsAdvancedFilter : PaginationFilter
     public ActivityStatus? Status { get; set; }
     public List<ActivityType>? IncludeTypes { get; set; }
     public bool JustMyParticipants { get; set; }
+    public bool IncludeInternalNotes { get; set; }
 }
 
 public enum QAActivitiesResultsListView
