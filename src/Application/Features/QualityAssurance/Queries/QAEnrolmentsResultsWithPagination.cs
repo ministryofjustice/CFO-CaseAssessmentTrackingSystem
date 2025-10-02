@@ -51,7 +51,7 @@ public static class QAEnrolmentsResultsWithPagination
                 let resubmissionEnrolment = db.ParticipantEnrolmentHistories
                      .Where(e => e.ParticipantId == p.Id
                              && e.Created < lastEnrolment.Created
-                             && e.EnrolmentStatus == 1)
+                             && e.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus.Value)
                      .OrderByDescending(e => e.Created)
                      .FirstOrDefault()
 
