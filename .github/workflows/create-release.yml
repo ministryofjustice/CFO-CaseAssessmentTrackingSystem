@@ -24,22 +24,13 @@ jobs:
     - name: Build, Test & Publish
       run: dotnet cake build.cake 
 
-    # Upload build artifacts
-    - name: Upload Published App
-      uses: actions/upload-artifact@v4
-      if: success()
-      with:
-        name: published-app
-        path: ./artifacts/
-        retention-days: 90
-
     # Create zip archive of build artifacts for release
+    # This creates the necessary ./artifacts.zip file on the runner's filesystem.
     - name: Create Build Artifacts Archive
       if: success()
       run: |
-        cd ./artifacts
-        zip -r ../artifacts.zip .
-        cd ..
+        # Use a single zip command from the root to create artifacts.zip
+        zip -r artifacts.zip ./artifacts/ 
 
     # Generate tag and release names with daily build numbers
     - name: Set Release Version
