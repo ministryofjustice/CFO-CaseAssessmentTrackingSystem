@@ -19,7 +19,8 @@
 
 <MudForm @ref="_form" Model="Command" Validation="@(Validator.ValidateValue(Command))" Class="ma-2" ReadOnly="ReadOnly">
     <MudGrid>
-        <MudItem xs="12" md="8">
+
+		<MudItem xs="12" md="8">
             <MudStack Row="true" AlignItems="AlignItems.Center">
                 <MudAvatar Size="Size.Medium" Color="@Color.Primary">
                     A
@@ -54,27 +55,63 @@
             </MudRadioGroup>
         </MudItem>
 
-        <MudItem xs="12" md="8">
-            <MudStack Row="true" AlignItems="AlignItems.Center">
-                <MudAvatar Size="Size.Medium" Color="@Color.Primary">
-                    C
-                </MudAvatar>            
-                <MudText Typo="Typo.subtitle1" id="participant-journey-label">
-                    @Command.GetMemberDescription(x => x.ActivitiesLinkToTasks)
-                </MudText>
-            </MudStack>
-        </MudItem>
-        <MudItem xs="12" md="4" Class="d-flex align-center">
-            <MudRadioGroup @bind-Value="Command.ActivitiesLinkToTasks" For="@(() => Command.ActivitiesLinkToTasks)">
-                <MudRadio Value="@DipSampleAnswer.Yes">@DipSampleAnswer.Yes.Name</MudRadio>
-                <MudRadio Value="@DipSampleAnswer.No">@DipSampleAnswer.No.Name</MudRadio>
-            </MudRadioGroup>
-        </MudItem>
+		<MudItem xs="12" md="8">
+			<MudStack Row="true" AlignItems="AlignItems.Center">
+				<MudAvatar Size="Size.Medium" Color="@Color.Primary">
+					C
+				</MudAvatar>
+				<MudText Typo="Typo.subtitle1" id="participant-journey-label">
+					@Command.GetMemberDescription(x => x.SupportsJourney)
+				</MudText>
+			</MudStack>
+		</MudItem>
+		<MudItem xs="12" md="4" Class="d-flex align-center">
+			<MudRadioGroup @bind-Value="Command.SupportsJourney" For="@(() => Command.SupportsJourney)">
+				<MudRadio Value="@DipSampleAnswer.Yes">@DipSampleAnswer.Yes.Name</MudRadio>
+				<MudRadio Value="@DipSampleAnswer.No">@DipSampleAnswer.No.Name</MudRadio>
+			</MudRadioGroup>
+		</MudItem>
 
-        <MudItem xs="12" md="8">
+       <MudItem xs="12" md="8">
+			<MudStack Row="true" AlignItems="AlignItems.Center">
+				<MudAvatar Size="Size.Medium" Color="@Color.Primary">
+					D
+				</MudAvatar>
+				<MudText Typo="Typo.subtitle1" id="participant-journey-label">
+					@Command.GetMemberDescription(x => x.AlignsWithDoS)
+				</MudText>
+			</MudStack>
+		</MudItem>
+		<MudItem xs="12" md="4" Class="d-flex align-center">
+			<MudRadioGroup @bind-Value="Command.AlignsWithDoS" For="@(() => Command.AlignsWithDoS)">
+				<MudRadio Value="@DipSampleAnswer.Yes">@DipSampleAnswer.Yes.Name</MudRadio>
+				<MudRadio Value="@DipSampleAnswer.No">@DipSampleAnswer.No.Name</MudRadio>
+				<MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>
+			</MudRadioGroup>
+		</MudItem>
+
+		<MudItem xs="12" md="8">
+			<MudStack Row="true" AlignItems="AlignItems.Center">
+				<MudAvatar Size="Size.Medium" Color="@Color.Primary">
+					E
+				</MudAvatar>
+				<MudText Typo="Typo.subtitle1" id="participant-journey-label">
+					@Command.GetMemberDescription(x => x.PreReleasePractical)
+				</MudText>
+			</MudStack>
+		</MudItem>
+		<MudItem xs="12" md="4" Class="d-flex align-center">
+			<MudRadioGroup @bind-Value="Command.PreReleasePractical" For="@(() => Command.PreReleasePractical)">
+				<MudRadio Value="@DipSampleAnswer.Yes">@DipSampleAnswer.Yes.Name</MudRadio>
+				<MudRadio Value="@DipSampleAnswer.No">@DipSampleAnswer.No.Name</MudRadio>
+				<MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>
+			</MudRadioGroup>
+		</MudItem>
+
+		<MudItem xs="12" md="8">
             <MudStack Row="true" AlignItems="AlignItems.Center">
                 <MudAvatar Size="Size.Medium" Color="@Color.Primary">
-                    D
+                    F
                 </MudAvatar>            
                 <MudText Typo="Typo.subtitle1" id="participant-journey-label">
                     @Command.GetMemberDescription(x => x.TTGDemonstratesGoodPRIProcess)
@@ -89,42 +126,26 @@
                 <MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>
             </MudRadioGroup>
         </MudItem>
-        
-        <MudItem xs="12" md="8">
-            <MudStack Row="true" AlignItems="AlignItems.Center">
-                <MudAvatar Size="Size.Medium" Color="@Color.Primary">
-                    E
-                </MudAvatar> 
-                <MudText Typo="Typo.subtitle1" id="participant-journey-label">
-                    @Command.GetMemberDescription(x => x.SupportsJourney)
-                </MudText>
-            </MudStack>
-        </MudItem>
-        <MudItem xs="12" md="4" Class="d-flex align-center">
-            <MudRadioGroup @bind-Value="Command.SupportsJourney" For="@(() => Command.SupportsJourney)">
-                <MudRadio Value="@DipSampleAnswer.Yes">@DipSampleAnswer.Yes.Name</MudRadio>
-                <MudRadio Value="@DipSampleAnswer.No">@DipSampleAnswer.No.Name</MudRadio>
-                <MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>
-            </MudRadioGroup>
-        </MudItem>
 
-        <MudItem xs="12" md="8">
-            <MudStack Row="true" AlignItems="AlignItems.Center">
-                <MudAvatar Size="Size.Medium" Color="@Color.Primary">
-                    F
-                </MudAvatar>
-                <MudText Typo="Typo.subtitle1" id="participant-journey-label">
-                    @Command.GetMemberDescription(x => x.AlignsWithDoS)
-                </MudText>
-            </MudStack>
-        </MudItem>
-        <MudItem xs="12" md="4" Class="d-flex align-center">
-            <MudRadioGroup @bind-Value="Command.AlignsWithDoS" For="@(() => Command.AlignsWithDoS)">
-                <MudRadio Value="@DipSampleAnswer.Yes">@DipSampleAnswer.Yes.Name</MudRadio>
-                <MudRadio Value="@DipSampleAnswer.No">@DipSampleAnswer.No.Name</MudRadio>
-                <MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>
-            </MudRadioGroup>
-        </MudItem>
+		<MudItem xs="12" md="8">
+			<MudStack Row="true" AlignItems="AlignItems.Center">
+				<MudAvatar Size="Size.Medium" Color="@Color.Primary">
+					G
+				</MudAvatar>
+				<MudText Typo="Typo.subtitle1" id="participant-journey-label">
+					@Command.GetMemberDescription(x => x.TTGDemonstratesGoodPRIProcess)
+				</MudText>
+			</MudStack>
+
+		</MudItem>
+		<MudItem xs="12" md="4" Class="d-flex align-center">
+			<MudRadioGroup @bind-Value="Command.TTGObjectiveTasks" For="@(() => Command.TTGObjectiveTasks)">
+				<MudRadio Value="@DipSampleAnswer.Yes">@DipSampleAnswer.Yes.Name</MudRadio>
+				<MudRadio Value="@DipSampleAnswer.No">@DipSampleAnswer.No.Name</MudRadio>
+				<MudRadio Value="@DipSampleAnswer.NotApplicable">@DipSampleAnswer.NotApplicable.Name</MudRadio>
+			</MudRadioGroup>
+		</MudItem>
+
         
         <MudItem xs="12" md="3">
             <MudText Typo="Typo.subtitle1">

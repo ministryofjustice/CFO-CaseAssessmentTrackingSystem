@@ -14,23 +14,47 @@ public static class SubmitCsoResponse
         public required string ParticipantId { get; set; }
         public required Guid DipSampleId { get; set; }
 
-        [Description("Does the pathway plan, thematic objectives and tasks (where applicable) show a clear participant story/journey?")]
+        /// <summary>
+        /// Represents the question A on the CSO sumbission response form
+        /// </summary>
+        [Description("Does the pathway plan, thematic objectives and tasks meet the participants needs as per the assessment?")]
         public DipSampleAnswer HasClearParticipantJourney { get; set; } = DipSampleAnswer.NotAnswered;
 
-        [Description("Is there progression shown against the tasks?")]
+        /// <summary>
+        /// Represents the question B on the CSO submission response form
+        /// </summary>
+        [Description("Is there progression shown under each objective/task?")]
         public DipSampleAnswer ShowsTaskProgression { get; set; } = DipSampleAnswer.NotAnswered;
 
-        [Description("Do activities link to the tasks?")]
-        public DipSampleAnswer ActivitiesLinkToTasks { get; set; } = DipSampleAnswer.NotAnswered;
-
-        [Description("If applicable, does the TTG objective and commencement of work against the tasks show good demonstration of the PRI process?")]
-        public DipSampleAnswer TTGDemonstratesGoodPRIProcess { get; set; } = DipSampleAnswer.NotAnswered;
-
-        [Description("If applicable, do Human Citizenship, Community Social and Intervention Services link to the participant story/journey?")]
+        /// <summary>
+        /// Represents the question C on the CSO submission response form
+        /// </summary>
+        [Description("Do the activities, including Support Work, Human Citizenship, Community Social, Intervention Services and ETE, link to the tasks?")]
         public DipSampleAnswer SupportsJourney { get; set; } = DipSampleAnswer.NotAnswered;
 
-        [Description("If applicable, do Human Citizenship, Community Social and Intervention Services link to the DoS and demonstrate good quality outcomes including VFM?")]
+        /// <summary>
+        /// Represents the question D on the CSO submission response form
+        /// </summary>
+        [Description("Do Human Citizenship, Community Social and Intervention Services link to the DoS and demonstrate good quality outcomes including VFM?")]
         public DipSampleAnswer AlignsWithDoS { get; set; } = DipSampleAnswer.NotAnswered;
+
+        /// <summary>
+        /// Represents the question E on the CSO submission response form
+        /// </summary>
+        [Description("Does the Pre-release support demonstrate focused resettlement activities and immediate practical support that will be required within 4 weeks of release from custody?")]
+        public DipSampleAnswer PreReleasePractical { get; set; } = DipSampleAnswer.NotAnswered;
+
+        /// <summary>
+        /// Represents the question F on the CSO submission response form
+        /// </summary>  
+        [Description("Does the TTG Objective include additional tasks that detail links and immediate practical issues to be addressed?")]
+        public DipSampleAnswer TTGDemonstratesGoodPRIProcess { get; set; } = DipSampleAnswer.NotAnswered;
+
+        /// <summary>
+        /// Represents the question G on the CSO submission response form
+        /// </summary>  
+        [Description("Has the community Support Worker progressed with TTG objective tasks?")]
+        public DipSampleAnswer TTGObjectiveTasks { get; set; } = DipSampleAnswer.NotAnswered;
 
         [Description("Comments")]
         public string? Comments { get; set; }
@@ -52,10 +76,11 @@ public static class SubmitCsoResponse
             dip.CsoAnswer(
                 clearJourney: request.HasClearParticipantJourney,
                 taskProgression: request.ShowsTaskProgression,
-                linksToTasks: request.ActivitiesLinkToTasks,
                 ttgDemonstratesGoodPRIProcess: request.TTGDemonstratesGoodPRIProcess,
                 supportsJourney: request.SupportsJourney,
                 alignsWithDoS: request.AlignsWithDoS,
+                preReleasePractical: request.PreReleasePractical,
+                ttgObjectiveTasks:  request.TTGObjectiveTasks,
                 isCompliant: request.ComplianceAnswer,
                 comments: request.Comments!,
                 reviewBy: request.CurrentUser.UserId,
@@ -86,6 +111,7 @@ public static class SubmitCsoResponse
                 .NotEmpty()
                 .WithMessage("DipSampleId is required");
 
+            // QUESTION A (Yes/No)
             RuleFor(x => x.HasClearParticipantJourney)
                 .Must(x => x.IsAnswer)
                 .WithMessage("Must be answered");
@@ -94,6 +120,7 @@ public static class SubmitCsoResponse
                 .Must(x => x == DipSampleAnswer.NotApplicable == false)
                 .WithMessage("Not applicable is not a valid answer for this question");
 
+            // QUESTION B (Yes/No)
             RuleFor(x => x.ShowsTaskProgression)
                 .Must(x => x.IsAnswer)
                 .WithMessage("Must be answered");
@@ -102,23 +129,32 @@ public static class SubmitCsoResponse
                 .Must(x => x == DipSampleAnswer.NotApplicable == false)
                 .WithMessage("Not applicable is not a valid answer for this question");
 
-            RuleFor(x => x.ActivitiesLinkToTasks)
+            // QUESTION C (Yes/No)
+            RuleFor(x => x.SupportsJourney)
+               .Must(x => x.IsAnswer)
+               .WithMessage("Must be answered");
+
+            RuleFor(x => x.SupportsJourney)
                 .Must(x => x == DipSampleAnswer.NotApplicable == false)
                 .WithMessage("Not applicable is not a valid answer for this question");
 
-            RuleFor(x => x.ActivitiesLinkToTasks)
+            // QUESTION D (Yes/No/Na)
+            RuleFor(x => x.AlignsWithDoS)
                 .Must(x => x.IsAnswer)
                 .WithMessage("Must be answered");
 
+            // QUESTION E (Yes/No/Na)
+            RuleFor(x => x.PreReleasePractical)
+                .Must(x => x.IsAnswer)
+                .WithMessage("Must be answered");
+
+            // QUESTION F (Yes/No/Na)
             RuleFor(x => x.TTGDemonstratesGoodPRIProcess)
                 .Must(x => x.IsAnswer)
                 .WithMessage("Must be answered");
 
-            RuleFor(x => x.SupportsJourney)
-                .Must(x => x.IsAnswer)
-                .WithMessage("Must be answered");
-
-            RuleFor(x => x.AlignsWithDoS)
+            // QUESTION G (Yes/No/Na)
+            RuleFor(x => x.TTGObjectiveTasks)
                 .Must(x => x.IsAnswer)
                 .WithMessage("Must be answered");
 

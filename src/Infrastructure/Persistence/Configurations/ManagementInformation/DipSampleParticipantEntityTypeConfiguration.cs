@@ -55,11 +55,18 @@ public class DipSampleParticipantEntityTypeConfiguration : IEntityTypeConfigurat
                 dsa => DipSampleAnswer.FromValue(dsa)
             );
 
-        builder.Property(s => s.ActivitiesLinkToTasks)
+        builder.Property(s => s.PreReleasePractical)
             .IsRequired()
             .HasConversion(
                 dsa => dsa!.Value,
                 dsa => DipSampleAnswer.FromValue(dsa)
+            );
+
+        builder.Property(s => s.TtgObjectiveTasks)
+            .IsRequired()
+            .HasConversion(
+            dsa => dsa!.Value,
+            dsa => DipSampleAnswer.FromValue(dsa)
             );
 
         builder.Property(s => s.TTGDemonstratesGoodPRIProcess)
