@@ -34,7 +34,6 @@ public class ParticipantDipSampleDto
     public string? CsoComments { get; set; }
     public DipSampleAnswer HasClearParticipantJourney { get; set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer ShowsTaskProgression { get; set; } = DipSampleAnswer.NotAnswered;
-    public DipSampleAnswer ActivitiesLinkToTasks { get; set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer TTGDemonstratesGoodPRIProcess { get; set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer SupportsJourney { get; set; } = DipSampleAnswer.NotAnswered;
     public DipSampleAnswer AlignsWithDoS { get; set; } = DipSampleAnswer.NotAnswered;
