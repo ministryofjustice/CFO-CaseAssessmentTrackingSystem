@@ -2,6 +2,7 @@
 @using Cfo.Cats.Application.Features.Activities.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Humanizer
+
 @inherits CatsComponentBase;
 
 @inject IStringLocalizer<PQA> L
@@ -16,11 +17,12 @@
              Height="calc(100vh - 330px)"
              Loading="@_loading"
              MultiSelection="true"
-             @bind-SelectedItems="_selectedItems"
              @bind-SelectedItem="_currentDto"
              Hover="true"
              @ref="_table"
-             Breakpoint="Breakpoint.Sm">
+             Breakpoint="Breakpoint.Sm"
+			 Striped="true"
+			 Dense="true">
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
             <div class="d-flex gap-4">
@@ -164,64 +166,3 @@
         <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
     </PagerContent>
 </MudDataGrid>
-
-@code {
-    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
-    [CascadingParameter] private UserProfile? UserProfile { get; set; }
-    
-    private bool _loading = false;
-    private int _defaultPageSize = 15;
-    private MudDataGrid<ActivityQueueEntryDto> _table = default!;
-
-    private ActivityQa1WithPagination.Query Query { get; set; } = new();
-    private ActivityQueueEntryDto _currentDto = new();
-    private HashSet<ActivityQueueEntryDto> _selectedItems = new();      
-   
-    private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state)
-    {
-        try
-        {
-            _loading = true;
-            Query.CurrentUser = UserProfile;
-            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Created";
-            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
-            Query.PageNumber = state.Page + 1;
-            Query.PageSize = state.PageSize;
-
-            var result = await GetNewMediator().Send(Query);
-            return new GridData<ActivityQueueEntryDto> { TotalItems = result.TotalItems, Items = result.Items };
-        }
-        finally
-        {
-            _loading = false;
-        }
-    }
-
-    private void ViewParticipant(ActivityQueueEntryDto dto)
-    {
-       Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
-    }
-
-    // private void ViewActivity(ActivityQueueEntryDto dto)
-    // {
-    //     Navigation.NavigateTo($"/pages/qa/activities/qa1/{dto.ActivityId}");
-    // }
-
-    private async Task OnSearch(string text)
-    {
-        if (_loading)
-        {
-            return;
-        }
-        _selectedItems = new();
-        Query.Keyword = text;
-        await _table.ReloadServerData();
-    }
-    
-    private async Task OnRefresh()
-    {
-        _selectedItems = new ();
-        Query.Keyword = string.Empty;
-        await _table.ReloadServerData();
-    }
-}

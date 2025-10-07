@@ -25,13 +25,16 @@
              Hover="true"
              RowClick="@RowClicked"
              RowClass="pointer-cursor"
-             @ref="_table">
+             @ref="_table"
+			 BreakPoint="Breakpoint.Sm"
+			 Striped="true"
+			 Dense="true">
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
             <div class="d-flex gap-4">
-                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large"/>
+                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large"/>				
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption">Activity Provider QA</MudText>
+                    <MudText Typo="Typo.h5">Activity Provider QA</MudText>
                 </div>
             </div>
             <div class="flex-grow-1"></div>
@@ -157,14 +160,7 @@
                     }
                 </MudTooltip>
             </CellTemplate>
-        </PropertyColumn>
-        @*
-        <PropertyColumn Property="x => x.NoOfPreviousSubmissions" Title="@L["Resubmissions"]">
-            <CellTemplate>
-                <MudText>@context.Item.NoOfPreviousSubmissions</MudText>
-            </CellTemplate>
-        </PropertyColumn>
-        *@
+        </PropertyColumn>        
     </Columns>
     <NoRecordsContent>
         <MudText>@ConstantString.NoRecords</MudText>
@@ -176,91 +172,3 @@
         <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })"/>
     </PagerContent>
 </MudDataGrid>
-
-@code {
-
-    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
-    [CascadingParameter] private UserProfile? UserProfile { get; set; }
-
-    private bool _loading = false;
-    private bool _downloading;
-    private int _defaultPageSize = 15;
-    private MudDataGrid<ActivityQueueEntryDto> _table = default!;
-
-    private ActivityPqaQueueWithPagination.Query Query { get; set; } = new();
-    private ActivityQueueEntryDto _currentDto = new();
-    private HashSet<ActivityQueueEntryDto> _selectedItems = new();
-
-    private void RowClicked(DataGridRowClickEventArgs<ActivityQueueEntryDto> args)
-    {
-        Navigation.NavigateTo($"/pages/qa/activities/pqa/{args.Item.Id}");
-    }
-
-    private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state)
-    {
-        try
-        {
-            _loading = true;
-            Query.CurrentUser = UserProfile;
-            Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "CommencedOn";
-            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? false ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
-            Query.PageNumber = state.Page + 1;
-            Query.PageSize = state.PageSize;
-
-            var result = await GetNewMediator().Send(Query);
-            return new GridData<ActivityQueueEntryDto> { TotalItems = result.TotalItems, Items = result.Items };
-        }
-        finally
-        {
-            _loading = false;
-        }
-    }
-
-    private async Task OnSearch(string text)
-    {
-        if (_loading)
-        {
-            return;
-        }
-        _selectedItems = new();
-        Query.Keyword = text;
-        await _table.ReloadServerData();
-    }
-
-    private async Task OnRefresh()
-    {
-        _selectedItems = new ();
-        Query.Keyword = string.Empty;
-        await _table.ReloadServerData();
-    }
-
-    private async Task OnExport()
-    {
-        try
-        {
-            _downloading = true;
-            var result = await GetNewMediator().Send(new ExportPqaActivities.Command()
-            {
-                Query = Query
-            });
-
-            if (result.Succeeded)
-            {
-                Snackbar.Add($"{ConstantString.ExportSuccess}", Severity.Info);
-                return;
-            }
-
-            Snackbar.Add(result.ErrorMessage, Severity.Error);
-
-        }
-        catch(Exception ex)
-        {
-            Logger.LogError(ex, "An error has occurred while generating the PQA Export");
-            Snackbar.Add($"An error occurred while generating your document.", Severity.Error);
-        }
-        finally
-        {
-            _downloading = false;
-        }
-    }
-}
