@@ -8,7 +8,7 @@ public class PublishActivityApprovedEventHandler(IUnitOfWork unitOfWork) : INoti
 {
     public async Task Handle(ActivityTransitionedDomainEvent notification, CancellationToken cancellationToken)
     {
-        if (notification.From == ActivityStatus.ApprovedStatus)
+        if (notification.To == ActivityStatus.ApprovedStatus)
         {
             await unitOfWork.DbContext.InsertOutboxMessage(new ActivityApprovedIntegrationEvent(notification.Item.Id, notification.DateOccurred.DateTime));
         }
