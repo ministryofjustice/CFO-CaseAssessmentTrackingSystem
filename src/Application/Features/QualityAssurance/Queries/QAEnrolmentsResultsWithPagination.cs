@@ -10,15 +10,15 @@ namespace Cfo.Cats.Application.Features.QualityAssurance.Queries;
 public static class QAEnrolmentsResultsWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
-    public class Query : QAEnrolmentsResultsAdvancedFilter, IRequest<PaginatedData<QAEnrolmentsResultsSummaryDto>>
+    public class Query : QAEnrolmentsResultsAdvancedFilter, IRequest<Result<PaginatedData<QAEnrolmentsResultsSummaryDto>>>
     {
         public QAEnrolmentsResultsAdvancedSpecification Specification => new(this);
     }
 
     public class Handler(IUnitOfWork unitOfWork)
-        : IRequestHandler<Query, PaginatedData<QAEnrolmentsResultsSummaryDto>>
+        : IRequestHandler<Query, Result<PaginatedData<QAEnrolmentsResultsSummaryDto>>>
     {
-        public async Task<PaginatedData<QAEnrolmentsResultsSummaryDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<PaginatedData<QAEnrolmentsResultsSummaryDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var db = unitOfWork.DbContext;
 

@@ -41,7 +41,7 @@
                     <MudListSubheader>
                         <MudGrid>
                             <MudItem xs="12">
-                                <MudSelect @bind-Value="Model.Location"
+                                <MudSelect @bind-Value="_selectedLocation"
                                             @bind-Value:after="OnLocationChanged"
                                             Label="Location"
                                             Clearable="true">
