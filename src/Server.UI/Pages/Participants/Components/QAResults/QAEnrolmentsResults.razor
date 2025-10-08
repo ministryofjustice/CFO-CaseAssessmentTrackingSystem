@@ -1,0 +1,157 @@
+﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
+@using Humanizer
+
+@inherits CatsComponent<PaginatedData<QAEnrolmentsResultsSummaryDto>>
+
+@inject IUserService UserService
+
+<style>
+    .mud-list-item:focus,
+    .mud-list-item:hover {
+        background-color: initial !important;
+    }
+</style>
+<MudItem xs="12">
+
+	@if (Loading)
+	{
+		<MudLoading Text="Loading" />
+	}
+
+	@if (ErrorMessage is not null)
+	{
+		<MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+			@ErrorMessage
+		</MudAlert>
+	}
+
+	@if (Data is not null)
+	{
+        <MudCard style="height: 100%">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">QA Enrolments Results</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudList T="QAEnrolmentsResultsSummaryDto" ReadOnly>
+                    <MudListSubheader>
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudSelect @bind-Value="_selectedLocation"
+                                            @bind-Value:after="OnLocationChanged"
+                                            Label="Location"
+                                            Clearable="true">
+                                    @foreach (var location in _locations)
+                                    {
+                                        <MudSelectItem Value="location">@location.Name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12">
+                                 <MudCheckBox T="bool" ValueChanged="OnExcludeEnrolmentsNotInProgress" Label="Hide enrolments that don't require my attention" /> 
+                            </MudItem>
+                        </MudGrid>
+                    </MudListSubheader>
+					@foreach (var enrolment in Data.Items)
+                        {
+                            var created = enrolment.OriginallySubmitted;
+                            var today = DateTime.Today.ToLocalTime();
+                            var notes = enrolment.GetNotes();
+
+                            <MudListItem Class="flex-row-reverse">
+                                <ChildContent>
+                                    <div class="d-flex justify-space-between align-center ml-2">
+                                        <div class="d-flex align-center">                            
+                                            <div class="pr-2">
+                                                <MudText Typo="Typo.body2">
+                                                    Participant: @enrolment.Participant
+											@enrolment.ParticipantId
+                                                </MudText>
+                                                <div class="d-flex gap-2 align-center">                                                    
+                                                    <MudText Typo="Typo.body2">
+                                                        Submitted by: @UserService.GetDisplayName(@enrolment.SubmittedBy) on @enrolment.SubmittedOn.
+                                                    </MudText>
+
+                                                    @if (enrolment.Status == EnrolmentStatus.ApprovedStatus)
+                                                    {
+                                                        <MudText Typo="Typo.body2">
+                                                            Approved On:  @enrolment.CompletedOn.
+                                                        </MudText>
+                                                    }
+                                                    else
+                                                    {
+                                                        <MudText Typo="Typo.body2">
+															Returned On:  @enrolment.CompletedOn.
+                                                        </MudText>
+                                                    }     
+													
+                                                    <MudText Typo="Typo.body2">
+														Originally submitted on @created.ToShortDateOrEmptyString() (@created.Humanize()) at @enrolment.TookPlaceAtLocationName.
+                                                    </MudText>                             
+                                                    @{
+                                                        Color color = enrolment.Status switch
+                                                        {
+                                                            _ when enrolment.Status == EnrolmentStatus.EnrollingStatus => Color.Warning,
+                                                            _ when enrolment.Status == EnrolmentStatus.ApprovedStatus => Color.Success,
+                                                            _ => Color.Default
+                                                        };
+                                                    }
+                                                    <MudChip Color="color" Size="Size.Small">@enrolment.Status.Name</MudChip>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                                                 Dense="true"
+                                                 EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+
+                                            <MudMenuItem OnClick="@(() => EditParticipant(enrolment.ParticipantId))">
+                                                    @ConstantString.EditParticipant
+                                            </MudMenuItem>                              
+                                        </MudMenu>
+                         
+                                    </div>
+                                        <MudDivider />
+                                </ChildContent>  
+                                <NestedList>
+                                    <MudListItem Icon="@Icons.Material.Filled.EditNote" Text="Notes" Expanded>
+                                        <MudText Typo="Typo.body1">
+                                            Notes
+                                        </MudText>
+
+                                        @if (notes != null && notes.Any())
+                                        {
+                                            @foreach (var note in notes)
+                                            {
+                                                <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
+                                                    <MudCard Outlined="false" Elevation="25">
+                                                        <MudCardContent>
+                                                            <MudText Typo="Typo.body1">
+                                                                @note.Message
+                                                            </MudText>
+                                                            <MudText Typo="Typo.caption">
+                                                                @note.CreatedBy (@note.TenantName)  @note.Created.Humanize()
+                                                            </MudText>
+                                                        </MudCardContent>
+                                                    </MudCard>
+                                                </MudTooltip>
+                                            }
+                                        }
+                                    </MudListItem>                                    
+                                </NestedList>
+                            </MudListItem>
+                            <MudDivider />
+                        }
+                        <MudListSubheader Class="d-flex justify-center mt-2">
+                            <MudPagination Count="@Data.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
+                        </MudListSubheader>
+                    
+				</MudList>
+            </MudCardContent>
+        </MudCard>
+    }
+</MudItem>

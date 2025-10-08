@@ -83,30 +83,30 @@
                                                 <div class="d-flex gap-2 align-center">
                                                     <MudChip T="string" Size="MudBlazor.Size.Small" Text="@activity.Definition.Type.Name" Color="Color.Secondary" />
                                                     <MudText Typo="Typo.body2">
-                                                        Submitted by: @activity.SubmittedBy
+                                                        Submitted by: @activity.SubmittedBy.
                                                     </MudText>
                                                     
                                                     @if(activity.Status == ActivityStatus.ApprovedStatus)
                                                     {
                                                         <MudText Typo="Typo.body2">
-                                                            Approved On:  @activity.ApprovedOn
+                                                            Approved On:  @activity.ApprovedOn.
                                                         </MudText>
                                                     }
                                                     else
                                                     {
                                                         <MudText Typo="Typo.body2">
-                                                            Returned On:  @activity.LastModified
+                                                            Returned On:  @activity.LastModified.
                                                         </MudText>
                                                     }
                                                     <MudText Typo="Typo.body2">                                                    
-                                                        Category:  @activity.Definition.Category.Name
+                                                        Category:  @activity.Definition.Category.Name.
                                                     </MudText>
                                                     <MudText Typo="Typo.body2">
-                                                        Added on @created.ToShortDateOrEmptyString() at @created.ToShortDateOrEmptyString() (@created.Humanize())
+                                                        Added on @created.ToShortDateOrEmptyString() (@created.Humanize()).
                                                     </MudText>
                                                     <MudText Typo="Typo.body2">
                                                         Took place on @commencedOn.ToShortDateOrEmptyString() (@(commencedOn == today ? "today" : commencedOn.Humanize()))
-                                                        at @activity.TookPlaceAtLocationName
+                                                        at @activity.TookPlaceAtLocationName.
                                                     </MudText>
                                                     @{
                                                         Color color = activity.Status switch
