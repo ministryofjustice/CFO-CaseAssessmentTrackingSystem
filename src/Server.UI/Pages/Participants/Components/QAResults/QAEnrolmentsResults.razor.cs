@@ -13,10 +13,12 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults;
 public partial class QAEnrolmentsResults 
 {
     private IEnumerable<LocationDto> _locations = [];
-    private PaginatedData<QAEnrolmentsResultsSummaryDto>? _enrolments;
+    //private PaginatedData<QAEnrolmentsResultsSummaryDto>? _enrolments;
     private bool _loading;
 
-    public required QAEnrolmentsResultsWithPagination.Query Model { get; set; }
+    private bool _includeInternalNotes = false;
+
+    //public required QAEnrolmentsResultsWithPagination.Query Model { get; set; }
 
     [CascadingParameter]
     private Task<AuthenticationState> AuthState { get; set; } = default!;
@@ -30,27 +32,37 @@ public partial class QAEnrolmentsResults
     [CascadingParameter]
     public UserProfile CurrentUser { get; set; } = default!;
 
+    protected override IRequest<Result<PaginatedData<QAEnrolmentsResultsSummaryDto>>> CreateQuery()
+ => new QAEnrolmentsResultsWithPagination.Query()
+ {
+     UserProfile = CurrentUser,
+     PageSize = 5,
+     OrderBy = "Created",
+     SortDirection = $"{SortDirection.Descending}",
+     JustMyParticipants = JustMyParticipants,
+     IncludeInternalNotes = _includeInternalNotes
+ };
+
     protected override async Task OnInitializedAsync()
     {
-
         var state = await AuthState;
 
-        bool includeInternalNotes = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
+        _includeInternalNotes = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
 
-        Model = new QAEnrolmentsResultsWithPagination.Query()
-        {
-            UserProfile = CurrentUser,
-            PageSize = 5,
-            OrderBy = "Created",
-            SortDirection = $"{SortDirection.Descending}",
-            JustMyParticipants = JustMyParticipants,
-            IncludeInternalNotes = includeInternalNotes
-        };
+        //Model = new QAEnrolmentsResultsWithPagination.Query()
+        //{
+        //    UserProfile = CurrentUser,
+        //    PageSize = 5,
+        //    OrderBy = "Created",
+        //    SortDirection = $"{SortDirection.Descending}",
+        //    JustMyParticipants = JustMyParticipants,
+        //    IncludeInternalNotes = _includeInternalNotes
+        //};
                 
         try
         {
             _loading = true;
-            _enrolments = await GetNewMediator().Send(Model);
+            //_enrolments = await GetNewMediator().Send(Model);
             _locations = LocationService
                 .GetVisibleLocations(CurrentUser.TenantId!)
                 .ToList();

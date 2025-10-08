@@ -1,10 +1,10 @@
 ﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
-@using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
+@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 @using Humanizer
 
-@inherits CatsComponentBase
+@inherits CatsComponent<PaginatedData<QAEnrolmentsResultsSummaryDto>>
 
 @inject IUserService UserService
 
@@ -15,12 +15,21 @@
     }
 </style>
 <MudItem xs="12">
-    @if (@_loading)
-    {
-        <LoadingCard Title="Fetching QA Enrolments Results" />
-    }
-    else
-    {
+
+	@if (Loading)
+	{
+		<MudLoading Text="Loading" />
+	}
+
+	@if (ErrorMessage is not null)
+	{
+		<MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+			@ErrorMessage
+		</MudAlert>
+	}
+
+	@if (Data is not null)
+	{
         <MudCard style="height: 100%">
             <MudCardHeader>
                 <CardHeaderContent>
@@ -47,9 +56,7 @@
                             </MudItem>
                         </MudGrid>
                     </MudListSubheader>
-                    @if (_enrolments is not null)
-                    {
-                        foreach (var enrolment in _enrolments.Items)
+					@foreach (var enrolment in Data.Items)
                         {
                             var created = enrolment.OriginallySubmitted;
                             var today = DateTime.Today.ToLocalTime();
@@ -62,7 +69,7 @@
                                             <div class="pr-2">
                                                 <MudText Typo="Typo.body2">
                                                     Participant: @enrolment.Participant
-                                                    @enrolment.ParticipantId
+											@enrolment.ParticipantId
                                                 </MudText>
                                                 <div class="d-flex gap-2 align-center">                                                    
                                                     <MudText Typo="Typo.body2">
@@ -140,10 +147,10 @@
                             <MudDivider />
                         }
                         <MudListSubheader Class="d-flex justify-center mt-2">
-                            <MudPagination Count="@_enrolments.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
+                            <MudPagination Count="@Data.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
                         </MudListSubheader>
-                    }
-                </MudList>            
+                    
+				</MudList>
             </MudCardContent>
         </MudCard>
     }
