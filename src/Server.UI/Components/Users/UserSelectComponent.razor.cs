@@ -5,8 +5,8 @@ namespace Cfo.Cats.Server.UI.Components.Users;
 
 public partial class UserSelectComponent
 {
-    [CascadingParameter]
-    public UserProfile CurrentUser { get; set; } = null!;
+    [Parameter]
+    public string TenantId { get; set; } = null!;
     [Parameter] public ApplicationUserDto? Value { get; set; }
     [Parameter] public EventCallback<ApplicationUserDto?> ValueChanged { get; set; }
     [Parameter] public string Label { get; set; } = "Select User";
@@ -16,7 +16,7 @@ public partial class UserSelectComponent
     [Parameter] public Variant Variant { get; set; } = MudBlazor.Variant.Outlined;
     private ApplicationUserDto[] _users = [];
     protected override void OnInitialized() => _users = UserService.DataSource
-        .Where(d => d.TenantId!.StartsWith(CurrentUser.TenantId!))
+        .Where(d => d.TenantId!.StartsWith(TenantId))
         .OrderBy(u => u.DisplayName)
         .ToArray();
     private string GetDisplayName(ApplicationUserDto? user) => user?.DisplayName ?? string.Empty;

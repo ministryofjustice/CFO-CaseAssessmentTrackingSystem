@@ -1,0 +1,15 @@
+﻿@using Cfo.Cats.Server.UI.Components.Users
+
+
+<MudDialog>
+	<DialogContent>
+		<div style="min-width: 600px;">
+			<UserSelectComponent ValueChanged="dto => { OnUserSelectedChanged(dto); }" TenantId="@CurrentUser.TenantId" />
+		</div>
+	</DialogContent>
+	<DialogActions>
+		<MudButton OnClick="Dialog.Cancel">@ConstantString.Cancel</MudButton>
+		<MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit" Disabled="@(SelectedUser.UserId == string.Empty)">@ConstantString.Ok</MudLoadingButton>
+	</DialogActions>
+</MudDialog>
+
