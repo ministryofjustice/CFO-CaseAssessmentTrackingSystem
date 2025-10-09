@@ -1,0 +1,66 @@
+﻿@using Cfo.Cats.Application.Features.Dashboard.Queries
+@inherits CatsComponent<GetPaidActivitiesPerSupportWorker.PaidActivitiesPerSupportWorkerDto>
+
+@if (Loading)
+{
+    <MudLoading Text="Loading" />
+}
+
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@if (Data is not null)
+{
+    <MudGrid Spacing="2">
+        <MudItem xs="12" Style="height: calc(100vh - 150px);">
+            <MudStack Row="true" Breakpoint="Breakpoint.SmAndDown" Style="height:100%; width:100%;">
+
+                <!-- This is the left column -->
+                <MudStack Style="width: 150px;">
+                    <MudChip T="string">Custody (@Data.Custody)</MudChip>
+                    <MudChip T="string">Community (@Data.Community)</MudChip>
+                </MudStack>
+
+                <!-- Right hand content -->
+                <MudStack Style="flex:1; height:80%; overflow:auto;">
+                    @if (VisualMode)
+                    {
+                        @if (VisualMode)
+                        {
+                            <MudChart ChartType="ChartType.Bar"
+                                      ChartSeries="@barSeries"
+                                      XAxisLabels="@xLabels"
+                                      Height="350px"
+                                      Width="100%"
+                                      Style="height: 500px;" />
+                        }
+                    }
+                    else
+                    {
+                        <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true">
+                            <HeaderContent>
+                                <MudTh>Location</MudTh>
+                                <MudTh>Type</MudTh>
+                                <MudTh>Activity Type</MudTh>
+                                <MudTh>Total Count</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Location">@context.Name</MudTd>
+                                <MudTd DataLabel="Type">@context.LocationType.Name</MudTd>
+                                <MudTd DataLabel="Activity Type">@context.ActivityType</MudTd>
+                                <MudTd DataLabel="Total Count">@context.TotalCount</MudTd>
+                            </RowTemplate>
+                            <PagerContent>
+                                <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
+                            </PagerContent>
+                        </MudTable>
+                    }
+                </MudStack>
+            </MudStack>
+        </MudItem>
+    </MudGrid>
+}
