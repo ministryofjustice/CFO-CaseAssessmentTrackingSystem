@@ -1,6 +1,9 @@
-﻿namespace Cfo.Cats.Infrastructure.Persistence;
+﻿using System.ComponentModel;
+using Microsoft.Extensions.Configuration;
 
-public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger, ApplicationDbContext context)
+namespace Cfo.Cats.Infrastructure.Persistence;
+
+public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger, ApplicationDbContext context, IConfiguration configuration)
 {
     public async Task InitialiseAsync()
     {
@@ -8,24 +11,33 @@ public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitial
         {
             await context.Database.MigrateAsync();
 
-            if (await context.Tenants.AnyAsync() == false)
+            if (string.IsNullOrEmpty(configuration["SeedPath"]))
             {
-                logger.LogInformation("No tenant data found. Executing scripts");
-
-                // no tenant, seed all data
-                DirectoryInfo di = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../../db/seed"));
-
-                var sqlFiles = di.GetFiles("*.sql").OrderBy(s => s.Name);
-                foreach (var file in sqlFiles)
-                {
-                    logger.LogInformation("Executing {file}", file.FullName);
-                    await context.Database.ExecuteSqlRawAsync(await File.ReadAllTextAsync(file.FullName));
-                    logger.LogInformation("Executed {file}", file.FullName);
-                }
+                throw new InvalidEnumArgumentException("Need the seed path");
             }
-            else
+
+            DirectoryInfo di = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configuration["SeedPath"]!));
+
+            var conn = context.Database.GetDbConnection();
+
+            if (conn.State != System.Data.ConnectionState.Open)
             {
-                logger.LogInformation("Tenant information found in the database. Skipping seeding");
+                await conn.OpenAsync();
+            }
+
+            var sqlFiles = di.GetFiles("*.sql").OrderBy(s => s.Name);
+            foreach (var file in sqlFiles)
+            {
+    
+                var sql = await File.ReadAllTextAsync(file.FullName);
+
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = sql;
+                cmd.CommandType = System.Data.CommandType.Text;
+
+                logger.LogInformation("Executing {file}", file.FullName);
+                await cmd.ExecuteNonQueryAsync();
+                logger.LogInformation("Executed {file}", file.FullName);
             }
         }
         catch (Exception ex)
