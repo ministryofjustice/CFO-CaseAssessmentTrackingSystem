@@ -1,6 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
-using static Cfo.Cats.Application.Features.Dashboard.Queries.GetActivitiesPerSupportWorker.Handler;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetActivitiesPerSupportWorker
