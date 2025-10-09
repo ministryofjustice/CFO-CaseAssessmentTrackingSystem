@@ -33,8 +33,9 @@ public static class GetParticipantEnrolmentHistory
 
             var results = await (
                                  from peh in db.ParticipantEnrolmentHistories
-                                 join u in db.Users on peh.CreatedBy equals u.Id
-
+                                 join u in db.Users on peh.CreatedBy equals u.Id into userJoin
+                                 from u in userJoin.DefaultIfEmpty()
+                                 
                                  // Do a group join (left join) to all PLHs for this participant
                                  join plhGroup in db.ParticipantLocationHistories
                                      on peh.ParticipantId equals plhGroup.ParticipantId into plhGroupJoin
@@ -59,7 +60,7 @@ public static class GetParticipantEnrolmentHistory
                                      Reason = peh.Reason,
                                      AdditionalInformation = peh.AdditionalInformation!,
                                      LocationName = l.Name,
-                                     SupportWorker = u!.DisplayName!,
+                                     SupportWorker = u != null ? u.DisplayName! : "System Update",
                                      SupportWorkerTenantId = u!.TenantId
                                  })
                                   .OrderBy(x => x.ActionDate)
@@ -74,8 +75,10 @@ public static class GetParticipantEnrolmentHistory
 
             for (int i = 0; i < results.Count; i++)
             {
-                // Mask support worker if needed
-                if (hideUser && HiddenTenantIds.Contains(results[i].SupportWorkerTenantId))
+                // Mask support worker if needed but not for system updates
+                if (hideUser
+                    && results[i].SupportWorker != "System Update"
+                    && HiddenTenantIds.Contains(results[i].SupportWorkerTenantId))
                 {
                     results[i].SupportWorker = "CFO User";
                 }

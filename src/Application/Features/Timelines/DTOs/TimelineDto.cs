@@ -21,7 +21,10 @@ public class TimelineDto
                     options.MapFrom(source => source.EventType.Name);
                 })
                 .ForMember(t => t.User, options => {
-                    options.MapFrom(source => source.CreatedByUser!.DisplayName);
+                    options.MapFrom(source =>
+                                    source.CreatedByUser != null
+                                         ? source.CreatedByUser.DisplayName
+                                         : "System Update");
                 })
                 .ForMember(t => t.Line1, options => {
                     options.MapFrom(source => source.Line1);
@@ -32,7 +35,10 @@ public class TimelineDto
                 }).ForMember(t => t.OccurredOn, options => {
                     options.MapFrom(source => source.Created);
                 }).ForMember(t => t.UserTenantId, options => {
-                    options.MapFrom(source => source.CreatedByUser!.TenantId);
+                    options.MapFrom(source =>
+                                    source.CreatedByUser != null
+                                        ? source.CreatedByUser.TenantId
+                                        : null);
                 });
         }
     }
