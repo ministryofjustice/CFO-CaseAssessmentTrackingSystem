@@ -1,6 +1,6 @@
 ﻿@using Cfo.Cats.Application.Features.Dashboard.Queries
 @using ApexCharts
-@inherits CatsComponent<GetPaidActivitiesPerSupportWorker.PaidActivitiesPerSupportWorkerDto>
+@inherits CatsComponent<GetApprovedActivitiesPerSupportWorker.ApprovedActivitiesPerSupportWorkerDto>
 
 @if (Loading)
 {
@@ -35,7 +35,7 @@
                                        Options="chartOptions"
                                        Height="@($"{Math.Max(300, Data.Details.Select(d => d.Name).Distinct().Count() * 60)}px")">
 
-                                @foreach (var activityType in Data.Details.Select(d => d.ActivityType).Distinct().OrderBy(t => t))
+                                @foreach (var activityType in Data.Details.Select(d => d.ActivityType.Name).Distinct().OrderBy(t => t))
                                 {
                                     <ApexPointSeries TItem="LocationActivityCount"
                                                      Items="@GetSeriesDataForActivityType(activityType)"
