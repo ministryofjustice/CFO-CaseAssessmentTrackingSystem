@@ -3,7 +3,7 @@ using ApexCharts;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard;
 
-public partial class SupportWorkerPaidActivityComponent
+public partial class SupportWorkerApprovedActivityDashboardComponent
 {
     [EditorRequired, Parameter]
     public DateRange? DateRange { get; set; }
@@ -19,8 +19,8 @@ public partial class SupportWorkerPaidActivityComponent
 
     private ApexChartOptions<LocationActivityCount> chartOptions = new();
 
-    protected override IRequest<Result<GetPaidActivitiesPerSupportWorker.PaidActivitiesPerSupportWorkerDto>> CreateQuery()
-     => new GetPaidActivitiesPerSupportWorker.Query()
+    protected override IRequest<Result<GetApprovedActivitiesPerSupportWorker.ApprovedActivitiesPerSupportWorkerDto>> CreateQuery()
+     => new GetApprovedActivitiesPerSupportWorker.Query()
      {
          CurrentUser = CurrentUser,
          UserId = UserId,
@@ -73,7 +73,8 @@ public partial class SupportWorkerPaidActivityComponent
 
     private List<LocationActivityCount> GetSeriesDataForActivityType(string activityType)
     {
-        if (Data?.Details == null){
+        if (Data?.Details == null)
+        {
             return new List<LocationActivityCount>();
         }
 
@@ -89,7 +90,7 @@ public partial class SupportWorkerPaidActivityComponent
         foreach (var location in allLocations)
         {
             var count = Data.Details
-                .Where(d => d.Name == location && d.ActivityType == activityType)
+                .Where(d => d.Name == location && d.ActivityType.Name == activityType)
                 .Sum(d => d.TotalCount);
 
             result.Add(new LocationActivityCount
