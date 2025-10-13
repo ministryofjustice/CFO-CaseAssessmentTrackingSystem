@@ -32,7 +32,7 @@ public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork, IBus bus
                 .ToArrayAsync();
 
             var activities = await unitOfWork.DbContext.Activities.Where(e => e.ParticipantId == context.ParticipantId)
-                .Where(e => e.CompletedOn != null && e.Status == ActivityStatus.ApprovedStatus)
+                .Where(e => e.CompletedOn != null && e.Status == ActivityStatus.ApprovedStatus.Value)
                 .Select(e => new { e.Id, e.CompletedOn })
                 .ToArrayAsync();
 
