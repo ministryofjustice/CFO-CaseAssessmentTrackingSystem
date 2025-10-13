@@ -68,41 +68,29 @@
                                         <div class="d-flex align-center">                            
                                             <div class="pr-2">
                                                 <MudText Typo="Typo.body2">
-                                                    Participant: @enrolment.Participant
-											@enrolment.ParticipantId
+                                                    Participant: @enrolment.Participant @enrolment.ParticipantId
                                                 </MudText>
-                                                <div class="d-flex gap-2 align-center">                                                    
+
+												<div class="d-flex gap-2 align-center">
                                                     <MudText Typo="Typo.body2">
                                                         Submitted by: @UserService.GetDisplayName(@enrolment.SubmittedBy) on @enrolment.SubmittedOn.
                                                     </MudText>
 
-                                                    @if (enrolment.Status == EnrolmentStatus.ApprovedStatus)
-                                                    {
-                                                        <MudText Typo="Typo.body2">
-                                                            Approved On:  @enrolment.CompletedOn.
-                                                        </MudText>
-                                                    }
-                                                    else
-                                                    {
-                                                        <MudText Typo="Typo.body2">
-															Returned On:  @enrolment.CompletedOn.
-                                                        </MudText>
-                                                    }     
+												<MudText Typo="Typo.body2">
+													@(enrolment.Status == EnrolmentStatus.ApprovedStatus
+																		? $"Approved On: {enrolment.CompletedOn?.ToString("g")}"
+																		: $"Returned On: {enrolment.CompletedOn?.ToString("g")}")
+												</MudText>
 													
-                                                    <MudText Typo="Typo.body2">
-														Originally submitted on @created.ToShortDateOrEmptyString() (@created.Humanize()) at @enrolment.TookPlaceAtLocationName.
-                                                    </MudText>                             
-                                                    @{
-                                                        Color color = enrolment.Status switch
-                                                        {
-                                                            _ when enrolment.Status == EnrolmentStatus.EnrollingStatus => Color.Warning,
-                                                            _ when enrolment.Status == EnrolmentStatus.ApprovedStatus => Color.Success,
-                                                            _ => Color.Default
-                                                        };
-                                                    }
-                                                    <MudChip Color="color" Size="Size.Small">@enrolment.Status.Name</MudChip>
-                                                </div>
-                                            </div>
+                                                <MudText Typo="Typo.body2">
+													Originally submitted on @created.ToShortDateOrEmptyString() (@created.Humanize()) at @enrolment.TookPlaceAtLocationName.
+                                                </MudText>                             
+												
+												<MudChip Style="@($"background-color:{enrolment.Status.Colour}; color:white;")" Size="Size.Small">
+													@enrolment.Status.Name
+												</MudChip>
+											</div>
+											</div>
                                         </div>
 
                                         <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
@@ -115,7 +103,7 @@
                                         </MudMenu>
                          
                                     </div>
-                                        <MudDivider />
+                                    <MudDivider />
                                 </ChildContent>  
                                 <NestedList>
                                     <MudListItem Icon="@Icons.Material.Filled.EditNote" Text="Notes" Expanded>

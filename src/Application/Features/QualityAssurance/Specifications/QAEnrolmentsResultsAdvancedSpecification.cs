@@ -12,8 +12,12 @@ public class QAEnrolmentsResultsAdvancedSpecification : Specification<Participan
                 .Where(e => e.EnrolmentStatus == filter.Status, filter.Status is not null)
                 .Where(e => e.OwnerId == filter.UserProfile.UserId, filter.JustMyParticipants)
                 .Where(e => e.Owner.TenantId.StartsWith(filter.UserProfile.TenantId!));
-                
-        Query.OrderByDescending(x => x.Created)
-                .ThenBy(x => x.LastModified);
+
+        //Make sure Enrolling ones are top of the list
+        Query.OrderBy(e =>
+                       e.EnrolmentStatus == EnrolmentStatus.EnrollingStatus.Value ? 0 :
+                       e.EnrolmentStatus == EnrolmentStatus.ApprovedStatus.Value ? 2 : 1)
+                .ThenByDescending(e => e.Created)
+                .ThenBy(e => e.LastModified);
     }
 }
