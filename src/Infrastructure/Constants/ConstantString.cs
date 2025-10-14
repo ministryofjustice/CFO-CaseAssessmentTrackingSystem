@@ -234,4 +234,6 @@ public static class ConstantString
     public static string OffenderManagerDeliusFeed => Localize("Offender Manager (Delius Feed)");
 
     public static string EditActivity => Localize("Edit Activity");
+    public static string PreReleaseSupport => Localize("Pre-Release Support");
+    public static string ThroughTheGate => Localize("Through the Gate");
 }
