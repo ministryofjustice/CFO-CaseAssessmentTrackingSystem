@@ -29,12 +29,14 @@ public static class GetPaidActivitiesPerSupportWorker
                         {
                             l.Name,
                             l.LocationType,
+                            a.Type,
                             mi.ActivityType
                         } into g
-                        orderby g.Key.Name, g.Key.ActivityType
+                        orderby g.Key.Name, g.Key.Type
                         select new LocationDetail(
                             g.Key.Name,
                             g.Key.LocationType,
+                            g.Key.Type,
                             g.Key.ActivityType,
                             g.Count()
                         );
@@ -60,6 +62,6 @@ public static class GetPaidActivitiesPerSupportWorker
         public int Community { get; }
     }
 
-    public record LocationDetail(string Name, LocationType LocationType, string ActivityType, int TotalCount);
+    public record LocationDetail(string Name, LocationType LocationType, ActivityType ActivityType, string ActivityTypeName, int TotalCount);
 
 }

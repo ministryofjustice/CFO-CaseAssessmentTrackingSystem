@@ -1,5 +1,6 @@
 using Cfo.Cats.Application.Features.Dashboard.Queries;
 using ApexCharts;
+using Cfo.Cats.Domain.Common.Enums;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard;
 
@@ -51,12 +52,16 @@ public partial class SupportWorkerPaidActivityComponent
             {
                 Bar = new PlotOptionsBar
                 {
-                    Horizontal = true
+                    Horizontal = false
                 }
             },
             DataLabels = new DataLabels
             {
                 Enabled = false
+            },
+            Xaxis = new XAxis
+            {
+                Title = new AxisTitle { Text = "Payable" }
             },
             Legend = new Legend
             {
@@ -67,7 +72,7 @@ public partial class SupportWorkerPaidActivityComponent
             {
                 Mode = IsDarkMode ? Mode.Dark : Mode.Light
             },
-            Colors = new List<string> { "#5cb85c", "#d9534f", "#5bc0de", "#f0ad4e", "#9467bd" }
+            Colors = ActivityType.List.Select(at => at.Colour).ToList()
         };
     }
 
@@ -89,7 +94,7 @@ public partial class SupportWorkerPaidActivityComponent
         foreach (var location in allLocations)
         {
             var count = Data.Details
-                .Where(d => d.Name == location && d.ActivityType == activityType)
+                .Where(d => d.Name == location && d.ActivityTypeName == activityType)
                 .Sum(d => d.TotalCount);
 
             result.Add(new LocationActivityCount

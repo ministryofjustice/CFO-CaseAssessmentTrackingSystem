@@ -17,7 +17,7 @@
 @if (Data is not null)
 {
     <MudGrid Spacing="2">
-        <MudItem xs="12" Style="height: calc(100vh - 150px);">
+        <MudItem xs="12"  Style="height: calc(50vh - 100px); overflow:auto;">
             <MudStack Row="true" Breakpoint="Breakpoint.SmAndDown" Style="height:100%; width:100%;">
                 <!-- Right hand content -->
                 <MudStack Style="flex:1; height:80%; overflow:auto;">
@@ -32,17 +32,18 @@
                             <div style="padding-top: 50px;">
                             <ApexChart TItem="LocationActivityCount"
                                        Options="chartOptions"
-                                       Height="@($"{Math.Max(300, Data.Details.Select(d => d.Name).Distinct().Count() * 60)}px")">
+                                       Height="270">
 
-                                @foreach (var activityType in Data.Details.Select(d => d.ActivityType.Name).Distinct().OrderBy(t => t))
+                                @foreach (var activityType in Data.Details.Select(d => d.ActivityType).Distinct().OrderBy(t => t))
                                 {
                                     <ApexPointSeries TItem="LocationActivityCount"
-                                                     Items="@GetSeriesDataForActivityType(activityType)"
-                                                     Name="@activityType"
+                                                     Items="@GetSeriesDataForActivityType(activityType.Name)"
+                                                     Name="@activityType.Name"
                                                      SeriesType="SeriesType.Bar"
                                                      XValue="@(e => e.Location)"
                                                      YValue="@(e => (decimal)e.Count)"
-                                                     OrderBy="e => e.X" />
+                                                     OrderBy="e => e.X" 
+                                                     Color="@activityType.Colour"/>
                                 }
                             </ApexChart>
                             </div>
@@ -50,7 +51,10 @@
                     }
                     else
                     {
-                        <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true">
+                        <MudText Typo="Typo.h5" GutterBottom="true">
+                            Commenced
+                        </MudText>
+                        <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true" Outlined="true" title="Commenced">
                             <HeaderContent>
                                 <MudTh>Location</MudTh>
                                 <MudTh>Type</MudTh>
@@ -60,7 +64,16 @@
                             <RowTemplate>
                                 <MudTd DataLabel="Location">@context.Name</MudTd>
                                 <MudTd DataLabel="Type">@context.LocationType.Name</MudTd>
-                                <MudTd DataLabel="Activity Type">@context.ActivityType</MudTd>
+                                <MudTd DataLabel="Activity Type">
+                                    <div style="display: flex; align-items: center;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Circle"
+                                                 Size="MudBlazor.Size.Small"
+                                                 Style="@($"color:{context.ActivityType.Colour};")" />
+                                        <MudText Typo="Typo.body2" Class="ml-2">
+                                            @context.ActivityType.Name
+                                        </MudText>
+                                    </div>
+                                </MudTd>
                                 <MudTd DataLabel="Total Count">@context.TotalCount</MudTd>
                             </RowTemplate>
                             <PagerContent>
