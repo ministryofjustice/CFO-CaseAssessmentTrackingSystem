@@ -15,53 +15,37 @@
 @if (Data is not null)
 {
     <MudGrid Spacing="2">
-        <!-- Pre-Release Support - Eligible for Payment -->
+        <MudItem>
+            <MudChip T="string">Custody (@Data.Custody)</MudChip>
+            <MudChip T="string">Community (@Data.Community)</MudChip>
+        </MudItem>
+    </MudGrid>
+    <MudGrid Spacing="2">
+        @if (VisualMode)
+        {
+            <!-- Pre-Release Support - Eligible for Payment -->
         <MudItem xs="12" sm="6" md="6" lg="6" Style="height: calc(50vh - 100px);">
             <MudCard Style="height: 100%;">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">Pre-Release Support - Eligible for Payment</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
                 <MudCardContent Style="height: calc(100% - 80px); overflow:auto;">
-                    @if (VisualMode)
-                    {
-                        <div style="width: 100%; height: 100%;">
-                            @if (GetChartData(ConstantString.PreReleaseSupport, true).Any())
-                            {
-                                <ApexChart TItem="ChartDataPoint"
-                                           Options="@GetChartOptions("#10b981")" Height="350">
-                                    <ApexPointSeries TItem="ChartDataPoint"
-                                                     Items="@GetChartData(ConstantString.PreReleaseSupport, true)"
-                                                     Name="Count"
-                                                     SeriesType="SeriesType.Bar"
-                                                     XValue="@(e => e.Location)"
-                                                     YValue="@(e => (decimal)e.Count)"
-                                                     OrderBy="e => e.X"/>
-                                </ApexChart>
-                            }
-                            else
-                            {
-                                <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <MudTable Items="@GetTableData(ConstantString.PreReleaseSupport, true)" MultiSelection="false" Striped="true" Hover="true">
-                            <HeaderContent>
-                                <MudTh>Location</MudTh>
-                                <MudTh>Count</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd>@context.Name</MudTd>
-                                <MudTd>@context.Count</MudTd>
-                            </RowTemplate>
-                            <PagerContent>
-                                <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
-                            </PagerContent>
-                        </MudTable>
-                    }
+                    <div style="width: 100%; height: 100%;">
+                        @if (GetChartData(ConstantString.PreReleaseSupport, true).Any())
+                        {
+                            <ApexChart TItem="ChartDataPoint"
+                                           Options="@GetChartOptions("#10b981", string.Format("{0} - {1}",ConstantString.PreReleaseSupport, ConstantString.Payable))" Height="335">
+                                <ApexPointSeries TItem="ChartDataPoint"
+                                                    Items="@GetChartData(ConstantString.PreReleaseSupport, true)"
+                                                    Name="Count"
+                                                    SeriesType="ApexCharts.SeriesType.Bar"
+                                                    XValue="@(e => e.Location)"
+                                                    YValue="@(e => (decimal)e.Count)"
+                                                    OrderBy="e => e.X"/>
+                            </ApexChart>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+                        }
+                    </div>
                 </MudCardContent>
             </MudCard>
         </MudItem>
@@ -69,50 +53,26 @@
         <!-- Pre-Release Support - NOT Eligible for Payment -->
         <MudItem xs="12" sm="6" md="6" lg="6" Style="height: calc(50vh - 100px);">
             <MudCard Style="height: 100%;">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">Pre-Release Support - NOT Eligible for Payment</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent Style="height: calc(100% - 80px);">
-                    @if (VisualMode)
-                    {
-                        <div style="width: 100%; height: 100%;">
-                            @if (GetChartData(ConstantString.PreReleaseSupport, false).Any())
-                            {
-                                <ApexChart TItem="ChartDataPoint"
-                                           Options="@GetChartOptions("#ef4444")" Height="350">
-                                    <ApexPointSeries TItem="ChartDataPoint"
-                                                     Items="@GetChartData(ConstantString.PreReleaseSupport, false)"
-                                                     Name="Count"
-                                                     SeriesType="SeriesType.Bar"
-                                                     XValue="@(e => e.Location)"
-                                                     YValue="@(e => (decimal)e.Count)"
-                                                     OrderBy="e => e.X" />
-                                </ApexChart>
-                            }
-                            else
-                            {
-                                <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <MudTable Items="@GetTableData(ConstantString.PreReleaseSupport, false)" MultiSelection="false" Striped="true" Hover="true">
-                            <HeaderContent>
-                                <MudTh>Location</MudTh>
-                                <MudTh>Count</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd>@context.Name</MudTd>
-                                <MudTd>@context.Count</MudTd>
-                            </RowTemplate>
-                            <PagerContent>
-                                <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
-                            </PagerContent>
-                        </MudTable>
-                    }
+                    <MudCardContent Style="height: calc(100% - 80px); overflow:auto;">
+                    <div style="width: 100%; height: 100%;">
+                        @if (GetChartData(ConstantString.PreReleaseSupport, false).Any())
+                        {
+                            <ApexChart TItem="ChartDataPoint"
+                                           Options="@GetChartOptions("#ef4444", string.Format("{0} - {1}",ConstantString.PreReleaseSupport, ConstantString.NonPayable))" Height="335">
+                                <ApexPointSeries TItem="ChartDataPoint"
+                                                    Items="@GetChartData(ConstantString.PreReleaseSupport, false)"
+                                                    Name="Count"
+                                                     SeriesType="ApexCharts.SeriesType.Bar"
+                                                    XValue="@(e => e.Location)"
+                                                    YValue="@(e => (decimal)e.Count)"
+                                                    OrderBy="e => e.X" />
+                            </ApexChart>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+                        }
+                    </div>
                 </MudCardContent>
             </MudCard>
         </MudItem>
@@ -120,50 +80,26 @@
         <!-- Through the Gate - Eligible for Payment -->
         <MudItem xs="12" sm="6" md="6" lg="6" Style="height: calc(50vh - 100px);">
             <MudCard Style="height: 100%;">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">Through the Gate - Eligible for Payment</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent Style="height: calc(100% - 80px);">
-                    @if (VisualMode)
-                    {
-                        <div style="width: 100%; height: 100%;">
-                            @if (GetChartData(ConstantString.ThroughTheGate, true).Any())
-                            {
-                                <ApexChart TItem="ChartDataPoint"
-                                           Options="@GetChartOptions("#3b82f6")" Height="350">
-                                    <ApexPointSeries TItem="ChartDataPoint"
-                                                     Items="@GetChartData(ConstantString.ThroughTheGate, true)"
-                                                     Name="Count"
-                                                     SeriesType="SeriesType.Bar"
-                                                     XValue="@(e => e.Location)"
-                                                     YValue="@(e => (decimal)e.Count)"
-                                                     OrderBy="e => e.X" />
-                                </ApexChart>
-                            }
-                            else
-                            {
-                                <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <MudTable Items="@GetTableData(ConstantString.ThroughTheGate, true)" MultiSelection="false" Striped="true" Hover="true">
-                            <HeaderContent>
-                                <MudTh>Location</MudTh>
-                                <MudTh>Count</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd>@context.Name</MudTd>
-                                <MudTd>@context.Count</MudTd>
-                            </RowTemplate>
-                            <PagerContent>
-                                <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
-                            </PagerContent>
-                        </MudTable>
-                    }
+                    <MudCardContent Style="height: calc(100% - 80px); overflow:auto;">
+                    <div style="width: 100%; height: 100%;">
+                        @if (GetChartData(ConstantString.ThroughTheGate, true).Any())
+                        {
+                            <ApexChart TItem="ChartDataPoint"
+                                           Options="@GetChartOptions("#10b981", string.Format("{0} - {1}",ConstantString.ThroughTheGate, ConstantString.Payable))" Height="335">
+                                <ApexPointSeries TItem="ChartDataPoint"
+                                                    Items="@GetChartData(ConstantString.ThroughTheGate, true)"
+                                                    Name="Count"
+                                                     SeriesType="ApexCharts.SeriesType.Bar"
+                                                    XValue="@(e => e.Location)"
+                                                    YValue="@(e => (decimal)e.Count)"
+                                                    OrderBy="e => e.X" />
+                            </ApexChart>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+                        }
+                    </div>
                 </MudCardContent>
             </MudCard>
         </MudItem>
@@ -171,53 +107,57 @@
         <!-- Through the Gate - NOT Eligible for Payment -->
         <MudItem xs="12" sm="6" md="6" lg="6" Style="height: calc(50vh - 100px);">
             <MudCard Style="height: 100%;">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">Through the Gate - NOT Eligible for Payment</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent Style="height: calc(100% - 80px);">
-                    @if (VisualMode)
-                    {
-                        <div style="width: 100%; height: 100%;">
-                            @if (GetChartData(ConstantString.ThroughTheGate, false).Any())
-                            {
-                                <ApexChart TItem="ChartDataPoint"
-                                           Options="@GetChartOptions("#f59e0b")" Height="350">
-                                    <ApexPointSeries TItem="ChartDataPoint"
-                                                     Items="@GetChartData(ConstantString.ThroughTheGate, false)"
-                                                     Name="Count"
-                                                     SeriesType="SeriesType.Bar"
-                                                     XValue="@(e => e.Location)"
-                                                     YValue="@(e => (decimal)e.Count)"
-                                                     OrderBy="e => e.X" />
-                                </ApexChart>
-                            }
-                            else
-                            {
-                                <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <MudTable Items="@GetTableData(ConstantString.ThroughTheGate, false)" MultiSelection="false" Hover="true" Striped="true">
-                            <HeaderContent>
-                                <MudTh>Location</MudTh>
-                                <MudTh>Count</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd>@context.Name</MudTd>
-                                <MudTd>@context.Count</MudTd>
-                            </RowTemplate>
-                            <PagerContent>
-                                <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
-                            </PagerContent>
-                        </MudTable>
-                    }
+                    <MudCardContent Style="height: calc(100% - 80px); overflow:auto;">
+                    <div style="width: 100%; height: 100%;">
+                        @if (GetChartData(ConstantString.ThroughTheGate, false).Any())
+                        {
+                            <ApexChart TItem="ChartDataPoint"
+                                           Options="@GetChartOptions("#ef4444", string.Format("{0} - {1}",ConstantString.ThroughTheGate, ConstantString.NonPayable))" Height="335">
+                                <ApexPointSeries TItem="ChartDataPoint"
+                                                    Items="@GetChartData(ConstantString.ThroughTheGate, false)"
+                                                    Name="Count"
+                                                     SeriesType="ApexCharts.SeriesType.Bar"
+                                                    XValue="@(e => e.Location)"
+                                                    YValue="@(e => (decimal)e.Count)"
+                                                    OrderBy="e => e.X" />
+                            </ApexChart>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+                        }
+                    </div>
                 </MudCardContent>
             </MudCard>
-        </MudItem>
+            </MudItem>
+        }
+        else
+        {
+            <MudItem xs="12" Style="height: calc(100vh - 150px);">
+                <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true">
+                    <HeaderContent>
+                        <MudTh>Location</MudTh>
+                        <MudTh>Location Type</MudTh>
+                        <MudTh>Support Type</MudTh>
+                        <MudTh>Payable</MudTh>
+                        <MudTh>Non-Payable</MudTh>
+                        <MudTh>Total Count</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Location">@context.Name</MudTd>
+                        <MudTd DataLabel="Location Type">@context.LocationType.Name</MudTd>
+                        <MudTd DataLabel="Support Type">@context.SupportType</MudTd>
+                        <MudTd DataLabel="Payable">@context.Payable</MudTd>
+                        <MudTd DataLabel="Payable">@(context.Count - context.Payable)</MudTd>
+                        <MudTd DataLabel="Total Count">@context.Count</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
+                    </PagerContent>
+                </MudTable>
+            </MudItem>
+            
+        }
     </MudGrid>
 }
 

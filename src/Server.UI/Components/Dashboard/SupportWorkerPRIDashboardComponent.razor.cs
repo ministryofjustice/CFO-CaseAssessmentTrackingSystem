@@ -26,24 +26,31 @@ public partial class SupportWorkerPRIDashboardComponent
 
     private List<ChartDataPoint> GetChartData(string supportType, bool isPayable)
     {
-        return Data?.Details
-            .Where(d => d.SupportType == supportType && d.IsPayable == isPayable)
-            .Select(d => new ChartDataPoint
-            {
-                Location = d.Name,
-                Count = d.Count
-            })
-            .ToList() ?? new List<ChartDataPoint>();
+        if (isPayable) {
+            return Data?.Details
+                .Where(d => d.SupportType == supportType && d.Payable > 0)
+                .Select(d => new ChartDataPoint
+                {
+                    Location = d.Name,
+                    Count = d.Payable
+                })
+                .ToList() ?? new List<ChartDataPoint>();
+        }
+        else
+        {
+            return Data?.Details
+                .Where(d => d.SupportType == supportType && (d.Count - d.Payable) > 0)
+                .Select(d => new ChartDataPoint
+                {
+                    Location = d.Name,
+                    Count = (d.Count - d.Payable)
+                })
+                .ToList() ?? new List<ChartDataPoint>();
+        }
+
     }
 
-    private IEnumerable<GetPrisPerSupportWorker.LocationDetail> GetTableData(string supportType, bool isPayable)
-    {
-        return Data?.Details
-            .Where(d => d.SupportType == supportType && d.IsPayable == isPayable)
-            ?? Enumerable.Empty<GetPrisPerSupportWorker.LocationDetail>();
-    }
-
-    private ApexChartOptions<ChartDataPoint> GetChartOptions(string color)
+    private ApexChartOptions<ChartDataPoint> GetChartOptions(string color, string xAxisTitle)
     {
         return new ApexChartOptions<ChartDataPoint>
         {
@@ -70,13 +77,12 @@ public partial class SupportWorkerPRIDashboardComponent
             },
             Xaxis = new XAxis
             {
-                Title = new AxisTitle { Text = "Location" }
+                Title = new AxisTitle { Text = xAxisTitle }
             },
             Yaxis = new List<YAxis>
             {
                 new YAxis
                 {
-                    Title = new AxisTitle { Text = "Count" },
                     Min = 0,
                     ForceNiceScale = true
                 }
