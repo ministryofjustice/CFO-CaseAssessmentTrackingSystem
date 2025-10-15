@@ -362,14 +362,24 @@ public class ClassificationType : SmartEnum<ClassificationType>
     public bool RequiresFurtherInformation { get; private set; }
 }
 
-public class ActivityType(string name, int value) : SmartEnum<ActivityType>(name, value)
+public class ActivityType : SmartEnum<ActivityType>
 {
-    public static readonly ActivityType CommunityAndSocial = new("Community and Social", 0);
-    public static readonly ActivityType EducationAndTraining = new("Education and Training", 1);
-    public static readonly ActivityType Employment = new("Employment", 2);
-    public static readonly ActivityType HumanCitizenship = new("Human Citizenship", 3);
-    public static readonly ActivityType InterventionsAndServicesWraparoundSupport = new("ISW Support", 4);
-    public static readonly ActivityType SupportWork = new("Support Work", 5);
+    public static readonly ActivityType CommunityAndSocial = new("Community and Social", 0, "#64748B");
+    public static readonly ActivityType EducationAndTraining = new("Education and Training", 1, "#A855F7");
+    public static readonly ActivityType Employment = new("Employment", 2, "#006D77");
+    public static readonly ActivityType HumanCitizenship = new("Human Citizenship", 3, "#64748B");
+    public static readonly ActivityType InterventionsAndServicesWraparoundSupport = new("ISW Support", 4, "#F59E0B");
+    public static readonly ActivityType SupportWork = new("Support Work", 5, "#008FFB");
+
+    private ActivityType(string name, int value, string colour) : base(name, value)
+    {
+        Colour = colour;
+    }
+
+    /// <summary>
+    /// Indicates whether the owner can have exactly one (exclusive), or multiple (inclusive) of each type of identifier.
+    /// </summary>
+    public string Colour { get; private set; }
 }
 
 public class ExpectedClaims(string name, int value) : SmartEnum<ExpectedClaims>(name, value)

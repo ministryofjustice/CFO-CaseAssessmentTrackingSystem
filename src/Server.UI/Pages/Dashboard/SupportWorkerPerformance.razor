@@ -67,16 +67,15 @@
 				<SupportWorkerInductionDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
 			</MudTabPanel>
 			<MudTabPanel Text="Activities">
-                @* <SupportWorkerActivityDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" /> *@
-                <MudGrid Spacing="2">
-                    <MudItem xs="12" sm="6" md="6" lg="4" Style="height: calc(100vh - 150px);">
-                        <SupportWorkerPaidActivityComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                <MudGrid Spacing="4">
+                    <MudItem xs="12" sm="12" md="12" lg="12">
+                        <SupportWorkerCommencedActivityDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
                     </MudItem>
-                    <MudItem xs="12" sm="6" md="6" lg="4" Style="height: calc(100vh - 150px);">
+                    <MudItem xs="12" sm="6" md="6" lg="6">
                         <SupportWorkerApprovedActivityDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
                     </MudItem>
-                    <MudItem xs="12" sm="6" md="6" lg="4" Style="height: calc(100vh - 150px);">
-                        <SupportWorkerCommencedActivityDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                    <MudItem xs="12" sm="6" md="6" lg="6">
+                        <SupportWorkerPaidActivityComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
                     </MudItem>
                 </MudGrid>
             </MudTabPanel>
