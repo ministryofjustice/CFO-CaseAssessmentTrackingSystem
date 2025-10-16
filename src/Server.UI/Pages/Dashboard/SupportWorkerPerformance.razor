@@ -63,6 +63,9 @@
 			<MudTabPanel Text="Enrolments" Class="pa-3">
 				<SupportWorkerEnrolmentDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
 			</MudTabPanel>
+            <MudTabPanel Text="Reassessments" Class="pa-3">
+                <SupportWorkerReassessmentDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+            </MudTabPanel>
 			<MudTabPanel Text="Inductions" Class="pa-3">
 				<SupportWorkerInductionDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
 			</MudTabPanel>
