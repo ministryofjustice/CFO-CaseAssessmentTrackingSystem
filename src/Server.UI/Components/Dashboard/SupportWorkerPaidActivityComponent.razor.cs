@@ -76,7 +76,7 @@ public partial class SupportWorkerPaidActivityComponent
         };
     }
 
-    private List<LocationActivityCount> GetSeriesDataForActivityType(string activityType)
+    private List<LocationActivityCount> GetSeriesDataForActivityType(ActivityType activityType)
     {
         if (Data?.Details == null){
             return new List<LocationActivityCount>();
@@ -84,7 +84,7 @@ public partial class SupportWorkerPaidActivityComponent
 
         // Get all unique locations
         var allLocations = Data.Details
-            .Select(d => d.Name)
+            .Select(d => d.Location)
             .Distinct()
             .OrderBy(name => name)
             .ToList();
@@ -94,8 +94,8 @@ public partial class SupportWorkerPaidActivityComponent
         foreach (var location in allLocations)
         {
             var count = Data.Details
-                .Where(d => d.Name == location && d.ActivityTypeName == activityType)
-                .Sum(d => d.TotalCount);
+                .Where(d => d.Location == location && d.ActivityType == activityType)
+                .Sum(d => d.Count);
 
             result.Add(new LocationActivityCount
             {

@@ -37,7 +37,7 @@
                                 @foreach (var activityType in Data.Details.Select(d => d.ActivityType).Distinct().OrderBy(t => t))
                                 {
                                     <ApexPointSeries TItem="LocationActivityCount"
-                                                     Items="@GetSeriesDataForActivityType(activityType.Name)"
+                                                     Items="@GetSeriesDataForActivityType(activityType)"
                                                      Name="@activityType.Name"
                                                      SeriesType="SeriesType.Bar"
                                                      XValue="@(e => e.Location)"
@@ -54,17 +54,33 @@
                         <MudText Typo="Typo.h5" GutterBottom="true">
                             Approved
                         </MudText>
-                        <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true" Outlined="true">
+                        <MudTable Items="Data.Details" MultiSelection="false" Striped="true" Hover="true" Outlined="true" title="Approved">
                             <HeaderContent>
-                                <MudTh>Location</MudTh>
-                                <MudTh>Type</MudTh>
-                                <MudTh>Activity Type</MudTh>
-                                <MudTh>Total Count</MudTh>
+                                <MudTh>
+                                    <MudTableSortLabel SortBy="new Func<GetApprovedActivitiesPerSupportWorker.Details, object>(x => x.Location)">
+                                        Location
+                                    </MudTableSortLabel>
+                                </MudTh>
+                                <MudTh>
+                                    <MudTableSortLabel SortBy="new Func<GetApprovedActivitiesPerSupportWorker.Details, object>(x => x.LocationType.Name)">
+                                        Location Type
+                                    </MudTableSortLabel>
+                                </MudTh>
+                                <MudTh>
+                                    <MudTableSortLabel SortBy="new Func<GetApprovedActivitiesPerSupportWorker.Details, object>(x => x.ActivityType.Name)">
+                                        Activity Type
+                                    </MudTableSortLabel>
+                                </MudTh>
+                                <MudTh>
+                                    <MudTableSortLabel SortBy="new Func<GetApprovedActivitiesPerSupportWorker.Details, object>(x => x.Count)">
+                                        Count
+                                    </MudTableSortLabel>
+                                </MudTh>
                             </HeaderContent>
                             <RowTemplate>
-                                <MudTd DataLabel="Location">@context.Name</MudTd>
-                                <MudTd DataLabel="Type">@context.LocationType.Name</MudTd>
-                                <MudTd DataLabel="Activity Type">
+                                <MudTd DataLabel="Location">@context.Location</MudTd>
+                                <MudTd DataLabel="LocationType">@context.LocationType.Name</MudTd>
+                                <MudTd DataLabel="ActivityType">
                                     <div style="display: flex; align-items: center;">
                                         <MudIcon Icon="@Icons.Material.Filled.Circle"
                                                  Size="MudBlazor.Size.Small"
@@ -74,7 +90,7 @@
                                         </MudText>
                                     </div>
                                 </MudTd>
-                                <MudTd DataLabel="Total Count">@context.TotalCount</MudTd>
+                                <MudTd DataLabel="Count">@context.Count</MudTd>
                             </RowTemplate>
                             <PagerContent>
                                 <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />

@@ -23,6 +23,7 @@ public static class GetApprovedActivitiesPerSupportWorker
                         where a.OwnerId == request.UserId
                               && a.CompletedOn >= request.StartDate
                               && a.CompletedOn <= request.EndDate
+                              && a.Status == ActivityStatus.ApprovedStatus.Value
                         group a by new
                         {
                             l.Name,
@@ -30,7 +31,7 @@ public static class GetApprovedActivitiesPerSupportWorker
                             a.Type
                         } into g
                         orderby g.Key.Name, g.Key.Type
-                        select new LocationDetail(
+                        select new Details(
                             g.Key.Name,
                             g.Key.LocationType,
                             g.Key.Type,
@@ -46,18 +47,18 @@ public static class GetApprovedActivitiesPerSupportWorker
     }
     public record ApprovedActivitiesPerSupportWorkerDto
     {
-        public ApprovedActivitiesPerSupportWorkerDto(LocationDetail[] details)
+        public ApprovedActivitiesPerSupportWorkerDto(Details[] details)
         {
             Details = details;
-            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.TotalCount);
-            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.TotalCount);
+            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.Count);
+            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.Count);
 
         }
-        public LocationDetail[] Details { get; }
+        public Details[] Details { get; init; }
         public int Custody { get; }
         public int Community { get; }
     }
 
-    public record LocationDetail(string Name, LocationType LocationType, ActivityType ActivityType, int TotalCount);
+    public record Details(string Location, LocationType LocationType, ActivityType ActivityType, int Count);
 
 }
