@@ -1,9 +1,8 @@
 ﻿@page "/"
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults
+
 @inherits CatsComponentBase
-
-
 
 <MudText Typo="Typo.h3">
     Dashboard
@@ -47,8 +46,7 @@
         
     @if (_showQaPots)
     {
-        <QaPots />
-            
+        <QaPots />            
     }
         
     @if (_showSyncComponent)
@@ -63,6 +61,14 @@
     }
     
     <QAActivitiesResults JustMyParticipants="_showMyTeamsParticipants is false"/>  
-    <QAEnrolmentsResults JustMyParticipants="_showMyTeamsParticipants is false" />
+	<QAEnrolmentsResults JustMyParticipants="_showMyTeamsParticipants is false" />
 
+	@if (_showMyTeamsParticipants)
+	{
+		<MyTeamsParticipantsInLicenceEndPeriod />
+	}
+	else
+	{
+		<MyParticipantsInLicenceEndPeriod/>
+	}	
 </MudGrid>

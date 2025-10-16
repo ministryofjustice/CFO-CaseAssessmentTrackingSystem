@@ -1,0 +1,95 @@
+﻿@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@using Humanizer
+
+@inherits CatsComponent<PaginatedData<ParticipantsInLicenceEndPeriodResultsSummaryDto>>
+
+@inject IUserService UserService
+
+<MudItem xs="12">
+	@if (Loading)
+	{
+		<MudLoading Text="Loading" />
+	}
+
+	@if (ErrorMessage is not null)
+	{
+		<MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+			@ErrorMessage
+		</MudAlert>
+	}
+
+	@if (Data is not null)
+	{
+        <MudCard style="height: 100%">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">Participants In Licence End Period</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+				<MudList T="ParticipantsInLicenceEndPeriodResultsSummaryDto" ReadOnly>
+                    <MudListSubheader>
+                
+						@if (_canSearch)
+						{
+							<MudTextField T="string" ValueChanged="@(OnSearch)" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+										  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+							</MudTextField>
+						}
+
+                    </MudListSubheader>
+
+					@foreach (var participant in Data.Items)
+                        {
+                            <MudListItem Class="flex-row-reverse">
+                                <ChildContent>
+                                    <div class="d-flex justify-space-between align-center ml-2">
+                                        <div class="d-flex align-center">                            
+                                            <div class="pr-2">
+                                                <MudText Typo="Typo.body2">
+                                                    Participant: @participant.ParticipantName @participant.Id
+                                                </MudText>                                                
+                                            </div>
+
+										<div class="d-flex gap-2 align-center">
+											<MudText Typo="Typo.body2">
+												Licence End Date:  @participant.PostLicenceCaseClosureEnd.
+											</MudText>
+											<MudText Typo="Typo.body2">
+												Participant Location:  @participant.TookPlaceAtLocationName.
+											</MudText>
+
+											<MudChip Style="@($"background-color:{participant.EnrolmentStatus.Colour}; color:white;")" Size="Size.Small">
+												@participant.EnrolmentStatus.Name
+											</MudChip>							
+										</div>
+									</div>
+
+									<MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+											 Dense="true"
+											 EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+
+										<MudMenuItem OnClick="@(() => EditParticipant(participant.Id))">
+											@ConstantString.EditParticipant
+										</MudMenuItem>
+									</MudMenu>
+								</div>
+								<MudDivider />
+							</ChildContent>
+						</MudListItem>
+
+						<MudDivider />
+                    }
+
+                    <MudListSubheader Class="d-flex justify-center mt-2">
+                            <MudPagination Count="@Data.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
+					</MudListSubheader>
+
+				</MudList>
+            </MudCardContent>
+        </MudCard>
+    }
+</MudItem>
