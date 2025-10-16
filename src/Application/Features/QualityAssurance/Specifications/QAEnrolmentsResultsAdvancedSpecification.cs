@@ -13,7 +13,6 @@ public class QAEnrolmentsResultsAdvancedSpecification : Specification<Participan
                 .Where(e => e.OwnerId == filter.UserProfile.UserId, filter.JustMyParticipants)
                 .Where(e => e.Owner.TenantId.StartsWith(filter.UserProfile.TenantId!));
 
-        //Make sure Enrolling ones are top of the list
         Query.OrderByDescending(e => e.Created)
                 .ThenBy(e => e.LastModified);
     }
