@@ -16,6 +16,10 @@ public class ActivitySummaryDto
     [Description("Additional Information")]
     public string? AdditionalInformation { get; set; }
 
+    public string? AbandonJustification { get; private set; }
+
+    public ActivityAbandonReason? AbandonReason { get; private set; }
+
     public class Mapping : Profile
     {
         public Mapping()
@@ -24,5 +28,4 @@ public class ActivitySummaryDto
                 .ForMember(dest => dest.TookPlaceAtLocationName, opts => opts.MapFrom(src => src.TookPlaceAtLocation.Name));
         }
     }
-
 }

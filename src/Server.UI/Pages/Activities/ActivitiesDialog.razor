@@ -105,18 +105,30 @@
                                         <MudText Typo="Typo.body2" Class="pt-1">
                                             Took place on @commencedOn.ToShortDateString() (@(commencedOn == today ? "today" : commencedOn.Humanize()))
                                             at @activity.TookPlaceAtLocationName
-                                        </MudText>
+                                        </MudText>                          
 
-                                        @{
-                                            Color color = activity.Status switch
-                                            {
-                                                _ when activity.Status == ActivityStatus.PendingStatus => Color.Warning,
-                                                _ when activity.Status == ActivityStatus.ApprovedStatus => Color.Success,
-                                                _ => Color.Default
-                                            };
-                                        }
+										@if (activity.Status == ActivityStatus.AbandonedStatus)
+										{			
+											var justification = string.IsNullOrWhiteSpace(activity.AbandonJustification)
+																? string.Empty
+																: $" because {activity.AbandonJustification.Trim()}";
 
+											<MudText Typo="Typo.body2" Class="pt-1">
+												Abandon Reason: @activity.AbandonReason@justification
+											</MudText>
+										}
+
+										@{
+											Color color = activity.Status switch
+											{
+												_ when activity.Status == ActivityStatus.PendingStatus => Color.Warning,
+												_ when activity.Status == ActivityStatus.ApprovedStatus => Color.Success,
+												_ when activity.Status == ActivityStatus.AbandonedStatus => Color.Info,
+												_ => Color.Default
+											};
+										}
                                         <MudChip Color="color" Size="Size.Small">@activity.Status.Name</MudChip>
+										
                                     </div>
                                 </div>
 
@@ -162,8 +174,7 @@
 @code {
     IEnumerable<LocationDto> locations = [];
     PaginatedData<ActivitySummaryDto>? activities;
-    //bool loading;
-
+    
     [Parameter, EditorRequired]
     public required ActivitiesWithPagination.Query Model { get; set; }
 

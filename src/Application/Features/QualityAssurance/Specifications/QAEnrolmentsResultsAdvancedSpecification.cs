@@ -12,8 +12,8 @@ public class QAEnrolmentsResultsAdvancedSpecification : Specification<Participan
                 .Where(e => e.EnrolmentStatus == filter.Status, filter.Status is not null)
                 .Where(e => e.OwnerId == filter.UserProfile.UserId, filter.JustMyParticipants)
                 .Where(e => e.Owner.TenantId.StartsWith(filter.UserProfile.TenantId!));
-                
-        Query.OrderByDescending(x => x.Created)
-                .ThenBy(x => x.LastModified);
+
+        Query.OrderByDescending(e => e.Created)
+                .ThenBy(e => e.LastModified);
     }
 }

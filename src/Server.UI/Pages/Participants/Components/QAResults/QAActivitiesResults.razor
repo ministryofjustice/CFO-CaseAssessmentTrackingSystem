@@ -85,19 +85,15 @@
                                                     <MudText Typo="Typo.body2">
                                                         Submitted by: @activity.SubmittedBy.
                                                     </MudText>
-                                                    
-                                                    @if(activity.Status == ActivityStatus.ApprovedStatus)
-                                                    {
-                                                        <MudText Typo="Typo.body2">
-                                                            Approved On:  @activity.ApprovedOn.
-                                                        </MudText>
-                                                    }
-                                                    else
-                                                    {
-                                                        <MudText Typo="Typo.body2">
-                                                            Returned On:  @activity.LastModified.
-                                                        </MudText>
-                                                    }
+
+													<MudText Typo="Typo.body2">
+														@(activity.Status == ActivityStatus.ApprovedStatus
+																	? $"Approved On: {activity.ApprovedOn?.ToString("g")}"
+																	: activity.Status == ActivityStatus.AbandonedStatus
+																	? $"Abandoned On: {activity.ApprovedOn?.ToString("g")}"
+																	: $"Returned On: {activity.LastModified?.ToString("g")}")
+													</MudText>                                                   
+											
                                                     <MudText Typo="Typo.body2">                                                    
                                                         Category:  @activity.Definition.Category.Name.
                                                     </MudText>
@@ -113,6 +109,7 @@
                                                         {
                                                             _ when activity.Status == ActivityStatus.PendingStatus => Color.Warning,
                                                             _ when activity.Status == ActivityStatus.ApprovedStatus => Color.Success,
+															_ when activity.Status == ActivityStatus.AbandonedStatus => Color.Info,
                                                             _ => Color.Default
                                                         };
                                                     }
@@ -164,17 +161,17 @@
                                             }
                                         }
                                     </MudListItem>
-                                    <MudDivider />
+                                    <MudDivider/>
                                     <MudListItem>
                                         <MudTextField Label="@activity.GetMemberDescription(x => x.AdditionalInformation)"
                                                         Value="@activity.AdditionalInformation"
                                                         Lines="5"
                                                         Class="mt-0"
-                                                        Disabled />
+                                                        ReadOnly />
                                     </MudListItem>
                                 </NestedList>
                             </MudListItem>
-                            <MudDivider />
+							<MudDivider Class="thick-divider" />
                         }
                         <MudListSubheader Class="d-flex justify-center mt-2">
                             <MudPagination Count="@_activities.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
