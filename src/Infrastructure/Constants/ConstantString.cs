@@ -238,4 +238,8 @@ public static class ConstantString
     public static string NonPayable => Localize("Non-Payable");
     public static string PreReleaseSupport => Localize("Pre-Release Support");
     public static string ThroughTheGate => Localize("Through the Gate");
+
+    public static string UncompliantRisk => Localize("Selecting 'Unknown' will cause this risk to fail compliance checks");
+    public static string UnansweredQuestion => Localize("This question has not been answered");
+
 }
