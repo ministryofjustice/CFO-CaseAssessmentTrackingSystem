@@ -19,22 +19,24 @@ public class Tenant : BaseAuditableEntity<string>
     }
 #pragma warning restore CS8618// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    private Tenant(string id, string name, string description)
+    private Tenant(string id, string name, string description, string? contractId)
     {
         Id = id;
         Name = name;
         Description = description;
+        ContractId = contractId;
 
         AddDomainEvent(new TenantCreatedDomainEvent(this));
     }
 
-    public static Tenant Create(string id, string name, string description)
+    public static Tenant Create(string id, string name, string description, string? contractId)
     {
-        return new Tenant(id, name, description);
+        return new Tenant(id, name, description, contractId);
     }
 
-    public string? Name { get; private set; }
-    public string? Description { get; private set; }
+    public string Name { get; private set; }
+    public string Description { get; private set; }
+    public string? ContractId { get; private set; }
 
     public Tenant Rename(string name)
     {
@@ -45,7 +47,7 @@ public class Tenant : BaseAuditableEntity<string>
 
         if (Name != name)
         {
-            string oldName = this.Name!;
+            var oldName = Name;
             Name = name;
             AddDomainEvent(new TenantRenamedDomainEvent(this, oldName));
         }
