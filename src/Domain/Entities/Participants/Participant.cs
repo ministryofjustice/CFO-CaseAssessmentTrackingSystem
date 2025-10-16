@@ -167,9 +167,9 @@ public class Participant : OwnerPropertyEntity<string>
     /// <returns></returns>
     public Participant AssignTo(string? to)
     {
-        if (to != OwnerId)
+        if (to != OwnerId || to == null)
         {
-            AddDomainEvent(new ParticipantAssignedDomainEvent(this, OwnerId, to));
+            AddDomainEvent(new ParticipantAssignedDomainEvent(this, OwnerId, to, _currentLocationId));
             OwnerId = to;
         }
         return this;
@@ -191,7 +191,7 @@ public class Participant : OwnerPropertyEntity<string>
     {
         if (CurrentLocation.Id != to.Id)
         {
-            var ownerId = this.OwnerId;
+            var ownerId = OwnerId;
             AddDomainEvent(new ParticipantMovedDomainEvent(this, CurrentLocation, to, ownerId));
             CurrentLocation = to;
             _currentLocationId = to.Id;

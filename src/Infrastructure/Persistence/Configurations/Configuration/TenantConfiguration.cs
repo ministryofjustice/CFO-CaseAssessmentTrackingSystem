@@ -20,6 +20,10 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
 
         builder.Property(t => t.Description).IsRequired().HasMaxLength(150);
 
+        builder.Property(t => t.ContractId)
+            .IsRequired(false)
+            .HasMaxLength(DatabaseConstants.FieldLengths.ContractId);
+
         builder.HasMany(t => t.Locations)
             .WithMany(l => l.Tenants)
             .UsingEntity<Dictionary<string,object>>(
