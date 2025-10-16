@@ -234,4 +234,9 @@ public static class ConstantString
     public static string OffenderManagerDeliusFeed => Localize("Offender Manager (Delius Feed)");
 
     public static string EditActivity => Localize("Edit Activity");
+
+    public static string UncompliantRisk => Localize("Selecting 'Unknown' will cause this risk to fail compliance checks");
+
+    public static string UnansweredQuestion => Localize("This question has not been answered");
+
 }

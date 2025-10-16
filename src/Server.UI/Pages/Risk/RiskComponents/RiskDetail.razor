@@ -7,14 +7,33 @@
             @Model.GetMemberDescription(x => x.RiskToChildren)
         </MudItem>
         <MudItem xs="8">
-            <MudToggleGroup @bind-Value="@Model.RiskToChildren" Class="readonly-toggle" CheckMark>
-                <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
-            </MudToggleGroup>
-            <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToChildren)" hidden />
+
+			<MudStack Row="true" StretchItems="StretchItems.Start" AlignItems="AlignItems.Center">
+				<MudToggleGroup @bind-Value="@Model.RiskToChildren" Class="readonly-toggle" CheckMark="true" FixedContent="true">
+					<MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+				</MudToggleGroup>
+
+				@if (Model.RiskToChildren == @RiskLevel.Unknown)
+				{
+					<MudTooltip Text="@ConstantString.UncompliantRisk">
+						<MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Medium" />
+					</MudTooltip>
+				}
+
+				@if(ReadOnly && Model.RiskToChildren == null)
+				{
+					<MudTooltip Text="@ConstantString.UnansweredQuestion">
+						<MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Medium" />
+					</MudTooltip>
+				}
+
+			</MudStack>
+			<MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToChildren)" hidden />
+            
         </MudItem>
         @* Risk to Public *@
         <MudDivider Class="mt-6" />
@@ -22,14 +41,30 @@
             @Model.GetMemberDescription(x => x.RiskToPublic)
         </MudItem>
         <MudItem xs="8">
-            <MudToggleGroup @bind-Value="@Model.RiskToPublic" Class="readonly-toggle" CheckMark>
-                <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
-            </MudToggleGroup>
-            <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToPublic)" hidden />
+			<MudStack Row="true" StretchItems="StretchItems.Start" AlignItems="AlignItems.Center">
+				<MudToggleGroup @bind-Value="@Model.RiskToPublic" Class="readonly-toggle" CheckMark>
+					<MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+				</MudToggleGroup>
+				@if(Model.RiskToPublic == @RiskLevel.Unknown)
+				{
+					<MudTooltip Text="@ConstantString.UncompliantRisk">
+						<MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Medium" />
+					</MudTooltip>
+				}
+
+				@if (ReadOnly && Model.RiskToPublic == null)
+				{
+					<MudTooltip Text="@ConstantString.UnansweredQuestion">
+						<MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Medium" />
+					</MudTooltip>
+				}
+
+			</MudStack>
+			<MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToPublic)" hidden />
         </MudItem>
         @* Risk to Known Adult *@
         <MudDivider Class="mt-6" />
@@ -37,14 +72,28 @@
             @Model.GetMemberDescription(x => x.RiskToKnownAdult)
         </MudItem>
         <MudItem xs="8">
-            <MudToggleGroup @bind-Value="@Model.RiskToKnownAdult" Class="readonly-toggle" CheckMark>
-                <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
-            </MudToggleGroup>
-            <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToKnownAdult)" hidden />
+			<MudStack Row="true" StretchItems="StretchItems.Start" AlignItems="AlignItems.Center">
+				<MudToggleGroup @bind-Value="@Model.RiskToKnownAdult" Class="readonly-toggle" CheckMark>
+					<MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+				</MudToggleGroup>
+				@if(Model.RiskToKnownAdult == @RiskLevel.Unknown)
+				{
+					<MudTooltip Text="@ConstantString.UncompliantRisk">
+						<MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Medium" />
+					</MudTooltip>
+				}
+				@if(ReadOnly && Model.RiskToKnownAdult == null)
+				{
+					<MudTooltip Text="@ConstantString.UnansweredQuestion">
+						<MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Medium" />
+					</MudTooltip>
+				}
+			</MudStack>
+			<MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToKnownAdult)" hidden />
         </MudItem>
         @* Risk to Staff *@
         <MudDivider Class="mt-6" />
@@ -52,14 +101,31 @@
             @Model.GetMemberDescription(x => x.RiskToStaff)
         </MudItem>
         <MudItem xs="8">
-            <MudToggleGroup @bind-Value="@Model.RiskToStaff" Class="readonly-toggle" CheckMark>
-                <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
-                <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
-            </MudToggleGroup>
+
+			<MudStack Row="true" StretchItems="StretchItems.Start" AlignItems="AlignItems.Center">
+				<MudToggleGroup @bind-Value="@Model.RiskToStaff" Class="readonly-toggle" CheckMark>
+					<MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+					<MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+				</MudToggleGroup>
+				@if (Model.RiskToStaff == @RiskLevel.Unknown)
+				{
+					<MudTooltip Text="@ConstantString.UncompliantRisk">
+						<MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Medium" />
+					</MudTooltip>
+				}
+				@if (ReadOnly && Model.RiskToStaff == null)
+				{
+					<MudTooltip Text="@ConstantString.UnansweredQuestion">
+						<MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Medium" />
+					</MudTooltip>
+				}
+			</MudStack>
+
             <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToStaff)" hidden />
+
         </MudItem>
         @if (Community == false)
         {
@@ -69,15 +135,34 @@
                 @Model.GetMemberDescription(x => x.RiskToOtherPrisoners)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToOtherPrisoners" Class="readonly-toggle" CheckMark>
-                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
-                </MudToggleGroup>
+				<MudStack Row="true" StretchItems="StretchItems.Start" AlignItems="AlignItems.Center">
+					<MudToggleGroup @bind-Value="@Model.RiskToOtherPrisoners" Class="readonly-toggle" CheckMark>
+						<MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
+						<MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+						<MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+						<MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+						<MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+					</MudToggleGroup>
+
+					@if (Model.RiskToOtherPrisoners == @RiskLevel.Unknown)
+					{
+						<MudTooltip Text="@ConstantString.UncompliantRisk">
+							<MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Medium" />
+						</MudTooltip>
+					}
+					
+					@if (ReadOnly && Model.RiskToOtherPrisoners == null)
+					{
+						<MudTooltip Text="@ConstantString.UnansweredQuestion">
+							<MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Medium" />
+						</MudTooltip>
+					}
+
+				</MudStack>
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToOtherPrisoners)" hidden />
             </MudItem>
+
+           
         }
         @* Risk to Self *@
         <MudDivider Class="mt-6" />
@@ -87,13 +172,30 @@
                 @Model.GetMemberDescription(x => x.RiskToSelf)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToSelf" Class="readonly-toggle" CheckMark>
-                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
-                </MudToggleGroup>
+				<MudStack Row="true" StretchItems="StretchItems.Start" AlignItems="AlignItems.Center">
+					<MudToggleGroup @bind-Value="@Model.RiskToSelf" Class="readonly-toggle" CheckMark>
+						<MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
+						<MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
+						<MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
+						<MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
+						<MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
+					</MudToggleGroup>
+
+					@if (Model.RiskToSelf == @RiskLevel.Unknown)
+					{
+						<MudTooltip Text="@ConstantString.UncompliantRisk">
+							<MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Medium" />
+						</MudTooltip>
+					}
+
+					@if (ReadOnly && Model.RiskToSelf == null)
+					{
+						<MudTooltip Text="@ConstantString.UnansweredQuestion">
+							<MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Medium" />
+						</MudTooltip>
+					}
+
+				</MudStack>
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToSelf)" hidden />
             </MudItem>
         }
@@ -103,12 +205,29 @@
                 @Model.GetMemberDescription(x => x.RiskToSelfNew)
             </MudItem>
             <MudItem xs="8">
-                <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.RiskToSelfNew" CheckMark>
-                    <MudToggleItem Value="@ConfirmationStatus.Unknown">@ConfirmationStatus.Unknown.Name</MudToggleItem>
-                    <MudToggleItem Value="@ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
-                    <MudToggleItem Value="@ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
-                </MudToggleGroup>
-                <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToSelfNew)" hidden />
+				<MudStack Row="true" StretchItems="StretchItems.Start" AlignItems="AlignItems.Center">
+					<MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.RiskToSelfNew" CheckMark>
+						<MudToggleItem Value="@ConfirmationStatus.Unknown">@ConfirmationStatus.Unknown.Name</MudToggleItem>
+						<MudToggleItem Value="@ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
+						<MudToggleItem Value="@ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
+					</MudToggleGroup>
+               
+					@if(Model.RiskToSelfNew == @RiskLevel.Unknown)
+					{
+						<MudTooltip Text="@ConstantString.UncompliantRisk">
+							<MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Medium" />
+						</MudTooltip>
+					}
+
+					@if (ReadOnly && Model.RiskToSelfNew == null)
+					{
+						<MudTooltip Text="@ConstantString.UnansweredQuestion">
+							<MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Medium" />
+						</MudTooltip>
+					}
+
+				</MudStack>
+				<MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToSelfNew)" hidden />
             </MudItem>
         }
     </MudGrid>
