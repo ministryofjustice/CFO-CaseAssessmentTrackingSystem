@@ -146,6 +146,11 @@ internal static class DatabaseConstants
         /// </summary>
         public const int ContractDescription = 50;
 
+        /// <summary>
+        /// The maximum length for a contract id.
+        /// </summary>
+        public const int ContractId = 12;
+
     }
 
 }

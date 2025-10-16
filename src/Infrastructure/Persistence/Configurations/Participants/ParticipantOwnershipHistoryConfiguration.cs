@@ -38,5 +38,9 @@ public class ParticipantOwnershipHistoryConfiguration
 
         builder.Property(poh => poh.LastModifiedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
+        builder.Property(poh => poh.ContractId)
+            .IsRequired(false)
+            .HasMaxLength(DatabaseConstants.FieldLengths.ContractId);
     }
 }
