@@ -75,7 +75,8 @@
 				<SupportWorkerEmploymentDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
 			</MudTabPanel>
 			<MudTabPanel Text="PRI">
-			</MudTabPanel>
+                <SupportWorkerPRIDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+            </MudTabPanel>
 		</MudTabs>
     }
     
