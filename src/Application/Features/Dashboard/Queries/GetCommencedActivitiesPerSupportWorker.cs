@@ -30,7 +30,7 @@ public static class GetCommencedActivitiesPerSupportWorker
                             a.Type
                         } into g
                         orderby g.Key.Name, g.Key.Type
-                        select new LocationDetail(
+                        select new Details(
                             g.Key.Name,
                             g.Key.LocationType,
                             g.Key.Type,
@@ -46,18 +46,18 @@ public static class GetCommencedActivitiesPerSupportWorker
     }
     public record CommencedActivitiesPerSupportWorkerDto
     {
-        public CommencedActivitiesPerSupportWorkerDto(LocationDetail[] details)
+        public CommencedActivitiesPerSupportWorkerDto(Details[] details)
         {
             Details = details;
-            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.TotalCount);
-            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.TotalCount);
+            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.Count);
+            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.Count);
 
         }
-        public LocationDetail[] Details { get; }
+        public Details[] Details { get; }
         public int Custody { get; }
         public int Community { get; }
     }
 
-    public record LocationDetail(string Name, LocationType LocationType, ActivityType ActivityType, int TotalCount);
+    public record Details(string Location, LocationType LocationType, ActivityType ActivityType, int Count);
 
 }
