@@ -367,7 +367,7 @@ public class ActivityType : SmartEnum<ActivityType>
     public static readonly ActivityType CommunityAndSocial = new("Community and Social", 0, "#64748B");
     public static readonly ActivityType EducationAndTraining = new("Education and Training", 1, "#A855F7");
     public static readonly ActivityType Employment = new("Employment", 2, "#006D77");
-    public static readonly ActivityType HumanCitizenship = new("Human Citizenship", 3, "#64748B");
+    public static readonly ActivityType HumanCitizenship = new("Human Citizenship", 3, "#00B4C5");
     public static readonly ActivityType InterventionsAndServicesWraparoundSupport = new("ISW Support", 4, "#F59E0B");
     public static readonly ActivityType SupportWork = new("Support Work", 5, "#008FFB");
 
