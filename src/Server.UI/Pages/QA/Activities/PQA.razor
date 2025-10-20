@@ -80,75 +80,83 @@
 }
 
 @code {
-    private MudForm? _form;
-    private ActivityQueueEntryDto? _queueEntry;
-    private ActivityQaDetailsDto? _activityQaDetailsDto = null;
+	private int CharacterCount => Command.Message?.Length ?? 0;
+	private MudForm? _form;
+	private ActivityQueueEntryDto? _queueEntry;
+	private ActivityQaDetailsDto? _activityQaDetailsDto = null;
 
-    [Parameter] public Guid Id { get; set; }
+	[Parameter] public Guid Id { get; set; }
 
-    [CascadingParameter] public UserProfile? UserProfile { get; set; }
+	[CascadingParameter] public UserProfile? UserProfile { get; set; }
 
-    private SubmitActivityPqaResponse.Command Command { get; set; } = default!;
+	private SubmitActivityPqaResponse.Command Command { get; set; } = default!;
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (_activityQaDetailsDto is null)
-        {
-            var result = await GetNewMediator().Send(new GetActivityPqaEntryById.Query
+	protected override async Task OnInitializedAsync()
+	{
+		if (_activityQaDetailsDto is null)
+		{
+			var result = await GetNewMediator().Send(new GetActivityPqaEntryById.Query
             {
                 Id = Id,
                 CurrentUser = UserProfile
             });
 
-            if (result.Succeeded)
-            {
-                _queueEntry = result.Data!;
+			if (result.Succeeded)
+			{
+				_queueEntry = result.Data!;
 
-                var activity = await GetNewMediator().Send(new GetActivityById.Query()
+				var activity = await GetNewMediator().Send(new GetActivityById.Query()
                 {
                     Id = _queueEntry.ActivityId
                 });            
 
-                _activityQaDetailsDto = Mapper.Map<ActivityQaDetailsDto>(activity);
-                _activityQaDetailsDto.ActivityId = activity!.Id;
-     
-                Command = new SubmitActivityPqaResponse.Command
+				_activityQaDetailsDto = Mapper.Map<ActivityQaDetailsDto>(activity);
+				_activityQaDetailsDto.ActivityId = activity!.Id;
+
+				Command = new SubmitActivityPqaResponse.Command
                 {
                     QueueEntryId = Id,
                     CurrentUser = UserProfile
                 };
-            }
+			}
 
-            StateHasChanged();
-        }
-    }
+			StateHasChanged();
+		}
+	}
 
-    protected async Task SubmitToQa()
-    {
-        await _form!.Validate();
-        if (_form.IsValid)
-        {
-            var result = await GetNewMediator().Send(Command);
+	protected async Task SubmitToQa()
+	{
+		await _form!.Validate();
 
-            var message = Command.Response switch
-            {
-                SubmitActivityPqaResponse.PqaResponse.Accept => "Activity submitted to QA",
-                SubmitActivityPqaResponse.PqaResponse.Return => "Activity returned to Support Worker",
-                _ => "Comment added"
-            };
+		if (_form.IsValid)
+		{
+			var result = await GetNewMediator().Send(Command);
 
+			if (result.Succeeded)
+			{
+				var message = Command.Response switch
+				{
+					SubmitActivityPqaResponse.PqaResponse.Accept => "Activity submitted to QA",
+					SubmitActivityPqaResponse.PqaResponse.Return => "Activity returned to Support Worker",
+					_ => "Comment added"
+				};
 
-            if (result.Succeeded)
-            {
-                Snackbar.Add(message, Severity.Info);
-                Navigation.NavigateTo("/pages/qa/activities/pqa");
-            }
-            else
-            {
-                ShowActionFailure("Failed to return to submit", result);
-            }
-        }
-    }
+				Snackbar.Add(message, Severity.Info);
+				Navigation.NavigateTo("/pages/qa/activities/pqa");
+			}
+			else
+			{
+				var message = Command.Response switch
+				{
+					SubmitActivityPqaResponse.PqaResponse.Accept => "Failed to submit activity to QA",
+					SubmitActivityPqaResponse.PqaResponse.Return => "Failed to return activity to support worker",
+					_ => "Failed to add Comment/Defer"
+				};
+
+				ShowActionFailure(message, result);
+			}
+		}
+	}
 
     private void ShowActionFailure(string title, IResult result)
     {
@@ -167,7 +175,5 @@
                 options.RequireInteraction = true;
                 options.SnackbarVariant = Variant.Text;
             });
-    }
-
-    private int CharacterCount => Command.Message?.Length ?? 0;
+    }    
 }

@@ -176,24 +176,30 @@
 
         if (submit)
         {
-            var result = await GetNewMediator().Send(Command);
-
-            var message = Command.Response switch
-            {
-                SubmitActivityEscalationResponse.EscalationResponse.Accept => "Activity accepted",
-                SubmitActivityEscalationResponse.EscalationResponse.Return => "Activity returned to PQA",
-                _ => "Comment added"
-            };
-
+            var result = await GetNewMediator().Send(Command);      
 
             if (result.Succeeded)
             {
+				var message = Command.Response switch
+				{
+					SubmitActivityEscalationResponse.EscalationResponse.Accept => "Activity accepted",
+					SubmitActivityEscalationResponse.EscalationResponse.Return => "Activity returned to PQA",
+					_ => "Comment added"
+				};
+
                 Snackbar.Add(message, Severity.Info);
                 Navigation.NavigateTo("/pages/qa/activities/activities");
             }
             else
             {
-                ShowActionFailure("Failed to return to submit", result);
+				var message = Command.Response switch
+				{
+					SubmitActivityEscalationResponse.EscalationResponse.Accept => "Failed to accept activity",
+					SubmitActivityEscalationResponse.EscalationResponse.Return => "Failed to return activity",
+					_ => "Failed to add Comment"
+				};
+
+                ShowActionFailure(message, result);
             }
         }
     }

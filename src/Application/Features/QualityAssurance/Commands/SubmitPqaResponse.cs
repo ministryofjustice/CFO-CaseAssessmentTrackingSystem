@@ -1,6 +1,5 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Application.Pipeline;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.QualityAssurance.Commands;
@@ -92,9 +91,9 @@ public static class SubmitPqaResponse
                 RuleFor(c => c.QueueEntryId)
                     .Must(MustExist)
                     .WithMessage("Queue item does not exist");
-            });
-            
+            });            
         }
+
         private bool MustExist(Guid identifier)
             =>  _unitOfWork.DbContext.EnrolmentPqaQueue.Any(e => e.Id == identifier);
     }
@@ -150,6 +149,7 @@ public static class SubmitPqaResponse
     public class E_OwnerShouldNotBeApprover : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
+
         public E_OwnerShouldNotBeApprover(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -173,6 +173,7 @@ public static class SubmitPqaResponse
     public class F_EnrolmentOccurredWithin3Months : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
+
         public F_EnrolmentOccurredWithin3Months(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -180,7 +181,7 @@ public static class SubmitPqaResponse
             RuleSet(ValidationConstants.RuleSet.MediatR, () => {
                 RuleFor(f => f)
                     .Must(EnrolmentOccurredWithin3Months)
-                    .WithMessage("The enrolment consent date is over 3 months ago")
+                    .WithMessage($"The enrolment consent date is over 3 months ago")
                     .When(f => f.Response == PqaResponse.Accept);
 
             });
@@ -222,5 +223,36 @@ public static class SubmitPqaResponse
 
             return entry != null && entry.Participant!.EnrolmentStatus != EnrolmentStatus.ArchivedStatus;
         }  
+    }
+
+    public class H_ParticipantNotDeativatedInFeedOver30DaysAgo : AbstractValidator<Command>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public H_ParticipantNotDeativatedInFeedOver30DaysAgo(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                When(g => g.Response is PqaResponse.Accept, () =>
+                {
+                    RuleFor(g => g.QueueEntryId)
+                        .Must(ParticipantNotDeativatedInFeedOver30DaysAgo)
+                        .WithMessage("Cannot submit to CFO QA as post-licence case closure period has lapsed");
+                });
+            });
+        }
+
+        private bool ParticipantNotDeativatedInFeedOver30DaysAgo(Guid queueEntryId)
+        {
+            var thirtyDaysAgo = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-30));
+
+            var entry = _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
+                        .FirstOrDefault(a => a.Id == queueEntryId);
+
+            return entry != null && (entry.Participant!.DeactivatedInFeed == null 
+                                    || entry.Participant.DeactivatedInFeed >= thirtyDaysAgo);
+        }
     }
 }

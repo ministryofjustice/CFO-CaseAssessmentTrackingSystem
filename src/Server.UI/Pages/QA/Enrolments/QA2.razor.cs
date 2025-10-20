@@ -6,18 +6,21 @@ using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.Features.QualityAssurance.Commands;
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components;
+using System.Text;
 using IResult = Cfo.Cats.Application.Common.Interfaces.IResult;
 
 namespace Cfo.Cats.Server.UI.Pages.QA.Enrolments;
 
 public partial class QA2
 {
+    private int characterCount => Command.Message?.Length ?? 0; 
     private QaExternalMessageWarning? warningMessage;
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry = null;
     private ParticipantDto? _participantDto = null;
     private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
     private bool _saving = false;
+    
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; } = null!;
 
@@ -70,7 +73,6 @@ public partial class QA2
             {
                 _latestParticipantAssessmentDto = result.Data.MaxBy(pa => pa.CreatedDate);
             }
-
         }
     }
 
@@ -104,7 +106,7 @@ public partial class QA2
                 }
                 else
                 {
-                    ShowActionFailure("Failed to submit", result);
+                    ShowActionFailure("Failed to submit participant", result);
                 }
             }
         }
@@ -113,32 +115,27 @@ public partial class QA2
 
     private void ShowActionFailure(string title, IResult result)
     {
-        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        var html = new StringBuilder();
 
-        sb.Append("<div>");
-        sb.Append($"<h2>{title}</h2>");
-        sb.Append("<ul>");
-
+        html.Append($"<div>");
+        html.Append($"<h2>{title}</h2>");
+        html.Append($"<ul>");
         foreach (var e in result.Errors)
         {
-            sb.Append($"<li>{e}</li>");
+            html.Append($"<li>{e}</li>");
         }
+        html.Append($"</ul>");
+        html.Append($"</div>");
 
-        sb.Append("</ul>");
-        sb.Append("</div>");
+        RenderFragment content = builder =>
+        {
+            builder.AddMarkupContent(0, html.ToString());
+        };
 
-        Snackbar.Add(sb.ToString(), Severity.Error, options =>
+        Snackbar.Add(content, Severity.Error, options =>
         {
             options.RequireInteraction = true;
             options.SnackbarVariant = Variant.Text;
         });
     }
-
-    private int characterCount => Command.Message?.Length ?? 0;
-
-    private void UpdateCharacterCount(ChangeEventArgs args)
-    {
-        Command.Message = args?.Value?.ToString() ?? string.Empty;
-    }
-
 }
