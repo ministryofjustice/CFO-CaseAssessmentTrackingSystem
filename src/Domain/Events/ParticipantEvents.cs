@@ -10,11 +10,12 @@ public sealed class ParticipantCreatedDomainEvent(Participant participant, int l
     public int LocationId { get; } = locationId;
 }
 
-public sealed class ParticipantAssignedDomainEvent(Participant participant, string? from, string? to) : DomainEvent
+public sealed class ParticipantAssignedDomainEvent(Participant participant, string? from, string? to, int currentLocationId) : DomainEvent
 {
     public Participant Item { get; } = participant;
     public string? FromOwner { get; } = from;
     public string? NewOwner { get; } = to;
+    public int CurrentLocationId { get; } = currentLocationId;
 }
 
 public sealed class ParticipantTransitionedDomainEvent(Participant participant, EnrolmentStatus from, EnrolmentStatus to, string? reason, string? additionalInformation)

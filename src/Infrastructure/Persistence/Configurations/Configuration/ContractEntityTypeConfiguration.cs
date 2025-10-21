@@ -14,7 +14,7 @@ public class ContractEntityTypeConfiguration : IEntityTypeConfiguration<Contract
         );
 
         builder.Property(c => c.Id)
-            .HasMaxLength(12);
+            .HasMaxLength(DatabaseConstants.FieldLengths.ContractId);
 
         builder.Ignore(l => l.DomainEvents);
 
