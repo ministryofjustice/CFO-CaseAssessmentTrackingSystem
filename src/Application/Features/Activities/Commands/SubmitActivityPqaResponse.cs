@@ -152,6 +152,7 @@ public static class SubmitActivityPqaResponse
     public class E_OwnerShouldNotBeApprover : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
+
         public E_OwnerShouldNotBeApprover(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -176,6 +177,7 @@ public static class SubmitActivityPqaResponse
     public class F_ActivityOccurredWithin3Months : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
+
         public F_ActivityOccurredWithin3Months(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -225,8 +227,38 @@ public static class SubmitActivityPqaResponse
         {
             var entry = _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Participant)
                 .FirstOrDefault(a => a.Id == queueEntryId);
-            
+
             return entry != null && entry.Participant!.EnrolmentStatus!.ParticipantIsActive();
+        }
+    }
+
+    public class H_ParticipantNotDeativatedInFeedOver30DaysAgo : AbstractValidator<Command>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public H_ParticipantNotDeativatedInFeedOver30DaysAgo(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+            {
+                When(g => g.Response is PqaResponse.Accept, () =>
+                {
+                    RuleFor(g => g.QueueEntryId)
+                        .Must(ParticipantNotDeativatedInFeedOver30DaysAgo)
+                        .WithMessage("Cannot submit to CFO QA as post-licence case closure period has lapsed");
+                });
+            });
+        }
+
+        private bool ParticipantNotDeativatedInFeedOver30DaysAgo(Guid queueEntryId)
+        {
+            var thirtyDaysAgo = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-30));
+
+            var entry = _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Participant)
+                        .FirstOrDefault(a => a.Id == queueEntryId);
+
+            return entry != null && (entry.Participant!.DeactivatedInFeed == null || entry.Participant.DeactivatedInFeed >= thirtyDaysAgo);
         }
     }
 }

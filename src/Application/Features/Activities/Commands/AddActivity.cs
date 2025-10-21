@@ -291,7 +291,6 @@ public static class AddActivity
                     && c.Definition is not null
                     && c.Definition.Classification == ClassificationType.ISWActivity)
                 .WithMessage("Participant must be inducted at Hub before baseline can be achieved");
-
             });
 
             RuleFor(c => c.AdditionalInformation)
@@ -387,7 +386,7 @@ public static class AddActivity
         }
 
         private bool MustNotBeArchived(string participantId)
-            =>  unitOfWork.DbContext.Participants.Any(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
+            => unitOfWork.DbContext.Participants.Any(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value);
 
         private bool BeInductedAtHubForActivity(string participantId, int locationId, DateTime? date)
               => unitOfWork.DbContext.HubInductions.Any(e => e.ParticipantId == participantId

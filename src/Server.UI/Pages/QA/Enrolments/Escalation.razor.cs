@@ -13,6 +13,7 @@ namespace Cfo.Cats.Server.UI.Pages.QA.Enrolments;
 
 public partial class Escalation
 {
+    private int characterCount => Command.Message?.Length ?? 0;
     private QaExternalMessageWarning? warningMessage;
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry;
@@ -96,22 +97,29 @@ public partial class Escalation
             if (submit)
             {
                 var result = await GetNewMediator().Send(Command);
-
-                var message = Command.Response switch
-                {
-                    SubmitEscalationResponse.EscalationResponse.Accept => "Participant accepted",
-                    SubmitEscalationResponse.EscalationResponse.Return => "Participant returned to PQA",
-                    _ => "Comment added"
-                };
-
+                
                 if (result.Succeeded)
                 {
+                    var message = Command.Response switch
+                    {
+                        SubmitEscalationResponse.EscalationResponse.Accept => "Participant accepted",
+                        SubmitEscalationResponse.EscalationResponse.Return => "Participant returned to PQA",
+                        _ => "Comment added"
+                    };
+
                     Snackbar.Add(message, Severity.Info);
                     Navigation.NavigateTo("/pages/qa/servicedesk/enrolments");
                 }
                 else
                 {
-                    ShowActionFailure("Failed to return to submit", result);
+                    var message = Command.Response switch
+                    {
+                        SubmitEscalationResponse.EscalationResponse.Accept => "Failed to accept participant",
+                        SubmitEscalationResponse.EscalationResponse.Return => "Failed to return participant to PQA",
+                        _ => "Failed to add Comment"
+                    };
+
+                    ShowActionFailure(message, result);
                 }
             }
         }
@@ -139,8 +147,5 @@ public partial class Escalation
             options.RequireInteraction = true;
             options.SnackbarVariant = Variant.Text;
         });
-    }
-
-    private int characterCount => Command.Message?.Length ?? 0;
-
+    }    
 }

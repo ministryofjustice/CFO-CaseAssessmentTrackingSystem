@@ -84,7 +84,7 @@
                                 </MudRadioGroup>
                             </MudItem>
 
-                            <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" Class="mt-4" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount"/>
+                            <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" Class="mt-4" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true"/>
                             <MudText Class="ml-2">Characters: @CharacterCount / 1000</MudText>
                         </MudForm>
                         <MudContainer Class="d-flex px-0 pt-8">

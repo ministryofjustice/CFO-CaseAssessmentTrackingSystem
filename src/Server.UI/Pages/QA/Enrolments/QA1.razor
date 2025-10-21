@@ -99,7 +99,7 @@
 
                                 <MudGrid Class="py-4">
                                     <MudItem xs="12">
-                                        <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
+                                        <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" />
                                         <MudText Class="ml-2">Characters: @CharacterCount / 1000</MudText>
                                     </MudItem>
                                 </MudGrid>

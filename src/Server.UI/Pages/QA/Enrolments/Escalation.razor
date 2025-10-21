@@ -104,7 +104,7 @@
                                     Color="Color.Primary" />
                                 </MudItem>
                                 <MudItem xs="12" md="9" xl="10">
-                                    <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
+                                    <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" />
                                     <MudText Class="ml-2">Characters: @characterCount / 1000</MudText>
                                 </MudItem>
                             </MudGrid>
