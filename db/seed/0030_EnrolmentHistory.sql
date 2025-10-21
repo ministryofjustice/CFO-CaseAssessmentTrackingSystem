@@ -197,4 +197,24 @@ BEGIN
 
     SET IDENTITY_INSERT [Participant].[EnrolmentHistory] OFF;
 
+    UPDATE Participant.EnrolmentHistory SET [FROM] = [Created];
+
+    WITH NextEnrollmentStart AS (
+                        SELECT
+                            eh.Id AS PK, 
+                            LEAD(eh.[From]) OVER (
+                                PARTITION BY eh.ParticipantId
+                                ORDER BY eh.[From] ASC
+                            ) AS NextFromDate
+                        FROM
+                            Participant.EnrolmentHistory AS eh
+                    )
+                    -- 2. Update the base table
+                    UPDATE eh
+                    SET eh.[To] = nes.NextFromDate
+                    FROM
+                        Participant.EnrolmentHistory AS eh
+                    INNER JOIN
+                        NextEnrollmentStart AS nes 
+                        ON eh.Id = nes.PK;
 END

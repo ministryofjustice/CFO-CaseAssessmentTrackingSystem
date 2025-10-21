@@ -54,7 +54,8 @@ public static class GetParticipantEnrolmentHistory
                                  select new ParticipantEnrolmentHistoryDto
                                  {
                                      Id = peh.Id,
-                                     ActionDate = peh.Created,
+                                     From = peh.From,
+                                     To = peh.To,
                                      Status = peh.EnrolmentStatus == 4 ? "Archived" : "Active",
                                      Event = peh.EnrolmentStatus.Name,
                                      Reason = peh.Reason,
@@ -63,7 +64,7 @@ public static class GetParticipantEnrolmentHistory
                                      SupportWorker = u != null ? u.DisplayName! : "System Update",
                                      SupportWorkerTenantId = u!.TenantId
                                  })
-                                  .OrderBy(x => x.ActionDate)
+                                  .OrderBy(x => x.From)
                                   .ToListAsync();
 
             if (results.Count == 0)
@@ -82,15 +83,6 @@ public static class GetParticipantEnrolmentHistory
                 {
                     results[i].SupportWorker = "CFO User";
                 }
-
-                var current = results[i];
-                var next = i == results.Count - 1
-                    ? DateTime.UtcNow
-                    : results[i + 1].ActionDate;
-
-                current.DaysSincePrevious = (current.ActionDate.HasValue && next.HasValue)
-                    ? (next.Value - current.ActionDate.Value).Days
-                    : 0;
             }
 
             return results;
