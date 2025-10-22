@@ -1,0 +1,8 @@
+﻿namespace Cfo.Cats.Application.Features.Bios.DTOs.V1.Pathways.Diversity;
+
+public class A22() : SingleChoiceQuestion("Have carried a knife or blade for the purpose of self-defence or to harm others", [Yes, No, NA])
+{
+    public const string Yes = "Yes";
+    public const string No = "No";
+    public const string NA = "PNTS";
+}
