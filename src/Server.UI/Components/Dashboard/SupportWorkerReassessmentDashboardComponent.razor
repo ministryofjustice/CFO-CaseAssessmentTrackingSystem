@@ -1,0 +1,73 @@
+﻿@using Cfo.Cats.Application.Features.Dashboard.Queries
+@inherits CatsComponent<GetReassessmentsPerSupportWorker.ReassessmentsPerSupportWorkerDto>
+
+@if (Loading)
+{
+    <MudLoading Text="Loading" />
+}
+
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@if (Data is not null)
+{
+    <MudGrid Spacing="2">
+        <MudItem>
+            <MudChip T="string">Custody (@Data.Custody)</MudChip>
+            <MudChip T="string">Community (@Data.Community)</MudChip>
+        </MudItem>
+    </MudGrid>
+
+    @if (VisualMode)
+    {
+
+        <ApexCharts.ApexChart TItem="GetReassessmentsPerSupportWorker.Details" Options="Options" Height="650" Width="@("100%")">
+
+            <ApexCharts.ApexPointSeries TItem="GetReassessmentsPerSupportWorker.Details"
+                                        Items="@Data.Details"
+                                        Name="@($"Payable ({(Data.CommunityPayable + Data.CustodyPayable)})")"
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        XValue="@(e => e.LocationName)"
+                                        YValue="@(e => e.Payable)"
+                                        ShowDataLabels="true">
+            </ApexCharts.ApexPointSeries>
+
+            <ApexCharts.ApexPointSeries TItem="GetReassessmentsPerSupportWorker.Details"
+                                        Items="@Data.Details"
+                                        Name="@($"Non Payable ({(Data.Community + Data.Custody) - (Data.CommunityPayable + Data.CustodyPayable)})")"
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        XValue="@(e => e.LocationName)"
+                                        YValue="@(e => e.TotalCount - e.Payable)"
+                                        ShowDataLabels="true">
+            </ApexCharts.ApexPointSeries>
+        </ApexCharts.ApexChart>
+
+    }
+    else
+    {
+        <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true">
+            <HeaderContent>
+                <MudTh>Location</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Payable</MudTh>
+                <MudTh>Non-Payable</MudTh>
+                <MudTh>Total Count</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Location">@context.LocationName</MudTd>
+                <MudTd DataLabel="Type">@context.LocationType.Name</MudTd>
+                <MudTd DataLabel="Payable">@context.Payable</MudTd>
+                <MudTd DataLabel="Payable">@(context.TotalCount - context.Payable)</MudTd>
+                <MudTd DataLabel="Total Count">@context.TotalCount</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
+            </PagerContent>
+        </MudTable>
+    }
+
+}
