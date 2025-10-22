@@ -19,6 +19,13 @@
 
 @if(Data is not null)
 {
+    <MudGrid Spacing="2">
+        <!-- This is the left column -->
+        <MudItem>
+            <MudChip T="string">Custody (@Data.Custody)</MudChip>
+            <MudChip T="string">Community (@Data.Community)</MudChip>
+        </MudItem>
+    </MudGrid>
     @if(VisualMode)
     {
 		<ApexChart TItem="Details" Options="Options" Height="700">

@@ -1,5 +1,6 @@
 using ApexCharts;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
+using System.Linq;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard;
 
@@ -62,9 +63,15 @@ public partial class CasesPerLocationPerSupportWorkerCardComponent
         var statuses = Data.Records.Select(x => x.Status).Distinct().ToList();
 
         return locations.SelectMany(location =>
-            statuses.Select(status => new Details(location, status, Data.Records
-                    .Where(x => x.Location == location && x.Status == status)
-                    .Sum(x => x.Count))))
+            statuses.Select(status => new Details(location,
+                            Data.Records
+                            .Where(x => x.Location == location)
+                            .Select(d => d.LocationType)
+                            .FirstOrDefault()!,
+                        status, 
+                        Data.Records
+                            .Where(x => x.Location == location && x.Status == status)
+                            .Sum(x => x.Count))))
             .ToList();
           
     }
