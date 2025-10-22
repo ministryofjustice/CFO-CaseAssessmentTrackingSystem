@@ -1,5 +1,6 @@
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Events;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
 
@@ -17,13 +18,41 @@ public class ParticipantEnrolmentHistory : BaseAuditableEntity<int>
     public string? Reason { get; private set; }
     public string? AdditionalInformation { get; private set; }
 
+    public DateTime From { get; private set; }
+
+    /// <summary>
+    /// The date and time the enrolment status lasts till. If null, this is the current status
+    /// </summary>
+    public DateTime? To { get; private set; }
+
     public static ParticipantEnrolmentHistory Create(string participantId, EnrolmentStatus enrolmentStatus, string? reason, string? additionalInformation)
-        => new()
+    {
+        var history = new ParticipantEnrolmentHistory()
         {
             ParticipantId = participantId,
             EnrolmentStatus = enrolmentStatus,
-            Reason= reason,
+            Reason = reason,
             AdditionalInformation = additionalInformation,
-            Created = DateTime.UtcNow
+            From = DateTime.UtcNow
         };
+
+        history.AddDomainEvent(new ParticipantEnrolmentHistoryCreatedDomainEvent(history));
+        return history;
+    }
+
+    public ParticipantEnrolmentHistory SetTo(DateTime to)
+    {
+        if(To is not null)
+        {
+            throw new ApplicationException("Cannot set the to date more than once.");
+        }
+
+        if(to < From)
+        {
+            throw new ArgumentException("To cannot be earlier that From");
+        }
+
+        To = to;
+        return this;
+    }
 }

@@ -5,7 +5,9 @@ public class ParticipantEnrolmentHistoryDto
     public required int Id { get; init; }
 
     [Description("Date")]
-    public required DateTime? ActionDate { get; init; }
+    public required DateTime From { get; init; }
+
+    public required DateTime? To { get; init; }
 
     [Description("Status")]
     public required string Status { get; init; }
@@ -28,5 +30,6 @@ public class ParticipantEnrolmentHistoryDto
     public required string LocationName { get; init; }
 
     [Description("Days")]
-    public int DaysSincePrevious { get; set; } 
+    public int DaysSincePrevious => To.HasValue == false ? (DateTime.UtcNow - From).Days : (To.Value - From).Days;
+
 }

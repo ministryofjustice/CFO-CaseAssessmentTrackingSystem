@@ -1,4 +1,5 @@
 ﻿using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Common.Events;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
 
@@ -95,4 +96,12 @@ public sealed class ParticipantRegistrationDetailsChangedDomainEvent(Participant
 public sealed class ParticipantEnrolmentApprovedDomainEvent(Participant item) : DomainEvent
 {
     public Participant Item { get; } = item;
+}
+
+public sealed class ParticipantEnrolmentHistoryCreatedDomainEvent : CreatedDomainEvent<ParticipantEnrolmentHistory>
+{
+    public ParticipantEnrolmentHistoryCreatedDomainEvent(ParticipantEnrolmentHistory entity) 
+        : base(entity)
+    {
+    }
 }
