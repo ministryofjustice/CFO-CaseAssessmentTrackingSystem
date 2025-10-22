@@ -25,6 +25,7 @@ public static class GetInductionsPerSupportWorker
                         && mi.Approved >= request.StartDate
                         && mi.Approved <= request.EndDate
                         group mi by l into grp
+                        orderby grp.Key.Name, grp.Key.LocationType
                         select new LocationDetail
                             (
                                 grp.Key.Name,

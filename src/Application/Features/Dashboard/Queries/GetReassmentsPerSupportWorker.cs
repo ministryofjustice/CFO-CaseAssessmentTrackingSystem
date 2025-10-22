@@ -26,6 +26,7 @@ public static class GetReassessmentsPerSupportWorker
                         && mi.AssessmentCompleted >= request.StartDate
                         && mi.AssessmentCompleted <= request.EndDate
                         group mi by l into grp
+                        orderby grp.Key.Name, grp.Key.LocationType
                         select new Details
                             (
                                 grp.Key.Name,

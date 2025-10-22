@@ -39,7 +39,6 @@
                                                             SeriesType="ApexCharts.SeriesType.Bar"
                                                             XValue="@(e => e.Name)"
                                                             YValue="@(e => e.Payable)"
-                                                            OrderByDescending="e=>e.Y"
                                                             ShowDataLabels="true">
                                 </ApexCharts.ApexPointSeries>
 
@@ -49,7 +48,6 @@
                                                             SeriesType="ApexCharts.SeriesType.Bar"
                                                             XValue="@(e => e.Name)"
                                                             YValue="@(e => e.TotalCount - e.Payable)"
-                                                            OrderByDescending="e=>e.Y"
                                                             ShowDataLabels="true">
                                 </ApexCharts.ApexPointSeries>
                             </ApexCharts.ApexChart>

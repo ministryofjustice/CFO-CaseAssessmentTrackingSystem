@@ -26,6 +26,7 @@ public static class GetEmploymentsPerSupportWorker
                         && mi.ActivityApproved >= request.StartDate
                         && mi.ActivityApproved <= request.EndDate
                         group mi by l into grp
+                        orderby grp.Key.Name, grp.Key.LocationType
                         select new LocationDetail
                             (
                                 grp.Key.Name,
