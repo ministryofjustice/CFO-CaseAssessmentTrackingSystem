@@ -25,6 +25,8 @@ public class ParticipantEnrolmentHistory : BaseAuditableEntity<int>
     /// </summary>
     public DateTime? To { get; private set; }
 
+    public virtual Participant? Participant { get; private set; }
+
     public static ParticipantEnrolmentHistory Create(string participantId, EnrolmentStatus enrolmentStatus, string? reason, string? additionalInformation)
     {
         var history = new ParticipantEnrolmentHistory()
