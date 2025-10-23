@@ -5,9 +5,6 @@
         <RootNamespace>Cfo.Cats.Application.UnitTests</RootNamespace>
         <AssemblyName>Cfo.Cats.Application.UnitTests</AssemblyName>
         <IsPackable>false</IsPackable>
-        <LangVersion>default</LangVersion>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <NuGetAudit>false</NuGetAudit>
     </PropertyGroup>
 
     <ItemGroup>
@@ -18,7 +15,6 @@
       <PackageReference Include="NunitXml.TestLogger" />
       <PackageReference Include="Shouldly" />
     </ItemGroup>
-
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\Application\Application.csproj" />

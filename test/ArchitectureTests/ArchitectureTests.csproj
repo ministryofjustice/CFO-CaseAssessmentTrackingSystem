@@ -1,13 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
         <RootNamespace>Cfo.Cats.Domain.ArchitectureTests</RootNamespace>
         <AssemblyName>Cfo.Cats.Domain.ArchitectureTests</AssemblyName>
         <IsPackable>false</IsPackable>
-        <LangVersion>default</LangVersion>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <NuGetAudit>false</NuGetAudit>
     </PropertyGroup>
 
 
@@ -21,12 +17,10 @@
         <PackageReference Include="Shouldly" />
     </ItemGroup>
 
-
     <ItemGroup>
       <ProjectReference Include="..\..\src\Application\Application.csproj" />
       <ProjectReference Include="..\..\src\Domain\Domain.csproj" />
       <ProjectReference Include="..\..\src\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
-
 
 </Project>
