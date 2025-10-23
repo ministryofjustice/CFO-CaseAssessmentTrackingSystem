@@ -16,16 +16,14 @@
 @if (Data is not null)
 {
     <MudGrid Spacing="2">
+        <MudItem>
+            <MudChip T="string">Custody (@Data.Custody)</MudChip>
+            <MudChip T="string">Community (@Data.Community)</MudChip>
+        </MudItem>
+    </MudGrid>
+    <MudGrid Spacing="2">
         <MudItem xs="12" Style="height: calc(100vh - 150px);">
             <MudStack Row="true" Breakpoint="Breakpoint.SmAndDown" Style="height:100%; width:100%;">
-
-                <!-- This is the left column -->
-                <MudStack Style="width: 150px;">
-                    <MudChip T="string">Wing (@Data.Custody)</MudChip>
-                    <MudChip T="string">Hub (@Data.Community)</MudChip>
-                </MudStack>
-
-                <!-- Right hand content -->
                 <MudStack Style="flex:1; height:80%; overflow:auto;">
                     @if (VisualMode)
                     {
