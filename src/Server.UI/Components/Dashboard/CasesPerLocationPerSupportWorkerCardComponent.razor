@@ -17,7 +17,7 @@
     </MudAlert>
 }
 
-@if(Data is not null)
+@if (Data is not null && Data.Records.Any())
 {
     <MudGrid Spacing="2">
         <!-- This is the left column -->
@@ -78,5 +78,7 @@
         </MudTable>
     }
 }
-
-
+else
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+}

@@ -12,7 +12,7 @@
         @ErrorMessage
     </MudAlert>
 }
-@if (Data is not null)
+@if (Data is not null && Data.Details.Any())
 {
     <MudGrid Spacing="2">
         <MudItem>
@@ -41,7 +41,7 @@
                 }
                 else
                 {
-                    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">Pre-Release Support(Payable) - No data available</MudText>
                 }
             </MudItem>
 
@@ -62,7 +62,7 @@
                 }
                 else
                 {
-                    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">Pre-Release Support(Non-Payable) - No data available</MudText>
                 }
             </MudItem>
             
@@ -83,7 +83,7 @@
                 }
                 else
                 {
-                    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">Through the Gate(Payable) - No data available</MudText>
                 }
             </MudItem>
             
@@ -104,7 +104,7 @@
                 }
                 else
                 {
-                    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">Through the Gate(Payable) - No data available</MudText>
                 }
             </MudItem>
         }
@@ -137,4 +137,7 @@
         }
     </MudGrid>
 }
-
+else
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+}

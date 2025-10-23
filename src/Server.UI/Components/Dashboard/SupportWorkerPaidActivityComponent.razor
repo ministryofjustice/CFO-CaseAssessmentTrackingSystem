@@ -14,7 +14,7 @@
     </MudAlert>
 }
 
-@if (Data is not null)
+@if (Data is not null && Data.Details.Any())
 {
     <MudGrid Spacing="2">
         <MudItem>
@@ -89,4 +89,12 @@
             </PagerContent>
         </MudTable>
     }
+}
+else
+{
+    <MudGrid Spacing="6">
+        <MudItem>
+            <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">Payable - No data available</MudText>
+        </MudItem>
+    </MudGrid>
 }
