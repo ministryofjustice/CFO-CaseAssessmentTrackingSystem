@@ -65,7 +65,7 @@
                     <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">Pre-Release Support(Non-Payable) - No data available</MudText>
                 }
             </MudItem>
-            
+
             <!-- Through the Gate - Eligible for Payment -->
             <MudItem xs="12" sm="6" md="6" lg="6">
                 @if (GetChartData(ConstantString.ThroughTheGate, true).Any())
@@ -86,7 +86,7 @@
                     <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">Through the Gate(Payable) - No data available</MudText>
                 }
             </MudItem>
-            
+
             <!-- Through the Gate - NOT Eligible for Payment -->
             <MudItem xs="12" sm="6" md="6" lg="6">
                 @if (GetChartData(ConstantString.ThroughTheGate, false).Any())
@@ -113,20 +113,39 @@
             <MudItem xs="12" Style="height: calc(100vh - 150px);">
                 <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true">
                     <HeaderContent>
-                        <MudTh>Location</MudTh>
-                        <MudTh>Location Type</MudTh>
-                        <MudTh>Support Type</MudTh>
-                        <MudTh>Payable</MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<GetPrisPerSupportWorker.LocationDetail, object>(x => x.LocationName)">
+                                Location
+                            </MudTableSortLabel>
+                        </MudTh>                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<GetPrisPerSupportWorker.LocationDetail, object>(x => x.LocationType.Name)">
+                                Location Type
+                            </MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<GetPrisPerSupportWorker.LocationDetail, object>(x => x.SupportType)">
+                                Support Type
+                            </MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<GetPrisPerSupportWorker.LocationDetail, object>(x => x.Payable)">
+                                Payable
+                            </MudTableSortLabel>
+                        </MudTh>
                         <MudTh>Non-Payable</MudTh>
-                        <MudTh>Total Count</MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<GetPrisPerSupportWorker.LocationDetail, object>(x => x.TotalCount)">
+                                Count
+                            </MudTableSortLabel>
+                        </MudTh>
                     </HeaderContent>
                     <RowTemplate>
-                        <MudTd DataLabel="Location">@context.Name</MudTd>
+                        <MudTd DataLabel="Location">@context.LocationName</MudTd>
                         <MudTd DataLabel="Location Type">@context.LocationType.Name</MudTd>
                         <MudTd DataLabel="Support Type">@context.SupportType</MudTd>
                         <MudTd DataLabel="Payable">@context.Payable</MudTd>
-                        <MudTd DataLabel="Payable">@(context.Count - context.Payable)</MudTd>
-                        <MudTd DataLabel="Total Count">@context.Count</MudTd>
+                        <MudTd DataLabel="Payable">@(context.TotalCount - context.Payable)</MudTd>
+                        <MudTd DataLabel="Total Count">@context.TotalCount</MudTd>
                     </RowTemplate>
                     <PagerContent>
                         <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />

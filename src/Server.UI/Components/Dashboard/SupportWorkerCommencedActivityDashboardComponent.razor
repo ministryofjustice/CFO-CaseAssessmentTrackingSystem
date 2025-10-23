@@ -49,28 +49,28 @@
         <MudTable Items="Data.Details" MultiSelection="false" Striped="true" Hover="true" Outlined="true">
             <HeaderContent>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.Details, object>(x => x.Location)">
+                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.LocationDetail, object>(x => x.LocationName)">
                         Location
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.Details, object>(x => x.LocationType.Name)">
+                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.LocationDetail, object>(x => x.LocationType.Name)">
                         Location Type
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.Details, object>(x => x.ActivityType.Name)">
+                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.LocationDetail, object>(x => x.ActivityType.Name)">
                         Activity Type
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.Details, object>(x => x.Count)">
+                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.LocationDetail, object>(x => x.Count)">
                         Count
                     </MudTableSortLabel>
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Location">@context.Location</MudTd>
+                <MudTd DataLabel="Location">@context.LocationName</MudTd>
                 <MudTd DataLabel="LocationType">@context.LocationType.Name</MudTd>
                 <MudTd DataLabel="ActivityType">
                     <div style="display: flex; align-items: center;">

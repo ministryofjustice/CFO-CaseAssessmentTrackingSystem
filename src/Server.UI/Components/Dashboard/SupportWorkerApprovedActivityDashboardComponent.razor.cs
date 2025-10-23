@@ -93,7 +93,7 @@ public partial class SupportWorkerApprovedActivityDashboardComponent
 
         // Get all unique locations
         var allLocations = Data.Details
-            .Select(d => d.Location)
+            .Select(d => d.LocationName)
             .Distinct()
             .OrderBy(name => name)
             .ToList();
@@ -103,7 +103,7 @@ public partial class SupportWorkerApprovedActivityDashboardComponent
         foreach (var location in allLocations)
         {
             var count = Data.Details
-                .Where(d => d.Location == location && d.ActivityType == activityType)
+                .Where(d => d.LocationName == location && d.ActivityType == activityType)
                 .Sum(d => d.Count);
 
             result.Add(new LocationActivityCount

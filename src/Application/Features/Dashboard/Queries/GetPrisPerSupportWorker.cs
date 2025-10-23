@@ -55,8 +55,8 @@ public static class GetPrisPerSupportWorker
         {
             Details = details;
 
-            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.Count);
-            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.Count);
+            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.TotalCount);
+            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.TotalCount);
         }
 
         public LocationDetail[] Details { get; }
@@ -65,9 +65,9 @@ public static class GetPrisPerSupportWorker
     }
 
     public record LocationDetail(
-        string Name,
+        string LocationName,
         LocationType LocationType,
         string SupportType,
         int Payable,
-        int Count);
+        int TotalCount);
 }

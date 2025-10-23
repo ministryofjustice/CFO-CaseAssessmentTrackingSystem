@@ -7,7 +7,7 @@ public static class GetCasesPerLocationBySupportWorker
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<Result<CasesPerLocationSupportWorkerDto>>
-    { 
+    {
         public required string UserId { get; set; }
         public required UserProfile CurrentUser { get; set; }
     }
@@ -29,7 +29,7 @@ public static class GetCasesPerLocationBySupportWorker
                     l.LocationType,
                     p.EnrolmentStatus
                 } into grp
-                select new Details
+                select new LocationDetail
         (
                     grp.Key.Name,
                     grp.Key.LocationType,
@@ -44,19 +44,19 @@ public static class GetCasesPerLocationBySupportWorker
             return new CasesPerLocationSupportWorkerDto(result);
         }
     }
-}
 
-public record CasesPerLocationSupportWorkerDto
-{
-    public CasesPerLocationSupportWorkerDto(Details[] details)
+    public record CasesPerLocationSupportWorkerDto
     {
-        Records = details;
-        Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.Count);
-        Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.Count);
+        public CasesPerLocationSupportWorkerDto(LocationDetail[] details)
+        {
+            Records = details;
+            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.Count);
+            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.Count);
+        }
+        public LocationDetail[] Records { get; }
+        public int Custody { get; }
+        public int Community { get; }
     }
-    public Details[] Records { get; }
-    public int Custody { get; }
-    public int Community { get; }
-}
 
-public record Details(string Location, LocationType LocationType, EnrolmentStatus Status, int Count);
+    public record LocationDetail(string LocationName, LocationType LocationType, EnrolmentStatus Status, int Count);
+}

@@ -67,6 +67,6 @@ public static class GetEducationsPerSupportWorker
 
     }
 
-    public record LocationDetail(string Name, LocationType LocationType, int Payable, int TotalCount);
+    public record LocationDetail(string LocationName, LocationType LocationType, int Payable, int TotalCount);
 
 }

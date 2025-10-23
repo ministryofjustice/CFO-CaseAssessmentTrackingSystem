@@ -29,7 +29,7 @@
                                         Items="Data.Details"
                                         Name="@($"Payable ({(Data.CommunityPayable + Data.CustodyPayable)})")"
                                         SeriesType="ApexCharts.SeriesType.Bar"
-                                        XValue="@(e => e.Name)"
+                                        XValue="@(e => e.LocationName)"
                                         YValue="@(e => e.Payable)"
                                         ShowDataLabels="true">
             </ApexCharts.ApexPointSeries>
@@ -38,7 +38,7 @@
                                         Items="Data.Details"
                                         Name="@($"Non Payable ({(Data.Community + Data.Custody) - (Data.CommunityPayable + Data.CustodyPayable)})")"
                                         SeriesType="ApexCharts.SeriesType.Bar"
-                                        XValue="@(e => e.Name)"
+                                        XValue="@(e => e.LocationName)"
                                         YValue="@(e => e.TotalCount - e.Payable)"
                                         ShowDataLabels="true">
             </ApexCharts.ApexPointSeries>
@@ -48,15 +48,31 @@
     {
         <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true">
             <HeaderContent>
-                <MudTh>Location</MudTh>
-                <MudTh>Type</MudTh>
-                <MudTh>Payable</MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEducationsPerSupportWorker.LocationDetail, object>(x => x.LocationName)">
+                        Location
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEducationsPerSupportWorker.LocationDetail, object>(x => x.LocationType.Name)">
+                        Location Type
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEducationsPerSupportWorker.LocationDetail, object>(x => x.Payable)">
+                        Payable
+                    </MudTableSortLabel>
+                </MudTh>
                 <MudTh>Non-Payable</MudTh>
-                <MudTh>Total Count</MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEducationsPerSupportWorker.LocationDetail, object>(x => x.TotalCount)">
+                        Count
+                    </MudTableSortLabel>
+                </MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Location">@context.Name</MudTd>
-                <MudTd DataLabel="Type">@context.LocationType.Name</MudTd>
+                <MudTd DataLabel="Location">@context.LocationName</MudTd>
+                <MudTd DataLabel="Location Type">@context.LocationType.Name</MudTd>
                 <MudTd DataLabel="Payable">@context.Payable</MudTd>
                 <MudTd DataLabel="Payable">@(context.TotalCount - context.Payable)</MudTd>
                 <MudTd DataLabel="Total Count">@context.TotalCount</MudTd>

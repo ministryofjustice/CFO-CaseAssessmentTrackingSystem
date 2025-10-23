@@ -16,14 +16,14 @@ public partial class CasesPerLocationPerSupportWorkerCardComponent
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
     
-    protected override IRequest<Result<CasesPerLocationSupportWorkerDto>> CreateQuery()
+    protected override IRequest<Result<GetCasesPerLocationBySupportWorker.CasesPerLocationSupportWorkerDto>> CreateQuery()
      => new GetCasesPerLocationBySupportWorker.Query()
      {
          CurrentUser = CurrentUser,
          UserId = UserId
      };
 
-    private ApexChartOptions<Details> Options => new()
+    private ApexChartOptions<GetCasesPerLocationBySupportWorker.LocationDetail> Options => new()
     {
         Chart = new ApexCharts.Chart
         {
@@ -60,25 +60,25 @@ public partial class CasesPerLocationPerSupportWorkerCardComponent
         }        
     };
 
-    private List<Details> ChartData()
+    private List<GetCasesPerLocationBySupportWorker.LocationDetail> ChartData()
     {
         if (Data is null)
         {
             throw new InvalidOperationException("Call to ChartData() when no data set");
         }
 
-        var locations = Data.Records.Select(x => x.Location).Distinct().ToList();
+        var locations = Data.Records.Select(x => x.LocationName).Distinct().ToList();
         var statuses = Data.Records.Select(x => x.Status).Distinct().ToList();
 
         return locations.SelectMany(location =>
-            statuses.Select(status => new Details(location,
+            statuses.Select(status => new GetCasesPerLocationBySupportWorker.LocationDetail(location,
                             Data.Records
-                            .Where(x => x.Location == location)
+                            .Where(x => x.LocationName == location)
                             .Select(d => d.LocationType)
                             .FirstOrDefault()!,
                         status, 
                         Data.Records
-                            .Where(x => x.Location == location && x.Status == status)
+                            .Where(x => x.LocationName == location && x.Status == status)
                             .Sum(x => x.Count))))
             .ToList();
           

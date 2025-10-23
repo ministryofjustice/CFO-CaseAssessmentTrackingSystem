@@ -31,7 +31,7 @@ public partial class SupportWorkerPRIDashboardComponent
                 .Where(d => d.SupportType == supportType && d.Payable > 0)
                 .Select(d => new ChartDataPoint
                 {
-                    Location = d.Name,
+                    Location = d.LocationName,
                     Count = d.Payable
                 })
                 .ToList() ?? new List<ChartDataPoint>();
@@ -39,11 +39,11 @@ public partial class SupportWorkerPRIDashboardComponent
         else
         {
             return Data?.Details
-                .Where(d => d.SupportType == supportType && (d.Count - d.Payable) > 0)
+                .Where(d => d.SupportType == supportType && (d.TotalCount - d.Payable) > 0)
                 .Select(d => new ChartDataPoint
                 {
-                    Location = d.Name,
-                    Count = (d.Count - d.Payable)
+                    Location = d.LocationName,
+                    Count = (d.TotalCount - d.Payable)
                 })
                 .ToList() ?? new List<ChartDataPoint>();
         }
