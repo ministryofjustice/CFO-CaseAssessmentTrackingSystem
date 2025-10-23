@@ -1,3 +1,4 @@
+using ApexCharts;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
 
@@ -49,6 +50,14 @@ public partial class SupportWorkerEnrolmentDashboardComponent
                     }
                 },
             },
+        },
+        Yaxis = new List<YAxis>
+        {
+            new YAxis
+            {
+                Min = 0,
+                ForceNiceScale = true
+            }
         },
         Theme = new ApexCharts.Theme
         {

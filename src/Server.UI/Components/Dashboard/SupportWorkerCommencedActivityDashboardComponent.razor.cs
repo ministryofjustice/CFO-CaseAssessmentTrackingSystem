@@ -63,6 +63,14 @@ public partial class SupportWorkerCommencedActivityDashboardComponent
             {
                 Title = new AxisTitle { Text = "Commenced" }
             },
+            Yaxis = new List<YAxis>
+            {
+                new YAxis
+                {
+                    Min = 0,
+                    ForceNiceScale = true
+                }
+            },
             Legend = new Legend
             {
                 Position = LegendPosition.Bottom,

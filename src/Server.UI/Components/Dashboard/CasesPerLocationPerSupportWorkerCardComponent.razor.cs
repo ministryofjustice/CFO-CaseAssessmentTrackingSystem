@@ -46,6 +46,14 @@ public partial class CasesPerLocationPerSupportWorkerCardComponent
                 },
             },
         },
+        Yaxis = new List<YAxis>
+            {
+                new YAxis
+                {
+                    Min = 0,
+                    ForceNiceScale = true
+                }
+            },
         Theme = new Theme
         {
             Mode = IsDarkMode ? Mode.Dark : Mode.Light

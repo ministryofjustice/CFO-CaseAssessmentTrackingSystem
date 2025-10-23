@@ -63,6 +63,14 @@ public partial class SupportWorkerApprovedActivityDashboardComponent
             {
                 Title = new AxisTitle { Text = "Approved" }
             },
+            Yaxis = new List<YAxis>
+            {
+                new YAxis
+                {
+                    Min = 0,
+                    ForceNiceScale = true
+                }
+            },
             Legend = new Legend
             {
                 Position = LegendPosition.Bottom,
