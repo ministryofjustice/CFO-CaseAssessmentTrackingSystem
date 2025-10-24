@@ -14,91 +14,83 @@
     </MudAlert>
 }
 
-@if (Data is not null)
+@if (Data is not null && Data.Details.Any())
 {
     <MudGrid Spacing="2">
-        <MudItem xs="12"  Style="height: calc(50vh - 100px); overflow:auto;">
-            <MudStack Row="true" Breakpoint="Breakpoint.SmAndDown" Style="height:100%; width:100%;">
-                <!-- Right hand content -->
-                <MudStack Style="flex:1; height:80%; overflow:auto;">
-                    @if (VisualMode)
-                    {
-                        <div style="width: 100%; height: 100%; position: relative">
-                            <!-- Chips overlaid on chart -->
-                            <div style="position: absolute; top: 16px; left: 24px; z-index: 10; display: flex; gap: 8px;">
-                                <MudChip T="string" Size="MudBlazor.Size.Small">Custody (@Data.Custody)</MudChip>
-                                <MudChip T="string" Size="MudBlazor.Size.Small">Community (@Data.Community)</MudChip>
-                            </div>
-                            <div style="padding-top: 50px;">
-                            <ApexChart TItem="LocationActivityCount"
-                                       Options="chartOptions"
-                                       Height="270">
-
-                                @foreach (var activityType in Data.Details.Select(d => d.ActivityType).Distinct().OrderBy(t => t))
-                                {
-                                    <ApexPointSeries TItem="LocationActivityCount"
-                                                     Items="@GetSeriesDataForActivityType(activityType)"
-                                                     Name="@activityType.Name"
-                                                     SeriesType="SeriesType.Bar"
-                                                     XValue="@(e => e.Location)"
-                                                     YValue="@(e => (decimal)e.Count)"
-                                                     OrderBy="e => e.X" 
-                                                     Color="@activityType.Colour"/>
-                                }
-                            </ApexChart>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <MudText Typo="Typo.h5" GutterBottom="true">
-                            Commenced
-                        </MudText>
-                        <MudTable Items="Data.Details" MultiSelection="false" Striped="true" Hover="true" Outlined="true" title="Commenced">
-                            <HeaderContent>
-                                <MudTh>
-                                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.Details, object>(x => x.Location)">
-                                        Location
-                                    </MudTableSortLabel>
-                                </MudTh>
-                                <MudTh>
-                                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.Details, object>(x => x.LocationType.Name)">
-                                        Location Type
-                                    </MudTableSortLabel>
-                                </MudTh>
-                                <MudTh>
-                                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.Details, object>(x => x.ActivityType.Name)">
-                                        Activity Type
-                                    </MudTableSortLabel>
-                                </MudTh>
-                                <MudTh>
-                                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.Details, object>(x => x.Count)">
-                                        Count
-                                    </MudTableSortLabel>
-                                </MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd DataLabel="Location">@context.Location</MudTd>
-                                <MudTd DataLabel="LocationType">@context.LocationType.Name</MudTd>
-                                <MudTd DataLabel="ActivityType">
-                                    <div style="display: flex; align-items: center;">
-                                        <MudIcon Icon="@Icons.Material.Filled.Circle"
-                                                 Size="MudBlazor.Size.Small"
-                                                 Style="@($"color:{context.ActivityType.Colour};")" />
-                                        <MudText Typo="Typo.body2" Class="ml-2">
-                                            @context.ActivityType.Name
-                                        </MudText>
-                                    </div>
-                                </MudTd>
-                                <MudTd DataLabel="Count">@context.Count</MudTd>
-                            </RowTemplate>
-                            <PagerContent>
-                                <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
-                            </PagerContent>
-                        </MudTable>
-                    }
-                </MudStack>
-            </MudStack>
+        <MudItem>
+            <MudText Typo="Typo.h5" GutterBottom="true">Commenced</MudText>
+        </MudItem>
+        <MudItem>
+            <MudChip T="string" Size="MudBlazor.Size.Small">Custody (@Data.Custody)</MudChip>
+            <MudChip T="string" Size="MudBlazor.Size.Small">Community (@Data.Community)</MudChip>
         </MudItem>
     </MudGrid>
+    @if (VisualMode)
+    {
+        <ApexChart TItem="LocationActivityCount"
+                   Options="chartOptions"
+                   Height="325">
+
+            @foreach (var activityType in Data.Details.Select(d => d.ActivityType).Distinct().OrderBy(t => t))
+            {
+                <ApexPointSeries TItem="LocationActivityCount"
+                                 Items="@GetSeriesDataForActivityType(activityType)"
+                                 Name="@activityType.Name"
+                                 SeriesType="SeriesType.Bar"
+                                 XValue="@(e => e.Location)"
+                                 YValue="@(e => (decimal)e.Count)"
+                                 OrderBy="e => e.X"
+                                 Color="@activityType.Colour" />
+            }
+        </ApexChart>
+    }
+    else
+    {
+        <MudTable Items="Data.Details" MultiSelection="false" Striped="true" Hover="true" Outlined="true">
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.LocationDetail, object>(x => x.LocationName)">
+                        Location
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.LocationDetail, object>(x => x.LocationType.Name)">
+                        Location Type
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.LocationDetail, object>(x => x.ActivityType.Name)">
+                        Activity Type
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetCommencedActivitiesPerSupportWorker.LocationDetail, object>(x => x.Count)">
+                        Count
+                    </MudTableSortLabel>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Location">@context.LocationName</MudTd>
+                <MudTd DataLabel="LocationType">@context.LocationType.Name</MudTd>
+                <MudTd DataLabel="ActivityType">
+                    <div style="display: flex; align-items: center;">
+                        <MudIcon Icon="@Icons.Material.Filled.Circle"
+                                 Size="MudBlazor.Size.Small"
+                                 Style="@($"color:{context.ActivityType.Colour};")" />
+                        <MudText Typo="Typo.body2" Class="ml-2">
+                            @context.ActivityType.Name
+                        </MudText>
+                    </div>
+                </MudTd>
+                <MudTd DataLabel="Count">@context.Count</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
+            </PagerContent>
+        </MudTable>
+    }
+}
+else
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">Commenced - No data available</MudText>
 }

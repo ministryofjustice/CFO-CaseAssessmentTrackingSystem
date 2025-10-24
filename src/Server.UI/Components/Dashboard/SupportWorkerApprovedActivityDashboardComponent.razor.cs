@@ -63,6 +63,14 @@ public partial class SupportWorkerApprovedActivityDashboardComponent
             {
                 Title = new AxisTitle { Text = "Approved" }
             },
+            Yaxis = new List<YAxis>
+            {
+                new YAxis
+                {
+                    Min = 0,
+                    ForceNiceScale = true
+                }
+            },
             Legend = new Legend
             {
                 Position = LegendPosition.Bottom,
@@ -85,7 +93,7 @@ public partial class SupportWorkerApprovedActivityDashboardComponent
 
         // Get all unique locations
         var allLocations = Data.Details
-            .Select(d => d.Location)
+            .Select(d => d.LocationName)
             .Distinct()
             .OrderBy(name => name)
             .ToList();
@@ -95,7 +103,7 @@ public partial class SupportWorkerApprovedActivityDashboardComponent
         foreach (var location in allLocations)
         {
             var count = Data.Details
-                .Where(d => d.Location == location && d.ActivityType == activityType)
+                .Where(d => d.LocationName == location && d.ActivityType == activityType)
                 .Sum(d => d.Count);
 
             result.Add(new LocationActivityCount

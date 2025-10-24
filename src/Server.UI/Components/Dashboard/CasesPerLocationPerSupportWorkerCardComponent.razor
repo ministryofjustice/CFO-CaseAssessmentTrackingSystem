@@ -3,7 +3,7 @@
 @using Cfo.Cats.Application.Features.Dashboard.Queries
 @using Cfo.Cats.Domain.Common.Enums
 
-@inherits CatsComponent<CasesPerLocationSupportWorkerDto>
+@inherits CatsComponent<GetCasesPerLocationBySupportWorker.CasesPerLocationSupportWorkerDto>
 
 @if (Loading)
 {
@@ -17,21 +17,28 @@
     </MudAlert>
 }
 
-@if(Data is not null)
+@if (Data is not null && Data.Records.Any())
 {
+    <MudGrid Spacing="2">
+        <!-- This is the left column -->
+        <MudItem>
+            <MudChip T="string">Custody (@Data.Custody)</MudChip>
+            <MudChip T="string">Community (@Data.Community)</MudChip>
+        </MudItem>
+    </MudGrid>
     @if(VisualMode)
     {
-		<ApexChart TItem="Details" Options="Options" Height="700">
+        <ApexChart TItem="GetCasesPerLocationBySupportWorker.LocationDetail" Options="Options" Height="700">
 			@{
 				var chartData = ChartData();
 				var statuses = chartData.Select(x => x.Status).OrderBy(x => x.LogicalOrder).Distinct();
 			}
 			@foreach (var status in statuses)
 			{
-				<ApexPointSeries TItem="Details"
+                <ApexPointSeries TItem="GetCasesPerLocationBySupportWorker.LocationDetail"
 									Name="@status.Name"
 									Items="@chartData.Where(x => x.Status == status).ToList()"
-									XValue="@(x => x.Location)"
+									XValue="@(x => x.LocationName)"
 									YValue="@(x => x.Count)"
 									SeriesType="SeriesType.Bar"
 									ShowDataLabels
@@ -47,23 +54,29 @@
 					>
             <HeaderContent>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<(string Location, string Status, int Count), object>(x => x.Location)">
+                    <MudTableSortLabel SortBy="new Func<GetCasesPerLocationBySupportWorker.LocationDetail, object>(x => x.LocationName)">
                         Location
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<(string Location, string Status, int Count), object>(x => x.Status)">
+                    <MudTableSortLabel SortBy="new Func<GetCasesPerLocationBySupportWorker.LocationDetail, object>(x => x.LocationType.Name)">
+                        LocationType
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetCasesPerLocationBySupportWorker.LocationDetail, object>(x => x.Status.Name)">
                         Status
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<(string Location, string Status, int Count), object>(x => x.Count)">
+                    <MudTableSortLabel SortBy="new Func<GetCasesPerLocationBySupportWorker.LocationDetail, object>(x => x.Count)">
                         Count
                     </MudTableSortLabel>
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Location">@context.Location</MudTd>
+                <MudTd DataLabel="Location">@context.LocationName</MudTd>
+                <MudTd DataLabel="LocationType">@context.LocationType</MudTd>
                 <MudTd DataLabel="Status">@context.Status</MudTd>
                 <MudTd DataLabel="Count">@context.Count</MudTd>
             </RowTemplate>
@@ -71,5 +84,7 @@
         </MudTable>
     }
 }
-
-
+else
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+}

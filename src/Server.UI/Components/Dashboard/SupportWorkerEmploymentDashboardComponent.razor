@@ -13,72 +13,77 @@
     </MudAlert>
 }
 
-@if (Data is not null)
+@if (Data is not null && Data.Details.Any())
 {
     <MudGrid Spacing="2">
-        <MudItem xs="12" Style="height: calc(100vh - 150px);">
-            <MudStack Row="true" Breakpoint="Breakpoint.SmAndDown" Style="height:100%; width:100%;">
-
-                <!-- This is the left column -->
-                <MudStack Style="width: 150px;">
-                    <MudChip T="string">Custody (@Data.Custody)</MudChip>
-                    <MudChip T="string">Community (@Data.Community)</MudChip>
-                </MudStack>
-
-                <!-- Right hand content -->
-                <MudStack Style="flex:1; height:80%; overflow:auto;">
-                    @if (VisualMode)
-                    {
-                        @if (VisualMode)
-                        {
-                            <ApexCharts.ApexChart TItem="GetEmploymentsPerSupportWorker.LocationDetail" Options="Options" Height="@("100%")" Width="@("100%")">
-
-                                <ApexCharts.ApexPointSeries TItem="GetEmploymentsPerSupportWorker.LocationDetail"
-                                                            Items="Data.Details"
-                                                            Name="@($"Payable ({(Data.CommunityPayable + Data.CustodyPayable)})")"
-                                                            SeriesType="ApexCharts.SeriesType.Bar"
-                                                            XValue="@(e => e.Name)"
-                                                            YValue="@(e => e.Payable)"
-                                                            OrderByDescending="e=>e.Y"
-                                                            ShowDataLabels="true">
-                                </ApexCharts.ApexPointSeries>
-
-                                <ApexCharts.ApexPointSeries TItem="GetEmploymentsPerSupportWorker.LocationDetail"
-                                                            Items="Data.Details"
-                                                            Name="@($"Non Payable ({(Data.Community + Data.Custody) - (Data.CommunityPayable + Data.CustodyPayable)})")"
-                                                            SeriesType="ApexCharts.SeriesType.Bar"
-                                                            XValue="@(e => e.Name)"
-                                                            YValue="@(e => e.TotalCount - e.Payable)"
-                                                            OrderByDescending="e=>e.Y"
-                                                            ShowDataLabels="true">
-                                </ApexCharts.ApexPointSeries>
-                            </ApexCharts.ApexChart>
-                        }
-                    }
-                    else
-                    {
-                        <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true">
-                            <HeaderContent>
-                                <MudTh>Location</MudTh>
-                                <MudTh>Type</MudTh>
-                                <MudTh>Payable</MudTh>
-                                <MudTh>Non-Payable</MudTh>
-                                <MudTh>Total Count</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd DataLabel="Location">@context.Name</MudTd>
-                                <MudTd DataLabel="Type">@context.LocationType.Name</MudTd>
-                                <MudTd DataLabel="Payable">@context.Payable</MudTd>
-                                <MudTd DataLabel="Payable">@(context.TotalCount - context.Payable)</MudTd>
-                                <MudTd DataLabel="Total Count">@context.TotalCount</MudTd>
-                            </RowTemplate>
-                            <PagerContent>
-                                <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
-                            </PagerContent>
-                        </MudTable>
-                    }
-                </MudStack>
-            </MudStack>
+        <MudItem>
+            <MudChip T="string">Custody (@Data.Custody)</MudChip>
+            <MudChip T="string">Community (@Data.Community)</MudChip>
         </MudItem>
     </MudGrid>
+    @if (VisualMode)
+    {
+        <ApexCharts.ApexChart TItem="GetEmploymentsPerSupportWorker.LocationDetail" Options="Options" Height="650" Width="@("100%")">
+
+            <ApexCharts.ApexPointSeries TItem="GetEmploymentsPerSupportWorker.LocationDetail"
+                                        Items="Data.Details"
+                                        Name="@($"Payable ({(Data.CommunityPayable + Data.CustodyPayable)})")"
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        XValue="@(e => e.LocationName)"
+                                        YValue="@(e => e.Payable)"
+                                        ShowDataLabels="true">
+            </ApexCharts.ApexPointSeries>
+
+            <ApexCharts.ApexPointSeries TItem="GetEmploymentsPerSupportWorker.LocationDetail"
+                                        Items="Data.Details"
+                                        Name="@($"Non Payable ({(Data.Community + Data.Custody) - (Data.CommunityPayable + Data.CustodyPayable)})")"
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        XValue="@(e => e.LocationName)"
+                                        YValue="@(e => e.TotalCount - e.Payable)"
+                                        ShowDataLabels="true">
+            </ApexCharts.ApexPointSeries>
+        </ApexCharts.ApexChart>
+    }
+    else
+    {
+        <MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true">
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEmploymentsPerSupportWorker.LocationDetail, object>(x => x.LocationName)">
+                        Location
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEmploymentsPerSupportWorker.LocationDetail, object>(x => x.LocationType.Name)">
+                        Location Type
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEmploymentsPerSupportWorker.LocationDetail, object>(x => x.Payable)">
+                        Payable
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>Non-Payable</MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEmploymentsPerSupportWorker.LocationDetail, object>(x => x.TotalCount)">
+                        Count
+                    </MudTableSortLabel>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Location">@context.LocationName</MudTd>
+                <MudTd DataLabel="Location Type">@context.LocationType.Name</MudTd>
+                <MudTd DataLabel="Payable">@context.Payable</MudTd>
+                <MudTd DataLabel="Payable">@(context.TotalCount - context.Payable)</MudTd>
+                <MudTd DataLabel="Total Count">@context.TotalCount</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
+            </PagerContent>
+        </MudTable>
+    }
+}
+else
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
 }

@@ -59,6 +59,6 @@ public static class GetEnrolmentsPerSupportWorker
 
     }
 
-    public record LocationDetail (string Name, LocationType LocationType, int Count);
+    public record LocationDetail (string LocationName, LocationType LocationType, int Count);
 
 }

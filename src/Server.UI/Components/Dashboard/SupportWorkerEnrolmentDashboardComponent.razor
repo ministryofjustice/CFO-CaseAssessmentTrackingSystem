@@ -13,54 +13,61 @@
 	</MudAlert>
 }
 
-@if(Data is not null)
+@if (Data is not null && Data.Details.Any())
 {
-	<MudGrid Spacing="2">
+    <MudGrid Spacing="2">
+        <MudItem>
+            <MudChip T="string">Custody (@Data.Custody)</MudChip>
+            <MudChip T="string">Community (@Data.Community)</MudChip>
+        </MudItem>
+    </MudGrid>
 
-		<MudItem xs="12" Style="height: calc(100vh - 150px);">
-			<MudStack Row="true" Breakpoint="Breakpoint.SmAndDown" Style="height:100%; width:100%;">
-				
-				<!-- This is the left column -->
-				<MudStack Style="width: 150px;">
-					<MudChip T="string">Custody (@Data.Custody)</MudChip>
-					<MudChip T="string">Community (@Data.Community)</MudChip>
-				</MudStack>
+	@if (VisualMode)
+	{
+		<ApexCharts.ApexChart TItem="GetEnrolmentsPerSupportWorker.LocationDetail" Options="Options" Height="650" Width="@("100%")">
+            <ApexCharts.ApexPointSeries TItem="GetEnrolmentsPerSupportWorker.LocationDetail"
+										Items="Data.Details"
+										SeriesType="ApexCharts.SeriesType.Bar"
+                                        XValue="@(e => e.LocationName)"
+										YValue="@(e => e.Count)"
+										ShowDataLabels="true">
 
-				<!-- Right hand content -->
-				<MudStack Style="flex:1; height:80%; overflow:auto;">
-					@if (VisualMode)
-					{
-						<ApexCharts.ApexChart TItem="GetEnrolmentsPerSupportWorker.LocationDetail" Options="Options" Height="@("100%")" Width="@("100%")">
-							<ApexCharts.ApexPointSeries TItem="GetEnrolmentsPerSupportWorker.LocationDetail"
-														Items="Data.Details"
-														SeriesType="ApexCharts.SeriesType.Bar"
-														XValue="@(e => e.Name)"
-														YValue="@(e => e.Count)"
-														ShowDataLabels="true">
+			</ApexCharts.ApexPointSeries>
+		</ApexCharts.ApexChart>
+	}
+	else
+	{
+		<MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true">
+			<HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsPerSupportWorker.LocationDetail, object>(x => x.LocationName)">
+                        Location
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsPerSupportWorker.LocationDetail, object>(x => x.LocationType.Name)">
+                        LocationType
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsPerSupportWorker.LocationDetail, object>(x => x.Count)">
+                        Count
+                    </MudTableSortLabel>
+                </MudTh>
+			</HeaderContent>
+			<RowTemplate>
+                <MudTd DataLabel="Location">@context.LocationName</MudTd>
+				<MudTd DataLabel="Location Type">@context.LocationType.Name</MudTd>
+				<MudTd DataLabel="Count">@context.Count</MudTd>
+			</RowTemplate>
+			<PagerContent>
+				<MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
+			</PagerContent>
+		</MudTable>
+	}
 
-							</ApexCharts.ApexPointSeries>
-						</ApexCharts.ApexChart>
-					}
-					else
-					{
-						<MudTable Items="@Data.Details" MultiSelection="false" Striped="true" Hover="true">
-							<HeaderContent>
-								<MudTh>Location</MudTh>
-								<MudTh>Type</MudTh>
-								<MudTh>Count</MudTh>
-							</HeaderContent>
-							<RowTemplate>
-								<MudTd DataLabel="Location">@context.Name</MudTd>
-								<MudTd DataLabel="Type">@context.LocationType.Name</MudTd>
-								<MudTd DataLabel="Count">@context.Count</MudTd>
-							</RowTemplate>
-							<PagerContent>
-								<MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
-							</PagerContent>
-						</MudTable>
-					}
-				</MudStack>
-			</MudStack>
-		</MudItem>
-	</MudGrid>
+}
+else
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
 }
