@@ -10,7 +10,8 @@ bool publishing = builder.ExecutionContext.IsPublishMode;
 var sql = builder.AddSqlServer("sql", sqlPassword, 1433)
     .WithDataVolume("cats-aspire-data")
     .WithLifetime(ContainerLifetime.Persistent)
-    .WithEndpointProxySupport(false);
+    .WithEndpointProxySupport(false)
+    .WithImageTag("2022-latest");
 #pragma warning restore ASPIREPROXYENDPOINTS001
     
     
