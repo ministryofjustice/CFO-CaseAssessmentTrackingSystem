@@ -31,7 +31,7 @@ public class MenuService : IMenuService
 
                             new()
                             {
-                                Title = "Support Worker Dashboard",
+                                Title = "Support Worker",
                                 Href = "/pages/dashboard/supportworker/",
                                 PageStatus = PageStatus.Wip
                             }
