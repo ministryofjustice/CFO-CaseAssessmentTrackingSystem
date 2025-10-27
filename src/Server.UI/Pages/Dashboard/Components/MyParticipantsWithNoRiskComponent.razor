@@ -1,0 +1,117 @@
+﻿@using Cfo.Cats.Application.Features.Dashboard.DTOs
+@using Humanizer
+
+@inherits CatsComponent<PaginatedData<ParticipantsWithNoRiskDto>>
+
+<MudItem lg="6" md="12">
+
+	@if (Loading)
+	{
+		<MudLoading Text="Loading" />
+	}
+
+	@if (ErrorMessage is not null)
+	{
+		<MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+			@ErrorMessage
+		</MudAlert>
+	} 
+
+	@if (Data is not null)
+	{
+		<MudCard style="height: 100%">
+			<MudCardHeader>
+				<CardHeaderContent>
+					<MudText Typo="Typo.h5">Participants with no risk</MudText>
+				</CardHeaderContent>
+			</MudCardHeader>
+			<MudCardContent>
+				<MudTable Items="Data.Items"
+						  Hover="true"
+						  Striped="true"
+						  Filter="new Func<ParticipantsWithNoRiskDto, bool>(FilterFunc)">
+					<ToolBarContent>
+
+						<MudText Typo="Typo.h6">Details</MudText>
+						<MudSpacer />
+						<MudStack>			
+							@if (_canSearch)
+							{
+								<MudTextField T="string" ValueChanged="@(OnSearch)" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+											  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium">
+								</MudTextField>
+							}
+						</MudStack>
+					</ToolBarContent>
+					<HeaderContent>
+						<MudTh>
+							<MudTableSortLabel SortBy="new Func<ParticipantsWithNoRiskDto, object>(x => x.ParticipantName)">
+								Participant
+							</MudTableSortLabel>
+						</MudTh>
+						<MudTh>
+							<MudTableSortLabel SortBy="new Func<ParticipantsWithNoRiskDto, object>(x => x.EnrolmentStatus.Name)">
+								Status
+							</MudTableSortLabel>
+						</MudTh>
+						<MudTh>
+							<MudTableSortLabel SortBy="new Func<ParticipantsWithNoRiskDto, object>(x => x.CaseCreatedDate!)">
+								Case Created Date
+							</MudTableSortLabel>
+						</MudTh>					
+					</HeaderContent>
+					<RowTemplate>
+						<MudTd DataLabel="Participant">
+							<MudStack>
+								<MudText>@($"{context.ParticipantName}")</MudText>
+								<MudLink Typo="Typo.body2" Href=@($"/pages/participants/{context.ParticipantId}")>
+									@context.ParticipantId
+								</MudLink>
+							</MudStack>
+						</MudTd>
+						<MudTd DataLabel="Status">		
+
+							@if (context.EnrolmentStatus is not null)
+							{
+								<MudStack>
+									<MudChip T="string"
+											 Size="Size.Small"
+											 Style="@(
+													  string.IsNullOrWhiteSpace(context.EnrolmentStatus.Colour)
+													  ? string.Empty
+													  : $"background-color:{context.EnrolmentStatus.Colour}; color:white;"
+													 )">
+													@context.EnrolmentStatus.Name
+									</MudChip>
+								</MudStack>
+							}
+							else
+							{
+								<span>-</span>
+							}					
+						</MudTd>
+						<MudTd DataLabel="Created Date">
+							<MudStack>
+								<MudText>@context.CaseCreatedDate</MudText>
+								@if (context.CaseCreatedDate == DateTime.Today)
+								{
+									<MudText Typo="Typo.body2">Today</MudText>
+								}
+								else
+								{
+									<MudText Typo="Typo.body2">@context.CaseCreatedDate.Humanize()</MudText>
+								}
+							</MudStack>			
+						</MudTd>
+					</RowTemplate>	
+					
+					<PagerContent>
+						<MudListSubheader Class="d-flex justify-center mt-2">
+							<MudPagination Count=@Data.TotalPages ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
+						</MudListSubheader>
+					</PagerContent>
+				</MudTable>
+			</MudCardContent>
+		</MudCard>
+		}  
+</MudItem>
