@@ -207,7 +207,7 @@ public static class SubmitActivityPqaResponse
         }
     }
 
-    public class G_ParticipantNotDeativatedInFeedOver30DaysAgo : AbstractValidator<Command>
+    public class G_ParticipantNotDeactivatedInFeedOver30DaysAgo : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
 
