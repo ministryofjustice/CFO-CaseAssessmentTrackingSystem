@@ -220,13 +220,13 @@ public static class SubmitActivityPqaResponse
                 When(g => g.Response is PqaResponse.Accept, () =>
                 {
                     RuleFor(g => g.QueueEntryId)
-                        .Must(ParticipantNotDeativatedInFeedOver30DaysAgo)
+                        .Must(ParticipantNotDeactivatedInFeedOver30DaysAgo)
                         .WithMessage("Cannot submit to CFO QA as post-licence case closure period has lapsed");
                 });
             });
         }
 
-        private bool ParticipantNotDeativatedInFeedOver30DaysAgo(Guid queueEntryId)
+        private bool ParticipantNotDeactivatedInFeedOver30DaysAgo(Guid queueEntryId)
         {
             var thirtyDaysAgo = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-30));
 

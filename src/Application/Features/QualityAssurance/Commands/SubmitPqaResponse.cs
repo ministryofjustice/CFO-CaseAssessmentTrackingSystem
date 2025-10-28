@@ -201,11 +201,11 @@ public static class SubmitPqaResponse
         }  
     }
 
-    public class G_ParticipantNotDeativatedInFeedOver30DaysAgo : AbstractValidator<Command>
+    public class G_ParticipantNotDeactivatedInFeedOver30DaysAgo : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public G_ParticipantNotDeativatedInFeedOver30DaysAgo(IUnitOfWork unitOfWork)
+        public G_ParticipantNotDeactivatedInFeedOver30DaysAgo(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
@@ -214,13 +214,13 @@ public static class SubmitPqaResponse
                 When(g => g.Response is PqaResponse.Accept, () =>
                 {
                     RuleFor(g => g.QueueEntryId)
-                        .Must(ParticipantNotDeativatedInFeedOver30DaysAgo)
+                        .Must(ParticipantNotDeactivatedInFeedOver30DaysAgo)
                         .WithMessage("Cannot submit to CFO QA as post-licence case closure period has lapsed");
                 });
             });
         }
 
-        private bool ParticipantNotDeativatedInFeedOver30DaysAgo(Guid queueEntryId)
+        private bool ParticipantNotDeactivatedInFeedOver30DaysAgo(Guid queueEntryId)
         {
             var thirtyDaysAgo = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-30));
 
