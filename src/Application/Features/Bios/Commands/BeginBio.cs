@@ -29,15 +29,17 @@ public static class BeginBio
 
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
         {
+            var oldBio = await GetPreviousBio(request);
+
             Bio bio = new Bio()
             {
                 Id = Guid.CreateVersion7(),
                 ParticipantId = request.ParticipantId,
                 Pathways =
                 [
-                    new DiversityPathway(),
-                    new ChildhoodExperiencesPathway(),                    
-                    new RecentExperiencesPathway(),
+                    oldBio?.Pathways[0] ?? new DiversityPathway(),
+                    oldBio?.Pathways[1] ?? new ChildhoodExperiencesPathway(),                    
+                    oldBio?.Pathways[2] ?? new RecentExperiencesPathway(),
                 ]
             };
 
@@ -51,6 +53,26 @@ public static class BeginBio
             await _unitOfWork.DbContext.ParticipantBios.AddAsync(bioSurvey);
 
             return Result<Guid>.Success(bio.Id);
+        }
+
+        private async Task<Bio?> GetPreviousBio(Command request)
+        {
+            var oldBio = await _unitOfWork.DbContext.ParticipantBios.Where(b => b.ParticipantId == request.ParticipantId)
+                           .OrderByDescending(b => b.Created)
+                           .FirstOrDefaultAsync();
+
+            if (oldBio == null)
+            {
+                return null;
+            }
+
+            var bio = JsonConvert.DeserializeObject<Bio>(oldBio.BioJson,
+            new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            })!;
+
+            return bio;
         }
     }
 

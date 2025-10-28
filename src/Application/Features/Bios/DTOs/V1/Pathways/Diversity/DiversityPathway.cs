@@ -26,6 +26,8 @@ public sealed partial class DiversityPathway
         yield return A9;
         yield return A10;
         yield return A11;
+        yield return A21;
+        yield return A22;
         yield return A12;
         yield return A13;
         yield return A14;
@@ -35,6 +37,7 @@ public sealed partial class DiversityPathway
         yield return A18;
         yield return A19;
         yield return A20;
+
     }
 
     public A1 A1 { get; private set; } = new();
@@ -57,5 +60,6 @@ public sealed partial class DiversityPathway
     public A18 A18 { get; private set; } = new();
     public A19 A19 { get; private set; } = new();
     public A20 A20 { get; private set; } = new();
-
+    public A21 A21 { get; private set; } = new();
+    public A22 A22 { get; private set; } = new();
 }
