@@ -1,3 +1,4 @@
+using ApexCharts;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Server.UI.Components.Identity;
 using CsvHelper.Configuration.Attributes;
@@ -14,7 +15,7 @@ public partial class SupportWorkerPerformance
     public string? SelectedUserId { get; set; }
     public string? SelectedDisplayName { get; set; }
 
-    private DateRange _dateRange { get; set; } = new DateRange(new DateTime(2025, 1, 1), DateTime.Today);
+    private DateRange _dateRange { get; set; } = new DateRange(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1), DateTime.Today);
     
     [CascadingParameter]
     public UserProfile CurrentUser { get; set; } = null!;
