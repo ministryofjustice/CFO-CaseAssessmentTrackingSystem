@@ -211,7 +211,7 @@ public static class SubmitActivityPqaResponse
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public G_ParticipantNotDeativatedInFeedOver30DaysAgo(IUnitOfWork unitOfWork)
+        public G_ParticipantNotDeactivatedInFeedOver30DaysAgo(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
