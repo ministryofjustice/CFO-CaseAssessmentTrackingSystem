@@ -124,36 +124,11 @@ public static class SubmitActivityPqaResponse
         }
     }
 
-    public class D_ShouldNotBeAtPqaStatus : AbstractValidator<Command>
+    public class D_OwnerShouldNotBeApprover : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public D_ShouldNotBeAtPqaStatus(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-
-            RuleSet(ValidationConstants.RuleSet.MediatR, () =>
-            {
-                RuleFor(d => d.QueueEntryId)
-                    .Must(MustBeAtPqA)
-                    .WithMessage("Activity queue item is not at PQA stage");
-            });
-        }
-
-        private bool MustBeAtPqA(Guid id)
-        {
-            var entry = _unitOfWork.DbContext.ActivityPqaQueue.Include(c => c.Activity)
-                .FirstOrDefault(a => a.Id == id);
-
-            return entry != null && entry.Activity!.Status == ActivityStatus.SubmittedToProviderStatus;
-        }
-    }
-
-    public class E_OwnerShouldNotBeApprover : AbstractValidator<Command>
-    {
-        private readonly IUnitOfWork _unitOfWork;
-
-        public E_OwnerShouldNotBeApprover(IUnitOfWork unitOfWork)
+        public D_OwnerShouldNotBeApprover(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
@@ -174,11 +149,11 @@ public static class SubmitActivityPqaResponse
         }
     }
 
-    public class F_ActivityOccurredWithin3Months : AbstractValidator<Command>
+    public class E_ActivityOccurredWithin3Months : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public F_ActivityOccurredWithin3Months(IUnitOfWork unitOfWork)
+        public E_ActivityOccurredWithin3Months(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
@@ -204,11 +179,11 @@ public static class SubmitActivityPqaResponse
         }
     }
 
-    public class G_ParticipantMustNotBeArchived : AbstractValidator<Command>
+    public class F_ParticipantMustNotBeArchived : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public G_ParticipantMustNotBeArchived(IUnitOfWork unitOfWork)
+        public F_ParticipantMustNotBeArchived(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
@@ -232,11 +207,11 @@ public static class SubmitActivityPqaResponse
         }
     }
 
-    public class H_ParticipantNotDeativatedInFeedOver30DaysAgo : AbstractValidator<Command>
+    public class G_ParticipantNotDeativatedInFeedOver30DaysAgo : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public H_ParticipantNotDeativatedInFeedOver30DaysAgo(IUnitOfWork unitOfWork)
+        public G_ParticipantNotDeativatedInFeedOver30DaysAgo(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 

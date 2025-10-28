@@ -90,7 +90,7 @@ public static class SubmitPqaResponse
             RuleSet(ValidationConstants.RuleSet.MediatR, () => {
                 RuleFor(c => c.QueueEntryId)
                     .Must(MustExist)
-                    .WithMessage("Queue item does not exist");
+                    .WithMessage("Enrolment queue item does not exist");
             });            
         }
 
@@ -109,7 +109,7 @@ public static class SubmitPqaResponse
             RuleSet(ValidationConstants.RuleSet.MediatR, () => {
                 RuleFor(c => c.QueueEntryId)
                     .Must(MustBeOpen)
-                    .WithMessage("Queue item is already completed.");    
+                    .WithMessage("Enrolment queue item is already completed.");    
             });
         }
 
@@ -122,35 +122,11 @@ public static class SubmitPqaResponse
         }
     }
 
-    public class D_ShouldNotBeAtPqaStatus : AbstractValidator<Command>
+    public class D_OwnerShouldNotBeApprover : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public D_ShouldNotBeAtPqaStatus(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-
-            RuleSet(ValidationConstants.RuleSet.MediatR, () => {
-                RuleFor(c => c.QueueEntryId)
-                    .Must(MustBeAtPqA)
-                    .WithMessage("Queue item is not a PQA stage");    
-            });
-        }
-
-        private bool MustBeAtPqA(Guid id)
-        {
-            var entry = _unitOfWork.DbContext.EnrolmentPqaQueue.Include(c => c.Participant)
-                .FirstOrDefault(a => a.Id == id);
-
-            return entry != null && entry.Participant!.EnrolmentStatus == EnrolmentStatus.SubmittedToProviderStatus;
-        }
-    }
-
-    public class E_OwnerShouldNotBeApprover : AbstractValidator<Command>
-    {
-        private readonly IUnitOfWork _unitOfWork;
-
-        public E_OwnerShouldNotBeApprover(IUnitOfWork unitOfWork)
+        public D_OwnerShouldNotBeApprover(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             
@@ -170,11 +146,11 @@ public static class SubmitPqaResponse
         }
     }
 
-    public class F_EnrolmentOccurredWithin3Months : AbstractValidator<Command>
+    public class E_EnrolmentOccurredWithin3Months : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public F_EnrolmentOccurredWithin3Months(IUnitOfWork unitOfWork)
+        public E_EnrolmentOccurredWithin3Months(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
@@ -183,9 +159,7 @@ public static class SubmitPqaResponse
                     .Must(EnrolmentOccurredWithin3Months)
                     .WithMessage($"The enrolment consent date is over 3 months ago")
                     .When(f => f.Response == PqaResponse.Accept);
-
             });
-
         }
 
         private bool EnrolmentOccurredWithin3Months(Command c)
@@ -199,20 +173,22 @@ public static class SubmitPqaResponse
         }
     }
   
-    public class G_ParticipantMustNotBeArchived : AbstractValidator<Command>
+    public class F_ParticipantMustNotBeArchived : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public G_ParticipantMustNotBeArchived(IUnitOfWork unitOfWork)
+        public F_ParticipantMustNotBeArchived(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
             RuleSet(ValidationConstants.RuleSet.MediatR, () => {
-                RuleFor(g => g.QueueEntryId)
-                    .Must(ParticipantMustNotBeArchived)
-                    .WithMessage("Participant is archived");
+                When(g => g.Response is PqaResponse.Accept, () =>
+                {
+                    RuleFor(g => g.QueueEntryId)
+                        .Must(ParticipantMustNotBeArchived)
+                        .WithMessage("Participant is archived");
+                });
             });
-
         }
 
         private bool ParticipantMustNotBeArchived(Guid queueEntryId)
@@ -225,11 +201,11 @@ public static class SubmitPqaResponse
         }  
     }
 
-    public class H_ParticipantNotDeativatedInFeedOver30DaysAgo : AbstractValidator<Command>
+    public class G_ParticipantNotDeativatedInFeedOver30DaysAgo : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public H_ParticipantNotDeativatedInFeedOver30DaysAgo(IUnitOfWork unitOfWork)
+        public G_ParticipantNotDeativatedInFeedOver30DaysAgo(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
