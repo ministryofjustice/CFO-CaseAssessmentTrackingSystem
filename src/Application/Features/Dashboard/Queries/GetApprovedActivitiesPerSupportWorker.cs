@@ -22,7 +22,7 @@ public static class GetApprovedActivitiesPerSupportWorker
                         join l in context.Locations on a.TookPlaceAtLocation.Id equals l.Id
                         where a.OwnerId == request.UserId
                               && a.CompletedOn >= request.StartDate
-                              && a.CompletedOn <= request.EndDate
+                              && a.CompletedOn < request.EndDate.AddDays(1).Date
                               && a.Status == ActivityStatus.ApprovedStatus.Value
                         group a by new
                         {

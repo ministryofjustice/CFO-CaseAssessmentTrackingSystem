@@ -24,7 +24,7 @@ public static class GetReassessmentsPerSupportWorker
                         join l in context.Locations on mi.LocationId equals l.Id
                         where mi.SupportWorker == request.UserId
                         && mi.AssessmentCompleted >= request.StartDate
-                        && mi.AssessmentCompleted <= request.EndDate
+                        && mi.AssessmentCompleted < request.EndDate.AddDays(1).Date
                         group mi by l into grp
                         orderby grp.Key.Name, grp.Key.LocationType
                         select new Details
