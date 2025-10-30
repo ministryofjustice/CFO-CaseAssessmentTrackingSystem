@@ -64,12 +64,7 @@ public partial class MyTeamsParticipantsWithNoRiskComponent
             return true;
         }
 
-        if (data.ParticipantId.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
-        {
-            return true;
-        }
-
-        if (data.ParticipantName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+        if (data.Description.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
         {
             return true;
         }
