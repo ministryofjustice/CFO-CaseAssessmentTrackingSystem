@@ -26,38 +26,75 @@ public static class MyTeamsParicipantsWithNoRiskResultsWithPagination
     {
         public async Task<Result<PaginatedData<MyTeamsParticipantsWithNoRiskDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
+            PaginatedData<MyTeamsParticipantsWithNoRiskDto> data = await GetData(request, cancellationToken);
+            return data;  
+        }
+
+        private async Task<PaginatedData<MyTeamsParticipantsWithNoRiskDto>> GetData(Query request, CancellationToken cancellationToken)
+        {
+            return request.GroupingType switch
+            {
+                MyTeamsParticipantsWithNoRiskGroupingType.User => await GetParticipantsWithNoRiskAggregateByUser(request, cancellationToken),
+                MyTeamsParticipantsWithNoRiskGroupingType.Tenant => await GetParticipantsWithNoRiskAggregateByTenant(request, cancellationToken),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+
+        private async Task<PaginatedData<MyTeamsParticipantsWithNoRiskDto>> GetParticipantsWithNoRiskAggregateByTenant(Query request, CancellationToken cancellationToken)
+        {
+            var db = unitOfWork.DbContext;
+            var groupedQuery =  from p in db.Participants.ApplySpecification(request.Specification)
+                                join owner in db.Users on p.OwnerId equals owner.Id
+                                join t in db.Tenants on owner.TenantId equals t.Id
+                                join r in db.Risks on p.Id equals r.ParticipantId into riskGroup
+                                from r in riskGroup.DefaultIfEmpty()
+                                where r.Created == null
+                                group p by new { t.Id, t.Name } into g
+                                orderby g.Key.Name
+                                select new MyTeamsParticipantsWithNoRiskDto
+                                {
+                                    Description = g.Key.Name!,
+                                    Count = g.Count()
+                                };
+
+            var results = await groupedQuery
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToListAsync(cancellationToken);
+
+            var count = await groupedQuery.CountAsync(cancellationToken);
+
+            return new PaginatedData<MyTeamsParticipantsWithNoRiskDto>(
+                results, count, request.PageNumber, request.PageSize);
+        }
+
+        private async Task<PaginatedData<MyTeamsParticipantsWithNoRiskDto>> GetParticipantsWithNoRiskAggregateByUser(Query request, CancellationToken cancellationToken)
+        {
             var db = unitOfWork.DbContext;
 
-            var CFOTenantNames = new HashSet<string> { "CFO", "CFO Evolution" };
-
-            var cutoffDate = DateTime.UtcNow.AddDays(-30);
-
 #pragma warning disable CS8602
-            var query = from p in db.Participants.ApplySpecification(request.Specification)                        
+            var query = from p in db.Participants.ApplySpecification(request.Specification)
                         join owner in db.Users on p.OwnerId equals owner.Id
-                        join u in db.Users on p.CreatedBy equals u.Id
                         join r in db.Risks on p.Id equals r.ParticipantId into riskGroup
                         from r in riskGroup.DefaultIfEmpty()
                         where r.Created == null
-                        orderby p.Created ascending // oldest first
-
+                        group p by new { owner.Id, owner.DisplayName} into g
+                        orderby g.Key.DisplayName
                         select new MyTeamsParticipantsWithNoRiskDto
                         {
-                            ParticipantId = p.Id,
-                            ParticipantName = $"{p.FirstName} {p.LastName}",
-                            EnrolmentStatus = p.EnrolmentStatus!,
-                            CaseCreatedDate = p.Created!
+                            Description = g.Key.DisplayName,  
+                            Count = g.Count()
                         };
-
-  
-                    var count = await query.CountAsync(cancellationToken);
 
             var results = await query
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .ToListAsync(cancellationToken);
 
-            return new PaginatedData<MyTeamsParticipantsWithNoRiskDto>(results, count, request.PageNumber, request.PageSize);
+            var count = await query.CountAsync(cancellationToken);
+
+            return new PaginatedData<MyTeamsParticipantsWithNoRiskDto>(
+                results, count, request.PageNumber, request.PageSize);
         }
 
         public class Validator : AbstractValidator<Query>
