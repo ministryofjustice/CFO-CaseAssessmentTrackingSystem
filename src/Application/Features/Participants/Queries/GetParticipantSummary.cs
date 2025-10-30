@@ -103,13 +103,15 @@ public static class GetParticipantSummary
                             BioSummary =
                                 (from bio in db.ParticipantBios
                                  where bio.ParticipantId == participantId
+                                 orderby bio.Created descending
                                  select new BioSummaryDto
                                  {
                                      BioCreator = bio.CreatedBy,
                                      BioDate = bio.Created,
                                      BioId = bio.Id,
                                      BioStatus = bio.Status
-                                 }).FirstOrDefault(),
+                                 })
+                                 .FirstOrDefault(),
                             LatestPri =
                                 (from pri in db.PRIs
                                  where pri.ParticipantId == participantId
