@@ -1,0 +1,86 @@
+﻿@using Cfo.Cats.Application.Features.Dashboard.DTOs
+@using Humanizer
+
+@inherits CatsComponent<PaginatedData<MyTeamsParticipantsWithNoRiskDto>>
+
+<MudItem lg="6" md="12">
+
+	@if (Loading)
+	{
+		<MudLoading Text="Loading" />
+	}
+
+	@if (ErrorMessage is not null)
+	{
+		<MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+			@ErrorMessage
+		</MudAlert>
+	} 
+
+	@if (Data is not null)
+	{
+		<MudCard style="height: 100%">
+			<MudCardHeader>
+				<CardHeaderContent>
+					<MudText Typo="Typo.h5">My Teams with participants with no risk</MudText>
+				</CardHeaderContent>
+				<CardHeaderActions>
+					<MudSwitch T="bool" Value="_byPerson" ValueChanged="OnByPersonChanged" Color="Color.Info">
+						By Person
+					</MudSwitch>
+				</CardHeaderActions>
+			</MudCardHeader>
+			<MudCardContent>
+				<MudTable Items="Data.Items"
+						  Hover="true"
+						  Striped="true"
+						  Filter="new Func<MyTeamsParticipantsWithNoRiskDto, bool>(FilterFunc)">
+					<ToolBarContent>
+
+						<MudText Typo="Typo.h6">Details</MudText>
+						<MudSpacer />
+						<MudStack>			
+							@if (_canSearch)
+							{
+								<MudTextField T="string" ValueChanged="@(OnSearch)" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+											  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium">
+								</MudTextField>
+							}
+						</MudStack>
+					</ToolBarContent>
+					<HeaderContent>
+						<MudTh>
+							<MudTableSortLabel SortBy="new Func<MyTeamsParticipantsWithNoRiskDto, object>(x => x.Description)">
+								Details
+							</MudTableSortLabel>
+						</MudTh>
+						<MudTh>
+							<MudTableSortLabel SortBy="new Func<MyTeamsParticipantsWithNoRiskDto, object>(x => x.Count)">
+								Count
+							</MudTableSortLabel>
+						</MudTh>						
+					</HeaderContent>
+					<RowTemplate>
+						<MudTd DataLabel="Description">
+							<MudStack>
+								<MudText>@($"{context.Description}")</MudText>								
+							</MudStack>
+						</MudTd>
+					
+						<MudTd DataLabel="Count">
+							<MudStack>
+								<MudText>@context.Count</MudText>								
+							</MudStack>			
+						</MudTd>
+					</RowTemplate>	
+					
+					<PagerContent>
+						<MudListSubheader Class="d-flex justify-center mt-2">
+							<MudPagination Count=@Data.TotalPages ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
+						</MudListSubheader>
+					</PagerContent>
+				</MudTable>
+			</MudCardContent>
+		</MudCard>
+		}  
+</MudItem>

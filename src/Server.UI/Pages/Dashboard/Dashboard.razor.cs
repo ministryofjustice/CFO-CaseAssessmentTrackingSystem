@@ -8,17 +8,15 @@ namespace Cfo.Cats.Server.UI.Pages.Dashboard;
 [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
 public partial class Dashboard
 {
-
     private bool _showQaPots;
     private bool _showMyTeamsParticipants;
     private bool _showJobManagement;
     private bool _showCaseWorkload;
     private bool _showRiskDueAggregate;
     private bool _showSyncComponent;
+    private bool _showNoRiskAggregate;
 
     public string Title { get; } = "Dashboard";
-
-    [CascadingParameter] private UserProfile UserProfile { get; set; } = default!;
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
 
@@ -32,6 +30,7 @@ public partial class Dashboard
         // these  follow the same logic for now no need to make the same check.
         _showCaseWorkload = _showMyTeamsParticipants;
         _showRiskDueAggregate = _showCaseWorkload;
+        _showNoRiskAggregate = _showCaseWorkload;
 
         _showQaPots = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
 
@@ -40,7 +39,5 @@ public partial class Dashboard
 
         _showJobManagement = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions))
             .Succeeded;
-    }
-
-  
+    }  
 }
