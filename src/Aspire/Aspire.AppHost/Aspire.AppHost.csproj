@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\DatabaseMigrator\DatabaseMigrator.csproj" />
     <ProjectReference Include="..\..\Server.UI\Server.UI.csproj" />
   </ItemGroup>
 

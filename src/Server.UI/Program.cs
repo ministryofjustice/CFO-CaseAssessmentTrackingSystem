@@ -37,14 +37,6 @@ if (useSentry)
 var app = builder.Build();
 
 app.ConfigureServer();
-
-if (app.Environment.IsDevelopment())
-{
-    using var scope = app.Services.CreateScope();
-    var applicationDbContextInitializer = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitializer>();
-    await applicationDbContextInitializer.InitialiseAsync();
-}
-
 app.MapDefaultEndpoints();
 
 await app.RunAsync();

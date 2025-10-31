@@ -171,8 +171,7 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
-        
-        services.AddScoped<ApplicationDbContextInitializer>();
+
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
         return services;
