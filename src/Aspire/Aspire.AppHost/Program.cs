@@ -21,6 +21,10 @@ var rabbit = builder.AddRabbitMQ("rabbit",
         port: 5672)
     .WithManagementPlugin(port: 15672);
 
+var migrator = builder.AddProject<Projects.DatabaseMigrator>("Migrator")
+    .WithReference(catsDb)
+    .WaitFor(sql);
+
 var cats = builder.AddProject<Projects.Server_UI>("cats", configure: project =>
     {
         // Exclude launchSettings on publish
@@ -28,7 +32,7 @@ var cats = builder.AddProject<Projects.Server_UI>("cats", configure: project =>
     })
     .WithReference(catsDb)
     .WithReference(rabbit)
-    .WaitFor(sql);
+    .WaitForCompletion(migrator);
 
 if (publishing)
 {
