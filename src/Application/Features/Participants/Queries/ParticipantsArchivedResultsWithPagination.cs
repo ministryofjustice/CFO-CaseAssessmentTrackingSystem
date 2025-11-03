@@ -24,8 +24,7 @@ public static class ParticipantsArchivedResultsWithPagination
 #pragma warning disable CS8602
             var query = from peh in db.ParticipantEnrolmentHistories.ApplySpecification(request.Specification)
                         join p in db.Participants on peh.ParticipantId equals p.Id
-                        join createdBy in unitOfWork.DbContext.Users on peh.CreatedBy equals createdBy.Id
-                        where createdBy.TenantId!.StartsWith(request.CurrentUser.TenantId!)                         
+                        join createdBy in unitOfWork.DbContext.Users on peh.CreatedBy equals createdBy.Id                        
                         orderby peh.From  
                         select new ParticipantsArchivedResultsSummaryDto
                         {

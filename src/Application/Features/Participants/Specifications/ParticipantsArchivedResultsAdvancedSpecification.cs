@@ -11,9 +11,9 @@ public sealed class ParticipantsArchivedResultsAdvancedSpecification : Specifica
         Query.Where(peh => peh.EnrolmentStatus == EnrolmentStatus.ArchivedStatus.Value
                           && peh.From >= thirtyDaysAgo);
 
-        Query.Where(peh => peh.CreatedBy == filter.CurrentUser!.UserId, filter.JustMyParticipants);
+        Query.Where(peh => peh.Participant!.OwnerId == filter.CurrentUser!.UserId, filter.JustMyParticipants);
              
-             //.Where(peh => peh.Participant!.Owner!.TenantId!.StartsWith(filter.CurrentUser!.TenantId!));
+        Query.Where(peh => peh.Participant!.Owner!.TenantId!.StartsWith(filter.CurrentUser!.TenantId!));
 
         // If we have passed a filter through, search the surname and current location
         Query.Where(peh => string.IsNullOrWhiteSpace(filter.Keyword)
