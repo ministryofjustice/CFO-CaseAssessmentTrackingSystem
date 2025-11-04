@@ -11,8 +11,16 @@ public class RiskInformationReviewed(IUnitOfWork unitOfWork) : INotificationHand
             .FirstOrDefaultAsync(cancellationToken);
 
         if (participant is not null)
-        {
-            participant.SetRiskDue(DateTime.UtcNow.AddDays(70), RiskDueReason.TenWeekReview);
+        {         
+            //If risk still not completed class it as initial review and keep review date as 14 days
+            if (participant.EnrolmentStatus == EnrolmentStatus.EnrollingStatus && notification.Item.ReviewReason == RiskReviewReason.NoRiskInformationAvailable)
+            {
+                participant.SetRiskDue(DateTime.UtcNow.AddDays(14), RiskDueReason.InitialReview);
+            }
+            else
+            {
+                participant.SetRiskDue(DateTime.UtcNow.AddDays(70), RiskDueReason.TenWeekReview);
+            }
         }
     }
 }
