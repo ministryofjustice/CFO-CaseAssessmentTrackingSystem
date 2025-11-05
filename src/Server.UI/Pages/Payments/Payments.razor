@@ -60,7 +60,7 @@ else
         <MudTabPanel Text="Activities">
             <ActivityPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Activities")" Contract="@SelectedContract" DataView="DataView" />
         </MudTabPanel>
-        <MudTabPanel Text="Education & Training">
+        <MudTabPanel Text="Education &amp; Training">
             <EducationPayments Month="@Month" Year="@Year" @key="@($"{Month}-{Year}-{SelectedContract?.Id}-Education")" Contract="@SelectedContract" DataView="DataView" />
         </MudTabPanel>
         <MudTabPanel Text="Employment">
