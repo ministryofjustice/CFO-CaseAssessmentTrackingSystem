@@ -1,5 +1,6 @@
 @using Cfo.Cats.Application.Features.Dashboard.Queries
 @using ApexCharts
+@using Cfo.Cats.Domain.Common.Enums
 @inherits CatsComponent<GetCommencedActivitiesPerSupportWorker.CommencedActivitiesPerSupportWorkerDto>
 
 @if (Loading)
@@ -31,16 +32,24 @@
                    Options="chartOptions"
                    Height="325">
 
-            @foreach (var activityType in Data.Details.Select(d => d.ActivityType).Distinct().OrderBy(t => t))
-            {
-                <ApexPointSeries TItem="LocationActivityCount"
-                                 Items="@GetSeriesDataForActivityType(activityType)"
-                                 Name="@activityType.Name"
-                                 SeriesType="SeriesType.Bar"
-                                 XValue="@(e => e.Location)"
-                                 YValue="@(e => (decimal)e.Count)"
-                                 OrderBy="e => e.X"
-                                 Color="@activityType.Colour" />
+            @{
+                var sortedActivityTypes = Data.Details
+                    .Select(d => d.ActivityType)
+                    .Distinct()
+                    .OrderBy(at => desiredOrder.IndexOf(at))
+                    .ToList();
+            
+                foreach (var activityType in sortedActivityTypes)
+                {
+                    <ApexPointSeries TItem="LocationActivityCount"
+                                    Items="@GetSeriesDataForActivityType(activityType)"
+                                    Name="@activityType.Name"
+                                    SeriesType="SeriesType.Bar"
+                                    XValue="@(e => e.Location)"
+                                    YValue="@(e => (decimal)e.Count)"
+                                    OrderBy="e => e.X"
+                                    Color="@activityType.Colour" />
+                }
             }
         </ApexChart>
     }

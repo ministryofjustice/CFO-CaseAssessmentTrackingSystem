@@ -18,6 +18,15 @@ public partial class SupportWorkerPaidActivityComponent
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
+    private List<ActivityType> desiredOrder = new List<ActivityType>
+    {
+        ActivityType.SupportWork,
+        ActivityType.HumanCitizenship,
+        ActivityType.CommunityAndSocial,
+        ActivityType.InterventionsAndServicesWraparoundSupport,
+        ActivityType.EducationAndTraining,
+        ActivityType.Employment
+    };
     private ApexChartOptions<LocationActivityCount> chartOptions = new();
 
     protected override IRequest<Result<GetPaidActivitiesPerSupportWorker.PaidActivitiesPerSupportWorkerDto>> CreateQuery()
@@ -52,7 +61,19 @@ public partial class SupportWorkerPaidActivityComponent
             {
                 Bar = new PlotOptionsBar
                 {
-                    Horizontal = false
+                    Horizontal = false,
+                    DataLabels = new ApexCharts.PlotOptionsBarDataLabels
+                    {
+                        Total = new ApexCharts.BarTotalDataLabels
+                        {
+                            Enabled = true,
+                            Style = new ApexCharts.BarDataLabelsStyle
+                            {
+                                FontWeight = "800",
+                                Color = IsDarkMode ? "#FFFFFF" : "#000000",
+                            }
+                        }
+                    },
                 }
             },
             DataLabels = new DataLabels

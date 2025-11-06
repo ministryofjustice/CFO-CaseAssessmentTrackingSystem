@@ -63,12 +63,12 @@
 			<MudTabPanel Text="Enrolments" Class="pa-3">
 				<SupportWorkerEnrolmentDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
 			</MudTabPanel>
-            <MudTabPanel Text="Reassessments" Class="pa-3">
-                <SupportWorkerReassessmentDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
-            </MudTabPanel>
 			<MudTabPanel Text="Inductions" Class="pa-3">
 				<SupportWorkerInductionDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
 			</MudTabPanel>
+			<MudTabPanel Text="Support &amp; Referral">
+                <SupportWorkerPRIDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+            </MudTabPanel>
 			<MudTabPanel Text="Activities">
                 <MudGrid Spacing="4">
                     <MudItem xs="12" sm="12" md="12" lg="12">
@@ -82,15 +82,16 @@
                     </MudItem>
                 </MudGrid>
             </MudTabPanel>
-			<MudTabPanel Text="Education & Training">
+			<MudTabPanel Text="Education &amp; Training">
 				<SupportWorkerEducationDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
 			</MudTabPanel>
 			<MudTabPanel Text="Employment">
 				<SupportWorkerEmploymentDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
 			</MudTabPanel>
-			<MudTabPanel Text="PRI">
-                <SupportWorkerPRIDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+			<MudTabPanel Text="Reassessments" Class="pa-3">
+                <SupportWorkerReassessmentDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
+
 		</MudTabs>
     }
     

@@ -56,6 +56,7 @@ public partial class SupportWorkerPRIDashboardComponent
         {
             Chart = new Chart
             {
+                Stacked = true,
                 Toolbar = new Toolbar { Show = false },
                 Animations = new Animations { Enabled = true }
             },
@@ -63,31 +64,44 @@ public partial class SupportWorkerPRIDashboardComponent
             {
                 Bar = new PlotOptionsBar
                 {
-                    Horizontal = false
-                }
-            },
-            DataLabels = new DataLabels
-            {
-                Enabled = true,
-                Style = new DataLabelsStyle
-                {
-                    FontSize = "12px",
-                    Colors = new List<string> { "#fff" }
+                    Horizontal = false,
+                    ColumnWidth = "55%",
+                    DataLabels = new ApexCharts.PlotOptionsBarDataLabels
+                    {
+                        Total = new ApexCharts.BarTotalDataLabels
+                        {
+                            Enabled = true,
+                            Style = new ApexCharts.BarDataLabelsStyle
+                            {
+                                FontWeight = "800",
+                                Color = IsDarkMode ? "#FFFFFF" : "#000000",
+                            }
+                        }
+                    },
                 }
             },
             Xaxis = new XAxis
             {
-                Title = new AxisTitle { Text = xAxisTitle }
+                Title = new AxisTitle { Text = xAxisTitle },
+                Labels = new XAxisLabels { Rotate = -45 }
             },
             Yaxis = new List<YAxis>
             {
                 new YAxis
                 {
                     Min = 0,
-                    ForceNiceScale = true
+                    ForceNiceScale = true,
+                    Labels = new YAxisLabels
+                    {
+                        Show = true
+                    }
                 }
             },
-            Colors = new List<string> { color }
+            Colors = new List<string> { color },
+            Tooltip = new Tooltip
+            {
+                Enabled = true
+            }
         };
     }
 
