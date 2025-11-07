@@ -92,6 +92,8 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
 
     /// <summary>
     /// Marks the sample as verified.
+    /// 
+    /// This is action is performed by the CPM.
     /// </summary>
     /// <returns>This item, with it's status changed</returns>
     /// <exception cref="MissingParticipantDetailsException">If the participants have not been loaded</exception>
@@ -115,31 +117,31 @@ public class OutcomeQualityDipSample : BaseAuditableEntity<Guid>
 
         foreach (var participant in Participants)
         {
-            if (participant.CpmIsCompliant.IsAnswer == false)
+            
+            if(participant.CpmIsCompliant.IsAnswer == false)
             {
-                if (participant.CpmIsCompliant.IsAnswer == false)
+                // any records that have not been manually answered by the CPM are marked as 'Not Compliant (Auto)' or 'Compliant (Auto)' based on the CSO answer.
+                var cpmAnswer = participant.CsoIsCompliant switch
                 {
-                    var cpmAnswer = participant.CsoIsCompliant switch
-                    {
-                        var c when c.Name == ComplianceAnswer.Compliant.Name => ComplianceAnswer.AutoCompliant,
-                        var c when c.Name == ComplianceAnswer.NotCompliant.Name => ComplianceAnswer.AutoNotCompliant,
-                        _ => throw new ApplicationException("Invalid answer")
-                    };
+                    var c when c.Name == ComplianceAnswer.Compliant.Name => ComplianceAnswer.AutoCompliant,
+                    var c when c.Name == ComplianceAnswer.NotCompliant.Name => ComplianceAnswer.AutoNotCompliant,
+                    var c when c.Name == ComplianceAnswer.Unsure.Name => throw new ApplicationException("Invalid answer"),
+                    _ => throw new ApplicationException("Invalid answer")
+                };
 
-                    participant.CpmAnswer(
-                        cpmAnswer,
-                        participant.CsoComments!,
-                        userId,
-                        DateTime.UtcNow
-                    );
-                }
-
+                participant.CpmAnswer(
+                                    cpmAnswer,
+                                    participant.CsoComments!,
+                                    userId,
+                                    DateTime.UtcNow
+                                );
             }
 
-            if (participant.CsoIsCompliant.IsAnswer && (participant.CsoIsCompliant.IsAccepted == participant.CpmIsCompliant.IsAccepted))
+            // Any records where the CSO and CPM answers match (and the CSO answer is not 'Unsure') are marked as 'Compliant (Auto)' or 'Not Compliant (Auto)'.
+            if (participant.CsoIsCompliant.Name != ComplianceAnswer.Unsure.Name && (participant.CsoIsCompliant.IsAccepted == participant.CpmIsCompliant.IsAccepted))
             {
-                var finalAnswer = participant.CpmIsCompliant.IsAccepted ? 
-                    ComplianceAnswer.AutoCompliant : 
+                var finalAnswer = participant.CpmIsCompliant.IsAccepted ?
+                    ComplianceAnswer.AutoCompliant :
                     ComplianceAnswer.AutoNotCompliant;
 
                 participant.FinalAnswer(finalAnswer, participant.CpmComments!, participant.CpmReviewedBy!, DateTime.UtcNow);
