@@ -20,65 +20,14 @@
     }
         
     <MyNotifications />
+    <!-- Everything above this line stays -->
 
-    @if (_showCaseWorkload)
-    {
-        <CaseWorkload/>
-    }
-
-    @if (_showRiskDueAggregate)
-    {
-        <RiskDueAggregateComponent />
-    }
-    else
-    {
-        <MyRiskDueComponent />
-    }
-
-    @if (_showMyTeamsParticipants)
-    {
-        <MyTeamsParticipantsLatestEngagementComponent />
-    }
-    else
-    {
-        <MyParticipantsLatestEngagementComponent />
-    }
-        
-    @if (_showQaPots)
-    {
-        <QaPots />            
-    }
-        
-    @if (_showSyncComponent)
-    {
-        <SyncComponent />
-    }
-        
-    @if(_showJobManagement)
-    {
-        <CacheControl />
-        <JobManagement />
-    }
-    
-    <QAActivitiesResults JustMyParticipants="_showMyTeamsParticipants is false"/>  
-	<QAEnrolmentsResults JustMyParticipants="_showMyTeamsParticipants is false" />
-
-	@if (_showMyTeamsParticipants)
-	{
-		<MyTeamsParticipantsInLicenceEndPeriod />
-	}
-	else
-	{
-		<MyParticipantsInLicenceEndPeriod/>
-	}	
-
-	@if (_showMyTeamsParticipants)
-	{
-		<MyTeamsArchivedCases />
-	}
-	else
-	{
-		<MyArchivedCases />
-	}
+    <!-- SW Dashboard -->
+    <QAActivitiesResults JustMyParticipants="true"/>  
+	<QAEnrolmentsResults JustMyParticipants="true" />
+    <MyRiskDueComponent />
+    <MyParticipantsLatestEngagementComponent />
+    <MyParticipantsInLicenceEndPeriod/>
+    <MyArchivedCases />
 	
 </MudGrid>

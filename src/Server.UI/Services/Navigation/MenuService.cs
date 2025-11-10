@@ -28,11 +28,29 @@ public class MenuService : IMenuService
                                 Href = "/",
                                 PageStatus = PageStatus.Completed
                             },
-
                             new()
                             {
                                 Title = "Support Worker",
                                 Href = "/pages/dashboard/supportworker/",
+                                PageStatus = PageStatus.Wip
+                            },
+                            // We need to be able to support policies here.
+                            // I.e. Internal, UserHasAdditionalRoles
+                            new()
+                            {
+                                Title = "Quality Assurance",
+                                Href = "/pages/dashboard/qa/",
+                                PageStatus = PageStatus.Wip,
+                                Roles = [RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer,
+                                            RoleNames.QASupportManager, RoleNames.QAFinance,
+                                            RoleNames.PerformanceManager, RoleNames.CSO,
+                                            RoleNames.CPM, RoleNames.CMPSM]
+                            },
+                            // Here, we need to filter this to INTERNAL users only.
+                            new()
+                            {
+                                Title = "System",
+                                Href = "/pages/dashboard/system/",
                                 PageStatus = PageStatus.Wip
                             }
                         ],

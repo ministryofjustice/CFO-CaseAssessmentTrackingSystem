@@ -1,0 +1,28 @@
+@page "/pages/dashboard/qa"
+
+@inherits CatsComponentBase
+
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@using Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults
+
+<MudText Typo="Typo.h3">
+    QA Dashboard
+</MudText>
+
+<MudGrid Class="mt-2">
+    <QAActivitiesResults JustMyParticipants="false"/>  
+	<QAEnrolmentsResults JustMyParticipants="false" />
+
+    <CaseWorkload/>
+    <RiskDueAggregateComponent />
+    <MyTeamsParticipantsLatestEngagementComponent />
+
+    @if(_showQaPots)
+    {
+        <QaPots />
+    }
+
+    <MyTeamsParticipantsInLicenceEndPeriod />
+    <MyTeamsArchivedCases />
+
+</MudGrid>

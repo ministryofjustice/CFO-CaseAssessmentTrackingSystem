@@ -1,0 +1,21 @@
+@page "/pages/dashboard/system"
+
+@inherits CatsComponentBase
+
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@using Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults
+
+<MudText Typo="Typo.h3">
+    System Dashboard
+</MudText>
+
+<MudGrid Class="mt-2">
+    <SyncComponent />
+
+    @if(_showJobManagement)
+    {
+        <CacheControl />
+        <JobManagement />
+    }
+
+</MudGrid>
