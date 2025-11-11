@@ -31,37 +31,38 @@ Task("Build")
             Configuration = "Release"
         });
     });
-    
- Task("Publish")
-     .IsDependentOn("Test")
-     .Does(() =>
- {
-     DotNetPublish("./src/Server.UI/Server.UI.csproj",
-         new DotNetPublishSettings {
-             Configuration = "Release",
-             OutputDirectory = "./artifacts/publish",
-             NoRestore = true,
-             NoBuild = true
-         });
- });
+
+Task("Publish UI")
+    .IsDependentOn("Test")
+    .Does(() =>
+{
+    DotNetPublish("./src/Server.UI/Server.UI.csproj",
+        new DotNetPublishSettings
+        {
+            Configuration = "Release",
+            OutputDirectory = "./artifacts/publish/Server.UI",
+            NoRestore = true,
+            NoBuild = true
+        });
+
+});
  
- Task("ScriptMigration")
-     .IsDependentOn("Publish")
-     .Does(() =>
- {
-     var settings = new ProcessSettings {
-             Arguments = "ef migrations script --no-build " +
-                         "--project ./src/Infrastructure/Infrastructure.csproj " +
-                         "--startup-project ./src/Server.UI/Server.UI.csproj " +
-                         "--configuration Release " +
-                         "--output ./artifacts/migrations.sql --idempotent",
-             WorkingDirectory = Context.Environment.WorkingDirectory // force repo root
-         };
-         
-     StartProcess("dotnet", settings);
- });
- 
- Task("Default")
-    .IsDependentOn("ScriptMigration");
+Task("Publish Migrations")
+    .IsDependentOn("Publish UI")
+    .Does(() =>
+{
+    DotNetPublish("./src/DatabaseMigrator/DatabaseMigrator.csproj",
+        new DotNetPublishSettings
+        {
+            Configuration = "Release",
+            OutputDirectory = "./artifacts/publish/DatabaseMigrator",
+            NoRestore = true,
+            NoBuild = true
+        });
+
+});
+
+Task("Default")
+    .IsDependentOn("Publish Migrations");
     
- RunTarget(target);
+RunTarget(target);
