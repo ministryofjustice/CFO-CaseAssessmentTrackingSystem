@@ -15,7 +15,7 @@ public record DipSampleParticipantSummaryDto(
 {
     public bool CsoAndCpmDisagree =>
         CpmComplianceAnswer.IsAnswer && CsoComplianceAnswer.IsAnswer 
-        && CpmComplianceAnswer.IsAccepted != CsoComplianceAnswer.IsAccepted;
+        && CpmComplianceAnswer.Name != CsoComplianceAnswer.Name;
 
     public ComplianceAnswer ComplianceAnswer
     {
