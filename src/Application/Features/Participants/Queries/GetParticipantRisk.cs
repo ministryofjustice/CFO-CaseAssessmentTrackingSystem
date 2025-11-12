@@ -40,7 +40,7 @@ public class GetParticipantRisk
             }
 
             if(request.ReadOnly is false){
-                //Query only for reviews, when either ReadOnly is not passed or explicitly set to true
+                //Query only for reviews, when either ReadOnly is not passed or explicitly set to false
                 var locationType = await unitOfWork.DbContext.Locations
                 .Where(l => l.Id == risk.LocationId)
                 .Select(l => l.LocationType)

@@ -277,6 +277,18 @@ public class RiskDto
                     .SetValidator(new RiskDetail.Validator());
             });
 
+            When(x => x.LocationType?.IsCommunity == true, () =>
+            {
+                RuleFor(x => x.CommunityRiskDetail)
+                    .SetValidator(new RiskDetail.Validator());
+            });
+
+            When(x => x.LocationType?.IsCustody == true, () =>
+            {
+                RuleFor(x => x.CustodyRiskDetail)
+                    .SetValidator(new RiskDetail.Validator());
+            });
+
             RuleFor(x => x.IsSubjectToSHPO)
                 .NotNull()
                 .WithMessage("You must answer");
