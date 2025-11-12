@@ -2,6 +2,7 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
 
@@ -12,6 +13,7 @@ public class GetParticipantRisk
     {
         public required string ParticipantId { get; set; }
         public Guid? RiskId { get; set; }
+        public bool ReadOnly { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<RiskDto>>
@@ -37,6 +39,18 @@ public class GetParticipantRisk
                 return Result<RiskDto>.Failure(["Risk not found."]);
             }
 
+            if(request.ReadOnly is false){
+                //Query only for reviews, when either ReadOnly is not passed or explicitly set to true
+                var locationType = await unitOfWork.DbContext.Locations
+                .Where(l => l.Id == risk.LocationId)
+                .Select(l => l.LocationType)
+                .FirstOrDefaultAsync(cancellationToken);
+
+                var dto = mapper.Map<RiskDto>(risk);
+                dto.LocationType = locationType;
+
+                return dto;
+            }
             return mapper.Map<RiskDto>(risk);
         }
     }  
