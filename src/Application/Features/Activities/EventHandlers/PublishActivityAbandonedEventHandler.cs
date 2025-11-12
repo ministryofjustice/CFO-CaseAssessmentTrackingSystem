@@ -10,7 +10,7 @@ public class PublishActivityAbandonedEventHandler(IUnitOfWork unitOfWork) : INot
     {
         if (notification.To == ActivityStatus.AbandonedStatus)
         {
-            await unitOfWork.DbContext.InsertOutboxMessage(new ActivityAbandonedIntegrationEvent(notification.Item, notification.DateOccurred.DateTime));
+            await unitOfWork.DbContext.InsertOutboxMessage(new ActivityAbandonedIntegrationEvent(notification.Item.Id, notification.DateOccurred.DateTime));
         }
     }
 }
