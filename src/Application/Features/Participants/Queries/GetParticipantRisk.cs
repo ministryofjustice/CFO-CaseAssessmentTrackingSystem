@@ -13,46 +13,42 @@ public class GetParticipantRisk
     {
         public required string ParticipantId { get; set; }
         public Guid? RiskId { get; set; }
-        public bool ReadOnly { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<RiskDto>>
     {
         public async Task<Result<RiskDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var query = unitOfWork.DbContext.Risks
-                .Include(x => x.Participant)
-                .IgnoreAutoIncludes()
-                .Where(x => x.ParticipantId == request.ParticipantId);
+            var query =
+                from r in unitOfWork.DbContext.Risks
+                    .Include(x => x.Participant)
+                    .IgnoreAutoIncludes()
+                join l in unitOfWork.DbContext.Locations
+                    on r.LocationId equals l.Id
+                where r.ParticipantId == request.ParticipantId
+                select new { Risk = r, LocationType = l.LocationType };
 
-            if(request.RiskId is not null)
+            if (request.RiskId is not null)
             {
                 query = query
-                    .Where(x => x.Id == request.RiskId);
+                    .Where(x => x.Risk.Id == request.RiskId);
             }
 
-            var risk = await query.OrderByDescending(x => x.Created)
-                .FirstOrDefaultAsync();
+            var result = await query
+                .OrderByDescending(x => x.Risk.Created)
+                .FirstOrDefaultAsync(cancellationToken);
 
-            if(risk is null)
+            if(result is null)
             {
                 return Result<RiskDto>.Failure(["Risk not found."]);
             }
 
-            if(request.ReadOnly is false){
-                //Query only for reviews, when either ReadOnly is not passed or explicitly set to false
-                var locationType = await unitOfWork.DbContext.Locations
-                .Where(l => l.Id == risk.LocationId)
-                .Select(l => l.LocationType)
-                .FirstOrDefaultAsync(cancellationToken);
+            var dto = mapper.Map<RiskDto>(result.Risk);
+            dto.LocationType = result.LocationType;
 
-                var dto = mapper.Map<RiskDto>(risk);
-                dto.LocationType = locationType;
-
-                return dto;
-            }
-            return mapper.Map<RiskDto>(risk);
+            return dto;
         }
+
     }  
 
     public class Validator : AbstractValidator<Query>

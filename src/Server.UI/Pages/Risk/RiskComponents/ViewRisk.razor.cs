@@ -22,8 +22,7 @@ public partial class ViewRisk
             var result = await GetNewMediator().Send(new GetParticipantRisk.Query()
             {
                 ParticipantId = ParticipantId,
-                RiskId = RiskId,
-                ReadOnly = true
+                RiskId = RiskId
             });
 
             if (result is { Succeeded: true, Data: not null })
