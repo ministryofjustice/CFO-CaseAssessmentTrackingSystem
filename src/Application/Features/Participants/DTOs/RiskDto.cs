@@ -1,6 +1,5 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Entities.Participants;
-using Microsoft.AspNetCore.Components;
 using Newtonsoft.Json;
 
 namespace Cfo.Cats.Application.Features.Participants.DTOs;
@@ -8,6 +7,8 @@ namespace Cfo.Cats.Application.Features.Participants.DTOs;
 [Description("Risk")]
 public class RiskDto
 {
+    public LocationType? LocationType { get; set; }
+
     [Description("Activity Recommendations")]
     public string? ActivityRecommendations { get; set; }
 
@@ -271,6 +272,18 @@ public class RiskDto
             });
 
             When(x => x.IsRelevantToCustody, () =>
+            {
+                RuleFor(x => x.CustodyRiskDetail)
+                    .SetValidator(new RiskDetail.Validator());
+            });
+
+            When(x => x.LocationType?.IsCommunity == true, () =>
+            {
+                RuleFor(x => x.CommunityRiskDetail)
+                    .SetValidator(new RiskDetail.Validator());
+            });
+
+            When(x => x.LocationType?.IsCustody == true, () =>
             {
                 RuleFor(x => x.CustodyRiskDetail)
                     .SetValidator(new RiskDetail.Validator());

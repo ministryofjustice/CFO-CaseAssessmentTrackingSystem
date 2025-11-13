@@ -2,6 +2,7 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace Cfo.Cats.Application.Features.Participants.Queries;
 
@@ -18,27 +19,36 @@ public class GetParticipantRisk
     {
         public async Task<Result<RiskDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var query = unitOfWork.DbContext.Risks
-                .Include(x => x.Participant)
-                .IgnoreAutoIncludes()
-                .Where(x => x.ParticipantId == request.ParticipantId);
+            var query =
+                from r in unitOfWork.DbContext.Risks
+                    .Include(x => x.Participant)
+                    .IgnoreAutoIncludes()
+                join l in unitOfWork.DbContext.Locations
+                    on r.LocationId equals l.Id
+                where r.ParticipantId == request.ParticipantId
+                select new { Risk = r, LocationType = l.LocationType };
 
-            if(request.RiskId is not null)
+            if (request.RiskId is not null)
             {
                 query = query
-                    .Where(x => x.Id == request.RiskId);
+                    .Where(x => x.Risk.Id == request.RiskId);
             }
 
-            var risk = await query.OrderByDescending(x => x.Created)
-                .FirstOrDefaultAsync();
+            var result = await query
+                .OrderByDescending(x => x.Risk.Created)
+                .FirstOrDefaultAsync(cancellationToken);
 
-            if(risk is null)
+            if(result is null)
             {
                 return Result<RiskDto>.Failure(["Risk not found."]);
             }
 
-            return mapper.Map<RiskDto>(risk);
+            var dto = mapper.Map<RiskDto>(result.Risk);
+            dto.LocationType = result.LocationType;
+
+            return dto;
         }
+
     }  
 
     public class Validator : AbstractValidator<Query>
