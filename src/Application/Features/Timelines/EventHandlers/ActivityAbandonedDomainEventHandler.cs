@@ -10,5 +10,14 @@ public class ActivityAbandonedDomainEventHandler(ICurrentUserService currentUser
     
     protected override string GetParticipantId(ActivityTransitionedDomainEvent notification) 
         => notification.Item.ParticipantId;
+
+    public override async Task Handle(ActivityTransitionedDomainEvent notification, CancellationToken cancellationToken)
+    {
+        if(notification.Item.Status == ActivityStatus.AbandonedStatus)
+        {
+            await base.Handle(notification, cancellationToken);
+        }
+    }
+
 }
 
