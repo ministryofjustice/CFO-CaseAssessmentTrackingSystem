@@ -6,8 +6,17 @@ public class ActivityAbandonedDomainEventHandler(ICurrentUserService currentUser
     : TimelineNotificationHandler<ActivityTransitionedDomainEvent>(currentUserService, unitOfWork)
 {   
     protected override string GetLine1(ActivityTransitionedDomainEvent notification) => "Activity abandoned.";
-    protected override TimelineEventType GetEventType() => TimelineEventType.Activity;
+      
+    protected override string GetLine2(ActivityTransitionedDomainEvent notification)
+    {
+        var name = notification.Item.Definition.Name;
+        return name.Substring(0, Math.Min(name.Length, 50));
+    }
     
+    protected override string GetLine3(ActivityTransitionedDomainEvent notification) => notification.Item.AbandonReason!.Name;
+
+    protected override TimelineEventType GetEventType() => TimelineEventType.Activity;
+
     protected override string GetParticipantId(ActivityTransitionedDomainEvent notification) 
         => notification.Item.ParticipantId;
 
@@ -18,6 +27,4 @@ public class ActivityAbandonedDomainEventHandler(ICurrentUserService currentUser
             await base.Handle(notification, cancellationToken);
         }
     }
-
 }
-
