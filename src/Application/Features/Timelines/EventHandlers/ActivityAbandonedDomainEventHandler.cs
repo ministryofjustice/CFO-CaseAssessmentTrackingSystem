@@ -24,7 +24,7 @@ public class ActivityAbandonedDomainEventHandler(ICurrentUserService currentUser
     {
         if(notification.Item.Status == ActivityStatus.AbandonedStatus)
         {
-            await base.Handle(notification, cancellationToken);
+            await base.Handle(notification, cancellationToken); 
         }
     }
 }
