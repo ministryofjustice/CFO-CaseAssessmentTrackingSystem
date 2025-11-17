@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\DatabaseMigrator\DatabaseMigrator.csproj" />
+    <ProjectReference Include="..\..\PaymentProcessor\PaymentProcessor.csproj" />
     <ProjectReference Include="..\..\Server.UI\Server.UI.csproj" />
   </ItemGroup>
 

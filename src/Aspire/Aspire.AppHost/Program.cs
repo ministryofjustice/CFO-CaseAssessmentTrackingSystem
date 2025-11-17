@@ -34,6 +34,9 @@ var cats = builder.AddProject<Projects.Server_UI>("cats", configure: project =>
     .WithReference(rabbit)
     .WaitForCompletion(migrator);
 
+var paymentProcessor = builder.AddProject<Projects.PaymentProcessor>("payment-processor")
+    .WithReference(rabbit).WaitFor(rabbit);
+
 if (publishing)
 {
     cats.WithHttpEndpoint(port: 8080, targetPort: 8080)
