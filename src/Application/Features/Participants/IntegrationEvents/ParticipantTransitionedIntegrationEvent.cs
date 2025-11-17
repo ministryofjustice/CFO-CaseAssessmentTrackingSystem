@@ -1,3 +1,5 @@
-﻿namespace Cfo.Cats.Application.Features.Participants.IntegrationEvents;
+﻿using Cfo.Cats.EventBus.Events;
 
-public record ParticipantTransitionedIntegrationEvent(string ParticipantId, string From, string To, DateTime OccuredOn);
+namespace Cfo.Cats.Application.Features.Participants.IntegrationEvents;
+
+public sealed record ParticipantTransitionedIntegrationEvent(string ParticipantId, string From, string To, DateTime OccuredOn) : IntegrationEvent;

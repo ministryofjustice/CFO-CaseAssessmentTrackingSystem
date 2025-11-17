@@ -14,11 +14,11 @@ public static class Extensions
             .ConfigureJsonOptions(options => options.TypeInfoResolverChain.Add(IntegrationEventContext.Default));
 
         builder.AddRabbitMqEventBus("rabbit")
-            .AddSubscription<PaymentProcessedIntegrationEvent, PaymentProcessedIntegrationEventHandler>();
+            .AddSubscription<ParticipantTransitionedIntegrationEvent, ParticipantTransitionedIntegrationEventHandler>();
     }
 }
 
-[JsonSerializable(typeof(PaymentProcessedIntegrationEvent))]
+[JsonSerializable(typeof(ParticipantTransitionedIntegrationEvent))]
 public partial class IntegrationEventContext : JsonSerializerContext
 {
 

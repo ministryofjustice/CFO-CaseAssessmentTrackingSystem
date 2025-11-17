@@ -3,9 +3,7 @@ using Cfo.Cats.Application.Features.KeyValues.DTOs;
 using Cfo.Cats.Application.Features.KeyValues.Queries.PaginationQuery;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Domain.Entities.Documents;
-
 using Newtonsoft.Json;
-using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
@@ -15,7 +13,7 @@ public class DocumentExportKeyValuesIntegrationEventConsumer(
     IStringLocalizer<DocumentExportKeyValuesIntegrationEventConsumer> localizer,
     IUploadService uploadService,
     IMapper mapper,
-    IDomainEventDispatcher domainEventDispatcher) : IHandleMessages<ExportDocumentIntegrationEvent>
+    IDomainEventDispatcher domainEventDispatcher) // : IHandleMessages<ExportDocumentIntegrationEvent>
 {
     public async Task Handle(ExportDocumentIntegrationEvent context)
     {

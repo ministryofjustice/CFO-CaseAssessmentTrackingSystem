@@ -1,11 +1,10 @@
 using Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
 public class RecordThroughTheGatePaymentConsumer(IUnitOfWork unitOfWork)
-    : IHandleMessages<PRIThroughTheGateCompletedIntegrationEvent>
+    // : IHandleMessages<PRIThroughTheGateCompletedIntegrationEvent>
 {
     public async Task Handle(PRIThroughTheGateCompletedIntegrationEvent context)
     {

@@ -3,6 +3,7 @@ using Cfo.Cats.Infrastructure;
 using Cfo.Cats.Infrastructure.Persistence;
 using Cfo.Cats.Server.UI;
 using System.Globalization;
+using Cfo.Cats.EventBusRabbitMQ;
 
 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-GB");
 CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-GB");
@@ -16,6 +17,8 @@ builder.AddServerUi();
 builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration, builder.Environment);
+    
+builder.AddRabbitMqEventBus("rabbit");
 
 builder.AddServiceDefaults();
 

@@ -1,10 +1,9 @@
 ﻿using Cfo.Cats.Application.Features.QualityAssurance.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
-using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) : IHandleMessages<EnrolmentApprovedAtQaIntegrationEvent>
+public class RecordEnrolmentPaymentConsumer(IUnitOfWork unitOfWork) // : IHandleMessages<EnrolmentApprovedAtQaIntegrationEvent>
 {
     public async Task Handle(EnrolmentApprovedAtQaIntegrationEvent context)
     {

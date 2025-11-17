@@ -6,7 +6,6 @@ using Cfo.Cats.Domain.Entities.Documents;
 
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
@@ -14,7 +13,7 @@ public class DocumentExportRiskDueAggregateIntegrationEventConsumer(
     IUnitOfWork unitOfWork,
     IExcelService excelService,
     IUploadService uploadService,
-    IDomainEventDispatcher domainEventDispatcher) : IHandleMessages<ExportDocumentIntegrationEvent>
+    IDomainEventDispatcher domainEventDispatcher) // : IHandleMessages<ExportDocumentIntegrationEvent>
 {
     public async Task Handle(ExportDocumentIntegrationEvent context)
     {

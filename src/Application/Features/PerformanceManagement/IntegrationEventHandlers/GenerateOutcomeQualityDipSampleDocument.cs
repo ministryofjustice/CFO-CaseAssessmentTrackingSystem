@@ -1,12 +1,11 @@
 ﻿using Cfo.Cats.Application.Features.PerformanceManagement.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.Documents;
-using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.PerformanceManagement.IntegrationEventHandlers;
 
 public class GenerateOutcomeQualityDipSampleDocument(IUnitOfWork unitOfWork, 
     IDomainEventDispatcher domainEventDispatcher, 
-    ILogger<GenerateOutcomeQualityDipSampleDocument> logger) : IHandleMessages<OutcomeQualityDipSampleFinalisedIntegrationEvent>
+    ILogger<GenerateOutcomeQualityDipSampleDocument> logger) // : IHandleMessages<OutcomeQualityDipSampleFinalisedIntegrationEvent>
 {
     public async Task Handle(OutcomeQualityDipSampleFinalisedIntegrationEvent message)
     {

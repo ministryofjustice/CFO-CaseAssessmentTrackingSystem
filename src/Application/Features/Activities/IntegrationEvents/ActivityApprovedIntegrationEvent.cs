@@ -1,3 +1,5 @@
-﻿namespace Cfo.Cats.Application.Features.Activities.IntegrationEvents;
+﻿using Cfo.Cats.EventBus.Events;
 
-public record ActivityApprovedIntegrationEvent(Guid Id, DateTime OccurredOn);
+namespace Cfo.Cats.Application.Features.Activities.IntegrationEvents;
+
+public record ActivityApprovedIntegrationEvent(Guid ActivityId, DateTime OccurredOn) : IntegrationEvent;

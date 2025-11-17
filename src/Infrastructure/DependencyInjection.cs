@@ -22,7 +22,6 @@ using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.Contracts;
 using Cfo.Cats.Infrastructure.Services.Delius;
 using Cfo.Cats.Infrastructure.Services.Locations;
-using Cfo.Cats.Infrastructure.Services.MessageHandling;
 using Cfo.Cats.Infrastructure.Services.MultiTenant;
 using Cfo.Cats.Infrastructure.Services.OffLoc;
 using Cfo.Cats.Infrastructure.Services.Ordnance;
@@ -36,11 +35,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using Quartz.AspNetCore;
-using Rebus;
-using Rebus.Activation;
-using Rebus.Bus;
-using Rebus.Config;
-using Rebus.Handlers;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Cfo.Cats.Infrastructure;
@@ -93,10 +87,6 @@ public static class DependencyInjection
                 s.GetRequiredService<RightToWorkSettings>()
             );
 
-        services.Configure<RabbitSettings>(configuration.GetSection("RabbitSettings"));
-
-        services.Configure<OvernightServiceSettings>(configuration.GetSection("OvernightServiceSettings"));
-
         services.AddOptions<OutcomeQualityDipSampleSettings>()
             .BindConfiguration(OutcomeQualityDipSampleSettings.Key)
             .ValidateDataAnnotations()
@@ -109,33 +99,32 @@ public static class DependencyInjection
                     "Templates"
                 );
         });
-            
 
-        services.AddSingleton<IBus>(_ =>
-        {
-            var provider = services.BuildServiceProvider();
-            var rabbitSettings = provider.GetRequiredService<IOptions<RabbitSettings>>().Value;
+        // services.AddSingleton<IBus>(_ =>
+        // {
+        //     var provider = services.BuildServiceProvider();
+        //     var rabbitSettings = provider.GetRequiredService<IOptions<RabbitSettings>>().Value;
+        //
+        //     return Configure.With(new BuiltinHandlerActivator())
+        //         .Transport(t => t.UseRabbitMqAsOneWayClient(configuration.GetConnectionString("rabbit"))
+        //             .ExchangeNames(rabbitSettings.DirectExchange, rabbitSettings.TopicExchange))
+        //         .Start();
+        // });
 
-            return Configure.With(new BuiltinHandlerActivator())
-                .Transport(t => t.UseRabbitMqAsOneWayClient(configuration.GetConnectionString("rabbit"))
-                    .ExchangeNames(rabbitSettings.DirectExchange, rabbitSettings.TopicExchange))
-                .Start();
-        });
-
-        var handlerTypes = typeof(SyncParticipantCommandHandler).Assembly
-            .GetTypes()
-            .Where(t => t.IsAbstract == false && t.GetInterfaces()
-                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>)));
-
-        foreach (var handler in handlerTypes)
-        {
-            services.AddScoped(handler);
-        }
-
-        services.AddHostedService<OvernightBackgroundService>();
-        services.AddHostedService<TasksBackgroundService>();
-        services.AddHostedService<PaymentBackgroundService>();
-        services.AddHostedService<DocumentsBackgroundService>();
+        // var handlerTypes = typeof(SyncParticipantCommandHandler).Assembly
+        //     .GetTypes()
+        //     .Where(t => t.IsAbstract == false && t.GetInterfaces()
+        //         .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>)));
+        //
+        // foreach (var handler in handlerTypes)
+        // {
+        //     services.AddScoped(handler);
+        // }
+        //
+        // services.AddHostedService<OvernightBackgroundService>();
+        // services.AddHostedService<TasksBackgroundService>();
+        // services.AddHostedService<PaymentBackgroundService>();
+        // services.AddHostedService<DocumentsBackgroundService>();
 
         services.AddSingleton<ISessionService,SessionService>();
         

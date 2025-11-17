@@ -1,6 +1,8 @@
-﻿namespace Cfo.Cats.Application.Features.Participants.IntegrationEvents;
+﻿using Cfo.Cats.EventBus.Events;
 
-public record ParticipantEngagedIntegrationEvent(
+namespace Cfo.Cats.Application.Features.Participants.IntegrationEvents;
+
+public sealed record ParticipantEngagedIntegrationEvent(
     string ParticipantId, 
     string Description, 
     string Category, 
@@ -8,4 +10,4 @@ public record ParticipantEngagedIntegrationEvent(
     string EngagedAtLocation,
     string EngagedAtContract,
     string EngagedWith,
-    string EngagedWithTenant);
+    string EngagedWithTenant) : IntegrationEvent;

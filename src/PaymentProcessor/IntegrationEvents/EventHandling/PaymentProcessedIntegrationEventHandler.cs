@@ -3,12 +3,12 @@ using Cfo.Cats.PaymentProcessor.IntegrationEvents.Events;
 
 namespace Cfo.Cats.PaymentProcessor.IntegrationEvents.EventHandling;
 
-public class PaymentProcessedIntegrationEventHandler(ILogger<PaymentProcessedIntegrationEventHandler> logger)
-    : IIntegrationEventHandler<PaymentProcessedIntegrationEvent>
+public class ParticipantTransitionedIntegrationEventHandler(ILogger<ParticipantTransitionedIntegrationEventHandler> logger)
+    : IIntegrationEventHandler<ParticipantTransitionedIntegrationEvent>
 {
-    public Task Handle(PaymentProcessedIntegrationEvent @event)
+    public Task Handle(ParticipantTransitionedIntegrationEvent @event)
     {
-        logger.LogDebug($"Handling integration event: {@event}");
+        logger.LogInformation($"Handling integration event: {@event}");
         return Task.CompletedTask;
     }
 }

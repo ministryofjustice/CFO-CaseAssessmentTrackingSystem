@@ -1,3 +1,5 @@
-﻿namespace Cfo.Cats.Application.Features.PerformanceManagement.IntegrationEvents;
+﻿using Cfo.Cats.EventBus.Events;
 
-public record OutcomeQualityDipSampleVerifyingIntegrationEvent(Guid DipSampleId, string UserId, DateTime OccurredOn);
+namespace Cfo.Cats.Application.Features.PerformanceManagement.IntegrationEvents;
+
+public record OutcomeQualityDipSampleVerifyingIntegrationEvent(Guid DipSampleId, string UserId, DateTime OccurredOn) : IntegrationEvent;

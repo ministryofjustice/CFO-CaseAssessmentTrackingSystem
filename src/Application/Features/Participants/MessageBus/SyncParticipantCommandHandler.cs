@@ -1,5 +1,4 @@
 ﻿using Cfo.Cats.Domain.Entities.Participants;
-using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.Participants.MessageBus;
 
@@ -8,7 +7,7 @@ public class SyncParticipantCommandHandler(
     ICandidateService candidateService,
     IDomainEventDispatcher domainEventDispatcher,
     ILogger<SyncParticipantCommandHandler> logger)
-    : IHandleMessages<SyncParticipantCommand>
+    // : IHandleMessages<SyncParticipantCommand>
 {
     public async Task Handle(SyncParticipantCommand context)
     {

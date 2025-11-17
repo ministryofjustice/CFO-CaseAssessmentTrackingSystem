@@ -1,7 +1,9 @@
+using Cfo.Cats.EventBus.Events;
+
 namespace Cfo.Cats.Application.Features.Inductions.IntegrationEvents;
 
-public record WingInductionCreatedIntegrationEvent(Guid Id, DateTime OccurredOn);
+public sealed record WingInductionCreatedIntegrationEvent(Guid InductionId, DateTime OccurredOn) : IntegrationEvent;
 
-public record HubInductionCreatedIntegrationEvent(Guid Id, DateTime OccurredOn);
+public sealed record HubInductionCreatedIntegrationEvent(Guid InductionId, DateTime OccurredOn) : IntegrationEvent;
 
-public record WingPhaseCompletedIntegrationEvent(Guid InductionId, int Phase);
+public sealed record WingPhaseCompletedIntegrationEvent(Guid InductionId, int Phase): IntegrationEvent;

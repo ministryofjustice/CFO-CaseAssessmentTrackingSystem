@@ -30,8 +30,6 @@
         <PackageReference Include="Microsoft.Extensions.Http.Polly" />
         <PackageReference Include="Quartz" />
         <PackageReference Include="Quartz.AspNetCore" />
-        <PackageReference Include="Rebus.RabbitMq" />
-        <PackageReference Include="Rebus.ServiceProvider" />
         <PackageReference Include="Sentry.AspNetCore" />
         <PackageReference Include="Sentry.EntityFramework" />
         <PackageReference Include="ZiggyCreatures.FusionCache" />
@@ -39,6 +37,7 @@
     
     <ItemGroup>
         <ProjectReference Include="..\Application\Application.csproj" />
+        <ProjectReference Include="..\EventBus\EventBus.csproj" />
     </ItemGroup>
 
 </Project>

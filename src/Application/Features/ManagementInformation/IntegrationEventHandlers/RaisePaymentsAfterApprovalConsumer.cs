@@ -3,12 +3,10 @@ using Cfo.Cats.Application.Features.Assessments.IntegrationEvents;
 using Cfo.Cats.Application.Features.Inductions.IntegrationEvents;
 using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
 using Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
-using Rebus.Bus;
-using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork, IBus bus) : IHandleMessages<ParticipantTransitionedIntegrationEvent>
+public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork) // : IHandleMessages<ParticipantTransitionedIntegrationEvent>
 {
     public async Task Handle(ParticipantTransitionedIntegrationEvent context)
     {
@@ -64,7 +62,8 @@ public class RaisePaymentsAfterApprovalConsumer(IUnitOfWork unitOfWork, IBus bus
 
             foreach (var message in events)
             {
-                await bus.Publish(message);
+                throw new NotImplementedException("This needs fixing");
+                //await bus.Publish(message);
             }
         }
     }

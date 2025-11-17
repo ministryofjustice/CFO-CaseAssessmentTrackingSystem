@@ -1,11 +1,12 @@
 ﻿using System.Text.Json;
 using Cfo.Cats.Application.Outbox;
+using Cfo.Cats.EventBus.Abstractions;
+using Cfo.Cats.EventBus.Events;
 using Quartz;
-using Rebus.Bus;
 
 namespace Cfo.Cats.Infrastructure.Jobs;
 
-public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOutboxMessagesJob> logger, IBus bus)
+public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOutboxMessagesJob> logger, IEventBus bus)
     : IJob
 {
     private const int BatchSize = 10;
@@ -59,7 +60,7 @@ public class PublishOutboxMessagesJob(IUnitOfWork unitOfWork, ILogger<PublishOut
                         throw new ApplicationException("Unable to deserialize message content");
                     }
 
-                    await bus.Publish(deserializedMessage);
+                    await bus.PublishAsync((IntegrationEvent)deserializedMessage);
                     outboxMessage.ProcessedOnUtc = DateTime.UtcNow;
                 }
                 catch (Exception ex)

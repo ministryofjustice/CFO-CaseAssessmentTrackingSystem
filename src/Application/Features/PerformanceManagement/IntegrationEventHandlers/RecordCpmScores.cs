@@ -1,9 +1,8 @@
 ﻿using Cfo.Cats.Application.Features.PerformanceManagement.IntegrationEvents;
-using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.PerformanceManagement.IntegrationEventHandlers;
 
-public class RecordCpmScores(IUnitOfWork unitOfWork) : IHandleMessages<OutcomeQualityDipSampleVerifyingIntegrationEvent>
+public class RecordCpmScores(IUnitOfWork unitOfWork) // : IHandleMessages<OutcomeQualityDipSampleVerifyingIntegrationEvent>
 {
     public async Task Handle(OutcomeQualityDipSampleVerifyingIntegrationEvent message)
     {

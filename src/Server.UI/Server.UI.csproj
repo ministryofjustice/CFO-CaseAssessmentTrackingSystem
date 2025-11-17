@@ -59,6 +59,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Aspire\Aspire.ServiceDefaults\Aspire.ServiceDefaults.csproj" />
       <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\EventBusRabbitMQ\EventBusRabbitMQ.csproj" />
     </ItemGroup>
 
     <ItemGroup>

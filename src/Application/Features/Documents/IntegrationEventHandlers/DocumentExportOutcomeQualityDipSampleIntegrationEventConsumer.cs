@@ -1,7 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.Documents;
-using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.Documents.IntegrationEventHandlers;
 
@@ -12,8 +11,7 @@ public class DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer
         IUploadService uploadService,
         IDomainEventDispatcher domainEventDispatcher,
         ILogger<DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer> logger
-    )
-      : IHandleMessages<ExportDocumentIntegrationEvent>
+    ) // : IHandleMessages<ExportDocumentIntegrationEvent>
 {
     public async Task Handle(ExportDocumentIntegrationEvent message)
     {

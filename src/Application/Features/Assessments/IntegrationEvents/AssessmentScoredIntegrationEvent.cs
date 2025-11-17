@@ -1,3 +1,5 @@
-﻿namespace Cfo.Cats.Application.Features.Assessments.IntegrationEvents;
+﻿using Cfo.Cats.EventBus.Events;
 
-public record AssessmentScoredIntegrationEvent(Guid Id, string ParticipantId, DateTime OccurredOn);
+namespace Cfo.Cats.Application.Features.Assessments.IntegrationEvents;
+
+public record AssessmentScoredIntegrationEvent(Guid AssessmentId, string ParticipantId, DateTime OccurredOn) : IntegrationEvent;

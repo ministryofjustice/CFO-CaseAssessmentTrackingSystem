@@ -1,11 +1,10 @@
 ﻿using Cfo.Cats.Application.Features.PathwayPlans.IntegrationEvents;
 using Cfo.Cats.Application.Features.PRIs.IntegrationEvents;
 using Cfo.Cats.Application.Outbox;
-using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.PRIs.IntegrationEventHandlers;
 
-public class PriTaskCompletedWatcherConsumer(IUnitOfWork unitOfWork, ILogger<PriTaskCompletedWatcherConsumer> logger) : IHandleMessages<ObjectiveTaskCompletedIntegrationEvent>
+public class PriTaskCompletedWatcherConsumer(IUnitOfWork unitOfWork, ILogger<PriTaskCompletedWatcherConsumer> logger) // : IHandleMessages<ObjectiveTaskCompletedIntegrationEvent>
 {
     public async Task Handle(ObjectiveTaskCompletedIntegrationEvent context)
     {

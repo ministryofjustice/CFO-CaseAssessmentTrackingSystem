@@ -1,11 +1,13 @@
-﻿namespace Cfo.Cats.Application.Outbox;
+﻿using Cfo.Cats.EventBus.Events;
+
+namespace Cfo.Cats.Application.Outbox;
 
 public static class OutboxExtensions
 {
     public static async Task InsertOutboxMessage<T>(
         this IApplicationDbContext context,
         T message)
-        where T : notnull
+        where T : IntegrationEvent
     {
         var outboxMessage = new OutboxMessage
         {
