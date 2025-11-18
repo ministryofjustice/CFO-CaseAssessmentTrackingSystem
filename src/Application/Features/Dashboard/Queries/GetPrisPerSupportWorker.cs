@@ -10,13 +10,27 @@ public static class GetPrisPerSupportWorker
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
-        public required string UserId { get; set; }
+        public string? UserId { get; set; }
+        public string? TenantId { get; set; }
         public required UserProfile CurrentUser { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PrisPerSupportWorkerDto>>
     {
         public async Task<Result<PrisPerSupportWorkerDto>> Handle(Query request, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(request.UserId) == false)
+            {
+                return await GetPrisByUserId(request, cancellationToken);
+            }
+            if (string.IsNullOrWhiteSpace(request.TenantId) == false)
+            {
+                return await GetPrisByTenantId(request, cancellationToken);
+            }
+            return Result<PrisPerSupportWorkerDto>.Failure("Invalid request: UserId or TenantId must be provided.");
+        }
+
+        private async Task<Result<PrisPerSupportWorkerDto>> GetPrisByUserId(Query request, CancellationToken cancellationToken)
         {
             var context = unitOfWork.DbContext;
 
@@ -47,6 +61,38 @@ public static class GetPrisPerSupportWorker
 
             return new PrisPerSupportWorkerDto(results);
         }
+        private async Task<Result<PrisPerSupportWorkerDto>> GetPrisByTenantId(Query request, CancellationToken cancellationToken)
+        {
+            var context = unitOfWork.DbContext;
+
+            var query = from pri in context.SupportAndReferralPayments
+                        join l in context.Locations on pri.LocationId equals l.Id
+                        where
+                              pri.TenantId.StartsWith(request.TenantId!)
+                              && pri.Approved >= request.StartDate
+                              && pri.Approved <= request.EndDate
+                        group pri by new
+                        {
+                            l.Name,
+                            l.LocationType,
+                            pri.SupportType,
+                        } into g
+                        orderby g.Key.Name, g.Key.SupportType
+                        select new LocationDetail(
+                            g.Key.Name,
+                            g.Key.LocationType,
+                            g.Key.SupportType,
+                            g.Count(mi => mi.EligibleForPayment),
+                            g.Count()
+                        );
+
+            var results = await query
+                .AsNoTracking()
+                .ToArrayAsync(cancellationToken);
+
+            return new PrisPerSupportWorkerDto(results);
+        }
+
     }
 
     public record PrisPerSupportWorkerDto
