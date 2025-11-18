@@ -9,7 +9,32 @@ namespace Cfo.Cats.Infrastructure.Services.Identity;
 
 public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory, IOptions<IdentityOptions> optionsAccessor, ILogger<SignInManager<ApplicationUser>> logger, IAuthenticationSchemeProvider schemes, IUserConfirmation<ApplicationUser> confirmation, IOptions<AllowlistOptions> allowlistOptions, INetworkIpProvider networkIpAccessor, ISessionService sessionService)
     : SignInManager<ApplicationUser>(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation)
-{    
+{
+    public override async Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent, bool bypassTwoFactor)
+    {
+        var user = await UserManager.FindByLoginAsync(loginProvider, providerKey);
+
+        // Account does not exist
+        if (user is null)
+        {
+            return SignInResult.Failed;
+        }
+
+        if (user.IsActive is false)
+        {
+            return CustomSignInResult.Inactive;
+        }
+
+        var result = await base.ExternalLoginSignInAsync(loginProvider, providerKey, isPersistent, bypassTwoFactor);
+
+        if(result.Succeeded)
+        {
+            sessionService.StartSession(user.Id);
+        }
+
+        return result;
+    }
+
     public override async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure)
     {
         var user = await UserManager.FindByNameAsync(userName);

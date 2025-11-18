@@ -28,12 +28,14 @@ using Cfo.Cats.Infrastructure.Services.OffLoc;
 using Cfo.Cats.Infrastructure.Services.Ordnance;
 using Cfo.Cats.Infrastructure.Services.Serialization;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Identity.Web;
 using Quartz;
 using Quartz.AspNetCore;
 using Rebus;
@@ -335,6 +337,18 @@ public static class DependencyInjection
             })
             .AddIdentityCookies(options => {});
 
+        services
+            .AddAuthentication()
+            .AddMicrosoftIdentityWebApp(configuration, openIdConnectScheme: "MicrosoftEntraID");
+
+        services.Configure<OpenIdConnectOptions>("MicrosoftEntraID", options =>
+        {
+            options.SignInScheme = IdentityConstants.ExternalScheme;
+            options.SaveTokens = true;
+            options.Scope.Add("email");
+            options.Scope.Add("profile");
+        });
+
         services.AddDataProtection().PersistKeysToDbContext<ApplicationDbContext>();
 
         services.AddSingleton<IPasswordService, PasswordService>();
@@ -347,8 +361,14 @@ public static class DependencyInjection
 
         services.ConfigureApplicationCookie(options => {
             options.LoginPath = "/pages/authentication/login";
-            options.Cookie.SameSite = SameSiteMode.Strict;
+            options.Cookie.SameSite = SameSiteMode.Lax;
             options.Cookie.SecurePolicy = policy;
+        });
+
+        services.ConfigureExternalCookie(options =>
+        {
+            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
 
         services.AddSingleton<UserService>();
