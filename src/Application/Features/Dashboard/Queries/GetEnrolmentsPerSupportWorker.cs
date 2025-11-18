@@ -61,9 +61,8 @@ public static class GetEnrolmentsPerSupportWorker
 
             var query = from mi in context.EnrolmentPayments
                         join l in context.Locations on mi.LocationId equals l.Id
-                        join u in context.Users on mi.SupportWorker equals u.Id
                         where mi.EligibleForPayment
-                        && u.TenantId!.StartsWith(request.TenantId!)
+                        && mi.TenantId.StartsWith(request.TenantId!)
                         && mi.Approved >= request.StartDate
                         && mi.Approved <= request.EndDate
                         group l by l into grp

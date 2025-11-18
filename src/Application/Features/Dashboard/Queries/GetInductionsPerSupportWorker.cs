@@ -60,8 +60,7 @@ public static class GetInductionsPerSupportWorker
 
             var query = from mi in context.InductionPayments
                         join l in context.Locations on mi.LocationId equals l.Id
-                        join u in context.Users on mi.SupportWorker equals u.Id
-                        where u.TenantId!.StartsWith(request.TenantId!)
+                        where mi.TenantId.StartsWith(request.TenantId!)
                         && mi.Approved >= request.StartDate
                         && mi.Approved <= request.EndDate
                         group mi by l into grp
