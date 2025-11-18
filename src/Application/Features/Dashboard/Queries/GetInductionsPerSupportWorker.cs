@@ -9,7 +9,8 @@ public static class GetInductionsPerSupportWorker
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
-        public required string UserId { get; set; }
+        public string? UserId { get; set; }
+        public string? TenantId { get; set; }
         public required UserProfile CurrentUser { get; set; }
     }
 
@@ -17,11 +18,50 @@ public static class GetInductionsPerSupportWorker
     {
         public async Task<Result<InductionsPerSupportWorkerDto>> Handle(Query request, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrWhiteSpace(request.UserId) == false)
+            {
+                return await GetInductionsByUserId(request, cancellationToken);
+            }
+            if (string.IsNullOrWhiteSpace(request.TenantId) == false)
+            {
+                return await GetInductionsByTenantId(request, cancellationToken);
+            }
+            return Result<InductionsPerSupportWorkerDto>.Failure("Invalid request: UserId or TenantId must be provided.");
+        }
+
+        private async Task<Result<InductionsPerSupportWorkerDto>> GetInductionsByUserId(Query request, CancellationToken cancellationToken)
+        {
             var context = unitOfWork.DbContext;
 
             var query = from mi in context.InductionPayments
                         join l in context.Locations on mi.LocationId equals l.Id
                         where mi.SupportWorker == request.UserId
+                        && mi.Approved >= request.StartDate
+                        && mi.Approved <= request.EndDate
+                        group mi by l into grp
+                        orderby grp.Key.Name, grp.Key.LocationType
+                        select new LocationDetail
+                            (
+                                grp.Key.Name,
+                                grp.Key.LocationType,
+                                grp.Count(mi => mi.EligibleForPayment),
+                                grp.Count()
+                            );
+
+            var results = await query
+                .AsNoTracking()
+                .ToArrayAsync(cancellationToken);
+
+            return new InductionsPerSupportWorkerDto(results);
+        }
+        private async Task<Result<InductionsPerSupportWorkerDto>> GetInductionsByTenantId(Query request, CancellationToken cancellationToken)
+        {
+            var context = unitOfWork.DbContext;
+
+            var query = from mi in context.InductionPayments
+                        join l in context.Locations on mi.LocationId equals l.Id
+                        join u in context.Users on mi.SupportWorker equals u.Id
+                        where u.TenantId!.StartsWith(request.TenantId!)
                         && mi.Approved >= request.StartDate
                         && mi.Approved <= request.EndDate
                         group mi by l into grp
