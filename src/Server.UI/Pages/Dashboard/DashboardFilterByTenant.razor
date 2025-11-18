@@ -82,13 +82,13 @@
 			<MudTabPanel Text="Activities">
                 <MudGrid Spacing="4">
                     <MudItem xs="12" sm="12" md="12" lg="12">
-                        <SupportWorkerCommencedActivityDashboardComponent DateRange="@_dateRange" UserId="@CurrentUser.UserId" @key="CurrentUser.UserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                        <SupportWorkerCommencedActivityDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
                     </MudItem>
                     <MudItem xs="12" sm="6" md="6" lg="6">
-                        <SupportWorkerApprovedActivityDashboardComponent DateRange="@_dateRange" UserId="@CurrentUser.UserId" @key="CurrentUser.UserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                        <SupportWorkerApprovedActivityDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
                     </MudItem>
                     <MudItem xs="12" sm="6" md="6" lg="6">
-                        <SupportWorkerPaidActivityComponent DateRange="@_dateRange" UserId="@CurrentUser.UserId" @key="CurrentUser.UserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                        <SupportWorkerPaidActivityComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
                     </MudItem>
                 </MudGrid>
             </MudTabPanel>
