@@ -208,7 +208,7 @@ public static class SubmitToProviderQa
             var participant = await _unitOfWork.DbContext
                 .Participants.SingleAsync(x => x.Id == participantId, cancellationToken);
 
-            return participant.CalculateConsentDate() >= DateTime.Today.AddMonths(-3);                
+            return participant.ConsentStatus == ConsentStatus.GrantedStatus || participant.CalculateConsentDate() >= DateTime.Today.AddMonths(-3);                
         }
     }
 }
