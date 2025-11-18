@@ -79,5 +79,7 @@ public enum IdentityActionType
     [Description("Account Activated")]
     AccountActivated,
     [Description("Account Deactivated")]
-    AccountDeactivated
+    AccountDeactivated,
+    [Description("External Login")]
+    ExternalLogin
 }
