@@ -9,12 +9,27 @@ public static class GetPaidActivitiesPerSupportWorker
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
-        public required string UserId { get; set; }
+        public string? UserId { get; set; }
+        public string? TenantId { get; set; }
         public required UserProfile CurrentUser { get; set; }
     }
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaidActivitiesPerSupportWorkerDto>>
     {
         public async Task<Result<PaidActivitiesPerSupportWorkerDto>> Handle(Query request, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(request.UserId) == false)
+            {
+                return await GetPaidActivitiesByUserId(request, cancellationToken);
+            }
+            if (string.IsNullOrWhiteSpace(request.TenantId) == false)
+            {
+                return await GetPaidActivitiesByTenantId(request, cancellationToken);
+            }
+            return Result<PaidActivitiesPerSupportWorkerDto>.Failure("Invalid request: UserId or TenantId must be provided."); 
+
+        }
+
+        private async Task<Result<PaidActivitiesPerSupportWorkerDto>> GetPaidActivitiesByUserId(Query request, CancellationToken cancellationToken)
         {
             var context = unitOfWork.DbContext;
 
@@ -45,6 +60,38 @@ public static class GetPaidActivitiesPerSupportWorker
 
             return new PaidActivitiesPerSupportWorkerDto(results);
         }
+        private async Task<Result<PaidActivitiesPerSupportWorkerDto>> GetPaidActivitiesByTenantId(Query request, CancellationToken cancellationToken)
+        {
+            var context = unitOfWork.DbContext;
+
+            var query = from mi in context.ActivityPayments
+                        join a in context.Activities on mi.ActivityId equals a.Id
+                        join l in context.Locations on mi.LocationId equals l.Id
+                        where mi.EligibleForPayment
+                              && mi.TenantId.StartsWith(request.TenantId!)
+                              && mi.ActivityApproved >= request.StartDate
+                              && mi.ActivityApproved <= request.EndDate
+                        group mi by new
+                        {
+                            l.Name,
+                            l.LocationType,
+                            a.Type
+                        } into g
+                        orderby g.Key.Name, g.Key.Type
+                        select new LocationDetail(
+                            g.Key.Name,
+                            g.Key.LocationType,
+                            g.Key.Type,
+                            g.Count()
+                        );
+
+            var results = await query
+                .AsNoTracking()
+                .ToArrayAsync(cancellationToken);
+
+            return new PaidActivitiesPerSupportWorkerDto(results);
+        }
+
     }
     public record PaidActivitiesPerSupportWorkerDto
     {

@@ -9,8 +9,11 @@ public partial class SupportWorkerCommencedActivityDashboardComponent
     [EditorRequired, Parameter]
     public DateRange? DateRange { get; set; }
 
-    [EditorRequired, Parameter]
+    [Parameter]
     public string UserId { get; set; } = null!;
+
+    [Parameter]
+    public string TenantId { get; set; } = null!;
 
     [EditorRequired, Parameter]
     public bool VisualMode { get; set; }
@@ -34,6 +37,7 @@ public partial class SupportWorkerCommencedActivityDashboardComponent
      {
          CurrentUser = CurrentUser,
          UserId = UserId,
+         TenantId = TenantId,
          StartDate = DateRange?.Start ?? throw new InvalidOperationException("DateRange not set"),
          EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set")
      };
