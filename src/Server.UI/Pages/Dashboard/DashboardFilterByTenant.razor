@@ -71,7 +71,7 @@
 				<CasesPerLocationPerSupportWorkerCardComponent TenantId="@SelectedTenantId" @key="@SelectedTenantId" VisualMode="@_visualMode" />
 			</MudTabPanel>
 			<MudTabPanel Text="Enrolments" Class="pa-3">
-				<SupportWorkerEnrolmentDashboardComponent DateRange="@_dateRange" UserId="@CurrentUser.UserId" @key="CurrentUser.UserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+				<SupportWorkerEnrolmentDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
 			</MudTabPanel>
 			<MudTabPanel Text="Inductions" Class="pa-3">
 				<SupportWorkerInductionDashboardComponent DateRange="@_dateRange" UserId="@CurrentUser.UserId" @key="CurrentUser.UserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
