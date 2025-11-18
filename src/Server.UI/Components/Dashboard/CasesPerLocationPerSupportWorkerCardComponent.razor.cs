@@ -7,8 +7,10 @@ namespace Cfo.Cats.Server.UI.Components.Dashboard;
 public partial class CasesPerLocationPerSupportWorkerCardComponent
 {
 
-    [EditorRequired, Parameter]
+    [Parameter]
     public string UserId { get; set; } = null!;
+    [Parameter]
+    public string TenantId { get; set; } = null!;
 
     [EditorRequired, Parameter]
     public bool VisualMode { get; set; }
@@ -20,7 +22,8 @@ public partial class CasesPerLocationPerSupportWorkerCardComponent
      => new GetCasesPerLocationBySupportWorker.Query()
      {
          CurrentUser = CurrentUser,
-         UserId = UserId
+         UserId = UserId,
+         TenantId = TenantId
      };
 
     private ApexChartOptions<GetCasesPerLocationBySupportWorker.LocationDetail> Options => new()

@@ -8,7 +8,8 @@ public static class GetCasesPerLocationBySupportWorker
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<Result<CasesPerLocationSupportWorkerDto>>
     {
-        public required string UserId { get; set; }
+        public string? UserId { get; set; }
+        public string? TenantId { get; set; }
         public required UserProfile CurrentUser { get; set; }
     }
 
@@ -16,12 +17,25 @@ public static class GetCasesPerLocationBySupportWorker
     {
         public async Task<Result<CasesPerLocationSupportWorkerDto>> Handle(Query request, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrWhiteSpace(request.UserId) == false)
+            {
+                return await GetCasesPerLocationByUserId(request.UserId, cancellationToken);
+            }
+            if (string.IsNullOrWhiteSpace(request.TenantId) == false)
+            {
+                return await GetCasesPerLocationByTenantId(request.TenantId, cancellationToken);
+            }
+            return Result<CasesPerLocationSupportWorkerDto>.Failure("Invalid request: UserId or TenantId must be provided.");          
+        }
+
+        private async Task<Result<CasesPerLocationSupportWorkerDto>> GetCasesPerLocationByUserId(string userId, CancellationToken cancellationToken)
+        {
             var context = unitOfWork.DbContext;
 
             var query =
                 from p in context.Participants
                 join l in context.Locations on p.CurrentLocation!.Id equals l.Id
-                where p.OwnerId == request.UserId
+                where p.OwnerId == userId
                       && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
                 group p by new
                 {
@@ -30,7 +44,37 @@ public static class GetCasesPerLocationBySupportWorker
                     p.EnrolmentStatus
                 } into grp
                 select new LocationDetail
-        (
+                (
+                    grp.Key.Name,
+                    grp.Key.LocationType,
+                    grp.Key.EnrolmentStatus,
+                    grp.Count()
+                );
+
+            var result = await query
+                .AsNoTracking()
+                .ToArrayAsync(cancellationToken);
+
+            return new CasesPerLocationSupportWorkerDto(result);
+        }
+        private async Task<Result<CasesPerLocationSupportWorkerDto>> GetCasesPerLocationByTenantId(string tenantId, CancellationToken cancellationToken)
+        {
+            var context = unitOfWork.DbContext;
+
+            var query =
+                from p in context.Participants
+                join l in context.Locations on p.CurrentLocation!.Id equals l.Id
+                join u in context.Users on p.OwnerId equals u.Id
+                where u.TenantId!.StartsWith(tenantId)
+                      && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
+                group p by new
+                {
+                    l.Name,
+                    l.LocationType,
+                    p.EnrolmentStatus
+                } into grp
+                select new LocationDetail
+                (
                     grp.Key.Name,
                     grp.Key.LocationType,
                     grp.Key.EnrolmentStatus,
