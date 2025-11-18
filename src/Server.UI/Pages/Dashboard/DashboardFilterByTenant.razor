@@ -77,7 +77,7 @@
 				<SupportWorkerInductionDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
 			</MudTabPanel>
 			<MudTabPanel Text="Support &amp; Referral">
-                <SupportWorkerPRIDashboardComponent DateRange="@_dateRange" UserId="@CurrentUser.UserId" @key="CurrentUser.UserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                <SupportWorkerPRIDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
 			<MudTabPanel Text="Activities">
                 <MudGrid Spacing="4">
