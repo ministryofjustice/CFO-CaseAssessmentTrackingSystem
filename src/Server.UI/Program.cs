@@ -38,5 +38,6 @@ var app = builder.Build();
 
 app.ConfigureServer();
 app.MapDefaultEndpoints();
+app.MapExternalLogins();
 
 await app.RunAsync();

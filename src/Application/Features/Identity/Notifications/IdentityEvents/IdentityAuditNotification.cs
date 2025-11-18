@@ -48,5 +48,8 @@ public class IdentityAuditNotification : INotification
     public static IdentityAuditNotification DeactivateAccount(string userName, string ipAddress,  string performedBy)
         => new(IdentityActionType.AccountDeactivated, ipAddress, userName, performedBy);
 
+    public static IdentityAuditNotification ExternalLogin(string userName, string ipAddress)
+        => new(IdentityActionType.ExternalLogin, ipAddress, userName);
+
 }
 

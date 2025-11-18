@@ -105,11 +105,29 @@
                 </MudButton>
             </EditForm>
 
+            <MudDivider Class="my-4" />
+
+            <MudStack AlignItems="AlignItems.Center">
+                @* https://learn.microsoft.com/en-us/entra/identity-platform/howto-add-branding-in-apps *@
+                <MudButton Class="microsoft-signin" Variant="Variant.Outlined" Color="Color.Dark" Href="@($"/external-login?provider=MicrosoftEntraID&returnUrl={@Uri.EscapeDataString(ReturnUrl ?? "/")}")">
+                    <div class="d-flex align-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21"><title>MS-SymbolLockup</title><rect x="1" y="1" width="9" height="9" fill="#f25022"/><rect x="1" y="11" width="9" height="9" fill="#00a4ef"/><rect x="11" y="1" width="9" height="9" fill="#7fba00"/><rect x="11" y="11" width="9" height="9" fill="#ffb900"/></svg>
+                        <MudText>@string.Format(ConstantString.SigninWith, "Microsoft")</MudText>
+                    </div>
+                </MudButton>
+            </MudStack>
+            
         </MudItem>
     </MudGrid>
 </MudPaper>
 
-
+<style>
+    .microsoft-signin {
+        color: #5e5e5e !important;
+        border: 1px solid #8c8c8c !important;
+        border-radius: 0 !important;
+    }
+</style>
 
 @code {
     public const string PageUrl = "/pages/authentication/login";
@@ -126,6 +144,17 @@
             UserName = "",
             Password = ""
         };
+
+    [SupplyParameterFromQuery]
+    public string? Error
+    {
+        get {
+            return errorMessage;
+        }
+        set {
+            errorMessage = value;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -146,7 +175,7 @@
         if(user is null)
         {
             await Sender.Publish( IdentityAuditNotification.UnknownUserNameNotification(Input.UserName, NetworkIpProvider.IpAddress));
-            errorMessage = L["Error: Invalid login attempt."];
+            errorMessage = L[ConstantString.Errors.InvalidLoginAttempt];
             return;
         }
 
@@ -170,7 +199,7 @@
             else if(customSignInResult.IsInactive)
             {
                 await Sender.Publish(IdentityAuditNotification.UserInactive(Input.UserName, NetworkIpProvider.IpAddress));
-                errorMessage = L["Account is inactive. Please contact CFO Service Desk"];
+                errorMessage = L[ConstantString.Errors.AccountInactive];
             }
         }
         else if (result.RequiresTwoFactor)
@@ -190,7 +219,7 @@
         else
         {
             await Sender.Publish( IdentityAuditNotification.LoginFailedPassword(Input.UserName,NetworkIpProvider.IpAddress) );
-            errorMessage = L["Error: Invalid login attempt."];
+            errorMessage = L[ConstantString.Errors.InvalidLoginAttempt];
         }
     }
 
