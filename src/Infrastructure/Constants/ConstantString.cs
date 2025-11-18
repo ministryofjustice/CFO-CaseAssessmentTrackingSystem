@@ -245,4 +245,13 @@ public static class ConstantString
     public static string Trigger => Localize("Trigger");
     
     public static string Labels => Localize(nameof(Labels));
+
+    public static class Errors
+    {
+        public static string AccountInactive = Localize("Account is inactive. Please contact CFO Service Desk");
+        public static string AccountLockedOut = Localize("Account is locked");
+        public static string InvalidLoginAttempt = Localize("Invalid login attempt");
+        public static string NotAllowed = Localize("Not allowed");
+        public static string ExternalLoginFailed = Localize("External login failed");
+    }
 }

@@ -42,5 +42,6 @@ app.UseOutputCache();
 
 app.ConfigureServer();
 app.MapDefaultEndpoints();
+app.MapExternalLogins();
 
 await app.RunAsync();
