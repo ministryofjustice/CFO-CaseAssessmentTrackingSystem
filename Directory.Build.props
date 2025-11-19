@@ -9,7 +9,7 @@
     <WarningsNotAsErrors>CS8785</WarningsNotAsErrors>
 
     <!-- Common parameters -->
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <LangVersion>default</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>

@@ -11,7 +11,7 @@ public class QAActivitiesResultsAdvancedSpecification : Specification<Activity>
             .Where(def => def.RequiresQa)
             .GroupBy(def => def.Type)
             .Select(def => def.Key)
-            .ToArray();
+            .ToList();
 
         Query.Where(a => a.Participant.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
              .Where(a => filter.IncludeTypes!.Contains(a.Type), filter.IncludeTypes is { Count: > 0 })

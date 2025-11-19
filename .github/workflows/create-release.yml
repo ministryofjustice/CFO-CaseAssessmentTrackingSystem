@@ -16,13 +16,22 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '9.0.x'
+        dotnet-version: '10.0.x'
 
-    - name: Restore Cake Tool
-      run: dotnet tool restore
+    - name: Restore
+      run: dotnet restore ./
 
-    - name: Build, Test & Publish
-      run: dotnet cake build.cake 
+    - name: Build
+      run: dotnet build ./cats.sln --configuration Release --no-restore
+
+    - name: Test
+      run: dotnet test ./ --configuration Release --no-build --no-restore
+
+    - name: Publish UI
+      run: dotnet publish ./src/Server.UI/Server.UI.csproj --configuration Release --output ./artifacts/publish/Server.UI --no-restore --no-build
+
+    - name: Publish Migrations
+      run: dotnet publish ./src/DatabaseMigrator/DatabaseMigrator.csproj --configuration Release --output ./artifacts/publish/DatabaseMigrator --no-restore --no-build 
 
     # Create zip archive of build artifacts for release
     # This creates the necessary ./artifacts.zip file on the runner's filesystem.
