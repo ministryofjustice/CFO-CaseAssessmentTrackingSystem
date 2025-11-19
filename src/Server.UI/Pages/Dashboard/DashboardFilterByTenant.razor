@@ -98,8 +98,8 @@
             <MudTabPanel Text="Employment">
                 <SupportWorkerEmploymentDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
-			<MudTabPanel Text="Reassessments" Class="pa-3">
-                <SupportWorkerReassessmentDashboardComponent DateRange="@_dateRange" UserId="@CurrentUser.UserId" @key="CurrentUser.UserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+            <MudTabPanel Text="Reassessments" Class="pa-3">
+                <SupportWorkerReassessmentDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
 
 		</MudTabs>
