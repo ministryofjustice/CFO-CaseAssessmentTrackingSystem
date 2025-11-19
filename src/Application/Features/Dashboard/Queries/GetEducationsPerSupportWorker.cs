@@ -18,67 +18,40 @@ public static class GetEducationsPerSupportWorker
     {
         public async Task<Result<EducationsPerSupportWorkerDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.UserId) == false)
-            {
-                return await GetEducationsByUserId(request, cancellationToken);
-            }
-            if (string.IsNullOrWhiteSpace(request.TenantId) == false)
-            {
-                return await GetEducationsByTenantId(request, cancellationToken);
-            }
-            return Result<EducationsPerSupportWorkerDto>.Failure("Invalid request: UserId or TenantId must be provided."); 
-        }
-
-        private async Task<Result<EducationsPerSupportWorkerDto>> GetEducationsByUserId(Query request, CancellationToken cancellationToken)
-        {
             var context = unitOfWork.DbContext;
 
             var query = from mi in context.EducationPayments
                         join ap in context.Activities on mi.ActivityId equals ap.Id
                         join l in context.Locations on mi.LocationId equals l.Id
-                        where ap.OwnerId == request.UserId
-                        && mi.ActivityApproved >= request.StartDate
-                        && mi.ActivityApproved <= request.EndDate
-                        group mi by l into grp
-                        orderby grp.Key.Name, grp.Key.LocationType
-                        select new LocationDetail
-                            (
-                                grp.Key.Name,
-                                grp.Key.LocationType,
-                                grp.Count(mi => mi.EligibleForPayment),
-                                grp.Count()
-                            );
+                        where mi.ActivityApproved >= request.StartDate &&
+                              mi.ActivityApproved <= request.EndDate
+                        select new { mi, ap, l };
 
-            var results = await query
+            // Checks and applies filter based on UserId or TenantId else throws exception
+            query = request switch
+            {
+                { UserId: var userId } when !string.IsNullOrWhiteSpace(userId)
+                    => query.Where(x => x.ap.OwnerId == userId),
+
+                { TenantId: var tenantId } when !string.IsNullOrWhiteSpace(tenantId)
+                    => query.Where(x => x.mi.TenantId.StartsWith(tenantId)),
+
+                _ => throw new ArgumentException("Invalid request: UserId or TenantId must be provided.")
+            };
+
+            var groupedQuery = from x in query
+                               group x.mi by x.l into grp
+                               orderby grp.Key.Name, grp.Key.LocationType
+                               select new LocationDetail(
+                                   grp.Key.Name,
+                                   grp.Key.LocationType,
+                                   grp.Count(mi => mi.EligibleForPayment),
+                                   grp.Count()
+                               );
+
+            var results = await groupedQuery
                 .AsNoTracking()
                 .ToArrayAsync(cancellationToken);
-
-            return new EducationsPerSupportWorkerDto(results);
-        }
-        private async Task<Result<EducationsPerSupportWorkerDto>> GetEducationsByTenantId(Query request, CancellationToken cancellationToken)
-        {
-            var context = unitOfWork.DbContext;
-
-            var query = from mi in context.EducationPayments
-                        join ap in context.Activities on mi.ActivityId equals ap.Id
-                        join l in context.Locations on mi.LocationId equals l.Id
-                        where mi.TenantId.StartsWith(request.TenantId!)
-                        && mi.ActivityApproved >= request.StartDate
-                        && mi.ActivityApproved <= request.EndDate
-                        group mi by l into grp
-                        orderby grp.Key.Name, grp.Key.LocationType
-                        select new LocationDetail
-                            (
-                                grp.Key.Name,
-                                grp.Key.LocationType,
-                                grp.Count(mi => mi.EligibleForPayment),
-                                grp.Count()
-                            );
-
-            var results = await query
-                .AsNoTracking()
-                .ToArrayAsync(cancellationToken);
-
             return new EducationsPerSupportWorkerDto(results);
         }
 

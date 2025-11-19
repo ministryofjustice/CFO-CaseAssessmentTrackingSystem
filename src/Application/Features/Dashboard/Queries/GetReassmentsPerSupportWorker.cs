@@ -19,35 +19,34 @@ public static class GetReassessmentsPerSupportWorker
     {
         public async Task<Result<ReassessmentsPerSupportWorkerDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.UserId) == false)
-            {
-                return await GetReassessmentsByUserId(request, cancellationToken);
-            }
-            if (string.IsNullOrWhiteSpace(request.TenantId) == false)
-            {
-                return await GetReassessmentsByTenantId(request, cancellationToken);
-            }
-            return Result<ReassessmentsPerSupportWorkerDto>.Failure("Invalid request: UserId or TenantId must be provided.");
-    
-        }
-
-        private async Task<Result<ReassessmentsPerSupportWorkerDto>> GetReassessmentsByUserId(Query request, CancellationToken cancellationToken)
-        {
             var context = unitOfWork.DbContext;
-            var query = from mi in context.ReassessmentPayments
+
+            var baseQuery = context.ReassessmentPayments
+                .Where(mi => mi.AssessmentCompleted >= request.StartDate &&
+                             mi.AssessmentCompleted < request.EndDate.AddDays(1).Date);
+
+            // Checks and applies filter based on UserId or TenantId else throws exception
+            baseQuery = request switch
+            {
+                { UserId: var userId } when !string.IsNullOrWhiteSpace(userId)
+                    => baseQuery.Where(mi => mi.SupportWorker == userId),
+
+                { TenantId: var tenantId } when !string.IsNullOrWhiteSpace(tenantId)
+                    => baseQuery.Where(mi => mi.TenantId.StartsWith(tenantId)),
+
+                _ => throw new ArgumentException("Invalid request: UserId or TenantId must be provided.")
+            };
+
+            var query = from mi in baseQuery
                         join l in context.Locations on mi.LocationId equals l.Id
-                        where mi.SupportWorker == request.UserId
-                        && mi.AssessmentCompleted >= request.StartDate
-                        && mi.AssessmentCompleted < request.EndDate.AddDays(1).Date
                         group mi by l into grp
                         orderby grp.Key.Name, grp.Key.LocationType
-                        select new Details
-                            (
-                                grp.Key.Name,
-                                grp.Key.LocationType,
-                                grp.Count(mi => mi.EligibleForPayment),
-                                grp.Count()
-                            );
+                        select new Details(
+                            grp.Key.Name,
+                            grp.Key.LocationType,
+                            grp.Count(mi => mi.EligibleForPayment),
+                            grp.Count()
+                        );
 
             var results = await query
                 .AsNoTracking()
@@ -55,31 +54,6 @@ public static class GetReassessmentsPerSupportWorker
 
             return new ReassessmentsPerSupportWorkerDto(results);
         }
-        private async Task<Result<ReassessmentsPerSupportWorkerDto>> GetReassessmentsByTenantId(Query request, CancellationToken cancellationToken)
-        {
-            var context = unitOfWork.DbContext;
-            var query = from mi in context.ReassessmentPayments
-                        join l in context.Locations on mi.LocationId equals l.Id
-                        where mi.TenantId.StartsWith(request.TenantId!)
-                        && mi.AssessmentCompleted >= request.StartDate
-                        && mi.AssessmentCompleted < request.EndDate.AddDays(1).Date
-                        group mi by l into grp
-                        orderby grp.Key.Name, grp.Key.LocationType
-                        select new Details
-                            (
-                                grp.Key.Name,
-                                grp.Key.LocationType,
-                                grp.Count(mi => mi.EligibleForPayment),
-                                grp.Count()
-                            );
-
-            var results = await query
-                .AsNoTracking()
-                .ToArrayAsync(cancellationToken);
-
-            return new ReassessmentsPerSupportWorkerDto(results);
-        }
-
     }
 
     public record ReassessmentsPerSupportWorkerDto

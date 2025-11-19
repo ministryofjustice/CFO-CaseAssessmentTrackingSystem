@@ -19,32 +19,31 @@ public static class GetPrisPerSupportWorker
     {
         public async Task<Result<PrisPerSupportWorkerDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.UserId) == false)
-            {
-                return await GetPrisByUserId(request, cancellationToken);
-            }
-            if (string.IsNullOrWhiteSpace(request.TenantId) == false)
-            {
-                return await GetPrisByTenantId(request, cancellationToken);
-            }
-            return Result<PrisPerSupportWorkerDto>.Failure("Invalid request: UserId or TenantId must be provided.");
-        }
-
-        private async Task<Result<PrisPerSupportWorkerDto>> GetPrisByUserId(Query request, CancellationToken cancellationToken)
-        {
             var context = unitOfWork.DbContext;
 
-            var query = from pri in context.SupportAndReferralPayments
-                        join l in context.Locations on pri.LocationId equals l.Id
-                        where
-                              pri.SupportWorker == request.UserId &&
-                              pri.Approved >= request.StartDate
-                              && pri.Approved <= request.EndDate
-                        group pri by new
+            var baseQuery = context.SupportAndReferralPayments
+                .Where(mi => mi.Approved >= request.StartDate &&
+                             mi.Approved <= request.EndDate);
+
+            // Checks and applies filter based on UserId or TenantId else throws exception
+            baseQuery = request switch
+            {
+                { UserId: var userId } when !string.IsNullOrWhiteSpace(userId)
+                    => baseQuery.Where(mi => mi.SupportWorker == userId),
+
+                { TenantId: var tenantId } when !string.IsNullOrWhiteSpace(tenantId)
+                    => baseQuery.Where(mi => mi.TenantId.StartsWith(tenantId)),
+
+                _ => throw new ArgumentException("Invalid request: UserId or TenantId must be provided.")
+            };
+
+            var query = from mi in baseQuery
+                        join l in context.Locations on mi.LocationId equals l.Id
+                        group mi by new
                         {
                             l.Name,
                             l.LocationType,
-                            pri.SupportType,
+                            mi.SupportType
                         } into g
                         orderby g.Key.Name, g.Key.SupportType
                         select new LocationDetail(
@@ -58,38 +57,7 @@ public static class GetPrisPerSupportWorker
             var results = await query
                 .AsNoTracking()
                 .ToArrayAsync(cancellationToken);
-
-            return new PrisPerSupportWorkerDto(results);
-        }
-        private async Task<Result<PrisPerSupportWorkerDto>> GetPrisByTenantId(Query request, CancellationToken cancellationToken)
-        {
-            var context = unitOfWork.DbContext;
-
-            var query = from pri in context.SupportAndReferralPayments
-                        join l in context.Locations on pri.LocationId equals l.Id
-                        where
-                              pri.TenantId.StartsWith(request.TenantId!)
-                              && pri.Approved >= request.StartDate
-                              && pri.Approved <= request.EndDate
-                        group pri by new
-                        {
-                            l.Name,
-                            l.LocationType,
-                            pri.SupportType,
-                        } into g
-                        orderby g.Key.Name, g.Key.SupportType
-                        select new LocationDetail(
-                            g.Key.Name,
-                            g.Key.LocationType,
-                            g.Key.SupportType,
-                            g.Count(mi => mi.EligibleForPayment),
-                            g.Count()
-                        );
-
-            var results = await query
-                .AsNoTracking()
-                .ToArrayAsync(cancellationToken);
-
+                
             return new PrisPerSupportWorkerDto(results);
         }
 

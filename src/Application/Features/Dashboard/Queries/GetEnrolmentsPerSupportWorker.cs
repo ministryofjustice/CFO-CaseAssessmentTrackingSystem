@@ -19,65 +19,41 @@ public static class GetEnrolmentsPerSupportWorker
     {
         public async Task<Result<EnrolmentsPerSupportWorkerDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.UserId) == false)
-            {
-                return await GetEnrolmentsByUserId(request, cancellationToken);
-            }
-            if (string.IsNullOrWhiteSpace(request.TenantId) == false)
-            {
-                return await GetEnrolmentsByTenantId(request, cancellationToken);
-            }
-            return Result<EnrolmentsPerSupportWorkerDto>.Failure("Invalid request: UserId or TenantId must be provided."); 
-            
-        }
-
-        private async Task<Result<EnrolmentsPerSupportWorkerDto>> GetEnrolmentsByUserId(Query request, CancellationToken cancellationToken)
-        {
             var context = unitOfWork.DbContext;
 
-            var query = from mi in context.EnrolmentPayments
+            var baseQuery = context.EnrolmentPayments
+                .Where(mi => mi.EligibleForPayment &&
+                             mi.Approved >= request.StartDate &&
+                             mi.Approved <= request.EndDate);
+
+            // Checks and applies filter based on UserId or TenantId else throws exception
+            baseQuery = request switch
+            {
+                { UserId: var userId } when !string.IsNullOrWhiteSpace(userId)
+                    => baseQuery.Where(mi => mi.SupportWorker == userId),
+
+                { TenantId: var tenantId } when !string.IsNullOrWhiteSpace(tenantId)
+                    => baseQuery.Where(mi => mi.TenantId.StartsWith(tenantId)),
+
+                _ => throw new ArgumentException("Invalid request: UserId or TenantId must be provided.")
+            };
+
+            var query = from mi in baseQuery
                         join l in context.Locations on mi.LocationId equals l.Id
-                        where mi.EligibleForPayment
-                        && mi.SupportWorker == request.UserId
-                        && mi.Approved >= request.StartDate
-                        && mi.Approved <= request.EndDate
                         group l by l into grp
-                        select new LocationDetail
-                            (
+                        orderby grp.Key.Name, grp.Key.LocationType
+                        select new LocationDetail(
                                 grp.Key.Name,
                                 grp.Key.LocationType,
                                 grp.Count()
-                            );
+                        );
 
             var results = await query
                 .AsNoTracking()
                 .ToArrayAsync(cancellationToken);
 
             return new EnrolmentsPerSupportWorkerDto(results);
-        }
-        private async Task<Result<EnrolmentsPerSupportWorkerDto>> GetEnrolmentsByTenantId(Query request, CancellationToken cancellationToken)
-        {
-            var context = unitOfWork.DbContext;
 
-            var query = from mi in context.EnrolmentPayments
-                        join l in context.Locations on mi.LocationId equals l.Id
-                        where mi.EligibleForPayment
-                        && mi.TenantId.StartsWith(request.TenantId!)
-                        && mi.Approved >= request.StartDate
-                        && mi.Approved <= request.EndDate
-                        group l by l into grp
-                        select new LocationDetail
-                            (
-                                grp.Key.Name,
-                                grp.Key.LocationType,
-                                grp.Count()
-                            );
-
-            var results = await query
-                .AsNoTracking()
-                .ToArrayAsync(cancellationToken);
-
-            return new EnrolmentsPerSupportWorkerDto(results);
         }
 
     }

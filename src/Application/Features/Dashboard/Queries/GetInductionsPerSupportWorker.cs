@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
+using Humanizer;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetInductionsPerSupportWorker
@@ -18,60 +19,34 @@ public static class GetInductionsPerSupportWorker
     {
         public async Task<Result<InductionsPerSupportWorkerDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.UserId) == false)
-            {
-                return await GetInductionsByUserId(request, cancellationToken);
-            }
-            if (string.IsNullOrWhiteSpace(request.TenantId) == false)
-            {
-                return await GetInductionsByTenantId(request, cancellationToken);
-            }
-            return Result<InductionsPerSupportWorkerDto>.Failure("Invalid request: UserId or TenantId must be provided.");
-        }
-
-        private async Task<Result<InductionsPerSupportWorkerDto>> GetInductionsByUserId(Query request, CancellationToken cancellationToken)
-        {
             var context = unitOfWork.DbContext;
 
-            var query = from mi in context.InductionPayments
+            var baseQuery = context.InductionPayments
+                .Where(mi => mi.Approved >= request.StartDate &&
+                             mi.Approved <= request.EndDate);
+
+            // Checks and applies filter based on UserId or TenantId else throws exception
+            baseQuery = request switch
+            {
+                { UserId: var userId } when !string.IsNullOrWhiteSpace(userId)
+                    => baseQuery.Where(mi => mi.SupportWorker == userId),
+
+                { TenantId: var tenantId } when !string.IsNullOrWhiteSpace(tenantId)
+                    => baseQuery.Where(mi => mi.TenantId.StartsWith(tenantId)),
+
+                _ => throw new ArgumentException("Invalid request: UserId or TenantId must be provided.")
+            };
+
+            var query = from mi in baseQuery
                         join l in context.Locations on mi.LocationId equals l.Id
-                        where mi.SupportWorker == request.UserId
-                        && mi.Approved >= request.StartDate
-                        && mi.Approved <= request.EndDate
                         group mi by l into grp
                         orderby grp.Key.Name, grp.Key.LocationType
-                        select new LocationDetail
-                            (
-                                grp.Key.Name,
-                                grp.Key.LocationType,
-                                grp.Count(mi => mi.EligibleForPayment),
-                                grp.Count()
-                            );
-
-            var results = await query
-                .AsNoTracking()
-                .ToArrayAsync(cancellationToken);
-
-            return new InductionsPerSupportWorkerDto(results);
-        }
-        private async Task<Result<InductionsPerSupportWorkerDto>> GetInductionsByTenantId(Query request, CancellationToken cancellationToken)
-        {
-            var context = unitOfWork.DbContext;
-
-            var query = from mi in context.InductionPayments
-                        join l in context.Locations on mi.LocationId equals l.Id
-                        where mi.TenantId.StartsWith(request.TenantId!)
-                        && mi.Approved >= request.StartDate
-                        && mi.Approved <= request.EndDate
-                        group mi by l into grp
-                        orderby grp.Key.Name, grp.Key.LocationType
-                        select new LocationDetail
-                            (
-                                grp.Key.Name,
-                                grp.Key.LocationType,
-                                grp.Count(mi => mi.EligibleForPayment),
-                                grp.Count()
-                            );
+                        select new LocationDetail(
+                            grp.Key.Name,
+                            grp.Key.LocationType,
+                            grp.Count(mi => mi.EligibleForPayment),
+                            grp.Count()
+                        );
 
             var results = await query
                 .AsNoTracking()

@@ -32,15 +32,6 @@
 				@SelectedDisplayName
 			</MudLink>
 		}
-                   @* <MudSelect T="string" ValueChanged="OnChangedListView" Value="@_selectedTenantId" Dense="false" Label="Tenant" Clearable="true"
-                               Style="min-width: 300px;" Placeholder="Select a tenant">
-                        @foreach (var item in TenantsService.DataSource.Where(x => x.Id.StartsWith(CurrentUser!.TenantId!)).OrderBy(t => t.Id))
-                        {
-                            <MudSelectItem T="string" Value="@item.Id">
-                                @item.Name  
-                            </MudSelectItem>
-                        }
-                    </MudSelect> *@
 		<MudSwitch @bind-Value="_visualMode"
 				   T="bool"
 				   ThumbIcon="@Icons.Material.Filled.StackedBarChart"
