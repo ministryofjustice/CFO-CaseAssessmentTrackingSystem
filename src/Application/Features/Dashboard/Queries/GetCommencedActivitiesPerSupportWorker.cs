@@ -17,31 +17,31 @@ public static class GetCommencedActivitiesPerSupportWorker
     {
         public async Task<Result<CommencedActivitiesPerSupportWorkerDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.UserId) == false)
-            {
-                return await GetCommencedActivitiesByUserId(request, cancellationToken);
-            }
-            if (string.IsNullOrWhiteSpace(request.TenantId) == false)
-            {
-                return await GetCommencedActivitiesByTenantId(request, cancellationToken);
-            }
-            return Result<CommencedActivitiesPerSupportWorkerDto>.Failure("Invalid request: UserId or TenantId must be provided."); 
-        }
-
-        private async Task<Result<CommencedActivitiesPerSupportWorkerDto>> GetCommencedActivitiesByUserId(Query request, CancellationToken cancellationToken)
-        {
             var context = unitOfWork.DbContext;
 
-            var query = from a in context.Activities
-                        join l in context.Locations on a.TookPlaceAtLocation.Id equals l.Id
-                        where a.OwnerId == request.UserId
-                              && a.CommencedOn >= request.StartDate
-                              && a.CommencedOn <= request.EndDate
-                        group a by new
+            var baseQuery = context.Activities
+                .Where(mi => mi.CommencedOn >= request.StartDate &&
+                             mi.CommencedOn <= request.EndDate);
+
+            // Checks and applies filter based on UserId or TenantId else throws exception
+            baseQuery = request switch
+            {
+                { UserId: var userId } when !string.IsNullOrWhiteSpace(userId)
+                    => baseQuery.Where(mi => mi.OwnerId == userId),
+
+                { TenantId: var tenantId } when !string.IsNullOrWhiteSpace(tenantId)
+                    => baseQuery.Where(mi => mi.TenantId.StartsWith(tenantId)),
+
+                _ => throw new ArgumentException("Invalid request: UserId or TenantId must be provided.")
+            };
+
+            var query = from mi in baseQuery
+                        join l in context.Locations on mi.TookPlaceAtLocation.Id equals l.Id
+                        group mi by new
                         {
                             l.Name,
                             l.LocationType,
-                            a.Type
+                            mi.Type
                         } into g
                         orderby g.Key.Name, g.Key.Type
                         select new LocationDetail(
@@ -54,36 +54,7 @@ public static class GetCommencedActivitiesPerSupportWorker
             var results = await query
                 .AsNoTracking()
                 .ToArrayAsync(cancellationToken);
-
-            return new CommencedActivitiesPerSupportWorkerDto(results);
-        }
-        private async Task<Result<CommencedActivitiesPerSupportWorkerDto>> GetCommencedActivitiesByTenantId(Query request, CancellationToken cancellationToken)
-        {
-            var context = unitOfWork.DbContext;
-
-            var query = from a in context.Activities
-                        join l in context.Locations on a.TookPlaceAtLocation.Id equals l.Id
-                        where a.TenantId.StartsWith(request.TenantId!)
-                              && a.CommencedOn >= request.StartDate
-                              && a.CommencedOn <= request.EndDate
-                        group a by new
-                        {
-                            l.Name,
-                            l.LocationType,
-                            a.Type
-                        } into g
-                        orderby g.Key.Name, g.Key.Type
-                        select new LocationDetail(
-                            g.Key.Name,
-                            g.Key.LocationType,
-                            g.Key.Type,
-                            g.Count()
-                        );
-
-            var results = await query
-                .AsNoTracking()
-                .ToArrayAsync(cancellationToken);
-
+                
             return new CommencedActivitiesPerSupportWorkerDto(results);
         }
 

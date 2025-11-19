@@ -17,32 +17,32 @@ public static class GetApprovedActivitiesPerSupportWorker
     {
         public async Task<Result<ApprovedActivitiesPerSupportWorkerDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.UserId) == false)
-            {
-                return await GetApprovedActivitiesByUserId(request, cancellationToken);
-            }
-            if (string.IsNullOrWhiteSpace(request.TenantId) == false)
-            {
-                return await GetApprovedActivitiesByTenantId(request, cancellationToken);
-            }
-            return Result<ApprovedActivitiesPerSupportWorkerDto>.Failure("Invalid request: UserId or TenantId must be provided."); 
-        }
-
-        private async Task<Result<ApprovedActivitiesPerSupportWorkerDto>> GetApprovedActivitiesByUserId(Query request, CancellationToken cancellationToken)
-        {
             var context = unitOfWork.DbContext;
 
-            var query = from a in context.Activities
-                        join l in context.Locations on a.TookPlaceAtLocation.Id equals l.Id
-                        where a.OwnerId == request.UserId
-                              && a.CompletedOn >= request.StartDate
-                              && a.CompletedOn < request.EndDate.AddDays(1).Date
-                              && a.Status == ActivityStatus.ApprovedStatus.Value
-                        group a by new
+            var baseQuery = context.Activities
+                .Where(mi => mi.CompletedOn >= request.StartDate &&
+                             mi.CompletedOn < request.EndDate.AddDays(1).Date &&
+                             mi.Status == ActivityStatus.ApprovedStatus.Value);
+            
+            // Checks and applies filter based on UserId or TenantId else throws exception
+            baseQuery = request switch
+            {
+                { UserId: var userId } when !string.IsNullOrWhiteSpace(userId)
+                    => baseQuery.Where(mi => mi.OwnerId == userId),
+
+                { TenantId: var tenantId } when !string.IsNullOrWhiteSpace(tenantId)
+                    => baseQuery.Where(mi => mi.TenantId.StartsWith(tenantId)),
+
+                _ => throw new ArgumentException("Invalid request: UserId or TenantId must be provided.")
+            };
+
+            var query = from mi in baseQuery
+                        join l in context.Locations on mi.TookPlaceAtLocation.Id equals l.Id
+                        group mi by new
                         {
                             l.Name,
                             l.LocationType,
-                            a.Type
+                            mi.Type
                         } into g
                         orderby g.Key.Name, g.Key.Type
                         select new LocationDetail(
@@ -52,40 +52,7 @@ public static class GetApprovedActivitiesPerSupportWorker
                             g.Count()
                         );
 
-            var results = await query
-                .AsNoTracking()
-                .ToArrayAsync(cancellationToken);
-
-            return new ApprovedActivitiesPerSupportWorkerDto(results);
-        }
-        private async Task<Result<ApprovedActivitiesPerSupportWorkerDto>> GetApprovedActivitiesByTenantId(Query request, CancellationToken cancellationToken)
-        {
-            var context = unitOfWork.DbContext;
-
-            var query = from a in context.Activities
-                        join l in context.Locations on a.TookPlaceAtLocation.Id equals l.Id
-                        where a.TenantId.StartsWith(request.TenantId!)
-                              && a.CompletedOn >= request.StartDate
-                              && a.CompletedOn < request.EndDate.AddDays(1).Date
-                              && a.Status == ActivityStatus.ApprovedStatus.Value
-                        group a by new
-                        {
-                            l.Name,
-                            l.LocationType,
-                            a.Type
-                        } into g
-                        orderby g.Key.Name, g.Key.Type
-                        select new LocationDetail(
-                            g.Key.Name,
-                            g.Key.LocationType,
-                            g.Key.Type,
-                            g.Count()
-                        );
-
-            var results = await query
-                .AsNoTracking()
-                .ToArrayAsync(cancellationToken);
-
+            var results = await query.AsNoTracking().ToArrayAsync(cancellationToken);
             return new ApprovedActivitiesPerSupportWorkerDto(results);
         }
 

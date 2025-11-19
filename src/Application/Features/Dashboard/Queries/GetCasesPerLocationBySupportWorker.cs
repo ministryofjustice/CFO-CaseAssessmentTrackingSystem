@@ -17,31 +17,32 @@ public static class GetCasesPerLocationBySupportWorker
     {
         public async Task<Result<CasesPerLocationSupportWorkerDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.UserId) == false)
-            {
-                return await GetCasesPerLocationByUserId(request.UserId, cancellationToken);
-            }
-            if (string.IsNullOrWhiteSpace(request.TenantId) == false)
-            {
-                return await GetCasesPerLocationByTenantId(request.TenantId, cancellationToken);
-            }
-            return Result<CasesPerLocationSupportWorkerDto>.Failure("Invalid request: UserId or TenantId must be provided.");          
-        }
-
-        private async Task<Result<CasesPerLocationSupportWorkerDto>> GetCasesPerLocationByUserId(string userId, CancellationToken cancellationToken)
-        {
             var context = unitOfWork.DbContext;
 
-            var query =
-                from p in context.Participants
-                join l in context.Locations on p.CurrentLocation!.Id equals l.Id
-                where p.OwnerId == userId
-                      && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
-                group p by new
+            var query = from p in context.Participants
+                        join l in context.Locations on p.CurrentLocation!.Id equals l.Id
+                        join u in context.Users on p.OwnerId equals u.Id
+                        where p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
+                        select new { p, l, u };
+
+            // Checks and applies filter based on UserId or TenantId else throws exception
+            query = request switch
+            {
+                { UserId: var userId } when !string.IsNullOrWhiteSpace(userId)
+                    => query.Where(x => x.p.OwnerId == userId),
+
+                { TenantId: var tenantId } when !string.IsNullOrWhiteSpace(tenantId)
+                    => query.Where(x => x.u.TenantId!.StartsWith(tenantId)),
+
+                _ => throw new ArgumentException("Invalid request: UserId or TenantId must be provided.")
+            };
+
+            var groupedQuery = from x in query
+                               group x.p by new
                 {
-                    l.Name,
-                    l.LocationType,
-                    p.EnrolmentStatus
+                    x.l.Name,
+                    x.l.LocationType,
+                    x.p.EnrolmentStatus
                 } into grp
                 select new LocationDetail
                 (
@@ -51,42 +52,12 @@ public static class GetCasesPerLocationBySupportWorker
                     grp.Count()
                 );
 
-            var result = await query
+            var results = await groupedQuery
                 .AsNoTracking()
                 .ToArrayAsync(cancellationToken);
 
-            return new CasesPerLocationSupportWorkerDto(result);
-        }
-        private async Task<Result<CasesPerLocationSupportWorkerDto>> GetCasesPerLocationByTenantId(string tenantId, CancellationToken cancellationToken)
-        {
-            var context = unitOfWork.DbContext;
-
-            var query =
-                from p in context.Participants
-                join l in context.Locations on p.CurrentLocation!.Id equals l.Id
-                join u in context.Users on p.OwnerId equals u.Id
-                where u.TenantId!.StartsWith(tenantId)
-                      && p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
-                group p by new
-                {
-                    l.Name,
-                    l.LocationType,
-                    p.EnrolmentStatus
-                } into grp
-                select new LocationDetail
-                (
-                    grp.Key.Name,
-                    grp.Key.LocationType,
-                    grp.Key.EnrolmentStatus,
-                    grp.Count()
-                );
-
-            var result = await query
-                .AsNoTracking()
-                .ToArrayAsync(cancellationToken);
-
-            return new CasesPerLocationSupportWorkerDto(result);
-        }
+            return new CasesPerLocationSupportWorkerDto(results);
+        }        
     }
 
     public record CasesPerLocationSupportWorkerDto
