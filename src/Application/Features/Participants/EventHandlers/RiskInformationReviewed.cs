@@ -13,7 +13,7 @@ public class RiskInformationReviewed(IUnitOfWork unitOfWork) : INotificationHand
         if (participant is not null)
         {         
             //If risk still not completed class it as initial review and keep review date as 14 days
-            if (participant.EnrolmentStatus == EnrolmentStatus.EnrollingStatus && notification.Item.ReviewReason == RiskReviewReason.NoRiskInformationAvailable)
+            if (participant.RiskDueReason == RiskDueReason.InitialReview && notification.Item.ReviewReason == RiskReviewReason.NoRiskInformationAvailable)
             {
                 participant.SetRiskDue(DateTime.UtcNow.AddDays(14), RiskDueReason.InitialReview);
             }
