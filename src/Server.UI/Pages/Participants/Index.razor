@@ -1,0 +1,144 @@
+@page "/pages/participants/Index"
+
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Specifications
+@using Cfo.Cats.Domain.Common.Enums
+
+@inherits CatsComponent<PaginatedData<Cfo.Cats.Application.Features.Participants.DTOs.ParticipantPaginationDto>>
+
+<PageTitle>Participants</PageTitle>
+
+
+<MudGrid>
+    
+    <MudItem xs="12" lg="2" md="4">
+        <MudStack AlignItems="AlignItems.Start">
+            <MudText Typo="Typo.h5">Filters</MudText>
+            
+            <MudEnumSelect TEnum="ParticipantListView" ValueChanged="OnChangedListView" Value="_listView" Dense="false" Label="Enrolment Status" FullWidth="true">
+            </MudEnumSelect>
+            
+            @if (_locations is { Length: > 0 })
+            {
+                <MudText Typo="Typo.h6">Location</MudText>
+                @foreach (var l in _locations)
+                {
+                    <MudChip T="string" OnClose="@(() => RemoveLocation(l))">
+                        @l.Name  
+                    </MudChip>
+                }    
+            }
+        </MudStack>
+    </MudItem>
+    
+    
+    <MudItem xs="12" lg="10" md="8">
+        @if (Loading)
+        {
+            <MudLoading Text="Fetching data.."/>
+        }
+
+        @if (ErrorMessage is not null)
+        {
+            <MudAlert Severity="Severity.Error">
+                @ErrorMessage
+            </MudAlert>
+        }
+
+        @if (ErrorMessage is null && Data is not null)
+        {
+            <MudTable T="ParticipantPaginationDto" 
+                      Items="Data.Items" 
+                      Hover="true" 
+                      Dense="true" 
+                      Striped="true"
+                      @ref="_table">
+                
+                <HeaderContent>
+                    <MudTh>
+                        Participant
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel T="string"
+                                           SortDirectionChanged="@(direction => SortDirectionChanged("EnrolmentStatus", direction))">
+                            Status
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel T="string"
+                                           SortDirectionChanged="@(direction => SortDirectionChanged("ConsentStatus", direction))">
+                            Consent                        
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>                 
+                        <MudTableSortLabel T="string"
+                                           SortDirectionChanged="@(direction => SortDirectionChanged("CurrentLocation", direction))">
+                            Location                        
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel T="string"
+                                           SortDirectionChanged="@(direction => SortDirectionChanged("EnrolmentLocation", direction))">
+                            Enrolled At                        
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel T="string"
+                                           SortDirectionChanged="@(direction => SortDirectionChanged("Owner", direction))">
+                            Owner                        
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel T="string"
+                                           SortDirectionChanged="@(direction => SortDirectionChanged("RiskDue", direction))">
+                            Risk                        
+                        </MudTableSortLabel>
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>
+                        <MudStack>
+                            <MudText Typo="Typo.body2">@context.ParticipantName</MudText>
+                            <MudText Typo="Typo.body2">@context.Id</MudText>
+                        </MudStack>
+                    </MudTd>
+                    <MudTd>
+                        <MudText Typo="Typo.body2">@context.EnrolmentStatus</MudText>
+                    </MudTd>
+                    <MudTd>
+                        <MudText Typo="Typo.body2">@context.ConsentStatus</MudText>
+                    </MudTd>
+                    <MudTd>
+                        <MudText Typo="Typo.body2">@context.CurrentLocation?.Name</MudText>
+                    </MudTd>
+                    <MudTd>
+                        <MudText Typo="Typo.body2">@context.EnrolmentLocation?.Name</MudText>
+                    </MudTd>
+                    <MudTd>
+                        <MudText Typo="Typo.body2">@context.Owner</MudText>
+                        <MudText Typo="Typo.body2">@context.Tenant</MudText>
+                    </MudTd>
+                    <MudTd>
+                        @if (context.RiskDue.HasValue)
+                        {
+                            <MudStack>
+                                <MudText Typo="Typo.body2">@context.RiskDue.Value.ToShortDateString()</MudText>
+
+                                <MudChip Size="Size.Small"
+                                         T="string"
+                                         Color="@(context.RiskDue < DateTime.Today ? Color.Error : Color.Info)">
+                                    @context.RiskDueReason
+                                </MudChip>
+                            </MudStack>
+                        }
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+            
+            <MudPagination Color="Color.Primary" Class="mt-2" Count="Data.TotalPages" SelectedChanged="OnSelectedPageChanged" Size="Size.Small" />
+            
+        }
+
+    </MudItem>
+
+</MudGrid>
