@@ -40,7 +40,7 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
         builder.OwnsMany(l => l.Domains, domain => {
             domain.WithOwner().HasForeignKey("TenantId");
             domain.HasKey("TenantId", "Domain");
-            domain.ToTable(DatabaseConstants.Tables.TenantDomain);
+            domain.ToTable(DatabaseConstants.Tables.TenantDomain, DatabaseConstants.Schemas.Configuration);
             domain.Property(x => x.Domain).HasMaxLength(255);
             domain.Property(x => x.CreatedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
             domain.Property(x => x.LastModifiedBy).HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
