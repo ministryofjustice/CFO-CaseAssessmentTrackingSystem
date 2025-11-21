@@ -6,10 +6,10 @@
     <NoWarn>NU1608</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="ActualLab.Fusion" Version="11.1.4" />
-    <PackageVersion Include="ActualLab.Fusion.Blazor" Version="11.1.4" />
-    <PackageVersion Include="ActualLab.Fusion.Ext.Services" Version="11.1.4" />
-    <PackageVersion Include="ActualLab.Generators" Version="11.1.4" />
+    <PackageVersion Include="ActualLab.Fusion" Version="11.2.47" />
+    <PackageVersion Include="ActualLab.Fusion.Blazor" Version="11.2.47" />
+    <PackageVersion Include="ActualLab.Fusion.Ext.Services" Version="11.2.47" />
+    <PackageVersion Include="ActualLab.Generators" Version="11.2.47" />
     <PackageVersion Include="Ardalis.SmartEnum" Version="8.2.0" />
     <PackageVersion Include="Ardalis.Specification" Version="9.3.1" />
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="9.3.1" />
@@ -17,24 +17,24 @@
     <PackageVersion Include="Aspire.Hosting.Kubernetes" Version="13.0.0-preview.1.25560.3" />
     <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.0.0" />
     <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.0.0" />
-    <PackageVersion Include="AutoMapper" Version="14.0.0" />
-    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.11" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.11.1" />
+    <PackageVersion Include="AutoMapper" Version="15.1.0" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.13" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.13" />
     <PackageVersion Include="Blazor-Analytics" Version="4.0.0" />
     <PackageVersion Include="Blazor-ApexCharts" Version="6.0.2" />
     <PackageVersion Include="BlazorDownloadFile" Version="2.4.0.2" />
     <PackageVersion Include="BlazorTime" Version="1.0.3" />
     <PackageVersion Include="ClosedXML" Version="0.105.0" />
-    <PackageVersion Include="CodeBeam.MudBlazor.Extensions" Version="8.2.5" />
+    <PackageVersion Include="CodeBeam.MudBlazor.Extensions" Version="8.3.0" />
     <PackageVersion Include="FluentValidation" Version="12.1.0" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.0" />
     <PackageVersion Include="GovukNotify" Version="7.2.0" />
-    <PackageVersion Include="Humanizer" Version="2.14.1" />
-    <PackageVersion Include="Humanizer.Core.uk" Version="2.14.1" />
-    <PackageVersion Include="IPAddressRange" Version="6.2.0" />
+    <PackageVersion Include="Humanizer" Version="3.0.1" />
+    <PackageVersion Include="Humanizer.Core.uk" Version="3.0.1" />
+    <PackageVersion Include="IPAddressRange" Version="6.3.0" />
     <PackageVersion Include="LazyCache" Version="2.4.0" />
     <PackageVersion Include="LazyCache.AspNetCore" Version="2.4.0" />
-    <PackageVersion Include="MediatR" Version="12.5.0" />
+    <PackageVersion Include="MediatR" Version="13.1.0" />
     <PackageVersion Include="MemoryPack.Generator" Version="1.21.4" />
     <PackageVersion Include="MessagePack" Version="3.1.4" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0" />
@@ -64,22 +64,22 @@
     <PackageVersion Include="NUnit" Version="4.4.0" />
     <PackageVersion Include="NUnit3TestAdapter" Version="5.2.0" />
     <PackageVersion Include="NunitXml.TestLogger" Version="7.0.2" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.13.1" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.13.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.13.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.13.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.13.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.14.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.14.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.14.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.14.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.14.0" />
     <PackageVersion Include="Quartz" Version="3.15.1" />
     <PackageVersion Include="Quartz.AspNetCore" Version="3.15.1" />
     <PackageVersion Include="Rebus" Version="8.9.0" />
     <PackageVersion Include="Rebus.RabbitMq" Version="10.1.0" />
-    <PackageVersion Include="Rebus.ServiceProvider" Version="10.6.0" />
+    <PackageVersion Include="Rebus.ServiceProvider" Version="10.7.0" />
     <PackageVersion Include="Scrutor" Version="6.1.0" />
     <PackageVersion Include="Sentry" Version="5.16.2" />
     <PackageVersion Include="Sentry.AspNetCore" Version="5.16.2" />
     <PackageVersion Include="Sentry.EntityFramework" Version="5.16.2" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
-    <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.6.10" />
+    <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.0" />
     <PackageVersion Include="Toolbelt.Blazor.HotKeys2" Version="6.0.1" />
     <PackageVersion Include="ZiggyCreatures.FusionCache" Version="2.4.0" />
   </ItemGroup>
