@@ -2,6 +2,11 @@ name: Create new release
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.2.3 or leave empty for auto-generated)'
+        required: false
+        type: string
 
 jobs:
   build:
@@ -11,7 +16,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 1  # Only get the latest commit - much faster!
+        fetch-depth: 0  # Fetch all history for proper versioning
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -33,56 +38,32 @@ jobs:
     - name: Publish Migrations
       run: dotnet publish ./src/DatabaseMigrator/DatabaseMigrator.csproj --configuration Release --output ./artifacts/publish/DatabaseMigrator --no-restore --no-build 
 
-    # Create zip archive of build artifacts for release
-    # This creates the necessary ./artifacts.zip file on the runner's filesystem.
     - name: Create Build Artifacts Archive
-      if: success()
       run: |
-        # Use a single zip command from the root to create artifacts.zip
-        zip -r artifacts.zip ./artifacts/ 
+        cd artifacts
+        zip -r ../Server.UI.zip ./publish/Server.UI/
+        zip -r ../DatabaseMigrator.zip ./publish/DatabaseMigrator/
 
-    # Generate tag and release names with daily build numbers
-    - name: Set Release Version
-      if: success()
-      id: set_release_version
+    - name: Generate Version Tag
+      id: version
       run: |
-        # Get current date in YYYY.MM.DD format
-        DATE_PREFIX="v$(date +'%Y.%m.%d')"
-        
-        # Get existing tags for today using GitHub API
-        EXISTING_TAGS=$(curl -s \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -H "Accept: application/vnd.github.v3+json" \
-          "https://api.github.com/repos/${{ github.repository }}/tags" \
-          | jq -r --arg prefix "$DATE_PREFIX" '.[] | select(.name | startswith($prefix)) | .name')
-        
-        # Count existing tags for today and increment
-        if [ -z "$EXISTING_TAGS" ]; then
-          BUILD_NUMBER="01"
+        if [ -n "${{ inputs.version }}" ]; then
+          TAG_NAME="${{ inputs.version }}"
         else
-          # Extract build numbers, find max, and increment
-          MAX_BUILD=$(echo "$EXISTING_TAGS" | sed "s/${DATE_PREFIX}.//g" | sort -n | tail -1)
-          BUILD_NUMBER=$(printf "%02d" $((MAX_BUILD + 1)))
+          TAG_NAME="v$(date +'%Y.%m.%d')-build.${{ github.run_number }}"
         fi
-        
-        # Set the final tag and release names
-        TAG_NAME="${DATE_PREFIX}.${BUILD_NUMBER}"
-        echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
-        echo "RELEASE_NAME=Release $TAG_NAME" >> $GITHUB_ENV
-        
-        echo "Generated tag: $TAG_NAME"
+        echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+        echo "Generated version: $TAG_NAME"
 
-    # Create a new release
     - name: Create Release
-      if: success()
-      id: create_release
-      uses: softprops/action-gh-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v2
       with:
-        tag_name: ${{ env.TAG_NAME }}
-        name: ${{ env.RELEASE_NAME }}
-        files: ./artifacts.zip
+        tag_name: ${{ steps.version.outputs.tag }}
+        name: Release ${{ steps.version.outputs.tag }}
+        files: |
+          Server.UI.zip
+          DatabaseMigrator.zip
         draft: false
         prerelease: true
         generate_release_notes: true
+        fail_on_unmatched_files: true
