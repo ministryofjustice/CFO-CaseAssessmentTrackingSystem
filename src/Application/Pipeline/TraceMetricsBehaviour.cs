@@ -1,4 +1,6 @@
-﻿namespace Cfo.Cats.Application.Pipeline;
+﻿using System.Runtime.CompilerServices;
+
+namespace Cfo.Cats.Application.Pipeline;
 
 public class TraceMetricsBehaviour<TRequest, TResponse>(ICurrentUserService currentUserService) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
@@ -8,16 +10,22 @@ public class TraceMetricsBehaviour<TRequest, TResponse>(ICurrentUserService curr
         var requestName = typeof(TRequest).FullName!.Split(".").Last();
         var transaction = SentrySdk.StartTransaction(requestName, "mediator.handle");
 
+        transaction.SetTag("tenant_id", currentUserService.TenantId ?? "none");
+        transaction.SetTag("tenant_name", currentUserService.TenantName ?? "none");
+        
         SentrySdk.ConfigureScope(scope =>
         {
-            scope.SetTag("tenant_id", currentUserService.TenantId ?? "none");
-            scope.SetTag("tenant_name", currentUserService.TenantName ?? "none");
             scope.Transaction = transaction;
+            scope.User = new SentryUser()
+            {
+                Id = currentUserService.UserId ?? "none",
+                Username = currentUserService.UserName ?? "none",
+            };
         });
 
         try
         {
-            return await next().ConfigureAwait(false);
+            return await next(cancellationToken);
         }
         catch (Exception ex)
         {

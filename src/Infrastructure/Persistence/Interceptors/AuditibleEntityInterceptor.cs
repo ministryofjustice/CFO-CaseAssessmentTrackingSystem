@@ -38,8 +38,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     )
     {
         var resultValueTask = await base.SavedChangesAsync(eventData, result, cancellationToken);
-        await TryUpdateTemporaryPropertiesForAuditTrail(eventData.Context!, cancellationToken)
-            .ConfigureAwait(false);
+        await TryUpdateTemporaryPropertiesForAuditTrail(eventData.Context!, cancellationToken);
         return resultValueTask;
     }
 
@@ -205,7 +204,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
             }
 
             await context.AddRangeAsync(temporaryAuditTrailList, cancellationToken);
-            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await context.SaveChangesAsync(cancellationToken);
             temporaryAuditTrailList.Clear();
         }
     }

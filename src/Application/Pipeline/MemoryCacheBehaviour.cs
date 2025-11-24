@@ -25,9 +25,8 @@ public class MemoryCacheBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
     {
         logger.LogTrace("{Name} is caching with {@Request}", nameof(request), request);
         var response = await cache
-            .GetOrAddAsync(request.CacheKey, async () => await next(cancellationToken), request.Options)
-            .ConfigureAwait(false);
-
+            .GetOrAddAsync(request.CacheKey, async () => await next(cancellationToken), request.Options);
+            
         return response;
     }
 }
