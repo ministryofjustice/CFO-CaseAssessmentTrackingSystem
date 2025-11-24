@@ -1,7 +1,6 @@
 using ActualLab.Api;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
-using System.Linq.Expressions;
 
 namespace Cfo.Cats.Server.UI.Services.Navigation;
 
@@ -39,7 +38,7 @@ public class MenuService : IMenuService
                             new()
                             {
                                 Title = "Tenant",
-                                Href = "/pages/dashboard/dashboardfilterbytenant/",
+                                Href = "/pages/dashboard/tenant/",
                                 PageStatus = PageStatus.Wip
                             }
                         ],
