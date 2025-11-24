@@ -1,5 +1,4 @@
-﻿
-@using Cfo.Cats.Application.Features.Dashboard.DTOs
+﻿@using Cfo.Cats.Application.Features.Dashboard.DTOs
 
 @inherits CatsComponent<PaginatedData<FirstPassQADetailsDto>>
 
@@ -49,22 +48,25 @@
                                             </MudText>                                                
                                             
 											<div class="d-flex gap-2 align-center">
-												<MudText Typo="Typo.body2">					
-													Queue @participant.Queue (@participant.LastModified).
-												</MudText>
+                                                <MudText Typo="Typo.body2">					
+                                                    Queue:  @participant.Queue
+                                                </MudText>
 												<MudText Typo="Typo.body2">
-													User:  @participant.QAUser.
+													User:  @participant.QAUser
 												</MudText>
                                                 <MudText Typo="Typo.body2">
-                                                    Is Accepted:  @participant.IsAccepted.
+                                                    Is Accepted:  @participant.IsAccepted
                                                 </MudText>
                                                 <MudText Typo="Typo.body2">
-                                                    Escalated:  @participant.Escalated.
+                                                    Escalated:  @participant.Escalated
                                                 </MudText>
                                                 <MudText Typo="Typo.body2">
-                                                    Note:  @participant.Note.
-                                                </MudText>						
-											</div>
+                                                    Note: @((string.IsNullOrWhiteSpace(participant.Note) ? "None" : participant.Note))
+                                                </MudText>	
+                                                <MudText Typo="Typo.body2">					
+                                                    Processed:  @participant.LastModified
+                                                </MudText>
+                                            </div>
 										</div>
 									</div>
 

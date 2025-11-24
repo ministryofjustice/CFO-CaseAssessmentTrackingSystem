@@ -83,6 +83,8 @@
         <MyArchivedCases/>
     }
 
-    <FirstPassQAActivitiesDetailsComponent/>
 	
+    @* The DateRange parameter can be changed when component added to CFO QA dashboard *@
+    @* <FirstPassQAActivitiesDetailsComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" /> *@
+    <FirstPassQAActivitiesDetailsComponent DateRange="@(new DateRange(DateTime.Today.AddDays(-100), DateTime.Today))"/>
 </MudGrid>
