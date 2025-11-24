@@ -1,0 +1,47 @@
+@using Cfo.Cats.Application.Features.Identity.DTOs
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Components.Dashboard
+@using Cfo.Cats.Server.UI.Components.Users
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
+@using Cfo.Cats.Application.Common.Interfaces.MultiTenant
+
+@page "/pages/dashboard/dashboardqa"
+@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.SMT}, {RoleNames.QAFinance}, {RoleNames.QAOfficer}, {RoleNames.QAManager}, {RoleNames.QASupportManager}")]
+
+
+<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+    <MudText Typo="Typo.h3">
+        QA Dashboard
+    </MudText>
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+        This page is still under development and may produce inaccurate results.
+    </MudAlert>
+	<MudStack Row="true" AlignItems="AlignItems.Center">
+
+		<MudDateRangePicker @ref="_picker" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="@_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
+			<PickerActions>
+				<MudButton OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+				<MudButton Color="Color.Primary" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
+			</PickerActions>
+		</MudDateRangePicker>
+		<MudSwitch @bind-Value="_visualMode"
+				   T="bool"
+				   ThumbIcon="@Icons.Material.Filled.StackedBarChart"
+				   Color="Color.Primary">
+			Visual Mode
+		</MudSwitch>
+	</MudStack>
+</MudStack>
+
+<MudStack>
+		<MudTabs PanelClass="pa-6" ApplyEffectsToContainer="true" Outlined="true">
+			<MudTabPanel Text="Pots Breakdown" Class="pa-3">
+                <!--Just an example, the components will need updating to receive date range and display accordingly -->
+                <QaPots />
+			</MudTabPanel>
+			<MudTabPanel Text="Activity Returns To Providers" Class="pa-3">
+			</MudTabPanel>
+			<MudTabPanel Text="Enrolment Returns To Providers" Class="pa-3">
+			</MudTabPanel>
+		</MudTabs>
+</MudStack>

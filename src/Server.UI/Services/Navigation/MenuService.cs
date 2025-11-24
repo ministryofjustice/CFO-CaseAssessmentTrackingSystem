@@ -34,6 +34,14 @@ public class MenuService : IMenuService
                                 Title = "Support Worker",
                                 Href = "/pages/dashboard/supportworker/",
                                 PageStatus = PageStatus.Wip
+                            },
+
+                            new()
+                            {
+                                Title = "QA",
+                                Href = "/pages/dashboard/dashboardqa/",
+                                PageStatus = PageStatus.Wip,
+                                Roles = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.QAFinance]
                             }
                         ],
                     },
