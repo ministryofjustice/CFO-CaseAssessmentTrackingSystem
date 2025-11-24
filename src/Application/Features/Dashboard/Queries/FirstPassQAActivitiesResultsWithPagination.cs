@@ -9,10 +9,13 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class FirstPassQAActivitiesResultsWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
-    public class Query : FirstPassQAActivitiesResultsAdvancedFilter,
-        IRequest<Result<PaginatedData<FirstPassQADetailsDto>>>
+    public class Query : FirstPassQAActivitiesResultsAdvancedFilter, IRequest<Result<PaginatedData<FirstPassQADetailsDto>>>
     {
         public FirstPassQAActivitiesResultsAdvancedSpecification Specification => new(this);
+        public required DateTime StartDate { get; set; }
+        public required DateTime EndDate { get; set; }
+        // public required string UserId { get; set; }
+        // public required UserProfile CurrentUser { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork)
@@ -23,10 +26,12 @@ public static class FirstPassQAActivitiesResultsWithPagination
         {
             var db = unitOfWork.DbContext;
 
-            var startDate = DateTime.UtcNow.AddDays(-1);
-            var endDate = DateTime.UtcNow;
-
+            var startDate = request.StartDate;
+            var endDate = request.EndDate;
+            
 #pragma warning disable CS8602
+            var x = (from p in db.Participants.ApplySpecification(request.Specification)
+                select p.Id).ToList();;
             
             var qa1DtoQuery =
                 from p in db.Participants.ApplySpecification(request.Specification)
@@ -62,7 +67,6 @@ public static class FirstPassQAActivitiesResultsWithPagination
                     Note = q.Notes.Select(n => n.Message).FirstOrDefault() ?? ""
                 };
 
-// Escalation DTO projection
             var escDtoQuery =
                 from p in db.Participants.ApplySpecification(request.Specification)
                 join q in db.ActivityEscalationQueue on  p.Id equals q.ParticipantId
