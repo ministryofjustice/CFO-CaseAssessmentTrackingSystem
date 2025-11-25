@@ -1,0 +1,97 @@
+﻿@using Cfo.Cats.Application.Features.Dashboard.DTOs
+
+@inherits CatsComponent<PaginatedData<FirstPassQADetailsDto>>
+
+<MudItem xs="12">
+	@if (Loading)
+	{
+		<MudLoading Text="Loading" />
+	}
+
+	@if (ErrorMessage is not null)
+	{
+		<MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+			@ErrorMessage
+		</MudAlert>
+	}
+
+	@if (Data is not null)
+	{
+        <MudCard style="height: 100%">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">First Pass QA Enrolments Details</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+				<MudList T="FirstPassQADetailsDto" ReadOnly>
+                    <MudListSubheader>
+                
+						@if (_canSearch)
+						{
+							<MudTextField T="string" ValueChanged="@(OnSearch)" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+										  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+							</MudTextField>
+						}
+
+                    </MudListSubheader>
+
+					@foreach (var participant in Data.Items)
+                    {
+                        <MudListItem Class="flex-row-reverse">
+                            <ChildContent>
+                                <div class="d-flex justify-space-between align-center ml-2">
+                                    <div class="d-flex align-center">                            
+                                        <div class="pr-2">
+                                            <MudText Typo="Typo.body2">
+                                                Participant: @participant.ParticipantName @participant.ParticipantId
+                                            </MudText>                                                
+                                            
+											<div class="d-flex gap-2 align-center">
+                                                <MudText Typo="Typo.body2">					
+                                                    Queue:  @participant.Queue
+                                                </MudText>
+												<MudText Typo="Typo.body2">
+													User:  @participant.QAUser
+												</MudText>
+                                                <MudText Typo="Typo.body2">
+                                                    Is Accepted:  @participant.IsAccepted
+                                                </MudText>
+                                                <MudText Typo="Typo.body2">
+                                                    Escalated:  @participant.Escalated
+                                                </MudText>
+                                                <MudText Typo="Typo.body2">
+                                                    Note: @((string.IsNullOrWhiteSpace(participant.Note) ? "None" : participant.Note))
+                                                </MudText>	
+                                                <MudText Typo="Typo.body2">					
+                                                    Processed:  @participant.LastModified
+                                                </MudText>
+                                            </div>
+										</div>
+									</div>
+
+									<MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+												Dense="true"
+												EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+
+										<MudMenuItem OnClick="@(() => EditParticipant(participant.ParticipantId))">
+											@ConstantString.EditParticipant
+										</MudMenuItem>
+									</MudMenu>
+								</div>
+								<MudDivider />
+							</ChildContent>
+						</MudListItem>
+
+						<MudDivider />
+					}
+
+                    <MudListSubheader Class="d-flex justify-center mt-2">
+                            <MudPagination Count="@Data.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
+					</MudListSubheader>
+
+				</MudList>
+            </MudCardContent>
+        </MudCard>
+    }
+</MudItem>
