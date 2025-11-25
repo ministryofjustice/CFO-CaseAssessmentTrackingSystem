@@ -111,7 +111,7 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
             }
 
             // User is authorized / authorization not required
-            return await next(cancellationToken).ConfigureAwait(false);
+            return await next(cancellationToken);
         }
         finally
         {

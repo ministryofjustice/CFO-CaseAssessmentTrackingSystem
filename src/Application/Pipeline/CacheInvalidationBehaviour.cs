@@ -25,7 +25,7 @@ public class CacheInvalidationBehaviour<TRequest, TResponse>
     )
     {
         logger.LogTrace("{Name} cache expire with {@Request}", nameof(request), request);
-        var response = await next(cancellationToken).ConfigureAwait(false);
+        var response = await next(cancellationToken);
 
         foreach (var key in request.CacheKeys)
         {

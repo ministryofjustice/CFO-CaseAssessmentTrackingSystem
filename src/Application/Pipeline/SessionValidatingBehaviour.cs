@@ -26,7 +26,7 @@ public class SessionValidatingBehaviour<TRequest, TResponse>(ISessionService ses
 
             // session is valid
             sessionService.UpdateActivity(userId);
-            return await next(cancellationToken).ConfigureAwait(false);
+            return await next(cancellationToken);
         }
         finally
         {
