@@ -106,6 +106,7 @@
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
                 pages.Add("Second Pass", "/pages/qa/enrolments/qa2");    
+                pages.Add("All QA Dashboard", "/pages/dashboard/allqadashboard");    
             }
 
             allowed = [RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
