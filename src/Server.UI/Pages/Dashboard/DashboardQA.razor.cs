@@ -1,6 +1,4 @@
 using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Server.UI.Components.Identity;
-using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Server.UI.Pages.Dashboard;
 

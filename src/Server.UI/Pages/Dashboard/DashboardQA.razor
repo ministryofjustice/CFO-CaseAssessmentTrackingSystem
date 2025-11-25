@@ -1,9 +1,5 @@
-@using Cfo.Cats.Application.Features.Identity.DTOs
 @using Cfo.Cats.Application.SecurityConstants
-@using Cfo.Cats.Server.UI.Components.Dashboard
-@using Cfo.Cats.Server.UI.Components.Users
-@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
-@using Cfo.Cats.Application.Common.Interfaces.MultiTenant
+
 
 @page "/pages/dashboard/dashboardqa"
 @attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.SMT}, {RoleNames.QAFinance}, {RoleNames.QAOfficer}, {RoleNames.QAManager}, {RoleNames.QASupportManager}")]

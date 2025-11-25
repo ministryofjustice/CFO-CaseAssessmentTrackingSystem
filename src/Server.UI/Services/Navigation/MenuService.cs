@@ -38,8 +38,8 @@ public class MenuService : IMenuService
 
                             new()
                             {
-                                Title = "QA",
-                                Href = "/pages/dashboard/dashboardqa/",
+                                Title = "My - QA",
+                                Href = "/pages/dashboard/myqadashboard/",
                                 PageStatus = PageStatus.Wip,
                                 Roles = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT, RoleNames.QAFinance]
                             }
