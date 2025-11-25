@@ -6,12 +6,12 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 
-public static class FirstPassQAActivitiesResultsWithPagination
+public static class FirstPassQAEnrolmentsResultsWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
-    public class Query : FirstPassQAActivitiesResultsAdvancedFilter, IRequest<Result<PaginatedData<FirstPassQADetailsDto>>>
+    public class Query : FirstPassQAEnrolmentsResultsAdvancedFilter, IRequest<Result<PaginatedData<FirstPassQADetailsDto>>>
     {
-        public FirstPassQAActivitiesResultsAdvancedSpecification Specification => new(this);
+        public FirstPassQAEnrolmentsResultsAdvancedSpecification Specification => new(this);
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
         // public required string UserId { get; set; }
@@ -30,10 +30,10 @@ public static class FirstPassQAActivitiesResultsWithPagination
             var endDate = request.EndDate;
             
 #pragma warning disable CS8602
-
+            
             var qa1DtoQuery =
                 from p in db.Participants.ApplySpecification(request.Specification)
-                join q in db.ActivityQa1Queue on p.Id equals q.ParticipantId
+                join q in db.EnrolmentQa1Queue on p.Id equals q.ParticipantId
                 join u in db.Users on q.OwnerId equals u.Id
                 where q.IsCompleted && q.LastModified >= startDate && q.LastModified <= endDate
                 select new FirstPassQADetailsDto
@@ -50,7 +50,7 @@ public static class FirstPassQAActivitiesResultsWithPagination
             
             var qa2DtoQuery =
                 from p in db.Participants.ApplySpecification(request.Specification)
-                join q in db.ActivityQa2Queue on p.Id equals q.ParticipantId
+                join q in db.EnrolmentQa2Queue on p.Id equals q.ParticipantId
                 join u in db.Users on q.OwnerId equals u.Id
                 where q.IsCompleted && q.LastModified >= startDate && q.LastModified <= endDate
                 select new FirstPassQADetailsDto
@@ -67,7 +67,7 @@ public static class FirstPassQAActivitiesResultsWithPagination
 
             var escDtoQuery =
                 from p in db.Participants.ApplySpecification(request.Specification)
-                join q in db.ActivityEscalationQueue on p.Id equals q.ParticipantId
+                join q in db.EnrolmentEscalationQueue on p.Id equals q.ParticipantId
                 join u in db.Users on q.OwnerId equals u.Id
                 where q.IsCompleted && q.LastModified >= startDate && q.LastModified <= endDate
                 select new FirstPassQADetailsDto
