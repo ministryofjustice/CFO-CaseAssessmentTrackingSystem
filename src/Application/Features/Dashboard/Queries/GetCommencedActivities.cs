@@ -2,10 +2,10 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Queries;
-public static class GetPaidActivities
+public static class GetCommencedActivities
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
-    public class Query : IRequest<Result<PaidActivitiesDto>>
+    public class Query : IRequest<Result<CommencedActivitiesDto>>
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
@@ -13,38 +13,35 @@ public static class GetPaidActivities
         public string? TenantId { get; set; }
         public required UserProfile CurrentUser { get; set; }
     }
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaidActivitiesDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<CommencedActivitiesDto>>
     {
-        public async Task<Result<PaidActivitiesDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<CommencedActivitiesDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-var context = unitOfWork.DbContext;
+            var context = unitOfWork.DbContext;
 
-            var query = from mi in context.ActivityPayments
-                        join ap in context.Activities on mi.ActivityId equals ap.Id
-                        join l in context.Locations on mi.LocationId equals l.Id
-                        where mi.EligibleForPayment &&
-                              mi.ActivityApproved >= request.StartDate &&
-                              mi.ActivityApproved <= request.EndDate
-                        select new { mi, ap, l };
+            var baseQuery = context.Activities
+                .Where(mi => mi.CommencedOn >= request.StartDate &&
+                             mi.CommencedOn <= request.EndDate);
 
             // Checks and applies filter based on UserId or TenantId else throws exception
-            query = request switch
+            baseQuery = request switch
             {
                 { UserId: var userId } when !string.IsNullOrWhiteSpace(userId)
-                    => query.Where(x => x.ap.OwnerId == userId),
+                    => baseQuery.Where(mi => mi.OwnerId == userId),
 
                 { TenantId: var tenantId } when !string.IsNullOrWhiteSpace(tenantId)
-                    => query.Where(x => x.mi.TenantId.StartsWith(tenantId)),
+                    => baseQuery.Where(mi => mi.TenantId.StartsWith(tenantId)),
 
                 _ => throw new ArgumentException("Invalid request: UserId or TenantId must be provided.")
             };
 
-            var groupedQuery = from x in query
-                               group x.mi by new
+            var query = from mi in baseQuery
+                        join l in context.Locations on mi.TookPlaceAtLocation.Id equals l.Id
+                        group mi by new
                         {
-                            x.l.Name,
-                            x.l.LocationType,
-                            x.ap.Type
+                            l.Name,
+                            l.LocationType,
+                            mi.Type
                         } into g
                         orderby g.Key.Name, g.Key.Type
                         select new LocationDetail(
@@ -54,17 +51,17 @@ var context = unitOfWork.DbContext;
                             g.Count()
                         );
 
-            var results = await groupedQuery
+            var results = await query
                 .AsNoTracking()
                 .ToArrayAsync(cancellationToken);
-
-            return new PaidActivitiesDto(results);
+                
+            return new CommencedActivitiesDto(results);
         }
 
     }
-    public record PaidActivitiesDto
+    public record CommencedActivitiesDto
     {
-        public PaidActivitiesDto(LocationDetail[] details)
+        public CommencedActivitiesDto(LocationDetail[] details)
         {
             Details = details;
             Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.Count);

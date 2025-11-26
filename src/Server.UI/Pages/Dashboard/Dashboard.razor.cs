@@ -1,5 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.SecurityConstants;
+﻿using Cfo.Cats.Application.SecurityConstants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 

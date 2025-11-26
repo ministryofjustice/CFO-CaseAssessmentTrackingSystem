@@ -1,0 +1,105 @@
+@using Cfo.Cats.Application.Features.Dashboard.Queries
+@using ApexCharts
+@using Cfo.Cats.Domain.Common.Enums
+@inherits CatsComponent<GetCommencedActivities.CommencedActivitiesDto>
+
+@if (Loading)
+{
+    <MudLoading Text="Loading" />
+}
+
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@if (Data is not null && Data.Details.Any())
+{
+    <MudGrid Spacing="2">
+        <MudItem>
+            <MudText Typo="Typo.h5" GutterBottom="true">Commenced</MudText>
+        </MudItem>
+        <MudItem>
+            <MudChip T="string" Size="MudBlazor.Size.Small">Custody (@Data.Custody)</MudChip>
+            <MudChip T="string" Size="MudBlazor.Size.Small">Community (@Data.Community)</MudChip>
+        </MudItem>
+    </MudGrid>
+    @if (VisualMode)
+    {
+        <ApexChart TItem="LocationActivityCount"
+                   Options="chartOptions"
+                   Height="325">
+
+            @{
+                var sortedActivityTypes = Data.Details
+                    .Select(d => d.ActivityType)
+                    .Distinct()
+                    .OrderBy(at => desiredOrder.IndexOf(at))
+                    .ToList();
+            
+                foreach (var activityType in sortedActivityTypes)
+                {
+                    <ApexPointSeries TItem="LocationActivityCount"
+                                    Items="@GetSeriesDataForActivityType(activityType)"
+                                    Name="@activityType.Name"
+                                    SeriesType="SeriesType.Bar"
+                                    XValue="@(e => e.Location)"
+                                    YValue="@(e => (decimal)e.Count)"
+                                    OrderBy="e => e.X"
+                                    Color="@activityType.Colour" />
+                }
+            }
+        </ApexChart>
+    }
+    else
+    {
+        <MudTable Items="Data.Details" MultiSelection="false" Striped="true" Hover="true" Outlined="true">
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetCommencedActivities.LocationDetail, object>(x => x.LocationName)">
+                        Location
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetCommencedActivities.LocationDetail, object>(x => x.LocationType.Name)">
+                        Location Type
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetCommencedActivities.LocationDetail, object>(x => x.ActivityType.Name)">
+                        Activity Type
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetCommencedActivities.LocationDetail, object>(x => x.Count)">
+                        Count
+                    </MudTableSortLabel>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Location">@context.LocationName</MudTd>
+                <MudTd DataLabel="LocationType">@context.LocationType.Name</MudTd>
+                <MudTd DataLabel="ActivityType">
+                    <div style="display: flex; align-items: center;">
+                        <MudIcon Icon="@Icons.Material.Filled.Circle"
+                                 Size="MudBlazor.Size.Small"
+                                 Style="@($"color:{context.ActivityType.Colour};")" />
+                        <MudText Typo="Typo.body2" Class="ml-2">
+                            @context.ActivityType.Name
+                        </MudText>
+                    </div>
+                </MudTd>
+                <MudTd DataLabel="Count">@context.Count</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
+            </PagerContent>
+        </MudTable>
+    }
+}
+else
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">Commenced - No data available</MudText>
+}

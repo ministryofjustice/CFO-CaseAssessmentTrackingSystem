@@ -1,0 +1,33 @@
+@using Cfo.Cats.Application.Common.Interfaces.Identity
+@using Cfo.Cats.Application.Features.Identity.DTOs
+@using Cfo.Cats.Application.Common.Interfaces.MultiTenant;
+@using Cfo.Cats.Application.Features.Tenants.DTOs
+@inject ITenantService TenantService
+
+<MudSelectExtended T="TenantDto"
+                   ItemCollection="@_tenants"
+                   Value="Value"
+                   ValueChanged="HandleValueChanged"
+                   Label="@Label"
+                   Placeholder="@Placeholder"
+                   Required="Required"
+                   Disabled="Disabled"
+                   Variant="Variant"
+                   ToStringFunc="@GetDisplayName"
+                   SearchBox="true"
+                   SearchBoxAutoFocus="true"
+                   SearchBoxClearable="true"
+                   SearchFunc="@(new Func<TenantDto?, string, bool>(Search))"
+                   ValuePresenter="ValuePresenter.ItemContent">
+                    <ItemTemplate>
+                        <MudStack Class="mud-width-full" Justify="Justify.SpaceBetween">
+                            <MudText Class="@($"pl-{(@context.Value?.Id.Length + 2)}")"><b>@context.Value?.Name (@context.Value?.Id)</b></MudText>
+                            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                <MudStack Row="true" Class="@($"pl-{(@context.Value?.Id.Length + 2)}")">
+                                    <MudIcon Icon="@Icons.Material.Outlined.Business" />
+                                    <MudText>@(context.Value?.Name)</MudText>
+                                </MudStack>
+                            </MudStack>
+                        </MudStack>
+                    </ItemTemplate>
+                   </MudSelectExtended>

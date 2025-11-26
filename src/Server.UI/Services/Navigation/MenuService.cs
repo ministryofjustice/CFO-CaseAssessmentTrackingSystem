@@ -1,7 +1,6 @@
 using ActualLab.Api;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
-using System.Linq.Expressions;
 
 namespace Cfo.Cats.Server.UI.Services.Navigation;
 
@@ -33,7 +32,7 @@ public class MenuService : IMenuService
                             {
                                 Title = "Support Worker",
                                 Href = "/pages/dashboard/supportworker/",
-                                PageStatus = PageStatus.Wip
+                                PageStatus = PageStatus.Completed
                             },
 
                             new()
@@ -43,13 +42,21 @@ public class MenuService : IMenuService
                                 PageStatus = PageStatus.Wip,
                                 Roles = [RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager],
                             },
-
+                            
                             new()
                             {
                                 Title = "QA - Team",
                                 Href = "/pages/dashboard/qateam/",
                                 PageStatus = PageStatus.Wip,
                                 Roles = [RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QASupportManager, RoleNames.QAManager],
+                            },
+                            
+                            new()
+                            {
+                                Title = "Tenant",
+                                Href = "/pages/dashboard/tenant/",
+                                PageStatus = PageStatus.Wip,
+                                Roles = RoleNames.AllExtraPermissions,
                             }
                         ],
                     },
