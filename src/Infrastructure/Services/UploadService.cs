@@ -87,10 +87,9 @@ public class UploadService : IUploadService
             {
                 BucketName = _bucketName,
                 Key = key
-            };            
+            };
 
-            using var response = await _client.GetObjectAsync(getRequest)
-                .ConfigureAwait(false);
+            using var response = await _client.GetObjectAsync(getRequest);
             var stream = new MemoryStream();
             await response.ResponseStream.CopyToAsync(stream);
             stream.Position = 0;

@@ -9,13 +9,6 @@
       ],
       "rollForward": false
     },
-    "dotnet-outdated-tool": {
-      "version": "4.6.8",
-      "commands": [
-        "dotnet-outdated"
-      ],
-      "rollForward": false
-    },
     "aspire.cli": {
       "version": "13.0.0",
       "commands": [

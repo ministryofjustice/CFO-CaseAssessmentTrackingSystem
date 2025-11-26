@@ -100,7 +100,8 @@
             allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
-                pages.Add("First Pass", "/pages/qa/enrolments/qa1");    
+                pages.Add("First Pass", "/pages/qa/enrolments/qa1");
+                pages.Add("QA", "/pages/dashboard/qadashboard");    
             }
 
             allowed = [RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
