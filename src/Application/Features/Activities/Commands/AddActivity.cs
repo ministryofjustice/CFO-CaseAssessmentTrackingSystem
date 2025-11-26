@@ -5,7 +5,7 @@ using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Activities;
 using Cfo.Cats.Domain.Entities.Documents;
-using Humanizer.Bytes;
+using Humanizer;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace Cfo.Cats.Application.Features.Activities.Commands;

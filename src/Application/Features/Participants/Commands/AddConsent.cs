@@ -2,7 +2,7 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Entities.Documents;
-using Humanizer.Bytes;
+using Humanizer;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace Cfo.Cats.Application.Features.Participants.Commands;
