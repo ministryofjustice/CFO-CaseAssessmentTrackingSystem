@@ -9,7 +9,7 @@ public abstract class TimelineNotificationHandler<TDomainEvent>(ICurrentUserServ
 
     protected IUnitOfWork UnitOfWork { get; } = unitOfWork;
 
-    public async Task Handle(TDomainEvent notification, CancellationToken cancellationToken)
+    public virtual Task Handle(TDomainEvent notification, CancellationToken cancellationToken)
     {
         var timelineEvent = Timeline.CreateTimeline(
         GetParticipantId(notification),
@@ -19,7 +19,7 @@ public abstract class TimelineNotificationHandler<TDomainEvent>(ICurrentUserServ
         GetLine2(notification),
         GetLine3(notification));
 
-        await UnitOfWork.DbContext.Timelines.AddAsync(timelineEvent);
+        return UnitOfWork.DbContext.Timelines.AddAsync(timelineEvent).AsTask();
     }
 
     protected abstract string GetLine1(TDomainEvent notification);
