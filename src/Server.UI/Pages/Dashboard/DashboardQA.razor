@@ -1,0 +1,51 @@
+@using Cfo.Cats.Application.SecurityConstants
+
+@page "/pages/dashboard/qadashboard"
+@attribute [Authorize(Policy = SecurityPolicies.Internal)]
+
+
+<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+    <MudText Typo="Typo.h3">
+        QA Dashboard
+    </MudText>
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+        This page is still under development and may produce inaccurate results.
+    </MudAlert>
+    <MudStack Row="true" AlignItems="AlignItems.Center">
+
+        <MudDateRangePicker @ref="_picker" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="@_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
+            <PickerActions>
+                <MudButton OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+                <MudButton Color="Color.Primary" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
+            </PickerActions>
+        </MudDateRangePicker>
+        <MudSwitch @bind-Value="_visualMode"
+                   T="bool"
+                   ThumbIcon="@Icons.Material.Filled.StackedBarChart"
+                   Color="Color.Primary">
+            Visual Mode
+        </MudSwitch>
+    </MudStack>
+</MudStack>
+
+<MudStack>
+        <MudTabs PanelClass="pa-6" ApplyEffectsToContainer="true" Outlined="true">
+            <MudTabPanel Text="Enrolments: First Pass" Class="pa-3">
+                <MudAlert Severity="Severity.Info">
+                    Under development, coming soon...
+                </MudAlert>
+            </MudTabPanel>
+            <MudTabPanel Text="Returns To Providers" Class="pa-3">
+                <MudAlert Severity="Severity.Info">
+                    Under development, coming soon...
+                </MudAlert>
+            </MudTabPanel>
+            <MudTabPanel Text="Advisories to providers" Class="pa-3">
+                <MudAlert Severity="Severity.Info">
+                    Under development, coming soon...
+                </MudAlert>
+            </MudTabPanel>
+                        <MudTabPanel Text="...More reports" Class="pa-3">
+            </MudTabPanel>
+        </MudTabs>
+</MudStack>
