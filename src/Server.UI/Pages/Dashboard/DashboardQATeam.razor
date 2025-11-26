@@ -1,12 +1,13 @@
 @using Cfo.Cats.Application.SecurityConstants
 
-@page "/pages/dashboard/qa"
-@attribute [Authorize(Policy = SecurityPolicies.Internal)]
+
+@page "/pages/dashboard/qateam"
+@attribute [Authorize(Policy = SecurityPolicies.Qa2)]
 
 
 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
     <MudText Typo="Typo.h3">
-        QA Dashboard
+        QA - Team Dashboard
     </MudText>
     <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
         This page is still under development and may produce inaccurate results.
