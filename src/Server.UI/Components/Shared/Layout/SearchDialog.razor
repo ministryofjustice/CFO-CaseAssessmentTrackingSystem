@@ -100,14 +100,14 @@
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
                 pages.Add("First Pass", "/pages/qa/enrolments/qa1");
-                pages.Add("QA", "/pages/dashboard/qadashboard");    
+                pages.Add("QA Dashboard", "/pages/dashboard/qa");    
             }
 
             allowed = [RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
                 pages.Add("Second Pass", "/pages/qa/enrolments/qa2");    
-                pages.Add("All QA Dashboard", "/pages/dashboard/allqadashboard");    
+                pages.Add("QA - Team Dashboard", "/pages/dashboard/qateam");    
             }
 
             allowed = [RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];

@@ -2,7 +2,7 @@ using Cfo.Cats.Application.Common.Security;
 
 namespace Cfo.Cats.Server.UI.Pages.Dashboard;
 
-public partial class DashboardAllQA
+public partial class DashboardQATeam
 {
     private MudDateRangePicker _picker = null!;
 
