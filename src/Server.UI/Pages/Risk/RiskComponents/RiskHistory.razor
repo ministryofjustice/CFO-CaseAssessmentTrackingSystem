@@ -51,7 +51,7 @@
                         @if (context.Item.DaysSinceLastReview > 6)
                         {
                             <MudText>
-                                @TimeSpan.FromDays(context.Item.DaysSinceLastReview).Humanize(minUnit: Humanizer.Localisation.TimeUnit.Week)
+                                @TimeSpan.FromDays(context.Item.DaysSinceLastReview).Humanize(minUnit: TimeUnit.Week)
                             </MudText>
                         }
                         else

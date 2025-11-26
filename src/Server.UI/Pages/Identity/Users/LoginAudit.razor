@@ -36,7 +36,10 @@
         <PropertyColumn Property="x => x.DateTime" Title="@_currentDto.GetMemberDescription(x => x.DateTime)" />
         <PropertyColumn Property="x => x.ActionType" Title="@_currentDto.GetMemberDescription(x => x.ActionType)">
             <CellTemplate>
-                @context.Item.ActionType.Humanize()
+                @if (context.Item.ActionType is not null)
+                {
+                    @context.Item.ActionType.Value.Humanize()    
+                }
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Property="x => x.UserName" Title="@_currentDto.GetMemberDescription(x => x.UserName)" />
