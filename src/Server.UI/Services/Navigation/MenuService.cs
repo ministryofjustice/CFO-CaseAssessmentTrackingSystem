@@ -32,14 +32,15 @@ public class MenuService : IMenuService
                             {
                                 Title = "Support Worker",
                                 Href = "/pages/dashboard/supportworker/",
-                                PageStatus = PageStatus.Wip
+                                PageStatus = PageStatus.Completed
                             },
 
                             new()
                             {
                                 Title = "Tenant",
                                 Href = "/pages/dashboard/tenant/",
-                                PageStatus = PageStatus.Wip
+                                PageStatus = PageStatus.Wip,
+                                Roles = RoleNames.AllExtraPermissions
                             }
                         ],
                     },
