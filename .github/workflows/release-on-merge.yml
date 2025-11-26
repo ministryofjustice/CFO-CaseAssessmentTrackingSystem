@@ -1,0 +1,58 @@
+
+name: Release After Merge
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Download Version Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: version
+        path: .
+
+    - name: Read Version
+      id: version
+      run: echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Restore
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build ./cats.sln --configuration Release --no-restore /p:Version=${{ steps.version.outputs.version }}
+
+    - name: Test
+      run: dotnet test ./ --configuration Release --no-build --no-restore
+
+    - name: Publish UI
+      run: dotnet publish ./src/Server.UI/Server.UI.csproj --configuration Release --output ./artifacts/UI
+
+    - name: Archive Artifacts
+      run: zip -r Server.UI.zip ./artifacts/UI
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.version.outputs.version }}
+        name: Release ${{ steps.version.outputs.version }}
+        files: Server.UI.zip
+        draft: false
+        prerelease: ${{ github.ref_name != 'main' }}
+        generate_release_notes: true
