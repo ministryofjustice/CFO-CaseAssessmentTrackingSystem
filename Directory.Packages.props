@@ -24,7 +24,7 @@
     <PackageVersion Include="BlazorDownloadFile" Version="2.4.0.2" />
     <PackageVersion Include="BlazorTime" Version="1.0.3" />
     <PackageVersion Include="ClosedXML" Version="0.105.0" />
-    <PackageVersion Include="CodeBeam.MudBlazor.Extensions" Version="8.3.0" />
+    <PackageVersion Include="CodeBeam.MudBlazor.Extensions" Version="8.2.5" />
     <PackageVersion Include="FluentValidation" Version="12.1.0" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.0" />
     <PackageVersion Include="GovukNotify" Version="7.2.0" />
