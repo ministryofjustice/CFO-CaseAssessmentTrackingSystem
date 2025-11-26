@@ -7,6 +7,10 @@ on:
         description: 'Release version (e.g., v1.2.3 or leave empty for auto-generated)'
         required: false
         type: string
+  push:
+    branches:
+      - develop
+      - main
 
 jobs:
   build:
@@ -50,10 +54,24 @@ jobs:
         if [ -n "${{ inputs.version }}" ]; then
           TAG_NAME="${{ inputs.version }}"
         else
-          TAG_NAME="v$(date +'%Y.%m.%d')-build.${{ github.run_number }}"
+          BRANCH_NAME="${{ github.ref_name }}"
+          if [ "$BRANCH_NAME" = "develop" ]; then
+            TAG_NAME="v$(date +'%Y.%m.%d')-dev.${{ github.run_number }}"
+          else
+            TAG_NAME="v$(date +'%Y.%m.%d')-build.${{ github.run_number }}"
+          fi
         fi
         echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
         echo "Generated version: $TAG_NAME"
+
+    - name: Determine if latest release
+      id: is_latest
+      run: |
+        if [ "${{ github.ref_name }}" = "main" ]; then
+          echo "latest=true" >> $GITHUB_OUTPUT
+        else
+          echo "latest=false" >> $GITHUB_OUTPUT
+        fi
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
@@ -64,6 +82,7 @@ jobs:
           Server.UI.zip
           DatabaseMigrator.zip
         draft: false
-        prerelease: true
+        prerelease: ${{ github.ref_name != 'main' }}
+        make_latest: ${{ steps.is_latest.outputs.latest }}
         generate_release_notes: true
         fail_on_unmatched_files: true
