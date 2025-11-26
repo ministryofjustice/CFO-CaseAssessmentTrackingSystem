@@ -2,6 +2,9 @@ name: .NET Core Unit Tests
 
 on:
   pull_request:
+    branches:
+      - develop
+      - main
 
 jobs:
   build:
