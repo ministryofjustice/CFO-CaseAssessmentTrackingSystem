@@ -41,8 +41,8 @@ jobs:
     - name: Create Build Artifacts Archive
       run: |
         cd artifacts
-        zip -r ../Server.UI.zip ./publish/Server.UI/
-        zip -r ../DatabaseMigrator.zip ./publish/DatabaseMigrator/
+        zip -r ../../Server.UI.zip ./Server.UI/*
+        zip -r ../../DatabaseMigrator.zip ./DatabaseMigrator/*
 
     - name: Generate Version Tag
       id: version
