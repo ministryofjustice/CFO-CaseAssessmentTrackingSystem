@@ -34,7 +34,8 @@ public static class GetParticipantRiskHistory
                                  CompletedBy = cb.DisplayName,
                                  LocationId = r.LocationId,
                                  LocationName = l.Name,
-                                 RiskReviewReason = r.ReviewReason
+                                 RiskReviewReason = r.ReviewReason,
+                                 RiskJustification = r.ReviewJustification 
                              })
                              .AsNoTracking()
                              .OrderByDescending(r => r.CreatedDate);
@@ -63,13 +64,16 @@ public static class GetParticipantRiskHistory
                     LocationId = item.LocationId,
                     LocationName = item.LocationName,
                     RiskReviewReason = item.RiskReviewReason,
-                    DaysSinceLastReview = daysDifference
+                    DaysSinceLastReview = daysDifference,
+                    RiskJustification = item.RiskJustification?
+                        .Substring(0, Math.Min(ValidationConstants.NotesLength, item.RiskJustification.Length))
                 };
             }).ToArray();
 
             return Result<RiskHistoryDto[]>.Success(result);
         }
     }
+    
     public class Validator : AbstractValidator<Query>
     {
         private readonly IUnitOfWork _unitOfWork;
