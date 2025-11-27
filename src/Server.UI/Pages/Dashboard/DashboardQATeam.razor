@@ -1,9 +1,8 @@
 @using Cfo.Cats.Application.SecurityConstants
-
+@using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 
 @page "/pages/dashboard/qateam"
 @attribute [Authorize(Policy = SecurityPolicies.Qa2)]
-
 
 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
     <MudText Typo="Typo.h3">
@@ -36,21 +35,33 @@
 </MudStack>
 
 <MudStack>
-        <MudTabs PanelClass="pa-6" ApplyEffectsToContainer="true" Outlined="true">
-            <MudTabPanel Text="Enrolments: First Pass" Class="pa-3">
-                <MudAlert Severity="Severity.Info">
-                    Under development, coming soon...
-                </MudAlert>
-            </MudTabPanel>
-            <MudTabPanel Text="Returns To Providers" Class="pa-3">
-                <MudAlert Severity="Severity.Info">
-                    Under development, coming soon...
-                </MudAlert>
-            </MudTabPanel>
-            <MudTabPanel Text="Advisories to providers" Class="pa-3">
-                <MudAlert Severity="Severity.Info">
-                    Under development, coming soon...
-                </MudAlert>
-            </MudTabPanel>
-        </MudTabs>
+    <MudTabs PanelClass="pa-6" ApplyEffectsToContainer="true" Outlined="true">
+        <MudTabPanel Text="QA Activities Feedback" Class="pa-3">
+            <FirstPassQAActivitiesDetailsComponent DateRange="@_dateRange" @key="(_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" />
+        </MudTabPanel>
+            
+        <MudTabPanel Text="QA Enrolment Feedback" Class="pa-3">
+            <FirstPassQAEnrolmentsDetailsComponent DateRange="@_dateRange" @key="(_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" /> 
+        </MudTabPanel>
+
+        <MudTabPanel Text="Enrolments: First Pass" Class="pa-3">
+            <MudAlert Severity="Severity.Info">
+                Under development, coming soon...
+            </MudAlert>
+        </MudTabPanel>
+        
+        <MudTabPanel Text="Returns To Providers" Class="pa-3">
+            <MudAlert Severity="Severity.Info">
+                Under development, coming soon...
+            </MudAlert>
+        </MudTabPanel>
+        
+        <MudTabPanel Text="Advisories to providers" Class="pa-3">
+            <MudAlert Severity="Severity.Info">
+                Under development, coming soon...
+            </MudAlert>
+        </MudTabPanel>
+        <MudTabPanel Text="...More reports" Class="pa-3">
+        </MudTabPanel>
+    </MudTabs>
 </MudStack>

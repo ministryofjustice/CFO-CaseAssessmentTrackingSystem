@@ -10,16 +10,6 @@ public partial class FirstPassQAEnrolmentsDetailsComponent
 {
     [EditorRequired, Parameter]
     public DateRange? DateRange { get; set; }
-
-    //Turn on when attached to CFO dashboard
-    // [EditorRequired, Parameter]
-    // public string UserId { get; set; } = null!;
-    //
-    // [EditorRequired, Parameter]
-    // public bool VisualMode { get; set; }
-    
-    [CascadingParameter(Name = "IsDarkMode")]
-    public bool IsDarkMode { get; set; }
     
     private int _pageNumber = 1;
     private bool _canSearch;
@@ -31,7 +21,6 @@ public partial class FirstPassQAEnrolmentsDetailsComponent
         => new FirstPassQAEnrolmentsResultsWithPagination.Query()
         {
             CurrentUser = CurrentUser,
-            // UserId = UserId,
             StartDate = DateRange?.Start ?? throw new InvalidOperationException("DateRange not set"),
             EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set"),
             PageSize = 5,
