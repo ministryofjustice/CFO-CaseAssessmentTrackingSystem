@@ -29,16 +29,10 @@ jobs:
       run: dotnet test ./cats.sln --configuration Release --no-build --no-restore
 
     - name: Publish UI
-      run: dotnet publish ./src/Server.UI/Server.UI.csproj --configuration Release --output ./artifacts/publish/Server.UI --no-restore --no-build
+      run: dotnet publish ./src/Server.UI/Server.UI.csproj --configuration Release --output ./artifacts/Server.UI --no-restore --no-build
 
     - name: Publish Migrations
-      run: dotnet publish ./src/DatabaseMigrator/DatabaseMigrator.csproj --configuration Release --output ./artifacts/publish/DatabaseMigrator --no-restore --no-build
-
-    - name: Create Build Artifacts Archive
-      run: |
-        cd artifacts
-        zip -r ../../Server.UI.zip Server.UI
-        zip -r ../../DatabaseMigrator.zip DatabaseMigrator
+      run: dotnet publish ./src/DatabaseMigrator/DatabaseMigrator.csproj --configuration Release --output ./artifacts/DatabaseMigrator --no-restore --no-build
 
     - name: Generate Version Tag
       id: version
@@ -52,14 +46,18 @@ jobs:
         echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
         echo "Generated tag: $TAG_NAME"
 
+    - name: Create Build Artifacts Archive
+      run: |
+        cd artifacts
+        zip -r ../../${{ steps.version.outputs.tag }}.zip Server.UI DatabaseMigrator
+
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ steps.version.outputs.tag }}
         name: Release ${{ steps.version.outputs.tag }}
         files: |
-          Server.UI.zip
-          DatabaseMigrator.zip
+          ${{ steps.version.outputs.tag }}.zip
         draft: false
         prerelease: true
         generate_release_notes: true
