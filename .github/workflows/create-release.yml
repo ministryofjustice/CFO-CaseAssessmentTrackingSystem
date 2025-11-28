@@ -5,9 +5,7 @@ on:
 
 jobs:
   build:
-    # Only run on main or develop
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-
     runs-on: ubuntu-latest
 
     steps:
@@ -22,43 +20,35 @@ jobs:
         dotnet-version: '10.0.x'
 
     - name: Restore
-      run: dotnet restore ./
+      run: dotnet restore ./cats.sln
 
     - name: Build
       run: dotnet build ./cats.sln --configuration Release --no-restore
 
     - name: Test
-      run: dotnet test ./ --configuration Release --no-build --no-restore
+      run: dotnet test ./cats.sln --configuration Release --no-build --no-restore
 
     - name: Publish UI
-      run: dotnet publish ./src/Server.UI/Server.UI.csproj \
-        --configuration Release \
-        --output ./artifacts/publish/Server.UI \
-        --no-restore --no-build
+      run: dotnet publish ./src/Server.UI/Server.UI.csproj --configuration Release --output ./artifacts/publish/Server.UI --no-restore --no-build
 
     - name: Publish Migrations
-      run: dotnet publish ./src/DatabaseMigrator/DatabaseMigrator.csproj \
-        --configuration Release \
-        --output ./artifacts/publish/DatabaseMigrator \
-        --no-restore --no-build
+      run: dotnet publish ./src/DatabaseMigrator/DatabaseMigrator.csproj --configuration Release --output ./artifacts/publish/DatabaseMigrator --no-restore --no-build
 
     - name: Create Build Artifacts Archive
       run: |
         cd artifacts
-        zip -r ../../Server.UI.zip ./Server.UI/*
-        zip -r ../../DatabaseMigrator.zip ./DatabaseMigrator/*
+        zip -r ../../Server.UI.zip Server.UI
+        zip -r ../../DatabaseMigrator.zip DatabaseMigrator
 
     - name: Generate Version Tag
       id: version
       run: |
         DATE_TAG="v$(date +'%Y.%m.%d')-build.${{ github.run_number }}"
-
         if [ "${GITHUB_REF##*/}" = "develop" ]; then
           TAG_NAME="${DATE_TAG}-dev"
         else
           TAG_NAME="${DATE_TAG}"
         fi
-
         echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
         echo "Generated tag: $TAG_NAME"
 
