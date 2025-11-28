@@ -38,18 +38,17 @@ jobs:
       id: version
       run: |
         DATE_TAG="v$(date +'%Y.%m.%d')-build.${{ github.run_number }}"
-        if [ "${GITHUB_REF##*/}" = "develop" ]; then
-          TAG_NAME="${DATE_TAG}-dev"
+        if [ "${GITHUB_REF##*/}" = "main" ]; then
+          TAG_NAME="${DATE_TAG}"  
         else
-          TAG_NAME="${DATE_TAG}"
+          TAG_NAME="${DATE_TAG}-dev"  
         fi
         echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
         echo "Generated tag: $TAG_NAME"
 
     - name: Create Build Artifacts Archive
       run: |
-        cd artifacts
-        zip -r ../../${{ steps.version.outputs.tag }}.zip Server.UI DatabaseMigrator
+        zip -r ${{ steps.version.outputs.tag }}.zip artifacts/Server.UI artifacts/DatabaseMigrator
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
