@@ -1,7 +1,4 @@
 
-# ![CATS Logo](content/cropped-Website-Logo-Banner-2-200x38.png)
-
-
 [![Run Tests](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/actions/workflows/run-tests.yml/badge.svg)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/actions/workflows/run-tests.yml)
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
