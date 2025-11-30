@@ -6,16 +6,16 @@
     <NoWarn>NU1608</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="ActualLab.Fusion" Version="11.3.4" />
-    <PackageVersion Include="ActualLab.Fusion.Blazor" Version="11.3.4" />
-    <PackageVersion Include="ActualLab.Fusion.Ext.Services" Version="11.3.4" />
-    <PackageVersion Include="ActualLab.Generators" Version="11.3.4" />
+    <PackageVersion Include="ActualLab.Fusion" Version="11.3.66" />
+    <PackageVersion Include="ActualLab.Fusion.Blazor" Version="11.3.66" />
+    <PackageVersion Include="ActualLab.Fusion.Ext.Services" Version="11.3.66" />
+    <PackageVersion Include="ActualLab.Generators" Version="11.3.66" />
     <PackageVersion Include="Ardalis.SmartEnum" Version="8.2.0" />
     <PackageVersion Include="Ardalis.Specification" Version="9.3.1" />
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="9.3.1" />
     <PackageVersion Include="Aspire.Hosting.Kubernetes" Version="13.0.0-preview.1.25560.3" />
-    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.0.0" />
-    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.0.0" />
+    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.0.1" />
+    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.0.1" />
     <PackageVersion Include="AutoMapper" Version="14.0.0" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.14" />
     <PackageVersion Include="AWSSDK.S3" Version="4.0.13.1" />
@@ -24,7 +24,7 @@
     <PackageVersion Include="BlazorDownloadFile" Version="2.4.0.2" />
     <PackageVersion Include="BlazorTime" Version="1.0.3" />
     <PackageVersion Include="ClosedXML" Version="0.105.0" />
-    <PackageVersion Include="CodeBeam.MudBlazor.Extensions" Version="8.2.5" />
+    <PackageVersion Include="CodeBeam.MudBlazor.Extensions" Version="8.3.0" />
     <PackageVersion Include="FluentValidation" Version="12.1.0" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.0" />
     <PackageVersion Include="GovukNotify" Version="7.2.0" />
@@ -73,12 +73,12 @@
     <PackageVersion Include="Rebus" Version="8.9.0" />
     <PackageVersion Include="Rebus.RabbitMq" Version="10.1.0" />
     <PackageVersion Include="Rebus.ServiceProvider" Version="10.7.0" />
-    <PackageVersion Include="Scrutor" Version="6.1.0" />
+    <PackageVersion Include="Scrutor" Version="7.0.0" />
     <PackageVersion Include="Sentry" Version="5.16.2" />
     <PackageVersion Include="Sentry.AspNetCore" Version="5.16.2" />
     <PackageVersion Include="Sentry.EntityFramework" Version="5.16.2" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
-    <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.0" />
+    <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.1" />
     <PackageVersion Include="Toolbelt.Blazor.HotKeys2" Version="6.0.1" />
     <PackageVersion Include="ZiggyCreatures.FusionCache" Version="2.4.0" />
   </ItemGroup>
