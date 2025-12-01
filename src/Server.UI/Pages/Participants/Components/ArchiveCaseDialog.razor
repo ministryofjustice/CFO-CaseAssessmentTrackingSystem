@@ -5,10 +5,16 @@
 
 <MudDialog>
     <DialogContent>
-        <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
-            <MudSelect @bind-Value="Model.ArchiveReason" 
+        <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+            <MudSelect T="ArchiveReason"
+                       @bind-Value="Model.ArchiveReason"
                        Label="@Model.GetMemberDescription(x => x.ArchiveReason)"
                        For="@(() => Model.ArchiveReason)">
+
+                <MudSelectItem Value="ArchiveReason.None" Disabled="true">
+                    -- Please select archive reason --
+                </MudSelectItem>
+                
                 <MudSelectItem Value="ArchiveReason.CaseloadTooHigh">@ArchiveReason.CaseloadTooHigh.Name</MudSelectItem>
                 <MudSelectItem Value="ArchiveReason.Deceased">@ArchiveReason.Deceased.Name</MudSelectItem>
                 <MudSelectItem Value="ArchiveReason.LicenceEnd">@ArchiveReason.LicenceEnd.Name</MudSelectItem>
@@ -19,7 +25,7 @@
                 <MudSelectItem Value="ArchiveReason.NoWishToParticipate">@ArchiveReason.NoWishToParticipate.Name</MudSelectItem>
                 <MudSelectItem Value="ArchiveReason.NoLongerEngaging">@ArchiveReason.NoLongerEngaging.Name</MudSelectItem>
                 <MudSelectItem Value="ArchiveReason.PersonalCircumstances">@ArchiveReason.PersonalCircumstances.Name</MudSelectItem>
-                <MudSelectItem Value="ArchiveReason.Other">@ArchiveReason.Other.Name</MudSelectItem>                
+                <MudSelectItem Value="ArchiveReason.Other">@ArchiveReason.Other.Name</MudSelectItem>
 
             </MudSelect>
             <MudTextField @bind-Value="Model.Justification"
@@ -31,13 +37,13 @@
     </DialogContent>
     <DialogActions>        
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Archive</MudLoadingButton>
+        <MudLoadingButton Loading="_saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Archive</MudLoadingButton>
     </DialogActions>
 </MudDialog>
 
 @code {
-    bool saving = false;
-    MudForm? form;
+    bool _saving;
+    MudForm? _form;
 
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
@@ -53,24 +59,24 @@
     {
         try
         {
-            saving = true;
+            _saving = true;
 
-            if(form is null)
+            if(_form is null)
             {
-                saving = false;
+                _saving = false;
                 return;
             }
 
-            await form.Validate();
+            await _form.Validate();
 
-            if(form.IsValid)
+            if(_form.IsValid)
             {
-                MudDialog.Close(DialogResult.Ok(true));
+                MudDialog.Close(DialogResult.Ok(Model));
             }
         }
         finally
         {
-            saving = false;
+            _saving = false;
         }
     }
 }
