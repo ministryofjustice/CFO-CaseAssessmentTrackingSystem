@@ -10,7 +10,7 @@ public static class ArchiveCase
     public class Command : IRequest<Result>
     {
         public required string ParticipantId { get; set; }
-        [Description("Reason for Archive")] public ArchiveReason ArchiveReason { get; set; } = ArchiveReason.CaseloadTooHigh;
+        [Description("Reason for Archive")] public ArchiveReason ArchiveReason { get; set; } = ArchiveReason.None;
         [Description("Justification for Archive")] public string? Justification { get; set; }
     }
 
@@ -18,6 +18,11 @@ public static class ArchiveCase
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
+            if (request.ArchiveReason == ArchiveReason.None)
+            {
+                return Result.Failure("Invalid archive reason");
+            }
+
             var participant = await unitOfWork.DbContext.Participants.FindAsync(request.ParticipantId);
             participant!.TransitionTo(EnrolmentStatus.ArchivedStatus, request.ArchiveReason.Name, request.Justification);
 
@@ -66,6 +71,10 @@ public static class ArchiveCase
                 .WithMessage("You must provide a justification for the selected Archive reason")
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
+      
+            RuleFor(c => c.ArchiveReason)
+                .Must(x => x != ArchiveReason.None)
+                .WithMessage("You must select an archive reason");
         }
     }
 }
