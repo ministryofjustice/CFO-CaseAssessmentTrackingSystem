@@ -1,4 +1,13 @@
-[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/CFO-CaseAssessmentTrackingSystem/badge?1)](https://github-community.service.justice.gov.uk/repository-standards/CFO-CaseAssessmentTrackingSystem)
+
+[![Run Tests](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/actions/workflows/run-tests.yml/badge.svg)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/actions/workflows/run-tests.yml)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Issues](https://img.shields.io/github/issues/ministryofjustice/CFO-CaseAssessmentTrackingSystem)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/issues)
+[![GitHub Repo stars](https://img.shields.io/github/stars/ministryofjustice/CFO-CaseAssessmentTrackingSystem?color=594ae2&style=flat-square&logo=github)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/stargazers)
+[![Contributors](https://img.shields.io/github/contributors/ministryofjustice/CFO-CaseAssessmentTrackingSystem?color=594ae2&style=flat-square&logo=github)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/graphs/contributors)
+[![Pull Requests](https://img.shields.io/github/issues-pr/ministryofjustice/CFO-CaseAssessmentTrackingSystem)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/pulls)
+[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/CFO-CaseAssessmentTrackingSystem/badge)](https://github-community.service.justice.gov.uk/repository-standards/CFO-CaseAssessmentTrackingSystem)
+
 
 # Overview
 
