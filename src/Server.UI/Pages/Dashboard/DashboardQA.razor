@@ -39,7 +39,7 @@
 <MudStack>
         <MudTabs PanelClass="pa-6" ApplyEffectsToContainer="true" Outlined="true">
             <MudTabPanel Text="Enrolments: Returns/Advisory to Provider" Class="pa-3">
-                <EnrolmentsToProviderDashboardComponent DateRange="@_dateRange" @key="(_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                <EnrolmentsToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
             <MudTabPanel Text="Activities: Returns to Providers" Class="pa-3">
                 <ActivitiesToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />

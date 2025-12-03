@@ -11,6 +11,7 @@ public static class GetEnrolmentsToProvider
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
         public string? UserId { get; set; }
+        public string? TenantId { get; set; }
         public required UserProfile CurrentUser { get; set; }
     }
 
@@ -22,64 +23,69 @@ public static class GetEnrolmentsToProvider
             var context = unitOfWork.DbContext;
 
             
-        var qa2Data = context.EnrolmentQa2Queue
-            .AsNoTracking()
-            .SelectMany(q => q.Notes, (q, n) => new 
-            {
-                Queue = "QA2",
-                ParticipantId = q.ParticipantId,
-                PqaUser = q.OwnerId,
-                IsAccepted = q.IsAccepted,
-                IsCompleted = q.IsCompleted,
-                Message = n.Message,
-                Escalated = q.IsEscalated, // bool? matches DTO
-                ReturnedDate = q.Created,
-                SupportWorkerId = q.SupportWorkerId,
-                TenantId = q.TenantId
-            });
+            var qa2Data = context.EnrolmentQa2Queue
+                .AsNoTracking()
+                .SelectMany(q => q.Notes, (q, n) => new 
+                {
+                    Queue = "QA2",
+                    ParticipantId = q.ParticipantId,
+                    PqaUser = q.OwnerId,
+                    IsAccepted = q.IsAccepted,
+                    IsCompleted = q.IsCompleted,
+                    Message = n.Message,
+                    Escalated = q.IsEscalated, // bool? matches DTO
+                    ReturnedDate = q.Created,
+                    SupportWorkerId = q.SupportWorkerId,
+                    TenantId = q.TenantId
+                });
 
-        var escData = context.EnrolmentEscalationQueue
-            .AsNoTracking()
-            .SelectMany(q => q.Notes, (q, n) => new 
-            {
-                Queue = "Escalation",
-                ParticipantId = q.ParticipantId,
-                PqaUser = q.CreatedBy,
-                IsAccepted = q.IsAccepted,
-                IsCompleted = q.IsCompleted,
-                Message = n.Message,
-                Escalated = false, 
-                ReturnedDate = q.Created,
-                SupportWorkerId = q.SupportWorkerId,
-                TenantId = q.TenantId
-            });
+            var escData = context.EnrolmentEscalationQueue
+                .AsNoTracking()
+                .SelectMany(q => q.Notes, (q, n) => new 
+                {
+                    Queue = "Escalation",
+                    ParticipantId = q.ParticipantId,
+                    PqaUser = q.CreatedBy,
+                    IsAccepted = q.IsAccepted,
+                    IsCompleted = q.IsCompleted,
+                    Message = n.Message,
+                    Escalated = false, 
+                    ReturnedDate = q.Created,
+                    SupportWorkerId = q.SupportWorkerId,
+                    TenantId = q.TenantId
+                });
 
-        var combined = qa2Data.Select(x => new
-        {
-            x.Queue,
-            x.ParticipantId,
-            x.PqaUser,
-            x.IsAccepted,
-            x.IsCompleted,
-            x.Message,
-            x.Escalated,
-            x.ReturnedDate,
-            x.SupportWorkerId,
-            x.TenantId
-        })
-        .Concat(escData.Select(x => new
-        {
-            x.Queue,
-            x.ParticipantId,
-            x.PqaUser,
-            x.IsAccepted,
-            x.IsCompleted,
-            x.Message,
-            x.Escalated,
-            x.ReturnedDate,
-            x.SupportWorkerId,
-            x.TenantId
-        }));
+            var combined = qa2Data.Select(x => new
+            {
+                x.Queue,
+                x.ParticipantId,
+                x.PqaUser,
+                x.IsAccepted,
+                x.IsCompleted,
+                x.Message,
+                x.Escalated,
+                x.ReturnedDate,
+                x.SupportWorkerId,
+                x.TenantId
+            })
+            .Concat(escData.Select(x => new
+            {
+                x.Queue,
+                x.ParticipantId,
+                x.PqaUser,
+                x.IsAccepted,
+                x.IsCompleted,
+                x.Message,
+                x.Escalated,
+                x.ReturnedDate,
+                x.SupportWorkerId,
+                x.TenantId
+            }));
+            
+            if (!string.IsNullOrWhiteSpace(request.TenantId))
+            {
+                combined = combined.Where(r => r.TenantId!.StartsWith(request.TenantId));
+            }
 
             var query = from data in combined
                         join qauser in context.Users on data.PqaUser equals qauser.Id into qauserJoin
@@ -115,9 +121,7 @@ public static class GetEnrolmentsToProvider
                             .AsNoTracking()
                             .ToArrayAsync(cancellationToken);
 
-            return result.Length == 0
-                ? Result<EnrolmentToProviderDto>.Failure("No matching enrolments were found. Please adjust your filters — expanding the date range or choosing another tenant may help.")
-                : Result<EnrolmentToProviderDto>.Success(new EnrolmentToProviderDto(result));
+            return new EnrolmentToProviderDto(result);
 
         }
 
