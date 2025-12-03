@@ -29,7 +29,7 @@ public static class GetEnrolmentsToProvider
                 {
                     Queue = "QA2",
                     ParticipantId = q.ParticipantId,
-                    PqaUser = q.OwnerId,
+                    CfoUser = q.OwnerId,
                     IsAccepted = q.IsAccepted,
                     IsCompleted = q.IsCompleted,
                     Message = n.Message,
@@ -45,7 +45,7 @@ public static class GetEnrolmentsToProvider
                 {
                     Queue = "Escalation",
                     ParticipantId = q.ParticipantId,
-                    PqaUser = q.CreatedBy,
+                    CfoUser = q.CreatedBy,
                     IsAccepted = q.IsAccepted,
                     IsCompleted = q.IsCompleted,
                     Message = n.Message,
@@ -59,7 +59,7 @@ public static class GetEnrolmentsToProvider
             {
                 x.Queue,
                 x.ParticipantId,
-                x.PqaUser,
+                x.CfoUser,
                 x.IsAccepted,
                 x.IsCompleted,
                 x.Message,
@@ -72,7 +72,7 @@ public static class GetEnrolmentsToProvider
             {
                 x.Queue,
                 x.ParticipantId,
-                x.PqaUser,
+                x.CfoUser,
                 x.IsAccepted,
                 x.IsCompleted,
                 x.Message,
@@ -87,35 +87,58 @@ public static class GetEnrolmentsToProvider
                 combined = combined.Where(r => r.TenantId!.StartsWith(request.TenantId));
             }
 
-            var query = from data in combined
-                        join qauser in context.Users on data.PqaUser equals qauser.Id into qauserJoin
-                        from qauser in qauserJoin.DefaultIfEmpty()
-                        join sw in context.Users on data.SupportWorkerId equals sw.Id into swJoin
-                        from sw in swJoin.DefaultIfEmpty()
-                        join c in context.Contracts on data.TenantId equals c.Tenant!.Id
-                        where data.ReturnedDate >= request.StartDate && data.ReturnedDate <= request.EndDate
-                            && data.IsCompleted == true && data.IsAccepted == false
-                        select new EnrolmentsTabularData
-                        {
-                            ContractName = c.Description,
-                            ParticipantId = data.ParticipantId,
-                            Queue = data.Queue,
-                            SupportWorker = sw.DisplayName,
-                            PqaUser = qauser.DisplayName,
-                            SubmittedDate = context.ParticipantEnrolmentHistories
-                                .Where(eh => eh.ParticipantId == data.ParticipantId
-                                            && eh.EnrolmentStatus == 2
-                                            && eh.Created < data.ReturnedDate)
-                                .OrderByDescending(eh => eh.Created)
-                                .Select(eh => (DateTime?)eh.Created)
-                                .FirstOrDefault(),
-                            ReturnedDate = data.ReturnedDate,
-                            IsCompleted = data.IsCompleted,
-                            IsAccepted = data.IsAccepted ? "Yes" : "No",
-                            Escalated = data.Escalated == true ? "Yes" :
-                                        data.Escalated == false ? "No" : "",
-                            Message = (data.Message ?? "").Replace("\r", " ").Replace("\n", " ")
-                        };
+            var query =
+                from data in combined
+                join cfoUser in context.Users on data.CfoUser equals cfoUser.Id into cfoUserJoin
+                from cfoUser in cfoUserJoin.DefaultIfEmpty()
+                join sw in context.Users on data.SupportWorkerId equals sw.Id into swJoin
+                from sw in swJoin.DefaultIfEmpty()
+                join c in context.Contracts on data.TenantId equals c.Tenant!.Id
+
+                // OUTER APPLY: get the latest "Submitted to Authority" EnrolmentHistory row
+                // (status = 2) BEFORE the escalation/QA ReturnedDate.
+                from latestSubmission in context.ParticipantEnrolmentHistories
+                    .Where(eh =>
+                        eh.ParticipantId == data.ParticipantId &&
+                        eh.EnrolmentStatus == 2 &&
+                        eh.Created < data.ReturnedDate)
+                    .OrderByDescending(eh => eh.Created)
+                    .Take(1)
+                    .DefaultIfEmpty()   // left-apply semantics
+
+                // Optional: join to Users to get display name for CreatedBy (if needed)
+                join submittedByUser in context.Users on latestSubmission.CreatedBy equals submittedByUser.Id into submittedByUserJoin
+                from submittedByUser in submittedByUserJoin.DefaultIfEmpty()
+
+                where data.ReturnedDate >= request.StartDate
+                && data.ReturnedDate <= request.EndDate
+                && data.IsCompleted == true
+                && data.IsAccepted == false
+
+                select new EnrolmentsTabularData
+                {
+                    ContractName = c.Description,
+                    ParticipantId = data.ParticipantId,
+                    Queue = data.Queue,
+                    SupportWorker = sw.DisplayName,
+                    CfoUser = cfoUser.DisplayName,
+
+                    // pulled from the SAME EnrolmentHistory row
+                    SubmittedDate = latestSubmission != null
+                        ? (DateTime?)latestSubmission.Created
+                        : null,
+                    PqaUser = submittedByUser != null
+                        ? submittedByUser.DisplayName
+                        : null,
+
+                    ReturnedDate = data.ReturnedDate,
+                    IsCompleted = data.IsCompleted,
+                    IsAccepted = data.IsAccepted ? "Yes" : "No",
+                    Escalated = data.Escalated == true ? "Yes"
+                            : data.Escalated == false ? "No"
+                            : "",
+                    Message = (data.Message ?? "").Replace("\r", " ").Replace("\n", " ")
+                };
 
             var result = await query.OrderBy(r => r.ReturnedDate)
                             .AsNoTracking()
@@ -154,6 +177,7 @@ public static class GetEnrolmentsToProvider
         public string? SupportWorkerId { get; set; }
         public string? SupportWorker { get; set; }
         public string? PqaUser { get; set; }
+        public string? CfoUser { get; set; }
         public DateTime? SubmittedDate { get; set; }
         public DateTime? ReturnedDate { get; set; }
         public bool IsCompleted { get; set; }
