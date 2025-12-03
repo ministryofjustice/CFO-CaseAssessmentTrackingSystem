@@ -18,7 +18,7 @@ public partial class EnrolmentsToProviderDashboardComponent
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
-    protected override IRequest<Result<GetEnrolmentsToProvider.EnrolmentToProviderDto[]>> CreateQuery()
+    protected override IRequest<Result<GetEnrolmentsToProvider.EnrolmentToProviderDto>> CreateQuery()
      => new GetEnrolmentsToProvider.Query()
      {
          CurrentUser = CurrentUser,
@@ -27,7 +27,7 @@ public partial class EnrolmentsToProviderDashboardComponent
          EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set")
      };
 
-    private ApexCharts.ApexChartOptions<GetEnrolmentsToProvider.EnrolmentToProviderDto[]> Options => new()
+    private ApexCharts.ApexChartOptions<GetEnrolmentsToProvider.EnrolmentsChartData> Options => new()
     {
         Chart = new ApexCharts.Chart
         {

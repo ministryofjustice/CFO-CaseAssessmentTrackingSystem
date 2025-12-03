@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 public static class GetEnrolmentsToProvider
 {
     [RequestAuthorize(Policy = SecurityPolicies.Internal)]
-    public class Query : IRequest<Result<EnrolmentToProviderDto[]>>
+    public class Query : IRequest<Result<EnrolmentToProviderDto>>
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
@@ -14,10 +14,10 @@ public static class GetEnrolmentsToProvider
         public required UserProfile CurrentUser { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<EnrolmentToProviderDto[]>>
+    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<EnrolmentToProviderDto>>
     {
         
-        public async Task<Result<EnrolmentToProviderDto[]>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<EnrolmentToProviderDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var context = unitOfWork.DbContext;
 
@@ -89,7 +89,7 @@ public static class GetEnrolmentsToProvider
                         join c in context.Contracts on data.TenantId equals c.Tenant!.Id
                         where data.ReturnedDate >= request.StartDate && data.ReturnedDate <= request.EndDate
                             && data.IsCompleted == true && data.IsAccepted == false
-                        select new EnrolmentToProviderDto
+                        select new EnrolmentsTabularData
                         {
                             ContractName = c.Description,
                             ParticipantId = data.ParticipantId,
@@ -116,8 +116,8 @@ public static class GetEnrolmentsToProvider
                             .ToArrayAsync(cancellationToken);
 
             return result.Length == 0
-                ? Result<EnrolmentToProviderDto[]>.Failure("No enrolments to provider found for the specified criteria.")
-                : Result<EnrolmentToProviderDto[]>.Success(result);
+                ? Result<EnrolmentToProviderDto>.Failure("No matching enrolments were found. Please adjust your filters — expanding the date range or choosing another tenant may help.")
+                : Result<EnrolmentToProviderDto>.Success(new EnrolmentToProviderDto(result));
 
         }
 
@@ -125,7 +125,24 @@ public static class GetEnrolmentsToProvider
 
     public record EnrolmentToProviderDto
     {
+        public EnrolmentToProviderDto(EnrolmentsTabularData[] tabularData)
+        {
+            TabularData = tabularData;
+            ChartData = tabularData
+                .GroupBy(td => td.ContractName)
+                .Select(g => new EnrolmentsChartData
+                {
+                    ContractName = g.Key,
+                    Count = g.Count()
+                })
+                .ToArray();
+        }
+        public EnrolmentsTabularData[] TabularData { get;}
+        public EnrolmentsChartData[] ChartData { get;}
+    }
 
+    public record EnrolmentsTabularData
+    {
         public string? TenantId { get; set; }
         public string? ContractName { get; set; }
         public string? ParticipantId { get; set; }
@@ -139,7 +156,11 @@ public static class GetEnrolmentsToProvider
         public string? IsAccepted { get; set; }
         public string? Escalated { get; set; }
         public string? Message { get; set; }
-
+    }
+    public record EnrolmentsChartData
+    {
+        public string? ContractName { get; set; }
+        public int Count { get; set; }
     }
 
 }

@@ -1,5 +1,5 @@
 @using Cfo.Cats.Application.Features.Dashboard.Queries
-@inherits CatsComponent<GetEnrolmentsToProvider.EnrolmentToProviderDto[]>
+@inherits CatsComponent<GetEnrolmentsToProvider.EnrolmentToProviderDto>
 
 @if(Loading)
 {
@@ -13,52 +13,52 @@
 	</MudAlert>
 }
 
-@if (Data is not null && Data.Any())
+@if (Data is not null && Data.ChartData.Any())
 {
 	@if (VisualMode)
 	{
-		@* <ApexCharts.ApexChart TItem="GetEnrolmentsToProvider.EnrolmentToProviderDto" Options="Options" Height="650" Width="@("100%")">
-            <ApexCharts.ApexPointSeries TItem="GetEnrolmentsToProvider.EnrolmentToProviderDto"
-										Items="Data"
+		<ApexCharts.ApexChart TItem="GetEnrolmentsToProvider.EnrolmentsChartData" Options="Options" Height="650" Width="@("100%")">
+            <ApexCharts.ApexPointSeries TItem="GetEnrolmentsToProvider.EnrolmentsChartData"
+										Items="Data.ChartData"
 										SeriesType="ApexCharts.SeriesType.Bar"
-                                        XValue="@(e => e.LocationName)"
+                                        XValue="@(e => e.ContractName)"
 										YValue="@(e => e.Count)"
 										ShowDataLabels="true">
 
 			</ApexCharts.ApexPointSeries>
-		</ApexCharts.ApexChart> *@
+		</ApexCharts.ApexChart>
 	}
 	else
 	{
-		<MudTable Items="@Data" MultiSelection="false" Striped="true" Hover="true">
+		<MudTable Items="@Data.TabularData" MultiSelection="false" Striped="true" Hover="true">
 			<HeaderContent>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentToProviderDto, object>(x => x.ContractName!)">
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.ContractName!)">
                         Contract
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentToProviderDto, object>(x => x.SupportWorker!)">
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.SupportWorker!)">
                         Support Worker
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentToProviderDto, object>(x => x.PqaUser!)">
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.PqaUser!)">
                         Provider QA
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentToProviderDto, object>(x => x.SubmittedDate!)">
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.SubmittedDate!)">
                         Submitted Date
                     </MudTableSortLabel>
                 </MudTh>
 				<MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentToProviderDto, object>(x => x.ReturnedDate!)">
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.ReturnedDate!)">
                         Returned Date
                     </MudTableSortLabel>
                 </MudTh>				
 				<MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentToProviderDto, object>(x => x.Message!)">
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.Message!)">
                         Message
                     </MudTableSortLabel>
                 </MudTh>		
