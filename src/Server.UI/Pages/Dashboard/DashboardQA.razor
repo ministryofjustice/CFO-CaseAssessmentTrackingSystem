@@ -1,5 +1,6 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Components.Dashboard.QA
+@inherits CatsComponentBase
 
 @page "/pages/dashboard/qa"
 @attribute [Authorize(Policy = SecurityPolicies.Internal)]
@@ -37,10 +38,8 @@
 
 <MudStack>
         <MudTabs PanelClass="pa-6" ApplyEffectsToContainer="true" Outlined="true">
-            <MudTabPanel Text="Enrolments: Returns to Provider" Class="pa-3">
-                <MudAlert Severity="Severity.Info">
-                    Under development, coming soon...
-                </MudAlert>
+            <MudTabPanel Text="Enrolments: Returns/Advisory to Provider" Class="pa-3">
+                <EnrolmentsToProviderDashboardComponent DateRange="@_dateRange" @key="(_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
             <MudTabPanel Text="Activities: Returns to Providers" Class="pa-3">
                 <ActivitiesToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />

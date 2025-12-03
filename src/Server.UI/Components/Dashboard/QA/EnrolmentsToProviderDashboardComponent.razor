@@ -1,0 +1,84 @@
+@using Cfo.Cats.Application.Features.Dashboard.Queries
+@inherits CatsComponent<GetEnrolmentsToProvider.EnrolmentToProviderDto[]>
+
+@if(Loading)
+{
+	<MudLoading Text="Loading" />
+}
+
+@if (ErrorMessage is not null)
+{
+	<MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+		@ErrorMessage
+	</MudAlert>
+}
+
+@if (Data is not null && Data.Any())
+{
+	@if (VisualMode)
+	{
+		@* <ApexCharts.ApexChart TItem="GetEnrolmentsToProvider.EnrolmentToProviderDto" Options="Options" Height="650" Width="@("100%")">
+            <ApexCharts.ApexPointSeries TItem="GetEnrolmentsToProvider.EnrolmentToProviderDto"
+										Items="Data"
+										SeriesType="ApexCharts.SeriesType.Bar"
+                                        XValue="@(e => e.LocationName)"
+										YValue="@(e => e.Count)"
+										ShowDataLabels="true">
+
+			</ApexCharts.ApexPointSeries>
+		</ApexCharts.ApexChart> *@
+	}
+	else
+	{
+		<MudTable Items="@Data" MultiSelection="false" Striped="true" Hover="true">
+			<HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentToProviderDto, object>(x => x.ContractName!)">
+                        Contract
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentToProviderDto, object>(x => x.SupportWorker!)">
+                        Support Worker
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentToProviderDto, object>(x => x.PqaUser!)">
+                        Provider QA
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentToProviderDto, object>(x => x.SubmittedDate!)">
+                        Submitted Date
+                    </MudTableSortLabel>
+                </MudTh>
+				<MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentToProviderDto, object>(x => x.ReturnedDate!)">
+                        Returned Date
+                    </MudTableSortLabel>
+                </MudTh>				
+				<MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentToProviderDto, object>(x => x.Message!)">
+                        Message
+                    </MudTableSortLabel>
+                </MudTh>		
+			</HeaderContent>
+			<RowTemplate>
+                <MudTd DataLabel="Contract">@context.ContractName</MudTd>
+				<MudTd DataLabel="Support Worker">@context.SupportWorker</MudTd>
+				<MudTd DataLabel="Provider QA">@context.PqaUser</MudTd>
+				<MudTd DataLabel="Submitted Date">@context.SubmittedDate</MudTd>
+				<MudTd DataLabel="Returned Date">@context.ReturnedDate</MudTd>
+				<MudTd DataLabel="Message">@context.Message</MudTd>
+			</RowTemplate>
+			<PagerContent>
+				<MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
+			</PagerContent>
+		</MudTable>
+	}
+
+}
+else
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+}
