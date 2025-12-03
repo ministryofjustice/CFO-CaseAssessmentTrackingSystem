@@ -38,6 +38,16 @@
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.Queue!)">
+                        Queue
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.ParticipantId!)">
+                        Participant
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.SupportWorker!)">
                         Support Worker
                     </MudTableSortLabel>
@@ -65,6 +75,8 @@
 			</HeaderContent>
 			<RowTemplate>
                 <MudTd DataLabel="Contract">@context.ContractName</MudTd>
+				<MudTd DataLabel="Queue">@context.Queue</MudTd>
+				<MudTd DataLabel="Participant">@context.ParticipantId</MudTd>
 				<MudTd DataLabel="Support Worker">@context.SupportWorker</MudTd>
 				<MudTd DataLabel="Provider QA">@context.PqaUser</MudTd>
 				<MudTd DataLabel="Submitted Date">@context.SubmittedDate</MudTd>
