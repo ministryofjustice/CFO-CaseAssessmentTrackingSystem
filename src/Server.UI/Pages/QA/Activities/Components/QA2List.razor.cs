@@ -6,7 +6,7 @@ namespace Cfo.Cats.Server.UI.Pages.QA.Activities.Components;
 
 public partial class QA2List
 {
-    [CascadingParameter] private UserProfile? UserProfile { get; set; }
+    [CascadingParameter] public UserProfile? UserProfile { get; set; }
 
     private bool _loading = false;
     private int _defaultPageSize = 30;

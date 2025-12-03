@@ -17,8 +17,8 @@ public class EnrolmentQueueEntryDto
 
     public bool IsCompleted { get; set; }
     public bool IsAccepted { get; set; }
-    
     public NoteDto[] Notes { get; set; } = [];
+    // public EnrolmentQaNoteDto[] Notes { get; set; } = [];
 
     public int NoOfPreviousSubmissions { get; set; }
 
