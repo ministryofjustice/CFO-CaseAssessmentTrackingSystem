@@ -1,12 +1,12 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Queries;
-
+    
 namespace Cfo.Cats.Server.UI.Pages.QA.Activities.Components;
 
 public partial class QA1List
 {
-    [CascadingParameter] private UserProfile? UserProfile { get; set; }
+    [CascadingParameter] public UserProfile? UserProfile { get; set; }
 
     private bool _loading = false;
     private int _defaultPageSize = 30;

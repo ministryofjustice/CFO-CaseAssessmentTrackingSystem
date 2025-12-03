@@ -108,7 +108,16 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
+     
+        <TemplateColumn Title="Notes" Sortable="false">
+            <CellTemplate Context="context">
+                <QaNotes ParticipantId="@context.Item.ParticipantId"  />
+            </CellTemplate>
+        </TemplateColumn>
+
+        
     </Columns>
+    
     <NoRecordsContent>
         <MudText>@ConstantString.NoRecords</MudText>
     </NoRecordsContent>

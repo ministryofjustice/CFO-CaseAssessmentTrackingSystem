@@ -155,6 +155,12 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
+        <TemplateColumn Title="Notes" Sortable="false">
+            <CellTemplate Context="context">
+                <QaNotes ActivityId="context.Item.ActivityId" />
+            </CellTemplate>
+        </TemplateColumn>
+
     </Columns>
     <NoRecordsContent>
         <MudText>@ConstantString.NoRecords</MudText>

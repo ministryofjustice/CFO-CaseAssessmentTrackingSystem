@@ -1,6 +1,6 @@
-﻿@using Cfo.Cats.Application.Features.Activities.DTOs
+﻿@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Application.Features.Activities.DTOs
 @using Cfo.Cats.Application.Features.Activities.Queries
-@using Cfo.Cats.Application.SecurityConstants
 @using Humanizer
 
 @inherits CatsComponentBase;
@@ -8,6 +8,8 @@
 @inject IStringLocalizer<PQA> L
 
 @attribute [Authorize(Policy = SecurityPolicies.Qa1)]
+
+<CascadingValue Value="UserProfile" IsFixed="true">
 
 <MudDataGrid ServerData="@(ServerReload)"
              FixedHeader="true"
@@ -21,8 +23,8 @@
              Hover="true"
              @ref="_table"
              Breakpoint="Breakpoint.Sm"
-			 Striped="true"
-			 Dense="true">
+             Striped="true"
+             Dense="true">
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
             <div class="d-flex gap-4">
@@ -154,7 +156,28 @@
                     <MudText Typo="Typo.body2">@context.Item.AssignedTo</MudText>
                 </div>
             </CellTemplate>
-        </PropertyColumn>         
+        </PropertyColumn>    
+        <TemplateColumn Title="Notes" Sortable="false" CellClass="text-end">
+            <CellTemplate Context="context">
+                <MudMenu Icon="@Icons.Material.Filled.Notes"
+                         Variant="Variant.Outlined"
+                         Size="Size.Small"
+                         Dense="true"
+                         AnchorOrigin="Origin.CenterRight"
+                         TransformOrigin="Origin.TopRight">
+            
+                    <ChildContent>
+                        <div style="min-width: 300px; max-width: 400px; max-height: 400px; overflow-y:auto;">
+                            <CascadingValue Value="UserProfile" IsFixed="true">
+                                <QaNotes ActivityId="context.Item.ActivityId"/>
+                            </CascadingValue>
+                        </div>
+                    </ChildContent>
+
+                </MudMenu>
+            </CellTemplate>
+        </TemplateColumn>
+
     </Columns>
     <NoRecordsContent>
         <MudText>@ConstantString.NoRecords</MudText>
@@ -166,3 +189,4 @@
         <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
     </PagerContent>
 </MudDataGrid>
+</CascadingValue>
