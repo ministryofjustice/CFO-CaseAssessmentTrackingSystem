@@ -41,10 +41,6 @@ CATS relies on the external data from Nomis and Delius. This is aggregate and ma
 
 This has been developed on Windows 11 using Visual Studio 2022, Visual Studio Code and JetBrains Rider
 
-# Queries
-
-Any queries, please contact andrew.grocott@justice.gov.uk
-
 # Development Setup and Execution Guide
 ## Prerequisites
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
