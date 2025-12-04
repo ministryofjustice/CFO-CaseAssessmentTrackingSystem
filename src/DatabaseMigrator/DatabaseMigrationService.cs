@@ -44,6 +44,7 @@ public class DatabaseMigrationService(
     public Task StopAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("FakeDataSeeder stopped");
+        Environment.Exit(0); // https://github.com/dotnet/aspire/issues/10377
         return Task.CompletedTask;
     }
 }
