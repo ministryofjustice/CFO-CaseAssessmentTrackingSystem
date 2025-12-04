@@ -15,12 +15,12 @@ else if (_notes.Length == 0)
 }
 else
 {
+    <MudText Typo="Typo.body1">
+        Notes
+    </MudText>
     <MudList T="ActivityQaNoteDto" Dense="true">
         @foreach (var note in _notes.OrderByDescending(n => n.Created))
         {
-            <MudText Typo="Typo.body1">
-                Notes
-            </MudText>
             <MudListItem Icon="@Icons.Material.Filled.EditNote" Text="Notes" Expanded>
                 <MudCard Outlined="false" Elevation="2" Class="mb-2">
                     <MudCardContent>
