@@ -45,7 +45,20 @@ This has been developed on Windows 11 using Visual Studio 2022, Visual Studio Co
 
 Any queries, please contact andrew.grocott@justice.gov.uk
 
-# Publishing (preview)
+# Development Setup and Execution Guide
+## Prerequisites
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- **Visual Studio Code users**:
+    - [C# Dev Kit Extension](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit)
+    - [Aspire Extension (& CLI)](https://marketplace.visualstudio.com/items?itemName=microsoft-aspire.aspire-vscode)
+
+## Running the apps
+The recommended way to run and debug these apps is using .NET Aspire.
+- **Using Visual Studio Code**: open the project and press `F5`, selecting the *Default Configuration*.
+- **Using Visual Studio or other IDEs**: From the debug configuration dropdown, select `Aspire.AppHost` and start the application.
+---
+
+## Publishing (preview)
 
 This repository uses [Aspire]("https://github.com/dotnet/aspire") for service composition (dependency injection, service discovery, and configuration management). 
 
