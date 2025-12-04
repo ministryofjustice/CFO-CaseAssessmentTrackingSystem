@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using Cfo.Cats.Application.Common.Enums
+@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults
 
@@ -9,17 +11,17 @@
 </MudText>
 
 <MudGrid Class="mt-2">
-        
+
     @if (_showMyTeamsParticipants)
     {
         <MyTeamsParticipantsComponent/>
     }
     else
     {
-        <MyParticipantsComponent />
+        <MyParticipantsComponent/>
     }
-        
-    <MyNotifications />
+
+    <MyNotifications/>
 
     @if (_showCaseWorkload)
     {
@@ -28,57 +30,57 @@
 
     @if (_showRiskDueAggregate)
     {
-        <RiskDueAggregateComponent />
+        <RiskDueAggregateComponent/>
     }
     else
     {
-        <MyRiskDueComponent />
+        <MyRiskDueComponent/>
     }
 
     @if (_showMyTeamsParticipants)
     {
-        <MyTeamsParticipantsLatestEngagementComponent />
+        <MyTeamsParticipantsLatestEngagementComponent/>
     }
     else
     {
-        <MyParticipantsLatestEngagementComponent />
+        <MyParticipantsLatestEngagementComponent/>
     }
-        
+
     @if (_showQaPots)
     {
-        <QaPots />            
+        <QaPots/>
     }
-        
+
     @if (_showSyncComponent)
     {
-        <SyncComponent />
+        <SyncComponent/>
     }
-        
-    @if(_showJobManagement)
+
+    @if (_showJobManagement)
     {
-        <CacheControl />
-        <JobManagement />
+        <CacheControl/>
+        <JobManagement/>
     }
-    
-    <QAActivitiesResults JustMyParticipants="_showMyTeamsParticipants is false"/>  
-	<QAEnrolmentsResults JustMyParticipants="_showMyTeamsParticipants is false" />
 
-	@if (_showMyTeamsParticipants)
-	{
-		<MyTeamsParticipantsInLicenceEndPeriod />
-	}
-	else
-	{
-		<MyParticipantsInLicenceEndPeriod/>
-	}	
+    <QAActivitiesResults JustMyParticipants="_showMyTeamsParticipants is false"/>
+    <QAEnrolmentsResults JustMyParticipants="_showMyTeamsParticipants is false"/>
 
-	@if (_showMyTeamsParticipants)
-	{
-		<MyTeamsArchivedCases />
-	}
-	else
-	{
-		<MyArchivedCases />
-	}
-	
+    @if (_showMyTeamsParticipants)
+    {
+        <MyTeamsParticipantsInLicenceEndPeriod/>
+    }
+    else
+    {
+        <MyParticipantsInLicenceEndPeriod/>
+    }
+
+    @if (_showMyTeamsParticipants)
+    {
+        <MyTeamsArchivedCases/>
+    }
+    else
+    {
+        <MyArchivedCases/>
+    }
+
 </MudGrid>
