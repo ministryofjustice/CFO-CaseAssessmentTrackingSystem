@@ -95,8 +95,6 @@ public static class GetEnrolmentsToProvider
                 from sw in swJoin.DefaultIfEmpty()
                 join c in context.Contracts on data.TenantId equals c.Tenant!.Id
 
-                // OUTER APPLY: get the latest "Submitted to Authority" EnrolmentHistory row
-                // (status = 2) BEFORE the escalation/QA ReturnedDate.
                 from latestSubmission in context.ParticipantEnrolmentHistories
                     .Where(eh =>
                         eh.ParticipantId == data.ParticipantId &&
@@ -104,9 +102,8 @@ public static class GetEnrolmentsToProvider
                         eh.Created < data.ReturnedDate)
                     .OrderByDescending(eh => eh.Created)
                     .Take(1)
-                    .DefaultIfEmpty()   // left-apply semantics
+                    .DefaultIfEmpty() 
 
-                // Optional: join to Users to get display name for CreatedBy (if needed)
                 join submittedByUser in context.Users on latestSubmission.CreatedBy equals submittedByUser.Id into submittedByUserJoin
                 from submittedByUser in submittedByUserJoin.DefaultIfEmpty()
 
@@ -155,11 +152,15 @@ public static class GetEnrolmentsToProvider
         public EnrolmentToProviderDto(EnrolmentsTabularData[] tabularData)
         {
             TabularData = tabularData;
+            
             ChartData = tabularData
-                .GroupBy(td => td.ContractName)
+                .GroupBy(td => new { td.ContractName, td.Queue })
+                .OrderBy(g => g.Key.ContractName)
+                .ThenBy(g => g.Key.Queue)
                 .Select(g => new EnrolmentsChartData
                 {
-                    ContractName = g.Key,
+                    ContractName = g.Key.ContractName,
+                    Queue = g.Key.Queue,
                     Count = g.Count()
                 })
                 .ToArray();
@@ -188,6 +189,7 @@ public static class GetEnrolmentsToProvider
     public record EnrolmentsChartData
     {
         public string? ContractName { get; set; }
+        public string? Queue { get; set; }
         public int Count { get; set; }
     }
 

@@ -17,15 +17,27 @@
 {
 	@if (VisualMode)
 	{
-		<ApexCharts.ApexChart TItem="GetEnrolmentsToProvider.EnrolmentsChartData" Options="Options" Height="650" Width="@("100%")">
-            <ApexCharts.ApexPointSeries TItem="GetEnrolmentsToProvider.EnrolmentsChartData"
-										Items="Data.ChartData"
-										SeriesType="ApexCharts.SeriesType.Bar"
-                                        XValue="@(e => e.ContractName)"
-										YValue="@(e => e.Count)"
-										ShowDataLabels="true">
 
-			</ApexCharts.ApexPointSeries>
+        <ApexCharts.ApexChart TItem="GetEnrolmentsToProvider.EnrolmentsChartData"
+                      Options="Options"
+                      Height="650" Width="@( "100%" )">
+
+            <ApexCharts.ApexPointSeries TItem="GetEnrolmentsToProvider.EnrolmentsChartData"
+                                        Items='Data.ChartData.Where(x => x.Queue == "Escalation")'
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        Name="Escalation"
+                                        XValue="@(e => e.ContractName)"
+                                        YValue="@(e => e.Count)"
+                                        ShowDataLabels="true" />
+
+            <ApexCharts.ApexPointSeries TItem="GetEnrolmentsToProvider.EnrolmentsChartData"
+                                        Items='Data.ChartData.Where(x => x.Queue == "QA2")'
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        Name="QA2"
+                                        XValue="@(e => e.ContractName)"
+                                        YValue="@(e => e.Count)"
+                                        ShowDataLabels="true" />
+
 		</ApexCharts.ApexChart>
 	}
 	else
