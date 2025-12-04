@@ -1,0 +1,120 @@
+@using Cfo.Cats.Application.Features.Dashboard.Queries
+@inherits CatsComponent<GetActivitiesToProvider.ActivitiesToProviderDto>
+
+@if(Loading)
+{
+	<MudLoading Text="Loading" />
+}
+
+@if (ErrorMessage is not null)
+{
+	<MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+		@ErrorMessage
+	</MudAlert>
+}
+
+@if (Data is not null && Data.ChartData.Any())
+{
+	@if (VisualMode)
+	{
+
+        <ApexCharts.ApexChart TItem="GetActivitiesToProvider.ActivitiesChartData"
+                      Options="Options"
+                      Height="650" Width="@( "100%" )">
+
+            <ApexCharts.ApexPointSeries TItem="GetActivitiesToProvider.ActivitiesChartData"
+                                        Items='Data.ChartData.Where(x => x.Queue == "Escalation")'
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        Name="Escalation"
+                                        XValue="@(e => e.ContractName)"
+                                        YValue="@(e => e.Count)"
+                                        ShowDataLabels="true" />
+
+            <ApexCharts.ApexPointSeries TItem="GetActivitiesToProvider.ActivitiesChartData"
+                                        Items='Data.ChartData.Where(x => x.Queue == "QA2")'
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        Name="QA2"
+                                        XValue="@(e => e.ContractName)"
+                                        YValue="@(e => e.Count)"
+                                        ShowDataLabels="true" />
+
+		</ApexCharts.ApexChart>
+	}
+	else
+	{
+		<MudTable Items="@Data.TabularData" MultiSelection="false" Striped="true" Hover="true">
+			<HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetActivitiesToProvider.ActivitiesTabularData, object>(x => x.ContractName!)">
+                        Contract
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetActivitiesToProvider.ActivitiesTabularData, object>(x => x.Queue!)">
+                        Queue
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetActivitiesToProvider.ActivitiesTabularData, object>(x => x.ActivityType!.Name)">
+                        Activity Type
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetActivitiesToProvider.ActivitiesTabularData, object>(x => x.ParticipantId!)">
+                        Participant
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetActivitiesToProvider.ActivitiesTabularData, object>(x => x.SupportWorker!)">
+                        Support Worker
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetActivitiesToProvider.ActivitiesTabularData, object>(x => x.PqaUser!)">
+                        Provider QA
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetActivitiesToProvider.ActivitiesTabularData, object>(x => x.CfoUser!)">
+                        CFO USER
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetActivitiesToProvider.ActivitiesTabularData, object>(x => x.SubmittedDate!)">
+                        Submitted Date
+                    </MudTableSortLabel>
+                </MudTh>
+				<MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetActivitiesToProvider.ActivitiesTabularData, object>(x => x.ReturnedDate!)">
+                        Returned Date
+                    </MudTableSortLabel>
+                </MudTh>				
+				<MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetActivitiesToProvider.ActivitiesTabularData, object>(x => x.Message!)">
+                        Message
+                    </MudTableSortLabel>
+                </MudTh>		
+			</HeaderContent>
+			<RowTemplate>
+                <MudTd DataLabel="Contract">@context.ContractName</MudTd>
+				<MudTd DataLabel="Queue">@context.Queue</MudTd>
+				<MudTd DataLabel="Activity Type">@context.ActivityType?.Name</MudTd>
+				<MudTd DataLabel="Participant">@context.ParticipantId</MudTd>
+				<MudTd DataLabel="Support Worker">@context.SupportWorker</MudTd>
+				<MudTd DataLabel="Provider QA">@context.PqaUser</MudTd>
+				<MudTd DataLabel="Cfo User">@context.CfoUser</MudTd>
+				<MudTd DataLabel="Submitted Date">@context.SubmittedDate</MudTd>
+				<MudTd DataLabel="Returned Date">@context.ReturnedDate</MudTd>
+				<MudTd DataLabel="Message">@context.Message</MudTd>
+			</RowTemplate>
+			<PagerContent>
+				<MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
+			</PagerContent>
+		</MudTable>
+	}
+
+}
+else
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+}
