@@ -14,10 +14,12 @@ using Cfo.Cats.Application.Features.PathwayPlans.IntegrationEvents;
 using Cfo.Cats.Application.Features.PRIs.IntegrationEventHandlers;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
+using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Infrastructure.Configurations;
 using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
 using Cfo.Cats.Infrastructure.Jobs;
 using Cfo.Cats.Infrastructure.Persistence.Interceptors;
+using Cfo.Cats.Infrastructure.Persistence.Repositories;
 using Cfo.Cats.Infrastructure.Services.Candidates;
 using Cfo.Cats.Infrastructure.Services.Contracts;
 using Cfo.Cats.Infrastructure.Services.Delius;
@@ -173,7 +175,17 @@ public static class DependencyInjection
         services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+        
+        services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>(sp =>
+        {
+            var config = sp.GetRequiredService<IConfiguration>();
+            var connectionString = config.GetConnectionString("CatsDb") ?? throw new InvalidOperationException("Connection string not found");
 
+            return new SqlConnectionFactory(connectionString);
+        });
+
+        services.AddScoped<ILabelRepository, LabelRepository>();
+        
         return services;
     }
 

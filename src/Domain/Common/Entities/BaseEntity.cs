@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Cfo.Cats.Domain.Common.Contracts;
+using Cfo.Cats.Domain.Common.Exceptions;
 
 namespace Cfo.Cats.Domain.Common.Entities;
 
@@ -12,18 +13,15 @@ public abstract class BaseEntity<TId> : IEntity<TId>
 
     public TId Id { get; set; } = default!;
 
-    public void AddDomainEvent(DomainEvent domainEvent)
-    {
-        domainEvents.Add(domainEvent);
-    }
+    public void AddDomainEvent(DomainEvent domainEvent) => domainEvents.Add(domainEvent);
 
-    public void RemoveDomainEvent(DomainEvent domainEvent)
-    {
-        domainEvents.Remove(domainEvent);
-    }
+    public void ClearDomainEvents() => domainEvents.Clear();
 
-    public void ClearDomainEvents()
+    protected void CheckRule(IBusinessRule rule)
     {
-        domainEvents.Clear();
+        if (rule.IsBroken())
+        {
+            throw new BusinessRuleValidationException(rule);
+        }
     }
 }

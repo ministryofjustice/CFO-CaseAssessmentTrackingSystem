@@ -1,4 +1,6 @@
-﻿namespace Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Domain.Common;
+
+namespace Cfo.Cats.Application.Common.Security;
 
 public class UserProfile
 {
@@ -19,4 +21,11 @@ public class UserProfile
     public bool IsActive { get; set; }
     public string? TenantId { get; set; }
     public string? TenantName { get; set; }
+
+    public DomainUser AsDomainUser() =>
+        new (
+            this.UserId,
+            this.UserName,
+            this.TenantId!,
+            this.Email.EndsWith("@justice.gov.uk", StringComparison.CurrentCultureIgnoreCase));
 }
