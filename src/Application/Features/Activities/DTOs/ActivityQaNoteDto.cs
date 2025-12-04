@@ -9,6 +9,7 @@ public class ActivityQaNoteDto
     public required string CreatedBy { get; set; }
     public required string TenantName { get; set; }
     public required bool IsExternal { get; set; }
+    public bool IsExpanded { get; set; } = false;
 
     private class Mapper : Profile
     {

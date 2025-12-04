@@ -10,10 +10,29 @@ public partial class QA1List
 
     private bool _loading = false;
     private int _defaultPageSize = 30;
-    private MudDataGrid<ActivityQueueEntryDto> _table = default!;
+    //private MudDataGrid<ActivityQueueEntryDto> _table = default!;
 
     private ActivityQa1WithPagination.Query Query { get; set; } = new();
     private ActivityQueueEntryDto _currentDto = new();
+
+    private GridData<ActivityQueueEntryDto>? _pagedData;
+    private int _currentPage = 0;
+    private async Task OnPaginationChanged(int page)
+    {
+        _currentPage = page - 1;
+        await LoadPage();
+    }
+    private async Task LoadPage()
+    {
+        var state = new GridState<ActivityQueueEntryDto>
+        {
+            Page = _currentPage,
+            PageSize = _defaultPageSize
+        };
+
+        _pagedData = await ServerReload(state);
+        StateHasChanged();
+    }
 
     private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state)
     {
@@ -48,12 +67,50 @@ public partial class QA1List
         }
         
         Query.Keyword = text;
-        await _table.ReloadServerData();
+
+        _currentPage = 0;
+
+        await LoadPage();
+
+        //await _table.ReloadServerData();
     }
 
     private async Task OnRefresh()
     {
         Query.Keyword = string.Empty;
-        await _table.ReloadServerData();
+        _currentPage = 0;
+
+        await LoadPage();
+
+//        await _table.ReloadServerData();
     }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadPage();
+        }
+    }
+    
+    
+    // track expanded rows by ActivityId
+    private HashSet<Guid> ExpandedRows { get; } = new();
+
+    private void ToggleRow(Guid activityId)
+    {
+        if (ExpandedRows.Contains(activityId))
+        {
+            ExpandedRows.Remove(activityId);
+        }
+        else
+        {
+            // optional: collapse others — uncomment if you want single-open behavior
+            // ExpandedRows.Clear();
+            ExpandedRows.Add(activityId);
+        }
+
+        StateHasChanged();
+    }
+
+   
 }

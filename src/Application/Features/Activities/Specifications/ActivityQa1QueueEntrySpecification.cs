@@ -11,7 +11,9 @@ public class ActivityQa1QueueEntrySpecification : Specification<ActivityQa1Queue
             .Where(e => e.IsCompleted == false);
 
         Query.Where(e => 
-            e.Participant!.Id.Contains(filter.Keyword!) || e.Participant!.LastName.Contains(filter.Keyword!),
+            e.Participant!.Id.Contains(filter.Keyword!) 
+            || e.Participant!.FirstName.Contains(filter.Keyword!) 
+            || e.Participant!.LastName.Contains(filter.Keyword!),
         string.IsNullOrEmpty(filter.Keyword) == false);
     }
 }
