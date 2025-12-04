@@ -10,28 +10,15 @@
 @attribute [Authorize(Policy = SecurityPolicies.Qa1)]
 
 <CascadingValue Value="UserProfile" IsFixed="true">
-
-<MudDataGrid ServerData="@(ServerReload)"
-             FixedHeader="true"
-             FixedFooter="true"
-             Virtualize="true"
-             @bind-RowsPerPage="_defaultPageSize"
-             Height="calc(100vh - 330px)"
-             Loading="@_loading"
-             MultiSelection="true"
-             @bind-SelectedItem="_currentDto"
-             Hover="true"
-             @ref="_table"
-             Breakpoint="Breakpoint.Sm"
-             Striped="true"
-             Dense="true">
-    <ToolBarContent>
+   
+<MudCard style="height: 100%">
+    <MudCardHeader>
         <div class="d-flex align-start flex-grow-1">
-            <div class="d-flex gap-4">
-                <MudIcon Icon="@Icons.Material.Filled.Checklist" Size="Size.Medium" Color="Color.Primary" />
-                First Pass
-            </div>
-            <div class="flex-grow-1"></div>
+        <div class="d-flex gap-4">
+            <MudIcon Icon="@Icons.Material.Filled.Checklist" Size="Size.Medium" Color="Color.Primary" />
+            First Pass
+        </div>
+        <div class="flex-grow-1"></div>
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
@@ -53,140 +40,153 @@
                 </MudTextField>
             </div>
         </div>
-    </ToolBarContent>
-    <Columns>
-        <TemplateColumn CellClass="width:60px;" Title="@ConstantString.Actions" Sortable="false">
-            <CellTemplate>
-                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
-                         Dense="true"
-                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
-                    <MudMenuItem OnClick="@(() => ViewParticipant(context.Item))">
-                        @ConstantString.View Participant
-                    </MudMenuItem>
+    </MudCardHeader>
 
-                </MudMenu>
-            </CellTemplate>
-        </TemplateColumn>
-        <PropertyColumn Property="x => x.ParticipantName" Title="@L["Participant"]">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.ParticipantName</MudText>                    
-                    <MudText Typo="Typo.body2">@context.Item.ParticipantId</MudText>
+    <MudCardContent>
+       
+        @if (_loading)
+        {
+            <MudText>@ConstantString.Loading</MudText>
+        }
+        else if (_pagedData?.Items == null || !_pagedData.Items.Any())
+        {
+            <MudText>@ConstantString.NoRecords</MudText>
+        }
+        else
+        {
+            <div class="d-flex align-center pa-2 mb-1"
+                 style="border-radius:6px; font-weight:600; font-size:0.85rem;">
+
+                <div style="width:40px;"></div> @* space for expand button *@
+
+                <div style="min-width:220px; max-width:40%;">
+                    Participant
                 </div>
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.Activity" Title="@L["Activity"]" Sortable="false">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.Activity.Definition.Category.Name</MudText>
+
+                <div style="min-width:180px; max-width:28%;">
+                    Activity
                 </div>
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.SupportWorker" Title="@L["Support Worker"]">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.SupportWorker</MudText>
-                   
+
+                <div style="min-width:140px; max-width:18%;">
+                    Support Worker
                 </div>
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.TenantId" Title="@L["Tenant"]">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.TenantName</MudText>
-                    <MudText Typo="Typo.body2">@context.Item.TenantId</MudText>
+                
+                <div style="min-width:160px; max-width:18%;">
+                    Tenant
                 </div>
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.CommencedOn" Title="@L["Commenced on"]">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">
-                        @context.Item.CommencedOn.Date.ToString("d")
-                    </MudText>
-                    <MudText Typo="Typo.body2">
-                        @context.Item.CommencedOn.Date.Humanize()
-                    </MudText>
+     
+                <div style="min-width:160px; max-width:18%;">
+                    Commenced On
                 </div>
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.Created" Title="@L["Submitted"]">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">
-                        @context.Item.Created.Date.ToString("d")
-                    </MudText>
-                    <MudText Typo="Typo.body2">
-                        @context.Item.Created.Humanize()
-                    </MudText>
+                <div style="min-width:160px; max-width:18%;">
+                    Submitted
                 </div>
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.Expiry" Title="@L["Expiry"]">
-            <CellTemplate>
-                <MudTooltip Text="Must be processed up to 3 months after completion">
-                    @if (context.Item.Expiry < DateTime.Today)
-                    {
-                        <MudText Typo="Typo.body2">Expired</MudText>
-                    }
-                    else
-                    {
-                        <div class="d-flex flex-column">
-                            <MudText Typo="Typo.body2">
-                                @context.Item.Expiry.Date.ToString("d")
-                            </MudText>
-                            <MudText Typo="Typo.body2">
-                                @if (context.Item.Expiry == DateTime.Today)
-                                {
-                                    @("Today")
-                                }
-                                else
-                                {
-                                    @context.Item.Expiry.Humanize()
-                                }
-                            </MudText>
+                <div style="min-width:160px; max-width:18%;">
+                    Expiry
+                </div>
+                <div style="margin-left:auto; width:40px;">Actions</div> @* actions menu space *@
+            </div>
+
+            @foreach (var activity in _pagedData.Items)
+            {
+                <div class="mb-2">
+                    @* Row: small expand button + activity summary in a single horizontal line *@
+                    <div class="d-flex align-center pa-2" style="background:transparent; border-radius:6px;">
+                        <MudIconButton
+                            Icon="@(ExpandedRows.Contains(activity.ActivityId) ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                            Size="Size.Small"
+                            Edge="Edge.Start"
+                            OnClick="@(() => ToggleRow(activity.ActivityId))"
+                            aria-label="Toggle notes"/>
+
+                        <div class="ml-2 flex-grow-1 d-flex align-center" style="gap:12px;">
+                            <div style="min-width:220px; max-width:40%;">
+                                <MudText Typo="Typo.body2" Class="mb-0">
+                                    <strong>@activity.ParticipantName</strong>
+                                </MudText>
+                                <MudText Typo="Typo.caption" Class="mt-0">
+                                    @activity.ParticipantId
+                                </MudText>
+                            </div>
+
+                            <div style="min-width:180px; max-width:28%;">
+                                <MudText Typo="Typo.body2" Class="mb-0">
+                                    @activity.Activity.Definition.Category.Name
+                                </MudText>
+                            </div>
+
+                            <div style="min-width:140px; max-width:18%;">
+                                <MudText Typo="Typo.body2">@activity.SupportWorker</MudText>
+                            </div>
+
+                            <div class="d-flex flex-column">
+                                <MudText Typo="Typo.body2">@activity.TenantName</MudText>
+                                <MudText Typo="Typo.body2">@activity.TenantId</MudText>
+                            </div>
+                            <div style="min-width:160px; max-width:18%;">
+                                <MudText Typo="Typo.body2">@activity.CommencedOn.Date.ToString("d")</MudText>
+                                <MudText Typo="Typo.caption">@activity.CommencedOn.Date.Humanize()</MudText>
+                            </div>
+                            <div style="min-width:160px; max-width:18%;">
+                                <MudText Typo="Typo.body2">@activity.Created.Date.ToString("d")</MudText>
+                                <MudText Typo="Typo.caption">@activity.Created.Humanize()</MudText>
+                            </div>
+
+                            <div class="d-flex" style="margin-left:auto;">
+                                <MudTooltip Text="Must be processed up to 3 months after completion">
+                                    @if (@activity.Expiry < DateTime.Today)
+                                    {
+                                        <MudText Typo="Typo.body2">Expired</MudText>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex flex-column">
+                                            <MudText Typo="Typo.body2">
+                                                @activity.Expiry.Date.ToString("d")
+                                            </MudText>
+                                            <MudText Typo="Typo.body2">
+                                                @if (@activity.Expiry == DateTime.Today)
+                                                {
+                                                    @("Today")
+                                                }
+                                                else
+                                                {
+                                                    @activity.Expiry.Humanize()
+                                                }
+                                            </MudText>
+                                        </div>
+                                    }
+                                </MudTooltip>
+                            </div>
+                            
+                            <div class="d-flex" style="margin-left:auto;">
+                                <MudMenu Dense="true" Icon="@Icons.Material.Filled.MoreVert"
+                                         AnchorOrigin="Origin.CenterLeft">
+                                    <MudMenuItem OnClick="@(() => ViewParticipant(activity))">
+                                        @ConstantString.ViewParticipant
+                                    </MudMenuItem>
+                                </MudMenu>
+                            </div>
                         </div>
+                    </div>
+
+
+                    @if (ExpandedRows.Contains(activity.ActivityId))
+                    {
+                        <MudTr>
+                                        <QaNotesDropdown ActivityId="activity.ActivityId" />
+                        </MudTr>
                     }
-                </MudTooltip>
-            </CellTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.AssignedTo" Title="@L["AssignedTo"]">
-            <CellTemplate>
-                <div class="d-flex flex-column">
-                    <MudText Typo="Typo.body2">@context.Item.AssignedTo</MudText>
                 </div>
-            </CellTemplate>
-        </PropertyColumn>    
-        <TemplateColumn Title="Notes" Sortable="false" CellClass="text-end">
-            <CellTemplate Context="context">
-                <MudMenu Icon="@Icons.Material.Filled.Notes"
-                         Variant="Variant.Outlined"
-                         Size="Size.Small"
-                         Dense="true"
-                         AnchorOrigin="Origin.CenterRight"
-                         TransformOrigin="Origin.TopRight">
-            
-                    <ChildContent>
-                        <div style="min-width: 300px; max-width: 400px; max-height: 400px; overflow-y:auto;">
-                            <CascadingValue Value="UserProfile" IsFixed="true">
-                                <QaNotes ActivityId="context.Item.ActivityId"/>
-                            </CascadingValue>
-                        </div>
-                    </ChildContent>
+            }
 
-                </MudMenu>
-            </CellTemplate>
-        </TemplateColumn>
-
-    </Columns>
-    <NoRecordsContent>
-        <MudText>@ConstantString.NoRecords</MudText>
-    </NoRecordsContent>
-    <LoadingContent>
-        <MudText>@ConstantString.Loading</MudText>
-    </LoadingContent>
-    <PagerContent>
-        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50 })" />
-    </PagerContent>
-</MudDataGrid>
+            <MudPagination Count="@(_pagedData.TotalItems / _defaultPageSize + 1)"
+                           SelectedChanged="OnPaginationChanged"
+                           ShowFirstButton="true"
+                           ShowLastButton="true"
+                           Class="mt-3" />
+        }
+     
+    </MudCardContent>
+</MudCard>
 </CascadingValue>
