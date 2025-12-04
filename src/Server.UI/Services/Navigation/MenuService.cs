@@ -34,7 +34,15 @@ public class MenuService : IMenuService
                                 Href = "/pages/dashboard/supportworker/",
                                 PageStatus = PageStatus.Completed
                             },
-
+                            
+                            new()
+                            {
+                                Title = "Tenant",
+                                Href = "/pages/dashboard/tenant/",
+                                PageStatus = PageStatus.Wip,
+                                Roles = RoleNames.AllExtraPermissions,
+                            },
+                            
                             new()
                             {
                                 Title = "QA",
@@ -50,14 +58,7 @@ public class MenuService : IMenuService
                                 PageStatus = PageStatus.Wip,
                                 Roles = [RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QASupportManager, RoleNames.QAManager],
                             },
-                            
-                            new()
-                            {
-                                Title = "Tenant",
-                                Href = "/pages/dashboard/tenant/",
-                                PageStatus = PageStatus.Wip,
-                                Roles = RoleNames.AllExtraPermissions,
-                            }
+
                         ],
                     },
 

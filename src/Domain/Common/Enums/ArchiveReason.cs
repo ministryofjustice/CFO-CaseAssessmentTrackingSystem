@@ -4,6 +4,7 @@ namespace Cfo.Cats.Domain.Common.Enums;
 
 public sealed class ArchiveReason : SmartEnum<ArchiveReason>
 {
+    public static readonly ArchiveReason None                       = new("Please select archive reason", -1, false);
     public static readonly ArchiveReason CaseloadTooHigh            = new("Caseload for this location is too high", 0, false);
     public static readonly ArchiveReason Deceased                   = new("Deceased", 1, false);
     public static readonly ArchiveReason LicenceEnd                 = new("Licence end date reached", 2, false);

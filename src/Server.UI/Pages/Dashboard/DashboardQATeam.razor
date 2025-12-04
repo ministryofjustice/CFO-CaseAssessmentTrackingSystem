@@ -20,6 +20,12 @@
                 <MudButton Color="Color.Primary" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
             </PickerActions>
         </MudDateRangePicker>
+		@if (CurrentUser.AssignedRoles is not [])
+		{
+			<MudLink OnClick="DisplayOptionsDialog" Disabled="@(CurrentUser.AssignedRoles is [])">
+				@SelectedDisplayName
+			</MudLink>
+		}            
         <MudSwitch @bind-Value="_visualMode"
                    T="bool"
                    ThumbIcon="@Icons.Material.Filled.StackedBarChart"

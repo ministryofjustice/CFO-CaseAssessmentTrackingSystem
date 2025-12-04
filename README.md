@@ -1,4 +1,13 @@
-[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/CFO-CaseAssessmentTrackingSystem/badge?1)](https://github-community.service.justice.gov.uk/repository-standards/CFO-CaseAssessmentTrackingSystem)
+
+[![Run Tests](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/actions/workflows/run-tests.yml/badge.svg)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/actions/workflows/run-tests.yml)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Issues](https://img.shields.io/github/issues/ministryofjustice/CFO-CaseAssessmentTrackingSystem)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/issues)
+[![GitHub Repo stars](https://img.shields.io/github/stars/ministryofjustice/CFO-CaseAssessmentTrackingSystem?color=594ae2&style=flat-square&logo=github)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/stargazers)
+[![Contributors](https://img.shields.io/github/contributors/ministryofjustice/CFO-CaseAssessmentTrackingSystem?color=594ae2&style=flat-square&logo=github)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/graphs/contributors)
+[![Pull Requests](https://img.shields.io/github/issues-pr/ministryofjustice/CFO-CaseAssessmentTrackingSystem)](https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/pulls)
+[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/CFO-CaseAssessmentTrackingSystem/badge)](https://github-community.service.justice.gov.uk/repository-standards/CFO-CaseAssessmentTrackingSystem)
+
 
 # Overview
 
@@ -32,11 +41,20 @@ CATS relies on the external data from Nomis and Delius. This is aggregate and ma
 
 This has been developed on Windows 11 using Visual Studio 2022, Visual Studio Code and JetBrains Rider
 
-# Queries
+# Development Setup and Execution Guide
+## Prerequisites
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- **Visual Studio Code users**:
+    - [C# Dev Kit Extension](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit)
+    - [Aspire Extension (& CLI)](https://marketplace.visualstudio.com/items?itemName=microsoft-aspire.aspire-vscode)
 
-Any queries, please contact andrew.grocott@justice.gov.uk
+## Running the apps
+The recommended way to run and debug these apps is using .NET Aspire.
+- **Using Visual Studio Code**: open the project and press `F5`, selecting the *Default Configuration*.
+- **Using Visual Studio or other IDEs**: From the debug configuration dropdown, select `Aspire.AppHost` and start the application.
+---
 
-# Publishing (preview)
+## Publishing (preview)
 
 This repository uses [Aspire]("https://github.com/dotnet/aspire") for service composition (dependency injection, service discovery, and configuration management). 
 
