@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Enums;
-
+using Cfo.Cats.Domain.Common.Enums;
 using static MudBlazor.Color;
+using static MudBlazor.Variant;
 
 namespace Cfo.Cats.Server.UI.Extensions;
 
@@ -20,6 +21,15 @@ public static class EnumExtensions
         _ => throw new ArgumentOutOfRangeException(nameof(appColour), appColour, null)
     };
 
+    public static Variant AsMudVariant(this AppVariant appVariant)
+        => appVariant switch
+        {
+            AppVariant.Filled => Filled,
+            AppVariant.Outlined => Outlined,
+            AppVariant.Text => Text,
+            _ => throw new ArgumentOutOfRangeException(nameof(appVariant), appVariant, null)
+        };
+    
     public static string AsMudIcon(this AppIcon appIcon) =>
         appIcon switch
         {

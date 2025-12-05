@@ -1,0 +1,87 @@
+@using Cfo.Cats.Application.Features.Labels.Commands
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Domain.Labels
+@using DocumentFormat.OpenXml.EMMA
+@inherits CatsComponent<Cfo.Cats.Application.Features.Labels.DTOs.LabelDto[]>
+
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@if (Data is not null)
+{
+    <MudTable Items="@Data"
+              Hover="true"
+              Striped="true"
+              Dense="true"
+              SortLabel="Sort By">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Labels</MudText>
+            <MudSpacer />
+            <MudButton Variant="Variant.Outlined"
+                       Size="Size.Small"
+                       Disabled="@Loading"
+                       OnClick="@(() => OnAddLabel())"
+                       StartIcon="@Icons.Material.Filled.AddComment" 
+                       IconColor="Color.Surface" 
+                       Color="Color.Primary">
+                Add Label
+            </MudButton>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>
+                
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<LabelDto, object>(x => x.Name)">Name</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<LabelDto, object>(x => x.Description)">Description</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<LabelDto, object>(x => x.Colour)">Colour</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<LabelDto, object>(x => x.Variant)">Variant</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<LabelDto, object>(x => x.Contract)">Contract</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                Example
+            </MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>
+                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                                            Dense="true"
+                                            EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                    <MudMenuItem OnClick="@(()=> OnEdit(context))">
+                                            @ConstantString.Edit
+                    </MudMenuItem>
+                    <MudMenuItem OnClick="@(()=> OnDelete(context))">
+                                            @ConstantString.Delete
+                    </MudMenuItem>
+                </MudMenu>
+            </MudTd>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Description">@context.Description</MudTd>
+            <MudTd DataLabel="Colour">
+                @context.Colour
+            </MudTd>
+            <MudTd DataLabel="Variant">
+                @context.Variant
+            </MudTd>
+            <MudTd DataLabel="Contract">@context.Contract</MudTd>
+            <MudTd DataLabel="Example">
+                <CatsChip Label="@context.Name" Variant="@context.Variant" Colour="@context.Colour"/>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+}

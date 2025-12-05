@@ -1,0 +1,22 @@
+@page "/pages/labels"
+@inject IStringLocalizer<Index> L
+
+@attribute [Authorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+
+<PageTitle>@Title</PageTitle>
+
+<LabelsTable  />
+    
+
+
+@code {
+
+    private string Title { get; set; } = "";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Title = L["Labels"];
+    }
+
+}
