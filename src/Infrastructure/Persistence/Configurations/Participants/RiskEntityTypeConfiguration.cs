@@ -45,12 +45,6 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
                 x => RiskLevel.FromValue(x)
             );
 
-        builder.Property(x => x.RiskToSelfInCustody)
-            .HasConversion(
-                x => x!.Value,
-                x => RiskLevel.FromValue(x)
-            );
-
         builder.Property(x => x.RiskToStaffInCustody)
             .HasConversion(
                 x => x!.Value,
@@ -70,12 +64,6 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
             );
 
         builder.Property(x => x.RiskToPublicInCommunity)
-            .HasConversion(
-                x => x!.Value,
-                x => RiskLevel.FromValue(x)
-            );
-
-        builder.Property(x => x.RiskToSelfInCommunity)
             .HasConversion(
                 x => x!.Value,
                 x => RiskLevel.FromValue(x)
@@ -104,16 +92,11 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
                 x => x!.Value,
                 x => ConfirmationStatus.FromValue(x)
             );
-        builder.Property(x => x.RiskToSelfInCommunityNew)
-            .HasConversion(
-                x => x!.Value,
-                x => ConfirmationStatus.FromValue(x)
-            );
-        builder.Property(x => x.RiskToSelfInCustodyNew)
-            .HasConversion(
-                x => x!.Value,
-                x => ConfirmationStatus.FromValue(x)
-            );
+        builder.Property(x => x.RiskToSelfInCommunityText)
+            .HasMaxLength(256);
+
+        builder.Property(x => x.RiskToSelfInCustodyText)
+            .HasMaxLength(256);
 
         builder.Property(x => x.CreatedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
