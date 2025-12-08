@@ -95,14 +95,16 @@ public class Risk : BaseAuditableEntity<Guid>
     public RiskLevel? RiskToKnownAdultInCustody { get; private set; }
     public RiskLevel? RiskToStaffInCustody { get; private set; }
     public RiskLevel? RiskToOtherPrisonersInCustody { get; private set; }
-    public RiskLevel? RiskToSelfInCustody { get; private set; }
-    public ConfirmationStatus? RiskToSelfInCustodyNew { get; private set; }
+    // public RiskLevel? RiskToSelfInCustody { get; private set; }
+    // public ConfirmationStatus? RiskToSelfInCustodyNew { get; private set; }
+    public string? RiskToSelfInCustodyText { get; private set; }
     public RiskLevel? RiskToChildrenInCommunity { get; private set; }
     public RiskLevel? RiskToPublicInCommunity { get; private set; }
     public RiskLevel? RiskToKnownAdultInCommunity { get; private set; }
     public RiskLevel? RiskToStaffInCommunity { get; private set; }
-    public RiskLevel? RiskToSelfInCommunity { get; private set; }
-    public ConfirmationStatus? RiskToSelfInCommunityNew { get; private set; }
+    // public RiskLevel? RiskToSelfInCommunity { get; private set; }
+    // public ConfirmationStatus? RiskToSelfInCommunityNew { get; private set; }
+    public string? RiskToSelfInCommunityText { get; private set; }
     public string? SpecificRisk { get; private set; }
     public virtual Participant? Participant { get; private set; }
     public int LocationId { get; private set; }

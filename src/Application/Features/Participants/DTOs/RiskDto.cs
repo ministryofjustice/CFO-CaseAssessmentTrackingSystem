@@ -107,8 +107,7 @@ public class RiskDto
                     RiskToPublic = src.RiskToPublicInCommunity,
                     RiskToKnownAdult = src.RiskToKnownAdultInCommunity,
                     RiskToStaff = src.RiskToStaffInCommunity,
-                    RiskToSelf = src.RiskToSelfInCommunityNew == null ? src.RiskToSelfInCommunity : null,
-                    RiskToSelfNew = src.RiskToSelfInCommunityNew,
+                    RiskToSelfText = src.RiskToSelfInCommunityText
                 }))
                 .ForMember(dest => dest.CustodyRiskDetail, opt => opt.MapFrom(src => new RiskDetail
                 {
@@ -116,8 +115,7 @@ public class RiskDto
                     RiskToPublic = src.RiskToPublicInCustody,
                     RiskToKnownAdult = src.RiskToKnownAdultInCustody,
                     RiskToStaff = src.RiskToStaffInCustody,
-                    RiskToSelf = src.RiskToSelfInCustodyNew == null ? src.RiskToSelfInCustody : null,
-                    RiskToSelfNew = src.RiskToSelfInCustodyNew,
+                    RiskToSelfText = src.RiskToSelfInCustodyText,
                     RiskToOtherPrisoners = src.RiskToOtherPrisonersInCustody,
                 }))
                 .ReverseMap()
@@ -129,14 +127,12 @@ public class RiskDto
                 .ForPath(src => src.RiskToPublicInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToPublic))
                 .ForPath(src => src.RiskToKnownAdultInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToKnownAdult))
                 .ForPath(src => src.RiskToStaffInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToStaff))
-                .ForPath(src => src.RiskToSelfInCommunity, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToSelfNew == null ? dest.CommunityRiskDetail.RiskToSelf : null))
-                .ForPath(src => src.RiskToSelfInCommunityNew, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToSelfNew))
+                .ForPath(src => src.RiskToSelfInCommunityText, opt => opt.MapFrom(dest => dest.CommunityRiskDetail.RiskToSelfText))
                 .ForPath(src => src.RiskToChildrenInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToChildren))
                 .ForPath(src => src.RiskToPublicInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToPublic))
                 .ForPath(src => src.RiskToKnownAdultInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToKnownAdult))
                 .ForPath(src => src.RiskToStaffInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToStaff))
-                .ForPath(src => src.RiskToSelfInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToSelfNew == null ? dest.CustodyRiskDetail.RiskToSelf : null))
-                .ForPath(src => src.RiskToSelfInCustodyNew, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToSelfNew))
+                .ForPath(src => src.RiskToSelfInCustodyText, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToSelfText))
                 .ForPath(src => src.RiskToOtherPrisonersInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToOtherPrisoners));
         }
     }
@@ -149,12 +145,12 @@ public class RiskDto
         public RiskLevel? RiskToPublic { get; set; }
         [Description("Risk to Known Adult")]
         public RiskLevel? RiskToKnownAdult { get; set; }
+
         [Description("Risk to Staff")]
         public RiskLevel? RiskToStaff { get; set; }
+
         [Description("Risk to Self")]
-        public RiskLevel? RiskToSelf { get; set; }
-        [Description("Risk to Self")]
-        public ConfirmationStatus? RiskToSelfNew { get; set; }
+        public string? RiskToSelfText { get; set; }
 
         [Description("Risk to Other Prisoners")]
         public RiskLevel? RiskToOtherPrisoners { get; set; }
@@ -183,7 +179,7 @@ public class RiskDto
                     .NotNull()
                     .WithMessage("This option is mandatory");
 
-                RuleFor(x => x.RiskToSelfNew)
+                RuleFor(x => x.RiskToSelfText)
                     .NotNull()
                     .WithMessage("This option is mandatory");
             }

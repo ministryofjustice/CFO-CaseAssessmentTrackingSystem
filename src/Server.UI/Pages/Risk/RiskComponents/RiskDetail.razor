@@ -79,38 +79,15 @@
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToOtherPrisoners)" hidden />
             </MudItem>
         }
-        @* Risk to Self *@
         <MudDivider Class="mt-6" />
-        @if (ReadOnly && Model.RiskToSelf is not null)
-        {
-            <MudItem xs="4">
-                @Model.GetMemberDescription(x => x.RiskToSelf)
-            </MudItem>
-            <MudItem xs="8">
-                <MudToggleGroup @bind-Value="@Model.RiskToSelf" Class="readonly-toggle" CheckMark>
-                    <MudToggleItem Value="@RiskLevel.Unknown">@RiskLevel.Unknown.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Low">@RiskLevel.Low.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.Medium">@RiskLevel.Medium.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.High">@RiskLevel.High.Name</MudToggleItem>
-                    <MudToggleItem Value="@RiskLevel.VeryHigh">@RiskLevel.VeryHigh.Name</MudToggleItem>
-                </MudToggleGroup>
-                <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToSelf)" hidden />
-            </MudItem>
-        }
-        else
-        {
-            <MudItem xs="4">
-                @Model.GetMemberDescription(x => x.RiskToSelfNew)
-            </MudItem>
-            <MudItem xs="8">
-                <MudToggleGroup Class="readonly-toggle" @bind-Value="@Model.RiskToSelfNew" CheckMark>
-                    <MudToggleItem Value="@ConfirmationStatus.Unknown">@ConfirmationStatus.Unknown.Name</MudToggleItem>
-                    <MudToggleItem Value="@ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
-                    <MudToggleItem Value="@ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
-                </MudToggleGroup>
-                <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToSelfNew)" hidden />
-            </MudItem>
-        }
+        @* Risk to Self *@
+        <MudItem xs="4">
+            @Model.GetMemberDescription(x => x.RiskToSelfText)
+        </MudItem>
+        <MudItem xs="8">
+            <MudTextField @bind-Value="@Model.RiskToSelfText" Label="@Model.GetMemberDescription(x => x.RiskToSelfText)" />
+            <MudTextField ReadOnly Underline="false" For="@(() => Model.RiskToSelfText)" hidden />
+        </MudItem>
     </MudGrid>
 </MudForm>
 
