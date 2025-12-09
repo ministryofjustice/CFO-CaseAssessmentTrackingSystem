@@ -85,6 +85,7 @@ public static class ConstantString
     public static string OrderBy => Localize("Order By");
     public static string CreateAnItem => Localize("Create a new {0}");
     public static string EditTheItem => Localize("Edit the {0}");
+    public static string DeleteHeader => Localize("Confirm deletion");
     public static string DeleteTheItem => Localize("Delete the {0}");
     public static string DeleteItems => Localize("Delete selected items: {0}");
     public static string DeleteConfirmation =>

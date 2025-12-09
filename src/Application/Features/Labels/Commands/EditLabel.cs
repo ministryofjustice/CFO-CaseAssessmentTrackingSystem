@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Labels.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Labels;
@@ -32,6 +33,30 @@ public static class EditLabel
             label.Edit(request.NewName, request.NewDescription, request.NewColour, request.NewVariant);
             
             return Result.Success();
+        }
+    }
+
+    public class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+            RuleFor(x => x.NewName)
+                .NotEmpty()
+                .MinimumLength(LabelConstants.NameMinimumLength)
+                .MaximumLength(LabelConstants.NameMaximumLength);
+
+            RuleFor(x => x.NewDescription)
+                .NotEmpty()
+                .MinimumLength(LabelConstants.DescriptionMinimumLength)
+                .MaximumLength(LabelConstants.DescriptionMaximumLength);
+
+            RuleFor(v => v.NewName)
+                .Matches(ValidationConstants.LettersSpacesUnderscores)
+                .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Name"));
+            
+            RuleFor(v => v.NewDescription)
+                .Matches(ValidationConstants.LettersSpacesUnderscores)
+                .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Description"));
         }
     }
 }

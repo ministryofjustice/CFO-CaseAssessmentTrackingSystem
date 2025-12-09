@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Labels.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Labels;
@@ -46,11 +47,20 @@ public static class AddLabel
         {
             RuleFor(x => x.Name)
                 .NotEmpty()
-                .MinimumLength(2)
-                .MaximumLength(15);
+                .MinimumLength(LabelConstants.NameMinimumLength)
+                .MaximumLength(LabelConstants.NameMaximumLength);
 
             RuleFor(x => x.Description)
-                .MaximumLength(200);
+                .MinimumLength(LabelConstants.DescriptionMinimumLength)
+                .MaximumLength(LabelConstants.DescriptionMaximumLength);
+            
+            RuleFor(v => v.Name)
+                .Matches(ValidationConstants.LettersSpacesUnderscores)
+                .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Name"));
+            
+            RuleFor(v => v.Description)
+                .Matches(ValidationConstants.LettersSpacesUnderscores)
+                .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Description"));
         }
     }
 }

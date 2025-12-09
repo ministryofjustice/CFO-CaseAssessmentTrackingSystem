@@ -136,6 +136,119 @@ public class AddLabelCommandTests
     }
 
     [Test]
+    public void Validator_WithDescriptionTooShort_ShouldFail()
+    {
+        var validator = new AddLabel.Validator();
+        var command = new AddLabel.Command
+        {
+            Name = "Valid",
+            Description = "AB",
+            Colour = AppColour.Primary,
+            Variant = AppVariant.Filled,
+            ContractId = "CONTRACT-001"
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(e => e.PropertyName == "Description");
+    }
+
+    [Test]
+    public void Validator_WithValidCommand_ShouldPass()
+    {
+        var validator = new AddLabel.Validator();
+        var command = new AddLabel.Command
+        {
+            Name = "Valid",
+            Description = "Valid Description",
+            Colour = AppColour.Primary,
+            Variant = AppVariant.Filled,
+            ContractId = "CONTRACT-001"
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Test]
+    public void Validator_WithNameContainingInvalidCharacters_ShouldFail()
+    {
+        var validator = new AddLabel.Validator();
+        var command = new AddLabel.Command
+        {
+            Name = "Invalid123",
+            Description = "Description",
+            Colour = AppColour.Primary,
+            Variant = AppVariant.Filled,
+            ContractId = "CONTRACT-001"
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(e => e.PropertyName == "Name" && 
+            e.ErrorMessage.Contains("must contain only letters, spaces, and underscores"));
+    }
+
+    [Test]
+    public void Validator_WithDescriptionContainingInvalidCharacters_ShouldFail()
+    {
+        var validator = new AddLabel.Validator();
+        var command = new AddLabel.Command
+        {
+            Name = "Valid",
+            Description = "Invalid@#$",
+            Colour = AppColour.Primary,
+            Variant = AppVariant.Filled,
+            ContractId = "CONTRACT-001"
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(e => e.PropertyName == "Description" && 
+            e.ErrorMessage.Contains("must contain only letters, spaces, and underscores"));
+    }
+
+    [Test]
+    public void Validator_WithNameContainingUnderscores_ShouldPass()
+    {
+        var validator = new AddLabel.Validator();
+        var command = new AddLabel.Command
+        {
+            Name = "Valid_Name",
+            Description = "Description",
+            Colour = AppColour.Primary,
+            Variant = AppVariant.Filled,
+            ContractId = "CONTRACT-001"
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Test]
+    public void Validator_WithDescriptionContainingUnderscores_ShouldPass()
+    {
+        var validator = new AddLabel.Validator();
+        var command = new AddLabel.Command
+        {
+            Name = "Valid",
+            Description = "Valid_Description",
+            Colour = AppColour.Primary,
+            Variant = AppVariant.Filled,
+            ContractId = "CONTRACT-001"
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Test]
     public void Handle_WithDuplicateName_ShouldThrowBusinessRuleException()
     {
         _labelCounter.SetVisibleLabelCount(1);

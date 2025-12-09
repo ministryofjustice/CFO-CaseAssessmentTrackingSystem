@@ -126,6 +126,214 @@ public class EditLabelCommandTests
         existingLabel.Description.ShouldBe("Description");
     }
 
+    [Test]
+    public void Validator_WithInvalidNewName_ShouldFail()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = "",
+            NewDescription = "Description",
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(e => e.PropertyName == "NewName");
+    }
+
+    [Test]
+    public void Validator_WithNewNameTooShort_ShouldFail()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = "A",
+            NewDescription = "Description",
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(e => e.PropertyName == "NewName");
+    }
+
+    [Test]
+    public void Validator_WithNewNameTooLong_ShouldFail()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = "ThisIsAVeryLongLabelName",
+            NewDescription = "Description",
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(e => e.PropertyName == "NewName");
+    }
+
+    [Test]
+    public void Validator_WithNewDescriptionEmpty_ShouldFail()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = "Valid",
+            NewDescription = "",
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(e => e.PropertyName == "NewDescription");
+    }
+
+    [Test]
+    public void Validator_WithNewDescriptionTooShort_ShouldFail()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = "Valid",
+            NewDescription = "AB",
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(e => e.PropertyName == "NewDescription");
+    }
+
+    [Test]
+    public void Validator_WithNewDescriptionTooLong_ShouldFail()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = "Valid",
+            NewDescription = new string('A', 201),
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(e => e.PropertyName == "NewDescription");
+    }
+
+    [Test]
+    public void Validator_WithValidCommand_ShouldPass()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = "Valid",
+            NewDescription = "Valid Description",
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Test]
+    public void Validator_WithNewNameContainingInvalidCharacters_ShouldFail()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = "Invalid123",
+            NewDescription = "Description",
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(e => e.PropertyName == "NewName" && 
+            e.ErrorMessage.Contains("must contain only letters, spaces, and underscores"));
+    }
+
+    [Test]
+    public void Validator_WithNewDescriptionContainingInvalidCharacters_ShouldFail()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = "Valid",
+            NewDescription = "Invalid@#$",
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(e => e.PropertyName == "NewDescription" && 
+            e.ErrorMessage.Contains("must contain only letters, spaces, and underscores"));
+    }
+
+    [Test]
+    public void Validator_WithNewNameContainingUnderscores_ShouldPass()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = "Valid_Name",
+            NewDescription = "Description",
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Test]
+    public void Validator_WithNewDescriptionContainingUnderscores_ShouldPass()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = "Valid",
+            NewDescription = "Valid_Description",
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
     private class TestLabelRepository : ILabelRepository
     {
         private Label? _existingLabel;

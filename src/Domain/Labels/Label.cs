@@ -22,8 +22,9 @@ public class Label : BaseAuditableEntity<LabelId>
         ILabelCounter labelCounter)
     {
         CheckRule(new LabelCannotBeNullOrEmptyRule(name));
-        CheckRule(new LabelMustBeBetweenTwoAndFifteenCharactersRule(name));
+        CheckRule(new LabelNameMustBeValidLength(name));
         CheckRule(new LabelNamesMustBeUniqueAtContractLevelRule(labelCounter, name, contractId));
+        CheckRule(new LabelDescriptionMustBeValidLength(description));
         
         Id = new  LabelId(Guid.CreateVersion7());
         Name = name;
@@ -80,6 +81,7 @@ public class Label : BaseAuditableEntity<LabelId>
     {
         if (!Equals(Name, name))
         {
+            CheckRule(new LabelNameMustBeValidLength(name));
             AddDomainEvent(new LabelRenamedDomainEvent(Id, Name, name ));
             Name = name;
         }
@@ -113,6 +115,7 @@ public class Label : BaseAuditableEntity<LabelId>
     {
         if (Description != newDescription)
         {
+            CheckRule(new LabelDescriptionMustBeValidLength(newDescription));
             AddDomainEvent(new LabelDescriptionChangedDomainEvent(Id, Description, newDescription));
             Description = newDescription;
         }

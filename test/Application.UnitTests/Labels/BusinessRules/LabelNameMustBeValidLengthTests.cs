@@ -5,12 +5,12 @@ using Shouldly;
 
 namespace Cfo.Cats.Application.UnitTests.Labels.BusinessRules;
 
-public class LabelMustBeBetweenTwoAndFifteenCharactersRuleTests
+public class LabelNameMustBeValidLengthTests
 {
     [Test]
     public void IsBroken_WhenNameHasOneCharacter_ShouldReturnTrue()
     {
-        var rule = new LabelMustBeBetweenTwoAndFifteenCharactersRule("A");
+        var rule = new LabelNameMustBeValidLength("A");
 
         rule.IsBroken().ShouldBeTrue();
         rule.Message.ShouldBe("Label must be between 2 and 15 characters.");
@@ -19,7 +19,7 @@ public class LabelMustBeBetweenTwoAndFifteenCharactersRuleTests
     [Test]
     public void IsBroken_WhenNameHasTwoCharacters_ShouldReturnFalse()
     {
-        var rule = new LabelMustBeBetweenTwoAndFifteenCharactersRule("AB");
+        var rule = new LabelNameMustBeValidLength("AB");
 
         rule.IsBroken().ShouldBeFalse();
     }
@@ -27,7 +27,7 @@ public class LabelMustBeBetweenTwoAndFifteenCharactersRuleTests
     [Test]
     public void IsBroken_WhenNameHasFifteenCharacters_ShouldReturnFalse()
     {
-        var rule = new LabelMustBeBetweenTwoAndFifteenCharactersRule("FifteenCharName");
+        var rule = new LabelNameMustBeValidLength("FifteenCharName");
 
         rule.IsBroken().ShouldBeFalse();
     }
@@ -35,7 +35,7 @@ public class LabelMustBeBetweenTwoAndFifteenCharactersRuleTests
     [Test]
     public void IsBroken_WhenNameHasSixteenCharacters_ShouldReturnTrue()
     {
-        var rule = new LabelMustBeBetweenTwoAndFifteenCharactersRule("SixteenCharNames");
+        var rule = new LabelNameMustBeValidLength("SixteenCharNames");
 
         rule.IsBroken().ShouldBeTrue();
     }
@@ -45,7 +45,7 @@ public class LabelMustBeBetweenTwoAndFifteenCharactersRuleTests
     [TestCase("TenCharsOk")]
     public void IsBroken_WhenNameIsWithinRange_ShouldReturnFalse(string name)
     {
-        var rule = new LabelMustBeBetweenTwoAndFifteenCharactersRule(name);
+        var rule = new LabelNameMustBeValidLength(name);
 
         rule.IsBroken().ShouldBeFalse();
     }

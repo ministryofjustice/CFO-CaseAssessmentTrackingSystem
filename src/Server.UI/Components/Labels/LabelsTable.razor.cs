@@ -3,6 +3,7 @@ using Cfo.Cats.Application.Features.Labels.DTOs;
 using Cfo.Cats.Application.Features.Labels.Queries;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Labels;
+using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Dialogs;
 
 namespace Cfo.Cats.Server.UI.Components.Labels;
@@ -73,13 +74,19 @@ public partial class LabelsTable
             UserProfile = CurrentUser,
         };
 
+        var label = context.Contract switch
+        {
+            null => $"Are you sure you want to delete the global label {context.Name}?",
+            _ => $"Are you sure you want to the the {context.Name} label from the {context.Contract} contract?",
+        };
+        
         var parameters = new DialogParameters<ConfirmationDialog>()
         {
-            { x => x.ContentText, $"Are you sure you want to delete the {context.Name} label?" }
+            { x => x.ContentText, label },
         };
 
         var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
-        var result = await DialogService.ShowAsync<ConfirmationDialog>("Delete Label", parameters, options);
+        var result = await DialogService.ShowAsync<ConfirmationDialog>(@ConstantString.DeleteHeader, parameters, options);
         var dialogResult = await result.Result;
         if (dialogResult!.Canceled == false)
         {

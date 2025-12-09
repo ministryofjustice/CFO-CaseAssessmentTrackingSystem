@@ -12,11 +12,17 @@
             <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
                 <MudGrid>
                     <MudItem xs="12">
-                        <MudTextField T="string" @bind-Value="Model.Name" For="@(() => Model.Name)" Label="Name" Required="true" MaxLength="15" />
+                        <MudTextField T="string" @bind-Value="Model.Name" For="@(() => Model.Name)" Label="Name" Required="true" MaxLength="@LabelConstants.NameMaximumLength" data-1p-ignore />
+                        <MudText Color="Color.Secondary">
+                            Characters: @Model.Name.Length / @LabelConstants.NameMaximumLength
+                        </MudText>
                     </MudItem>
                     <MudItem xs="12">
-                        <MudTextField T="string" @bind-Value="Model.Description"  For="@(() => Model.Description)" Label="Description" Lines="3" MaxLength="200"
-                            Required="true" />
+                        <MudTextField T="string" @bind-Value="Model.Description"  For="@(() => Model.Description)" Label="Description" Lines="3" MaxLength="@LabelConstants.DescriptionMaximumLength"
+                                      Required="true" Immediate="true" />
+                        <MudText Color="Color.Secondary">
+                            Characters: @Model.Description.Length / @LabelConstants.DescriptionMaximumLength
+                        </MudText>
                     </MudItem>
                     <MudItem xs="12">
                       <ContractAutoComplete TenantId="@(CurrentUser?.TenantId ?? "xxx")" @bind-Value="SelectedContract" />

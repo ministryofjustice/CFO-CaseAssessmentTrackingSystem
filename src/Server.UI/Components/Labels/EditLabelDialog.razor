@@ -12,11 +12,17 @@
             <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
                 <MudGrid>
                     <MudItem xs="12">
-                        <MudTextField T="string" @bind-Value="Model.NewName" For="@(() => Model.NewName)" Label="Name" Required="true" MaxLength="15" />
+                        <MudTextField T="string" @bind-Value="Model.NewName" For="@(() => Model.NewName)" Label="Name" Required="true" MaxLength="@LabelConstants.NameMaximumLength" data-1p-ignore/>
+                        <MudText Color="Color.Secondary">
+                            Characters: @Model.NewName.Length / @LabelConstants.NameMaximumLength
+                        </MudText>
                     </MudItem>
                     <MudItem xs="12">
-                        <MudTextField T="string" @bind-Value="Model.NewDescription"  For="@(() => Model.NewDescription)" Label="Description" Lines="3" MaxLength="200"
-                            Required="true" />
+                        <MudTextField T="string" @bind-Value="Model.NewDescription"  For="@(() => Model.NewDescription)" Label="Description" Lines="3" MaxLength="@LabelConstants.DescriptionMaximumLength"
+                                      Required="true" Immediate="true" />
+                        <MudText Color="Color.Secondary">
+                            Characters: @Model.NewDescription.Length / @LabelConstants.DescriptionMaximumLength
+                        </MudText>
                     </MudItem>
                     <MudItem xs="12">
                         <MudEnumSelect TEnum="AppColour" Required="true" Label="Colour" For="@(() => Model.NewColour)" @bind-Value="Model.NewColour" />

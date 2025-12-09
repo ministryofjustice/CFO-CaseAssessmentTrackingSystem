@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Labels;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -19,11 +20,11 @@ public class LabelEntityTypeConfiguration : IEntityTypeConfiguration<Label>
 
         builder.Property(x => x.Name)
             .IsRequired()
-            .HasMaxLength(15);
+            .HasMaxLength(LabelConstants.NameMaximumLength);
 
         builder.Property(x => x.Description)
             .IsRequired()
-            .HasMaxLength(200);
+            .HasMaxLength(LabelConstants.DescriptionMaximumLength);
         
         builder.HasOne<Contract>()              
             .WithMany()                     
