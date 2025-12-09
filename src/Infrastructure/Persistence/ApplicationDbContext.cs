@@ -15,6 +15,7 @@ using Cfo.Cats.Domain.Entities.Notifications;
 using Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformation;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Entities.PRIs;
+using Cfo.Cats.Domain.Labels;
 
 namespace Cfo.Cats.Infrastructure.Persistence;
 
@@ -122,6 +123,8 @@ public class ApplicationDbContext
     public DbSet<Objective> Objectives => Set<Objective>();
     
     public DbSet<ObjectiveTask> ObjectiveTasks => Set<ObjectiveTask>();
+    public DbSet<Label> Labels => Set<Label>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

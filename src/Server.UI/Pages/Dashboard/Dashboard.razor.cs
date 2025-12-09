@@ -1,4 +1,7 @@
-﻿using Cfo.Cats.Application.SecurityConstants;
+﻿using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.Features.Labels.DTOs;
+using Cfo.Cats.Application.Features.Labels.Queries;
+using Cfo.Cats.Application.SecurityConstants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -14,7 +17,7 @@ public partial class Dashboard
     private bool _showRiskDueAggregate;
     private bool _showSyncComponent;
     private bool _showNoRiskAggregate;
-
+    
     public string Title { get; } = "Dashboard";
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
@@ -38,5 +41,6 @@ public partial class Dashboard
 
         _showJobManagement = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions))
             .Succeeded;
+ 
     }  
 }

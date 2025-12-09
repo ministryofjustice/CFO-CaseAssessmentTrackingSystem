@@ -78,6 +78,8 @@ internal static class DatabaseConstants
         public const string ActivityEscalationQueue = nameof(ActivityEscalationQueue);
 
         public const string PRI = nameof(PRI);
+        
+        public const string Label = nameof(Label);
     }
     public static class Schemas
     {

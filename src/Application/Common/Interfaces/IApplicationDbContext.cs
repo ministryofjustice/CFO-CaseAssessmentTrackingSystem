@@ -14,6 +14,7 @@ using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.Notifications;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Entities.PRIs;
+using Cfo.Cats.Domain.Labels;
 
 namespace Cfo.Cats.Application.Common.Interfaces;
 
@@ -115,5 +116,7 @@ public interface IApplicationDbContext
     DbSet<Objective> Objectives { get; }
     
     DbSet<ObjectiveTask> ObjectiveTasks { get; }
+    
+    DbSet<Label> Labels { get; }
     
 }
