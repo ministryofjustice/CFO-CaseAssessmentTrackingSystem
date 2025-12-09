@@ -13,7 +13,7 @@ on:
           - main
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
 
     steps:
@@ -50,9 +50,9 @@ jobs:
         BRANCH="${{ github.event.inputs.branch }}"
 
         if [ "$BRANCH" = "main" ]; then
-          TAG_NAME="${DATE_TAG}"
+          TAG_NAME="$DATE_TAG"
         else
-          TAG_NAME="${DATE_TAG}-dev"
+          TAG_NAME="$DATE_TAG-dev"
         fi
 
         echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
@@ -61,6 +61,13 @@ jobs:
     - name: Create Build Artifacts Archive
       run: |
         zip -r ${{ steps.version.outputs.tag }}.zip artifacts/Server.UI artifacts/DatabaseMigrator
+
+    - name: Create Git Tag and Push
+      run: |
+        git tag ${{ steps.version.outputs.tag }} ${{ github.sha }}
+        git push origin ${{ steps.version.outputs.tag }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
@@ -73,3 +80,4 @@ jobs:
         prerelease: ${{ github.event.inputs.branch != 'main' }}
         generate_release_notes: true
         fail_on_unmatched_files: true
+        token: ${{ secrets.GITHUB_TOKEN }}
