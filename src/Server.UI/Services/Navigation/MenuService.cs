@@ -101,7 +101,7 @@ public class MenuService : IMenuService
                                 Title = "Active PRI's",
                                 Href = "/pages/participants/pre-release-inventory",
                                 PageStatus = PageStatus.Completed
-                            }
+                            },
                         ]
                     },
                     new()
@@ -248,7 +248,7 @@ public class MenuService : IMenuService
             new()
             {
                 Title = "MANAGEMENT",
-                Roles = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT],
+                Roles = RoleNames.AllExtraPermissions, //
                 SectionItems =
                 [
                     new()
@@ -256,34 +256,35 @@ public class MenuService : IMenuService
                         IsParent = true,
                         Title = "Authorization",
                         Icon = Icons.Material.Filled.ManageAccounts,
+                        Roles = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT],
                         MenuItems =
                         [
                             new()
                             {
                                 Title = "Tenants",
                                 Href = "/administration/tenants",
-                                PageStatus = PageStatus.Completed
+                                PageStatus = PageStatus.Completed,
                             },
 
                             new()
                             {
                                 Title = "Users",
                                 Href = "/identity/users",
-                                PageStatus = PageStatus.Completed
+                                PageStatus = PageStatus.Completed,
                             },
 
                             new()
                             {
                                 Title = "User Audit",
                                 Href = "/identity/users/audit",
-                                PageStatus = PageStatus.Completed
+                                PageStatus = PageStatus.Completed,
                             },
 
                             new()
                             {
                                 Title = "Profile",
                                 Href = "/user/profile",
-                                PageStatus = PageStatus.Completed
+                                PageStatus = PageStatus.Completed,
                             }
                         ]
                     },
@@ -299,21 +300,30 @@ public class MenuService : IMenuService
                             {
                                 Title = "Lookup Values",
                                 Href = "/system/picklist",
-                                PageStatus = PageStatus.Completed
+                                PageStatus = PageStatus.Completed,
+                                Roles = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT],
                             },
 
                             new()
                             {
                                 Title = "Audit Trails",
                                 Href = "/system/audittrails",
-                                PageStatus = PageStatus.Completed
+                                PageStatus = PageStatus.Completed,
+                                Roles = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT],
                             },
 
                             new()
                             {
                                 Title = "Outbox Messages",
                                 Href = "/system/outbox",
-                                PageStatus = PageStatus.Completed
+                                PageStatus = PageStatus.Completed,
+                                Roles = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT],
+                            },
+                            new MenuSectionSubItemModel()
+                            {
+                                Title = "Labels",
+                                Href = "/pages/labels",
+                                PageStatus = PageStatus.Wip,
                             }
                         ]
                     }

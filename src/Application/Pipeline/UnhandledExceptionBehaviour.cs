@@ -29,7 +29,7 @@ public class UnhandledExceptionBehaviour<TRequest, TResponse>
         {
             return await next(cancellationToken);
         }
-        catch (DomainException de)
+        catch (Exception de) when(de is DomainException or ServerException)
         {
             var requestName = typeof(TRequest).Name;
             var userName = _currentUserService.UserName;
@@ -71,6 +71,20 @@ public class UnhandledExceptionBehaviour<TRequest, TResponse>
                 request,
                 userName
             );
+            
+            if (typeof(TResponse).IsGenericType && typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>))
+            {
+                var resultType = typeof(TResponse).GetGenericArguments()[0];
+                var invalidResultType = typeof(Result<>).MakeGenericType(resultType);
+                var invalidResult = Activator.CreateInstance(invalidResultType);
+                var invalidResultMethod = invalidResultType.GetMethod("Failure", [typeof(string[])]);
+                return (TResponse)invalidResultMethod!.Invoke(invalidResult, ["Unexpected error"])!;
+            }
+
+            if (typeof(TResponse).IsAssignableFrom(typeof(Result)))
+            {
+                return (TResponse)(object)Result.Failure("Unexpected error");
+            }
 
             throw;
         }

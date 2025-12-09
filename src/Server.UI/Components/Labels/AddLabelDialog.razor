@@ -1,0 +1,50 @@
+@inherits OwningComponentBase<IMediator>
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            Add Label
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+
+        <MudPaper MinHeight="300px" Elevation="0" Class="pa-4">
+            <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField T="string" @bind-Value="Model.Name" For="@(() => Model.Name)" Label="Name" Required="true" MaxLength="@LabelConstants.NameMaximumLength" data-1p-ignore />
+                        <MudText Color="Color.Secondary">
+                            Characters: @Model.Name.Length / @LabelConstants.NameMaximumLength
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField T="string" @bind-Value="Model.Description"  For="@(() => Model.Description)" Label="Description" Lines="3" MaxLength="@LabelConstants.DescriptionMaximumLength"
+                                      Required="true" Immediate="true" />
+                        <MudText Color="Color.Secondary">
+                            Characters: @Model.Description.Length / @LabelConstants.DescriptionMaximumLength
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12">
+                      <ContractAutoComplete TenantId="@(CurrentUser?.TenantId ?? "xxx")" @bind-Value="SelectedContract" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudEnumSelect TEnum="AppColour" Required="true" Label="Colour" For="@(() => Model.Colour)" @bind-Value="Model.Colour" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudEnumSelect TEnum="AppVariant" Required="true" Label="Style" For="@(() => Model.Variant)" @bind-Value="Model.Variant" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.body2">Example</MudText>
+                            <CatsChip Label="Model.Label" Variant="Model.Variant" Colour="Model.Colour"/>
+                        </MudStack>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudLoadingButton Loading="@_saving" Color="Color.Primary" OnClick="Add">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>

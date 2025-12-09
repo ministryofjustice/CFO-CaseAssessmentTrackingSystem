@@ -3533,6 +3533,51 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.ToTable("UserLogin", "Identity");
                 });
 
+            modelBuilder.Entity("Cfo.Cats.Domain.Labels.Label", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Colour")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContractId")
+                        .HasColumnType("nvarchar(12)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<int>("Variant")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractId");
+
+                    b.ToTable("Label", "Configuration");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
                 {
                     b.Property<int>("Id")
@@ -5883,6 +5928,13 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Labels.Label", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Contract", null)
+                        .WithMany()
+                        .HasForeignKey("ContractId");
                 });
 
             modelBuilder.Entity("TenantLocation", b =>
