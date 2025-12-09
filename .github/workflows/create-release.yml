@@ -2,17 +2,26 @@ name: Create new release
 
 on:
   workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to build from"
+        required: true
+        default: "develop"
+        type: choice
+        options:
+          - develop
+          - main
 
 jobs:
   build:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout selected branch
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
+        ref: ${{ github.event.inputs.branch }}
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -38,11 +47,14 @@ jobs:
       id: version
       run: |
         DATE_TAG="v$(date +'%Y.%m.%d')-build.${{ github.run_number }}"
-        if [ "${GITHUB_REF##*/}" = "main" ]; then
-          TAG_NAME="${DATE_TAG}"  
+        BRANCH="${{ github.event.inputs.branch }}"
+
+        if [ "$BRANCH" = "main" ]; then
+          TAG_NAME="${DATE_TAG}"
         else
-          TAG_NAME="${DATE_TAG}-dev"  
+          TAG_NAME="${DATE_TAG}-dev"
         fi
+
         echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
         echo "Generated tag: $TAG_NAME"
 
@@ -58,6 +70,6 @@ jobs:
         files: |
           ${{ steps.version.outputs.tag }}.zip
         draft: false
-        prerelease: true
+        prerelease: ${{ github.event.inputs.branch != 'main' }}
         generate_release_notes: true
         fail_on_unmatched_files: true
