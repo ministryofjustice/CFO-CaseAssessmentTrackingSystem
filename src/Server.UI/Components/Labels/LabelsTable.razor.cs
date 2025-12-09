@@ -77,7 +77,7 @@ public partial class LabelsTable
         var label = context.Contract switch
         {
             null => $"Are you sure you want to delete the global label {context.Name}?",
-            _ => $"Are you sure you want to the the {context.Name} label from the {context.Contract} contract?",
+            _ => $"Are you sure you want to delete the {context.Name} label from the {context.Contract} contract?",
         };
         
         var parameters = new DialogParameters<ConfirmationDialog>()
