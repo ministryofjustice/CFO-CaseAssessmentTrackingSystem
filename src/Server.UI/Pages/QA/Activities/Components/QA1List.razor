@@ -3,12 +3,11 @@
 
 @inherits CatsComponentBase;
 
-@inject IStringLocalizer<PQA> L
-
 @attribute [Authorize(Policy = SecurityPolicies.Qa1)]
 
+@inject IStringLocalizer<PQA> L
+
 <style>
-    /* Header and row alignment using flex, no wrap */
     .qa-header, .qa-row {
         display: flex;
         align-items: center;
@@ -17,7 +16,7 @@
         font-size: 0.85rem;
         padding: 8px 12px;
         overflow: hidden;
-        flex-wrap: nowrap; /* No wrapping */
+        flex-wrap: nowrap; 
     }
 
     .qa-header {
@@ -40,14 +39,13 @@
     .col-expiry { flex: 1.5 1 180px; min-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .col-actions { flex: 0 0 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-left: auto; }
 
-    /* Ensure text stays on one line */
     .qa-row div, .qa-header div {
         white-space: nowrap;
     }
 
     .qa-pager-row {
         display: flex;
-        justify-content: flex-end; /* everything aligned to right */
+        justify-content: flex-end; 
         align-items: center;
         gap: 12px;
         width: 100%;
@@ -121,17 +119,16 @@
             }
             else
             {
-                <!-- Headers -->
                 <div class="qa-header">
                     <div class="col-expand"></div>
-                    <div class="col-participant">Participant</div>
-                    <div class="col-activity">Activity</div>
-                    <div class="col-worker">Support Worker</div>
-                    <div class="col-tenant">Tenant</div>
-                    <div class="col-commenced">Commenced On</div>
-                    <div class="col-submitted">Submitted</div>
-                    <div class="col-expiry">Expiry</div>
-                    <div class="col-actions">Actions</div>
+                    <div class="col-participant">@L["Participant"]</div>
+                    <div class="col-activity">@L["Activity"]</div>
+                    <div class="col-worker">@L["Support Worker"]</div>
+                    <div class="col-tenant">@L["Tenant"]</div>
+                    <div class="col-commenced">@L["Commenced On"]</div>
+                    <div class="col-submitted">@L["Submitted"]</div>
+                    <div class="col-expiry">@L["Expiry"]</div>
+                    <div class="col-actions">@L["Actions"]</div>
                 </div>
 
                 @foreach (var activity in _pagedData.Items)
@@ -230,13 +227,10 @@
                             <MudSelectItem Value="50">50</MudSelectItem>
                         </MudSelect>
 
-                        <!-- Page Counter -->
                         <MudText Typo="Typo.body2" Class="qa-page-counter">
-                            @* Color="Color.Inherit"> *@
                             Page @(_currentPage + 1) of @TotalPages
                         </MudText>
 
-                        <!-- Pagination -->
                         <MudPagination Count="@TotalPages"
                                        SelectedChanged="@(async p => await OnPaginationChanged(p))"
                                        ShowFirstButton="true"

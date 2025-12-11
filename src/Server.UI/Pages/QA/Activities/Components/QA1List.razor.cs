@@ -14,6 +14,8 @@ public partial class QA1List
     private GridData<ActivityQueueEntryDto>? _pagedData;
     private int _currentPage;
 
+    private HashSet<Guid> ExpandedRows { get; } = [];
+
     private int TotalPages =>
         (_pagedData!.TotalItems + _defaultPageSize - 1) / _defaultPageSize;
 
@@ -55,10 +57,7 @@ public partial class QA1List
         }
     }
 
-    private void ViewParticipant(ActivityQueueEntryDto dto)
-    {
-        Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
-    }
+    private void ViewParticipant(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
 
     private async Task OnSearch(string text)
     {
@@ -89,9 +88,6 @@ public partial class QA1List
         }
     }
     
-    // track expanded rows by ActivityId
-    private HashSet<Guid> ExpandedRows { get; } = [];
-
     private void ToggleRow(Guid activityId)
     {
         if (!ExpandedRows.Remove(activityId))
