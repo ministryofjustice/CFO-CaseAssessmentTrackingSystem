@@ -67,6 +67,7 @@ jobs:
           mkdir -p deploy
           envsubst < infra/rabbitmq-deployment.yml > deploy/rabbitmq-deployment.yml
           envsubst < infra/rabbitmq-service.yml > deploy/rabbitmq-service.yml
+          envsubst < infra/migrator-job.yml > deploy/migrator-job.yml
           envsubst < infra/cats-deployment.yml > deploy/cats-deployment.yml
           envsubst < infra/cats-ingress.yml > deploy/cats-ingress.yml
           envsubst < infra/cats-service.yml > deploy/cats-service.yml
