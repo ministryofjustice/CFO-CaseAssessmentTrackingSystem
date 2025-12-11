@@ -32,7 +32,7 @@ var cats = builder.AddProject<Projects.Server_UI>("cats", configure: project =>
     })
     .WithReference(catsDb)
     .WithReference(rabbit)
-    .WaitForCompletion(migrator);
+    .WaitFor(migrator);
 
 if (publishing)
 {

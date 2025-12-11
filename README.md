@@ -51,7 +51,7 @@ This has been developed on Windows 11 using Visual Studio 2022, Visual Studio Co
 ## Running the apps
 The recommended way to run and debug these apps is using .NET Aspire.
 - **Using Visual Studio Code**: open the project and press `F5`, selecting the *Default Configuration*.
-- **Using Visual Studio or other IDEs**: From the debug configuration dropdown, select `Aspire.AppHost` and start the application.
+- **Using Visual Studio or other IDEs**: From the debug configuration dropdown, select `Cats.AppHost` and start the application.
 ---
 
 ## Publishing (preview)
