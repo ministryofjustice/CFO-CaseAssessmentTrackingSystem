@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: port-forward-deployment
+  labels:
+    app: portforward
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: port-forward
+  template:
+    metadata:
+      labels:
+        app: port-forward
+    spec:
+      containers:
+        - name: port-forward
+          image: ministryofjustice/port-forward
+          ports:
+            - containerPort: 11433   # this is your LOCAL_PORT inside the pod
+          env:
+            - name: REMOTE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: rds-mssql-instance-output
+                  key: rds_instance_address
+            - name: LOCAL_PORT
+              value: "11433"         # what the pod listens on
+            - name: REMOTE_PORT
+              value: "1433"          # SQL Server in the cloud

@@ -249,13 +249,17 @@ public static class DependencyInjection
 
         services.Configure<NotifyOptions>(configuration.GetSection(NotifyOptions.Notify));
 
-        if(configuration.GetSection("AWS") is {} section && section.Exists())
+        var options = configuration.GetAWSOptions();
+
+        string? accessKey = configuration.GetValue<string>("AWS:AccessKey");
+        string? secretKey = configuration.GetValue<string>("AWS:SecretKey");
+
+        if (string.IsNullOrEmpty(accessKey) is false && string.IsNullOrEmpty(secretKey) is false)
         {
-            var options = configuration.GetAWSOptions();
-            options.Credentials = new BasicAWSCredentials(section.GetRequiredValue("AccessKey"), section.GetRequiredValue("SecretKey"));
-            services.AddDefaultAWSOptions(options);
-            services.AddAWSService<IAmazonS3>();            
+            options.Credentials = new BasicAWSCredentials(accessKey, secretKey);
         }
+
+        services.AddDefaultAWSOptions(options);
 
         services.AddHttpClient<ICandidateService, CandidateService>((provider, client) =>
         {
