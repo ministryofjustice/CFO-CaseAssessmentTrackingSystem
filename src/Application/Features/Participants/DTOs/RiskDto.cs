@@ -143,7 +143,7 @@ public class RiskDto
 
     public record class RiskDetail
     {
-        [Description("Risk to Childen")]
+        [Description("Risk to Children")]
         public RiskLevel? RiskToChildren { get; set; }
         [Description("Risk to Public")]
         public RiskLevel? RiskToPublic { get; set; }
