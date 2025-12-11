@@ -15,6 +15,8 @@ public partial class QA2List
     private GridData<ActivityQueueEntryDto>? _pagedData;
     private int _currentPage;
 
+    private HashSet<Guid> ExpandedRows { get; } = new();
+
     private int TotalPages =>
         (_pagedData!.TotalItems + _defaultPageSize - 1) / _defaultPageSize;
     
@@ -36,11 +38,8 @@ public partial class QA2List
         StateHasChanged();
     }
     
-    private void ViewParticipant(ActivityQueueEntryDto dto)
-    {
-        Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
-    }
-    
+    private void ViewParticipant(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
+
     private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state)
     {
         try
@@ -89,9 +88,6 @@ public partial class QA2List
             await LoadPage();
         }
     }
-    
-    // track expanded rows by ActivityId
-    private HashSet<Guid> ExpandedRows { get; } = new();
 
     private void ToggleRow(Guid activityId)
     {

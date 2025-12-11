@@ -3,13 +3,10 @@
 
 @inherits CatsComponentBase;
 
+@attribute [Authorize(Policy = SecurityPolicies.Qa2)]
 @inject IStringLocalizer<PQA> L
 
-@attribute [Authorize(Policy = SecurityPolicies.Qa2)]
-
-
 <style>
-    /* Header and row alignment using flex, no wrap */
     .qa-header, .qa-row {
         display: flex;
         align-items: center;
@@ -18,7 +15,7 @@
         font-size: 0.85rem;
         padding: 8px 12px;
         overflow: hidden;
-        flex-wrap: nowrap; /* No wrapping */
+        flex-wrap: nowrap; 
     }
 
     .qa-header {
@@ -29,8 +26,7 @@
     .qa-row {
         border-radius: 6px;
     }
-
-    /* Columns: flex-grow for shrinking proportionally, min-width for limit */
+    
     .col-expand      { flex: 0 0 40px; }
     .col-participant { flex: 1 1 160px; min-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .col-activity    { flex: 1 1 130px; min-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -42,14 +38,13 @@
     .col-assignedTo  { flex: 1 1 110px; min-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .col-actions     { flex: 0 0 60px; margin-left: auto; overflow: hidden; }
 
-    /* Ensure text stays on one line */
     .qa-row div, .qa-header div {
         white-space: nowrap;
     }
 
     .qa-pager-row {
         display: flex;
-        justify-content: flex-end; /* everything aligned to right */
+        justify-content: flex-end; 
         align-items: center;
         gap: 12px;
         width: 100%;
@@ -67,7 +62,6 @@
         white-space: nowrap;
     }
 
-    /*.qa-pager-right .mud-pagination,*/
     .qa-pager-right,
     .qa-pager-right .mud-pagination ul {
         display: inline-flex !important;
@@ -76,7 +70,6 @@
         padding: 0;
     }
 
-    /*.qa-pager-right .mud-pagination button.mud-button-root {*/
     .qa-pager-right .mud-pagination button {
         min-width: 36px !important;
         padding: 0 6px !important;
@@ -125,20 +118,19 @@
             }
             else
             {
-                <!-- Headers -->
                 <div class="qa-header">
                     <div class="col-expand"></div>
-                    <div class="col-participant">Participant</div>
-                    <div class="col-activity">Activity</div>
-                    <div class="col-worker">Support Worker</div>
-                    <div class="col-tenant">Tenant</div>
-                    <div class="col-commenced">Commenced On</div>
-                    <div class="col-submitted">Submitted</div>
-                    <div class="col-expiry">Expiry</div>
-                    <div class="col-assignedTo">Assigned To</div>
-                    <div class="col-actions">Actions</div>
+                    <div class="col-participant">@L["Participant"]</div>
+                    <div class="col-activity">@L["Activity"]</div>
+                    <div class="col-worker">@L["Support Worker"]</div>
+                    <div class="col-tenant">@L["Tenant"]</div>
+                    <div class="col-commenced">@L["Commenced On"]</div>
+                    <div class="col-submitted">@L["Submitted"]</div>
+                    <div class="col-expiry">@L["Expiry"]</div>
+                    <div class="col-assignedTo">@L["Assigned To"]</div>
+                    <div class="col-actions">@L["Actions"]</div>
                 </div>
-
+                
                 @foreach (var activity in _pagedData.Items)
                 {
                     <div class="qa-row mb-2">
@@ -239,13 +231,10 @@
                         </MudSelect>
 
 
-                        <!-- Page Counter -->
                         <MudText Typo="Typo.body2" Class="qa-page-counter">
-                            @* Color="Color.Inherit"> *@
                             Page @(_currentPage + 1) of @TotalPages
                         </MudText>
 
-                        <!-- Pagination -->
                         <MudPagination Count="@TotalPages"
                                        SelectedChanged="@(async p => await OnPaginationChanged(p))"
                                        ShowFirstButton="true"
