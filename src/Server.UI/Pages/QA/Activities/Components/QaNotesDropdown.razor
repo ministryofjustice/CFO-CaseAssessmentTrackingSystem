@@ -26,7 +26,7 @@ else
                     <MudCardContent>
                         <MudText Typo="Typo.body2">@note.Message</MudText>
                         <MudText Typo="Typo.caption">
-                            @(hideUser && CFOTenantNames.Contains(note.TenantName)
+                            @(_hideUser && _cfoTenantNames.Contains(note.TenantName)
                                 ? $"CFO User ({note.TenantName}) · {note.Created.Humanize()}"
                                 : $"{note.CreatedBy} ({note.TenantName}) · {note.Created.Humanize()}")
                         </MudText>
@@ -46,13 +46,13 @@ else
 
     private ActivityQaNoteDto[]? _notes;
 
-    private bool hideUser = true;
-    private HashSet<string> CFOTenantNames = new() { "CFO", "CFO Evolution" };
-    private string[] allowed = { RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport };
+    private bool _hideUser = true;
+    private readonly HashSet<string> _cfoTenantNames = ["CFO", "CFO Evolution"];
+    private readonly string[] _allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
 
     protected override async Task OnParametersSetAsync()
     {
-        if (ActivityId == null || UserProfile == null || _notes != null)
+        if (ActivityId == null || _notes != null)
             return;
 
         var state = await AuthState;
@@ -61,7 +61,7 @@ else
         var result = await GetNewMediator().Send(new GetActivityQaNotes.Query()
         {
             ActivityId = ActivityId,
-            CurentUser = UserProfile,
+            CurrentUser = UserProfile,
             IncludeInternalNotes = includeInternalNotes
         });
 
@@ -70,8 +70,7 @@ else
             _notes = result.Data!.OrderBy(n => n.Created).ToArray();
         }
 
-        if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
-            hideUser = false;
+        if (UserProfile.AssignedRoles.Any(r => _allowed.Contains(r)))
+            _hideUser = false;
     }
-
 }
