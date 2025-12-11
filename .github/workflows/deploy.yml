@@ -32,9 +32,6 @@ jobs:
       - name: Test
         run: dotnet test --configuration Release --no-build --verbosity normal
 
-      - name: Publish
-        run: dotnet publish --configuration Release --no-build --output ./publish
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5.1.1
         with:
@@ -45,14 +42,25 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
         id: login-ecr
 
-      - name: Build and Push Docker Image
+      - name: Build and Push Server.UI Container
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ github.sha }}
+          dotnet publish src/Server.UI/Server.UI.csproj \
+            --configuration Release \
+            --no-build \
+            /t:PublishContainer \
+            /p:ContainerRegistry=${{ steps.login-ecr.outputs.registry }} \
+            /p:ContainerRepository=${{ vars.ECR_REPOSITORY }} \
+            /p:ContainerImageTag=cats-${{ github.sha }}
+      
+      - name: Build and Push DatabaseMigrator Container
+        run: |
+          dotnet publish src/DatabaseMigrator/DatabaseMigrator.csproj \
+            --configuration Release \
+            --no-build \
+            /t:PublishContainer \
+            /p:ContainerRegistry=${{ steps.login-ecr.outputs.registry }} \
+            /p:ContainerRepository=${{ vars.ECR_REPOSITORY }} \
+            /p:ContainerImageTag=migrator-${{ github.sha }}
       
       - name: Generate Kubernetes Manifests
         run: |

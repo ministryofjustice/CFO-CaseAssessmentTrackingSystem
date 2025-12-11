@@ -17,7 +17,7 @@ spec:
       serviceAccountName: ${NAMESPACE}
       containers:
         - name: cats
-          image: ${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}
+          image: ${REGISTRY}/${REPOSITORY}:cats-${IMAGE_TAG}
           ports:
             - containerPort: 8080
           env:
@@ -53,8 +53,6 @@ spec:
                   key: RABBIT_PASS
             - name: DOTNET_ENVIRONMENT
               value: "Development"
-            - name: UseDummyCandidateService # todo
-              value: "true"
             - name: ConnectionStrings__CatsDb
               value: "Server=$(DATABASE_ADDRESS);Database=CatsDb;User Id=$(DATABASE_USERNAME);Password=$(DATABASE_PASSWORD);TrustServerCertificate=True;"
             - name: ConnectionStrings__rabbit
