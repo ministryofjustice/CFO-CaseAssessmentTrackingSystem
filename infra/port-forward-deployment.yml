@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: port-forward-deployment
   labels:
-    app: portforward
+    app: port-forward
 spec:
   replicas: 1
   selector:
