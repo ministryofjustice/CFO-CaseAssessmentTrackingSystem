@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cats-service
+spec:
+  selector:
+    app: cats # this should match the pod label in deployment.yml
+  ports:
+    - name: https
+      port: 8080
+      targetPort: 8080
