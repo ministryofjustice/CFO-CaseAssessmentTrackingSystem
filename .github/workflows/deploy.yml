@@ -73,6 +73,7 @@ jobs:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ vars.ECR_REPOSITORY }}
           NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+          DOTNET_ENVIRONMENT: "Development"
       
       - name: Deploy to Kubernetes
         run: |
