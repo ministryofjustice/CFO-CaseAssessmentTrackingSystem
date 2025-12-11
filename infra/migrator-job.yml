@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrator-job
+  labels:
+    app: migrator
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels:
+        app: migrator
+    spec:
+      serviceAccountName: ${NAMESPACE}
+      restartPolicy: Never
+      containers:
+        - name: migrator
+          image: ${REGISTRY}/${REPOSITORY}:migrator-${IMAGE_TAG}
+          env:
+            - name: DATABASE_ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: rds-mssql-instance-output
+                  key: rds_instance_address
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: rds-mssql-instance-output
+                  key: database_username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rds-mssql-instance-output
+                  key: database_password
+            - name: DOTNET_ENVIRONMENT
+              value: "Development"
+            - name: ConnectionStrings__CatsDb
+              value: "Server=$(DATABASE_ADDRESS);Database=CatsDb;User Id=$(DATABASE_USERNAME);Password=$(DATABASE_PASSWORD);TrustServerCertificate=True;"
