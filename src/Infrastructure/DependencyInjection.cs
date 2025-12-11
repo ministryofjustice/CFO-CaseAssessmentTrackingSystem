@@ -260,6 +260,7 @@ public static class DependencyInjection
         }
 
         services.AddDefaultAWSOptions(options);
+        services.AddAWSService<IAmazonS3>();
 
         services.AddHttpClient<ICandidateService, CandidateService>((provider, client) =>
         {
