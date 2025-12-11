@@ -34,6 +34,6 @@ spec:
                   name: rds-mssql-instance-output
                   key: database_password
             - name: DOTNET_ENVIRONMENT
-              value: "Development"
+              value: "${DOTNET_ENVIRONMENT}"
             - name: ConnectionStrings__CatsDb
               value: "Server=$(DATABASE_ADDRESS);Database=CatsDb;User Id=$(DATABASE_USERNAME);Password=$(DATABASE_PASSWORD);TrustServerCertificate=True;"
