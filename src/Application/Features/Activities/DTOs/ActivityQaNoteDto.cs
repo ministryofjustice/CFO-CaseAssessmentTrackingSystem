@@ -2,6 +2,7 @@
 
 namespace Cfo.Cats.Application.Features.Activities.DTOs;
 #nullable disable
+
 public class ActivityQaNoteDto
 {
     public required DateTime Created { get; set; }
@@ -9,17 +10,29 @@ public class ActivityQaNoteDto
     public required string CreatedBy { get; set; }
     public required string TenantName { get; set; }
     public required bool IsExternal { get; set; }
-    public bool IsExpanded { get; set; } = false;
-
-    private class Mapper : Profile
+    
+    public bool IsExpanded { get; set; }
+    
+    public static ActivityQaNoteDto FromEntity(ActivityQueueEntryNote entity)
     {
-        public Mapper()
+        if (entity is null)
         {
-            CreateMap<ActivityQueueEntryNote, ActivityQaNoteDto>()                
-                .ForMember(target => target.CreatedBy, options => options.MapFrom(source => source.CreatedByUser.DisplayName))
-                .ForMember(target => target.Message, options => options.MapFrom(source => source.Message))
-                .ForMember(target => target.Created, options => options.MapFrom(source => source.Created))
-                .ForMember(target => target.TenantName, options => options.MapFrom(source => source.CreatedByUser.TenantName));
+            throw new ArgumentNullException(nameof(entity));
         }
+
+        if (entity.CreatedByUser is null)
+        {
+            throw new InvalidOperationException("CreatedByUser cannot be null when mapping ActivityQueueEntryNote.");
+        }
+        
+        return new ActivityQaNoteDto
+        {
+            Created = entity.Created ?? DateTime.MinValue,
+            Message = entity.Message,
+            CreatedBy = entity?.CreatedByUser?.DisplayName ?? string.Empty,
+            TenantName = entity?.CreatedByUser?.TenantName ?? string.Empty,
+            IsExternal = entity.IsExternal,
+            IsExpanded = false
+        };
     }
 }
