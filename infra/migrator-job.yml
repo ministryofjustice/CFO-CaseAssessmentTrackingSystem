@@ -14,10 +14,19 @@ spec:
     spec:
       serviceAccountName: ${NAMESPACE}
       restartPolicy: Never
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1001 
+        runAsGroup: 1001  
+        runAsNonRoot: true
       containers:
         - name: migrator
           image: ${REGISTRY}/${REPOSITORY}:migrator-${IMAGE_TAG}
-          env:
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+          env:   
             - name: DATABASE_ADDRESS
               valueFrom:
                 secretKeyRef:
