@@ -28,6 +28,9 @@ spec:
           ports:
             - containerPort: 5672
             - containerPort: 15672
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
           env:
             - name: RABBITMQ_DEFAULT_USER
               valueFrom:
@@ -39,13 +42,3 @@ spec:
                 secretKeyRef:
                   name: config
                   key: RABBIT_PASS
-          volumeMounts:
-            - name: rabbitmq-data
-              mountPath: /var/lib/rabbitmq
-          securityContext:
-            allowPrivilegeEscalation: false
-            privileged: false
-      volumes:
-        - name: rabbitmq-data
-          persistentVolumeClaim:
-            claimName: rabbitmq-pvc
