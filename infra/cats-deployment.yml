@@ -14,12 +14,21 @@ spec:
       labels:
         app: cats # this should match the selector in service.yml
     spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1001 
+        runAsGroup: 1001  
+        runAsNonRoot: true
       serviceAccountName: ${NAMESPACE}
       containers:
         - name: cats
           image: ${REGISTRY}/${REPOSITORY}:cats-${IMAGE_TAG}
           ports:
             - containerPort: 8080
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false              
           env:
             - name: DATABASE_ADDRESS
               valueFrom:
