@@ -1,0 +1,27 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Application/Application.csproj" />
+    <Project Path="src/DatabaseMigrator/DatabaseMigrator.csproj" />
+    <Project Path="src/Domain/Domain.csproj" />
+    <Project Path="src/Infrastructure/Infrastructure.csproj" />
+    <Project Path="src/Server.UI/Server.UI.csproj" />
+  </Folder>
+  <Folder Name="/src/Aspire/">
+    <Project Path="src/Aspire/Cats.AppHost/Cats.AppHost.csproj" />
+    <Project Path="src/Aspire/Cats.ServiceDefaults/Cats.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/Application.UnitTests/Application.UnitTests.csproj" />
+    <Project Path="test/ArchitectureTests/ArchitectureTests.csproj" />
+  </Folder>
+</Solution>

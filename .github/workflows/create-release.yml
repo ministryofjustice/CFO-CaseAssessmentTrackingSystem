@@ -29,13 +29,13 @@ jobs:
         dotnet-version: '10.0.x'
 
     - name: Restore
-      run: dotnet restore ./cats.sln
+      run: dotnet restore ./cats.slnx
 
     - name: Build
-      run: dotnet build ./cats.sln --configuration Release --no-restore
+      run: dotnet build ./cats.slnx --configuration Release --no-restore
 
     - name: Test
-      run: dotnet test ./cats.sln --configuration Release --no-build --no-restore
+      run: dotnet test ./cats.slnx --configuration Release --no-build --no-restore
 
     - name: Publish UI
       run: dotnet publish ./src/Server.UI/Server.UI.csproj --configuration Release --output ./artifacts/Server.UI --no-restore --no-build
