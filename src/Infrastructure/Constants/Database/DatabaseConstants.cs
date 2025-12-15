@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 namespace Cfo.Cats.Infrastructure.Constants.Database;
 
 internal static class DatabaseConstants
@@ -39,6 +37,7 @@ internal static class DatabaseConstants
         public const string ObjectiveTask = nameof(ObjectiveTask);
         public const string PathwayPlan = nameof(PathwayPlan);
         public const string PathwayPlanReviewHistory = nameof(PathwayPlanReviewHistory);
+        public const string PathwayPlanReview = nameof(PathwayPlanReview);
         public const string PersonalDetails = nameof(PersonalDetails);
         public const string Supervisor = nameof(Supervisor);
         public const string LocationHistory = nameof(LocationHistory);
@@ -152,8 +151,5 @@ internal static class DatabaseConstants
         /// The maximum length for a contract id.
         /// </summary>
         public const int ContractId = 12;
-
     }
-
 }
-
