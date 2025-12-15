@@ -156,7 +156,7 @@ public static class GetActivitiesAdvisoriesToProvider
                             .AsNoTracking()
                             .ToArrayAsync(cancellationToken);
 
-            return new ActivitiesAdvisoriesToProviderDto(result);
+            return new ActivitiesAdvisoriesToProviderDto(result.ToList());
 
         }
 
@@ -164,25 +164,24 @@ public static class GetActivitiesAdvisoriesToProvider
 
     public record ActivitiesAdvisoriesToProviderDto
     {
-        public ActivitiesAdvisoriesToProviderDto(ActivitiesAdvisoriesTabularData[] tabularData)
+        public ActivitiesAdvisoriesToProviderDto(List<ActivitiesAdvisoriesTabularData> tabularData)
         {
             TabularData = tabularData;
             
             ChartData = tabularData
-                .GroupBy(td => new { td.ContractName, td.Queue, td.ActivityType })
+                .GroupBy(td => new { td.ContractName, td.ActivityType })
                 .OrderBy(g => g.Key.ContractName)
-                .ThenBy(g => g.Key.Queue)
                 .ThenBy(g => g.Key.ActivityType?.Name)
                 .Select(g => new ActivitiesAdvisoriesChartData
                 {
                     ContractName = g.Key.ContractName,
-                    Queue = g.Key.Queue,
                     ActivityType = g.Key.ActivityType,
-                    Count = g.Count()
+                    EscalationQueue = g.Count(x => x.Queue == "Escalation"),
+                    QA2Queue = g.Count(x => x.Queue == "QA2")
                 })
                 .ToArray();
         }
-        public ActivitiesAdvisoriesTabularData[] TabularData { get;}
+        public List<ActivitiesAdvisoriesTabularData> TabularData { get;}
         public ActivitiesAdvisoriesChartData[] ChartData { get;}
     }
 
@@ -209,8 +208,8 @@ public static class GetActivitiesAdvisoriesToProvider
     {
         public string? ContractName { get; set; }
         public ActivityType? ActivityType { get; set; }
-        public string? Queue { get; set; }
-        public int Count { get; set; }
+        public int EscalationQueue { get; set; }
+        public int QA2Queue { get; set; }
     }
 
 }
