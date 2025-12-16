@@ -1,9 +1,5 @@
-@using Cfo.Cats.Application.Features.PathwayPlans.Commands
 @using Cfo.Cats.Application.Features.PathwayPlans.DTOs
-@using Cfo.Cats.Application.Features.PathwayPlans.Queries
-@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Objectives
-@using Cfo.Cats.Server.UI.Pages.Objectives.Tasks
 @using Humanizer
 
 @inherits CatsComponentBase
@@ -32,7 +28,7 @@
                     <div class="d-flex flex-column">
                         @if (ParticipantIsActive)
                         {
-                            <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="ReviewPathwayPlan">Review Pathway Plan</MudButton>
+                            <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="@ReviewPathwayPlan">Review Pathway Plan</MudButton>
                         }
                         @if(Model.LastReviewed.HasValue)
                         {
@@ -41,35 +37,35 @@
                     </div>
                 </div>
                 <div class="d-flex flex-column flex-sm-row align-center gap-2 mt-6">
-                    <MudSelect @bind-Value="selector" Label="Sort objectives by" Disabled="Model.Objectives.Any() is false" >
+                    <MudSelect @bind-Value="_selector" Label="Sort objectives by" Disabled="Model.Objectives.Any() is false" >
                         <MudSelectItem Value="@("Created")">Date added</MudSelectItem>
                         <MudSelectItem Value="@("Title")">Title</MudSelectItem>
                         <MudSelectItem Value="@("Outstanding")">No. of outstanding tasks</MudSelectItem>
                     </MudSelect>
-                        <MudSelect @bind-Value="sortDirection" Label="Direction" Disabled="Model.Objectives.Any() is false" >
+                        <MudSelect @bind-Value="_sortDirection" Label="Direction" Disabled="Model.Objectives.Any() is false" >
                         <MudSelectItem Value="SortDirection.Ascending">Ascending</MudSelectItem>
                         <MudSelectItem Value="SortDirection.Descending">Descending</MudSelectItem>
                     </MudSelect>
                     <MudSpacer />
                     <div class="d-flex flex-column">
-                        <MudCheckBox @bind-Value="hideCompletedObjectives" Label="Hide completed objectives" Disabled="Model.Objectives.Any() is false" />
-                        <MudCheckBox @bind-Value="hideCompletedTasks" Label="Hide completed tasks" Disabled="Model.Objectives.SelectMany(x => x.Tasks).Any() is false" />
+                        <MudCheckBox @bind-Value="_hideCompletedObjectives" Label="Hide completed objectives" Disabled="Model.Objectives.Any() is false" />
+                        <MudCheckBox @bind-Value="_hideCompletedTasks" Label="Hide completed tasks" Disabled="Model.Objectives.SelectMany(x => x.Tasks).Any() is false" />
                     </div>
                 </div>
                 <MudDivider Class="mt-6" />
             </MudListSubheader>
             @foreach (var objective in Model.Objectives
-           .Where(objective => objective.IsCompleted is false || hideCompletedObjectives is false)
-           .OrderByDirection(sortDirection, selectors[selector]))
+           .Where(objective => objective.IsCompleted is false || _hideCompletedObjectives is false)
+           .OrderByDirection(_sortDirection, _selectors[_selector]))
             {
-                <Objective Model="objective" HideCompletedTasks="hideCompletedTasks" ParticipantId="@Model.ParticipantId" ParticipantIsActive="@ParticipantIsActive" OnChange="async() => await OnRefresh()" />
+                <Objective Model="objective" HideCompletedTasks="_hideCompletedTasks" ParticipantId="@Model.ParticipantId" ParticipantIsActive="@ParticipantIsActive" OnChange="async() => await OnRefresh()" />
                 <MudDivider />
             }
         </MudList>
     </MudPaper>
 }
 
-@if(loading)
+@if(_loading)
 {
     <MudPaper>
         <MudText>@ConstantString.Loading</MudText>

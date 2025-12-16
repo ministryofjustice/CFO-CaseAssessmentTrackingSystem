@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.PathwayPlans.Commands;
@@ -10,22 +11,30 @@ public static class ReviewPathwayPlan
     public class Command : IRequest<Result>
     {
         public required Guid PathwayPlanId { get; set; }
+        public required string ParticipantId { get; set; }
+        public LocationDto? Location { get; set; }
+        public required DateTime? ReviewDate { get; set; }
+        public string? Review { get; set; }
+        public required PathwayPlanReviewReason ReviewReason { get; set; } = PathwayPlanReviewReason.Default;
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            var pathwayPlan = await unitOfWork.DbContext.PathwayPlans.FirstOrDefaultAsync(x => x.Id == request.PathwayPlanId);
+            var pathwayPlan = await unitOfWork.DbContext.PathwayPlans.FirstOrDefaultAsync(x => x.Id == request.PathwayPlanId, cancellationToken);
 
-            if(pathwayPlan is null)
+            if (pathwayPlan is not null)
             {
-                throw new NotFoundException("Cannot find pathway plan", request.PathwayPlanId);
+                pathwayPlan.Review(request.PathwayPlanId, request.ParticipantId, request.Location!.Id,
+                    request.ReviewDate!.Value, request.Review, request.ReviewReason);
+
+                await unitOfWork.SaveChangesAsync(cancellationToken);
+
+                return Result.Success();
             }
 
-            pathwayPlan.Review();
-
-            return Result.Success();
+            throw new NotFoundException("Cannot find pathway plan", request.PathwayPlanId);
         }
     }
 
@@ -47,6 +56,11 @@ public static class ReviewPathwayPlan
                     .MustAsync(ParticipantMustNotBeArchived)
                     .WithMessage("Participant is archived");
             });
+            
+            RuleFor(x => x.ReviewReason)
+                .NotNull()
+                .Must(r => r.IsValidSelection())
+                .WithMessage("A review reason must be selected.");
         }
 
         private async Task<bool> ParticipantMustNotBeArchived(Guid pathwayPlanId, CancellationToken cancellationToken)
@@ -58,7 +72,7 @@ public static class ReviewPathwayPlan
                                        select p.Id
                                        )
                             .AsNoTracking()
-                            .FirstOrDefaultAsync();
+                            .FirstOrDefaultAsync(cancellationToken);
 
             return participantId != null;
         }

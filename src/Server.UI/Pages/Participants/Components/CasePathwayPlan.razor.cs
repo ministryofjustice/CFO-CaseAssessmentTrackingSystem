@@ -1,33 +1,33 @@
 using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.Queries;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Pages.Objectives;
-using FluentValidation;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
 public partial class CasePathwayPlan
 {
-    private bool loading;
-    private bool hideCompletedObjectives = false;
-    private bool hideCompletedTasks = false;
+    private bool _loading;
+    private bool _hideCompletedObjectives;
+    private bool _hideCompletedTasks;
 
-    private string selector = "Created";
-    private Dictionary<string, Func<ObjectiveDto, dynamic>> selectors = new()
+    private string _selector = "Created";
+    private Dictionary<string, Func<ObjectiveDto, dynamic>> _selectors = new()
     {
         { "Created", (objective) => objective.Created },
         { "Title", (objective) => objective.Description },
         { "Outstanding", (objective) => objective.Tasks.Where(task => task.IsCompleted is false).Count() },
     };
 
-    private SortDirection sortDirection = SortDirection.Ascending;
+    private SortDirection _sortDirection = SortDirection.Ascending;
 
     [Parameter, EditorRequired]
     public required string ParticipantId { get; set; }
 
     [Parameter, EditorRequired]
-    public bool ParticipantIsActive { get; set; } = default!;
+    public bool ParticipantIsActive { get; set; }
 
     public PathwayPlanDto? Model { get; set; }
 
@@ -39,14 +39,14 @@ public partial class CasePathwayPlan
 
     private async Task OnRefresh(bool firstRender = false)
     {
-        loading = true;
+        _loading = true;
 
         try
         {
             Model = await GetNewMediator().Send(new GetPathwayPlanByParticipantId.Query()
             {
                 ParticipantId = ParticipantId
-            });
+                           });
 
             if (firstRender is false)
             {
@@ -55,7 +55,7 @@ public partial class CasePathwayPlan
         }
         finally
         {
-            loading = false;
+            _loading = false;
         }
     }
 
@@ -74,9 +74,7 @@ public partial class CasePathwayPlan
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true, BackdropClick = false };
         var dialog = await DialogService.ShowAsync<AddObjectiveDialog>("Add thematic objective", parameters, options);
 
-        var state = await dialog.Result;
-
-        if (state!.Canceled is false)
+        if (await dialog.Result is { Canceled: false })
         {
             var result = await GetNewMediator().Send(command);
 
@@ -92,38 +90,37 @@ public partial class CasePathwayPlan
         }
     }
 
-    public async Task ReviewPathwayPlan()
+    private async Task ReviewPathwayPlan()
     {
-        var command = new ReviewPathwayPlan.Command()
+        var command = new ReviewPathwayPlan.Command
         {
-            PathwayPlanId = Model!.Id
+            PathwayPlanId = Model!.Id,
+            ParticipantId = ParticipantId,
+            ReviewDate = DateTime.UtcNow,
+            ReviewReason = PathwayPlanReviewReason.Default
         };
 
-        var state = await DialogService.ShowMessageBox(
-        title: "Review Pathway",
-        message: "I confirm I have reviewed all objectives/tasks and they are still relevant to the participants' pathway plan.",
-        options: new DialogOptions
+        var parameters = new DialogParameters<ReviewPathwayPlanDialog>()
         {
-            MaxWidth = MaxWidth.Small,
-            FullWidth = true,
-            CloseButton = true
-        },
-        yesText: "Review",
-        cancelText: "Cancel");
+            { x => x.Model, command }
+        };
 
-        if (state is true)
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        
+        var dialog = await DialogService.ShowAsync<ReviewPathwayPlanDialog>("Review Pathway Plan", parameters, options);
+      
+        if (await dialog.Result is { Canceled: false })
         {
             var result = await GetNewMediator().Send(command);
 
             if (result.Succeeded)
             {
-
                 Snackbar.Add(ConstantString.PathwayPlanSuccessfullyReviewed, Severity.Info);
                 await OnRefresh();
             }
             else
             {
-                Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
+                Snackbar.Add(result.ErrorMessage, Severity.Error);
             }
         }
     }
