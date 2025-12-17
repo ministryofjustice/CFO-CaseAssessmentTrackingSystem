@@ -31,8 +31,16 @@ var cats = builder.AddProject<Projects.Server_UI>("cats", configure: project =>
         project.ExcludeLaunchProfile = publishing;
     })
     .WithReference(catsDb)
-    .WithReference(rabbit)
-    .WaitFor(migrator);
+    .WithReference(rabbit);
+
+if(builder.Configuration["MigrationBehaviour"] is "WaitForCompletion")
+{
+    cats.WaitForCompletion(migrator);
+}
+else
+{
+    cats.WaitFor(migrator);
+}
 
 if (publishing)
 {
