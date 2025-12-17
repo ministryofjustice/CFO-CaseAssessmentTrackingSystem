@@ -1,0 +1,74 @@
+﻿@using Cfo.Cats.Server.UI.Components.Participants;
+@using Cfo.Cats.Application.Features.Participants.DTOs;
+@using Humanizer
+
+@inherits ParticipantComponent<PathwayPlanReviewHistoryDto[]>
+
+@if (Loading)
+{
+    <MudLoading Text="Loading"/>
+}
+
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@if (Data is not null)
+{
+    <MudDataGrid Items="@Data" Striped="true">
+        <Columns>
+            <HierarchyColumn T="PathwayPlanReviewHistoryDto"></HierarchyColumn>
+            <TemplateColumn Title="Created" Sortable="true" SortBy="x => x.ReviewDate">
+                <CellTemplate>
+                    <MudStack>
+                        <MudText>
+                            @context.Item.ReviewedBy 
+                        </MudText>
+                        <MudText>
+                            @context.Item.ReviewDate.ToShortDateString()
+                        </MudText>
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Review Reason" Sortable="true" SortBy="x => x.ReviewReason?.Name">
+                <CellTemplate>
+                    <MudChip Size="Size.Small" Color="Color.Primary">
+                        @context.Item.ReviewReason  
+                    </MudChip>
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Review" Sortable="true" SortBy="x => x.Review">
+                <CellTemplate>
+                    @context.Item.Review
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Since Last Review" Sortable="true" SortBy="x => x.DaysSinceLastReview">
+                <CellTemplate>
+                        @if (context.Item.DaysSinceLastReview > 6)
+                        {
+                            <MudText>
+                                @TimeSpan.FromDays(context.Item.DaysSinceLastReview).Humanize(minUnit: TimeUnit.Week)
+                            </MudText>
+                        }
+                        else
+                        {
+                            <MudText> 
+                                @(context.Item.DaysSinceLastReview > 1 ? $"{context.Item.DaysSinceLastReview} days" : $"{context.Item.DaysSinceLastReview} day")
+                            </MudText>
+                        }
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="x => x.LocationName" Title="Location" Sortable="true"/>
+ 
+        </Columns>
+        <NoRecordsContent>
+            <MudText>@ConstantString.NoRecords</MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            <MudDataGridPager T="PathwayPlanReviewHistoryDto" />
+        </PagerContent>
+    </MudDataGrid>
+}
