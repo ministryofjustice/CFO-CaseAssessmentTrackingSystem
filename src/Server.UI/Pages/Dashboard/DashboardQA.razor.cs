@@ -19,7 +19,9 @@ public partial class DashboardQA
     {
         _showSelect = CurrentUser.AssignedRoles is { Length: > 0 };
 
-        SelectedDisplayName = "Select Tenant";
+        // if the current user has access to select, don't set the selected Tenant.
+        SelectedTenantId = CurrentUser.TenantId;
+        SelectedDisplayName = CurrentUser.TenantName;
     }
     private async Task DisplayOptionsDialog()
 	{
