@@ -32,7 +32,7 @@ public class MenuService : IMenuService
                             {
                                 Title = "Support Worker",
                                 Href = "/pages/dashboard/supportworker/",
-                                PageStatus = PageStatus.Completed
+                                PageStatus = PageStatus.Wip
                             },
                             
                             new()
@@ -42,12 +42,12 @@ public class MenuService : IMenuService
                                 PageStatus = PageStatus.Wip,
                                 Roles = RoleNames.AllExtraPermissions,
                             },
-                            
+
                             new()
                             {
                                 Title = "QA",
                                 Href = "/pages/dashboard/qa/",
-                                PageStatus = PageStatus.Wip,
+                                PageStatus = PageStatus.ComingSoon,
                                 Roles = [RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager],
                             },
                             
@@ -55,10 +55,9 @@ public class MenuService : IMenuService
                             {
                                 Title = "QA - Team",
                                 Href = "/pages/dashboard/qateam/",
-                                PageStatus = PageStatus.Wip,
+                                PageStatus = PageStatus.ComingSoon,
                                 Roles = [RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QASupportManager, RoleNames.QAManager],
                             },
-
                         ],
                     },
 
@@ -323,7 +322,7 @@ public class MenuService : IMenuService
                             {
                                 Title = "Labels",
                                 Href = "/pages/labels",
-                                PageStatus = PageStatus.Wip,
+                                PageStatus = PageStatus.ComingSoon,
                             }
                         ]
                     }
