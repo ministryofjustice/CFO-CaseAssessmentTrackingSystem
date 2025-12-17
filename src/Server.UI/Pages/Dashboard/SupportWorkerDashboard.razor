@@ -91,6 +91,13 @@
 			<MudTabPanel Text="Reassessments" Class="pa-3">
                 <ReassessmentDashboardComponent DateRange="@_dateRange" UserId="@SelectedUserId" @key="SelectedUserId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
+			<MudTabPanel Text="Pathway Plan Reviews" Class="pa-3">
+				<MudAlert Severity="Severity.Info">
+					This page is not affected by the date range selector. It is a list of all cases assigned to @SelectedDisplayName 
+					and their latest pathway plan reviews.
+				</MudAlert>
+				<PathwayPlanReviewDashboardComponent UserId="@SelectedUserId" @key="@SelectedUserId" VisualMode="@_visualMode" />
+            </MudTabPanel>
 
 		</MudTabs>
     }

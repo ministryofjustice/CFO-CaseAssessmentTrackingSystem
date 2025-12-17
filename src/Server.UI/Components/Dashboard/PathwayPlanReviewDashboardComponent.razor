@@ -1,0 +1,149 @@
+@using ActualLab.Fusion.Extensions
+@using ApexCharts
+@using Cfo.Cats.Application.Features.Dashboard.Queries
+@using Cfo.Cats.Domain.Common.Enums
+@using Humanizer
+
+@inherits CatsComponent<GetPathwayPlans.PathwayPlanDto>
+
+@if (Loading)
+{
+    <MudLoading Text="Loading" />
+}
+
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@if (Data is not null && Data.TabularData.Any())
+{
+    <MudGrid Spacing="2">
+        <!-- This is the left column -->
+        <MudItem>
+            <MudChip T="string">Custody (@Data.Custody)</MudChip>
+            <MudChip T="string">Community (@Data.Community)</MudChip>
+        </MudItem>
+    </MudGrid>
+    @if(VisualMode)
+    {
+        <ApexCharts.ApexChart TItem="GetPathwayPlans.LocationDetail" Options="Options" Height="650" Width="@("100%")">
+            <ApexCharts.ApexPointSeries TItem="GetPathwayPlans.LocationDetail"
+                                        Items="Data.ChartData"
+                                        Name="@($"Reviewed ({Data.TotalReviewed})")"
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        XValue="@(e => e.LocationName)"
+                                        YValue="@(e => e.TotalCount - e.OverdueCount)"
+                                        ShowDataLabels="true">
+            </ApexCharts.ApexPointSeries>
+
+            <ApexCharts.ApexPointSeries TItem="GetPathwayPlans.LocationDetail"
+                                        Items="Data.ChartData"
+                                        Name="@($"Reviewed 3+ months ago ({Data.TotalOverdueCount})")"
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        XValue="@(e => e.LocationName)"
+                                        YValue="@(e => e.OverdueCount)"
+                                        ShowDataLabels="true">
+            </ApexCharts.ApexPointSeries>
+        </ApexCharts.ApexChart>
+    }
+    else
+    {
+        <MudTable Items="Data.TabularData" Hover="true" Striped="true">
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetPathwayPlans.PathwayPlanReviewTabularData, object>(x => x.ParticipantCurrentLocation!)">
+                        Participant Location
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetPathwayPlans.PathwayPlanReviewTabularData, object>(x => x.ReviewLocation!)">
+                        Review Location
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetPathwayPlans.PathwayPlanReviewTabularData, object>(x => x.ParticipantName!)">
+                        Participant
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetPathwayPlans.PathwayPlanReviewTabularData, object>(x => x.ReviewReason!.Name!)">
+                        Review Reason
+                    </MudTableSortLabel>
+                </MudTh>                
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetPathwayPlans.PathwayPlanReviewTabularData, object>(x => x.ReviewDate ?? DateTime.MinValue)">
+                        Reviewed On
+                    </MudTableSortLabel>
+                </MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Participant Location">
+                    <MudText Typo="Typo.body2">@context.ParticipantCurrentLocation</MudText>
+                </MudTd>
+                <MudTd DataLabel="Review Location">
+                    <MudText>@context.ReviewLocation</MudText>
+                </MudTd>
+                <MudTd DataLabel="Participant">
+                    <MudStack Row AlignItems="AlignItems.Center">
+                        <MudStack AlignItems="AlignItems.Start" Spacing="0">
+                            <MudStack Row AlignItems="AlignItems.Center" Spacing="0">                
+                                <MudText>@context.ParticipantName</MudText>
+                                <MudChip T="string" Size="MudBlazor.Size.Small" Style="@($"background-color:{context.EnrolmentStatus!.Colour}; color:white;")">
+                                    @context.EnrolmentStatus
+                                </MudChip>
+                            </MudStack>                    
+                            <MudLink Typo="Typo.body2" Href=@($"/pages/participants/{context.ParticipantId}")>
+                                @context.ParticipantId
+                            </MudLink>
+                        </MudStack>
+                    </MudStack>
+                </MudTd>
+                <MudTd DataLabel="Review Reason">
+                    @if (context.ReviewReason != PathwayPlanReviewReason.Default)
+                    {
+                        <MudText>@context.ReviewReason</MudText>
+                    }else{
+                        <MudText>Not reviewed yet</MudText>
+                    }
+                </MudTd>
+                <MudTd DataLabel="Reviewed On">
+                    <MudStack Row AlignItems="AlignItems.Center">
+                        @if (context.ReviewDate != null)
+                        {
+                            <MudText>@context.ReviewDate?.ToShortDateString() by @context.ReviewedBy</MudText>
+                            @if (context.IsOverdue)
+                            {
+                                <MudTooltip Text="Needs review - last reviewed 3+ months ago.">
+                                    <MudIcon Icon="@Icons.Material.Rounded.Warning" Color="Color.Warning" Size="MudBlazor.Size.Small" />
+                                </MudTooltip>
+                            }                                
+                            @if (string.IsNullOrEmpty(context.ReviewNotes) is false)
+                            {
+                                <MudTooltip Text="@context.ReviewNotes">
+                                    <MudIcon Icon="@Icons.Material.Rounded.Info" Color="Color.Info" Size="MudBlazor.Size.Small" />
+                                </MudTooltip>
+                            }
+
+                        }
+                        else
+                        {
+                            <MudText>Not reviewed yet</MudText>
+                        }
+                    </MudStack>                
+                </MudTd>
+            </RowTemplate>
+			<PagerContent>
+				<MudTablePager PageSizeOptions="new int[] { 10, 20, 30 }" />
+			</PagerContent>
+        </MudTable>
+    }
+}
+else
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+}
+
