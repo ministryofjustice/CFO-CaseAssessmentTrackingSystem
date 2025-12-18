@@ -55,6 +55,12 @@ public static class ReviewPathwayPlan
                 RuleFor(x => x.PathwayPlanId)
                     .MustAsync(ParticipantMustNotBeArchived)
                     .WithMessage("Participant is archived");
+                
+                RuleFor(c => c.ReviewDate)
+                    .NotNull().WithMessage("Review date is required")
+                    .MustAsync((command, reviewDate, token) => 
+                        HaveOccurredOnOrAfterLastReview(command.ParticipantId, reviewDate, token))
+                    .WithMessage("The review date cannot be earlier than the most recent review for this participant");
             });
             
             RuleFor(x => x.ReviewReason)
@@ -75,6 +81,26 @@ public static class ReviewPathwayPlan
                             .FirstOrDefaultAsync(cancellationToken);
 
             return participantId != null;
+        }
+        
+        private async Task<bool> HaveOccurredOnOrAfterLastReview(string participantId, DateTime? reviewDate, CancellationToken cancellationToken)
+        {
+            if (reviewDate is null)
+            {
+                return false;
+            }
+
+            var latestReviewDate = await _unitOfWork.DbContext.PathwayPlans
+                .Where(pp => pp.ParticipantId == participantId)
+                .SelectMany(pp => pp.PathwayPlanReviews)
+                .MaxAsync(ppr => (DateTime?)ppr.ReviewDate, cancellationToken);
+            
+            if (latestReviewDate is null)
+            {
+                return true;
+            }
+            
+            return reviewDate.Value.Date >= latestReviewDate.Value.Date;
         }
     }
 }
