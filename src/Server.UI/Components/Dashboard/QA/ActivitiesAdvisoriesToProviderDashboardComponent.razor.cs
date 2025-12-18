@@ -33,16 +33,34 @@ public partial class ActivitiesAdvisoriesToProviderDashboardComponent
 
     private ApexCharts.ApexChartOptions<GetActivitiesAdvisoriesToProvider.ActivitiesAdvisoriesChartData> Options => new()
     {
+        Chart = new ApexCharts.Chart
+        {
+            Stacked = true,
+        },
         PlotOptions = new ApexCharts.PlotOptions
         {
             Bar = new ApexCharts.PlotOptionsBar
             {
-                Horizontal = false
-            }
+                DataLabels = new ApexCharts.PlotOptionsBarDataLabels
+                {
+                    Total = new ApexCharts.BarTotalDataLabels
+                    {
+                        Style = new ApexCharts.BarDataLabelsStyle
+                        {
+                            FontWeight = "800",
+                            Color = IsDarkMode ? "#FFFFFF" : "#000000",
+                        }
+                    }
+                },
+            },
         },
-        Chart = new ApexCharts.Chart
+        Yaxis = new List<YAxis>
         {
-            Stacked = false
+            new YAxis
+            {
+                Min = 0,
+                ForceNiceScale = true
+            }
         },
         Theme = new ApexCharts.Theme
         {

@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
 
