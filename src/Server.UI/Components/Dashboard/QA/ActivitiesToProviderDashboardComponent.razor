@@ -1,5 +1,4 @@
 @using Cfo.Cats.Application.Features.Dashboard.Queries
-@using Cfo.Cats.Domain.Common.Enums
 @inherits CatsComponent<GetActivitiesToProvider.ActivitiesToProviderDto>
 
 @if(Loading)
@@ -18,74 +17,28 @@
 {
 	@if (VisualMode)
 	{
+
         <ApexCharts.ApexChart TItem="GetActivitiesToProvider.ActivitiesChartData"
-            Title="Education and Training"
-            Options="Options"
-            Height="400" Width="@( "100%" )">
+                      Options="Options"
+                      Height="650" Width="@( "100%" )">
 
             <ApexCharts.ApexPointSeries TItem="GetActivitiesToProvider.ActivitiesChartData"
-                                        Items="Data.ChartData.Where(x => x.ActivityType == ActivityType.EducationAndTraining)"
+                                        Items='Data.ChartData.Where(x => x.Queue == "Escalation")'
                                         SeriesType="ApexCharts.SeriesType.Bar"
                                         Name="Escalation"
                                         XValue="@(e => e.ContractName)"
-                                        YValue="@(e => e.EscalationQueue)"
+                                        YValue="@(e => e.Count)"
                                         ShowDataLabels="true" />
 
             <ApexCharts.ApexPointSeries TItem="GetActivitiesToProvider.ActivitiesChartData"
-                                        Items="Data.ChartData.Where(x => x.ActivityType == ActivityType.EducationAndTraining)"
+                                        Items='Data.ChartData.Where(x => x.Queue == "QA2")'
                                         SeriesType="ApexCharts.SeriesType.Bar"
                                         Name="QA2"
                                         XValue="@(e => e.ContractName)"
-                                        YValue="@(e => e.QA2Queue)"
+                                        YValue="@(e => e.Count)"
                                         ShowDataLabels="true" />
 
 		</ApexCharts.ApexChart>
-
-        <ApexCharts.ApexChart TItem="GetActivitiesToProvider.ActivitiesChartData"
-            Title="Employment"
-            Options="@Options"
-            Height="400" Width="@( "100%" )">
-
-            <ApexCharts.ApexPointSeries TItem="GetActivitiesToProvider.ActivitiesChartData"
-                                        Items="Data.ChartData.Where(x => x.ActivityType == ActivityType.Employment)"
-                                        SeriesType="ApexCharts.SeriesType.Bar"
-                                        Name="Escalation"
-                                        XValue="@(e => e.ContractName)"
-                                        YValue="@(e => e.EscalationQueue)"
-                                        ShowDataLabels="true" />
-
-            <ApexCharts.ApexPointSeries TItem="GetActivitiesToProvider.ActivitiesChartData"
-                                        Items="Data.ChartData.Where(x => x.ActivityType == ActivityType.Employment)"
-                                        SeriesType="ApexCharts.SeriesType.Bar"
-                                        Name="QA2"
-                                        XValue="@(e => e.ContractName)"
-                                        YValue="@(e => e.QA2Queue)"
-                                        ShowDataLabels="true" />
-
-		</ApexCharts.ApexChart>
-
-        <ApexCharts.ApexChart TItem="GetActivitiesToProvider.ActivitiesChartData"
-            Title="ISW Support"
-            Options="Options"
-            Height="400" Width="@( "100%" )">
-
-            <ApexCharts.ApexPointSeries TItem="GetActivitiesToProvider.ActivitiesChartData"
-                                        Items="Data.ChartData.Where(x => x.ActivityType == ActivityType.InterventionsAndServicesWraparoundSupport)"
-                                        SeriesType="ApexCharts.SeriesType.Bar"
-                                        Name="Escalation"
-                                        XValue="@(e => e.ContractName)"
-                                        YValue="@(e => e.EscalationQueue)"
-                                        ShowDataLabels="true" />
-
-            <ApexCharts.ApexPointSeries TItem="GetActivitiesToProvider.ActivitiesChartData"
-                                        Items="Data.ChartData.Where(x => x.ActivityType == ActivityType.InterventionsAndServicesWraparoundSupport)"
-                                        SeriesType="ApexCharts.SeriesType.Bar"
-                                        Name="QA2"
-                                        XValue="@(e => e.ContractName)"
-                                        YValue="@(e => e.QA2Queue)"
-                                        ShowDataLabels="true" />
-
-		</ApexCharts.ApexChart>        
 	}
 	else
 	{
@@ -123,7 +76,7 @@
                 </MudTh>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetActivitiesToProvider.ActivitiesTabularData, object>(x => x.CfoUser!)">
-                        CFO User
+                        CFO USER
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
@@ -136,7 +89,11 @@
                         Returned Date
                     </MudTableSortLabel>
                 </MudTh>				
-				<MudTh>Message</MudTh>		
+				<MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetActivitiesToProvider.ActivitiesTabularData, object>(x => x.Message!)">
+                        Message
+                    </MudTableSortLabel>
+                </MudTh>		
 			</HeaderContent>
 			<RowTemplate>
                 <MudTd DataLabel="Contract">@context.ContractName</MudTd>

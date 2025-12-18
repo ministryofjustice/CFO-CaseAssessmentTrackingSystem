@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -157,15 +158,14 @@ public static class GetActivitiesToProvider
             TabularData = tabularData;
             
             ChartData = tabularData
-                .GroupBy(td => new { td.ContractName, td.ActivityType })
+                .GroupBy(td => new { td.ContractName, td.Queue })
                 .OrderBy(g => g.Key.ContractName)
-                .ThenBy(g => g.Key.ActivityType?.Name)
+                .ThenBy(g => g.Key.Queue)
                 .Select(g => new ActivitiesChartData
                 {
                     ContractName = g.Key.ContractName,
-                    ActivityType = g.Key.ActivityType,
-                    EscalationQueue = g.Count(x => x.Queue == "Escalation"),
-                    QA2Queue = g.Count(x => x.Queue == "QA2")
+                    Queue = g.Key.Queue,
+                    Count = g.Count()
                 })
                 .ToArray();
         }
@@ -197,8 +197,7 @@ public static class GetActivitiesToProvider
         public string? ContractName { get; set; }
         public ActivityType? ActivityType { get; set; }
         public string? Queue { get; set; }
-        public int EscalationQueue { get; set; }
-        public int QA2Queue { get; set; }
+        public int Count { get; set; }
     }
 
 }
