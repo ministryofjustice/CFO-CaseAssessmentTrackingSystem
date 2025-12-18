@@ -1,3 +1,5 @@
+using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -6,7 +8,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Participants;
 
 public class PathwayPlanEntityTypeConfiguration
     : IEntityTypeConfiguration<PathwayPlan>
-
 {
     public void Configure(EntityTypeBuilder<PathwayPlan> builder)
     {
@@ -28,25 +29,47 @@ public class PathwayPlanEntityTypeConfiguration
         builder.Property(pathwayPlan => pathwayPlan.LastModifiedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
-        builder.OwnsMany(pathwayPlan => pathwayPlan.ReviewHistories, history =>
+        builder.OwnsMany(p => p.PathwayPlanReviews, reviews =>
         {
-            history.ToTable(
-                DatabaseConstants.Tables.PathwayPlanReviewHistory,
+            reviews.ToTable(
+                DatabaseConstants.Tables.PathwayPlanReview,
                 DatabaseConstants.Schemas.Participant);
 
-            history.WithOwner()
-                .HasForeignKey(h => h.PathwayPlanId);
+            reviews.WithOwner()
+                .HasForeignKey(r => r.PathwayPlanId);
 
-            history.HasKey(h => h.Id);
+            reviews.HasKey(r => r.Id);
 
-            history.Property(h => h.CreatedBy)
+            reviews.Property(r => r.ParticipantId)
+                .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId)
+                .IsRequired();
+
+            reviews.Property(r => r.LocationId)
+                .IsRequired();
+
+            reviews.Property(r => r.ReviewDate)
+                .IsRequired();
+
+            reviews.Property(r => r.Review)
+                .HasMaxLength(ValidationConstants.NotesLength);
+
+            reviews.Property(r => r.ReviewReason)
+                .HasConversion(
+                    r => r.Value,
+                    v => PathwayPlanReviewReason.FromValue(v))
+                .IsRequired();
+
+            reviews.Property(r => r.CreatedBy)
                 .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
-            history.Property(h => h.LastModifiedBy)
+            reviews.Property(r => r.LastModifiedBy)
                 .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
+            reviews.HasIndex(r => r.PathwayPlanId);
+            reviews.HasIndex(r => r.ParticipantId);
         });
 
-        builder.Navigation(plan => plan.ReviewHistories).AutoInclude();
+        builder.Navigation(plan => plan.PathwayPlanReviews).AutoInclude();
 
         builder.HasMany(pathwayPlan => pathwayPlan.Objectives)
             .WithOne() // no navigation back

@@ -15,12 +15,12 @@ public class PathwayPlanSummaryDto
         {
             CreateMap<PathwayPlan, PathwayPlanSummaryDto>(MemberList.None)
                 .ForMember(target => target.LastReviewed, options =>
-                    options.MapFrom(source => source.ReviewHistories
+                    options.MapFrom(source => source.PathwayPlanReviews
                         .OrderByDescending(history => history.Created)
                         .Select(history => history.Created)
                         .FirstOrDefault()))
                 .ForMember(target => target.LastReviewedBy, options =>
-                    options.MapFrom(source => source.ReviewHistories
+                    options.MapFrom(source => source.PathwayPlanReviews
                         .OrderByDescending(history => history.Created)
                         .Select(history => history.CreatedBy)
                         .FirstOrDefault()));

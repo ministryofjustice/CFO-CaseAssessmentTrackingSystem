@@ -1,5 +1,5 @@
-using Cfo.Cats.Application.Features.Participants.DTOs;
-using Cfo.Cats.Application.Features.Participants.Queries;
+using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
+using Cfo.Cats.Application.Features.PathwayPlans.Queries;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 public partial class PathwayPlanReviewHistory

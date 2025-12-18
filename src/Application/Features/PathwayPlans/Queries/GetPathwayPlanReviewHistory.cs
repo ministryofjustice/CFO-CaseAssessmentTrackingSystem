@@ -1,9 +1,10 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Application.Features.Participants.DTOs;
+using Cfo.Cats.Application.Features.Participants.Queries;
+using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
-namespace Cfo.Cats.Application.Features.Participants.Queries;
+namespace Cfo.Cats.Application.Features.PathwayPlans.Queries;
 
 public static class GetPathwayPlanReviewHistoryHistory
 {
@@ -14,24 +15,25 @@ public static class GetPathwayPlanReviewHistoryHistory
     {
         public async Task<Result<PathwayPlanReviewHistoryDto[]>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var baseQuery = 
-                (from pprh in unitOfWork.DbContext.PathwayPlanReviews
-                    join l in unitOfWork.DbContext.Locations on pprh.LocationId equals l.Id
-                    join createdBy in unitOfWork.DbContext.Users on pprh.CreatedBy equals createdBy.Id
-                     where pprh.ParticipantId == request.ParticipantId
-                    select new PathwayPlanReviewHistoryDto
-                    {
-                        Id = pprh.Id,
-                        ParticipantId = pprh.ParticipantId,
-                        ReviewDate = pprh.Created!.Value,
-                        ReviewedBy = createdBy.DisplayName!,
-                        LocationId = pprh.LocationId,
-                        LocationName = l.Name,
-                        ReviewReason = pprh.ReviewReason,
-                        Review = pprh.Review
-                    })
-                .AsNoTracking()
-                .OrderByDescending(r => r.ReviewDate);
+            var baseQuery = unitOfWork.DbContext.PathwayPlans
+                    .Where(pp => pp.ParticipantId == request.ParticipantId)
+                    .SelectMany(pp => pp.PathwayPlanReviews, (pp, review) => new { pp, review })
+                    .Join(unitOfWork.DbContext.Locations, x => x.review.LocationId, l => l.Id,
+                        (x, l) => new { x.review, x.pp, Location = l })
+                    .Join(unitOfWork.DbContext.Users, x => x.review.CreatedBy, u => u.Id, (x, u) =>
+                        new PathwayPlanReviewHistoryDto
+                        {
+                            Id = x.review.Id,
+                            ParticipantId = x.review.ParticipantId,
+                            ReviewDate = x.review.Created!.Value,
+                            ReviewedBy = u.DisplayName!,
+                            LocationId = x.Location.Id,
+                            LocationName = x.Location.Name,
+                            ReviewReason = x.review.ReviewReason,
+                            Review = x.review.Review
+                        })
+                    .AsNoTracking()
+                    .OrderByDescending(r => r.ReviewDate);
                     
             var queryResultList = await baseQuery.ToListAsync(cancellationToken);
 

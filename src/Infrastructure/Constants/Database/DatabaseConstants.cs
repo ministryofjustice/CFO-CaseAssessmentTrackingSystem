@@ -36,7 +36,6 @@ internal static class DatabaseConstants
         public const string Objective = nameof(Objective);
         public const string ObjectiveTask = nameof(ObjectiveTask);
         public const string PathwayPlan = nameof(PathwayPlan);
-        public const string PathwayPlanReviewHistory = nameof(PathwayPlanReviewHistory);
         public const string PathwayPlanReview = nameof(PathwayPlanReview);
         public const string PersonalDetails = nameof(PersonalDetails);
         public const string Supervisor = nameof(Supervisor);

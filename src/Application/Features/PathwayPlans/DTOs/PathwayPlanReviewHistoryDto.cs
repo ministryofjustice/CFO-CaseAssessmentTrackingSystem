@@ -1,4 +1,4 @@
-﻿namespace Cfo.Cats.Application.Features.Participants.DTOs;
+﻿namespace Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 
 public class PathwayPlanReviewHistoryDto
 {
