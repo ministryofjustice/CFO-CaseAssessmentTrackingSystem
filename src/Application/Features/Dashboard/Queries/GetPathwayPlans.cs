@@ -23,8 +23,7 @@ public static class GetPathwayPlans
                             join pp in context.PathwayPlans on p.Id equals pp.ParticipantId
                             join u in context.Users on p.OwnerId equals u.Id
                             join pcl in context.Locations on p.CurrentLocation.Id equals pcl.Id
-                            //join l in context.Locations on p.LocationId equals l.Id
-                where p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value && p.EnrolmentStatus != EnrolmentStatus.DormantStatus.Value
+                where p.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
                 select new {
                     PathwayPlanId = pp.Id, 
                     ParticipantId = p.Id, 
@@ -35,6 +34,7 @@ public static class GetPathwayPlans
                     ParticipantCurrentLocation = pcl.Name,
                     ParticipantCurrentLocationType = pcl.LocationType
                 };
+                
             // Checks and applies filter based on UserId or TenantId else throws exception
             baseQuery = request switch
             {
@@ -48,21 +48,12 @@ public static class GetPathwayPlans
             };
 
             var query = from data in baseQuery
-                from latestReview in (
-                        from ppr in context.PathwayPlanReviews
-                        join u in context.Users on ppr.CreatedBy equals u.Id
-                        join l in context.Locations on ppr.LocationId equals l.Id
-                        where ppr.PathwayPlanId == data.PathwayPlanId
-                        orderby ppr.ReviewDate descending
-                        select new { 
-                            ReviewNote = ppr.Review,
-                            ReviewDate = ppr.ReviewDate, 
-                            ReviewReason = ppr.ReviewReason,
-                            ReviewLocation = l.Name, 
-                            ReviewedBy = u.DisplayName,
-                    }
-                    ).Take(1)
-                    .DefaultIfEmpty() 
+                join pp in context.PathwayPlans on data.PathwayPlanId equals pp.Id
+                from review in pp.PathwayPlanReviews.OrderByDescending(r => r.ReviewDate).Take(1).DefaultIfEmpty()
+                join u in context.Users on review.CreatedBy equals u.Id into users
+                from reviewUser in users.DefaultIfEmpty()
+                join l in context.Locations on review.LocationId equals l.Id into locations
+                from reviewLocation in locations.DefaultIfEmpty()
                 select new PathwayPlanReviewTabularData
                 {
                     ParticipantId = data.ParticipantId,
@@ -70,18 +61,18 @@ public static class GetPathwayPlans
                     ParticipantCurrentLocation = data.ParticipantCurrentLocation,
                     ParticipantCurrentLocationType = data.ParticipantCurrentLocationType ?? LocationType.Unknown,
                     EnrolmentStatus = data.EnrolmentStatus,
-                    ReviewLocation = latestReview.ReviewLocation ?? "Unknown",
-                    ReviewedBy = latestReview.ReviewedBy,
-                    ReviewDate = latestReview.ReviewDate,
-                    ReviewNotes = (latestReview.ReviewNote ?? "").Replace("\r", " ").Replace("\n", " "),
-                    ReviewReason = latestReview.ReviewReason ?? PathwayPlanReviewReason.Default
+                    ReviewLocation = reviewLocation != null ? reviewLocation.Name : "Unknown",
+                    ReviewedBy = reviewUser != null ? reviewUser.DisplayName : null,
+                    ReviewDate = review != null ? review.ReviewDate : null,
+                    ReviewNotes = review != null ? (review.Review ?? "").Replace("\r", " ").Replace("\n", " ") : "",
+                    ReviewReason = review != null ? review.ReviewReason : PathwayPlanReviewReason.Default
                 };
+                
             var results = await query
                 .AsNoTracking()
                 .ToArrayAsync(cancellationToken);
 
             return new PathwayPlanDto(results);
-
         }
 
     }
@@ -100,7 +91,7 @@ public static class GetPathwayPlans
                 g.Key.ParticipantCurrentLocation!,
                 g.Key.ParticipantCurrentLocationType!,
                 g.Count(),
-                g.Count(d => d.DueDate <= DateTime.UtcNow)
+                g.Count(d => d.IsOverdue)
             )).ToArray();
 
             Custody = ChartData.Where(d => d.LocationType?.IsCustody == true).Sum(d => d.TotalCount);
@@ -128,7 +119,7 @@ public static class GetPathwayPlans
         public EnrolmentStatus? EnrolmentStatus { get; set; } 
         public DateTime? ReviewDate { get; set; }
         public bool IsOverdue => 
-            DueDate is DateTime due && due < DateTime.UtcNow;
+            ReviewDate is null || (DueDate is DateTime due && due < DateTime.UtcNow);
         public DateTime? DueDate => ReviewDate?.AddMonths(3);
         public string? ReviewedBy { get; set; }
         public string? ReviewNotes { get; set; }

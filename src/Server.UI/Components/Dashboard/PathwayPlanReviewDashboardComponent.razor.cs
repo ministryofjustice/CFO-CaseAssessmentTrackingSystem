@@ -5,7 +5,6 @@ namespace Cfo.Cats.Server.UI.Components.Dashboard;
 
 public partial class PathwayPlanReviewDashboardComponent
 {
-
     [Parameter]
     public string UserId { get; set; } = null!;
     [Parameter]
@@ -16,6 +15,8 @@ public partial class PathwayPlanReviewDashboardComponent
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
+
+    private bool ShowOverdueOnly { get; set; } = false;
 
     private GetPathwayPlans.Query Query { get; set; } = default!;
 
@@ -66,5 +67,48 @@ public partial class PathwayPlanReviewDashboardComponent
         },
         Colors = new List<string> { "#5cb85c", "#d9534f" }
     };
+
+    private IEnumerable<GetPathwayPlans.PathwayPlanReviewTabularData> FilteredTabularData =>
+        ShowOverdueOnly && Data is not null 
+            ? Data.TabularData.Where(x => x.IsOverdue) 
+            : Data?.TabularData ?? Enumerable.Empty<GetPathwayPlans.PathwayPlanReviewTabularData>();
+
+    private GetPathwayPlans.LocationDetail[] FilteredChartData =>
+        ShowOverdueOnly && Data is not null
+            ? Data.ChartData.Select(x => new GetPathwayPlans.LocationDetail(
+                x.LocationName, 
+                x.LocationType, 
+                x.OverdueCount, 
+                x.OverdueCount))
+              .Where(x => x.TotalCount > 0)
+              .ToArray()
+            : Data?.ChartData ?? Array.Empty<GetPathwayPlans.LocationDetail>();
+
+    private int CustodyCount =>
+        ShowOverdueOnly && Data is not null
+            ? Data.ChartData.Where(d => d.LocationType?.IsCustody == true).Sum(d => d.OverdueCount)
+            : Data?.Custody ?? 0;
+
+    private int CommunityCount =>
+        ShowOverdueOnly && Data is not null
+            ? Data.ChartData.Where(d => d.LocationType?.IsCommunity == true).Sum(d => d.OverdueCount)
+            : Data?.Community ?? 0;
+
+    private async Task ShowReviewNotes(string notes)
+    {
+        var parameters = new DialogParameters
+        {
+            { nameof(ReviewNotesDialog.Notes), notes }
+        };
+        
+        var options = new DialogOptions 
+        { 
+            CloseButton = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+        
+        await DialogService.ShowAsync<ReviewNotesDialog>("Review Notes", parameters, options);
+    }
 
 }

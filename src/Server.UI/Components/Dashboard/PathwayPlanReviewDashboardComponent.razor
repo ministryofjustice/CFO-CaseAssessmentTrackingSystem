@@ -20,38 +20,47 @@
 
 @if (Data is not null && Data.TabularData.Any())
 {
-    <MudGrid Spacing="2">
+    <MudGrid Spacing="2" Class="mb-3">
         <!-- This is the left column -->
-        <MudItem>
-            <MudChip T="string">Custody (@Data.Custody)</MudChip>
-            <MudChip T="string">Community (@Data.Community)</MudChip>
+        <MudItem xs="12" sm="6">
+            <MudChip T="string">Custody (@CustodyCount)</MudChip>
+            <MudChip T="string">Community (@CommunityCount)</MudChip>
+        </MudItem>
+        <!-- Toggle button -->
+        <MudItem xs="12" sm="6" Class="d-flex justify-end align-center">
+            <MudSwitch T="bool" @bind-Value="ShowOverdueOnly" Color="Color.Primary" Label="Show Reviewed 3+ months ago" />
         </MudItem>
     </MudGrid>
     @if(VisualMode)
     {
-        <ApexCharts.ApexChart TItem="GetPathwayPlans.LocationDetail" Options="Options" Height="650" Width="@("100%")">
-            <ApexCharts.ApexPointSeries TItem="GetPathwayPlans.LocationDetail"
-                                        Items="Data.ChartData"
-                                        Name="@($"Reviewed ({Data.TotalReviewed})")"
-                                        SeriesType="ApexCharts.SeriesType.Bar"
-                                        XValue="@(e => e.LocationName)"
-                                        YValue="@(e => e.TotalCount - e.OverdueCount)"
-                                        ShowDataLabels="true">
-            </ApexCharts.ApexPointSeries>
+        <ApexCharts.ApexChart @key="ShowOverdueOnly" TItem="GetPathwayPlans.LocationDetail" Options="Options" Height="650" Width="@("100%")">
+            @if (!ShowOverdueOnly)
+            {
+                <ApexCharts.ApexPointSeries TItem="GetPathwayPlans.LocationDetail"
+                                            Items="Data.ChartData"
+                                            Name="@($"Reviewed ({Data.TotalReviewed})")"
+                                            SeriesType="ApexCharts.SeriesType.Bar"
+                                            XValue="@(e => e.LocationName)"
+                                            YValue="@(e => e.TotalCount - e.OverdueCount)"
+                                            ShowDataLabels="true"
+                                            Color="#5cb85c">
+                </ApexCharts.ApexPointSeries>
+            }
 
             <ApexCharts.ApexPointSeries TItem="GetPathwayPlans.LocationDetail"
-                                        Items="Data.ChartData"
+                                        Items="FilteredChartData"
                                         Name="@($"Reviewed 3+ months ago ({Data.TotalOverdueCount})")"
                                         SeriesType="ApexCharts.SeriesType.Bar"
                                         XValue="@(e => e.LocationName)"
                                         YValue="@(e => e.OverdueCount)"
-                                        ShowDataLabels="true">
+                                        ShowDataLabels="true"
+                                        Color="#d9534f">
             </ApexCharts.ApexPointSeries>
         </ApexCharts.ApexChart>
     }
     else
     {
-        <MudTable Items="Data.TabularData" Hover="true" Striped="true">
+        <MudTable Items="FilteredTabularData" Hover="true" Striped="true">
             <HeaderContent>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetPathwayPlans.PathwayPlanReviewTabularData, object>(x => x.ParticipantCurrentLocation!)">
@@ -123,9 +132,10 @@
                             }                                
                             @if (string.IsNullOrEmpty(context.ReviewNotes) is false)
                             {
-                                <MudTooltip Text="@context.ReviewNotes">
-                                    <MudIcon Icon="@Icons.Material.Rounded.Info" Color="Color.Info" Size="MudBlazor.Size.Small" />
-                                </MudTooltip>
+                                <MudIconButton Icon="@Icons.Material.Rounded.Info" 
+                                               Color="Color.Info" 
+                                               Size="MudBlazor.Size.Small" 
+                                               OnClick="@(() => ShowReviewNotes(context.ReviewNotes))" />
                             }
 
                         }
