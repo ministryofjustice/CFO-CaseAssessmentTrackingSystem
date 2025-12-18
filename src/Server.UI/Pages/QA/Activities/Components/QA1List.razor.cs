@@ -6,36 +6,14 @@ namespace Cfo.Cats.Server.UI.Pages.QA.Activities.Components;
 
 public partial class QA1List
 { 
-    [CascadingParameter] public UserProfile? UserProfile { get; set; }
+    [CascadingParameter] private UserProfile? UserProfile { get; set; }
 
-    private bool _loading;
+    private bool _loading = false;
     private int _defaultPageSize = 30;
-    private ActivityQa1WithPagination.Query Query { get; } = new();
-    private GridData<ActivityQueueEntryDto>? _pagedData;
-    private int _currentPage;
+    private MudDataGrid<ActivityQueueEntryDto> _table = default!;
 
-    private HashSet<Guid> ExpandedRows { get; } = [];
-
-    private int TotalPages =>
-        (_pagedData!.TotalItems + _defaultPageSize - 1) / _defaultPageSize;
-
-    private async Task OnPaginationChanged(int page)
-    {
-        _currentPage = page - 1;
-        await LoadPage();
-    }
-    
-    private async Task LoadPage()
-    {
-        var state = new GridState<ActivityQueueEntryDto>
-        {
-            Page = _currentPage,
-            PageSize = _defaultPageSize
-        };
-
-        _pagedData = await ServerReload(state);
-        StateHasChanged();
-    }
+    private ActivityQa1WithPagination.Query Query { get; set; } = new();
+    private ActivityQueueEntryDto _currentDto = new();
 
     private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state)
     {
@@ -57,7 +35,10 @@ public partial class QA1List
         }
     }
 
-    private void ViewParticipant(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
+    private void ViewParticipant(ActivityQueueEntryDto dto)
+    {
+        Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
+    }
 
     private async Task OnSearch(string text)
     {
@@ -67,34 +48,12 @@ public partial class QA1List
         }
         
         Query.Keyword = text;
-        _currentPage = 0;
-
-        await LoadPage();
+        await _table.ReloadServerData();
     }
 
     private async Task OnRefresh()
     {
         Query.Keyword = string.Empty;
-        _currentPage = 0;
-
-        await LoadPage();
-    }
-    
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await LoadPage();
-        }
-    }
-    
-    private void ToggleRow(Guid activityId)
-    {
-        if (!ExpandedRows.Remove(activityId))
-        {
-            ExpandedRows.Add(activityId);
-        }
-
-        StateHasChanged();
+        await _table.ReloadServerData();
     }
 }
