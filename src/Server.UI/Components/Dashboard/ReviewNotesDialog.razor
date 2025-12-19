@@ -1,0 +1,22 @@
+@namespace Cfo.Cats.Server.UI.Components.Dashboard
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.body1" Style="white-space: pre-wrap; word-break: break-word;">
+            @Notes
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close" Color="Color.Primary">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter]
+    public string Notes { get; set; } = string.Empty;
+
+    private void Close() => MudDialog.Close();
+}
