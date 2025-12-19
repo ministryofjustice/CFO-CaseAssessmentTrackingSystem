@@ -125,6 +125,8 @@ public class ApplicationDbContext
     public DbSet<ObjectiveTask> ObjectiveTasks => Set<ObjectiveTask>();
     public DbSet<Label> Labels => Set<Label>();
 
+    public DbSet<PathwayPlanReview> PathwayPlanReviews => Set<PathwayPlanReview>();
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

@@ -1,77 +1,9 @@
-@using Cfo.Cats.Application.Features.PathwayPlans.Commands
-@using Cfo.Cats.Application.Features.PathwayPlans.DTOs
-@using Cfo.Cats.Application.Features.PathwayPlans.Queries
-@using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Server.UI.Pages.Objectives
-@using Cfo.Cats.Server.UI.Pages.Objectives.Tasks
-@using Humanizer
 
-@inherits CatsComponentBase
-
-<style>
-    .mud-list-item-child:hover, 
-    .mud-list-item-child:focus {
-    background-color: initial !important;
-    }
-</style>
-
-@if(Model is not null)
-{
-    <MudPaper>
-        <MudList T="ObjectiveTaskDto">
-            <MudListSubheader Class="pb-8 px-8">
-                <div class="d-flex gap-4 align-center">
-                    @if (ParticipantIsActive)
-                    {
-                        <MudTooltip Text="New objective">
-                            <MudIconButton OnClick="AddObjective" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Class="rounded-circle" />
-                        </MudTooltip>
-                        <MudText>New objective</MudText>
-                    }
-                    <MudSpacer />
-                    <div class="d-flex flex-column">
-                        @if (ParticipantIsActive)
-                        {
-                            <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="ReviewPathwayPlan">Review Pathway Plan</MudButton>
-                        }
-                        @if(Model.LastReviewed.HasValue)
-                        {
-                            <MudText Typo="Typo.caption">Last reviewed @Model.LastReviewed.Value.Humanize()</MudText>
-                        }
-                    </div>
-                </div>
-                <div class="d-flex flex-column flex-sm-row align-center gap-2 mt-6">
-                    <MudSelect @bind-Value="selector" Label="Sort objectives by" Disabled="Model.Objectives.Any() is false" >
-                        <MudSelectItem Value="@("Created")">Date added</MudSelectItem>
-                        <MudSelectItem Value="@("Title")">Title</MudSelectItem>
-                        <MudSelectItem Value="@("Outstanding")">No. of outstanding tasks</MudSelectItem>
-                    </MudSelect>
-                        <MudSelect @bind-Value="sortDirection" Label="Direction" Disabled="Model.Objectives.Any() is false" >
-                        <MudSelectItem Value="SortDirection.Ascending">Ascending</MudSelectItem>
-                        <MudSelectItem Value="SortDirection.Descending">Descending</MudSelectItem>
-                    </MudSelect>
-                    <MudSpacer />
-                    <div class="d-flex flex-column">
-                        <MudCheckBox @bind-Value="hideCompletedObjectives" Label="Hide completed objectives" Disabled="Model.Objectives.Any() is false" />
-                        <MudCheckBox @bind-Value="hideCompletedTasks" Label="Hide completed tasks" Disabled="Model.Objectives.SelectMany(x => x.Tasks).Any() is false" />
-                    </div>
-                </div>
-                <MudDivider Class="mt-6" />
-            </MudListSubheader>
-            @foreach (var objective in Model.Objectives
-           .Where(objective => objective.IsCompleted is false || hideCompletedObjectives is false)
-           .OrderByDirection(sortDirection, selectors[selector]))
-            {
-                <Objective Model="objective" HideCompletedTasks="hideCompletedTasks" ParticipantId="@Model.ParticipantId" ParticipantIsActive="@ParticipantIsActive" OnChange="async() => await OnRefresh()" />
-                <MudDivider />
-            }
-        </MudList>
-    </MudPaper>
-}
-
-@if(loading)
-{
-    <MudPaper>
-        <MudText>@ConstantString.Loading</MudText>
-    </MudPaper>
-}
+<MudTabs Outlined="true" Border="true" Class="mt-2" >
+    <MudTabPanel Text="Latest">
+        <ViewPathwayPlan ParticipantId="@ParticipantId" ParticipantIsActive="@ParticipantIsActive" />
+    </MudTabPanel>
+    <MudTabPanel Text="Review History">
+        <PathwayPlanReviewHistory ParticipantId="@ParticipantId" ParticipantIsActive="@ParticipantIsActive" />
+    </MudTabPanel>
+</MudTabs>

@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251216121015_AddPathwayPlanReviewsExtraChanges")]
+    partial class AddPathwayPlanReviewsExtraChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2976,6 +2979,59 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.ToTable("PathwayPlan", "Participant");
                 });
 
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.PathwayPlanReview", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ParticipantId")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<Guid>("PathwayPlanId")
+                        .HasMaxLength(36)
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Review")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("ReviewDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ReviewReason")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.HasIndex("PathwayPlanId");
+
+                    b.ToTable("PathwayPlanReview", "Participant");
+                });
+
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.PriCode", b =>
                 {
                     b.Property<string>("ParticipantId")
@@ -5703,7 +5759,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.PathwayPlan", b =>
                 {
-                    b.OwnsMany("Cfo.Cats.Domain.Entities.Participants.PathwayPlanReview", "PathwayPlanReviews", b1 =>
+                    b.OwnsMany("Cfo.Cats.Domain.Entities.Participants.PathwayPlanReviewHistory", "ReviewHistories", b1 =>
                         {
                             b1.Property<Guid>("Id")
                                 .ValueGeneratedOnAdd()
@@ -5723,40 +5779,35 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                                 .HasMaxLength(36)
                                 .HasColumnType("nvarchar(36)");
 
-                            b1.Property<int>("LocationId")
-                                .HasColumnType("int");
-
-                            b1.Property<string>("ParticipantId")
-                                .IsRequired()
-                                .HasMaxLength(9)
-                                .HasColumnType("nvarchar(9)");
-
                             b1.Property<Guid>("PathwayPlanId")
                                 .HasColumnType("uniqueidentifier");
 
-                            b1.Property<string>("Review")
-                                .HasMaxLength(1000)
-                                .HasColumnType("nvarchar(1000)");
-
-                            b1.Property<DateTime>("ReviewDate")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<int>("ReviewReason")
-                                .HasColumnType("int");
-
                             b1.HasKey("Id");
-
-                            b1.HasIndex("ParticipantId");
 
                             b1.HasIndex("PathwayPlanId");
 
-                            b1.ToTable("PathwayPlanReview", "Participant");
+                            b1.ToTable("PathwayPlanReviewHistory", "Participant");
 
                             b1.WithOwner()
                                 .HasForeignKey("PathwayPlanId");
                         });
 
-                    b.Navigation("PathwayPlanReviews");
+                    b.Navigation("ReviewHistories");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.PathwayPlanReview", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Location", null)
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.PathwayPlan", null)
+                        .WithMany("PathwayPlanReviews")
+                        .HasForeignKey("PathwayPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.PriCode", b =>
@@ -6066,6 +6117,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.PathwayPlan", b =>
                 {
                     b.Navigation("Objectives");
+
+                    b.Navigation("PathwayPlanReviews");
                 });
 
             modelBuilder.Entity("Cfo.Cats.Domain.Identity.ApplicationRole", b =>

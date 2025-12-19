@@ -1,0 +1,114 @@
+﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Common.Validators
+@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.PathwayPlans.Commands
+@using Cfo.Cats.Domain.Common.Enums
+
+@inject ILocationService Locations;
+@inject ICurrentUserService CurrentUser;
+@inject IValidationService Validator
+
+@inherits CatsComponentBase
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+            <MudSelect @bind-Value="Model.ReviewReason"
+                       Label="@Model.GetMemberDescription(x => x.ReviewReason)"
+                       For="@(() => Model.ReviewReason)">
+                <MudSelectItem Value="PathwayPlanReviewReason.Default">@PathwayPlanReviewReason.Default.Name</MudSelectItem>
+                <MudSelectItem Value="PathwayPlanReviewReason.AssessmentPerformed">@PathwayPlanReviewReason.AssessmentPerformed.Name</MudSelectItem>
+                <MudSelectItem Value="PathwayPlanReviewReason.ParticipantChangedLocation">@PathwayPlanReviewReason.ParticipantChangedLocation.Name</MudSelectItem>
+                <MudSelectItem Value="PathwayPlanReviewReason.ChangeToCircumstances">@PathwayPlanReviewReason.ChangeToCircumstances.Name</MudSelectItem>
+                <MudSelectItem Value="PathwayPlanReviewReason.EndOfWingPhaseDelivery">@PathwayPlanReviewReason.EndOfWingPhaseDelivery.Name</MudSelectItem>
+                <MudSelectItem Value="PathwayPlanReviewReason.NinetyDayReview">@PathwayPlanReviewReason.NinetyDayReview.Name</MudSelectItem>
+            </MudSelect>
+
+            <MudTextField @bind-Value="Model.Review"
+            Label="@Model.GetMemberDescription(x => x.Review)"
+            For="@(() => Model.Review)"
+            Required="true"
+            Immediate="true"
+            RequiredError="Review is required!"
+            Lines="5"
+            MaxLength=@ValidationConstants.NotesLength
+            Counter=@ValidationConstants.NotesLength
+            Class="mt-4" 
+            />
+       
+             <MudDatePicker Label="@Model.GetMemberDescription(x => x.ReviewDate)"
+                               @bind-Date="Model.ReviewDate"
+                               For="(() => Model.ReviewDate)"
+                               ImmediateText="true" Editable="false" MaxDate="DateTime.Today.Date" MinDate="DateTime.Today.AddMonths(-3)" PickerVariant="PickerVariant.Dialog" />
+            
+            <MudSelect @bind-Value="Model.Location"
+                        Label="@Model.GetMemberDescription(x => x.Location)"
+                        For="() => Model.Location"
+                        Clearable="true"
+                        ToStringFunc="location => location?.Name">
+                @foreach (var location in _locations)
+                {
+                    <MudSelectItem Value="location">@location.Name</MudSelectItem>
+                }
+            </MudSelect>
+
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="_saving" Color="Color.Primary" OnClick="@Submit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    bool _saving;
+    MudForm? _form;
+
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public required ReviewPathwayPlan.Command Model { get; set; }
+    
+    IEnumerable<LocationDto> _locations = [];
+
+    protected override void OnInitialized()
+    {
+        _locations = Locations
+            .GetVisibleLocations(CurrentUser.TenantId!)
+            .ToList();
+
+        base.OnInitialized();
+    }
+    
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+  
+    private async Task Submit()
+    {
+        try
+        {
+            _saving = true;
+
+            if (_form is null)
+            {
+                _saving = false;
+                return;
+            }
+
+            await _form.Validate();
+
+            if (_form.IsValid)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+    
+}

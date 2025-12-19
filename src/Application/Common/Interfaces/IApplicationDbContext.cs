@@ -6,7 +6,6 @@ using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Entities.Bios;
 using Cfo.Cats.Domain.Identity;
-using Cfo.Cats.Domain.ValueObjects;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -118,5 +117,6 @@ public interface IApplicationDbContext
     DbSet<ObjectiveTask> ObjectiveTasks { get; }
     
     DbSet<Label> Labels { get; }
-    
+ 
+    DbSet<PathwayPlanReview> PathwayPlanReviews { get; }
 }

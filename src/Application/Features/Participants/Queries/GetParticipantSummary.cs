@@ -1,6 +1,5 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
-using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
@@ -24,9 +23,7 @@ public static class GetParticipantSummary
         {
             var db = unitOfWork.DbContext;
             var participantId = request.ParticipantId;
-
-            var activeStatuses = EnrolmentStatus.ActiveList;
-
+        
 #pragma warning disable CS8601, CS8602, CS8629
             var query = from p in db.Participants
                         where p.Id == participantId
@@ -86,7 +83,7 @@ public static class GetParticipantSummary
                                  {
                                      Created = pathwayPlan.Created.Value,
                                      pathwayPlan.CreatedBy,
-                                     LastReview = (from review in pathwayPlan.ReviewHistories
+                                     LastReview = (from review in pathwayPlan.PathwayPlanReviews
                                                    orderby review.Created
                                                    select new
                                                    {

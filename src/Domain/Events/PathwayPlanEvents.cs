@@ -32,3 +32,8 @@ public sealed class ObjectiveTaskCompletedDomainEvent(ObjectiveTask objectiveTas
 {
     public ObjectiveTask Item { get; set; } = objectiveTask;
 }
+
+public sealed class PathwayPlanReviewAddedDomainEvent(PathwayPlanReview pathwayPlanReview) : DomainEvent
+{
+    public PathwayPlanReview Item { get; set; } = pathwayPlanReview;
+}
