@@ -16,12 +16,10 @@
             <MudSelect @bind-Value="Model.ReviewReason"
                        Label="@Model.GetMemberDescription(x => x.ReviewReason)"
                        For="@(() => Model.ReviewReason)">
-                <MudSelectItem Value="PathwayPlanReviewReason.Default">@PathwayPlanReviewReason.Default.Name</MudSelectItem>
-                <MudSelectItem Value="PathwayPlanReviewReason.AssessmentPerformed">@PathwayPlanReviewReason.AssessmentPerformed.Name</MudSelectItem>
-                <MudSelectItem Value="PathwayPlanReviewReason.ParticipantChangedLocation">@PathwayPlanReviewReason.ParticipantChangedLocation.Name</MudSelectItem>
-                <MudSelectItem Value="PathwayPlanReviewReason.ChangeToCircumstances">@PathwayPlanReviewReason.ChangeToCircumstances.Name</MudSelectItem>
-                <MudSelectItem Value="PathwayPlanReviewReason.EndOfWingPhaseDelivery">@PathwayPlanReviewReason.EndOfWingPhaseDelivery.Name</MudSelectItem>
-                <MudSelectItem Value="PathwayPlanReviewReason.NinetyDayReview">@PathwayPlanReviewReason.NinetyDayReview.Name</MudSelectItem>
+               @foreach (var item in PathwayPlanReviewReason.OrderedList)
+               {
+                   <MudSelectItem T="PathwayPlanReviewReason" Value="@item">@item.Name</MudSelectItem>
+               }
             </MudSelect>
 
             <MudTextField @bind-Value="Model.Review"
