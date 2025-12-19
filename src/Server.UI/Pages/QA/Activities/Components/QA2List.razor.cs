@@ -8,17 +8,14 @@ public partial class QA2List
 {
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
 
-    private bool _loading = false;
+    private bool _loading;  
     private int _defaultPageSize = 30;
-    private MudDataGrid<ActivityQueueEntryDto> _table = default!;
+    private MudDataGrid<ActivityQueueEntryDto> _table = null!;
 
-    private ActivityQa2WithPagination.Query Query { get; set; } = new();
+    private ActivityQa2WithPagination.Query Query { get; } = new();
     private ActivityQueueEntryDto _currentDto = new();
 
-    private void ViewParticipant(ActivityQueueEntryDto dto)
-    {
-        Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
-    }
+    private void ViewParticipant(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
 
     private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state)
     {
