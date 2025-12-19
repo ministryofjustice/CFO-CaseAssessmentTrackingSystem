@@ -20,6 +20,7 @@
 {
     <MudDataGrid Items="@Data" Striped="true">
         <Columns>
+            <HierarchyColumn />
             <TemplateColumn Title="Created" Sortable="true" SortBy="x => x.Created">
                 <CellTemplate>
                     <MudText>
@@ -66,11 +67,6 @@
                 </CellTemplate>
 
             </TemplateColumn>
-            <TemplateColumn Title="Review" Sortable="true" SortBy="x => x.Review">
-                <CellTemplate>
-                    @context.Item.Review
-                </CellTemplate>
-            </TemplateColumn>
             <TemplateColumn Title="Review Reason" Sortable="true" SortBy="x => x.ReviewReason?.Name">
                 <CellTemplate>
                     <MudChip Size="Size.Small" Color="Color.Primary">
@@ -80,6 +76,9 @@
             </TemplateColumn>
             <PropertyColumn Property="x => x.LocationName" Title="Location" Sortable="true"/>
         </Columns>
+        <ChildRowContent>
+            <MudTextField Disabled Label="Review" Value="@context.Item.Review" Lines="5" />
+        </ChildRowContent>
         <NoRecordsContent>
             <MudText>@ConstantString.NoRecords</MudText>
         </NoRecordsContent>
