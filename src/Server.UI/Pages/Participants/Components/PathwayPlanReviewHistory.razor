@@ -20,11 +20,18 @@
 {
     <MudDataGrid Items="@Data" Striped="true">
         <Columns>
-            <TemplateColumn Title="Created" Sortable="true" SortBy="x => x.ReviewDate">
+            <TemplateColumn Title="Created" Sortable="true" SortBy="x => x.Created">
+                <CellTemplate>
+                    <MudText>
+                        @context.Item.Created.ToShortDateString()
+                    </MudText>
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Reviewed" Sortable="true" SortBy="x => x.ReviewDate">
                 <CellTemplate>
                     <MudStack>
                         <MudText>
-                            @context.Item.ReviewedBy 
+                            @context.Item.ReviewedBy
                         </MudText>
                         <MudText>
                             @context.Item.ReviewDate.ToShortDateString()
@@ -32,36 +39,46 @@
                     </MudStack>
                 </CellTemplate>
             </TemplateColumn>
-            <TemplateColumn Title="Review Reason" Sortable="true" SortBy="x => x.ReviewReason?.Name">
+            <TemplateColumn Title="Since Last Review" Sortable="true" SortBy="x => x.DaysSinceLastReview">
                 <CellTemplate>
-                    <MudChip Size="Size.Small" Color="Color.Primary">
-                        @context.Item.ReviewReason  
-                    </MudChip>
+                    @if (context.Item.DaysSinceLastReview is null)
+                    {
+                        <MudText Color="Color.Dark">—</MudText>
+                    }
+                    else if (context.Item.DaysSinceLastReview > 6)
+                    {
+                        <MudText>
+                            @(
+                            TimeSpan
+                                .FromDays(context.Item.DaysSinceLastReview.Value)
+                                .Humanize(minUnit: TimeUnit.Week)
+                            )
+                        </MudText>
+                    }
+                    else
+                    {
+                        <MudText>
+                            @(context.Item.DaysSinceLastReview == 1
+                                ? "1 day"
+                                : $"{context.Item.DaysSinceLastReview} days")
+                        </MudText>
+                    }
                 </CellTemplate>
+
             </TemplateColumn>
             <TemplateColumn Title="Review" Sortable="true" SortBy="x => x.Review">
                 <CellTemplate>
                     @context.Item.Review
                 </CellTemplate>
             </TemplateColumn>
-            <TemplateColumn Title="Since Last Review" Sortable="true" SortBy="x => x.DaysSinceLastReview">
+            <TemplateColumn Title="Review Reason" Sortable="true" SortBy="x => x.ReviewReason?.Name">
                 <CellTemplate>
-                        @if (context.Item.DaysSinceLastReview > 6)
-                        {
-                            <MudText>
-                                @TimeSpan.FromDays(context.Item.DaysSinceLastReview).Humanize(minUnit: TimeUnit.Week)
-                            </MudText>
-                        }
-                        else
-                        {
-                            <MudText> 
-                                @(context.Item.DaysSinceLastReview > 1 ? $"{context.Item.DaysSinceLastReview} days" : $"{context.Item.DaysSinceLastReview} day")
-                            </MudText>
-                        }
+                    <MudChip Size="Size.Small" Color="Color.Primary">
+                        @context.Item.ReviewReason
+                    </MudChip>
                 </CellTemplate>
             </TemplateColumn>
             <PropertyColumn Property="x => x.LocationName" Title="Location" Sortable="true"/>
- 
         </Columns>
         <NoRecordsContent>
             <MudText>@ConstantString.NoRecords</MudText>

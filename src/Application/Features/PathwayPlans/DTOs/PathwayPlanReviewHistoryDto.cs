@@ -10,5 +10,6 @@ public class PathwayPlanReviewHistoryDto
     public required string ReviewedBy { get; set; }
     public int LocationId { get; set; }
     public string LocationName { get; set; } = string.Empty;
-    public int DaysSinceLastReview { get; set; }
+    public required DateTime Created { get; set; }
+    public int? DaysSinceLastReview { get; set; }
 }
