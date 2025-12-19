@@ -22,7 +22,8 @@
              @ref="_table"
              Breakpoint="Breakpoint.Sm"
 			 Striped="true"
-			 Dense="true">
+			 Dense="true"
+             ExpandSingleRow="true">
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
             <div class="d-flex gap-4">
@@ -53,18 +54,7 @@
         </div>
     </ToolBarContent>
     <Columns>
-        <TemplateColumn CellClass="width:60px;" Title="@ConstantString.Actions" Sortable="false">
-            <CellTemplate>
-                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
-                         Dense="true"
-                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
-                    <MudMenuItem OnClick="@(() => ViewParticipant(context.Item))">
-                        @ConstantString.View Participant
-                    </MudMenuItem>
-
-                </MudMenu>
-            </CellTemplate>
-        </TemplateColumn>
+        <HierarchyColumn T="ActivityQueueEntryDto" />
         <PropertyColumn Property="x => x.ParticipantName" Title="@L["Participant"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
@@ -148,14 +138,29 @@
                 </MudTooltip>
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.AssignedTo" Title="@L["AssignedTo"]">
+        <PropertyColumn Property="x => x.AssignedTo" Title="@L["Assigned To"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">@context.Item.AssignedTo</MudText>
                 </div>
             </CellTemplate>
-        </PropertyColumn>         
+        </PropertyColumn>
+        <TemplateColumn Title="@ConstantString.Actions" Sortable="false">
+            <CellTemplate>
+                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                         Dense="true"
+                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                    <MudMenuItem OnClick="@(() => ViewParticipant(context.Item))">
+                        @ConstantString.View Participant
+                    </MudMenuItem>
+
+                </MudMenu>
+            </CellTemplate>
+        </TemplateColumn>
     </Columns>
+    <ChildRowContent>
+        <QaNotesDropdown ActivityId="@context.Item.ActivityId" />
+    </ChildRowContent>
     <NoRecordsContent>
         <MudText>@ConstantString.NoRecords</MudText>
     </NoRecordsContent>

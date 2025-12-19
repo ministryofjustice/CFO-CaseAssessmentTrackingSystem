@@ -1,19 +1,19 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Queries;
-
+    
 namespace Cfo.Cats.Server.UI.Pages.QA.Activities.Components;
 
 public partial class QA1List
-{
+{ 
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
 
-    private bool _loading = false;
+    private bool _loading;
     private int _defaultPageSize = 30;
-    private MudDataGrid<ActivityQueueEntryDto> _table = default!;
-
-    private ActivityQa1WithPagination.Query Query { get; set; } = new();
+    private MudDataGrid<ActivityQueueEntryDto> _table = null!;
     private ActivityQueueEntryDto _currentDto = new();
+    
+    private ActivityQa1WithPagination.Query Query { get;  } = new();
 
     private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state)
     {
@@ -22,7 +22,7 @@ public partial class QA1List
             _loading = true;
             Query.CurrentUser = UserProfile;
             Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Created";
-            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
+            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? nameof(SortDirection.Descending) : nameof(SortDirection.Ascending);
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
 
@@ -35,10 +35,7 @@ public partial class QA1List
         }
     }
 
-    private void ViewParticipant(ActivityQueueEntryDto dto)
-    {
-        Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
-    }
+    private void ViewParticipant(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
 
     private async Task OnSearch(string text)
     {
