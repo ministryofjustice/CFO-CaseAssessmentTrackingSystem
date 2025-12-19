@@ -1,0 +1,36 @@
+@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
+@using Humanizer
+
+@inherits CatsComponentBase
+
+@if (_notes is null)
+{
+    <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+}
+else if (_notes.Length == 0)
+{
+    <MudText Typo="Typo.caption" Class="pa-2">No notes found.</MudText>
+}
+else
+{
+    <MudText Typo="Typo.body1">
+        Notes
+    </MudText>
+    <MudList T="EnrolmentQaNoteDto" Dense="true">
+        @foreach (var note in _notes.OrderByDescending(n => n.Created))
+        {
+            <MudListItem Icon="@Icons.Material.Filled.EditNote" Text="Notes" Expanded>
+                <MudCard Outlined="false" Elevation="2" Class="mb-2">
+                    <MudCardContent>
+                        <MudText Typo="Typo.body2">@note.Message</MudText>
+                        <MudText Typo="Typo.caption">
+                            @(_hideUser && _cfoTenantNames.Contains(note.TenantName)
+                                ? $"CFO User ({note.TenantName}) · {note.Created.Humanize()}"
+                                : $"{note.CreatedBy} ({note.TenantName}) · {note.Created.Humanize()}")
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudListItem>
+        }
+    </MudList>
+}

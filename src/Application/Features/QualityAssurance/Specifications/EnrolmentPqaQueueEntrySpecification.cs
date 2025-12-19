@@ -11,9 +11,9 @@ public class EnrolmentPqaQueueEntrySpecification : Specification<EnrolmentPqaQue
             .Where(e => e.IsCompleted == false);
 
         Query.Where(e => 
-            e.ParticipantId.Contains(filter.Keyword!) || e.Participant!.LastName.Contains(filter.Keyword!),
-            string.IsNullOrEmpty(filter.Keyword) == false);
-
-        
+            e.ParticipantId.Contains(filter.Keyword!)
+            || e.Participant!.FirstName.Contains(filter.Keyword!)
+            || e.Participant!.LastName.Contains(filter.Keyword!),
+            !string.IsNullOrEmpty(filter.Keyword));
     }
 }
