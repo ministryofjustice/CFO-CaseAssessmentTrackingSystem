@@ -14,18 +14,7 @@
     <MudText Typo="Typo.h3">
         Tenant Dashboard
     </MudText>
-    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
-        This page is still under development and may produce inaccurate results.
-    </MudAlert>
 	<MudStack Row="true" AlignItems="AlignItems.Center">
-
-		<MudDateRangePicker @ref="_picker" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="@_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
-			<PickerActions>
-				<MudButton OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
-				<MudButton Color="Color.Primary" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
-			</PickerActions>
-		</MudDateRangePicker>
-
 		@if (CurrentUser.AssignedRoles is not [])
 		{
 			<MudLink OnClick="DisplayOptionsDialog" Disabled="@(CurrentUser.AssignedRoles is [])">
@@ -53,47 +42,64 @@
 
     @if (SelectedTenantId is not null)
     {
-		<MudTabs PanelClass="pa-6" ApplyEffectsToContainer="true" Outlined="true">
-			<MudTabPanel Text="Location Breakdown">
-				<MudAlert Severity="Severity.Info">
-					This page is not affected by the date range selector. It is a breakdown of all cases assigned to @SelectedDisplayName
-					and their current status.
-				</MudAlert>
-				<CasesPerLocationDashboardComponent TenantId="@SelectedTenantId" @key="@SelectedTenantId" VisualMode="@_visualMode" />
-			</MudTabPanel>
-			<MudTabPanel Text="Enrolments" Class="pa-3">
-				<EnrolmentDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
-			</MudTabPanel>
-			<MudTabPanel Text="Inductions" Class="pa-3">
-				<InductionDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
-			</MudTabPanel>
-			<MudTabPanel Text="Support &amp; Referral">
-                <SupportAndReferralDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+        <MudTabs PanelClass="pa-1" ApplyEffectsToContainer="true" Outlined="true" Color="Color.Info">
+            <MudTabPanel Text="Case Management" Icon="@Icons.Material.Filled.People">
+                <MudTabs Outlined="true">
+                    <MudTabPanel Text="Location Breakdown" Class="pa-3">
+                        <CasesPerLocationDashboardComponent TenantId="@SelectedTenantId" @key="@SelectedTenantId" VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                    <MudTabPanel Text="Pathway Plan Reviews" Class="pa-3">
+                        <PathwayPlanReviewDashboardComponent TenantId="@SelectedTenantId" @key="@SelectedTenantId" VisualMode="@_visualMode"/>
+                    </MudTabPanel>    
+                </MudTabs>
             </MudTabPanel>
-			<MudTabPanel Text="Activities">
-                <MudGrid Spacing="4">
-                    <MudItem xs="12" sm="12" md="12" lg="12">
-                        <CommencedActivityDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
-                    </MudItem>
-                    <MudItem xs="12" sm="6" md="6" lg="6">
-                        <ApprovedActivityDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
-                    </MudItem>
-                    <MudItem xs="12" sm="6" md="6" lg="6">
-                        <PaidActivityComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
-                    </MudItem>
-                </MudGrid>
+            <MudTabPanel Text="Performance" Icon="@Icons.Material.Filled.Score">
+                <div style="max-width: 640px;">
+                    <MudDateRangePicker @ref="_picker" Label="Date Range" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="@_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
+                        <PickerActions>
+                            <MudButton OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+                            <MudButton Color="Color.Primary" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
+                        </PickerActions>
+                    </MudDateRangePicker>    
+                </div>
+                <MudTabs Outlined="true">
+                    <MudTabPanel Text="Enrolments" Class="pa-3">
+                        <EnrolmentDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                    <MudTabPanel Text="Inductions" Class="pa-3">
+                        <InductionDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                    <MudTabPanel Text="Support &amp; Referral" Class="pa-3">
+                        <SupportAndReferralDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                    <MudTabPanel Text="Activities" Class="pa-3">
+                        <MudGrid Spacing="4">
+                            <MudItem xs="12" sm="12" md="12" lg="12">
+                                <CommencedActivityDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6" md="6" lg="6">
+                                <ApprovedActivityDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6" md="6" lg="6">
+                                <PaidActivityComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                            </MudItem>
+                        </MudGrid>
+                    </MudTabPanel>
+                    <MudTabPanel Text="Education &amp; Training" Class="pa-3">
+                        <EducationAndTrainingDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                    <MudTabPanel Text="Employment" Class="pa-3">
+                        <EmploymentDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                    <MudTabPanel Text="Reassessments" Class="pa-3">
+                        <ReassessmentDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                </MudTabs>
             </MudTabPanel>
-            <MudTabPanel Text="Education &amp; Training">
-                <EducationAndTrainingDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
-            </MudTabPanel>
-            <MudTabPanel Text="Employment">
-                <EmploymentDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
-            </MudTabPanel>
-            <MudTabPanel Text="Reassessments" Class="pa-3">
-                <ReassessmentDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
-            </MudTabPanel>
-
-		</MudTabs>
+        </MudTabs>
+        
+        
+		
     }
     
 </MudStack>

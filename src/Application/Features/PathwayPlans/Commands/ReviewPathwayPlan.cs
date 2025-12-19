@@ -53,7 +53,15 @@ public static class ReviewPathwayPlan
             RuleFor(x => x.PathwayPlanId)
                 .NotNull()
                 .WithMessage("You must provide a Pathway Plan");
-
+            
+            RuleFor(x => x.Review)
+                .NotNull()
+                .WithMessage("You must provide a review comment")
+                .MaximumLength(ValidationConstants.NotesLength)
+                .WithMessage($"Maximum length of a review comment is {ValidationConstants.NotesLength}")
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Review"));
+            
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
                 RuleFor(x => x.PathwayPlanId)
