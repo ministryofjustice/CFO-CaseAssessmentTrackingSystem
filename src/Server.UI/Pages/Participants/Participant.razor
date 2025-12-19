@@ -1,13 +1,9 @@
 @page "/pages/participants/{id}"
-@using System.Globalization
-@using Cfo.Cats.Application.Features.Participants.DTOs
-@using Cfo.Cats.Application.Features.Participants.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.DMS
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.Histories
-@using Humanizer
 
 @inherits CatsComponentBase
  
@@ -94,7 +90,7 @@
                             <CaseAssessment ParticipantId="@Id" ConsentDate="@_participant.DateOfFirstConsent"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Pathway Plan">
-                            <CasePathwayPlan ParticipantId="@Id" OnUpdate="() => Refresh()" ParticipantIsActive="@_participant.IsActive" />
+                            <CasePathwayPlan ParticipantId="@Id" ParticipantIsActive="@_participant.IsActive"/>
                         </MudTabPanel>
                         <MudTabPanel Text="PRI">
                             <CasePRI ParticipantId="@Id" OnUpdate="() => Refresh()" />
