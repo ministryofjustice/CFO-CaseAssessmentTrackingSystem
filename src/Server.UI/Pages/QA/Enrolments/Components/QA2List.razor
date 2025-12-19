@@ -53,7 +53,8 @@
         </div>
     </ToolBarContent>
     <Columns>
-        <TemplateColumn CellClass="width:60px;" Title="@ConstantString.Actions" Sortable="false">
+        <HierarchyColumn />
+        <TemplateColumn Title="@ConstantString.Actions" Sortable="false">
             <CellTemplate>
                 <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                          Dense="true"
@@ -89,7 +90,7 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.AssignedTo" Title="@L["AssignedTo"]">
+        <PropertyColumn Property="x => x.AssignedTo" Title="@L["Assigned To"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">@context.Item.AssignedTo</MudText>
@@ -109,6 +110,9 @@
             </CellTemplate>
         </PropertyColumn>
     </Columns>
+    <ChildRowContent>
+        <QaNotesDropdown ParticipantId="@context.Item.ParticipantId" />
+    </ChildRowContent>
     <NoRecordsContent>
         <MudText>@ConstantString.NoRecords</MudText>
     </NoRecordsContent>
