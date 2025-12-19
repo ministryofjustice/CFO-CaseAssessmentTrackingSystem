@@ -13,8 +13,12 @@ public static class ReviewPathwayPlan
         public required Guid PathwayPlanId { get; set; }
         public required string ParticipantId { get; set; }
         public LocationDto? Location { get; set; }
+        
+        [Description(description: "Review Date")]
         public required DateTime? ReviewDate { get; set; }
         public string? Review { get; set; }
+        
+        [Description(description: "Review Reason")]
         public required PathwayPlanReviewReason ReviewReason { get; set; } = PathwayPlanReviewReason.Default;
     }
 
@@ -67,6 +71,10 @@ public static class ReviewPathwayPlan
                 .NotNull()
                 .Must(r => r.IsValidSelection())
                 .WithMessage("A review reason must be selected.");
+
+            RuleFor(x => x.Location)
+                .NotNull()
+                .WithMessage("You must provide a location");
         }
 
         private async Task<bool> ParticipantMustNotBeArchived(Guid pathwayPlanId, CancellationToken cancellationToken)
