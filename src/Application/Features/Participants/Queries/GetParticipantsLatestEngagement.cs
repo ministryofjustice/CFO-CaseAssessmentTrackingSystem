@@ -1,5 +1,4 @@
-﻿using Ardalis.Specification.EntityFrameworkCore;
-using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -10,9 +9,9 @@ public static class GetParticipantsLatestEngagement
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Query : PaginationFilter, IRequest<Result<PaginatedData<ParticipantEngagementDto>>>
     {
-        public required UserProfile CurrentUser { get; set; }
-        public bool JustMyCases { get; set; } = false;
-        public bool HideRecentEngagements { get; set; } = false;
+        public required UserProfile CurrentUser { get; init; }
+        public bool JustMyCases { get; init; }
+        public bool HideRecentEngagements { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaginatedData<ParticipantEngagementDto>>>
@@ -25,6 +24,12 @@ public static class GetParticipantsLatestEngagement
             var query =
                 from participant in db.Participants
                 join engagement in db.ParticipantEngagements
+                        .Where(e =>
+                            string.IsNullOrWhiteSpace(request.Keyword) ||
+                            e.Description.Contains(request.Keyword) ||
+                            e.Category.Contains(request.Keyword) ||
+                            e.EngagedAtLocation.Contains(request.Keyword)
+                        )
                     on participant.Id equals engagement.ParticipantId into leftJoin
                 from engagement in leftJoin
                     .OrderByDescending(pe => pe.EngagedOn)
@@ -38,15 +43,15 @@ public static class GetParticipantsLatestEngagement
                 where participant.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
                 where request.HideRecentEngagements == false || (engagement == null || engagement.EngagedOn < DateOnly.FromDateTime(DateTime.Today).AddMonths(-3))
                 where string.IsNullOrWhiteSpace(request.Keyword)
-                    || new[] 
-                    { 
-                        engagement.Description, 
-                        engagement.Category, 
-                        engagement.EngagedAtLocation, 
-                        participant.FirstName, 
-                        participant.LastName, 
-                        participant.Id 
-                    }.Any(f => f.Contains(request.Keyword))
+                      || (engagement != null &&
+                          (
+                              engagement.Description.Contains(request.Keyword) ||
+                              engagement.Category.Contains(request.Keyword) ||
+                              engagement.EngagedAtLocation.Contains(request.Keyword)
+                          ))
+                      || participant.FirstName.Contains(request.Keyword)
+                      || participant.LastName.Contains(request.Keyword)
+                      || participant.Id.Contains(request.Keyword)
                 select new
                 {
                     participant.Id,
