@@ -75,7 +75,7 @@
     {
         pages.Add("Home", "/");
         pages.Add("Support Worker Dashboard", "/pages/dashboard/supportworker");
-        pages.Add("Tenant Dashboard", "/pages/dashboard/tenant");
+        //pages.Add("Tenant Dashboard", "/pages/dashboard/tenant");
         pages.Add("Participants", "/pages/participants");
         pages.Add("New Enrolment", "/pages/candidates/search");
         pages.Add("My Documents", "/pages/analytics/my-documents");
@@ -101,14 +101,14 @@
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
                 pages.Add("First Pass", "/pages/qa/enrolments/qa1");
-                pages.Add("QA Dashboard", "/pages/dashboard/qa");    
+                //pages.Add("QA Dashboard", "/pages/dashboard/qa");    
             }
 
             allowed = [RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
                 pages.Add("Second Pass", "/pages/qa/enrolments/qa2");    
-                pages.Add("QA - Team Dashboard", "/pages/dashboard/qateam");    
+                //pages.Add("QA - Team Dashboard", "/pages/dashboard/qateam");    
             }
 
             allowed = [RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
