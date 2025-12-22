@@ -93,7 +93,7 @@ public static class ChangeEnrolmentLocation
                 .IgnoreAutoIncludes()
                 .FirstAsync(x => x.Id == participantId, cancellationToken);
             
-            return participant.EnrolmentStatus!.AllowEnrolmentLocationChange();
+            return participant.EnrolmentStatus!.AllowEnrolmentLocationChange() && participant.ConsentStatus!.AllowEnrolmentLocationChange();
         }
     }
 }

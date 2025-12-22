@@ -6,7 +6,6 @@
 
 @inject IValidationService Validator
 
-
 <MudDialog>
     <DialogContent>
         <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
@@ -29,8 +28,7 @@
             <MudItem xs="12">
                 <MudTextField @bind-Value="Command.JustificationReason" Label="Justification Reason" 
                               Lines="5" Class="mt-4" MaxLength="@ValidationConstants.NotesLength" 
-                              Immediate="true" oninput="UpdateCharacterCount" Required="true"/>
-                <MudText Class="ml-2">Characters: @characterCount / 1000</MudText>
+                              Immediate="true" Counter=@ValidationConstants.NotesLength Required="true"/>
             </MudItem>
         </MudForm>
        
@@ -52,21 +50,21 @@
 
 @code {
     private MudForm? _form;
-    private bool _saving = false;
+    private bool _saving;
 
-    [Inject] public ILocationService LocationService { get; set; } = default!;
+    [Inject] public ILocationService LocationService { get; set; } = null!;
 
     [CascadingParameter] 
-    private IMudDialogInstance MudDialog { get; set; } = default!;
+    private IMudDialogInstance MudDialog { get; set; } = null!;
 
-    [Parameter] public UserProfile UserProfile { get; set; } = default!;
+    [Parameter] public UserProfile UserProfile { get; set; } = null!;
 
     [Parameter] public string? ParticipantId { get; set; }
     [Parameter] public string? JustificationReason { get; set; }
 
     public LocationDto[] Locations { get; set; } = [];
 
-    private ChangeEnrolmentLocation.Command Command { get; set; } = new(); 
+    private ChangeEnrolmentLocation.Command Command { get; } = new(); 
 
     private void Cancel()
     {
@@ -81,9 +79,7 @@
             .ToArray();
 
         Command.CurrentUser = UserProfile;
-        Command.ParticipantId = ParticipantId;
-        Command.JustificationReason = JustificationReason;
-
+        Command.ParticipantId = ParticipantId;   
     }
 
     private async Task Submit()
@@ -115,13 +111,5 @@
         {
             _saving = false;
         }
-    }
-
-    private int characterCount => Command.JustificationReason?.Length ?? 0;
-
-    private void UpdateCharacterCount(ChangeEventArgs args)
-    {
-        Command.JustificationReason = args?.Value?.ToString() ?? string.Empty;
-    }
-
+    }    
 }
