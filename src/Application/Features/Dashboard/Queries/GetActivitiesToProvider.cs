@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -157,17 +156,55 @@ public static class GetActivitiesToProvider
         {
             TabularData = tabularData;
             
-            ChartData = tabularData
-                .GroupBy(td => new { td.ContractName, td.Queue })
-                .OrderBy(g => g.Key.ContractName)
-                .ThenBy(g => g.Key.Queue)
+            // Get all unique contracts first, sorted
+            var allContracts = tabularData
+                .Select(td => td.ContractName)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+            
+            // Get all unique activity types
+            var allActivityTypes = tabularData
+                .Select(td => td.ActivityType)
+                .Where(at => at != null)
+                .Distinct()
+                .OrderBy(at => at!.Name)
+                .ToList();
+            
+            // Group the actual data
+            var grouped = tabularData
+                .GroupBy(td => new { td.ContractName, td.ActivityType })
                 .Select(g => new ActivitiesChartData
                 {
                     ContractName = g.Key.ContractName,
-                    Queue = g.Key.Queue,
-                    Count = g.Count()
+                    ActivityType = g.Key.ActivityType,
+                    EscalationQueue = g.Count(x => x.Queue == "Escalation"),
+                    QA2Queue = g.Count(x => x.Queue == "QA2")
                 })
-                .ToArray();
+                .ToList();
+            
+            // Ensure each ActivityType has entries for all contracts (with 0 if missing)
+            var completeData = new List<ActivitiesChartData>();
+            
+            foreach (var activityType in allActivityTypes)
+            {
+                foreach (var contract in allContracts)
+                {
+                    var existing = grouped.FirstOrDefault(x => 
+                        x.ActivityType == activityType && 
+                        x.ContractName == contract);
+                        
+                    completeData.Add(existing ?? new ActivitiesChartData
+                    {
+                        ContractName = contract,
+                        ActivityType = activityType,
+                        EscalationQueue = 0,
+                        QA2Queue = 0
+                    });
+                }
+            }
+            
+            ChartData = completeData.ToArray();
         }
         public ActivitiesTabularData[] TabularData { get;}
         public ActivitiesChartData[] ChartData { get;}
@@ -197,7 +234,8 @@ public static class GetActivitiesToProvider
         public string? ContractName { get; set; }
         public ActivityType? ActivityType { get; set; }
         public string? Queue { get; set; }
-        public int Count { get; set; }
+        public int EscalationQueue { get; set; }
+        public int QA2Queue { get; set; }
     }
 
 }
