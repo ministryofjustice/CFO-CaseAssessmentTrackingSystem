@@ -153,7 +153,7 @@ public static class SubmitToProviderQa
             }
             
             // ok if we get here, we have at LEAST 1 red. So we just need an amber AND a justification
-            if (latest.Scores.Count(s => s.Score is < 25) >= 2 
+            if (latest.Scores.Count(s => s.Score is <= 25) >= 2 
                 && string.IsNullOrEmpty(command.JustificationReason) == false)
             {
                 return true;
