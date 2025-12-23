@@ -13,10 +13,14 @@
         Support Worker Dashboard
     </MudText>
     
-	<MudStack Row="true" AlignItems="AlignItems.Center">
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">
+        This page is still under development and may produce inaccurate results.
+    </MudAlert>
+  
+    
+    <MudStack Row="true" AlignItems="AlignItems.Center">
 
-	
-
+        
 		@if (CurrentUser.AssignedRoles is not [])
 		{
 			<MudLink OnClick="DisplayOptionsDialog" Disabled="@(CurrentUser.AssignedRoles is [])">
