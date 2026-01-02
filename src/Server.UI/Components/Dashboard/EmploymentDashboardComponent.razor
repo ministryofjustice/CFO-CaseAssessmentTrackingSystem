@@ -24,22 +24,12 @@
     @if (VisualMode)
     {
         <ApexCharts.ApexChart TItem="GetEmployments.LocationDetail" Options="Options" Height="650" Width="@("100%")">
-
             <ApexCharts.ApexPointSeries TItem="GetEmployments.LocationDetail"
                                         Items="Data.Details"
-                                        Name="@($"Payable ({(Data.CommunityPayable + Data.CustodyPayable)})")"
+                                        Name="@($"Payable ({(Data.Community + Data.Custody)})")"
                                         SeriesType="ApexCharts.SeriesType.Bar"
                                         XValue="@(e => e.LocationName)"
                                         YValue="@(e => e.Payable)"
-                                        ShowDataLabels="true">
-            </ApexCharts.ApexPointSeries>
-
-            <ApexCharts.ApexPointSeries TItem="GetEmployments.LocationDetail"
-                                        Items="Data.Details"
-                                        Name="@($"Non Payable ({(Data.Community + Data.Custody) - (Data.CommunityPayable + Data.CustodyPayable)})")"
-                                        SeriesType="ApexCharts.SeriesType.Bar"
-                                        XValue="@(e => e.LocationName)"
-                                        YValue="@(e => e.TotalCount - e.Payable)"
                                         ShowDataLabels="true">
             </ApexCharts.ApexPointSeries>
         </ApexCharts.ApexChart>
@@ -63,19 +53,11 @@
                         Payable
                     </MudTableSortLabel>
                 </MudTh>
-                <MudTh>Non-Payable</MudTh>
-                <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEmployments.LocationDetail, object>(x => x.TotalCount)">
-                        Count
-                    </MudTableSortLabel>
-                </MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Location">@context.LocationName</MudTd>
                 <MudTd DataLabel="Location Type">@context.LocationType.Name</MudTd>
                 <MudTd DataLabel="Payable">@context.Payable</MudTd>
-                <MudTd DataLabel="Payable">@(context.TotalCount - context.Payable)</MudTd>
-                <MudTd DataLabel="Total Count">@context.TotalCount</MudTd>
             </RowTemplate>
             <PagerContent>
                 <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />

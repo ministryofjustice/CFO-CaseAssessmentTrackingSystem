@@ -14,7 +14,12 @@
     <MudText Typo="Typo.h3">
         Tenant Dashboard
     </MudText>
-	<MudStack Row="true" AlignItems="AlignItems.Center">
+        
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">
+        This page is still under development and may produce inaccurate results.
+    </MudAlert>
+    
+    <MudStack Row="true" AlignItems="AlignItems.Center">
 		@if (CurrentUser.AssignedRoles is not [])
 		{
 			<MudLink OnClick="DisplayOptionsDialog" Disabled="@(CurrentUser.AssignedRoles is [])">
@@ -73,17 +78,7 @@
                         <SupportAndReferralDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
                     </MudTabPanel>
                     <MudTabPanel Text="Activities" Class="pa-3">
-                        <MudGrid Spacing="4">
-                            <MudItem xs="12" sm="12" md="12" lg="12">
-                                <CommencedActivityDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
-                            </MudItem>
-                            <MudItem xs="12" sm="6" md="6" lg="6">
-                                <ApprovedActivityDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
-                            </MudItem>
-                            <MudItem xs="12" sm="6" md="6" lg="6">
-                                <PaidActivityComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
-                            </MudItem>
-                        </MudGrid>
+                        <PaidActivityComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
                     </MudTabPanel>
                     <MudTabPanel Text="Education &amp; Training" Class="pa-3">
                         <EducationAndTrainingDashboardComponent DateRange="@_dateRange" TenantId="@SelectedTenantId" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />

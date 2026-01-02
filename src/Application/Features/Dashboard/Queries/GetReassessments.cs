@@ -22,8 +22,9 @@ public static class GetReassessments
             var context = unitOfWork.DbContext;
 
             var baseQuery = context.ReassessmentPayments
-                .Where(mi => mi.AssessmentCompleted >= request.StartDate &&
-                             mi.AssessmentCompleted < request.EndDate.AddDays(1).Date);
+                .Where(mi => mi.PaymentPeriod >= request.StartDate &&
+                             mi.PaymentPeriod < request.EndDate.AddDays(1).Date)
+                .Where(mi => mi.EligibleForPayment);
 
             // Checks and applies filter based on UserId or TenantId else throws exception
             baseQuery = request switch
@@ -41,10 +42,9 @@ public static class GetReassessments
                         join l in context.Locations on mi.LocationId equals l.Id
                         group mi by l into grp
                         orderby grp.Key.Name, grp.Key.LocationType
-                        select new Details(
+                        select new LocationDetails(
                             grp.Key.Name,
                             grp.Key.LocationType,
-                            grp.Count(mi => mi.EligibleForPayment),
                             grp.Count()
                         );
 
@@ -58,27 +58,22 @@ public static class GetReassessments
 
     public record ReassessmentsDto
     {
-        public ReassessmentsDto(Details[] details)
+        public ReassessmentsDto(LocationDetails[] details)
         {
             Details = details;
             
-            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.TotalCount);
-            CustodyPayable = details.Where(d => d.LocationType.IsCustody).Sum(d => d.Payable);
-
-            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.TotalCount);
-            CommunityPayable = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.Payable);
+            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.Payable);
+            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.Payable);
         }
 
-        public Details[] Details { get; }
+        public LocationDetails[] Details { get; }
 
         public int Custody { get; }
-        public int CustodyPayable { get; }
 
         public int Community { get; }
-        public int CommunityPayable { get; }
 
     }
 
-    public record Details(string LocationName, LocationType LocationType, int Payable, int TotalCount);
+    public record LocationDetails(string LocationName, LocationType LocationType, int Payable);
 
 }
