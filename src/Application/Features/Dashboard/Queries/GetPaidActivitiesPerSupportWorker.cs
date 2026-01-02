@@ -23,8 +23,8 @@ var context = unitOfWork.DbContext;
                         join ap in context.Activities on mi.ActivityId equals ap.Id
                         join l in context.Locations on mi.LocationId equals l.Id
                         where mi.EligibleForPayment &&
-                              mi.ActivityApproved >= request.StartDate &&
-                              mi.ActivityApproved <= request.EndDate
+                              mi.PaymentPeriod >= request.StartDate &&
+                              mi.PaymentPeriod <= request.EndDate
                         select new { mi, ap, l };
 
             // Checks and applies filter based on UserId or TenantId else throws exception

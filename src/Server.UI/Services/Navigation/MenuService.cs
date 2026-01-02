@@ -39,7 +39,7 @@ public class MenuService : IMenuService
                             {
                                 Title = "Tenant",
                                 Href = "/pages/dashboard/tenant/",
-                                PageStatus = PageStatus.ComingSoon,
+                                PageStatus = PageStatus.Wip,
                                 Roles = RoleNames.AllExtraPermissions,
                             },
 

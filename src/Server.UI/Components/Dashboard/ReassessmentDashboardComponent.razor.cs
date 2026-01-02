@@ -30,7 +30,7 @@ public partial class ReassessmentDashboardComponent
          EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set")
      };
 
-    private ApexCharts.ApexChartOptions<GetReassessments.Details> Options => new()
+    private ApexCharts.ApexChartOptions<GetReassessments.LocationDetails> Options => new()
     {
         Chart = new ApexCharts.Chart
         {
