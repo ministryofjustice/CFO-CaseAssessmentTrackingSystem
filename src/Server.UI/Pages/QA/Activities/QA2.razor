@@ -2,8 +2,6 @@
 
 @using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.Activities.Commands
-@using Cfo.Cats.Application.Features.Activities.DTOs
-@using Cfo.Cats.Application.Features.Activities.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.QA.Activities.Components
@@ -141,83 +139,7 @@
 </MudContainer>
 
 @code {
-    private ActivityQaExternalMessageWarning? _warningMessage;
-    private MudForm? _form;
-    private ActivityQueueEntryDto? _queueEntry;
-    private ActivityQaDetailsDto? _activityQaDetailsDto;
-    
-    [CascadingParameter]
-    public UserProfile? UserProfile { get; set; }
-
-    private SubmitActivityQa2Response.Command Command { get; set; } = default!;
-
-    private async Task GetQueueItem()
-    {
-        GrabActivityQa2Entry.Command command = new GrabActivityQa2Entry.Command()
-            {
-                CurrentUser = UserProfile!
-            };
-
-        var result = await GetNewMediator().Send(command);
-
-        if (result.Succeeded)
-        {
-            _queueEntry = result.Data!;
-
-            var activity = await GetNewMediator().Send(new GetActivityById.Query()
-                {
-                    Id = _queueEntry.ActivityId
-                });
-            _activityQaDetailsDto = Mapper.Map<ActivityQaDetailsDto>(activity);
-            _activityQaDetailsDto.ActivityId = activity!.Id;
-
-            Command = new SubmitActivityQa2Response.Command()
-                {
-                    ActivityQueueEntryId = _queueEntry.Id,
-                    CurrentUser = UserProfile
-                };
-        }
-        else
-        {
-            Snackbar.Add(result.ErrorMessage, Severity.Info);
-        }
-    }
-
-    protected async Task SubmitToQa()
-    {
-        await _form!.Validate();
-
-        if (_form.IsValid is false)
-        {
-            return;
-        }
-
-        bool submit = true;
-
-        if (Command is { IsMessageExternal: true, Message.Length: > 0 })
-        {
-            submit = await _warningMessage!.ShowAsync();
-        }
-
-        if (submit)
-        {
-            var result = await GetNewMediator().Send(Command);
-
-            if (result.Succeeded)
-            {
-                Snackbar.Add("Activity submitted", Severity.Info);
-                Navigation.NavigateTo("/pages/qa/activities/qa2", true);
-            }
-            else
-            {
-                ShowActionFailure("Failed to submit", result);
-            }
-        }
-    }
-
-    private void ShowActionFailure(string title, IResult result)
-    {
-        Snackbar.Add(
+    private RenderFragment RenderFailure(string title, IResult result) =>
         @<div>
             <h2>@title</h2>
             <ul>
@@ -226,10 +148,5 @@
                     <li>@e</li>
                 }
             </ul>
-        </div>
-        , Severity.Error, options => {
-            options.RequireInteraction = true;
-            options.SnackbarVariant = Variant.Text;
-        });
-    }
+        </div>;
 }
