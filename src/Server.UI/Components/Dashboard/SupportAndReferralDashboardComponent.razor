@@ -26,12 +26,12 @@
             <!-- Pre-Release Support - Eligible for Payment -->
             <MudItem xs="12" sm="6" md="6" lg="6">
 
-                @if (GetChartData(ConstantString.PreReleaseSupport, true).Any())
+                @if (GetChartData(ConstantString.PreReleaseSupport).Any())
                 {
                     <ApexChart TItem="ChartDataPoint"
                                Options="@GetChartOptions("#10b981", string.Format("{0} - {1}",ConstantString.PreReleaseSupport, ConstantString.Payable))" Height="335">
                         <ApexPointSeries TItem="ChartDataPoint"
-                                         Items="@GetChartData(ConstantString.PreReleaseSupport, true)"
+                                         Items="@GetChartData(ConstantString.PreReleaseSupport)"
                                          Name="Count"
                                          SeriesType="ApexCharts.SeriesType.Bar"
                                          XValue="@(e => e.Location)"
@@ -44,57 +44,15 @@
                     <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">Pre-Release Support(Payable) - No data available</MudText>
                 }
             </MudItem>
-
-            <!-- Pre-Release Support - NOT Eligible for Payment -->
-            <MudItem xs="12" sm="6" md="6" lg="6">
-                @if (GetChartData(ConstantString.PreReleaseSupport, false).Any())
-                {
-                    <ApexChart TItem="ChartDataPoint"
-                               Options="@GetChartOptions("#ef4444", string.Format("{0} - {1}",ConstantString.PreReleaseSupport, ConstantString.NonPayable))" Height="335">
-                        <ApexPointSeries TItem="ChartDataPoint"
-                                         Items="@GetChartData(ConstantString.PreReleaseSupport, false)"
-                                         Name="Count"
-                                         SeriesType="ApexCharts.SeriesType.Bar"
-                                         XValue="@(e => e.Location)"
-                                         YValue="@(e => (decimal)e.Count)"
-                                         OrderBy="e => e.X" />
-                    </ApexChart>
-                }
-                else
-                {
-                    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">Pre-Release Support(Non-Payable) - No data available</MudText>
-                }
-            </MudItem>
-
+            
             <!-- Through the Gate - Eligible for Payment -->
             <MudItem xs="12" sm="6" md="6" lg="6">
-                @if (GetChartData(ConstantString.ThroughTheGate, true).Any())
+                @if (GetChartData(ConstantString.ThroughTheGate).Any())
                 {
                     <ApexChart TItem="ChartDataPoint"
                                Options="@GetChartOptions("#10b981", string.Format("{0} - {1}",ConstantString.ThroughTheGate, ConstantString.Payable))" Height="335">
                         <ApexPointSeries TItem="ChartDataPoint"
-                                         Items="@GetChartData(ConstantString.ThroughTheGate, true)"
-                                         Name="Count"
-                                         SeriesType="ApexCharts.SeriesType.Bar"
-                                         XValue="@(e => e.Location)"
-                                         YValue="@(e => (decimal)e.Count)"
-                                         OrderBy="e => e.X" />
-                    </ApexChart>
-                }
-                else
-                {
-                    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">Through the Gate(Payable) - No data available</MudText>
-                }
-            </MudItem>
-
-            <!-- Through the Gate - NOT Eligible for Payment -->
-            <MudItem xs="12" sm="6" md="6" lg="6">
-                @if (GetChartData(ConstantString.ThroughTheGate, false).Any())
-                {
-                    <ApexChart TItem="ChartDataPoint"
-                               Options="@GetChartOptions("#ef4444", string.Format("{0} - {1}",ConstantString.ThroughTheGate, ConstantString.NonPayable))" Height="335">
-                        <ApexPointSeries TItem="ChartDataPoint"
-                                         Items="@GetChartData(ConstantString.ThroughTheGate, false)"
+                                         Items="@GetChartData(ConstantString.ThroughTheGate)"
                                          Name="Count"
                                          SeriesType="ApexCharts.SeriesType.Bar"
                                          XValue="@(e => e.Location)"
@@ -132,20 +90,13 @@
                                 Payable
                             </MudTableSortLabel>
                         </MudTh>
-                        <MudTh>Non-Payable</MudTh>
-                        <MudTh>
-                            <MudTableSortLabel SortBy="new Func<GetSupportReferrals.LocationDetail, object>(x => x.TotalCount)">
-                                Count
-                            </MudTableSortLabel>
-                        </MudTh>
+                       
                     </HeaderContent>
                     <RowTemplate>
                         <MudTd DataLabel="Location">@context.LocationName</MudTd>
                         <MudTd DataLabel="Location Type">@context.LocationType.Name</MudTd>
                         <MudTd DataLabel="Support Type">@context.SupportType</MudTd>
                         <MudTd DataLabel="Payable">@context.Payable</MudTd>
-                        <MudTd DataLabel="Payable">@(context.TotalCount - context.Payable)</MudTd>
-                        <MudTd DataLabel="Total Count">@context.TotalCount</MudTd>
                     </RowTemplate>
                     <PagerContent>
                         <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />

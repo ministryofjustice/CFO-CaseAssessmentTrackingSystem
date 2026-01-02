@@ -22,8 +22,9 @@ public static class GetInductions
             var context = unitOfWork.DbContext;
 
             var baseQuery = context.InductionPayments
-                .Where(mi => mi.Approved >= request.StartDate &&
-                             mi.Approved <= request.EndDate);
+                .Where(mi => mi.PaymentPeriod >= request.StartDate &&
+                             mi.PaymentPeriod <= request.EndDate)
+                .Where(mi => mi.EligibleForPayment);
 
             // Checks and applies filter based on UserId or TenantId else throws exception
             baseQuery = request switch
@@ -42,10 +43,9 @@ public static class GetInductions
                         group mi by l into grp
                         orderby grp.Key.Name, grp.Key.LocationType
                         select new LocationDetail(
-                            grp.Key.Name,
-                            grp.Key.LocationType,
-                            grp.Count(mi => mi.EligibleForPayment),
-                            grp.Count()
+                            LocationName: grp.Key.Name,
+                            LocationType: grp.Key.LocationType,
+                            Payable: grp.Count()
                         );
 
             var results = await query
@@ -61,25 +61,15 @@ public static class GetInductions
         public InductionsDto(LocationDetail[] details)
         {
             Details = details;
-            
-            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.TotalCount);
-            CustodyPayable = details.Where(d => d.LocationType.IsCustody).Sum(d => d.Payable);
-
-            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.TotalCount);
-            CommunityPayable = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.Payable);
-
+            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.Payable);
+            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.Payable);
         }
 
         public LocationDetail[] Details { get; }
-
         public int Custody { get; }
-        public int CustodyPayable { get; }
-
         public int Community { get; }
-        public int CommunityPayable { get; }
-
     }
 
-    public record LocationDetail(string LocationName, LocationType LocationType, int Payable, int TotalCount);
+    public record LocationDetail(string LocationName, LocationType LocationType, int Payable);
 
 }

@@ -22,8 +22,9 @@ public static class GetSupportReferrals
             var context = unitOfWork.DbContext;
 
             var baseQuery = context.SupportAndReferralPayments
-                .Where(mi => mi.Approved >= request.StartDate &&
-                             mi.Approved <= request.EndDate);
+                .Where(mi => mi.PaymentPeriod >= request.StartDate &&
+                             mi.PaymentPeriod <= request.EndDate)
+                .Where(mi => mi.EligibleForPayment);
 
             // Checks and applies filter based on UserId or TenantId else throws exception
             baseQuery = request switch
@@ -50,7 +51,6 @@ public static class GetSupportReferrals
                             g.Key.Name,
                             g.Key.LocationType,
                             g.Key.SupportType,
-                            g.Count(mi => mi.EligibleForPayment),
                             g.Count()
                         );
 
@@ -69,8 +69,8 @@ public static class GetSupportReferrals
         {
             Details = details;
 
-            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.TotalCount);
-            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.TotalCount);
+            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.Payable);
+            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.Payable);
         }
 
         public LocationDetail[] Details { get; }
@@ -82,6 +82,5 @@ public static class GetSupportReferrals
         string LocationName,
         LocationType LocationType,
         string SupportType,
-        int Payable,
-        int TotalCount);
+        int Payable);
 }

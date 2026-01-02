@@ -29,9 +29,8 @@ public partial class SupportAndReferralDashboardComponent
          EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set")
      };
 
-    private List<ChartDataPoint> GetChartData(string supportType, bool isPayable)
+    private List<ChartDataPoint> GetChartData(string supportType)
     {
-        if (isPayable) {
             return Data?.Details
                 .Where(d => d.SupportType == supportType && d.Payable > 0)
                 .Select(d => new ChartDataPoint
@@ -40,24 +39,11 @@ public partial class SupportAndReferralDashboardComponent
                     Count = d.Payable
                 })
                 .ToList() ?? new List<ChartDataPoint>();
-        }
-        else
-        {
-            return Data?.Details
-                .Where(d => d.SupportType == supportType && (d.TotalCount - d.Payable) > 0)
-                .Select(d => new ChartDataPoint
-                {
-                    Location = d.LocationName,
-                    Count = (d.TotalCount - d.Payable)
-                })
-                .ToList() ?? new List<ChartDataPoint>();
-        }
-
+        
     }
 
-    private ApexChartOptions<ChartDataPoint> GetChartOptions(string color, string xAxisTitle)
-    {
-        return new ApexChartOptions<ChartDataPoint>
+    private ApexChartOptions<ChartDataPoint> GetChartOptions(string color, string xAxisTitle) =>
+        new()
         {
             Chart = new Chart
             {
@@ -108,7 +94,6 @@ public partial class SupportAndReferralDashboardComponent
                 Enabled = true
             }
         };
-    }
 
     private record ChartDataPoint
     {

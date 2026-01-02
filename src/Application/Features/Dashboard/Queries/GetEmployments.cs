@@ -23,8 +23,9 @@ public static class GetEmployments
             var query = from mi in context.EmploymentPayments
                         join ap in context.Activities on mi.ActivityId equals ap.Id
                         join l in context.Locations on mi.LocationId equals l.Id
-                        where mi.ActivityApproved >= request.StartDate &&
-                              mi.ActivityApproved <= request.EndDate
+                        where mi.PaymentPeriod >= request.StartDate &&
+                              mi.PaymentPeriod <= request.EndDate
+                              && mi.EligibleForPayment
                         select new { mi, ap, l };
 
             // Checks and applies filter based on UserId or TenantId else throws exception
@@ -45,7 +46,6 @@ public static class GetEmployments
                                select new LocationDetail(
                                    grp.Key.Name,
                                    grp.Key.LocationType,
-                                   grp.Count(mi => mi.EligibleForPayment),
                                    grp.Count()
                                );
 
@@ -62,25 +62,16 @@ public static class GetEmployments
         public EmploymentsDto(LocationDetail[] details)
         {
             Details = details;
-
-            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.TotalCount);
-            CustodyPayable = details.Where(d => d.LocationType.IsCustody).Sum(d => d.Payable);
-
-            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.TotalCount);
-            CommunityPayable = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.Payable);
-
+            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.Payable);
+            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.Payable);
         }
 
         public LocationDetail[] Details { get; }
 
         public int Custody { get; }
-        public int CustodyPayable { get; }
-
         public int Community { get; }
-        public int CommunityPayable { get; }
-
     }
 
-    public record LocationDetail(string LocationName, LocationType LocationType, int Payable, int TotalCount);
+    public record LocationDetail(string LocationName, LocationType LocationType, int Payable);
 
 }
