@@ -1,6 +1,4 @@
 ﻿@using Cfo.Cats.Application.Features.Activities.DTOs
-@using Cfo.Cats.Application.Features.Activities.Queries
-@using Cfo.Cats.Application.SecurityConstants
 @using Humanizer
 
 @inherits CatsComponentBase;
@@ -15,8 +13,6 @@
              @bind-RowsPerPage="_defaultPageSize"
              Height="calc(100vh - 330px)"
              Loading="@_loading"
-             MultiSelection="true"             
-             @bind-SelectedItem="_currentDto"
              Hover="true"
              @ref="_table"
              BreakPoint="Breakpoint.Sm"
@@ -133,6 +129,13 @@
                         </div>
                     }
                 </MudTooltip>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Qa1CompletedBy" Title="@L["First Pass User"]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.Qa1CompletedBy</MudText>
+                </div>
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Property="x => x.AssignedTo" Title="@L["Assigned To"]">
