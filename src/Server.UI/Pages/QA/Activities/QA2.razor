@@ -4,7 +4,6 @@
 @using Cfo.Cats.Application.Features.Activities.Commands
 @using Cfo.Cats.Application.Features.Activities.DTOs
 @using Cfo.Cats.Application.Features.Activities.Queries
-@using Cfo.Cats.Application.Features.Documents.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.QA.Activities.Components
@@ -16,7 +15,7 @@
 <style>
     .document-container {
         width: 90%;
-        height: calc(100vh - 150px);
+        height: calc(100vh - 350px);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -24,7 +23,7 @@
 
 </style>
 
-<ActivityQaExternalMessageWarning @ref="warningMessage" />
+<ActivityQaExternalMessageWarning @ref="_warningMessage" />
 
 <MudContainer Style="width: 100%; min-width: 480px;" MaxWidth="MaxWidth.ExtraLarge">
     <MudText Typo="Typo.h5" Class="mb-5">
@@ -57,7 +56,10 @@
             <MudItem xs="8" Style="height: 100%; width: 100%;">
                 <MudTabs>
                     <MudTabPanel Text="QA Notes">
-                        <QaNotes ActivityId="@_activityQaDetailsDto.ActivityId" />
+                        <MudItem xs="12" md="9" xl="10">
+                            First Pass User:  @_queueEntry.Qa1CompletedBy
+                        </MudItem>
+                        <QaNotes ActivityId="@_activityQaDetailsDto.ActivityId"/>
                     </MudTabPanel>
 
                     <MudTabPanel Text="Previous Activities" Style="min-width: 185px;" BadgeColor="Color.Info">
@@ -108,8 +110,14 @@
                                         Color="Color.Primary" />
                                     </MudItem>
                                     <MudItem xs="12" md="9" xl="10">
-                                        <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
-                                        <MudText Class="ml-2">Characters: @characterCount / 1000</MudText>
+                                        <MudTextField @bind-Value="Command.Message" 
+                                                      Label="Message" 
+                                                      Lines="5" 
+                                                      For="() => Command.Message" 
+                                                      MaxLength="@ValidationConstants.NotesLength" 
+                                                      Immediate="true"  
+                                                      Counter=@ValidationConstants.NotesLength>
+                                        </MudTextField>
                                     </MudItem>
                                 </MudGrid>
 
@@ -133,13 +141,13 @@
 </MudContainer>
 
 @code {
-    private ActivityQaExternalMessageWarning? warningMessage;
+    private ActivityQaExternalMessageWarning? _warningMessage;
     private MudForm? _form;
-    private ActivityQueueEntryDto? _queueEntry = null;
-    private ActivityQaDetailsDto? _activityQaDetailsDto = null;
+    private ActivityQueueEntryDto? _queueEntry;
+    private ActivityQaDetailsDto? _activityQaDetailsDto;
     
     [CascadingParameter]
-    public UserProfile? UserProfile { get; set; } = null!;
+    public UserProfile? UserProfile { get; set; }
 
     private SubmitActivityQa2Response.Command Command { get; set; } = default!;
 
@@ -188,7 +196,7 @@
 
         if (Command is { IsMessageExternal: true, Message.Length: > 0 })
         {
-            submit = await warningMessage!.ShowAsync();
+            submit = await _warningMessage!.ShowAsync();
         }
 
         if (submit)
@@ -223,12 +231,5 @@
             options.RequireInteraction = true;
             options.SnackbarVariant = Variant.Text;
         });
-    }
-
-    private int characterCount => Command.Message?.Length ?? 0;
-
-    private void UpdateCharacterCount(ChangeEventArgs args)
-    {
-        Command.Message = args?.Value?.ToString() ?? string.Empty;
     }
 }
