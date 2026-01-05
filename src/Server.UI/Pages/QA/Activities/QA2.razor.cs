@@ -17,7 +17,7 @@ public partial class QA2 : CatsComponentBase
     [CascadingParameter]
     public UserProfile? UserProfile { get; set; }
 
-    protected SubmitActivityQa2Response.Command Command { get; set; } = default!;
+    protected SubmitActivityQa2Response.Command Command { get; set; } = null!;
 
     protected async Task GetQueueItem()
     {
@@ -53,7 +53,7 @@ public partial class QA2 : CatsComponentBase
         }
     }
 
-    protected async Task SubmitToQa()
+    private async Task SubmitToQa()
     {
         await _form!.Validate();
 
@@ -85,8 +85,7 @@ public partial class QA2 : CatsComponentBase
         }
     }
 
-    private void ShowActionFailure(string title, IResult result)
-    {
+    private void ShowActionFailure(string title, IResult result) =>
         Snackbar.Add(
             RenderFailure(title, result),
             Severity.Error,
@@ -95,5 +94,4 @@ public partial class QA2 : CatsComponentBase
                 options.RequireInteraction = true;
                 options.SnackbarVariant = Variant.Text;
             });
-    }
 }
