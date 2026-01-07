@@ -3,10 +3,7 @@
 @attribute [Authorize(Policy = SecurityPolicies.SeniorInternal)]
 
 @using Cfo.Cats.Application.Common.Validators
-@using Cfo.Cats.Application.Features.Participants.DTOs
-@using Cfo.Cats.Application.Features.Assessments.DTOs
 @using Cfo.Cats.Application.Features.QualityAssurance.Commands
-@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components
@@ -22,11 +19,9 @@
         justify-content: center;
         align-items: center;
     }
-
-
 </style>
 
-<QaExternalMessageWarning @ref="warningMessage" />
+<QaExternalMessageWarning @ref="_warningMessage" />
 
 @if (_participantDto is not null && _participantDto.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus)
 {
@@ -52,6 +47,10 @@
         <MudItem xs="8" Style="height: 100%; width: 100%;">
             <MudTabs>
                 <MudTabPanel Text="QA Notes">
+                    <MudItem xs="12" md="9" xl="10">
+                        First Pass User:  @_queueEntry.Qa1CompletedBy
+                    </MudItem>
+                    <MudDivider/>
                     <QaNotes ParticipantId="@_participantDto.Id"/>
                 </MudTabPanel>
 
@@ -104,14 +103,20 @@
                                     Color="Color.Primary" />
                                 </MudItem>
                                 <MudItem xs="12" md="9" xl="10">
-                                    <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" />
-                                    <MudText Class="ml-2">Characters: @characterCount / 1000</MudText>
+                                    <MudTextField @bind-Value="Command.Message"
+                                                  Label="Message"
+                                                  Lines="5"
+                                                  For="() => Command.Message"
+                                                  MaxLength="@ValidationConstants.NotesLength"
+                                                  Immediate="true"
+                                                  Counter=@ValidationConstants.NotesLength>
+                                    </MudTextField>
                                 </MudItem>
                             </MudGrid>
                         </MudForm>
 
                         <MudContainer Class="d-flex px-0 pt-8">
-                            <MudLoadingButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled" Loading="_saving">Submit</MudLoadingButton>
+                            <MudLoadingButton Color="Color.Primary" OnClick="@SubmitToQa" Variant="Variant.Filled" Loading="_saving">Submit</MudLoadingButton>
                         </MudContainer>
                     }
                     else

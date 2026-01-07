@@ -12,7 +12,7 @@ public static class GrabQa2Entry
     [RequestAuthorize(Policy = SecurityPolicies.Qa2)]
     public class Command : IRequest<Result<EnrolmentQueueEntryDto>>
     {
-        public required UserProfile CurrentUser { get; set; }        
+        public required UserProfile CurrentUser { get; init; }        
     }
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result<EnrolmentQueueEntryDto>>
@@ -46,18 +46,28 @@ public static class GrabQa2Entry
                     }
                 }
 
-                if (entry is not null)
+                if (entry is null)
                 {
-                    return Result<EnrolmentQueueEntryDto>.Success(mapper.Map<EnrolmentQueueEntryDto>(entry));
+                    return Result<EnrolmentQueueEntryDto>.Failure("Nothing assignable");    
                 }
-                return Result<EnrolmentQueueEntryDto>.Failure("Nothing assignable");
+                
+                var dto = mapper.Map<EnrolmentQueueEntryDto>(entry);
+                
+                dto.Qa1CompletedBy = await unitOfWork.DbContext.EnrolmentQa1Queue
+                    .Include(q => q.SupportWorker)
+                    .Where(q1 => q1.IsCompleted && 
+                           q1.ParticipantId == entry.ParticipantId )
+                    .OrderByDescending(q1 => q1.LastModified)
+                    .Select(q1 => q1.Owner!.DisplayName)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                
+                return Result<EnrolmentQueueEntryDto>.Success(dto);
             }
             finally
             {
-                
                 Semaphore.Release();
             }
         }
     }
-    
 }

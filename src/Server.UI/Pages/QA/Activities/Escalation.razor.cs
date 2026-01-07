@@ -7,7 +7,7 @@ using IResult = Cfo.Cats.Application.Common.Interfaces.IResult;
 
 namespace Cfo.Cats.Server.UI.Pages.QA.Activities;
 
-public partial class Escalation : CatsComponentBase
+public partial class Escalation 
 {
     private ActivityQaExternalMessageWarning? _warningMessage;
     private MudForm? _form;
