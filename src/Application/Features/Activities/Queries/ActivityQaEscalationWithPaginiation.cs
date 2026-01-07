@@ -17,6 +17,7 @@ public static class ActivityQaEscalationWithPagination
             SortDirection = "Desc";
             OrderBy = "Created";
         }
+        
         public ActivityQaEscalationQueueEntrySpecification Specification => new(this);
     }
 
@@ -49,14 +50,14 @@ public static class ActivityQaEscalationWithPagination
 
             var qa1Owners = await unitOfWork.DbContext.ActivityQa1Queue
                 .Where(q1 =>
-                    activityIds.Contains(q1.ActivityId) &&
+                    ((IEnumerable<Guid>)activityIds).Contains(q1.ActivityId) &&
                     q1.IsCompleted)
                 .GroupBy(q1 => q1.ActivityId)
                 .Select(g => new
                 {
                     ActivityId = g.Key,
                     Qa1CompletedBy = g
-                        .OrderByDescending(x => x.OwnerId)
+                        .OrderByDescending(x => x.LastModified)
                         .Select(x => x.Owner!.DisplayName)
                         .FirstOrDefault()
                 })

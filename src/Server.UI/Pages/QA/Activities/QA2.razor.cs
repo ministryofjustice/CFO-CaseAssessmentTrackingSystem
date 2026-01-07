@@ -7,7 +7,7 @@ using IResult = Cfo.Cats.Application.Common.Interfaces.IResult;
 
 namespace Cfo.Cats.Server.UI.Pages.QA.Activities;
 
-public partial class QA2 : CatsComponentBase
+public partial class QA2
 {
     private ActivityQaExternalMessageWarning? _warningMessage;
     private MudForm? _form;
