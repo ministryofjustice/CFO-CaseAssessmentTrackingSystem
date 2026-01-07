@@ -10,8 +10,8 @@ public static class GetActivityEscalationEntryById
     [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
     public class Query : IRequest<Result<ActivityQueueEntryDto>>
     {
-        public Guid Id { get; set; }
-        public UserProfile? CurrentUser { get; set; }
+        public Guid Id { get; init; }
+        public UserProfile? CurrentUser { get; init; }
     }
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<ActivityQueueEntryDto>>
@@ -29,8 +29,14 @@ public static class GetActivityEscalationEntryById
                 return Result<ActivityQueueEntryDto>.Failure("Not found");
             }
 
+            entry.Qa1CompletedBy  = await unitOfWork.DbContext.ActivityQa1Queue
+                .Where(q1 => q1.ActivityId==entry.ActivityId &&
+                             q1.IsCompleted)
+                .OrderByDescending(q1 => q1.LastModified)
+                .Select(q1 => q1.Owner!.DisplayName)
+                .FirstOrDefaultAsync(cancellationToken);
+            
             return entry;
-
         }
     }
 

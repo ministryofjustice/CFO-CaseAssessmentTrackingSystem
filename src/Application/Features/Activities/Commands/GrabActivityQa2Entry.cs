@@ -12,7 +12,7 @@ public static class GrabActivityQa2Entry
     [RequestAuthorize(Policy = SecurityPolicies.Qa2)]
     public class Command : IRequest<Result<ActivityQueueEntryDto>>
     {
-        public required UserProfile CurrentUser { get; set; }
+        public required UserProfile CurrentUser { get; init; }
     }
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper)
@@ -50,17 +50,15 @@ public static class GrabActivityQa2Entry
                 {
                     return Result<ActivityQueueEntryDto>.Failure("Nothing assignable");
                 }
-
-                var qa1Owner = await unitOfWork.DbContext.ActivityQa1Queue
+                var dto = mapper.Map<ActivityQueueEntryDto>(entry);
+                
+                dto.Qa1CompletedBy = await unitOfWork.DbContext.ActivityQa1Queue
                     .Where(q1 =>
                         q1.ActivityId == entry.ActivityId &&
                         q1.IsCompleted)
                     .OrderByDescending(q1 => q1.OwnerId)
                     .Select(q1 => q1.Owner!.DisplayName)
                     .FirstOrDefaultAsync(cancellationToken);
-
-                var dto = mapper.Map<ActivityQueueEntryDto>(entry);
-                dto.Qa1CompletedBy = qa1Owner;
 
                 return Result<ActivityQueueEntryDto>.Success(dto);
             }

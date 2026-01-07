@@ -1,5 +1,4 @@
 ﻿@using Cfo.Cats.Application.Features.QualityAssurance.DTOs
-@using Cfo.Cats.Application.Features.QualityAssurance.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Humanizer
 
@@ -10,14 +9,13 @@
 @attribute [Authorize(Policy = SecurityPolicies.Qa2)]
 
 <MudDataGrid ServerData="@(ServerReload)"
+             T="EnrolmentQueueEntryDto"
              FixedHeader="true"
              FixedFooter="true"
              Virtualize="true"
              @bind-RowsPerPage="_defaultPageSize"
              Height="calc(100vh - 330px)"
              Loading="@_loading"
-             MultiSelection="true"             
-             @bind-SelectedItem="_currentDto"
              Hover="true"
              @ref="_table"
              BreakPoint="Breakpoint.Sm"
@@ -87,6 +85,13 @@
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2">@context.Item.TenantName</MudText>
                     <MudText Typo="Typo.body2">@context.Item.TenantId</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Qa1CompletedBy" Title="@L["First Pass User"]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2">@context.Item.Qa1CompletedBy</MudText>
                 </div>
             </CellTemplate>
         </PropertyColumn>
