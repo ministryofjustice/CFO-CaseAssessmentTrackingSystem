@@ -28,9 +28,16 @@ public static class GetEscalationEntryById
                 //question: do we return a specific error if the entry exists but is at a different tenant?
                 return Result<EnrolmentQueueEntryDto>.Failure("Not found");
             }
+            
+            entry.Qa1CompletedBy = await unitOfWork.DbContext.EnrolmentQa1Queue
+                .Where(q1 =>
+                    q1.ParticipantId == entry.ParticipantId &&
+                    q1.IsCompleted)
+                .OrderByDescending(q1 => q1.LastModified)
+                .Select(q1 => q1.Owner!.DisplayName)
+                .FirstOrDefaultAsync(cancellationToken);
 
             return entry;
-
         }
     }
 

@@ -8,17 +8,13 @@ public partial class QA2List
 {
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
 
-    private bool _loading = false;
+    private bool _loading;
     private int _defaultPageSize = 30;
-    private MudDataGrid<EnrolmentQueueEntryDto> _table = default!;
+    private MudDataGrid<EnrolmentQueueEntryDto> _table = null!;
 
-    private Qa2WithPagination.Query Query { get; set; } = new();
-    private EnrolmentQueueEntryDto _currentDto = new();
-   
-    private void OnEdit(EnrolmentQueueEntryDto dto)
-    {
-        Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
-    }
+    private Qa2WithPagination.Query Query { get; } = new();
+    
+    private void OnEdit(EnrolmentQueueEntryDto dto) => Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
 
     private async Task<GridData<EnrolmentQueueEntryDto>> ServerReload(GridState<EnrolmentQueueEntryDto> state)
     {
@@ -27,7 +23,7 @@ public partial class QA2List
             _loading = true;
             Query.CurrentUser = UserProfile;
             Query.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Created";
-            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
+            Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? nameof(SortDirection.Descending) : nameof(SortDirection.Ascending);
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
 

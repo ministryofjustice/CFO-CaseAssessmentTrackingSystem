@@ -39,7 +39,11 @@
             <MudTabs>
 
                 <MudTabPanel Text="QA Notes">
-                    <QaNotes ActivityId="@_activityQaDetailsDto.ActivityId" />
+                    <MudItem xs="12" md="9" xl="10">
+                        First Pass User:  @_queueEntry.Qa1CompletedBy
+                    </MudItem>
+                    <MudDivider/>
+                    <QaNotes ActivityId="@_activityQaDetailsDto.ActivityId"/>
                 </MudTabPanel>
 
                 <MudTabPanel Text="Previous Activities" Style="min-width: 185px;" BadgeColor="Color.Info">
