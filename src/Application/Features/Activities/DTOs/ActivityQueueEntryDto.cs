@@ -59,8 +59,9 @@ public class ActivityQueueEntryDto
                 .ForMember(target => target.IsAccepted, options => options.MapFrom(source => source.IsAccepted))
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity))
-                .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore());
-
+                .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore())
+                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore());
+            
             CreateMap<ActivityQa1QueueEntry, ActivityQueueEntryDto>()
                 .ForMember(target => target.ActivityId,
                     options => options.MapFrom(source => source.ActivityId))
@@ -82,8 +83,9 @@ public class ActivityQueueEntryDto
                 .ForMember(target => target.Notes, options => options.MapFrom(source => source.Notes))
                 .ForMember(target => target.AssignedTo, options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForMember(target => target.Activity, options => options.MapFrom(source => source.Activity))
-                .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore());
-
+                .ForMember(target => target.NoOfPreviousSubmissions, options => options.Ignore())
+                .ForMember(d => d.Qa1CompletedBy, o => o.Ignore());
+            
             CreateMap<ActivityQa2QueueEntry, ActivityQueueEntryDto>()
                 .ForMember(target => target.ActivityId,
                 options => options.MapFrom(source => source.ActivityId))
