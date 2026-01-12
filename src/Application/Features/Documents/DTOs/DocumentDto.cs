@@ -11,6 +11,8 @@ public class DocumentDto
     [Description("File Name")] public string? Title { get; set; }
 
     [Description("Description")] public string? Description { get; set; }
+    
+    [Description("Version")] public string? Version { get; set; }
 
     [Description("Is Public")] public bool IsPublic { get; set; }
 

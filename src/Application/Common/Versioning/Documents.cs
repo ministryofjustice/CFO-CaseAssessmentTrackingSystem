@@ -8,7 +8,8 @@ public static class Documents
 
         public static IReadOnlyList<string> Versions { get; set; } =
         [
-            "1.0"
+            "1.1",
+            "1.0",
         ];
     }
 
