@@ -15,6 +15,7 @@
             <HeaderContent>
                 <MudTh>View</MudTh>
                 <MudTh>File Name</MudTh>
+                <MudTh>Version</MudTh>
                 <MudTh>Consent Date</MudTh>
                 <MudTh>Upload Date</MudTh>
                 <MudTh></MudTh>
@@ -24,6 +25,7 @@
                     <MudRadio Value="@context.DocumentId!.Value" Color="Color.Primary"/>
                 </MudTd>
                 <MudTd DataLabel="File Name">@context.FileName</MudTd>
+                <MudTd DataLabel="Version">@context.Version</MudTd>
                 <MudTd DataLabel="Consent">@context.ConsentDate.ToShortDateString()</MudTd>
                 <MudTd DataLabel="Uploaded By">@context.Created</MudTd>
                 <MudTd>
