@@ -36,7 +36,7 @@
             <MudMenuItem Icon="@Icons.Material.Filled.Approval" IconColor="Color.Primary" OnClick="OpenConsentDialog">@ConstantString.AddConsent</MudMenuItem>
         }
 
-        @if (Participant.EnrolmentStatus.AllowEnrolmentLocationChange())
+        @if (Participant.EnrolmentStatus.AllowEnrolmentLocationChange() && Participant.ConsentStatus.AllowEnrolmentLocationChange())
         {
             <MudMenuItem Icon="@Icons.Material.Filled.Map" IconColor="Color.Primary" OnClick="OpenAdjustLocationDialog">
                 @ConstantString.ChangeEnrolmentLocation
@@ -227,7 +227,7 @@
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
 
-        var dialog = await DialogService.ShowAsync<AdjustEnrolmentLocationDialog>("Change Enrolment Location", parameters, options);
+        var dialog = await DialogService.ShowAsync<AdjustEnrolmentLocationDialog>(@ConstantString.ChangeEnrolmentLocation, parameters, options);
         var state = await dialog.Result;
 
         if (state!.Canceled == false)
