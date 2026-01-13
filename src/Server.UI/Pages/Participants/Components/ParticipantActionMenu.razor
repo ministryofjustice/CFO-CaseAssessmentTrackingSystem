@@ -36,7 +36,7 @@
             <MudMenuItem Icon="@Icons.Material.Filled.Approval" IconColor="Color.Primary" OnClick="OpenConsentDialog">@ConstantString.AddConsent</MudMenuItem>
         }
 
-        @if (Participant.EnrolmentStatus.AllowEnrolmentLocationChange())
+        @if (Participant.EnrolmentStatus.AllowEnrolmentLocationChange() && Participant.ConsentStatus.AllowEnrolmentLocationChange())
         {
             <MudMenuItem Icon="@Icons.Material.Filled.Map" IconColor="Color.Primary" OnClick="OpenAdjustLocationDialog">
                 @ConstantString.ChangeEnrolmentLocation
