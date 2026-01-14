@@ -46,19 +46,11 @@ public class MenuService : IMenuService
 
                             new()
                             {
-                                Title = "QA",
-                                Href = "/pages/dashboard/qa/",
-                                PageStatus = PageStatus.ComingSoon,
+                                Title = "Provider feedback",
+                                Href = "/pages/dashboard/providerfeedback/",
+                                PageStatus = PageStatus.Wip,
                                 Roles = [RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager],
-                            },
-                            
-                            new()
-                            {
-                                Title = "QA - Team",
-                                Href = "/pages/dashboard/qateam/",
-                                PageStatus = PageStatus.ComingSoon,
-                                Roles = [RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QASupportManager, RoleNames.QAManager],
-                            },
+                            }
                         ],
                     },
 
