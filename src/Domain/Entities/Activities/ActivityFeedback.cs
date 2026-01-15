@@ -2,6 +2,7 @@ using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
+using Cfo.Cats.Domain.Events;
 using Cfo.Cats.Domain.Identity;
 
 namespace Cfo.Cats.Domain.Entities.Activities;
@@ -11,8 +12,8 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
     public Guid ActivityId { get; set; }
     public string? ParticipantId { get; protected set; }
 
-    public string? RecipientUserId { get; set; } = null!;
-    public ApplicationUser? RecipientUser { get; set; } = null!;
+    public string? RecipientUserId { get; set; }
+    public ApplicationUser? RecipientUser { get; set; }
 
     public string Message { get; set; } = null!;
 
@@ -64,9 +65,8 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
             TenantId = tenantId
         };
 
-        //To do
-        // feedback.AddDomainEvent(
-        //     new ActivityFeedbackCreatedDomainEvent(feedback));
+         feedback.AddDomainEvent(
+             new ActivityFeedbackCreatedDomainEvent(feedback));
 
         return feedback;
     }
