@@ -45,7 +45,7 @@ internal sealed class ActivityFeedbackEntityTypeConfiguration
             .HasMaxLength(ValidationConstants.NotesLength);
 
         builder.Property(x => x.ActivityProcessedDate)
-            .IsRequired(false);
+            .IsRequired();
 
         builder.Property(x => x.IsRead)
             .IsRequired();
