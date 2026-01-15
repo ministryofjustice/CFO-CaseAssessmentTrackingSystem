@@ -71,7 +71,7 @@
                 </MudTh>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.CfoUser!)">
-                        CFO USER
+                        CFO User
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
@@ -85,9 +85,7 @@
                     </MudTableSortLabel>
                 </MudTh>				
 				<MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.Message!)">
-                        Message
-                    </MudTableSortLabel>
+                    <MudTh>Message</MudTh>>
                 </MudTh>		
 			</HeaderContent>
 			<RowTemplate>
@@ -102,7 +100,7 @@
 				<MudTd DataLabel="Message">@context.Message</MudTd>
 			</RowTemplate>
 			<PagerContent>
-				<MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
+				<MudTablePager PageSizeOptions="new int[] { 10, 20}" />
 			</PagerContent>
 		</MudTable>
 	}
