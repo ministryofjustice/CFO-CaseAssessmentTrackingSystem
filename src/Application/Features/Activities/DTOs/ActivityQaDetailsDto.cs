@@ -16,8 +16,7 @@ public class ActivityQaDetailsDto
     public required string ParticipantId { get; set; }
     
     public Participant? Participant { get; set; }
-    //public required Guid TaskId { get; set; }
-
+    
     [Description("Location")]
     public LocationDto? Location { get; set; }
 

@@ -12,10 +12,11 @@ public static class GrabActivityQa2Entry
     [RequestAuthorize(Policy = SecurityPolicies.Qa2)]
     public class Command : IRequest<Result<ActivityQueueEntryDto>>
     {
-        public required UserProfile CurrentUser { get; set; }
+        public required UserProfile CurrentUser { get; init; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result<ActivityQueueEntryDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper)
+        : IRequestHandler<Command, Result<ActivityQueueEntryDto>>
     {
         private static readonly SemaphoreSlim Semaphore = new(1, 1);
 
@@ -33,7 +34,8 @@ public static class GrabActivityQa2Entry
                 if (entry is null)
                 {
                     entry = await unitOfWork.DbContext.ActivityQa2Queue
-                        .Where(x => x.IsCompleted == false && x.OwnerId == null && x.CreatedBy != request.CurrentUser.UserId)
+                        .Where(x => x.IsCompleted == false && x.OwnerId == null &&
+                                    x.CreatedBy != request.CurrentUser.UserId)
                         .OrderBy(x => x.Created)
                         .FirstOrDefaultAsync(cancellationToken);
 
@@ -44,11 +46,21 @@ public static class GrabActivityQa2Entry
                     }
                 }
 
-                if (entry is not null)
+                if (entry is null)
                 {
-                    return Result<ActivityQueueEntryDto>.Success(mapper.Map<ActivityQueueEntryDto>(entry));
+                    return Result<ActivityQueueEntryDto>.Failure("Nothing assignable");
                 }
-                return Result<ActivityQueueEntryDto>.Failure("Nothing assignable");
+                var dto = mapper.Map<ActivityQueueEntryDto>(entry);
+                
+                dto.Qa1CompletedBy = await unitOfWork.DbContext.ActivityQa1Queue
+                    .Where(q1 =>
+                        q1.ActivityId == entry.ActivityId &&
+                        q1.IsCompleted)
+                    .OrderByDescending(q1 => q1.OwnerId)
+                    .Select(q1 => q1.Owner!.DisplayName)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                return Result<ActivityQueueEntryDto>.Success(dto);
             }
             finally
             {
