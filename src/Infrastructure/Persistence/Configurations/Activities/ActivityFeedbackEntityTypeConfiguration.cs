@@ -2,6 +2,7 @@ using Cfo.Cats.Domain.Entities.Activities;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Domain.Entities.Administration;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Activities;
@@ -56,14 +57,14 @@ internal sealed class ActivityFeedbackEntityTypeConfiguration
         // SmartEnum mappings (same pattern as Participant)
         // --------------------
 
-        builder.Property(x => x.OutCome)
-            .IsRequired(false)
+        builder.Property(x => x.Outcome)
+            .IsRequired()
             .HasConversion(
                 o => o!.Value,
                 o => FeedbackOutcome.FromValue(o));
 
         builder.Property(x => x.Stage)
-            .IsRequired(false)
+            .IsRequired()
             .HasConversion(
                 s => s!.Value,
                 s => FeedbackStage.FromValue(s));
@@ -87,11 +88,20 @@ internal sealed class ActivityFeedbackEntityTypeConfiguration
             .HasForeignKey(x => x.RecipientUserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(x => x.CreatedBy)
+        builder.HasOne(x => x.CreatedByUser)
             .WithMany()
             .HasForeignKey(x => x.CreatedBy)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasOne(x => x.Tenant)
+            .WithMany()
+            .HasForeignKey(x => x.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
 
+        builder.Property(x => x.TenantId)
+            .IsRequired()
+            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
+        
         // --------------------
         // Owner / Editor (mirror Participant)
         // --------------------
