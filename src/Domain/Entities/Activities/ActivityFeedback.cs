@@ -1,5 +1,6 @@
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Identity;
 
@@ -15,16 +16,19 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
 
     public string Message { get; set; } = null!;
 
-    public FeedbackOutcome OutCome { get; set; }
+    public FeedbackOutcome Outcome { get; set; }
     public FeedbackStage Stage { get; set; }
 
     public DateTime? ActivityProcessedDate { get; private set; }
 
     public bool IsRead { get; private set; }
     public DateTime? ReadAt { get; private set; }
+    public string TenantId { get; protected set; }
+    public ApplicationUser? CreatedByUser { get; private set; }
 
     public virtual Activity? Activity { get; private set; }
     public virtual Participant? Participant { get; protected set; }
+    public virtual Tenant? Tenant { get; private set; }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private ActivityFeedback()
@@ -41,7 +45,8 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
         FeedbackOutcome outcome,
         FeedbackStage stage,
         DateTime? activityProcessedDate,
-        string createdBy)
+        string createdBy,
+        string tenantId )
     {
        var feedback = new ActivityFeedback
         {
@@ -50,12 +55,13 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
             ParticipantId = participantId,
             RecipientUserId = recipientUserId,
             Message = message,
-            OutCome = outcome,
+            Outcome = outcome,
             Stage = stage,
             ActivityProcessedDate = activityProcessedDate,
             CreatedBy = createdBy,
             Created = DateTime.UtcNow,
-            IsRead = false
+            IsRead = false,
+            TenantId = tenantId
         };
 
         //To do
