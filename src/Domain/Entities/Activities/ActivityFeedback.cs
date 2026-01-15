@@ -1,4 +1,5 @@
 using Cfo.Cats.Domain.Common.Entities;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Identity;
 
@@ -13,7 +14,8 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
     public ApplicationUser? RecipientUser { get; set; } = null!;
 
     public string Message { get; set; } = null!;
-    public FeedbackOutcome Outcome { get; set; }
+
+    public FeedbackOutcome OutCome { get; set; }
     public FeedbackStage Stage { get; set; }
 
     public DateTime? ActivityProcessedDate { get; private set; }
@@ -24,6 +26,13 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
     public virtual Activity? Activity { get; private set; }
     public virtual Participant? Participant { get; protected set; }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    private ActivityFeedback()
+    {
+    }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    
+    
     public static ActivityFeedback Create(
         Guid activityId,
         string participantId,
@@ -41,7 +50,7 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
             ParticipantId = participantId,
             RecipientUserId = recipientUserId,
             Message = message,
-            Outcome = outcome,
+            OutCome = outcome,
             Stage = stage,
             ActivityProcessedDate = activityProcessedDate,
             CreatedBy = createdBy,
