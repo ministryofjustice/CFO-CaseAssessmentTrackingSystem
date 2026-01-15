@@ -45,10 +45,10 @@ public class MenuService : IMenuService
 
                             new()
                             {
-                                Title = "Provider feedback",
+                                Title = "Provider Feedback",
                                 Href = "/pages/dashboard/providerfeedback/",
                                 PageStatus = PageStatus.Wip,
-                                Roles = [RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager],
+                                Roles = [RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QASupportManager, RoleNames.QAManager],
                             }
                         ],
                     },
