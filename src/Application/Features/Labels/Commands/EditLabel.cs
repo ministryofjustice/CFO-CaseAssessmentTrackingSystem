@@ -55,8 +55,8 @@ public static class EditLabel
                 .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Name"));
             
             RuleFor(v => v.NewDescription)
-                .Matches(ValidationConstants.LettersSpacesUnderscores)
-                .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Description"));
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
         }
     }
 }

@@ -59,8 +59,8 @@ public static class AddLabel
                 .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Name"));
             
             RuleFor(v => v.Description)
-                .Matches(ValidationConstants.LettersSpacesUnderscores)
-                .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Description"));
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
         }
     }
 }
