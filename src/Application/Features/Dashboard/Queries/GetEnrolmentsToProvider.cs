@@ -153,17 +153,43 @@ public static class GetEnrolmentsToProvider
         {
             TabularData = tabularData;
             
-            ChartData = tabularData
+            // Get all unique contracts first, sorted
+            var allContracts = tabularData
+                .Select(td => td.ContractName)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+            
+            // Create chart data ensuring all queues have entries for all contracts
+            var grouped = tabularData
                 .GroupBy(td => new { td.ContractName, td.Queue })
-                .OrderBy(g => g.Key.ContractName)
-                .ThenBy(g => g.Key.Queue)
                 .Select(g => new EnrolmentsChartData
                 {
                     ContractName = g.Key.ContractName,
                     Queue = g.Key.Queue,
                     Count = g.Count()
                 })
-                .ToArray();
+                .ToList();
+            
+            // Always ensure both queues exist (Escalation and QA2)
+            var queues = new List<string> { "Escalation", "QA2" };
+            var completeData = new List<EnrolmentsChartData>();
+            
+            foreach (var queue in queues)
+            {
+                foreach (var contract in allContracts)
+                {
+                    var existing = grouped.FirstOrDefault(x => x.Queue == queue && x.ContractName == contract);
+                    completeData.Add(existing ?? new EnrolmentsChartData
+                    {
+                        ContractName = contract,
+                        Queue = queue,
+                        Count = 0
+                    });
+                }
+            }
+            
+            ChartData = completeData.ToArray();
         }
         public EnrolmentsTabularData[] TabularData { get;}
         public EnrolmentsChartData[] ChartData { get;}
