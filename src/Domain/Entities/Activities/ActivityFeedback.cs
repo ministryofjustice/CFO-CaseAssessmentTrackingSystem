@@ -10,9 +10,9 @@ namespace Cfo.Cats.Domain.Entities.Activities;
 public class ActivityFeedback : OwnerPropertyEntity<Guid>
 {
     public Guid ActivityId { get; set; }
-    public string? ParticipantId { get; protected set; }
+    public string ParticipantId { get; protected set; }
 
-    public string? RecipientUserId { get; set; }
+    public string RecipientUserId { get; set; }
     public ApplicationUser? RecipientUser { get; set; }
 
     public string Message { get; set; } = null!;
@@ -20,7 +20,7 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
     public FeedbackOutcome Outcome { get; set; }
     public FeedbackStage Stage { get; set; }
 
-    public DateTime? ActivityProcessedDate { get; private set; }
+    public DateTime ActivityProcessedDate { get; private set; }
 
     public bool IsRead { get; private set; }
     public DateTime? ReadAt { get; private set; }
@@ -45,7 +45,7 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
         string message,
         FeedbackOutcome outcome,
         FeedbackStage stage,
-        DateTime? activityProcessedDate,
+        DateTime activityProcessedDate,
         string createdBy,
         string tenantId )
     {
