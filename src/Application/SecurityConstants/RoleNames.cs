@@ -28,4 +28,19 @@ public static class RoleNames
         CMPSM
     ];
 
+    /// <summary>
+    /// Roles that only exist for internal staff.
+    /// </summary>
+    public static string[] InternalRoles =
+    [
+        QAFinance,
+        QAOfficer,
+        PerformanceManager,
+        SMT,
+        SystemSupport,
+        CSO,
+        CPM,
+        CMPSM,
+    ];
+
 }

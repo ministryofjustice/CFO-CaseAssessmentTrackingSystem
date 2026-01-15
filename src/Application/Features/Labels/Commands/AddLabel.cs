@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Labels.Commands;
 
 public static class AddLabel
 {
-    [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+    [RequestAuthorize(Policy = SecurityPolicies.Internal)]
     public class Command : IRequest<Result>
     {
         public required string Name { get; set; }
