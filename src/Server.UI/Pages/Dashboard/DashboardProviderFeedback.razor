@@ -8,7 +8,7 @@
 
 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
     <MudText Typo="Typo.h3">
-        QA Dashboard
+        Provider Feedback Dashboard
     </MudText>
     <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
         This page is still under development and may produce inaccurate results.
@@ -38,13 +38,18 @@
 
 <MudStack>
         <MudTabs PanelClass="pa-6" ApplyEffectsToContainer="true" Outlined="true">
-            <MudTabPanel Text="Enrolments: Returns to Provider" Class="pa-3">
+            <MudTabPanel Text="Enrolments: Returns" Class="pa-3">
                 <EnrolmentsToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
-            <MudTabPanel Text="Activities: Returns to Providers" Class="pa-3">
+            <MudTabPanel Text="Activities: Returns" Class="pa-3">
                 <ActivitiesToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
-            <MudTabPanel Text="Advisories to providers" Class="pa-3">
+            <MudTabPanel Text="Enrolments: Advisories" Class="pa-3">
+                <MudAlert Severity="Severity.Info">
+                    Under development, coming soon...
+                </MudAlert>
+            </MudTabPanel>
+            <MudTabPanel Text="Activities: Advisories" Class="pa-3">
                 <MudAlert Severity="Severity.Info">
                     Under development, coming soon...
                 </MudAlert>
