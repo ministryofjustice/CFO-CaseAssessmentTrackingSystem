@@ -23,6 +23,6 @@ flowchart LR
 
     subgraph Authority["Authority"]
         E[Submitted To Authority]
-        E --> C["Returned"]
-        E --> F["Approved"]
+        E --> C[Returned]
+        E --> F[Approved]
     end
