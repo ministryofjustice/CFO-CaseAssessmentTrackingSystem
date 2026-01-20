@@ -45,9 +45,7 @@
                 <ActivitiesToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
             <MudTabPanel Text="Enrolments: Advisories" Class="pa-3">
-                <MudAlert Severity="Severity.Info">
-                    Under development, coming soon...
-                </MudAlert>
+                <EnrolmentAdvisoriesToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
             <MudTabPanel Text="Activities: Advisories" Class="pa-3">
                 <ActivitiesAdvisoriesToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
