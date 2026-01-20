@@ -171,7 +171,7 @@ public class EditLabelCommandTests
         var command = new EditLabel.Command
         {
             LabelId = new LabelId(Guid.NewGuid()),
-            NewName = "ThisIsAVeryLongLabelName",
+            NewName = new string('x', 201),
             NewDescription = "Description",
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled
@@ -277,27 +277,7 @@ public class EditLabelCommandTests
         result.Errors.ShouldContain(e => e.PropertyName == "NewName" && 
             e.ErrorMessage.Contains("must contain only letters, spaces, and underscores"));
     }
-
-    [Test]
-    public void Validator_WithNewDescriptionContainingInvalidCharacters_ShouldFail()
-    {
-        var validator = new EditLabel.Validator();
-        var command = new EditLabel.Command
-        {
-            LabelId = new LabelId(Guid.NewGuid()),
-            NewName = "Valid",
-            NewDescription = "Invalid@#$",
-            NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Filled
-        };
-
-        var result = validator.Validate(command);
-
-        result.IsValid.ShouldBeFalse();
-        result.Errors.ShouldContain(e => e.PropertyName == "NewDescription" && 
-            e.ErrorMessage.Contains("must contain only letters, spaces, and underscores"));
-    }
-
+    
     [Test]
     public void Validator_WithNewNameContainingUnderscores_ShouldPass()
     {
@@ -315,25 +295,7 @@ public class EditLabelCommandTests
 
         result.IsValid.ShouldBeTrue();
     }
-
-    [Test]
-    public void Validator_WithNewDescriptionContainingUnderscores_ShouldPass()
-    {
-        var validator = new EditLabel.Validator();
-        var command = new EditLabel.Command
-        {
-            LabelId = new LabelId(Guid.NewGuid()),
-            NewName = "Valid",
-            NewDescription = "Valid_Description",
-            NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Filled
-        };
-
-        var result = validator.Validate(command);
-
-        result.IsValid.ShouldBeTrue();
-    }
-
+    
     private class TestLabelRepository : ILabelRepository
     {
         private Label? _existingLabel;

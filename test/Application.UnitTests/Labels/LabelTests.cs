@@ -91,7 +91,7 @@ public class LabelTests
                 AppVariant.Filled,
                 "CONTRACT-001",
                 _labelCounter))
-            .Message.ShouldContain("Label must be between 2 and 15 characters");
+            .Message.ShouldContain("Label must be between 2 and 25 characters");
     }
 
     [Test]
@@ -99,13 +99,13 @@ public class LabelTests
     {
         Should.Throw<BusinessRuleValidationException>(() =>
             Label.Create(
-                "ThisIsAVeryLongLabelName",
+                new string('x', 201),
                 "Description",
                 AppColour.Primary,
                 AppVariant.Filled,
                 "CONTRACT-001",
                 _labelCounter))
-            .Message.ShouldContain("Label must be between 2 and 15 characters");
+            .Message.ShouldContain("Label must be between 2 and 25 characters");
     }
 
     [Test]
