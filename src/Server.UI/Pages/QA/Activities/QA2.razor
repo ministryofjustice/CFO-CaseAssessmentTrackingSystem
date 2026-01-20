@@ -72,7 +72,7 @@
                         {
                             <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
                                 <MudItem xs="12">
-                                    <MudRadioGroup T="SubmitActivityQa2Response.Qa2Response?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
+                                    <MudRadioGroup T="SubmitActivityQa2Response.Qa2Response?" @bind-Value="Command.Response" For="@(() => Command.Response)" @bind-Value:after="OnResponseChanged" Required="true">
                                         <MudRadio T="SubmitActivityQa2Response.Qa2Response?" Value="SubmitActivityQa2Response.Qa2Response.Accept" Color="Color.Primary">
                                             Accept
                                         </MudRadio>
@@ -85,6 +85,19 @@
                                     </MudRadioGroup>
                                 </MudItem>
 
+                                @if (Command.Response == SubmitActivityQa2Response.Qa2Response.Accept)
+                                {                                
+                                    <MudItem xs="12">
+                                        <MudRadioGroup T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" @bind-Value="Command.FeedbackType" For="@(() => Command.FeedbackType)">
+                                            <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.Advisory" Color="Color.Primary">
+                                                Advisory
+                                            </MudRadio>
+                                            <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.AcceptedByException" Color="Color.Secondary">
+                                                Accepted By Exception
+                                            </MudRadio>
+                                        </MudRadioGroup>
+                                    </MudItem>
+                                }
                                 <MudDivider Class="py-4" />
 
                                 @if (Command.IsMessageExternal)
@@ -230,5 +243,12 @@
     private void UpdateCharacterCount(ChangeEventArgs args)
     {
         Command.Message = args?.Value?.ToString() ?? string.Empty;
+    }
+    private void OnResponseChanged()
+    {
+        if (Command.Response != SubmitActivityQa2Response.Qa2Response.Accept)
+        {
+            Command.FeedbackType = null;
+        }
     }
 }
