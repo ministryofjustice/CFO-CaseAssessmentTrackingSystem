@@ -5,7 +5,7 @@ flowchart LR
     %% Pools / Lanes
     subgraph Participant["Participant"]
         A[Start Event\nParticipant Action]
-        A --> B[Send Command\n(e.g., Change Status)]
+        A --> B[Send Command\nExample: Change Status]
     end
 
     subgraph Application["Application Service"]
@@ -13,7 +13,7 @@ flowchart LR
     end
 
     subgraph Domain["Domain Model / Aggregate"]
-        C --> D[Domain Event Raised\n(Status Transitioned)]
+        C --> D[Domain Event Raised\nStatus Transitioned]
         D --> E[End of Transaction\nCommit]
     end
 
