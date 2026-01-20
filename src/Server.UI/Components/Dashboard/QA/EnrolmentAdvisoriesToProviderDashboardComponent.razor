@@ -1,0 +1,110 @@
+@using Cfo.Cats.Application.Features.Dashboard.Queries
+@inherits CatsComponent<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesToProviderDto>
+
+@if(Loading)
+{
+	<MudLoading Text="Loading" />
+}
+
+@if (ErrorMessage is not null)
+{
+	<MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+		@ErrorMessage
+	</MudAlert>
+}
+
+@if (Data is not null && Data.ChartData.Any())
+{
+	@if (VisualMode)
+	{
+
+        <ApexCharts.ApexChart TItem="GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesChartData"
+                      Options="Options"
+                      Height="650" Width="@( "100%" )">
+
+            <ApexCharts.ApexPointSeries TItem="GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesChartData"
+                                        Items="Data.ChartData"
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        Name="Escalation"
+                                        XValue="@(e => e.ContractName)"
+                                        YValue="@(e => e.EscalationQueue)"
+                                        ShowDataLabels="true" />
+
+            <ApexCharts.ApexPointSeries TItem="GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesChartData"
+                                        Items="Data.ChartData"
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        Name="QA2"
+                                        XValue="@(e => e.ContractName)"
+                                        YValue="@(e => e.QA2Queue)"
+                                        ShowDataLabels="true" />
+
+		</ApexCharts.ApexChart>
+	}
+	else
+	{
+		<MudTable Items="@Data.TabularData" MultiSelection="false" Striped="true" Hover="true">
+			<HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.ContractName!)">
+                        Contract
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.Queue!)">
+                        Queue
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.ParticipantId!)">
+                        Participant
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.SupportWorker!)">
+                        Support Worker
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.PqaUser!)">
+                        Provider QA
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.CfoUser!)">
+                        CFO User
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.SubmittedDate!)">
+                        Submitted Date
+                    </MudTableSortLabel>
+                </MudTh>
+				<MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.AdvisoryDate!)">
+                        Advisory Date
+                    </MudTableSortLabel>
+                </MudTh>				
+				<MudTh>Advisory Notes</MudTh>		
+			</HeaderContent>
+			<RowTemplate>
+                <MudTd DataLabel="Contract">@context.ContractName</MudTd>
+				<MudTd DataLabel="Queue">@context.Queue</MudTd>
+				<MudTd DataLabel="Participant">@context.ParticipantId</MudTd>
+				<MudTd DataLabel="Support Worker">@context.SupportWorker</MudTd>
+				<MudTd DataLabel="Provider QA">@context.PqaUser</MudTd>
+				<MudTd DataLabel="Cfo User">@context.CfoUser</MudTd>
+				<MudTd DataLabel="Submitted Date">@context.SubmittedDate</MudTd>
+				<MudTd DataLabel="Advisory Date">@context.AdvisoryDate</MudTd>
+				<MudTd DataLabel="Message">@context.Message</MudTd>
+			</RowTemplate>
+			<PagerContent>
+				<MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
+			</PagerContent>
+		</MudTable>
+	}
+
+}
+else
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="MudBlazor.Align.Center">No data available</MudText>
+}
