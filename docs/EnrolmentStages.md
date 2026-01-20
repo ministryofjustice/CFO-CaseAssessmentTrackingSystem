@@ -1,4 +1,4 @@
-# Participant Journey
+# Enrolment Stages
 
 ```mermaid
 stateDiagram-v2
