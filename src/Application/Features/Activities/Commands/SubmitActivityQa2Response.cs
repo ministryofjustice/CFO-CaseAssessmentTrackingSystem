@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -12,6 +13,7 @@ public static class SubmitActivityQa2Response
         public required Guid ActivityQueueEntryId { get; set; }
 
         public Qa2Response? Response { get; set; }
+        public FeedbackType? FeedbackType { get; set; }
 
         public string Message { get; set; } = default!;
 
@@ -39,7 +41,7 @@ public static class SubmitActivityQa2Response
                 return Result.Failure("Cannot find Activity queue item");
             }
 
-            entry.AddNote(request.Message, request.IsMessageExternal);
+            entry.AddNote(request.Message, request.IsMessageExternal, request.FeedbackType);
 
             switch (request.Response)
             {
