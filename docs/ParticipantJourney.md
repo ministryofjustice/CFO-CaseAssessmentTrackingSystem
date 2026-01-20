@@ -3,27 +3,26 @@
 ```mermaid
 flowchart LR
     %% Pools / Lanes
-    subgraph Participant["Participant"]
-        A[Start Event\nParticipant Action]
-        A --> B[Send Command\nExample: Change Status]
+
+    subgraph SupportWorker["Support Worker"]
+        A[Identifies Participant]
+        B[Consent Added]
+        D[Returned]
+        F[Approved]
+        A --> B[Adds Consent]
+        B --> C[Submits To PQA]
+        D --> C[Resubmitted To PQA]
+        F --> G[Continue working with]
     end
 
-    subgraph Application["Application Service"]
-        B --> C[Invoke Aggregate\nTransition Status]
+    subgraph ProviderQa["Provider QA"]
+        C[Submitted To PQA]
+        C --> D[Returned]
+        C --> E[Approved]
     end
 
-    subgraph Domain["Domain Model / Aggregate"]
-        C --> D[Domain Event Raised\nStatus Transitioned]
-        D --> E[End of Transaction\nCommit]
-    end
-
-    subgraph Integration["Integration Layer"]
-        E --> F[Publish Integration Event]
-    end
-
-    subgraph External["External Event Handlers"]
-        F --> G[Handler A Updates State]
-        F --> H[Handler B Updates State]
-        G --> I[End]
-        H --> I
+    subgraph Authority["Authority"]
+        E[Submitted To Authority]
+        E --> C["Returned"]
+        E --> F["Approved"]
     end
