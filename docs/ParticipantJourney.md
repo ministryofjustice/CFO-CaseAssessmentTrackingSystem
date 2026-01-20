@@ -1,29 +1,25 @@
 # Participant Journey
 
 ```mermaid
-flowchart LR
-    %% Pools / Lanes
+stateDiagram-v2
 
-    subgraph SupportWorker["Support Worker"]
-        SW_A[Identifies Participant]
-        SW_B[Consent Added]
-        SW_D[Returned]
-        SW_F[Approved]
+ classDef archiveClass fill:#F00
+ classDef approvedClass fill:#008000
+ classDef qaClass fill:#FFD700
 
-        SW_A --> SW_B
-        SW_B --> PQA_C[Submits To PQA]
-        SW_D --> PQA_C
-        SW_F --> SW_G[Continue working with]
-    end
+ [*] --> Identified
+ Identified --> Enrolling
+ Enrolling --> PQA
+ PQA --> Enrolling
+ PQA --> Authority
+ Authority --> PQA
+ Authority --> Approved
+ Approved --> Archived
+ Enrolling --> Archived
+ Identified --> Archived
 
-    subgraph ProviderQa["Provider QA"]
-        PQA_C[Submitted To PQA]
-        PQA_C --> SW_D
-        PQA_C --> AUTH_E[Approved]
-    end
-
-    subgraph Authority["Authority"]
-        AUTH_E[Submitted To Authority]
-        AUTH_E --> PQA_C
-        AUTH_E --> SW_F
-    end
+ class Archived archiveClass
+ class Approved approvedClass
+ class PQA qaClass
+ class Authority qaClass
+```
