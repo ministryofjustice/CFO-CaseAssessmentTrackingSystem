@@ -139,4 +139,11 @@ public partial class QA2
             options.SnackbarVariant = Variant.Text;
         });
     }
+    private void OnResponseChanged()
+    {
+        if (Command.Response != SubmitQa2Response.Qa2Response.Accept)
+        {
+            Command.FeedbackType = null;
+        }
+    }    
 }
