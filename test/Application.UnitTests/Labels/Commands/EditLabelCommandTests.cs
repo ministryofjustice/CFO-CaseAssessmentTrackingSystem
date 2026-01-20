@@ -295,6 +295,98 @@ public class EditLabelCommandTests
 
         result.IsValid.ShouldBeTrue();
     }
+
+    [Test]
+    public void Validator_WithNewDescriptionContainingCommonPunctuation_ShouldPass()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = "Valid",
+            NewDescription = "Description with £, $, @, punctuation & symbols!",
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Test]
+    public void Validator_WithNewDescriptionContainingNumbers_ShouldPass()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = "Valid",
+            NewDescription = "Description 123 with numbers",
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Test]
+    public void Validator_WithNewDescriptionContainingMultiLine_ShouldPass()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = "Valid",
+            NewDescription = "Line 1\r\nLine 2",
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Test]
+    public void Validator_WithNewDescriptionContainingInvalidCharacters_ShouldFail()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = "Valid",
+            NewDescription = "Invalid characters: <html> tags",
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(e => e.PropertyName == "NewDescription" && 
+            e.ErrorMessage.Contains("must contain only letters, numbers, spaces and common punctuation"));
+    }
+
+    [Test]
+    public void Validator_WithNewNameAt25Characters_ShouldPass()
+    {
+        var validator = new EditLabel.Validator();
+        var command = new EditLabel.Command
+        {
+            LabelId = new LabelId(Guid.NewGuid()),
+            NewName = new string('A', 25),
+            NewDescription = "Valid Description",
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
     
     private class TestLabelRepository : ILabelRepository
     {

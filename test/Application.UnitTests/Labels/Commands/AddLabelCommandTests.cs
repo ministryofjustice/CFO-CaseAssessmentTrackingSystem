@@ -211,6 +211,98 @@ public class AddLabelCommandTests
     }
 
     [Test]
+    public void Validator_WithDescriptionContainingCommonPunctuation_ShouldPass()
+    {
+        var validator = new AddLabel.Validator();
+        var command = new AddLabel.Command
+        {
+            Name = "Valid",
+            Description = "Description with £, $, @, punctuation & symbols!",
+            Colour = AppColour.Primary,
+            Variant = AppVariant.Filled,
+            ContractId = "CONTRACT-001"
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Test]
+    public void Validator_WithDescriptionContainingNumbers_ShouldPass()
+    {
+        var validator = new AddLabel.Validator();
+        var command = new AddLabel.Command
+        {
+            Name = "Valid",
+            Description = "Description 123 with numbers",
+            Colour = AppColour.Primary,
+            Variant = AppVariant.Filled,
+            ContractId = "CONTRACT-001"
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Test]
+    public void Validator_WithDescriptionContainingMultiLine_ShouldPass()
+    {
+        var validator = new AddLabel.Validator();
+        var command = new AddLabel.Command
+        {
+            Name = "Valid",
+            Description = "Line 1\r\nLine 2",
+            Colour = AppColour.Primary,
+            Variant = AppVariant.Filled,
+            ContractId = "CONTRACT-001"
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Test]
+    public void Validator_WithDescriptionContainingInvalidCharacters_ShouldFail()
+    {
+        var validator = new AddLabel.Validator();
+        var command = new AddLabel.Command
+        {
+            Name = "Valid",
+            Description = "Invalid characters: <html> tags",
+            Colour = AppColour.Primary,
+            Variant = AppVariant.Filled,
+            ContractId = "CONTRACT-001"
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(e => e.PropertyName == "Description" && 
+            e.ErrorMessage.Contains("must contain only letters, numbers, spaces and common punctuation"));
+    }
+
+    [Test]
+    public void Validator_WithNameAt25Characters_ShouldPass()
+    {
+        var validator = new AddLabel.Validator();
+        var command = new AddLabel.Command
+        {
+            Name = new string('A', 25),
+            Description = "Valid Description",
+            Colour = AppColour.Primary,
+            Variant = AppVariant.Filled,
+            ContractId = "CONTRACT-001"
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Test]
     public void Handle_WithDuplicateName_ShouldThrowBusinessRuleException()
     {
         _labelCounter.SetVisibleLabelCount(1);
