@@ -147,5 +147,12 @@ public partial class Escalation
             options.RequireInteraction = true;
             options.SnackbarVariant = Variant.Text;
         });
+    }
+    private void OnResponseChanged()
+    {
+        if (Command.Response != SubmitEscalationResponse.EscalationResponse.Accept)
+        {
+            Command.FeedbackType = null;
+        }
     }    
 }
