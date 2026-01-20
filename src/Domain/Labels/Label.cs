@@ -21,10 +21,11 @@ public class Label : BaseAuditableEntity<LabelId>
         string? contractId, 
         ILabelCounter labelCounter)
     {
-        CheckRule(new LabelCannotBeNullOrEmptyRule(name));
-        CheckRule(new LabelNameMustBeValidLength(name));
-        CheckRule(new LabelNamesMustBeUniqueAtContractLevelRule(labelCounter, name, contractId));
-        CheckRule(new LabelDescriptionMustBeValidLength(description));
+        CheckRule(new NameCannotBeNullOrEmptyRule(name));
+        CheckRule(new NameMustBeValidLength(name));
+        CheckRule(new NamesMustBeUniqueAtContractLevelRule(labelCounter, name, contractId));
+        CheckRule(new DescriptionMustBeValidLength(description));
+        CheckRule(new DescriptionCannotBeNullOrEmpty(description));
         
         Id = new  LabelId(Guid.CreateVersion7());
         Name = name;
@@ -81,7 +82,7 @@ public class Label : BaseAuditableEntity<LabelId>
     {
         if (!Equals(Name, name))
         {
-            CheckRule(new LabelNameMustBeValidLength(name));
+            CheckRule(new NameMustBeValidLength(name));
             AddDomainEvent(new LabelRenamedDomainEvent(Id, Name, name ));
             Name = name;
         }
@@ -115,7 +116,7 @@ public class Label : BaseAuditableEntity<LabelId>
     {
         if (Description != newDescription)
         {
-            CheckRule(new LabelDescriptionMustBeValidLength(newDescription));
+            CheckRule(new DescriptionMustBeValidLength(newDescription));
             AddDomainEvent(new LabelDescriptionChangedDomainEvent(Id, Description, newDescription));
             Description = newDescription;
         }
@@ -128,6 +129,7 @@ public class Label : BaseAuditableEntity<LabelId>
         CheckRule(new GlobalRulesCanOnlyBeDeletedByInternalUsersRule(ContractId, domainUser));
         CheckRule(new LabelCannotBeDeletedIfParticipantsAreLinked(Id, labelCounter));
         
+        // we raise an event that deletion is valid.
         AddDomainEvent(new LabelDeletedDomainEvent(this));
     }
 }
