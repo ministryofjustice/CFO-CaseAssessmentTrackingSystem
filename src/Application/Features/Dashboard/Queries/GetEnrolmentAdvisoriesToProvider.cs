@@ -132,7 +132,7 @@ public static class GetEnrolmentAdvisoriesToProvider
                     SupportWorker = sw.DisplayName,
                     CfoUser = cfoUser.DisplayName,
 
-                    SubmittedDate = latestSubmission != null
+                    PqaSubmittedDate = latestSubmission != null
                         ? (DateTime?)latestSubmission.Created
                         : null,
 
@@ -190,7 +190,7 @@ public static class GetEnrolmentAdvisoriesToProvider
         public string? SupportWorker { get; set; }
         public string? PqaUser { get; set; }
         public string? CfoUser { get; set; }
-        public DateTime? SubmittedDate { get; set; }
+        public DateTime? PqaSubmittedDate { get; set; }
         public DateTime? AdvisoryDate { get; set; }
         public bool IsCompleted { get; set; }
         public string? IsAccepted { get; set; }

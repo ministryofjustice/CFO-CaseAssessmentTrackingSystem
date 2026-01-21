@@ -124,7 +124,7 @@ public static class GetActivitiesToProvider
                     SupportWorker = sw.DisplayName,
                     CfoUser = cfoUser.DisplayName,
 
-                    SubmittedDate = latestSubmission != null
+                    PqaSubmittedDate = latestSubmission != null
                         ? (DateTime?)latestSubmission.LastModified
                         : null,
                     PqaUser = submittedByUser != null
@@ -222,7 +222,7 @@ public static class GetActivitiesToProvider
         public string? SupportWorker { get; set; }
         public string? PqaUser { get; set; }
         public string? CfoUser { get; set; }
-        public DateTime? SubmittedDate { get; set; }
+        public DateTime? PqaSubmittedDate { get; set; }
         public DateTime? ReturnedDate { get; set; }
         public bool IsCompleted { get; set; }
         public string? IsAccepted { get; set; }

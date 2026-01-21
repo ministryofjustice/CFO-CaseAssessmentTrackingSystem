@@ -33,7 +33,7 @@ public static class GetActivitiesAdvisoriesToProvider
                     IsAccepted = q.IsAccepted,
                     IsCompleted = q.IsCompleted,
                     Message = n.Message,
-                    Escalated = q.IsEscalated, // bool? matches DTO
+                    Escalated = q.IsEscalated,
                     AdvisoryDate = q.Created,
                     SupportWorkerId = q.SupportWorkerId,
                     TenantId = q.TenantId
@@ -112,7 +112,7 @@ public static class GetActivitiesAdvisoriesToProvider
                         eh.LastModified < data.AdvisoryDate)
                     .OrderByDescending(eh => eh.LastModified)
                     .Take(1)
-                    .DefaultIfEmpty()   // left-apply semantics
+                    .DefaultIfEmpty()
 
                 join submittedByUser in context.Users on latestSubmission.LastModifiedBy equals submittedByUser.Id into submittedByUserJoin
                 from submittedByUser in submittedByUserJoin.DefaultIfEmpty()
