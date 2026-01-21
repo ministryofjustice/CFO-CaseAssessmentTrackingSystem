@@ -75,8 +75,8 @@
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.SubmittedDate!)">
-                        Submitted Date
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.PqaSubmittedDate!)">
+                        PQA Submitted Date
                     </MudTableSortLabel>
                 </MudTh>
 				<MudTh>
@@ -93,7 +93,7 @@
 				<MudTd DataLabel="Support Worker">@context.SupportWorker</MudTd>
 				<MudTd DataLabel="Provider QA">@context.PqaUser</MudTd>
 				<MudTd DataLabel="Cfo User">@context.CfoUser</MudTd>
-				<MudTd DataLabel="Submitted Date">@context.SubmittedDate</MudTd>
+				<MudTd DataLabel="PQA Submitted Date">@context.PqaSubmittedDate</MudTd>
 				<MudTd DataLabel="Advisory Date">@context.AdvisoryDate</MudTd>
 				<MudTd DataLabel="Message">@context.Message</MudTd>
 			</RowTemplate>

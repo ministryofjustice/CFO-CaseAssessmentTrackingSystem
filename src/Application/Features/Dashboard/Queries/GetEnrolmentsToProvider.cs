@@ -17,7 +17,6 @@ public static class GetEnrolmentsToProvider
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<EnrolmentToProviderDto>>
     {
-        
         public async Task<Result<EnrolmentToProviderDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var context = unitOfWork.DbContext;
@@ -120,8 +119,7 @@ public static class GetEnrolmentsToProvider
                     SupportWorker = sw.DisplayName,
                     CfoUser = cfoUser.DisplayName,
 
-                    // pulled from the SAME EnrolmentHistory row
-                    SubmittedDate = latestSubmission != null
+                    PqaSubmittedDate = latestSubmission != null
                         ? (DateTime?)latestSubmission.Created
                         : null,
                     PqaUser = submittedByUser != null
@@ -152,15 +150,13 @@ public static class GetEnrolmentsToProvider
         public EnrolmentToProviderDto(EnrolmentsTabularData[] tabularData)
         {
             TabularData = tabularData;
-            
-            // Get all unique contracts first, sorted
+
             var allContracts = tabularData
                 .Select(td => td.ContractName)
                 .Distinct()
                 .OrderBy(c => c)
                 .ToList();
             
-            // Create chart data ensuring all queues have entries for all contracts
             var grouped = tabularData
                 .GroupBy(td => new { td.ContractName, td.Queue })
                 .Select(g => new EnrolmentsChartData
@@ -171,7 +167,6 @@ public static class GetEnrolmentsToProvider
                 })
                 .ToList();
             
-            // Always ensure both queues exist (Escalation and QA2)
             var queues = new List<string> { "Escalation", "QA2" };
             var completeData = new List<EnrolmentsChartData>();
             
@@ -205,7 +200,7 @@ public static class GetEnrolmentsToProvider
         public string? SupportWorker { get; set; }
         public string? PqaUser { get; set; }
         public string? CfoUser { get; set; }
-        public DateTime? SubmittedDate { get; set; }
+        public DateTime? PqaSubmittedDate { get; set; }
         public DateTime? ReturnedDate { get; set; }
         public bool IsCompleted { get; set; }
         public string? IsAccepted { get; set; }
