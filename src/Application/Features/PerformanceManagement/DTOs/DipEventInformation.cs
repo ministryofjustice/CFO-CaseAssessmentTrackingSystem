@@ -1,6 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Enums;
-
-namespace Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
+﻿namespace Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 
 public class DipEventInformation
 {

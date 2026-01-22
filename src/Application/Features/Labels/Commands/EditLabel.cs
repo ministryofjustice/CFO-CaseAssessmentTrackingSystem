@@ -16,6 +16,7 @@ public static class EditLabel
         public required string NewDescription { get; set; }
         public AppColour NewColour { get; set; }
         public AppVariant NewVariant { get; set; }
+        public AppIcon NewAppIcon { get; set; }
         
     }
 
@@ -30,7 +31,7 @@ public static class EditLabel
                 throw new NotFoundException("Label does not exist");
             }
             
-            label.Edit(request.NewName, request.NewDescription, request.NewColour, request.NewVariant);
+            label.Edit(request.NewName, request.NewDescription, request.NewColour, request.NewVariant, request.NewAppIcon);
             
             return Result.Success();
         }

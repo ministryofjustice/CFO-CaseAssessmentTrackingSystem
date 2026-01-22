@@ -18,6 +18,7 @@ public class Label : BaseAuditableEntity<LabelId>
         string description, 
         AppColour colour, 
         AppVariant variant, 
+        AppIcon appIcon,
         string? contractId, 
         ILabelCounter labelCounter)
     {
@@ -33,7 +34,8 @@ public class Label : BaseAuditableEntity<LabelId>
         Colour = colour;
         Variant = variant;
         ContractId = contractId;
-        
+        AppIcon = appIcon;
+
         AddDomainEvent(new LabelCreatedDomainEvent(this));
     }
     
@@ -42,9 +44,10 @@ public class Label : BaseAuditableEntity<LabelId>
         string description, 
         AppColour colour, 
         AppVariant variant,
+        AppIcon appIcon,
         string? contractId,
         ILabelCounter labelCounter)
-        => new (name, description, colour, variant, contractId, labelCounter);
+        => new (name, description, colour, variant, appIcon, contractId, labelCounter);
     
     /// <summary>
     /// The name of the label. Used for display and filtering.
@@ -62,6 +65,11 @@ public class Label : BaseAuditableEntity<LabelId>
     public AppColour Colour { get; private set; }
     
     public AppVariant Variant { get; private set; }
+
+    /// <summary>
+    /// The icon for the label
+    /// </summary>
+    public AppIcon AppIcon { get; private set; }
     
     /// <summary>
     /// The contract id if this label is linked to one
@@ -72,12 +80,13 @@ public class Label : BaseAuditableEntity<LabelId>
         string name, 
         string description, 
         AppColour colour,
-        AppVariant variant) => 
+        AppVariant variant,
+        AppIcon appIcon) => 
             EditName(name)
                 .EditDescription(description)
                 .EditColour(colour)
-                .EditVariant(variant);
-
+                .EditVariant(variant)
+                .EditAppIcon(appIcon);  
     private Label EditName(string name)
     {
         if (!Equals(Name, name))
@@ -121,6 +130,17 @@ public class Label : BaseAuditableEntity<LabelId>
             Description = newDescription;
         }
         
+        return this;
+    }
+
+    private Label EditAppIcon(AppIcon appIcon)
+    {
+        if (AppIcon != appIcon)
+        {
+            AddDomainEvent(new LabelAppIconChangedDomainEvent(Id, AppIcon, appIcon));
+            AppIcon = appIcon;
+        }
+
         return this;
     }
 

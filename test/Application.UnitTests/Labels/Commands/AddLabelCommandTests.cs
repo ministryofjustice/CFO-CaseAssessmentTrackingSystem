@@ -32,6 +32,7 @@ public class AddLabelCommandTests
             Description = "Test Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -51,6 +52,7 @@ public class AddLabelCommandTests
             Description = "Description",
             Colour = AppColour.Secondary,
             Variant = AppVariant.Outlined,
+            AppIcon = AppIcon.Person,
             ContractId = null
         };
 
@@ -69,6 +71,7 @@ public class AddLabelCommandTests
             Description = "Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -88,6 +91,7 @@ public class AddLabelCommandTests
             Description = "Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -107,6 +111,7 @@ public class AddLabelCommandTests
             Description = "Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -126,6 +131,7 @@ public class AddLabelCommandTests
             Description = new string('A', 201),
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -145,6 +151,7 @@ public class AddLabelCommandTests
             Description = "AB",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -164,6 +171,7 @@ public class AddLabelCommandTests
             Description = "Valid Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -182,6 +190,7 @@ public class AddLabelCommandTests
             Description = "Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -202,6 +211,7 @@ public class AddLabelCommandTests
             Description = "Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -220,6 +230,7 @@ public class AddLabelCommandTests
             Description = "Description with £, $, @, punctuation & symbols!",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -238,6 +249,7 @@ public class AddLabelCommandTests
             Description = "Description 123 with numbers",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -256,6 +268,7 @@ public class AddLabelCommandTests
             Description = "Line 1\r\nLine 2",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -274,6 +287,7 @@ public class AddLabelCommandTests
             Description = "Invalid characters: <html> tags",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -294,6 +308,7 @@ public class AddLabelCommandTests
             Description = "Valid Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -312,6 +327,7 @@ public class AddLabelCommandTests
             Description = "Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -328,6 +344,7 @@ public class AddLabelCommandTests
             Description = "Global Label",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = null
         };
 
@@ -346,6 +363,7 @@ public class AddLabelCommandTests
             Description = "Contract Label",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 

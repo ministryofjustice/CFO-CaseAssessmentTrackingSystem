@@ -27,6 +27,7 @@ public class LabelTests
             "Test Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -47,9 +48,10 @@ public class LabelTests
                 "Description",
                 AppColour.Primary,
                 AppVariant.Filled,
+            AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
-            .Message.ShouldContain("Label cannot be null or empty");
+            .Message.ShouldContain("Label Name cannot be null or empty.");
     }
 
     [Test]
@@ -61,9 +63,10 @@ public class LabelTests
                 "Description",
                 AppColour.Primary,
                 AppVariant.Filled,
+            AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
-            .Message.ShouldContain("Label cannot be null or empty");
+            .Message.ShouldContain("Label Name cannot be null or empty.");
     }
 
     [Test]
@@ -75,9 +78,10 @@ public class LabelTests
                 "Description",
                 AppColour.Primary,
                 AppVariant.Filled,
+            AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
-            .Message.ShouldContain("Label cannot be null or empty");
+            .Message.ShouldContain("Label Name cannot be null or empty.");
     }
 
     [Test]
@@ -89,6 +93,7 @@ public class LabelTests
                 "Description",
                 AppColour.Primary,
                 AppVariant.Filled,
+            AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
             .Message.ShouldContain("Label must be between 2 and 25 characters");
@@ -103,6 +108,7 @@ public class LabelTests
                 "Description",
                 AppColour.Primary,
                 AppVariant.Filled,
+            AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
             .Message.ShouldContain("Label must be between 2 and 25 characters");
@@ -119,6 +125,7 @@ public class LabelTests
                 "Description",
                 AppColour.Primary,
                 AppVariant.Filled,
+            AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
             .Message.ShouldContain("Labels must be unique at a contract level");
@@ -134,6 +141,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-002",
             _labelCounter);
 
@@ -149,6 +157,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -163,6 +172,7 @@ public class LabelTests
             "Original Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -170,7 +180,8 @@ public class LabelTests
             "Updated",
             "Updated Description",
             AppColour.Secondary,
-            AppVariant.Outlined);
+            AppVariant.Outlined,
+            AppIcon.Label);
 
         label.Name.ShouldBe("Updated");
         label.Description.ShouldBe("Updated Description");
@@ -186,6 +197,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -195,7 +207,8 @@ public class LabelTests
             "NewName",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled);
+            AppVariant.Filled,
+            AppIcon.Label);
 
         label.DomainEvents.ShouldContain(e => e is LabelRenamedDomainEvent);
     }
@@ -208,6 +221,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -217,7 +231,8 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Secondary,
-            AppVariant.Filled);
+            AppVariant.Filled,
+            AppIcon.Label);
 
         label.DomainEvents.ShouldContain(e => e is LabelColourChangedDomainEvent);
     }
@@ -230,6 +245,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -239,7 +255,8 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Primary,
-            AppVariant.Outlined);
+            AppVariant.Outlined,
+            AppIcon.Label);
 
         label.DomainEvents.ShouldContain(e => e is LabelVariantChangedDomainEvent);
     }
@@ -252,6 +269,7 @@ public class LabelTests
             "Original",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -261,7 +279,8 @@ public class LabelTests
             "Label",
             "Updated Description",
             AppColour.Primary,
-            AppVariant.Filled);
+            AppVariant.Filled,
+            AppIcon.Label);
 
         label.DomainEvents.ShouldContain(e => e is LabelDescriptionChangedDomainEvent);
     }
@@ -274,6 +293,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -283,7 +303,8 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled);
+            AppVariant.Filled,
+            AppIcon.Label);
 
         label.DomainEvents.ShouldBeEmpty();
     }
@@ -296,6 +317,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             null,
             _labelCounter);
 
@@ -315,6 +337,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             null,
             _labelCounter);
 
@@ -333,6 +356,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -352,6 +376,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -371,6 +396,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -390,6 +416,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 

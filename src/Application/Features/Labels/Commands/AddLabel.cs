@@ -16,6 +16,7 @@ public static class AddLabel
         public required AppColour Colour { get; set; }
         
         public required AppVariant Variant { get; set; }
+        public AppIcon AppIcon { get; set; }
         public string? ContractId { get; set; }
 
         
@@ -34,6 +35,7 @@ public static class AddLabel
                 request.Description, 
                 request.Colour, 
                 request.Variant, 
+                request.AppIcon,
                 request.ContractId, 
                 labelCounter);
             await repository.AddAsync(l);
