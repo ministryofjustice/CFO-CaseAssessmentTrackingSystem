@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -23,19 +24,21 @@ public class ArchivedCaseEntityTypeConfiguration
         builder.Property(x => x.EnrolmentHistoryId)
             .IsRequired();
 
-        builder.Property(x => x.OccurredOn)
+        builder.Property(x => x.Created)
             .IsRequired();
 
-        builder.Property(x => x.CreatedOn)
+        builder.Property(x => x.CreatedBy)
+            .IsRequired()
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
+        builder.Property(x => x.AdditionalInfo)
+            .HasMaxLength(ValidationConstants.NotesLength);
+
+        builder.Property(x => x.ArchiveReason)
+            .HasMaxLength(250);
+
+        builder.Property(x => x.From)
             .IsRequired();
-
-        builder.Property(x => x.TenantId)
-            .IsRequired()
-            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
-
-        builder.Property(x => x.SupportWorker)
-            .IsRequired()
-            .HasMaxLength(100);
 
         builder.Property(x => x.ContractId)
             .IsRequired()
@@ -48,16 +51,17 @@ public class ArchivedCaseEntityTypeConfiguration
             .IsRequired()
             .HasMaxLength(25);
 
-        builder.Property(x => x.ArchiveReason)
-            .HasMaxLength(250);
+        builder.Property(x => x.TenantId)
+            .IsRequired()
+            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
 
-        // Helpful MI index
+        // MI-friendly composite index
         builder.HasIndex(x => new
             {
                 x.ParticipantId,
                 x.EnrolmentHistoryId,
                 x.TenantId,
-                x.OccurredOn
+                x.From
             })
             .HasDatabaseName("ix_ArchivedCase_Participant_Enrolment");
     }
