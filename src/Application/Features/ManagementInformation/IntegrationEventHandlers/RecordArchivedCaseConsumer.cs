@@ -26,13 +26,15 @@ public class RecordArchivedCaseConsumer(IUnitOfWork unitOfWork)
         => ArchivedCase.CreateArchivedCase(
             data.ParticipantId,
             data.EnrolmentHistoryId,
-            data.OccurredOn,
-            data.TenantId,
-            data.SupportWorker,
+            data.Created,
+            data.CreatedBy,
+            data.AdditionalInfo,
+            data.ArchiveReason,
+            data.From,
             data.ContractId,
             data.LocationId,
             data.LocationType,
-            data.ArchiveReason
+            data.TenantId
         );
 
     private async Task<Data> GetData(ParticipantTransitionedIntegrationEvent context)
@@ -62,14 +64,15 @@ public class RecordArchivedCaseConsumer(IUnitOfWork unitOfWork)
             {
                 ParticipantId = context.ParticipantId,
                 EnrolmentHistoryId = peh.Id,
-                TenantId = u.TenantId!,
-                SupportWorker = peh.CreatedBy!,
+                Created = context.OccuredOn,
+                CreatedBy = peh.CreatedBy!,
+                AdditionalInfo = peh.AdditionalInformation!,
+                ArchiveReason = peh.Reason,
+                From = peh.From,
                 ContractId = l.Contract!.Id,
                 LocationId = l.Id,
                 LocationType = l.LocationType.Name,
-                OccurredOn = context.OccuredOn,
-                CreatedOn = peh.Created!.Value,
-                ArchiveReason = peh.Reason
+                TenantId = u.TenantId!
             };
 
         var data = await query.SingleOrDefaultAsync();
@@ -87,15 +90,14 @@ public class RecordArchivedCaseConsumer(IUnitOfWork unitOfWork)
     {
         public required string ParticipantId { get; set; }
         public required int EnrolmentHistoryId { get; set; }
-        public required string TenantId { get; set; }
-        public required string SupportWorker { get; set; }
+        public required DateTime Created { get; set; }
+        public required string CreatedBy { get; set; }
+        public required string? AdditionalInfo { get; set; }
+        public required string? ArchiveReason { get; set; }
+        public required DateTime From { get; set; }
         public required string ContractId { get; set; }
         public required int LocationId { get; set; }
         public required string LocationType { get; set; }
-
-        public required DateTime OccurredOn { get; set; }
-        public required DateTime CreatedOn { get; set; }
-
-        public required string? ArchiveReason { get; set; }
+        public required string TenantId { get; set; }
     }
 }
