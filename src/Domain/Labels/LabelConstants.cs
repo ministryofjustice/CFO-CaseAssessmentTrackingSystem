@@ -10,7 +10,7 @@ public static class LabelConstants
     /// <summary>
     /// The maximum length the name should be for a label
     /// </summary>
-    public const int NameMaximumLength = 15;
+    public const int NameMaximumLength = 25;
     
     /// <summary>
     /// The minimum length a description should be

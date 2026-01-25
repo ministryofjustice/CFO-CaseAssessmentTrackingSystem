@@ -9,4 +9,6 @@ public partial class CatsChip
     [Parameter, EditorRequired] public AppVariant Variant { get; set; }
 
     [Parameter, EditorRequired] public AppColour Colour { get; set; }
+
+    [Parameter, EditorRequired] public AppIcon Icon { get; set; }
 }

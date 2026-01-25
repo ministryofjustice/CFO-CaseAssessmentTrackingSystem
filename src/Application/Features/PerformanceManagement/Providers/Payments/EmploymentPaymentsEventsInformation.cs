@@ -1,5 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Enums;
-using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
+﻿using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 
 namespace Cfo.Cats.Application.Features.PerformanceManagement.Providers.Payments;
 

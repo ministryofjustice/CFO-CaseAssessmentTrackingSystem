@@ -160,6 +160,13 @@
                 pages.Add("Lookup Values", "/system/picklist");
                 pages.Add("Audit Trails", "/system/audittrails");
             }
+
+            allowed = RoleNames.InternalRoles;
+
+            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+            {
+                pages.Add("Labels", "/pages/labels");
+            }
         }
         
         pagesFiltered = pages;
