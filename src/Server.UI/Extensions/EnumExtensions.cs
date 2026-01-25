@@ -1,5 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Enums;
-using Cfo.Cats.Domain.Common.Enums;
+﻿using Cfo.Cats.Domain.Common.Enums;
 using static MudBlazor.Color;
 using static MudBlazor.Variant;
 
@@ -30,21 +29,43 @@ public static class EnumExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(appVariant), appVariant, null)
         };
     
-    public static string AsMudIcon(this AppIcon appIcon) =>
-        appIcon switch
-        {
-            AppIcon.Enrolment => Icons.Material.Filled.HowToReg,    
-            AppIcon.Objective => Icons.Material.Filled.TrackChanges,
-            AppIcon.Task => Icons.Material.Filled.Task,             
-            AppIcon.Activity => Icons.Material.Filled.EventNote,    
-            AppIcon.Payment => Icons.Material.Filled.CreditCard,    
-            AppIcon.Location => Icons.Material.Filled.LocationOn,
-            AppIcon.Reassignment => Icons.Material.Filled.AssignmentInd,
-            AppIcon.HubInduction => Icons.Material.Filled.AssignmentInd,
-            AppIcon.WingInduction => Icons.Material.Filled.AssignmentInd,
-            AppIcon.WingInductionPhase => Icons.Material.Filled.AssignmentInd,
-            _ => throw new ArgumentOutOfRangeException(nameof(appIcon), appIcon, null)
-        };
+    public static string? AsMudIcon(this AppIcon icon) => icon switch
+    {
+        AppIcon.None => null,
+        // Person / Group
+        AppIcon.Person => Icons.Material.Filled.Person,
+        AppIcon.Group => Icons.Material.Filled.Groups,
 
-    
+        // Tagging
+        AppIcon.Tag => Icons.Material.Filled.Tag,
+        AppIcon.Label => Icons.Material.Filled.Label,
+
+        // Priority / Status
+        AppIcon.Star => Icons.Material.Filled.Star,
+        AppIcon.Flag => Icons.Material.Filled.Flag,
+        AppIcon.Info => Icons.Material.Filled.Info,
+        AppIcon.Check => Icons.Material.Filled.CheckCircle,
+        AppIcon.Alert => Icons.Material.Filled.Warning,
+
+        // Contextual
+        AppIcon.Calendar => Icons.Material.Filled.CalendarMonth,
+        AppIcon.Shield => Icons.Material.Filled.Shield,
+        AppIcon.Work => Icons.Material.Filled.Work,
+        AppIcon.School => Icons.Material.Filled.School,
+        AppIcon.Home => Icons.Material.Filled.Home,
+        AppIcon.Lock => Icons.Material.Filled.Lock,
+
+        // Existing app icons from the assessment
+        AppIcon.Enrolment => Icons.Material.Filled.HowToReg,
+        AppIcon.Objective => Icons.Material.Filled.TrackChanges,
+        AppIcon.Task => Icons.Material.Filled.Task,
+        AppIcon.Activity => Icons.Material.Filled.EventNote,
+        AppIcon.Payment => Icons.Material.Filled.CreditCard,
+        AppIcon.Location => Icons.Material.Filled.LocationOn,
+        AppIcon.Reassignment => Icons.Material.Filled.AssignmentInd,
+        AppIcon.HubInduction => Icons.Material.Filled.AssignmentInd,
+        AppIcon.WingInduction => Icons.Material.Filled.AssignmentInd,
+        AppIcon.WingInductionPhase => Icons.Material.Filled.AssignmentInd,
+        _ => null
+    };
 }

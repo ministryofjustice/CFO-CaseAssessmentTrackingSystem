@@ -1,4 +1,6 @@
-namespace Cfo.Cats.Domain.Labels.Events;
+using Cfo.Cats.Domain.Labels.Events;
+
+namespace Cfo.Cats.Application.Features.Labels.EventHandlers;
 
 public class LabelDeletedDomainEventHandler(IUnitOfWork unitOfWork) : INotificationHandler<LabelDeletedDomainEvent>
 {

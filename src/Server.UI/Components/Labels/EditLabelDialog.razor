@@ -31,9 +31,12 @@
                         <MudEnumSelect TEnum="AppVariant" Required="true" Label="Style" For="@(() => Model.NewVariant)" @bind-Value="Model.NewVariant" />
                     </MudItem>
                     <MudItem xs="12">
+                        <MudEnumSelect TEnum="AppIcon" Required="true" Label="Icon" For="@(() => Model.NewAppIcon)" @bind-Value="Model.NewAppIcon" />
+                    </MudItem>
+                    <MudItem xs="12">
                         <MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.SpaceBetween" Spacing="2">
                             <MudText Typo="Typo.body2">Example</MudText>
-                            <CatsChip Label="@Model.NewName" Variant="@Model.NewVariant" Colour="@Model.NewColour" />
+                            <CatsChip Label="@Model.NewName" Variant="@Model.NewVariant" Colour="@Model.NewColour" Icon="@Model.NewAppIcon" />
                         </MudStack>
                     </MudItem>
                 </MudGrid>

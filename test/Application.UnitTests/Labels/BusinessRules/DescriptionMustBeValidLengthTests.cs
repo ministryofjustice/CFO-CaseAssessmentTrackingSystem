@@ -5,12 +5,12 @@ using Shouldly;
 
 namespace Cfo.Cats.Application.UnitTests.Labels.BusinessRules;
 
-public class LabelDescriptionMustBeValidLengthTests
+public class DescriptionMustBeValidLengthTests
 {
     [Test]
     public void IsBroken_WhenDescriptionHasTwoCharacters_ShouldReturnTrue()
     {
-        var rule = new LabelDescriptionMustBeValidLength("AB");
+        var rule = new DescriptionMustBeValidLength("AB");
 
         rule.IsBroken().ShouldBeTrue();
         rule.Message.ShouldBe("Description must be between 3 and 200 characters.");
@@ -19,7 +19,7 @@ public class LabelDescriptionMustBeValidLengthTests
     [Test]
     public void IsBroken_WhenDescriptionHasThreeCharacters_ShouldReturnFalse()
     {
-        var rule = new LabelDescriptionMustBeValidLength("ABC");
+        var rule = new DescriptionMustBeValidLength("ABC");
 
         rule.IsBroken().ShouldBeFalse();
     }
@@ -28,7 +28,7 @@ public class LabelDescriptionMustBeValidLengthTests
     public void IsBroken_WhenDescriptionHasTwoHundredCharacters_ShouldReturnFalse()
     {
         var description = new string('A', 200);
-        var rule = new LabelDescriptionMustBeValidLength(description);
+        var rule = new DescriptionMustBeValidLength(description);
 
         rule.IsBroken().ShouldBeFalse();
     }
@@ -37,7 +37,7 @@ public class LabelDescriptionMustBeValidLengthTests
     public void IsBroken_WhenDescriptionHasTwoHundredAndOneCharacters_ShouldReturnTrue()
     {
         var description = new string('A', 201);
-        var rule = new LabelDescriptionMustBeValidLength(description);
+        var rule = new DescriptionMustBeValidLength(description);
 
         rule.IsBroken().ShouldBeTrue();
     }
@@ -47,7 +47,7 @@ public class LabelDescriptionMustBeValidLengthTests
     [TestCase("This is a longer description that contains multiple words and still falls within the valid range")]
     public void IsBroken_WhenDescriptionIsWithinRange_ShouldReturnFalse(string description)
     {
-        var rule = new LabelDescriptionMustBeValidLength(description);
+        var rule = new DescriptionMustBeValidLength(description);
 
         rule.IsBroken().ShouldBeFalse();
     }

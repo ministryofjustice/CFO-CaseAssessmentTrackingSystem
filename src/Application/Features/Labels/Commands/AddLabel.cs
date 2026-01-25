@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Labels.Commands;
 
 public static class AddLabel
 {
-    [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+    [RequestAuthorize(Policy = SecurityPolicies.Internal)]
     public class Command : IRequest<Result>
     {
         public required string Name { get; set; }
@@ -16,6 +16,7 @@ public static class AddLabel
         public required AppColour Colour { get; set; }
         
         public required AppVariant Variant { get; set; }
+        public AppIcon AppIcon { get; set; }
         public string? ContractId { get; set; }
 
         
@@ -34,6 +35,7 @@ public static class AddLabel
                 request.Description, 
                 request.Colour, 
                 request.Variant, 
+                request.AppIcon,
                 request.ContractId, 
                 labelCounter);
             await repository.AddAsync(l);
@@ -59,8 +61,8 @@ public static class AddLabel
                 .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Name"));
             
             RuleFor(v => v.Description)
-                .Matches(ValidationConstants.LettersSpacesUnderscores)
-                .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Description"));
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
         }
     }
 }

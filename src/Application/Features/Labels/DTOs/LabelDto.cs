@@ -8,6 +8,8 @@ public record LabelDto
     public AppColour Colour { get; init; }
     
     public AppVariant Variant { get; init; } 
+
+    public AppIcon AppIcon { get; init; }
     
     public required string Contract { get; init; }
 }

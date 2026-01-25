@@ -28,6 +28,7 @@ public static class GetLabelById
                                     [Label].[Colour] as [{nameof(LabelDto.Colour)}],
                                     [Contract].[Description] as [{nameof(LabelDto.Contract)}],
                                     [Label].[Variant] as [{nameof(LabelDto.Variant)}],
+                                    [Label].[AppIcon] as [{nameof(LabelDto.AppIcon)}]
                                 FROM [Configuration].[Label] as [Label]
                                 LEFT JOIN [Configuration].[Contract] as [Contract]
                                     on [Label].[ContractId] = [Contract].[Id]

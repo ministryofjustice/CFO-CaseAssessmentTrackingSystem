@@ -322,7 +322,8 @@ public class MenuService : IMenuService
                             {
                                 Title = "Labels",
                                 Href = "/pages/labels",
-                                PageStatus = PageStatus.ComingSoon,
+                                PageStatus = PageStatus.Wip,
+                                Roles = RoleNames.InternalRoles
                             }
                         ]
                     }

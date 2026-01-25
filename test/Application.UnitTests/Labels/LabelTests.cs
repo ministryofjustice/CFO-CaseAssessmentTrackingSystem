@@ -27,6 +27,7 @@ public class LabelTests
             "Test Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -47,9 +48,10 @@ public class LabelTests
                 "Description",
                 AppColour.Primary,
                 AppVariant.Filled,
+            AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
-            .Message.ShouldContain("Label cannot be null or empty");
+            .Message.ShouldContain("Label Name cannot be null or empty.");
     }
 
     [Test]
@@ -61,9 +63,10 @@ public class LabelTests
                 "Description",
                 AppColour.Primary,
                 AppVariant.Filled,
+            AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
-            .Message.ShouldContain("Label cannot be null or empty");
+            .Message.ShouldContain("Label Name cannot be null or empty.");
     }
 
     [Test]
@@ -75,9 +78,10 @@ public class LabelTests
                 "Description",
                 AppColour.Primary,
                 AppVariant.Filled,
+            AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
-            .Message.ShouldContain("Label cannot be null or empty");
+            .Message.ShouldContain("Label Name cannot be null or empty.");
     }
 
     [Test]
@@ -89,9 +93,10 @@ public class LabelTests
                 "Description",
                 AppColour.Primary,
                 AppVariant.Filled,
+            AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
-            .Message.ShouldContain("Label must be between 2 and 15 characters");
+            .Message.ShouldContain("Label must be between 2 and 25 characters");
     }
 
     [Test]
@@ -99,13 +104,14 @@ public class LabelTests
     {
         Should.Throw<BusinessRuleValidationException>(() =>
             Label.Create(
-                "ThisIsAVeryLongLabelName",
+                new string('x', 201),
                 "Description",
                 AppColour.Primary,
                 AppVariant.Filled,
+            AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
-            .Message.ShouldContain("Label must be between 2 and 15 characters");
+            .Message.ShouldContain("Label must be between 2 and 25 characters");
     }
 
     [Test]
@@ -119,6 +125,7 @@ public class LabelTests
                 "Description",
                 AppColour.Primary,
                 AppVariant.Filled,
+            AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
             .Message.ShouldContain("Labels must be unique at a contract level");
@@ -134,6 +141,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-002",
             _labelCounter);
 
@@ -149,6 +157,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -163,6 +172,7 @@ public class LabelTests
             "Original Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -170,7 +180,9 @@ public class LabelTests
             "Updated",
             "Updated Description",
             AppColour.Secondary,
-            AppVariant.Outlined);
+            AppVariant.Outlined,
+            AppIcon.Label,
+            _labelCounter);
 
         label.Name.ShouldBe("Updated");
         label.Description.ShouldBe("Updated Description");
@@ -186,6 +198,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -195,7 +208,9 @@ public class LabelTests
             "NewName",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled);
+            AppVariant.Filled,
+            AppIcon.Label,
+            _labelCounter);
 
         label.DomainEvents.ShouldContain(e => e is LabelRenamedDomainEvent);
     }
@@ -208,6 +223,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -217,7 +233,9 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Secondary,
-            AppVariant.Filled);
+            AppVariant.Filled,
+            AppIcon.Label,
+            _labelCounter);
 
         label.DomainEvents.ShouldContain(e => e is LabelColourChangedDomainEvent);
     }
@@ -230,6 +248,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -239,7 +258,9 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Primary,
-            AppVariant.Outlined);
+            AppVariant.Outlined,
+            AppIcon.Label,
+            _labelCounter);
 
         label.DomainEvents.ShouldContain(e => e is LabelVariantChangedDomainEvent);
     }
@@ -252,6 +273,7 @@ public class LabelTests
             "Original",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -261,7 +283,9 @@ public class LabelTests
             "Label",
             "Updated Description",
             AppColour.Primary,
-            AppVariant.Filled);
+            AppVariant.Filled,
+            AppIcon.Label,
+            _labelCounter);
 
         label.DomainEvents.ShouldContain(e => e is LabelDescriptionChangedDomainEvent);
     }
@@ -274,6 +298,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -283,7 +308,9 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled);
+            AppVariant.Filled,
+            AppIcon.Label,
+            _labelCounter);
 
         label.DomainEvents.ShouldBeEmpty();
     }
@@ -296,6 +323,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             null,
             _labelCounter);
 
@@ -315,6 +343,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             null,
             _labelCounter);
 
@@ -333,6 +362,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -352,6 +382,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -371,6 +402,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -390,6 +422,7 @@ public class LabelTests
             "Description",
             AppColour.Primary,
             AppVariant.Filled,
+            AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
 
@@ -401,6 +434,83 @@ public class LabelTests
         var deleteEvent = label.DomainEvents.OfType<LabelDeletedDomainEvent>().FirstOrDefault();
         deleteEvent.ShouldNotBeNull();
         deleteEvent.Entity.ShouldBe(label);
+    }
+
+    [Test]
+    public void Edit_WhenRenamingToExistingLabel_ShouldThrowBusinessRuleException()
+    {
+        var label = Label.Create(
+            "Original",
+            "Description",
+            AppColour.Primary,
+            AppVariant.Filled,
+            AppIcon.Label,
+            "CONTRACT-001",
+            _labelCounter);
+
+        _labelCounter.SetVisibleLabelCount(1);
+
+        Should.Throw<BusinessRuleValidationException>(() =>
+            label.Edit(
+                "ExistingLabel",
+                "Description",
+                AppColour.Primary,
+                AppVariant.Filled,
+                AppIcon.Label,
+                _labelCounter))
+            .Message.ShouldContain("Cannot rename label");
+    }
+
+    [Test]
+    public void Edit_WhenRenamingToNonExistingLabel_ShouldSucceed()
+    {
+        var label = Label.Create(
+            "Original",
+            "Description",
+            AppColour.Primary,
+            AppVariant.Filled,
+            AppIcon.Label,
+            "CONTRACT-001",
+            _labelCounter);
+
+        _labelCounter.SetVisibleLabelCount(0);
+
+        label.Edit(
+            "NewUniqueName",
+            "Description",
+            AppColour.Primary,
+            AppVariant.Filled,
+            AppIcon.Label,
+            _labelCounter);
+
+        label.Name.ShouldBe("NewUniqueName");
+    }
+
+    [Test]
+    public void Edit_WhenKeepingSameName_ShouldNotCheckForDuplicates()
+    {
+        var label = Label.Create(
+            "Original",
+            "Description",
+            AppColour.Primary,
+            AppVariant.Filled,
+            AppIcon.Label,
+            "CONTRACT-001",
+            _labelCounter);
+
+        _labelCounter.SetVisibleLabelCount(1);
+
+        label.Edit(
+            "Original",
+            "Updated Description",
+            AppColour.Secondary,
+            AppVariant.Outlined,
+            AppIcon.Star,
+            _labelCounter);
+
+        label.Name.ShouldBe("Original");
+        label.Description.ShouldBe("Updated Description");
+        label.Colour.ShouldBe(AppColour.Secondary);
     }
 
     private class TestLabelCounter : ILabelCounter

@@ -6,13 +6,13 @@ using Shouldly;
 
 namespace Cfo.Cats.Application.UnitTests.Labels.BusinessRules;
 
-public class LabelNamesMustBeUniqueAtContractLevelRuleTests
+public class NamesMustBeUniqueAtContractLevelRuleTests
 {
     [Test]
     public void IsBroken_WhenDuplicateNameExistsInSameContract_ShouldReturnTrue()
     {
         var labelCounter = new TestLabelCounter(1);
-        var rule = new LabelNamesMustBeUniqueAtContractLevelRule(
+        var rule = new NamesMustBeUniqueAtContractLevelRule(
             labelCounter,
             "Duplicate",
             "CONTRACT-001");
@@ -25,7 +25,7 @@ public class LabelNamesMustBeUniqueAtContractLevelRuleTests
     public void IsBroken_WhenDuplicateNameExistsInDifferentContract_ShouldReturnFalse()
     {
         var labelCounter = new TestLabelCounter(0);
-        var rule = new LabelNamesMustBeUniqueAtContractLevelRule(
+        var rule = new NamesMustBeUniqueAtContractLevelRule(
             labelCounter,
             "SameName",
             "CONTRACT-002");
@@ -37,7 +37,7 @@ public class LabelNamesMustBeUniqueAtContractLevelRuleTests
     public void IsBroken_WhenNameIsUnique_ShouldReturnFalse()
     {
         var labelCounter = new TestLabelCounter(0);
-        var rule = new LabelNamesMustBeUniqueAtContractLevelRule(
+        var rule = new NamesMustBeUniqueAtContractLevelRule(
             labelCounter,
             "Unique",
             "CONTRACT-001");
@@ -49,7 +49,7 @@ public class LabelNamesMustBeUniqueAtContractLevelRuleTests
     public void IsBroken_WhenGlobalLabelNameExists_ShouldReturnTrue()
     {
         var labelCounter = new TestLabelCounter(1);
-        var rule = new LabelNamesMustBeUniqueAtContractLevelRule(
+        var rule = new NamesMustBeUniqueAtContractLevelRule(
             labelCounter,
             "GlobalLabel",
             null);
