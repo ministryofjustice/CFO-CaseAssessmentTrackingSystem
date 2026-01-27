@@ -129,6 +129,8 @@ public class ApplicationDbContext
     
     public DbSet<ArchivedCase> ArchivedCases => Set<ArchivedCase>();
     
+    public DbSet<ProviderFeedbackEnrolment> ProviderFeedbackEnrolments => Set<ProviderFeedbackEnrolment>();
+    public DbSet<ProviderFeedbackActivity> ProviderFeedbackActivities => Set<ProviderFeedbackActivity>(); 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

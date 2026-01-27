@@ -121,4 +121,6 @@ public interface IApplicationDbContext
     DbSet<PathwayPlanReview> PathwayPlanReviews { get; }
     
     DbSet<ArchivedCase> ArchivedCases { get; }
+    DbSet<ProviderFeedbackEnrolment> ProviderFeedbackEnrolments { get; }
+    DbSet<ProviderFeedbackActivity> ProviderFeedbackActivities { get; }
 }
