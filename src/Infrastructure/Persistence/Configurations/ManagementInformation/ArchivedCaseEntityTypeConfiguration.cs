@@ -21,6 +21,14 @@ public class ArchivedCaseEntityTypeConfiguration
             .IsRequired()
             .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId);
 
+        builder.Property(p => p.FirstName)
+            .IsRequired()
+            .HasMaxLength(50);
+
+      builder.Property(p => p.LastName)
+            .IsRequired()
+            .HasMaxLength(50);
+        
         builder.Property(x => x.EnrolmentHistoryId)
             .IsRequired();
 
@@ -39,7 +47,9 @@ public class ArchivedCaseEntityTypeConfiguration
 
         builder.Property(x => x.From)
             .IsRequired();
-
+        
+        builder.Property(x => x.To);
+        
         builder.Property(x => x.ContractId)
             .IsRequired()
             .HasMaxLength(12);
@@ -54,8 +64,7 @@ public class ArchivedCaseEntityTypeConfiguration
         builder.Property(x => x.TenantId)
             .IsRequired()
             .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
-
-        // MI-friendly composite index
+        
         builder.HasIndex(x => new
             {
                 x.ParticipantId,
