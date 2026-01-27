@@ -50,6 +50,14 @@
                                 </MudText>
                                 <MudText Typo="Typo.body2">@note.CreatedByEmail</MudText>
                             </CardHeaderContent>
+                            <CardHeaderActions>
+                                @if (note.CallReference is not null)
+                                {
+                                    <MudChip T="string" Size="Size.Small" Color="Color.Primary">
+                                        Call Reference @note.CallReference
+                                    </MudChip>
+                                }
+                            </CardHeaderActions>
                         </MudCardHeader>
                         <MudCardContent>
                             <MudText Typo="Typo.body1">
@@ -57,7 +65,7 @@
                                     @note.Message
                                 </div>
                             </MudText>
-
+                           
                         </MudCardContent>
                         <MudCardActions>
                             <MudTooltip Text="@note.Created.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
