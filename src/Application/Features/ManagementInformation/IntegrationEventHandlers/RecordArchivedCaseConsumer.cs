@@ -25,12 +25,15 @@ public class RecordArchivedCaseConsumer(IUnitOfWork unitOfWork)
     private static ArchivedCase CreateArchivedCase(Data data)
         => ArchivedCase.CreateArchivedCase(
             data.ParticipantId,
+            data.FirstName,
+            data.LastName,
             data.EnrolmentHistoryId,
             data.Created,
             data.CreatedBy,
             data.AdditionalInfo,
             data.ArchiveReason,
             data.From,
+            data.To,
             data.ContractId,
             data.LocationId,
             data.LocationType,
@@ -63,19 +66,25 @@ public class RecordArchivedCaseConsumer(IUnitOfWork unitOfWork)
             select new Data
             {
                 ParticipantId = context.ParticipantId,
+                FirstName = p.FirstName,
+                LastName = p.LastName,
                 EnrolmentHistoryId = peh.Id,
                 Created = context.OccuredOn,
                 CreatedBy = peh.CreatedBy!,
                 AdditionalInfo = peh.AdditionalInformation!,
                 ArchiveReason = peh.Reason,
                 From = peh.From,
+                To = peh.To,
                 ContractId = l.Contract!.Id,
                 LocationId = l.Id,
                 LocationType = l.LocationType.Name,
                 TenantId = u.TenantId!
             };
 
-        var data = await query.SingleOrDefaultAsync();
+        var data = await query
+            .OrderByDescending(x => x.From)
+            .Take(1)
+            .SingleOrDefaultAsync();
 
         if (data is null)
         {
@@ -89,12 +98,15 @@ public class RecordArchivedCaseConsumer(IUnitOfWork unitOfWork)
     public record Data
     {
         public required string ParticipantId { get; set; }
+        public required string FirstName { get; set; }
+        public required string LastName { get;  set; }
         public required int EnrolmentHistoryId { get; set; }
         public required DateTime Created { get; set; }
         public required string CreatedBy { get; set; }
         public required string? AdditionalInfo { get; set; }
         public required string? ArchiveReason { get; set; }
         public required DateTime From { get; set; }
+        public required DateTime? To { get; set; }
         public required string ContractId { get; set; }
         public required int LocationId { get; set; }
         public required string LocationType { get; set; }
