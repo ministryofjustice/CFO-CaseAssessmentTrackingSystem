@@ -33,10 +33,6 @@ public class ProviderFeedbackEnrolment
 
     public required DateTime ActionDate { get; set; }
 
-    public DateTime? NoteCreatedDate { get; set; }
-
-    public string? NoteCreatedBy { get; set; }
-
     public string Message { get; set; }
 
     public int? FeedbackType { get; set; }
@@ -52,8 +48,6 @@ public class ProviderFeedbackEnrolment
         string cfoUserId,
         DateTime pqaSubmittedDate,
         DateTime actionDate,
-        DateTime? noteCreatedDate,
-        string? noteCreatedBy,
         string message,
         int? feedbackType)
     {
@@ -73,8 +67,6 @@ public class ProviderFeedbackEnrolment
             CfoUserId = cfoUserId,
             PqaSubmittedDate = pqaSubmittedDate,
             ActionDate = actionDate,
-            NoteCreatedDate = noteCreatedDate,
-            NoteCreatedBy = noteCreatedBy,
             Message = message,
             FeedbackType = feedbackType
         };
@@ -90,8 +82,6 @@ public class ProviderFeedbackEnrolment
         string cfoUserId,
         DateTime pqaSubmittedDate,
         DateTime actionDate,
-        DateTime? noteCreatedDate,
-        string? noteCreatedBy,
         string message,
         int? feedbackType)
     {
@@ -111,8 +101,6 @@ public class ProviderFeedbackEnrolment
             CfoUserId = cfoUserId,
             PqaSubmittedDate = pqaSubmittedDate,
             ActionDate = actionDate,
-            NoteCreatedDate = noteCreatedDate,
-            NoteCreatedBy = noteCreatedBy,
             Message = message,
             FeedbackType = feedbackType
         };
@@ -128,8 +116,6 @@ public class ProviderFeedbackEnrolment
         string cfoUserId,
         DateTime pqaSubmittedDate,
         DateTime actionDate,
-        DateTime? noteCreatedDate,
-        string? noteCreatedBy,
         string message,
         int? feedbackType)
     {
@@ -149,8 +135,6 @@ public class ProviderFeedbackEnrolment
             CfoUserId = cfoUserId,
             PqaSubmittedDate = pqaSubmittedDate,
             ActionDate = actionDate,
-            NoteCreatedDate = noteCreatedDate,
-            NoteCreatedBy = noteCreatedBy,
             Message = message,
             FeedbackType = feedbackType
         };
@@ -166,8 +150,6 @@ public class ProviderFeedbackEnrolment
         string cfoUserId,
         DateTime pqaSubmittedDate,
         DateTime actionDate,
-        DateTime? noteCreatedDate,
-        string? noteCreatedBy,
         string message,
         int? feedbackType)
     {
@@ -187,8 +169,6 @@ public class ProviderFeedbackEnrolment
             CfoUserId = cfoUserId,
             PqaSubmittedDate = pqaSubmittedDate,
             ActionDate = actionDate,
-            NoteCreatedDate = noteCreatedDate,
-            NoteCreatedBy = noteCreatedBy,
             Message = message,
             FeedbackType = feedbackType
         };
