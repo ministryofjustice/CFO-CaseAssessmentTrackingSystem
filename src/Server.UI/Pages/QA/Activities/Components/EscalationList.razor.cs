@@ -12,9 +12,8 @@ public partial class EscalationList
     private int _defaultPageSize = 30;
     private MudDataGrid<ActivityQueueEntryDto> _table = null!;
 
-    private ActivityQaEscalationWithPaginiation.Query Query { get; } = new();
-    private ActivityQueueEntryDto _currentDto = new();
-
+    private ActivityQaEscalationWithPagination.Query Query { get; } = new();
+  
     private void ViewActivity(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/qa/activities/escalation/{dto.Id}");
 
     private void ViewParticipant(ActivityQueueEntryDto dto) => Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
