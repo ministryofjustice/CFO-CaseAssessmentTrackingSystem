@@ -29,6 +29,13 @@ public class ProviderFeedbackActivityEntityTypeConfiguration : IEntityTypeConfig
         builder.Property(x => x.NoteId)
             .IsRequired()
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+        
+        builder.Property(x => x.ActivityId)
+            .IsRequired()
+            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
+        builder.Property(x => x.ActivityType)
+            .IsRequired();
 
         builder.Property(x => x.TenantId)
             .IsRequired()
@@ -59,11 +66,6 @@ public class ProviderFeedbackActivityEntityTypeConfiguration : IEntityTypeConfig
 
         builder.Property(x => x.ActionDate)
             .IsRequired();
-
-        builder.Property(x => x.NoteCreatedDate);
-
-        builder.Property(x => x.NoteCreatedBy)
-            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
         builder.Property(x => x.Message)
             .HasMaxLength(1000);
