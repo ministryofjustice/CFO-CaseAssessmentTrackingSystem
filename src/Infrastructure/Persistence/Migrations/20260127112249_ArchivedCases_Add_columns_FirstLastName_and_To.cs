@@ -37,13 +37,29 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                 nullable: true);
             
             migrationBuilder.Sql("""
-                                     UPDATE Mi.ArchivedCase
+                                     UPDATE ac
                                      SET FirstName = p.FirstName,
                                          LastName = p.LastName,
-                                         [To] = eh.[To]
+                                         [To] = eh.[To],
+                                         LocationType =
+                                             CASE ac.LocationType
+                                                 WHEN '0' THEN 'Wing'
+                                                 WHEN '1' THEN 'Feeder'
+                                                 WHEN '2' THEN 'Outlying'
+                                                 WHEN '3' THEN 'Female'
+                                                 WHEN '4' THEN 'Community'
+                                                 WHEN '5' THEN 'Hub'
+                                                 WHEN '6' THEN 'Satellite'
+                                                 WHEN '7' THEN 'Unknown'
+                                                 WHEN '8' THEN 'Unmapped Custody'
+                                                 WHEN '9' THEN 'Unmapped Community'
+                                                 ELSE 'Unknown'
+                                             END
                                      FROM Mi.ArchivedCase ac
-                                     JOIN Participant.Participant p ON ac.ParticipantId = p.Id
-                                     JOIN Participant.EnrolmentHistory eh ON ac.EnrolmentHistoryId = eh.Id
+                                     JOIN Participant.Participant p 
+                                         ON ac.ParticipantId = p.Id
+                                     JOIN Participant.EnrolmentHistory eh 
+                                         ON ac.EnrolmentHistoryId = eh.Id
                                  """);
         }
 
