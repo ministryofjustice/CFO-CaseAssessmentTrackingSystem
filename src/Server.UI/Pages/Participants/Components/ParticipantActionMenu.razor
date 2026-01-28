@@ -72,7 +72,7 @@
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState;
-        _canForceUpdate = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SeniorInternal)).Succeeded;
+        _canForceUpdate = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Qa1)).Succeeded;
     }
 
     protected async Task Archive()
