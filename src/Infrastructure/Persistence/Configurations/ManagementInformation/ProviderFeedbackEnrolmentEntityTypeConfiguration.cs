@@ -60,11 +60,6 @@ public class ProviderFeedbackEnrolmentEntityTypeConfiguration : IEntityTypeConfi
         builder.Property(x => x.ActionDate)
             .IsRequired();
 
-        builder.Property(x => x.NoteCreatedDate);
-
-        builder.Property(x => x.NoteCreatedBy)
-            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
-
         builder.Property(x => x.Message)
             .HasMaxLength(1000);
         

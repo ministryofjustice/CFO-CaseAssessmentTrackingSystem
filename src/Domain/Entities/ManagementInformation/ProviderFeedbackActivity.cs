@@ -17,6 +17,10 @@ public class ProviderFeedbackActivity
     
     public required int NoteId { get; set; }
 
+    public required  string ActivityId { get; set; }
+
+    public required int ActivityType { get; set; }
+    
     public required string TenantId { get; set; }
 
     public required string ContractId { get; set; }
@@ -33,9 +37,6 @@ public class ProviderFeedbackActivity
 
     public required DateTime ActionDate { get; set; }
 
-    public DateTime? NoteCreatedDate { get; set; }
-
-    public string? NoteCreatedBy { get; set; }
     public string Message { get; set; }
 
     public int? FeedbackType{get; set;}
@@ -43,6 +44,8 @@ public class ProviderFeedbackActivity
     public static ProviderFeedbackActivity CreateReturnedQA2Activity(
         Guid queueEntryId,
         int noteId,
+        string activityId,
+        int activityType,
         string tenantId,
         string contractId,
         string participantId,
@@ -51,8 +54,6 @@ public class ProviderFeedbackActivity
         string cfoUserId,
         DateTime pqaSubmittedDate,
         DateTime actionDate,
-        DateTime? noteCreatedDate,
-        string? noteCreatedBy,
         string message,
         int? feedbackType)
     {
@@ -64,6 +65,8 @@ public class ProviderFeedbackActivity
             Queue = "QA2",
             QueueEntryId = queueEntryId,
             NoteId = noteId,
+            ActivityId = activityId,
+            ActivityType = activityType,
             TenantId = tenantId,
             ContractId = contractId,
             ParticipantId = participantId,
@@ -72,8 +75,6 @@ public class ProviderFeedbackActivity
             CfoUserId = cfoUserId,
             PqaSubmittedDate = pqaSubmittedDate,
             ActionDate = actionDate,
-            NoteCreatedDate = noteCreatedDate,
-            NoteCreatedBy = noteCreatedBy,
             Message = message,
             FeedbackType = feedbackType
         };
@@ -81,6 +82,8 @@ public class ProviderFeedbackActivity
     public static ProviderFeedbackActivity CreateReturnedEscalationActivity(
         Guid queueEntryId,
         int noteId,
+        string activityId,
+        int activityType,
         string tenantId,
         string contractId,
         string participantId,
@@ -89,8 +92,6 @@ public class ProviderFeedbackActivity
         string cfoUserId,
         DateTime pqaSubmittedDate,
         DateTime actionDate,
-        DateTime? noteCreatedDate,
-        string? noteCreatedBy,
         string message,
         int? feedbackType)
     {
@@ -102,6 +103,8 @@ public class ProviderFeedbackActivity
             Queue = "Escalation",
             QueueEntryId = queueEntryId,
             NoteId = noteId,
+            ActivityId = activityId,
+            ActivityType = activityType,
             TenantId = tenantId,
             ContractId = contractId,
             ParticipantId = participantId,
@@ -110,8 +113,6 @@ public class ProviderFeedbackActivity
             CfoUserId = cfoUserId,
             PqaSubmittedDate = pqaSubmittedDate,
             ActionDate = actionDate,
-            NoteCreatedDate = noteCreatedDate,
-            NoteCreatedBy = noteCreatedBy,
             Message = message,
             FeedbackType = feedbackType
         };
@@ -119,6 +120,8 @@ public class ProviderFeedbackActivity
     public static ProviderFeedbackActivity CreateAdvisoryQA2Activity(
         Guid queueEntryId,
         int noteId,
+        string activityId,
+        int activityType,
         string tenantId,
         string contractId,
         string participantId,
@@ -127,8 +130,6 @@ public class ProviderFeedbackActivity
         string cfoUserId,
         DateTime pqaSubmittedDate,
         DateTime actionDate,
-        DateTime? noteCreatedDate,
-        string? noteCreatedBy,
         string message,
         int? feedbackType)
     {
@@ -140,6 +141,8 @@ public class ProviderFeedbackActivity
             Queue = "QA2",
             QueueEntryId = queueEntryId,
             NoteId = noteId,
+            ActivityId = activityId,
+            ActivityType = activityType,
             TenantId = tenantId,
             ContractId = contractId,
             ParticipantId = participantId,
@@ -148,8 +151,6 @@ public class ProviderFeedbackActivity
             CfoUserId = cfoUserId,
             PqaSubmittedDate = pqaSubmittedDate,
             ActionDate = actionDate,
-            NoteCreatedDate = noteCreatedDate,
-            NoteCreatedBy = noteCreatedBy,
             Message = message,
             FeedbackType = feedbackType
         };
@@ -157,6 +158,8 @@ public class ProviderFeedbackActivity
     public static ProviderFeedbackActivity CreateAdvisoryEscalationActivity(
         Guid queueEntryId,
         int noteId,
+        string activityId,
+        int activityType,
         string tenantId,
         string contractId,
         string participantId,
@@ -165,8 +168,6 @@ public class ProviderFeedbackActivity
         string cfoUserId,
         DateTime pqaSubmittedDate,
         DateTime actionDate,
-        DateTime? noteCreatedDate,
-        string? noteCreatedBy,
         string message,
         int? feedbackType)
     {
@@ -178,6 +179,8 @@ public class ProviderFeedbackActivity
             Queue = "Escalation",
             QueueEntryId = queueEntryId,
             NoteId = noteId,
+            ActivityId = activityId,
+            ActivityType = activityType,
             TenantId = tenantId,
             ContractId = contractId,
             ParticipantId = participantId,
@@ -186,8 +189,6 @@ public class ProviderFeedbackActivity
             CfoUserId = cfoUserId,
             PqaSubmittedDate = pqaSubmittedDate,
             ActionDate = actionDate,
-            NoteCreatedDate = noteCreatedDate,
-            NoteCreatedBy = noteCreatedBy,
             Message = message,
             FeedbackType = feedbackType
         };
