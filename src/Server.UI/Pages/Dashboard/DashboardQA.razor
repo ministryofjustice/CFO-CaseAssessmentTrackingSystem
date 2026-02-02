@@ -44,8 +44,8 @@
             <MudTabPanel Text="Activities: Returns to Providers" Class="pa-3">
                 <ActivitiesToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
-            <MudTabPanel Text="Archived Cases by region count" Class="pa-3">
-                <ArchivedCasesByRegionAndReasonDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+            <MudTabPanel Text="Archived Cases by contract count" Class="pa-3">
+                <ArchivedCasesByContractAndReasonDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
             <MudTabPanel Text="Advisories to providers" Class="pa-3">
                 <MudAlert Severity="Severity.Info">

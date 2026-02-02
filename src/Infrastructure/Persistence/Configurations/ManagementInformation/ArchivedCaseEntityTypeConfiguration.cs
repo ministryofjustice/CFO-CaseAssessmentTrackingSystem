@@ -43,8 +43,14 @@ public class ArchivedCaseEntityTypeConfiguration
             .HasMaxLength(ValidationConstants.NotesLength);
 
         builder.Property(x => x.ArchiveReason)
-            .HasMaxLength(250);
+            .HasMaxLength(ValidationConstants.NotesLength);
 
+        builder.Property(x => x.UnarchiveAdditionalInfo)
+            .HasMaxLength(ValidationConstants.NotesLength);
+        
+        builder.Property(x => x.UnarchiveReason)
+            .HasMaxLength(ValidationConstants.NotesLength);
+        
         builder.Property(x => x.From)
             .IsRequired();
         

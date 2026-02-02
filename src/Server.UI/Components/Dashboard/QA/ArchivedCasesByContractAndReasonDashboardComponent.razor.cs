@@ -3,7 +3,7 @@ using Cfo.Cats.Application.Features.Dashboard.Queries;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard.QA;
 
-public partial class ArchivedCasesByRegionAndReasonDashboardComponent
+public partial class ArchivedCasesByContractAndReasonDashboardComponent
 {
     [EditorRequired, Parameter]
     public DateRange? DateRange { get; set; }
@@ -20,9 +20,9 @@ public partial class ArchivedCasesByRegionAndReasonDashboardComponent
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
-    protected override IRequest<Result<GetArchivedCasesByRegionAndReason.ArchivedCasesByRegionAndReasonDto>>
+    protected override IRequest<Result<GetArchivedCasesByContractAndReason.ArchivedCasesByContractAndReasonDto>>
         CreateQuery()
-        => new GetArchivedCasesByRegionAndReason.Query
+        => new GetArchivedCasesByContractAndReason.Query
         {
             CurrentUser = CurrentUser,
             UserId = UserId,
@@ -33,7 +33,7 @@ public partial class ArchivedCasesByRegionAndReasonDashboardComponent
                 ?? throw new InvalidOperationException("DateRange not set")
         };
 
-    private ApexChartOptions<GetArchivedCasesByRegionAndReason.ArchivedCasesChartData> Options
+    private ApexChartOptions<GetArchivedCasesByContractAndReason.ArchivedCasesChartData> Options
         => new()
         {
             Chart = new Chart
