@@ -1,25 +1,46 @@
-﻿using Cfo.Cats.Domain.Events;
+﻿using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
+using Rebus.Handlers;
 
 namespace Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 
-public class CloseOffLastArchivedCaseEntry(IUnitOfWork unitOfWork) : INotificationHandler<ParticipantEnrolmentHistoryCreatedDomainEvent>
+public class CloseOffLastArchivedCaseEntry(IUnitOfWork unitOfWork) : IHandleMessages<ParticipantTransitionedIntegrationEvent>
 {
-    public async Task Handle(ParticipantEnrolmentHistoryCreatedDomainEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(ParticipantTransitionedIntegrationEvent context)
     {
-        if (notification.Entity.EnrolmentStatus.Name != EnrolmentStatus.ArchivedStatus.Name)
+        if (context.From != EnrolmentStatus.ArchivedStatus.Name)
         {
             return;
         }
-    
-        var last = await unitOfWork.DbContext.ArchivedCases
-            .Where(e => 
-                    e.ParticipantId == notification.Entity.ParticipantId 
-                    && e.From <= notification.Entity.From
-                    && e.To == null
-                    )
-            .OrderByDescending(e => e.Created)
-            .FirstOrDefaultAsync(cancellationToken);
+        
+        var db = unitOfWork.DbContext;
 
-        last?.SetTo(notification.Entity.From);
+        var archivedCase = await db.ArchivedCases
+            .Where(ac =>
+                ac.ParticipantId == context.ParticipantId 
+                && ac.To == null)
+            .OrderByDescending(ac => ac.From)
+            .FirstOrDefaultAsync();
+        
+        if (archivedCase is null)
+        {
+            return;
+        }
+        
+        var unarchiveHistory = await db.ParticipantEnrolmentHistories
+            .Where(peh =>
+                peh.ParticipantId == context.ParticipantId &&
+                peh.From >= archivedCase.From &&
+                peh.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value)
+            .OrderBy(peh => peh.From)
+            .FirstOrDefaultAsync();
+
+        archivedCase.Close(
+            context.OccuredOn,
+            unarchiveHistory?.AdditionalInformation,
+            unarchiveHistory?.Reason
+            
+        );
+
+        await unitOfWork.SaveChangesAsync();
     }
 }
