@@ -24,129 +24,35 @@ public static class GetEnrolmentAdvisoriesToProvider
             var context = unitOfWork.DbContext;
 
             
-            var qa2Data = context.EnrolmentQa2Queue
-                .AsNoTracking()
-                .SelectMany(q => q.Notes, (q, n) => new 
-                {
-                    Queue = "QA2",
-                    ParticipantId = q.ParticipantId,
-                    CfoUser = q.OwnerId,
-                    IsAccepted = q.IsAccepted,
-                    IsCompleted = q.IsCompleted,
-                    Message = n.Message,
-                    Escalated = q.IsEscalated, // bool? matches DTO
-                    AdvisoryDate = q.Created,
-                    SupportWorkerId = q.SupportWorkerId,
-                    TenantId = q.TenantId
-                })
-                .Where(n => n.Message != null
-                && (n.Message.StartsWith("Advisory") || n.Message.StartsWith("Accepted by Exception"))
-                && n.IsAccepted == true
-                && n.IsCompleted == true);
-
-            var escData = context.EnrolmentEscalationQueue
-                .AsNoTracking()
-                .SelectMany(q => q.Notes, (q, n) => new 
-                {
-                    Queue = "Escalation",
-                    ParticipantId = q.ParticipantId,
-                    CfoUser = q.CreatedBy,
-                    IsAccepted = q.IsAccepted,
-                    IsCompleted = q.IsCompleted,
-                    Message = n.Message,
-                    Escalated = false, 
-                    AdvisoryDate = q.Created,
-                    SupportWorkerId = q.SupportWorkerId,
-                    TenantId = q.TenantId
-                })
-                .Where(n => n.Message != null
-                && (n.Message.StartsWith("Advisory") || n.Message.StartsWith("Accepted by Exception"))
-                && n.IsAccepted == true
-                && n.IsCompleted == true);
-
-            var combined = qa2Data.Select(x => new
-            {
-                x.Queue,
-                x.ParticipantId,
-                x.CfoUser,
-                x.IsAccepted,
-                x.IsCompleted,
-                x.Message,
-                x.Escalated,
-                x.AdvisoryDate,
-                x.SupportWorkerId,
-                x.TenantId
-            })
-            .Concat(escData.Select(x => new
-            {
-                x.Queue,
-                x.ParticipantId,
-                x.CfoUser,
-                x.IsAccepted,
-                x.IsCompleted,
-                x.Message,
-                x.Escalated,
-                x.AdvisoryDate,
-                x.SupportWorkerId,
-                x.TenantId
-            }));
-            
-            if (!string.IsNullOrWhiteSpace(request.TenantId))
-            {
-                combined = combined.Where(r => r.TenantId!.StartsWith(request.TenantId));
-            }
-
-            var query =
-                from data in combined
-                join cfoUser in context.Users on data.CfoUser equals cfoUser.Id into cfoUserJoin
+            var query = from pfa in context.ProviderFeedbackEnrolments
+                where pfa.Message != null
+                    && (pfa.FeedbackType == 0 || pfa.FeedbackType == 1)
+                    && pfa.ActionDate >= request.StartDate
+                    && pfa.ActionDate <= request.EndDate
+                    && (!string.IsNullOrWhiteSpace(request.TenantId) ? pfa.TenantId.StartsWith(request.TenantId) : true)
+                join cfoUser in context.Users on pfa.CfoUserId equals cfoUser.Id into cfoUserJoin
                 from cfoUser in cfoUserJoin.DefaultIfEmpty()
-                join sw in context.Users on data.SupportWorkerId equals sw.Id into swJoin
+                join sw in context.Users on pfa.SupportWorkerId equals sw.Id into swJoin
                 from sw in swJoin.DefaultIfEmpty()
-
-                from latestSubmission in context.ParticipantEnrolmentHistories
-                    .Where(eh =>
-                        eh.ParticipantId == data.ParticipantId 
-                        && eh.EnrolmentStatus == 2
-                        && eh.Created < data.AdvisoryDate)
-                    .OrderByDescending(eh => eh.Created)
-                    .Take(1)
-                    .DefaultIfEmpty() 
-
-                join submittedByUser in context.Users on latestSubmission.CreatedBy equals submittedByUser.Id into submittedByUserJoin
-                from submittedByUser in submittedByUserJoin.DefaultIfEmpty()
-
-                where data.AdvisoryDate >= request.StartDate
-                && data.AdvisoryDate <= request.EndDate && data.TenantId.Length > 6
+                join submittedByUser in context.Users on pfa.ProviderQaUserId equals submittedByUser.Id into submittedByUserJoin
+                from submittedByUser in submittedByUserJoin.DefaultIfEmpty()                
 
                 select new EnrolmentAdvisoriesTabularData
                 {
                     ContractName =
                         (from con in context.Contracts
-                        where data.TenantId.StartsWith(con.Tenant!.Id)
+                        where pfa.TenantId.StartsWith(con.Tenant!.Id)
                         orderby con.Tenant!.Id.Length descending
                         select con.Description)
                         .FirstOrDefault(),
-
-                    ParticipantId = data.ParticipantId,
-                    Queue = data.Queue,
+                    ParticipantId = pfa.ParticipantId,
+                    Queue = pfa.Queue,
                     SupportWorker = sw.DisplayName,
                     CfoUser = cfoUser.DisplayName,
-
-                    PqaSubmittedDate = latestSubmission != null
-                        ? (DateTime?)latestSubmission.Created
-                        : null,
-
-                    PqaUser = submittedByUser != null
-                        ? submittedByUser.DisplayName
-                        : null,
-
-                    AdvisoryDate = data.AdvisoryDate,
-                    IsCompleted = data.IsCompleted,
-                    IsAccepted = data.IsAccepted ? "Yes" : "No",
-                    Escalated = data.Escalated == true ? "Yes"
-                            : data.Escalated == false ? "No"
-                            : "",
-                    Message = (data.Message ?? "").Replace("\r", " ").Replace("\n", " ")
+                    PqaSubmittedDate = pfa.PqaSubmittedDate,
+                    PqaUser = submittedByUser.DisplayName,
+                    AdvisoryDate = pfa.ActionDate,
+                    Message = (pfa.Message ?? "").Replace("\r", " ").Replace("\n", " ")
                 };
 
             var result = await query.OrderBy(r => r.AdvisoryDate)
