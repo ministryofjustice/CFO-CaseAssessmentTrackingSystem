@@ -30,8 +30,10 @@ public class RecordArchivedCaseConsumer(IUnitOfWork unitOfWork)
             data.EnrolmentHistoryId,
             data.Created,
             data.CreatedBy,
-            data.AdditionalInfo,
+            data.ArchiveAdditionalInfo,
             data.ArchiveReason,
+            data.UnarchiveAdditionalInfo,
+            data.UnarchiveReason,
             data.From,
             data.To,
             data.ContractId,
@@ -43,7 +45,7 @@ public class RecordArchivedCaseConsumer(IUnitOfWork unitOfWork)
     private async Task<Data> GetData(ParticipantTransitionedIntegrationEvent context)
     {
         var db = unitOfWork.DbContext;
-
+        
         var query =
             from p in db.Participants
             join peh in db.ParticipantEnrolmentHistories on p.Id equals peh.ParticipantId
@@ -56,13 +58,11 @@ public class RecordArchivedCaseConsumer(IUnitOfWork unitOfWork)
                 .OrderByDescending(lh => lh.From)
                 .Take(1)
             join l in db.Locations on lh.LocationId equals l.Id
-
+        
             where p.Id == context.ParticipantId
                   && peh.EnrolmentStatus == EnrolmentStatus.ArchivedStatus.Value
-                  && peh.From == context.OccuredOn
-                  && peh.From >= lh.From
-                  && (peh.To == null || peh.To <= lh.To)
-
+                  && peh.To == null 
+        
             select new Data
             {
                 ParticipantId = context.ParticipantId,
@@ -70,9 +70,11 @@ public class RecordArchivedCaseConsumer(IUnitOfWork unitOfWork)
                 LastName = p.LastName,
                 EnrolmentHistoryId = peh.Id,
                 Created = context.OccuredOn,
-                CreatedBy = peh.CreatedBy!,
-                AdditionalInfo = peh.AdditionalInformation!,
+                CreatedBy = u.CreatedBy!,
+                ArchiveAdditionalInfo = peh.AdditionalInformation!,
                 ArchiveReason = peh.Reason,
+                UnarchiveAdditionalInfo = null,
+                UnarchiveReason = null,
                 From = peh.From,
                 To = peh.To,
                 ContractId = l.Contract!.Id,
@@ -80,21 +82,21 @@ public class RecordArchivedCaseConsumer(IUnitOfWork unitOfWork)
                 LocationType = l.LocationType.Name,
                 TenantId = u.TenantId!
             };
-
+        
         var data = await query
             .OrderByDescending(x => x.From)
             .Take(1)
             .SingleOrDefaultAsync();
-
+    
         if (data is null)
         {
             throw new InvalidOperationException(
                 $"No archived enrolment found for participant {context.ParticipantId}");
         }
-
+    
         return data;
     }
-
+    
     public record Data
     {
         public required string ParticipantId { get; set; }
@@ -103,8 +105,10 @@ public class RecordArchivedCaseConsumer(IUnitOfWork unitOfWork)
         public required int EnrolmentHistoryId { get; set; }
         public required DateTime Created { get; set; }
         public required string CreatedBy { get; set; }
-        public required string? AdditionalInfo { get; set; }
+        public required string? ArchiveAdditionalInfo { get; set; }
         public required string? ArchiveReason { get; set; }
+        public required string? UnarchiveAdditionalInfo { get; set; }
+        public required string? UnarchiveReason { get; set; }
         public required DateTime From { get; set; }
         public required DateTime? To { get; set; }
         public required string ContractId { get; set; }

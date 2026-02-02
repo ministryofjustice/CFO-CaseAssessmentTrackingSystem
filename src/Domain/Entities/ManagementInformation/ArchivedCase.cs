@@ -18,6 +18,8 @@ public class ArchivedCase
         string createdBy,
         string? additionalInfo,
         string? archiveReason,
+        string? unarchiveAdditionalInfo,
+        string? unarchiveReason,
         DateTime from,
         DateTime? to,
         string contractId,
@@ -36,6 +38,8 @@ public class ArchivedCase
             CreatedBy = createdBy,
             AdditionalInfo = additionalInfo,
             ArchiveReason = archiveReason,
+            UnarchiveAdditionalInfo = unarchiveAdditionalInfo,
+            UnarchiveReason = unarchiveReason,
             From = from,
             To = to,
             ContractId = contractId,
@@ -45,19 +49,21 @@ public class ArchivedCase
         };
     }
 
-    public ArchivedCase SetTo(DateTime to)
+    public ArchivedCase Close(DateTime to, string? unarchiveAdditionalInfo, string? unarchiveReason)
     {
         if (To is not null)
         {
-            throw new ApplicationException("Cannot set the to date more than once.");
+            throw new ApplicationException("Cannot close archived case more than once.");
         }
 
         if (to < From)
         {
-            throw new ArgumentException("To cannot be earlier that From");
+            throw new ArgumentException("To cannot be earlier than From");
         }
 
         To = to;
+        UnarchiveReason = unarchiveReason;
+        UnarchiveAdditionalInfo = unarchiveAdditionalInfo;
         return this;
     }
 
@@ -70,6 +76,8 @@ public class ArchivedCase
     public required string CreatedBy { get; set; }
     public required string? AdditionalInfo { get; set; }
     public required string? ArchiveReason { get; set; }
+    public required string? UnarchiveAdditionalInfo { get; set; }
+    public required string? UnarchiveReason { get; set; }
     public required DateTime From { get; set; }
     public required DateTime? To { get; set; }
     public required string ContractId { get; set; }
