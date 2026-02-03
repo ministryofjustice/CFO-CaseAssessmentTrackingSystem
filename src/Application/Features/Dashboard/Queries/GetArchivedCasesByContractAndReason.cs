@@ -30,12 +30,12 @@ public static class GetArchivedCasesByContractAndReason
                 join u in context.Users on c.CreatedBy equals u.Id
                 where ac.From <= request.EndDate
                       && (ac.To == null || ac.To >= request.StartDate)
-                      && ac.TenantId.StartsWith(request.CurrentUser.TenantId!)
+                      && c.Tenant!.Id.StartsWith(request.CurrentUser.TenantId!)
                 select new { ac, c,u };
 
             if (!string.IsNullOrWhiteSpace(request.TenantId))
             {
-                query = query.Where(x => x.ac.TenantId.StartsWith(request.TenantId));
+                query = query.Where(x => x.c.Tenant!.Id.StartsWith(request.TenantId));
             }
             
             var tabularData = await query
