@@ -1,5 +1,5 @@
 @using Cfo.Cats.Application.Features.Dashboard.Queries
-@inherits CatsComponent<GetEnrolmentsToProvider.EnrolmentToProviderDto>
+@inherits CatsComponent<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesToProviderDto>
 
 @if(Loading)
 {
@@ -18,24 +18,24 @@
 	@if (VisualMode)
 	{
 
-        <ApexCharts.ApexChart TItem="GetEnrolmentsToProvider.EnrolmentsChartData"
+        <ApexCharts.ApexChart TItem="GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesChartData"
                       Options="Options"
                       Height="650" Width="@( "100%" )">
 
-            <ApexCharts.ApexPointSeries TItem="GetEnrolmentsToProvider.EnrolmentsChartData"
-                                        Items='Data.ChartData.Where(x => x.Queue == "Escalation")'
+            <ApexCharts.ApexPointSeries TItem="GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesChartData"
+                                        Items="Data.ChartData"
                                         SeriesType="ApexCharts.SeriesType.Bar"
                                         Name="Escalation"
                                         XValue="@(e => e.ContractName)"
-                                        YValue="@(e => e.Count)"
+                                        YValue="@(e => e.EscalationQueue)"
                                         ShowDataLabels="true" />
 
-            <ApexCharts.ApexPointSeries TItem="GetEnrolmentsToProvider.EnrolmentsChartData"
-                                        Items='Data.ChartData.Where(x => x.Queue == "QA2")'
+            <ApexCharts.ApexPointSeries TItem="GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesChartData"
+                                        Items="Data.ChartData"
                                         SeriesType="ApexCharts.SeriesType.Bar"
                                         Name="QA2"
                                         XValue="@(e => e.ContractName)"
-                                        YValue="@(e => e.Count)"
+                                        YValue="@(e => e.QA2Queue)"
                                         ShowDataLabels="true" />
 
 		</ApexCharts.ApexChart>
@@ -45,46 +45,46 @@
 		<MudTable Items="@Data.TabularData" MultiSelection="false" Striped="true" Hover="true">
 			<HeaderContent>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.ContractName!)">
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.ContractName!)">
                         Contract
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.Queue!)">
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.Queue!)">
                         Queue
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.ParticipantId!)">
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.ParticipantId!)">
                         Participant
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.SupportWorker!)">
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.SupportWorker!)">
                         Support Worker
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.PqaUser!)">
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.PqaUser!)">
                         Provider QA
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.CfoUser!)">
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.CfoUser!)">
                         CFO User
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.PqaSubmittedDate!)">
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.PqaSubmittedDate!)">
                         PQA Submitted Date
                     </MudTableSortLabel>
                 </MudTh>
 				<MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object>(x => x.ReturnedDate!)">
-                        Returned Date
+                    <MudTableSortLabel SortBy="new Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object>(x => x.AdvisoryDate!)">
+                        Advisory Date
                     </MudTableSortLabel>
                 </MudTh>				
-                <MudTh>Message</MudTh>
+				<MudTh>Advisory Notes</MudTh>		
 			</HeaderContent>
 			<RowTemplate>
                 <MudTd DataLabel="Contract">@context.ContractName</MudTd>
@@ -94,11 +94,11 @@
 				<MudTd DataLabel="Provider QA">@context.PqaUser</MudTd>
 				<MudTd DataLabel="Cfo User">@context.CfoUser</MudTd>
 				<MudTd DataLabel="PQA Submitted Date">@context.PqaSubmittedDate</MudTd>
-				<MudTd DataLabel="Returned Date">@context.ReturnedDate</MudTd>
+				<MudTd DataLabel="Advisory Date">@context.AdvisoryDate</MudTd>
 				<MudTd DataLabel="Message">@context.Message</MudTd>
 			</RowTemplate>
 			<PagerContent>
-				<MudTablePager PageSizeOptions="new int[] { 10, 20}" />
+				<MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
 			</PagerContent>
 		</MudTable>
 	}

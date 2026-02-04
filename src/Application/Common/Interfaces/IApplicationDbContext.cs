@@ -119,4 +119,6 @@ public interface IApplicationDbContext
     DbSet<Label> Labels { get; }
  
     DbSet<PathwayPlanReview> PathwayPlanReviews { get; }
+    DbSet<ProviderFeedbackEnrolment> ProviderFeedbackEnrolments { get; }
+    DbSet<ProviderFeedbackActivity> ProviderFeedbackActivities { get; }
 }

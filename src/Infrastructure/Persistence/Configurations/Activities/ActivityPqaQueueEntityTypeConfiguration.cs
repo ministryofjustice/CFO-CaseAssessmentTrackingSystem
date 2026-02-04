@@ -51,6 +51,7 @@ public class ActivityPqaQueueEntityTypeConfiguration : IEntityTypeConfiguration<
                 .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
             note.Ignore(x => x.IsExternal);
+            note.Ignore(x => x.FeedbackType);
         });
 
         builder.HasOne(t => t.Tenant)

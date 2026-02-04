@@ -1,5 +1,6 @@
 ﻿using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
 using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
+using Cfo.Cats.Application.Features.Activities.IntegrationEvents;
 using Cfo.Cats.Application.Features.PathwayPlans.IntegrationEvents;
 using Cfo.Cats.Application.Features.PRIs.IntegrationEventHandlers;
 using Microsoft.Extensions.Configuration;
@@ -21,7 +22,11 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
         _activator = new BuiltinHandlerActivator();
 
         _activator.Handle<PriTaskCompletedWatcherConsumer>(provider)
-            .Handle<RaisePaymentsAfterApprovalConsumer>(provider);
+            .Handle<RaisePaymentsAfterApprovalConsumer>(provider)
+            .Handle<RecordEnrolmentReturnedFeedbackConsumer>(provider)
+            .Handle<RecordEnrolmentAdvisoryFeedbackConsumer>(provider)
+            .Handle<RecordActivityReturnedFeedbackConsumer>(provider)
+            .Handle<RecordActivityAdvisoryFeedbackConsumer>(provider);
 
         _bus = Configure.With(_activator)
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.TasksService)
@@ -36,6 +41,7 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
 
         await _bus.Subscribe<ObjectiveTaskCompletedIntegrationEvent>();
         await _bus.Subscribe<ParticipantTransitionedIntegrationEvent>();
+        await _bus.Subscribe<ActivityTransitionedIntegrationEvent>();
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)

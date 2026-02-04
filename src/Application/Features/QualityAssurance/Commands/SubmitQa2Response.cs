@@ -14,6 +14,8 @@ public static class SubmitQa2Response
         public required Guid QueueEntryId { get; set; }
         
         public Qa2Response? Response { get; set; }
+        
+        public FeedbackType? FeedbackType { get; set; } 
 
         public string Message { get; set; } = default!;
 
@@ -41,7 +43,7 @@ public static class SubmitQa2Response
                 return Result.Failure("Cannot find queue item");
             }
 
-            entry.AddNote(request.Message, request.IsMessageExternal);
+            entry.AddNote(request.Message, request.IsMessageExternal, request.FeedbackType);
 
             switch (request.Response)
             {
