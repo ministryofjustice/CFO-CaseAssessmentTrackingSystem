@@ -7,11 +7,11 @@ namespace Cfo.Cats.Infrastructure.Services;
 public class OutcomeQualityDipSampleExcelService(IOptions<DocumentExportOptions> options) : IOutcomeQualityDipSampleExcelService
 {
     private (string Region, DateTime Date, string Cpm, int Score)? _summary;
-    private List<(string Participant, string Type, string CurrentLocation, string EnrolledAt, string SupportWorker, string Compliant, string Feedback)> _participants = [];
+    private List<(string Participant, string Type, string CurrentLocation, string EnrolledAt, string SupportWorker, string Compliant, string CsoComments, string CpmComments, string FinalComments)> _participants = [];
 
-    public IOutcomeQualityDipSampleExcelService AddParticipant(string participant, string type, string currentLocation, string enrolledAt, string supportWorker, bool compliant, string feedBack)
+    public IOutcomeQualityDipSampleExcelService AddParticipant(string participant, string type, string currentLocation, string enrolledAt, string supportWorker, bool compliant, string csoComments, string cpmComments, string finalComments)
     {
-        _participants.Add((participant, type, currentLocation, enrolledAt, supportWorker, compliant ? "Y" : "N", feedBack));
+        _participants.Add((participant, type, currentLocation, enrolledAt, supportWorker, compliant ? "Y" : "N", csoComments, cpmComments, finalComments));
         return this;
     }
 
@@ -56,12 +56,34 @@ public class OutcomeQualityDipSampleExcelService(IOptions<DocumentExportOptions>
             ws.Cell(rowIndex, 4).Value = p.EnrolledAt;
             ws.Cell(rowIndex, 5).Value = p.SupportWorker;
             ws.Cell(rowIndex, 6).Value = p.Compliant;
-            ws.Cell(rowIndex, 7).Value = p.Feedback;
+            
+            // notes formatting
+            ws.Cell(rowIndex, 7).Value = p.CsoComments;
+            ws.Cell(rowIndex, 8).Value = p.CpmComments;
+            ws.Cell(rowIndex, 9).Value = p.FinalComments;
 
+            ws.Cell(rowIndex, 7).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(rowIndex, 7).Style.Alignment.Vertical =  XLAlignmentVerticalValues.Center;
+            ws.Cell(rowIndex, 7).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(rowIndex, 7).Style.Alignment.WrapText = true;
+            
+            ws.Cell(rowIndex, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(rowIndex, 8).Style.Alignment.Vertical =  XLAlignmentVerticalValues.Center;
+            ws.Cell(rowIndex,8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(rowIndex, 8).Style.Alignment.WrapText = true;
+            
+            ws.Cell(rowIndex, 9).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(rowIndex, 9).Style.Alignment.Vertical =  XLAlignmentVerticalValues.Center;
+            ws.Cell(rowIndex, 9).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(rowIndex, 9).Style.Alignment.WrapText = true;
+            
+            ws.Row(rowIndex).AdjustToContents();
+            ws.Row(rowIndex).ClearHeight();
+            
             rowIndex++;
         }
 
-        var tableRange = ws.Range(16, 1, rowIndex, 7);
+        var tableRange = ws.Range(16, 1, rowIndex, 9);
         tableRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
         tableRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
