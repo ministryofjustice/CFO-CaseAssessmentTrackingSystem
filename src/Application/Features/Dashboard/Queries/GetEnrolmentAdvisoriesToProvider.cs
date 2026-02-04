@@ -98,9 +98,6 @@ public static class GetEnrolmentAdvisoriesToProvider
         public string? CfoUser { get; set; }
         public DateTime? PqaSubmittedDate { get; set; }
         public DateTime? AdvisoryDate { get; set; }
-        public bool IsCompleted { get; set; }
-        public string? IsAccepted { get; set; }
-        public string? Escalated { get; set; }
         public string? Message { get; set; }
     }
     public record EnrolmentAdvisoriesChartData
