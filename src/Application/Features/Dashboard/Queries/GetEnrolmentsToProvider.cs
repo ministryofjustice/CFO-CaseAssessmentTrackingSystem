@@ -24,7 +24,7 @@ public static class GetEnrolmentsToProvider
             var query = from pfa in context.ProviderFeedbackEnrolments
                 where pfa.FeedbackType == null
                     && pfa.ActionDate >= request.StartDate
-                    && pfa.ActionDate <= request.EndDate
+                    && pfa.ActionDate < request.EndDate.AddDays(1)
                     && (!string.IsNullOrWhiteSpace(request.TenantId) ? pfa.TenantId.StartsWith(request.TenantId) : true)
                 join cfoUser in context.Users on pfa.CfoUserId equals cfoUser.Id into cfoUserJoin
                 from cfoUser in cfoUserJoin.DefaultIfEmpty()
