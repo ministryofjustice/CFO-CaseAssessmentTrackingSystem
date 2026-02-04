@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260128152831_ChangeProviderFeedbackEnrolmentAndActivity")]
+    [Migration("20260127165700_ChangeProviderFeedbackEnrolmentAndActivity")]
     partial class ChangeProviderFeedbackEnrolmentAndActivity
     {
         /// <inheritdoc />
