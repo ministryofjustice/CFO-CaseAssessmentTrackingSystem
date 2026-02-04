@@ -65,7 +65,9 @@ public class DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer
                                     EnrolledAt = p.EnrolmentLocation!.Name,
                                     SupportWorker = p.Owner.DisplayName,
                                     Compliant = sp.FinalIsCompliant.IsAccepted,
-                                    FeedBack = sp.FinalComments
+                                    CsoComments = sp.CsoComments,
+                                    CpmComments = sp.CpmComments,
+                                    FinalComments = sp.FinalComments
                                 }
                             ).ToArray()
                         };
@@ -83,7 +85,7 @@ public class DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer
 
             foreach (var p in summary.Participants) 
             {
-                excelService.AddParticipant(p.Participant, p.Type, p.CurrentLocation, p.EnrolledAt, p.SupportWorker, p.Compliant, p.FeedBack);
+                excelService.AddParticipant(p.Participant, p.Type, p.CurrentLocation, p.EnrolledAt, p.SupportWorker, p.Compliant, p.CsoComments, p.CpmComments, p.FinalComments);
             }
 
             var results = await excelService.ExportAsync();

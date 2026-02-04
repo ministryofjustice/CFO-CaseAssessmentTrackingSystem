@@ -12,6 +12,6 @@ public class DipSampleStatus : SmartEnum<DipSampleStatus>
     public static readonly DipSampleStatus Reviewed = new(nameof(Reviewed), 1);
     public static readonly DipSampleStatus Verifying = new(nameof(Verifying), 2);
     public static readonly DipSampleStatus Verified = new(nameof(Verified), 3);
-    public static readonly DipSampleStatus Finalising = new(nameof(Finalised), 5);
+    public static readonly DipSampleStatus Finalising = new(nameof(Finalising), 4);
     public static readonly DipSampleStatus Finalised = new(nameof(Finalised), 5);
 }
