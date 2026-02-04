@@ -26,7 +26,7 @@ public static class GetActivitiesAdvisoriesToProvider
                 where pfa.Message != null
                     && (pfa.FeedbackType == 0 || pfa.FeedbackType == 1)
                     && pfa.ActionDate >= request.StartDate
-                    && pfa.ActionDate <= request.EndDate 
+                    && pfa.ActionDate < request.EndDate.AddDays(1)
                     && pfa.TenantId.Length > 6
                     && (!string.IsNullOrWhiteSpace(request.TenantId) ? pfa.TenantId.StartsWith(request.TenantId) : true)
                 join cfoUser in context.Users on pfa.CfoUserId equals cfoUser.Id into cfoUserJoin
