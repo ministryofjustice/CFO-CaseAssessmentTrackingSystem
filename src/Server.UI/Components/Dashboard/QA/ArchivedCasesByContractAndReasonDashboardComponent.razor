@@ -19,16 +19,21 @@
     {
         <ApexCharts.ApexChart TItem="GetArchivedCasesByContractAndReason.ArchivedCasesChartData"
                               Options="@Options"
-                              Height="650" Width="@( "100%" )">
+                              Height="650"
+                              Width="@( "100%" )">
 
+            @foreach (var series in SeriesByReason)
+            {
+                <ApexCharts.ApexPointSeries
+                    TItem="GetArchivedCasesByContractAndReason.ArchivedCasesChartData"
+                    Items="@(series.Items)"
+                    SeriesType="ApexCharts.SeriesType.Bar"
+                    Name="@(series.Reason)"
+                    XValue="@(e => e.Contract)"
+                    YValue="@(e => e.Count)"
+                    ShowDataLabels="true" />
+            }
 
-            <ApexCharts.ApexPointSeries TItem="GetArchivedCasesByContractAndReason.ArchivedCasesChartData"
-                                        Items="Data.ChartData"
-                                        SeriesType="ApexCharts.SeriesType.Bar"
-                                        Name="Archived Cases"
-                                        XValue="@(e => e.Contract)"
-                                        YValue="@(e => e.Count)"
-                                        ShowDataLabels="true" />
         </ApexCharts.ApexChart>
     }
     else
