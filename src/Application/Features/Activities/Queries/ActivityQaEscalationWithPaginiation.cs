@@ -7,7 +7,7 @@ using Cfo.Cats.Domain.Entities.Activities;
 
 namespace Cfo.Cats.Application.Features.Activities.Queries;
 
-public static class ActivityQaEscalationWithPaginiation
+public static class ActivityQaEscalationWithPagination
 {
     [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
     public class Query : ActivityQueueEntryFilter, IRequest<PaginatedData<ActivityQueueEntryDto>>
@@ -17,6 +17,7 @@ public static class ActivityQaEscalationWithPaginiation
             SortDirection = "Desc";
             OrderBy = "Created";
         }
+        
         public ActivityQaEscalationQueueEntrySpecification Specification => new(this);
     }
 
@@ -35,39 +36,63 @@ public static class ActivityQaEscalationWithPaginiation
                 : query.OrderBy(sortExpression);
 
             var data = await ordered
-                .ProjectToPaginatedDataAsync<ActivityEscalationQueueEntry, ActivityQueueEntryDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
+                .ProjectToPaginatedDataAsync<ActivityEscalationQueueEntry, ActivityQueueEntryDto>(
+                    request.Specification,
+                    request.PageNumber,
+                    request.PageSize,
+                    mapper.ConfigurationProvider,
+                    cancellationToken);
 
+            var activityIds = data.Items
+                .Select(x => x.ActivityId)
+                .Distinct()
+                .ToArray();
+
+            var qa1Owners = await unitOfWork.DbContext.ActivityQa1Queue
+                .Where(q1 =>
+                    ((IEnumerable<Guid>)activityIds).Contains(q1.ActivityId) &&
+                    q1.IsCompleted)
+                .GroupBy(q1 => q1.ActivityId)
+                .Select(g => new
+                {
+                    ActivityId = g.Key,
+                    Qa1CompletedBy = g
+                        .OrderByDescending(x => x.LastModified)
+                        .Select(x => x.Owner!.DisplayName)
+                        .FirstOrDefault()
+                })
+                .ToDictionaryAsync(
+                    x => x.ActivityId,
+                    x => x.Qa1CompletedBy,
+                    cancellationToken);
+
+            foreach (var item in data.Items)
+            {
+                if (qa1Owners.TryGetValue(item.ActivityId, out var completedBy))
+                {
+                    item.Qa1CompletedBy = completedBy;
+                }
+            }
+            
             return data;
         }
 
         private Expression<Func<ActivityEscalationQueueEntry, object?>> GetSortExpression(Query request)
         {
-            Expression<Func<ActivityEscalationQueueEntry, object?>> sortExpression;
-            switch (request.OrderBy)
+            Expression<Func<ActivityEscalationQueueEntry, object?>> sortExpression = request.OrderBy switch
             {
-                case "ParticipantId":
-                    sortExpression = (x => x.Participant!.FirstName + ' ' + x.Participant.LastName);
-                    break;
-                case "TenantId":
-                    sortExpression = (x => x.TenantId);
-                    break;
-                case "Created":
-                    sortExpression = (x => x.Created!);
-                    break;
-                case "SupportWorker":
-                    sortExpression = (x => x.Participant!.Owner!.DisplayName!);
-                    break;
-                case "AssignedTo":
-                    sortExpression = (x => x.OwnerId == null ? null : x.Owner!.DisplayName);
-                    break;
-                default:
-                    sortExpression = (x => x.Created!);
-                    break;
-            }
+                "ParticipantId" => (x => x.Participant!.FirstName + ' ' + x.Participant.LastName),
+                "TenantId" => (x => x.TenantId),
+                "Created" => (x => x.Created!),
+                "SupportWorker" => (x => x.Participant!.Owner!.DisplayName!),
+                "AssignedTo" => (x => x.OwnerId == null ? null : x.Owner!.DisplayName),
+                _ => (x => x.Created!)
+            };
 
             return sortExpression;
         }
     }
+    
     public class Validator : AbstractValidator<Query>
     {
         public Validator()
@@ -93,7 +118,6 @@ public static class ActivityQaEscalationWithPaginiation
             RuleFor(r => r.OrderBy)
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "OrderBy"));
-
         }
     }
 }
