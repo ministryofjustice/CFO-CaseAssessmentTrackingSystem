@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260127090344_BackfillProviderFeedbackActivities")]
-    partial class BackfillProviderFeedbackActivities
+    [Migration("20260127170000_BackfillProviderFeedbackEnrolment")]
+    partial class BackfillProviderFeedbackEnrolment
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
