@@ -32,7 +32,13 @@ public partial class ArchivedCasesByContractAndReasonDashboardComponent
             EndDate = DateRange?.End
                 ?? throw new InvalidOperationException("DateRange not set")
         };
-
+    
+    private IEnumerable<(string Reason, IEnumerable<GetArchivedCasesByContractAndReason.ArchivedCasesChartData> Items)>
+        SeriesByReason =>
+        Data!.ChartData
+            .GroupBy(x => x.Reason ?? "Unknown")
+            .Select(g => (Reason: g.Key, Items: g.AsEnumerable()));
+    
     private ApexChartOptions<GetArchivedCasesByContractAndReason.ArchivedCasesChartData> Options
         => new()
         {
