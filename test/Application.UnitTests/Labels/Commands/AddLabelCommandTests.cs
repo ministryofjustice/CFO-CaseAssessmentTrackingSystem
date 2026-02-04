@@ -32,6 +32,7 @@ public class AddLabelCommandTests
             Description = "Test Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -51,6 +52,7 @@ public class AddLabelCommandTests
             Description = "Description",
             Colour = AppColour.Secondary,
             Variant = AppVariant.Outlined,
+            AppIcon = AppIcon.Person,
             ContractId = null
         };
 
@@ -69,6 +71,7 @@ public class AddLabelCommandTests
             Description = "Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -88,6 +91,7 @@ public class AddLabelCommandTests
             Description = "Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -103,10 +107,11 @@ public class AddLabelCommandTests
         var validator = new AddLabel.Validator();
         var command = new AddLabel.Command
         {
-            Name = "ThisIsAVeryLongLabelName",
+            Name = new  string('A', 201),
             Description = "Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -126,6 +131,7 @@ public class AddLabelCommandTests
             Description = new string('A', 201),
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -145,6 +151,7 @@ public class AddLabelCommandTests
             Description = "AB",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -164,6 +171,7 @@ public class AddLabelCommandTests
             Description = "Valid Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -182,6 +190,7 @@ public class AddLabelCommandTests
             Description = "Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -189,26 +198,6 @@ public class AddLabelCommandTests
 
         result.IsValid.ShouldBeFalse();
         result.Errors.ShouldContain(e => e.PropertyName == "Name" && 
-            e.ErrorMessage.Contains("must contain only letters, spaces, and underscores"));
-    }
-
-    [Test]
-    public void Validator_WithDescriptionContainingInvalidCharacters_ShouldFail()
-    {
-        var validator = new AddLabel.Validator();
-        var command = new AddLabel.Command
-        {
-            Name = "Valid",
-            Description = "Invalid@#$",
-            Colour = AppColour.Primary,
-            Variant = AppVariant.Filled,
-            ContractId = "CONTRACT-001"
-        };
-
-        var result = validator.Validate(command);
-
-        result.IsValid.ShouldBeFalse();
-        result.Errors.ShouldContain(e => e.PropertyName == "Description" && 
             e.ErrorMessage.Contains("must contain only letters, spaces, and underscores"));
     }
 
@@ -222,6 +211,7 @@ public class AddLabelCommandTests
             Description = "Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -231,15 +221,94 @@ public class AddLabelCommandTests
     }
 
     [Test]
-    public void Validator_WithDescriptionContainingUnderscores_ShouldPass()
+    public void Validator_WithDescriptionContainingCommonPunctuation_ShouldPass()
     {
         var validator = new AddLabel.Validator();
         var command = new AddLabel.Command
         {
             Name = "Valid",
-            Description = "Valid_Description",
+            Description = "Description with £, $, @, punctuation & symbols!",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
+            ContractId = "CONTRACT-001"
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Test]
+    public void Validator_WithDescriptionContainingNumbers_ShouldPass()
+    {
+        var validator = new AddLabel.Validator();
+        var command = new AddLabel.Command
+        {
+            Name = "Valid",
+            Description = "Description 123 with numbers",
+            Colour = AppColour.Primary,
+            Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
+            ContractId = "CONTRACT-001"
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Test]
+    public void Validator_WithDescriptionContainingMultiLine_ShouldPass()
+    {
+        var validator = new AddLabel.Validator();
+        var command = new AddLabel.Command
+        {
+            Name = "Valid",
+            Description = "Line 1\r\nLine 2",
+            Colour = AppColour.Primary,
+            Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
+            ContractId = "CONTRACT-001"
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Test]
+    public void Validator_WithDescriptionContainingInvalidCharacters_ShouldFail()
+    {
+        var validator = new AddLabel.Validator();
+        var command = new AddLabel.Command
+        {
+            Name = "Valid",
+            Description = "Invalid characters: <html> tags",
+            Colour = AppColour.Primary,
+            Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
+            ContractId = "CONTRACT-001"
+        };
+
+        var result = validator.Validate(command);
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldContain(e => e.PropertyName == "Description" && 
+            e.ErrorMessage.Contains("must contain only letters, numbers, spaces and common punctuation"));
+    }
+
+    [Test]
+    public void Validator_WithNameAt25Characters_ShouldPass()
+    {
+        var validator = new AddLabel.Validator();
+        var command = new AddLabel.Command
+        {
+            Name = new string('A', 25),
+            Description = "Valid Description",
+            Colour = AppColour.Primary,
+            Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -258,6 +327,7 @@ public class AddLabelCommandTests
             Description = "Description",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 
@@ -274,6 +344,7 @@ public class AddLabelCommandTests
             Description = "Global Label",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = null
         };
 
@@ -292,6 +363,7 @@ public class AddLabelCommandTests
             Description = "Contract Label",
             Colour = AppColour.Primary,
             Variant = AppVariant.Filled,
+            AppIcon = AppIcon.Label,
             ContractId = "CONTRACT-001"
         };
 

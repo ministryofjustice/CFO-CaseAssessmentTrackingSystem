@@ -18,13 +18,15 @@ public class Label : BaseAuditableEntity<LabelId>
         string description, 
         AppColour colour, 
         AppVariant variant, 
+        AppIcon appIcon,
         string? contractId, 
         ILabelCounter labelCounter)
     {
-        CheckRule(new LabelCannotBeNullOrEmptyRule(name));
-        CheckRule(new LabelNameMustBeValidLength(name));
-        CheckRule(new LabelNamesMustBeUniqueAtContractLevelRule(labelCounter, name, contractId));
-        CheckRule(new LabelDescriptionMustBeValidLength(description));
+        CheckRule(new NameCannotBeNullOrEmptyRule(name));
+        CheckRule(new NameMustBeValidLength(name));
+        CheckRule(new NamesMustBeUniqueAtContractLevelRule(labelCounter, name, contractId));
+        CheckRule(new DescriptionMustBeValidLength(description));
+        CheckRule(new DescriptionCannotBeNullOrEmpty(description));
         
         Id = new  LabelId(Guid.CreateVersion7());
         Name = name;
@@ -32,7 +34,8 @@ public class Label : BaseAuditableEntity<LabelId>
         Colour = colour;
         Variant = variant;
         ContractId = contractId;
-        
+        AppIcon = appIcon;
+
         AddDomainEvent(new LabelCreatedDomainEvent(this));
     }
     
@@ -41,9 +44,10 @@ public class Label : BaseAuditableEntity<LabelId>
         string description, 
         AppColour colour, 
         AppVariant variant,
+        AppIcon appIcon,
         string? contractId,
         ILabelCounter labelCounter)
-        => new (name, description, colour, variant, contractId, labelCounter);
+        => new (name, description, colour, variant, appIcon, contractId, labelCounter);
     
     /// <summary>
     /// The name of the label. Used for display and filtering.
@@ -61,6 +65,11 @@ public class Label : BaseAuditableEntity<LabelId>
     public AppColour Colour { get; private set; }
     
     public AppVariant Variant { get; private set; }
+
+    /// <summary>
+    /// The icon for the label
+    /// </summary>
+    public AppIcon AppIcon { get; private set; }
     
     /// <summary>
     /// The contract id if this label is linked to one
@@ -71,17 +80,21 @@ public class Label : BaseAuditableEntity<LabelId>
         string name, 
         string description, 
         AppColour colour,
-        AppVariant variant) => 
-            EditName(name)
+        AppVariant variant,
+        AppIcon appIcon,
+        ILabelCounter labelCounter) => 
+            EditName(name, labelCounter)
                 .EditDescription(description)
                 .EditColour(colour)
-                .EditVariant(variant);
-
-    private Label EditName(string name)
+                .EditVariant(variant)
+                .EditAppIcon(appIcon);  
+                
+    private Label EditName(string name, ILabelCounter labelCounter)
     {
         if (!Equals(Name, name))
         {
-            CheckRule(new LabelNameMustBeValidLength(name));
+            CheckRule(new NameMustBeValidLength(name));
+            CheckRule(new LabelCannotBeRenamedIfExistingLabelExists(name, Name, ContractId, labelCounter));
             AddDomainEvent(new LabelRenamedDomainEvent(Id, Name, name ));
             Name = name;
         }
@@ -115,11 +128,22 @@ public class Label : BaseAuditableEntity<LabelId>
     {
         if (Description != newDescription)
         {
-            CheckRule(new LabelDescriptionMustBeValidLength(newDescription));
+            CheckRule(new DescriptionMustBeValidLength(newDescription));
             AddDomainEvent(new LabelDescriptionChangedDomainEvent(Id, Description, newDescription));
             Description = newDescription;
         }
         
+        return this;
+    }
+
+    private Label EditAppIcon(AppIcon appIcon)
+    {
+        if (AppIcon != appIcon)
+        {
+            AddDomainEvent(new LabelAppIconChangedDomainEvent(Id, AppIcon, appIcon));
+            AppIcon = appIcon;
+        }
+
         return this;
     }
 
@@ -128,6 +152,7 @@ public class Label : BaseAuditableEntity<LabelId>
         CheckRule(new GlobalRulesCanOnlyBeDeletedByInternalUsersRule(ContractId, domainUser));
         CheckRule(new LabelCannotBeDeletedIfParticipantsAreLinked(Id, labelCounter));
         
+        // we raise an event that deletion is valid.
         AddDomainEvent(new LabelDeletedDomainEvent(this));
     }
 }

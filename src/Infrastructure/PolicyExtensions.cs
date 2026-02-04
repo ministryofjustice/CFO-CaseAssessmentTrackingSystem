@@ -138,5 +138,13 @@ internal static class PolicyExtensions
             policy.RequireAuthenticatedUser();
             policy.RequireRole(RoleNames.CMPSM, RoleNames.SMT, RoleNames.SystemSupport);
         });
+
+        options.AddPolicy(SecurityPolicies.ManageLabels, policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireRole(RoleNames.ManageLabels);
+        });
+
     }
 }

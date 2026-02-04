@@ -74,6 +74,12 @@ public static class SecurityPolicies
     public const string OutcomeQualityDipVerification = nameof(OutcomeQualityDipVerification);
 
     /// <summary>
-    /// Used to allow a user to finalise outcome quality dip samples. Aligns with CMPSM role (though not limited to them)    
+    /// Used to allow a user to finalise outcome quality dip samples. Aligns with CMPSM role (though not limited to them)
+    /// </summary>
     public const string OutcomeQualityDipFinalise = nameof(OutcomeQualityDipFinalise);
+
+    /// <summary>
+    /// Used to allow a user to manage labels.
+    /// </summary>
+    public const string ManageLabels = nameof(ManageLabels);
 }

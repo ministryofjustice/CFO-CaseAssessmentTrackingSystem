@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Labels.Commands;
 
 public static class EditLabel
 {
-    [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+    [RequestAuthorize(Policy = SecurityPolicies.ManageLabels)]
     public class Command : IRequest<Result>
     {
         public required LabelId LabelId { get; set; }
@@ -16,10 +16,11 @@ public static class EditLabel
         public required string NewDescription { get; set; }
         public AppColour NewColour { get; set; }
         public AppVariant NewVariant { get; set; }
+        public AppIcon NewAppIcon { get; set; }
         
     }
 
-    public class Handler(ILabelRepository repository) : IRequestHandler<Command, Result>
+    public class Handler(ILabelRepository repository, ILabelCounter labelCounter) : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -30,7 +31,7 @@ public static class EditLabel
                 throw new NotFoundException("Label does not exist");
             }
             
-            label.Edit(request.NewName, request.NewDescription, request.NewColour, request.NewVariant);
+            label.Edit(request.NewName, request.NewDescription, request.NewColour, request.NewVariant, request.NewAppIcon, labelCounter);
             
             return Result.Success();
         }
@@ -55,8 +56,8 @@ public static class EditLabel
                 .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Name"));
             
             RuleFor(v => v.NewDescription)
-                .Matches(ValidationConstants.LettersSpacesUnderscores)
-                .WithMessage(string.Format(ValidationConstants.LettersSpacesUnderscoresMessage, "Description"));
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
         }
     }
 }

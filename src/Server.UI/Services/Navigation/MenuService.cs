@@ -1,6 +1,7 @@
 using ActualLab.Api;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
+using Cfo.Cats.Server.UI.Pages.Identity.Roles;
 
 namespace Cfo.Cats.Server.UI.Services.Navigation;
 
@@ -247,7 +248,7 @@ public class MenuService : IMenuService
             new()
             {
                 Title = "MANAGEMENT",
-                Roles = RoleNames.AllExtraPermissions, //
+                Roles = RoleNames.InternalRoles, 
                 SectionItems =
                 [
                     new()
@@ -293,6 +294,7 @@ public class MenuService : IMenuService
                         IsParent = true,
                         Title = "System",
                         Icon = Icons.Material.Filled.Devices,
+                        Roles = [RoleNames.SMT, RoleNames.SystemSupport, RoleNames.QAManager, RoleNames.QASupportManager],
                         MenuItems =
                         [
                             new()
@@ -308,7 +310,7 @@ public class MenuService : IMenuService
                                 Title = "Audit Trails",
                                 Href = "/system/audittrails",
                                 PageStatus = PageStatus.Completed,
-                                Roles = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT],
+                                Roles = [RoleNames.SystemSupport, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT],
                             },
 
                             new()
@@ -316,13 +318,14 @@ public class MenuService : IMenuService
                                 Title = "Outbox Messages",
                                 Href = "/system/outbox",
                                 PageStatus = PageStatus.Completed,
-                                Roles = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT],
+                                Roles = [RoleNames.SystemSupport, RoleNames.SMT],
                             },
                             new MenuSectionSubItemModel()
                             {
                                 Title = "Labels",
                                 Href = "/pages/labels",
-                                PageStatus = PageStatus.ComingSoon,
+                                PageStatus = PageStatus.Wip,
+                                Roles = RoleNames.ManageLabels
                             }
                         ]
                     }

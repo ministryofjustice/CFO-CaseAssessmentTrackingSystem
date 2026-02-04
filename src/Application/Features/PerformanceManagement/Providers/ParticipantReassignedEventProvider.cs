@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cfo.Cats.Application.Common.Enums;
 using Cfo.Cats.Application.Features.PerformanceManagement.DTOs;
 
 namespace Cfo.Cats.Application.Features.PerformanceManagement.Providers;
