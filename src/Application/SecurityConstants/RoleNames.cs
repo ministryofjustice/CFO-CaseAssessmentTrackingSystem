@@ -34,6 +34,8 @@ public static class RoleNames
     public static string[] InternalRoles =
     [
         QAOfficer,
+        QASupportManager,
+        QAManager,
         PerformanceManager,
         SMT,
         SystemSupport,
@@ -42,4 +44,12 @@ public static class RoleNames
         CMPSM,
     ];
 
+    // Roles that can manage labels
+    public static string[] ManageLabels =
+    [
+        QASupportManager,
+        QAManager,
+        SMT,
+        SystemSupport
+    ];
 }

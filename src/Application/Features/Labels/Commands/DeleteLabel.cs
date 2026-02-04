@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Labels.Commands;
 
 public static class DeleteLabel
 {
-    [RequestAuthorize(Policy = SecurityPolicies.UserHasAdditionalRoles)]
+    [RequestAuthorize(Policy = SecurityPolicies.ManageLabels)]
     public class Command : IRequest<Result>
     {
         public required UserProfile UserProfile { get; set; }   

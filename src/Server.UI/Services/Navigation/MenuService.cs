@@ -294,7 +294,7 @@ public class MenuService : IMenuService
                         IsParent = true,
                         Title = "System",
                         Icon = Icons.Material.Filled.Devices,
-                        Roles = RoleNames.InternalRoles,
+                        Roles = [RoleNames.SMT, RoleNames.SystemSupport, RoleNames.QAManager, RoleNames.QASupportManager],
                         MenuItems =
                         [
                             new()
@@ -310,7 +310,7 @@ public class MenuService : IMenuService
                                 Title = "Audit Trails",
                                 Href = "/system/audittrails",
                                 PageStatus = PageStatus.Completed,
-                                Roles = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT],
+                                Roles = [RoleNames.SystemSupport, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT],
                             },
 
                             new()
@@ -318,14 +318,14 @@ public class MenuService : IMenuService
                                 Title = "Outbox Messages",
                                 Href = "/system/outbox",
                                 PageStatus = PageStatus.Completed,
-                                Roles = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT],
+                                Roles = [RoleNames.SystemSupport, RoleNames.SMT],
                             },
                             new MenuSectionSubItemModel()
                             {
                                 Title = "Labels",
                                 Href = "/pages/labels",
                                 PageStatus = PageStatus.Wip,
-                                Roles = RoleNames.InternalRoles
+                                Roles = RoleNames.ManageLabels
                             }
                         ]
                     }

@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Labels.Commands;
 
 public static class AddLabel
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Internal)]
+    [RequestAuthorize(Policy = SecurityPolicies.ManageLabels)]
     public class Command : IRequest<Result>
     {
         public required string Name { get; set; }
@@ -18,8 +18,7 @@ public static class AddLabel
         public required AppVariant Variant { get; set; }
         public AppIcon AppIcon { get; set; }
         public string? ContractId { get; set; }
-
-        
+       
     }
 
     public class Handler(

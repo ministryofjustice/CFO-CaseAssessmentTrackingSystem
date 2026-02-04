@@ -161,7 +161,7 @@
                 pages.Add("Audit Trails", "/system/audittrails");
             }
 
-            allowed = RoleNames.InternalRoles;
+            allowed = RoleNames.ManageLabels;
 
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
