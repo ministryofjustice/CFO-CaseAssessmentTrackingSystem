@@ -33,7 +33,6 @@ public static class RoleNames
     /// </summary>
     public static string[] InternalRoles =
     [
-        QAFinance,
         QAOfficer,
         PerformanceManager,
         SMT,

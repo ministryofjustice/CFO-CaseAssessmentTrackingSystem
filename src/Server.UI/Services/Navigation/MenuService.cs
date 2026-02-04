@@ -1,6 +1,7 @@
 using ActualLab.Api;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
+using Cfo.Cats.Server.UI.Pages.Identity.Roles;
 
 namespace Cfo.Cats.Server.UI.Services.Navigation;
 
@@ -247,7 +248,7 @@ public class MenuService : IMenuService
             new()
             {
                 Title = "MANAGEMENT",
-                Roles = RoleNames.AllExtraPermissions, //
+                Roles = RoleNames.InternalRoles, 
                 SectionItems =
                 [
                     new()
@@ -293,6 +294,7 @@ public class MenuService : IMenuService
                         IsParent = true,
                         Title = "System",
                         Icon = Icons.Material.Filled.Devices,
+                        Roles = RoleNames.InternalRoles,
                         MenuItems =
                         [
                             new()
