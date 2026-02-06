@@ -1,7 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Security;
-using Cfo.Cats.Application.Features.Labels.DTOs;
-using Cfo.Cats.Application.Features.Labels.Queries;
-using Cfo.Cats.Application.SecurityConstants;
+﻿using Cfo.Cats.Application.SecurityConstants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -16,9 +13,9 @@ public partial class Dashboard
     private bool _showCaseWorkload;
     private bool _showRiskDueAggregate;
     private bool _showSyncComponent;
-    private bool _showNoRiskAggregate;
-    
-    public string Title { get; } = "Dashboard";
+    private bool _showSearchParticipant;
+
+    private readonly string _title  = "Dashboard";
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
 
@@ -26,21 +23,20 @@ public partial class Dashboard
     {
         var state = await AuthState;
 
-        _showMyTeamsParticipants =
-            (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.UserHasAdditionalRoles)).Succeeded;
+        // Check user roles/permissions once
+        var hasAdditionalRoles = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.UserHasAdditionalRoles)).Succeeded;
+        var isInternalUser = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
+        var canAccessSystemSupport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions)).Succeeded;
 
-        // these  follow the same logic for now no need to make the same check.
-        _showCaseWorkload = _showMyTeamsParticipants;
-        _showRiskDueAggregate = _showCaseWorkload;
-        _showNoRiskAggregate = _showCaseWorkload;
+        // Feature flags derived from permissions
+        _showMyTeamsParticipants = hasAdditionalRoles;
+        _showCaseWorkload = hasAdditionalRoles;
+        _showRiskDueAggregate = hasAdditionalRoles;
+        
+        _showQaPots = isInternalUser;
+        _showSearchParticipant = isInternalUser;
+        _showSyncComponent = isInternalUser;
 
-        _showQaPots = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
-
-        // this follows the same check as QA pots
-        _showSyncComponent = _showQaPots;
-
-        _showJobManagement = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemSupportFunctions))
-            .Succeeded;
- 
+        _showJobManagement = canAccessSystemSupport;
     }  
 }
