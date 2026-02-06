@@ -127,6 +127,8 @@ public class ApplicationDbContext
 
     public DbSet<PathwayPlanReview> PathwayPlanReviews => Set<PathwayPlanReview>();
     
+    public DbSet<ArchivedCase> ArchivedCases => Set<ArchivedCase>();
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
