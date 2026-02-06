@@ -5,7 +5,7 @@
 @inherits CatsComponentBase
 
 <MudText Typo="Typo.h3">
-    Dashboard
+    @_title
 </MudText>
 
 <MudGrid Class="mt-2">
@@ -18,7 +18,12 @@
     {
         <MyParticipantsComponent/>
     }
-
+    
+    @if (_showSearchParticipant)
+    {
+        <ParticipantById/>
+    }
+    
     <MyNotifications/>
 
     @if (_showCaseWorkload)

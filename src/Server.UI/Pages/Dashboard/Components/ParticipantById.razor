@@ -1,0 +1,33 @@
+﻿@inherits CatsComponent<Cfo.Cats.Application.Features.Participants.DTOs.ParticipantDto>
+
+<MudItem xs="12" md="6" lg="3">
+    <MudCard>
+        <MudCardHeader>
+            <MudText Typo="Typo.h5">Search For A Participant</MudText>
+        </MudCardHeader>
+
+        <MudCardContent>
+            <MudTextField T="string"
+                          @bind-Value="_participantId"
+                          Immediate="true"
+                          Placeholder="Enter a participant ID and press Enter"
+                          OnKeyDown="OnKeyUp"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@Icons.Material.Filled.Search" />
+
+            @if (Loading)
+            {
+                <MudLoading Class="mt-4" Text="Searching…" />
+            }
+
+            @if (ErrorMessage is not null)
+            {
+                <MudAlert Class="mt-4"
+                          Variant="Variant.Outlined"
+                          Severity="Severity.Error">
+                    @ErrorMessage
+                </MudAlert>
+            }
+        </MudCardContent>
+    </MudCard>
+</MudItem>
