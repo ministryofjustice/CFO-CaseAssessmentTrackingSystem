@@ -32,7 +32,7 @@
                                Options="@GetChartOptions("#10b981", string.Format("{0} - {1}",ConstantString.PreReleaseSupport, ConstantString.Payable))" Height="335">
                         <ApexPointSeries TItem="ChartDataPoint"
                                          Items="@GetChartData(ConstantString.PreReleaseSupport)"
-                                         Name="Count"
+                                         Name="Payable"
                                          SeriesType="ApexCharts.SeriesType.Bar"
                                          XValue="@(e => e.Location)"
                                          YValue="@(e => (decimal)e.Count)"
@@ -53,7 +53,7 @@
                                Options="@GetChartOptions("#10b981", string.Format("{0} - {1}",ConstantString.ThroughTheGate, ConstantString.Payable))" Height="335">
                         <ApexPointSeries TItem="ChartDataPoint"
                                          Items="@GetChartData(ConstantString.ThroughTheGate)"
-                                         Name="Count"
+                                         Name="Payable"
                                          SeriesType="ApexCharts.SeriesType.Bar"
                                          XValue="@(e => e.Location)"
                                          YValue="@(e => (decimal)e.Count)"

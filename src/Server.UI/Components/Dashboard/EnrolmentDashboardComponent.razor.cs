@@ -45,6 +45,7 @@ public partial class EnrolmentDashboardComponent
                 {
                     Total = new ApexCharts.BarTotalDataLabels
                     {
+                        Enabled = true,
                         Style = new ApexCharts.BarDataLabelsStyle
                         {
                             FontWeight = "800",
