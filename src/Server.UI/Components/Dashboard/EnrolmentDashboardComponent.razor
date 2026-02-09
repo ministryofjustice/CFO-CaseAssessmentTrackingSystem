@@ -29,7 +29,8 @@
 										Items="Data.Details"
 										SeriesType="ApexCharts.SeriesType.Bar"
                                         XValue="@(e => e.LocationName)"
-										YValue="@(e => e.Count)"
+										YValue="@(e => e.Payable)"
+										Name="Payable"
 										ShowDataLabels="true">
 
 			</ApexCharts.ApexPointSeries>
@@ -50,15 +51,15 @@
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<GetEnrolments.LocationDetail, object>(x => x.Count)">
-                        Count
+                    <MudTableSortLabel SortBy="new Func<GetEnrolments.LocationDetail, object>(x => x.Payable)">
+                        Payable
                     </MudTableSortLabel>
                 </MudTh>
 			</HeaderContent>
 			<RowTemplate>
                 <MudTd DataLabel="Location">@context.LocationName</MudTd>
 				<MudTd DataLabel="Location Type">@context.LocationType.Name</MudTd>
-				<MudTd DataLabel="Count">@context.Count</MudTd>
+				<MudTd DataLabel="Count">@context.Payable</MudTd>
 			</RowTemplate>
 			<PagerContent>
 				<MudTablePager PageSizeOptions="new int[] { 10, 20 }" />

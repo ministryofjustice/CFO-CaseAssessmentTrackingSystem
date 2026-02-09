@@ -63,8 +63,8 @@ public static class GetEnrolments
         public EnrolmentDto(LocationDetail[] details) 
         {
             Details = details;
-            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.Count);
-            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.Count);
+            Custody = details.Where(d => d.LocationType.IsCustody).Sum(d => d.Payable);
+            Community = details.Where(d => d.LocationType.IsCommunity).Sum(d => d.Payable);
         }
 
         public LocationDetail[] Details { get; }
@@ -75,6 +75,6 @@ public static class GetEnrolments
 
     }
 
-    public record LocationDetail (string LocationName, LocationType LocationType, int Count);
+    public record LocationDetail (string LocationName, LocationType LocationType, int Payable);
 
 }
