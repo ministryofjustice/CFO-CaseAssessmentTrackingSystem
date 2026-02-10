@@ -25,7 +25,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                 WHERE
                     (qn.[Message] LIKE N'Advisory%' OR qn.[Message] LIKE N'Accepted by Exception%')
                     AND q.[IsAccepted] = CAST(1 AS bit)
-                    AND q.[IsCompleted] = CAST(1 AS bit);
+                    AND q.[IsCompleted] = CAST(1 AS bit)
+                    AND q.[IsEscalated] = CAST(0 AS bit);
 
                 -- Enrolment Escalation
                 UPDATE en
@@ -57,7 +58,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                 WHERE
                     (qn.[Message] LIKE N'Advisory%' OR qn.[Message] LIKE N'Accepted by Exception%')
                     AND aq.[IsAccepted] = CAST(1 AS bit)
-                    AND aq.[IsCompleted] = CAST(1 AS bit);
+                    AND aq.[IsCompleted] = CAST(1 AS bit)
+                    AND aq.[IsEscalated] = CAST(0 AS bit);
 
                 -- Activities Escalation
                 UPDATE en
