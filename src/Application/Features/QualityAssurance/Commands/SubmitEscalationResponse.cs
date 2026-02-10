@@ -72,6 +72,15 @@ public static class SubmitEscalationResponse
             RuleFor(x => x.Message)
                 .MaximumLength(ValidationConstants.NotesLength);
             
+            When(x => x.Response is EscalationResponse.Comment, () =>
+            {
+                RuleFor(x => x.Message)
+                    .NotEmpty()
+                    .WithMessage("Internal Message is required for this response.")
+                    .MaximumLength(ValidationConstants.NotesLength)
+                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "Message"));
+            });                
+            
             RuleFor(x => x.MessageToProvider)
                 .MaximumLength(ValidationConstants.NotesLength);
 

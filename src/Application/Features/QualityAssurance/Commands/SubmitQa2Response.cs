@@ -75,10 +75,17 @@ public static class SubmitQa2Response
             RuleFor(x => x.Message)
                 .MaximumLength(ValidationConstants.NotesLength);
             
+            When(x => x.Response is Qa2Response.Escalate, () => {
+                RuleFor(x => x.Message)
+                    .NotEmpty()
+                    .WithMessage("Internal Message is required when escalating")
+                    .Matches(ValidationConstants.Notes)
+                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "Message"));
+            });
+            
             RuleFor(x => x.MessageToProvider)
                 .MaximumLength(ValidationConstants.NotesLength);
 
-            // Accept response: FeedbackType is required
             When(x => x.Response == Qa2Response.Accept, () =>
             {
                 RuleFor(x => x.FeedbackType)
@@ -88,7 +95,6 @@ public static class SubmitQa2Response
                     .WithMessage("FeedbackType cannot be 'Returned' when accepting");
             });
 
-            // Return response: FeedbackType must be Returned and MessageToProvider is mandatory
             When(x => x.Response == Qa2Response.Return, () =>
             {
                 RuleFor(x => x.FeedbackType)
@@ -102,7 +108,6 @@ public static class SubmitQa2Response
                     .WithMessage(string.Format(ValidationConstants.NotesMessage, "External Message"));
             });
 
-            // Accept response: MessageToProvider required if FeedbackType is Advisory or AcceptedByException
             When(x => x.Response == Qa2Response.Accept && (x.FeedbackType == FeedbackType.Advisory || x.FeedbackType == FeedbackType.AcceptedByException), () =>
             {
                 RuleFor(x => x.MessageToProvider)
