@@ -75,6 +75,7 @@
                                     <MudTh>Commenced</MudTh>
                                     <MudTh>Completed</MudTh>
                                     <MudTh>Status</MudTh>
+                                    <MudTh>Reason</MudTh>
                                     <MudTh></MudTh>
                                 </HeaderContent>
                                 <RowTemplate>
@@ -82,6 +83,11 @@
                                     <MudTd DataLabel="S">@context.StartDate.ToShortDateString()</MudTd>
                                     <MudTd DataLabel="E">@(context.CompletedDate.HasValue ? context.CompletedDate.Value.ToShortDateString() : string.Empty)</MudTd>
                                     <MudTd DataLabel="F">@(context.Status.Name)</MudTd>
+                                    <MudTd DataLabel="G">
+                                        <MudTooltip Text="@context.AbandonJustification">
+                                            @(context.AbandonReason?.Name)
+                                        </MudTooltip>
+                                    </MudTd>
                                     <MudTd>
                                         <MudFab Color="Color.Info"
                                         StartIcon="@Icons.Material.Filled.AssignmentTurnedIn"
