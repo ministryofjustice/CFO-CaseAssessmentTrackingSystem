@@ -54,6 +54,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                 ) AS [a3]
                 WHERE [aq].[IsCompleted] = CAST(1 AS bit) 
                 AND [aq].[IsAccepted] = CAST(0 AS bit)
+                AND [aq].IsEscalated = CAST(0 AS bit)
                 AND CAST(LEN([aq].[TenantId]) AS int) > 6
                 AND NOT EXISTS (
                     SELECT 1 
@@ -163,6 +164,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                 WHERE ([qn].[Message] LIKE N'Advisory%' OR [qn].[Message] LIKE N'Accepted by Exception%')
                 AND [aq].[IsAccepted] = CAST(1 AS bit) 
                 AND [aq].[IsCompleted] = CAST(1 AS bit)
+                AND [aq].[IsEscalated] = CAST(0 AS bit)
                 AND CAST(LEN([aq].[TenantId]) AS int) > 6
                 AND NOT EXISTS (
                     SELECT 1 
