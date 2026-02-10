@@ -15,8 +15,8 @@ public static class SubmitEscalationResponse
         public FeedbackType? FeedbackType { get; set; } 
 
         public string Message { get; set; } = default!;
+        public string MessageToProvider { get; set; } = default!;
 
-        public bool IsMessageExternal { get; set; }
         public UserProfile? CurrentUser { get; set; }
     }
 
@@ -40,7 +40,8 @@ public static class SubmitEscalationResponse
                 return Result.Failure("Cannot find queue item");
             }
 
-            entry.AddNote(request.Message, request.IsMessageExternal, request.FeedbackType);
+            entry.AddNote(request.Message, isExternal: false)
+                 .AddNote(request.MessageToProvider, isExternal: true, request.FeedbackType);
 
             switch (request.Response)
             {
@@ -70,14 +71,39 @@ public static class SubmitEscalationResponse
 
             RuleFor(x => x.Message)
                 .MaximumLength(ValidationConstants.NotesLength);
+            
+            RuleFor(x => x.MessageToProvider)
+                .MaximumLength(ValidationConstants.NotesLength);
 
-            When(x => x.Response is EscalationResponse.Return or EscalationResponse.Comment, () =>
+            When(x => x.Response == EscalationResponse.Accept, () =>
             {
-                RuleFor(x => x.Message)
+                RuleFor(x => x.FeedbackType)
+                    .NotNull()
+                    .WithMessage("You must select a feedback type when accepting")
+                    .Must(ft => ft != FeedbackType.Returned)
+                    .WithMessage("FeedbackType cannot be 'Returned' when accepting");
+            });
+
+            When(x => x.Response == EscalationResponse.Return, () =>
+            {
+                RuleFor(x => x.FeedbackType)
+                    .Equal(FeedbackType.Returned)
+                    .WithMessage("FeedbackType must be 'Returned' when returning");
+                
+                RuleFor(x => x.MessageToProvider)
                     .NotEmpty()
-                    .WithMessage("A message is required for this response.")
-                    .MaximumLength(ValidationConstants.NotesLength)
-                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "Message"));
+                    .WithMessage("External Message is required when returning")
+                    .Matches(ValidationConstants.Notes)
+                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "External Message"));
+            });
+
+            When(x => x.Response == EscalationResponse.Accept && (x.FeedbackType == FeedbackType.Advisory || x.FeedbackType == FeedbackType.AcceptedByException), () =>
+            {
+                RuleFor(x => x.MessageToProvider)
+                    .NotEmpty()
+                    .WithMessage("External Message is required for Advisory or Accepted By Exception")
+                    .Matches(ValidationConstants.Notes)
+                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "External Message"));
             });
         }
     }
