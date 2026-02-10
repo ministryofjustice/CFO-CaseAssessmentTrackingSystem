@@ -13,6 +13,7 @@ public sealed class PathwayPlanReviewReason : SmartEnum<PathwayPlanReviewReason>
     public static readonly PathwayPlanReviewReason NinetyDayReview = new("90 Day Review", 5);
     public static readonly PathwayPlanReviewReason InitialReview = new ("Initial Review", 6);
     public static readonly PathwayPlanReviewReason Reassignment = new("Reassignment", 7);
+    public static readonly PathwayPlanReviewReason NewInformation = new ("New Information", 8);
     
     private PathwayPlanReviewReason(string name, int value) 
         : base(name, value) 
@@ -30,6 +31,7 @@ public sealed class PathwayPlanReviewReason : SmartEnum<PathwayPlanReviewReason>
         EndOfWingPhaseDelivery,
         InitialReview,
         ParticipantChangedLocation,
+        NewInformation,
         Reassignment
     };
 }
