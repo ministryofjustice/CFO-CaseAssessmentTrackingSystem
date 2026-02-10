@@ -10,35 +10,35 @@
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Components.Stepper
 
-@inject ILocationService locationService
-@inject ICurrentUserService currentUserService
+@inject ILocationService LocationService
+@inject ICurrentUserService CurrentUserService
 @inject IValidator<AddPRI.Command> validator
 
-@if(model is not null)
+@if(_model is not null)
 {
     <MudContainer Class="d-flex align-center">
-        <CatsMudStepper @ref="stepper" Color="Color.Primary" Variant="Variant.Filled"
+        <CatsMudStepper @ref="_stepper" Color="Color.Primary" Variant="Variant.Filled"
         MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All" 
         Style="width: 100%; max-width: 1024px" ActiveStepChanged="OnStepChange">
             <ChildContent>
-                <MudForm Model="model">
+                <MudForm Model="_model">
                     <MudCard Class="px-8 pt-4 pb-8">
-                        <CatsMudStep Title="Release" Icon="@Icons.Material.Filled.Map" Condition="() => IsValid(releaseForm)">
+                        <CatsMudStep Title="Release" Icon="@Icons.Material.Filled.Map" Condition="() => IsValid(_releaseForm)">
                             <ChildContent>
-                                <MudForm @ref="releaseForm" Model="model.Release" Validation="Validator.ValidateValue(model.Release)">
-                                    <FilterLocationAutoComplete Locations="custodyLocations" 
-                                                                @bind-Value="model.Release.CustodyLocation"
+                                <MudForm @ref="_releaseForm" Model="_model.Release" Validation="Validator.ValidateValue(_model.Release)">
+                                    <FilterLocationAutoComplete Locations="_custodyLocations" 
+                                                                @bind-Value="_model.Release.CustodyLocation"
                                                                 Label="Discharge Location"
-                                                                For="() => model.Release.CustodyLocation" />
+                                                                For="() => _model.Release.CustodyLocation!" />
 
-                                    <FilterLocationAutoComplete Locations="communityLocations" 
-                                                                @bind-Value="model.Release.ExpectedRegion"
+                                    <FilterLocationAutoComplete Locations="_communityLocations" 
+                                                                @bind-Value="_model.Release.ExpectedRegion"
                                                                 Label="Expected release region"
                                                                 @bind-Value:after="LocationChanged"
-                                                                For="() => model.Release.ExpectedRegion" />
+                                                                For="() => _model.Release.ExpectedRegion!" />
                                     
-                                    <MudDatePicker @bind-Date="model.Release.ExpectedOn"
-                                                   For="() => model.Release.ExpectedOn"
+                                    <MudDatePicker @bind-Date="_model.Release.ExpectedOn"
+                                                   For="() => _model.Release.ExpectedOn"
                                                    Label="Expected date of release"
                                                    MinDate="DateTime.Today"
                                                    MaxDate="DateTime.Today.AddMonths(3)"
@@ -48,10 +48,10 @@
                                 </MudForm>
                             </ChildContent>
                         </CatsMudStep>
-                        <CatsMudStep Title="Assignment" Icon="@Icons.Material.Filled.Person" Condition="() => IsValid(codeForm)">
+                        <CatsMudStep Title="Assignment" Icon="@Icons.Material.Filled.Person" Condition="() => IsValid(_codeForm)">
                             <ChildContent>
-                                <MudForm @ref="codeForm" Model="model.Code" Validation="Validator.ValidateValue(model.Code)">
-                                    @if(model.Code.IsSelfAssignmentAllowed)
+                                <MudForm @ref="_codeForm" Model="_model.Code" Validation="Validator.ValidateValue(_model.Code)">
+                                    @if(_model.Code.IsSelfAssignmentAllowed)
                                     {
                                         <MudAlert Class="mb-4" Severity="Severity.Info">If not self-assigning, the community support worker will need to generate and provide you with a PRI code</MudAlert>
                                     }
@@ -61,47 +61,47 @@
                                     }
 
                                     <MudText Typo="Typo.body1">Enter PRI code below</MudText>
-                                    <MudTextField @bind-Value="model.Code.Value"
-                                    For="() => model.Code.Value"
+                                    <MudTextField @bind-Value="_model.Code.PriCode"
+                                    For="() => _model.Code.PriCode"
                                     Label="Code"
                                     MaxLength="6"
                                     Immediate
                                     InputMode="InputMode.numeric"
-                                    Disabled="model.Code.SelfAssign && model.Code.IsSelfAssignmentAllowed"
+                                    Disabled="_model.Code.SelfAssign && _model.Code.IsSelfAssignmentAllowed"
                                     Class="mb-2" />
 
-                                    @if(model.Code.IsSelfAssignmentAllowed)
+                                    @if(_model.Code.IsSelfAssignmentAllowed)
                                     {
-                                        <MudCheckBox @bind-Value="model.Code.SelfAssign"
-                                        @bind-Value:after="() => model.Code.Value = null"
-                                        For="() => model.Code.SelfAssign"
+                                        <MudCheckBox @bind-Value="_model.Code.SelfAssign"
+                                        @bind-Value:after="() => _model.Code.PriCode = null"
+                                        For="() => _model.Code.SelfAssign"
                                         Label="Alternatively, I would like to self-assign the PRI, as I will be working with this participant Through the Gate" />
                                     }
                                 </MudForm>
                             </ChildContent>
                         </CatsMudStep>
-                        <CatsMudStep Title="Pre-Release Meeting" Icon="@Icons.Material.Filled.MeetingRoom" Condition="() => IsValid(meetingForm)">
+                        <CatsMudStep Title="Pre-Release Meeting" Icon="@Icons.Material.Filled.MeetingRoom" Condition="() => IsValid(_meetingForm)">
                             <ChildContent>
-                                <MudForm @ref="meetingForm" Model="model.Meeting" Validation="Validator.ValidateValue(model.Meeting)">
+                                <MudForm @ref="_meetingForm" Model="_model.Meeting" Validation="Validator.ValidateValue(_model.Meeting)">
                                     <MudText Class="mb-1" Typo="Typo.body2">Date pre-release meeting took place between the Custody Support Worker, the Community Support Worker (potentially yourself), and the Participant</MudText>
-                                    <MudDatePicker @bind-Date="model.Meeting.AttendedOn"
-                                    For="() => model.Meeting.AttendedOn"
+                                    <MudDatePicker @bind-Date="_model.Meeting.AttendedOn"
+                                    For="() => _model.Meeting.AttendedOn"
                                     Label="Date pre-release meeting took place"
                                     MaxDate="DateTime.Today"
                                     Class="mb-6"/>
 
                                     @* Custody *@
                                     <MudText Typo="Typo.body1">Did the Custody Support Worker attend this meeting in person?</MudText>
-                                    <MudToggleGroup @bind-Value="model.Meeting.CustodyAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
+                                    <MudToggleGroup @bind-Value="_model.Meeting.CustodyAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
                                         <MudToggleItem Value="ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
                                         <MudToggleItem Value="ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
                                     </MudToggleGroup>
-                                    <MudTextField ReadOnly Underline="false" For="() => model.Meeting.CustodyAttendedInPerson" hidden />
+                                    <MudTextField ReadOnly Underline="false" For="() => _model.Meeting.CustodyAttendedInPerson" hidden />
 
-                                    @if (model.Meeting.CustodyAttendedInPerson == ConfirmationStatus.No)
+                                    @if (_model.Meeting.CustodyAttendedInPerson == ConfirmationStatus.No)
                                     {
-                                        <MudTextField @bind-Value="model.Meeting.ReasonCustodyDidNotAttendInPerson"
-                                        For="() => model.Meeting.ReasonCustodyDidNotAttendInPerson"
+                                        <MudTextField @bind-Value="_model.Meeting.ReasonCustodyDidNotAttendInPerson"
+                                        For="() => _model.Meeting.ReasonCustodyDidNotAttendInPerson"
                                         Label="Reason for not attending the meeting in person"
                                         MaxLength="@ValidationConstants.NotesLength"
                                         Lines="5"
@@ -112,16 +112,16 @@
 
                                     @* Community *@
                                     <MudText Typo="Typo.body1">Did the Community Support Worker attend this meeting in person?</MudText>
-                                    <MudToggleGroup @bind-Value="model.Meeting.CommunityAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
+                                    <MudToggleGroup @bind-Value="_model.Meeting.CommunityAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
                                         <MudToggleItem Value="ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
                                         <MudToggleItem Value="ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
                                     </MudToggleGroup>
-                                    <MudTextField ReadOnly Underline="false" For="() => model.Meeting.CommunityAttendedInPerson" hidden />
+                                    <MudTextField ReadOnly Underline="false" For="() => _model.Meeting.CommunityAttendedInPerson" hidden />
 
-                                    @if (model.Meeting.CommunityAttendedInPerson == ConfirmationStatus.No)
+                                    @if (_model.Meeting.CommunityAttendedInPerson == ConfirmationStatus.No)
                                     {
-                                        <MudTextField @bind-Value="model.Meeting.ReasonCommunityDidNotAttendInPerson"
-                                        For="() => model.Meeting.ReasonCommunityDidNotAttendInPerson"
+                                        <MudTextField @bind-Value="_model.Meeting.ReasonCommunityDidNotAttendInPerson"
+                                        For="() => _model.Meeting.ReasonCommunityDidNotAttendInPerson"
                                         Label="Reason for not attending the meeting in person"
                                         MaxLength="@ValidationConstants.NotesLength"
                                         Lines="5"
@@ -132,23 +132,23 @@
 
                                     @* Participant *@
                                     <MudText Typo="Typo.body1">Did the Participant attend this meeting in person?</MudText>
-                                    <MudToggleGroup @bind-Value="model.Meeting.ParticipantAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
+                                    <MudToggleGroup @bind-Value="_model.Meeting.ParticipantAttendedInPerson" SelectionMode="SelectionMode.SingleSelection" CheckMark>
                                         <MudToggleItem Value="ConfirmationStatus.Yes">@ConfirmationStatus.Yes.Name</MudToggleItem>
                                         <MudToggleItem Value="ConfirmationStatus.No">@ConfirmationStatus.No.Name</MudToggleItem>
                                     </MudToggleGroup>
-                                    <MudTextField ReadOnly Underline="false" For="() => model.Meeting.ParticipantAttendedInPerson" hidden />
+                                    <MudTextField ReadOnly Underline="false" For="() => _model.Meeting.ParticipantAttendedInPerson" hidden />
 
-                                    @if (model.Meeting.ParticipantAttendedInPerson == ConfirmationStatus.No)
+                                    @if (_model.Meeting.ParticipantAttendedInPerson == ConfirmationStatus.No)
                                     {
-                                        <MudTextField @bind-Value="model.Meeting.ReasonParticipantDidNotAttendInPerson"
-                                        For="() => model.Meeting.ReasonParticipantDidNotAttendInPerson"
+                                        <MudTextField @bind-Value="_model.Meeting.ReasonParticipantDidNotAttendInPerson"
+                                        For="() => _model.Meeting.ReasonParticipantDidNotAttendInPerson"
                                         Label="Reason for not attending the meeting in person"
                                         MaxLength="@ValidationConstants.NotesLength"
                                         Lines="5"
                                         Class="mt-2" />
                                     }
-                                    <MudTextField @bind-Value="model.Meeting.PostReleaseCommunitySupportInformation"
-                                                  For="() => model.Meeting.PostReleaseCommunitySupportInformation"
+                                    <MudTextField @bind-Value="_model.Meeting.PostReleaseCommunitySupportInformation"
+                                                  For="() => _model.Meeting.PostReleaseCommunitySupportInformation"
                                                   Label="Post release community support information"
                                                   MaxLength="@ValidationConstants.NotesLength"
                                                   Lines="5"
@@ -167,19 +167,19 @@
 }
 
 @code {
-    MudForm codeForm = new();
-    MudForm releaseForm = new();
-    MudForm meetingForm = new();
+    MudForm _codeForm = new();
+    MudForm _releaseForm = new();
+    MudForm _meetingForm = new();
 
-    CatsMudStepper stepper = new();
+    CatsMudStepper _stepper = new();
 
-    AddPRI.Command? model;
+    AddPRI.Command? _model;
 
     bool Processing { get; set; }
-    bool SubmissionSuccess { get; set; } = false;
+    bool SubmissionSuccess { get; set; }
 
-    LocationDto[] communityLocations = [];
-    LocationDto[] custodyLocations = [];
+    LocationDto[] _communityLocations = [];
+    LocationDto[] _custodyLocations = [];
 
     [CascadingParameter]
     public UserProfile? CurrentUser { get; set; }
@@ -192,9 +192,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        model = new AddPRI.Command(Upci);
+        _model = new AddPRI.Command(Upci);
 
-        communityLocations = await GetNewMediator().Send(new GetAllLocationsQuery()
+        _communityLocations = await GetNewMediator().Send(new GetAllLocationsQuery()
         {
             LocationType = LocationType.Community
         });
@@ -204,40 +204,39 @@
                 TenantId = CurrentUser!.TenantId
             });
 
-        custodyLocations = all.Data!.Where(e => e.LocationType.IsCustody).ToArray();
+        _custodyLocations = all.Data!.Where(e => e.LocationType.IsCustody).ToArray();
 
-        model.Release.CustodyLocation = CurrentLocation;
-
+        _model.Release.CustodyLocation = CurrentLocation;
     }
 
     private async Task LocationChanged()
     {
-        if(model is { Release.ExpectedRegion: not null} )
+        if(_model is { Release.ExpectedRegion: not null} )
         {
             // Allow self assignment if user has access to expected release region
-            model.Code.IsSelfAssignmentAllowed = locationService
-                .GetVisibleLocations(currentUserService.TenantId!).Select(l => l.Id)
-                .Contains(model.Release.ExpectedRegion.Id);
+            _model.Code.IsSelfAssignmentAllowed = LocationService
+                .GetVisibleLocations(CurrentUserService.TenantId!).Select(l => l.Id)
+                .Contains(_model.Release.ExpectedRegion.Id);
         }
         else
         {
-            model!.Code.IsSelfAssignmentAllowed = false;
+            _model!.Code.IsSelfAssignmentAllowed = false;
         }
 
         // Present warning if chosen location is different to the location DMS believes they are transferring to
         await Task.CompletedTask;
     }
 
-    private async Task SubmitPRI()
+    private async Task SubmitPri()
     {
-        if (stepper.IsAllStepsCompleted())
+        if (_stepper.IsAllStepsCompleted())
         {
-            var result = await validator.ValidateAsync(model!);
+            var result = await validator.ValidateAsync(_model!);
 
             if (result.IsValid)
             {
                 Processing = true;
-                var response = await GetNewMediator().Send(model!);
+                var response = await GetNewMediator().Send(_model!);
                 Processing = false;
                 SubmissionSuccess = response.Succeeded;
             }
@@ -245,7 +244,6 @@
             {
                 Snackbar.Add(string.Join(", ", result.Errors), Severity.Error);
             }
-
         }
     }
 
@@ -255,9 +253,9 @@
         {
             Processing = true;
 
-            if (step == stepper.Steps.Count())
+            if (step == _stepper.Steps.Count())
             {
-                await SubmitPRI();
+                await SubmitPri();
             }
         }
         finally

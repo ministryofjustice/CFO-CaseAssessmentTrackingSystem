@@ -13,9 +13,9 @@ public static class AddPRI
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public record Command(string ParticipantId) : IRequest<Result>
     {
-        public PriCodeDto Code { get; set; } = new() { ParticipantId = ParticipantId };
-        public PriReleaseDto Release { get; set; } = new();
-        public PriMeetingDto Meeting { get; set; } = new();
+        public PriCodeDto Code { get; } = new() { ParticipantId = ParticipantId };
+        public PriReleaseDto Release { get; } = new();
+        public PriMeetingDto Meeting { get; } = new();
     }
 
     private class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : IRequestHandler<Command, Result>
@@ -32,10 +32,10 @@ public static class AddPRI
 
             string? assignee = null;
 
-            if(request.Code.Value is not null)
+            if(request.Code.PriCode is not null)
             {
                 assignee = await unitOfWork.DbContext.PriCodes
-                    .Where(p => p.Code == request.Code.Value && p.ParticipantId == request.ParticipantId)
+                    .Where(p => p.Code == request.Code.PriCode && p.ParticipantId == request.ParticipantId)
                     .Select(p => p.CreatedBy)
                     .SingleAsync(cancellationToken);
             }
@@ -54,9 +54,9 @@ public static class AddPRI
 
     public class Validator : AbstractValidator<Command>
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly ICurrentUserService currentUserService;
-        private readonly ILocationService locationService;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly ILocationService _locationService;
 
         public Validator(
             IUnitOfWork unitOfWork,
@@ -66,20 +66,25 @@ public static class AddPRI
             IValidator<PriReleaseDto> priReleaseValidator,
             IValidator<PriMeetingDto> priMeetingValidator)
         {
-            this.unitOfWork = unitOfWork;
-            this.currentUserService = currentUserService;
-            this.locationService = locationService;
+            _unitOfWork = unitOfWork;
+            _currentUserService = currentUserService;
+            _locationService = locationService;
 
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
                 RuleFor(c => c.ParticipantId)
-                    .MustAsync(NotAlreadyHavePRI)
+                    .MustAsync(NotAlreadyHavePri)
                     .WithMessage("A PRI has already been created for this participant")
                     .DependentRules(() =>
                     {
-                        RuleFor(c => c.Code).SetValidator(priCodeValidator);
-                        RuleFor(c => c.Release).SetValidator(priReleaseValidator);
-                        RuleFor(c => c.Meeting).SetValidator(priMeetingValidator);
+                        RuleFor(c => c.Code)
+                            .SetValidator(priCodeValidator, ValidationConstants.RuleSet.MediatR);
+                        
+                        RuleFor(c => c.Release)
+                            .SetValidator(priReleaseValidator, ValidationConstants.RuleSet.MediatR);
+
+                        RuleFor(c => c.Meeting)
+                            .SetValidator(priMeetingValidator, ValidationConstants.RuleSet.MediatR);
 
                         RuleFor(c => c)
                             .MustAsync(BeAuthorised)
@@ -90,8 +95,8 @@ public static class AddPRI
             });
         }
 
-        private async Task<bool> NotAlreadyHavePRI(string participantId, CancellationToken cancellationToken)
-            => await unitOfWork.DbContext.PRIs.AnyAsync(p => p.ParticipantId == participantId, cancellationToken) is false;
+        private async Task<bool> NotAlreadyHavePri(string participantId, CancellationToken cancellationToken)
+            => await _unitOfWork.DbContext.PRIs.AnyAsync(p => p.ParticipantId == participantId, cancellationToken) is false;
 
         private async Task<bool> BeAuthorised(Command command, CancellationToken cancellationToken)
         {
@@ -99,84 +104,89 @@ public static class AddPRI
 
             if(command.Code.SelfAssign)
             {
-                assigneeTenantId = currentUserService.TenantId;
+                assigneeTenantId = _currentUserService.TenantId;
             }
-            else
+            else if (command.Code.PriCode is not null)
             {
-                var createdBy = await unitOfWork.DbContext.PriCodes
-                    .Where(p => p.ParticipantId == command.ParticipantId && p.Code == command.Code.Value)
+                var createdBy = await _unitOfWork.DbContext.PriCodes
+                    .Where(p => p.ParticipantId == command.ParticipantId && p.Code == command.Code.PriCode)
                     .Select(p => p.CreatedBy)
                     .SingleAsync(cancellationToken);
 
-                var tenantId = await unitOfWork.DbContext.Users.Where(u => u.Id == createdBy)
+                var tenantId = await _unitOfWork.DbContext.Users.Where(u => u.Id == createdBy)
                     .Select(u => u.TenantId)
                     .FirstOrDefaultAsync(cancellationToken);
 
                 assigneeTenantId = tenantId;
             }
-
-            return locationService
+            else
+            {
+                return false;
+            }
+            
+            return _locationService
                 .GetVisibleLocations(assigneeTenantId!)
                 .Select(l => l.Id)
                 .Contains(command.Release.ExpectedRegion!.Id);
         }
 
         private async Task<bool> MustNotBeArchived(string participantId, CancellationToken cancellationToken)
-            => await unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
+            => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == participantId && e.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value, cancellationToken);
     }
 
     public class PriCodeDto
     {
-        public int? Value { get; set; }
+        public int? PriCode;
+        
         public bool SelfAssign { get; set; }
         public bool IsSelfAssignmentAllowed { get; set; }
-        public required string ParticipantId { get; set; }
+        public required string ParticipantId { get; init; }
 
         public class Validator : AbstractValidator<PriCodeDto>
         {
-            private readonly IUnitOfWork unitOfWork;
+            
+            private readonly IUnitOfWork _unitOfWork;
 
             public Validator(IUnitOfWork unitOfWork)
             {
-                this.unitOfWork = unitOfWork;
+               _unitOfWork = unitOfWork;
 
                 RuleFor(c => c.ParticipantId)
                     .NotNull();
 
-                RuleSet(ValidationConstants.RuleSet.MediatR, () =>
+                When(c => c.PriCode.HasValue, () =>
                 {
-                    When(c => c.Value is not null, () =>
-                    {
-                        RuleFor(c => c.Value)
-                            .InclusiveBetween(100_000, 999_999)
-                            .WithMessage("Invalid format for code")
-                            .DependentRules(() =>
-                            {
-                                RuleFor(c => c.Value)
-                                    .MustAsync(async (command, code, context, canc) => await BeValid(command.ParticipantId, code!.Value, canc))
-                                    .WithMessage("Invalid code");
-                            });
-                    });
+                    RuleFor(c => c.PriCode)
+                        .NotNull()
+                        .WithMessage("Invalid format for code")
+                        .InclusiveBetween(100_000, 999_999)
+                        .DependentRules(() =>
+                        {
+                            RuleFor(c => c.PriCode)
+                                .MustAsync(async (command, code, canc) =>
+                                    await BeValid(command.ParticipantId, code!.Value, canc))
+                                .WithMessage("Invalid code");
+                        });
                 });
 
                 When(c => c.IsSelfAssignmentAllowed, () =>
                 {
                     RuleFor(c => c.SelfAssign)
                         .Equal(true)
-                        .When(c => c.Value is not not null)
+                        .When(c => c.PriCode is null)
                         .WithMessage("You must self-assign when no PRI code is provided");
                 })
                 .Otherwise(() =>
                 {
                     // Self assignment is not allowed
-                    RuleFor(c => c.Value)
+                    RuleFor(c => c.PriCode)
                         .NotEmpty()
                         .WithMessage("You must provide a code");
                 });
             }
 
             private async Task<bool> BeValid(string participantId, int code, CancellationToken cancellationToken)
-                => await unitOfWork.DbContext.PriCodes.AnyAsync(pc => pc.Code == code && pc.ParticipantId == participantId, cancellationToken);
+                => await _unitOfWork.DbContext.PriCodes.AnyAsync(pc => pc.Code == code && pc.ParticipantId == participantId, cancellationToken);
         }
     }
 
@@ -210,14 +220,12 @@ public static class AddPRI
 
         private class Mapper : Profile
         {
-            public Mapper()
-            {
+            public Mapper() =>
                 CreateMap<PRIDto, PriReleaseDto>(MemberList.None)
-                 .ForMember(target => target.ExpectedRegion,
-                    options => options.MapFrom(source => source.ExpectedReleaseRegion))
-                 .ForMember(target => target.ExpectedOn,
-                    options => options.MapFrom(source => source.ExpectedReleaseDate.ToDateTime(TimeOnly.MinValue)));
-            }
+                    .ForMember(target => target.ExpectedRegion,
+                        options => options.MapFrom(source => source.ExpectedReleaseRegion))
+                    .ForMember(target => target.ExpectedOn,
+                        options => options.MapFrom(source => source.ExpectedReleaseDate.ToDateTime(TimeOnly.MinValue)));
         }
     }
 
@@ -273,18 +281,16 @@ public static class AddPRI
 
         private class Mapper : Profile
         {
-            public Mapper()
-            {
+            public Mapper() =>
                 CreateMap<PRIDto, PriMeetingDto>(MemberList.None)
-                 .ForMember(target => target.AttendedOn,
-                    options => options.MapFrom(source => source.MeetingAttendedOn.ToDateTime(TimeOnly.MinValue)))
-                 .ForMember(target => target.CustodyAttendedInPerson,
-                    options => options.MapFrom(source => (source.CustodyAttendedInPerson ? ConfirmationStatus.Yes : ConfirmationStatus.No)))
-                 .ForMember(target => target.CommunityAttendedInPerson,
-                    options => options.MapFrom(source => (source.CommunityAttendedInPerson ? ConfirmationStatus.Yes : ConfirmationStatus.No)))
-                 .ForMember(target => target.ParticipantAttendedInPerson,
-                    options => options.MapFrom(source => (source.ParticipantAttendedInPerson ? ConfirmationStatus.Yes : ConfirmationStatus.No)));
-            }
+                    .ForMember(target => target.AttendedOn,
+                        options => options.MapFrom(source => source.MeetingAttendedOn.ToDateTime(TimeOnly.MinValue)))
+                    .ForMember(target => target.CustodyAttendedInPerson,
+                        options => options.MapFrom(source => (source.CustodyAttendedInPerson ? ConfirmationStatus.Yes : ConfirmationStatus.No)))
+                    .ForMember(target => target.CommunityAttendedInPerson,
+                        options => options.MapFrom(source => (source.CommunityAttendedInPerson ? ConfirmationStatus.Yes : ConfirmationStatus.No)))
+                    .ForMember(target => target.ParticipantAttendedInPerson,
+                        options => options.MapFrom(source => (source.ParticipantAttendedInPerson ? ConfirmationStatus.Yes : ConfirmationStatus.No)));
         }
     }
 }
