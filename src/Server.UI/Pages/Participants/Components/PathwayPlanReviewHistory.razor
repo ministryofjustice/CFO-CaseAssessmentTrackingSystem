@@ -77,7 +77,7 @@
             <PropertyColumn Property="x => x.LocationName" Title="Location" Sortable="true"/>
         </Columns>
         <ChildRowContent>
-            <MudTextField Disabled Label="Review" Value="@context.Item.Review" Lines="5" />
+            <MudTextField Disabled Label="Review" Value="@context.Item.Review" Lines="2" AutoGrow="true"  />
         </ChildRowContent>
         <NoRecordsContent>
             <MudText>@ConstantString.NoRecords</MudText>
