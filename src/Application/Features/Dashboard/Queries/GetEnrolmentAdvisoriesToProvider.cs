@@ -26,7 +26,7 @@ public static class GetEnrolmentAdvisoriesToProvider
             
             var query = from pfa in context.ProviderFeedbackEnrolments
                 where pfa.Message != null
-                    && (pfa.FeedbackType == 0 || pfa.FeedbackType == 1)
+                    && (pfa.FeedbackType == ((int)FeedbackType.Advisory) || pfa.FeedbackType == ((int)FeedbackType.AcceptedByException))
                     && pfa.ActionDate >= request.StartDate
                     && pfa.ActionDate < request.EndDate.AddDays(1)
                     && (!string.IsNullOrWhiteSpace(request.TenantId) ? pfa.TenantId.StartsWith(request.TenantId) : true)

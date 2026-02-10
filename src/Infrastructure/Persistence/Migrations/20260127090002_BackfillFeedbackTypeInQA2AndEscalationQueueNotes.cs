@@ -11,6 +11,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
+                --ADVISORIES/ACCEPTED BY EXCEPTION
                 -- Enrolment QA2
                 UPDATE qn
                 SET qn.FeedbackType =
@@ -76,6 +77,49 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     (en.[Message] LIKE N'Advisory%' OR en.[Message] LIKE N'Accepted by Exception%')
                     AND eq.[IsAccepted] = CAST(1 AS bit)
                     AND eq.[IsCompleted] = CAST(1 AS bit);
+
+                --RETURNS
+                -- Enrolment QA2
+                UPDATE qn
+                SET qn.FeedbackType = 2
+                FROM [Enrolment].[Qa2QueueNote] AS qn
+                INNER JOIN [Enrolment].[Qa2Queue] AS q
+                    ON q.[Id] = qn.[EnrolmentQa2QueueEntryId]
+                WHERE
+                    q.[IsAccepted] = CAST(0 AS bit)
+                    AND q.[IsCompleted] = CAST(1 AS bit)
+                    AND q.[IsEscalated] = CAST(0 AS bit);
+
+                -- Enrolment Escalation
+                UPDATE en
+                SET en.FeedbackType = 2
+                FROM [Enrolment].[EscalationNote] AS en
+                INNER JOIN [Enrolment].[EscalationQueue] AS eq
+                    ON eq.[Id] = en.[EnrolmentEscalationQueueEntryId]
+                WHERE
+                    eq.[IsAccepted] = CAST(0 AS bit)
+                    AND eq.[IsCompleted] = CAST(1 AS bit);
+
+                -- Activities QA2
+                UPDATE qn
+                SET qn.FeedbackType = 2
+                FROM [Activities].[Qa2QueueNote] AS qn
+                INNER JOIN [Activities].[ActivityQa2Queue] AS aq
+                    ON aq.[Id] = qn.[ActivityQa2QueueEntryId]
+                WHERE
+                    aq.[IsAccepted] = CAST(0 AS bit)
+                    AND aq.[IsCompleted] = CAST(1 AS bit)
+                    AND aq.[IsEscalated] = CAST(0 AS bit);
+
+                -- Activities Escalation
+                UPDATE en
+                SET en.FeedbackType = 2
+                FROM [Activities].[EscalationNote] AS en
+                INNER JOIN [Activities].[ActivityEscalationQueue] AS eq
+                    ON eq.[Id] = en.[ActivityEscalationQueueEntryId]
+                WHERE
+                    eq.[IsAccepted] = CAST(0 AS bit)
+                    AND eq.[IsCompleted] = CAST(1 AS bit);                    
             ");
         }
 
@@ -86,22 +130,22 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                 -- Revert Enrolment QA2
                 UPDATE [Enrolment].[Qa2QueueNote]
                 SET FeedbackType = NULL
-                WHERE FeedbackType IN (0, 1);
+                WHERE FeedbackType IN (0, 1, 2);
 
                 -- Revert Enrolment Escalation
                 UPDATE [Enrolment].[EscalationNote]
                 SET FeedbackType = NULL
-                WHERE FeedbackType IN (0, 1);
+                WHERE FeedbackType IN (0, 1, 2);
 
                 -- Revert Activities QA2
                 UPDATE [Activities].[Qa2QueueNote]
                 SET FeedbackType = NULL
-                WHERE FeedbackType IN (0, 1);
+                WHERE FeedbackType IN (0, 1, 2);
 
                 -- Revert Activities Escalation
                 UPDATE [Activities].[EscalationNote]
                 SET FeedbackType = NULL
-                WHERE FeedbackType IN (0, 1);
+                WHERE FeedbackType IN (0, 1, 2);
             ");
         }
     }

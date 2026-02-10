@@ -24,7 +24,7 @@ public static class GetActivitiesAdvisoriesToProvider
 
             var query = from pfa in context.ProviderFeedbackActivities.AsNoTracking()
                 where pfa.Message != null
-                    && (pfa.FeedbackType == 0 || pfa.FeedbackType == 1)
+                    && (pfa.FeedbackType == ((int)FeedbackType.Advisory) || pfa.FeedbackType == ((int)FeedbackType.AcceptedByException))
                     && pfa.ActionDate >= request.StartDate
                     && pfa.ActionDate < request.EndDate.AddDays(1)
                     && pfa.TenantId.Length > 6

@@ -22,7 +22,7 @@ public static class GetEnrolmentsToProvider
             var context = unitOfWork.DbContext;
 
             var query = from pfa in context.ProviderFeedbackEnrolments
-                where pfa.FeedbackType == null
+                where pfa.FeedbackType == ((int)FeedbackType.Returned)
                     && pfa.ActionDate >= request.StartDate
                     && pfa.ActionDate < request.EndDate.AddDays(1)
                     && (!string.IsNullOrWhiteSpace(request.TenantId) ? pfa.TenantId.StartsWith(request.TenantId) : true)
