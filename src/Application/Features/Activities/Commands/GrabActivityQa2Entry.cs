@@ -26,40 +26,54 @@ public static class GrabActivityQa2Entry
 
             try
             {
-                var entry = await unitOfWork.DbContext.ActivityQa2Queue
+                var entryWithUser = await unitOfWork.DbContext.ActivityQa2Queue
                     .Where(x => x.OwnerId == request.CurrentUser.UserId)
                     .Where(x => x.IsCompleted == false)
+                    .Join(
+                        unitOfWork.DbContext.Users,
+                        q => q.CreatedBy,
+                        u => u.Id,
+                        (q, u) => new
+                        {
+                            Entry = q,
+                            CreatedByDisplayName = u.DisplayName
+                        })
                     .FirstOrDefaultAsync(cancellationToken);
 
-                if (entry is null)
+                if (entryWithUser is null)
                 {
-                    entry = await unitOfWork.DbContext.ActivityQa2Queue
-                        .Where(x => x.IsCompleted == false && x.OwnerId == null &&
-                                    x.CreatedBy != request.CurrentUser.UserId)
+                    entryWithUser = await unitOfWork.DbContext.ActivityQa2Queue
+                        .Where(x =>
+                            x.IsCompleted == false &&
+                            x.OwnerId == null &&
+                            x.CreatedBy != request.CurrentUser.UserId)
                         .OrderBy(x => x.Created)
+                        .Join(
+                            unitOfWork.DbContext.Users,
+                            q => q.CreatedBy,
+                            u => u.Id,
+                            (q, u) => new
+                            {
+                                Entry = q,
+                                CreatedByDisplayName = u.DisplayName
+                            })
                         .FirstOrDefaultAsync(cancellationToken);
 
-                    if (entry is not null)
+                    if (entryWithUser is not null)
                     {
-                        entry.OwnerId = request.CurrentUser.UserId;
+                        entryWithUser.Entry.OwnerId = request.CurrentUser.UserId;
                         await unitOfWork.CommitTransactionAsync();
                     }
                 }
 
-                if (entry is null)
+                if (entryWithUser is null)
                 {
                     return Result<ActivityQueueEntryDto>.Failure("Nothing assignable");
                 }
-                var dto = mapper.Map<ActivityQueueEntryDto>(entry);
                 
-                dto.Qa1CompletedBy = await unitOfWork.DbContext.ActivityQa1Queue
-                    .Where(q1 =>
-                        q1.ActivityId == entry.ActivityId &&
-                        q1.IsCompleted)
-                    .OrderByDescending(q1 => q1.OwnerId)
-                    .Select(q1 => q1.Owner!.DisplayName)
-                    .FirstOrDefaultAsync(cancellationToken);
-
+                var dto = mapper.Map<ActivityQueueEntryDto>(entryWithUser.Entry);
+                dto.Qa1CompletedBy = entryWithUser.CreatedByDisplayName;
+                
                 return Result<ActivityQueueEntryDto>.Success(dto);
             }
             finally

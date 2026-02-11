@@ -25,42 +25,56 @@ public static class GrabQa2Entry
 
             try
             {
-                var entry = await unitOfWork.DbContext.EnrolmentQa2Queue
+               var entryWithUser = await unitOfWork.DbContext.EnrolmentQa2Queue
                     .Include(q => q.SupportWorker)
                     .Where(x => x.OwnerId == request.CurrentUser.UserId)
                     .Where(x => x.IsCompleted == false)
+                    .Join(
+                        unitOfWork.DbContext.Users,
+                        q => q.CreatedBy,
+                        u => u.Id,
+                        (q, u) => new
+                        {
+                            Entry = q,
+                            CreatedByDisplayName = u.DisplayName
+                        })
                     .FirstOrDefaultAsync(cancellationToken);
-
-                if (entry is null)
+                
+                if (entryWithUser is null)
                 {
-                    entry = await unitOfWork.DbContext.EnrolmentQa2Queue
+                    entryWithUser = await unitOfWork.DbContext.EnrolmentQa2Queue
                         .Include(q => q.SupportWorker)
-                        .Where(x => x.IsCompleted == false && x.OwnerId == null && x.CreatedBy != request.CurrentUser.UserId)
+                        .Where(x =>
+                            x.IsCompleted == false &&
+                            x.OwnerId == null &&
+                            x.CreatedBy != request.CurrentUser.UserId)
                         .OrderBy(x => x.Created)
+                        .Join(
+                            unitOfWork.DbContext.Users,
+                            q => q.CreatedBy,
+                            u => u.Id,
+                            (q, u) => new
+                            {
+                                Entry = q,
+                                CreatedByDisplayName = u.DisplayName
+                            })
                         .FirstOrDefaultAsync(cancellationToken);
 
-                    if (entry is not null)
+                    if (entryWithUser is not null)
                     {
-                        entry.OwnerId = request.CurrentUser.UserId;
+                        entryWithUser.Entry.OwnerId = request.CurrentUser.UserId;
                         await unitOfWork.CommitTransactionAsync();
                     }
                 }
 
-                if (entry is null)
+                if (entryWithUser is null)
                 {
                     return Result<EnrolmentQueueEntryDto>.Failure("Nothing assignable");    
                 }
                 
-                var dto = mapper.Map<EnrolmentQueueEntryDto>(entry);
+                var dto = mapper.Map<EnrolmentQueueEntryDto>(entryWithUser.Entry);
                 
-                dto.Qa1CompletedBy = await unitOfWork.DbContext.EnrolmentQa1Queue
-                    .Include(q => q.SupportWorker)
-                    .Where(q1 => q1.IsCompleted && 
-                           q1.ParticipantId == entry.ParticipantId )
-                    .OrderByDescending(q1 => q1.LastModified)
-                    .Select(q1 => q1.Owner!.DisplayName)
-                    .FirstOrDefaultAsync(cancellationToken);
-
+                dto.Qa1CompletedBy = entryWithUser.CreatedByDisplayName;
                 
                 return Result<EnrolmentQueueEntryDto>.Success(dto);
             }
