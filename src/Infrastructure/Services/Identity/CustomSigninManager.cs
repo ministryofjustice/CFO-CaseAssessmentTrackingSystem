@@ -41,6 +41,7 @@ public class CustomSigninManager(UserManager<ApplicationUser> userManager, IHttp
         if (PasswordCheckSucceededAndTwoFactorDisabledForIpRange(passwordCheckResult, ipAddress))
         {
             await SignInAsync(user, isPersistent);
+            await UserManager.ResetAccessFailedCountAsync(user);
             sessionService.StartSession(user.Id);
             return passwordCheckResult;
         }        
