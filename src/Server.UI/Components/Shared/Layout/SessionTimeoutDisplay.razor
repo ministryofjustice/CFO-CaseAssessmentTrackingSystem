@@ -1,0 +1,15 @@
+@using Cfo.Cats.Application.Common.Security
+@using System.Security.Claims
+@using System.Reflection.Metadata.Ecma335
+@inject ISessionService SessionService
+@implements IAsyncDisposable
+
+@if (_remainingTime.HasValue)
+{
+    <MudTooltip Arrow="true" Text="Session timeout">
+        <MudChip T="string" Icon="@Icons.Material.Filled.Timer" Color="@GetChipColor()" Size="Size.Medium"
+                 OnClick="TimerClicked" Variant="Variant.Filled">
+            @FormatTime(_remainingTime.Value)
+        </MudChip>
+    </MudTooltip>
+}
