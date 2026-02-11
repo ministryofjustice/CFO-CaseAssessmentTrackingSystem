@@ -9,7 +9,7 @@
     </MudCardHeader>
     <MudCardContent Class="d-flex justify-space-between align-center">
 
-        @if (_latestPRI is null)
+        @if (_latestPri is null)
         {
             <MudText Typo="Typo.body2">@_noPriInfo</MudText>
         }
@@ -22,44 +22,61 @@
                             <MudText Typo="Typo.subtitle2">Date Created</MudText>
                         </dt>
                         <dd>
-                            <MudText Typo="Typo.body2">@_latestPRI.Created.ToString("dd/MM/yyyy")</MudText>
+                            <MudText Typo="Typo.body2">@_latestPri.Created.ToString("dd/MM/yyyy")</MudText>
                         </dd>
                     </div>
 
-                    @if (_latestPRI.Status == PriStatus.Completed || _latestPRI.Status == PriStatus.Abandoned)
+
+                    <div class="description-pair">
+                        <dt>
+                            <MudText Typo="Typo.subtitle2">Actual Release Date</MudText>
+                        </dt>
+                        <dd>
+                            @if (_latestPri.ActualReleaseDate != null)
+                            {
+                                <MudText Typo="Typo.body2">@_latestPri.ActualReleaseDate?.ToString("dd/MM/yyyy")</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body2">None</MudText>
+                            }
+                        </dd>
+                    </div>
+
+                    @if (_latestPri.Status == PriStatus.Completed || _latestPri.Status == PriStatus.Abandoned)
                     {
                         <div class="description-pair">
                             <dt>
-                                <MudText Typo="Typo.subtitle2">Date @_latestPRI.Status.Name</MudText>
+                                <MudText Typo="Typo.subtitle2">Date @_latestPri.Status.Name</MudText>
                             </dt>
                             <dd>
-                                <MudText Typo="Typo.body2">@_latestPRI.CompletedOn?.ToString("dd/MM/yyyy")</MudText>
+                                <MudText Typo="Typo.body2">@_latestPri.CompletedOn?.ToString("dd/MM/yyyy")</MudText>
                             </dd>
                         </div>
 
                         <div class="description-pair">
                             <dt>
-                                <MudText Typo="Typo.subtitle2">@_latestPRI.Status.Name By</MudText>
+                                <MudText Typo="Typo.subtitle2">@_latestPri.Status.Name By</MudText>
                             </dt>
                             <dd>
-                                <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == _latestPRI.CompletedBy).DisplayName </MudText>
+                                <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == _latestPri.CompletedBy).DisplayName </MudText>
                             </dd>
                         </div>
 
-                        if (_latestPRI.Status == PriStatus.Abandoned)
+                        if (_latestPri.Status == PriStatus.Abandoned)
                         {
                             <div class="description-pair">
                                 <dt>
-                                    <MudText Typo="Typo.subtitle2">@_latestPRI.Status.Name Reason</MudText>
+                                    <MudText Typo="Typo.subtitle2">@_latestPri.Status.Name Reason</MudText>
                                 </dt>
                                 <dd>
-                                    <MudText Typo="Typo.body2">@_latestPRI.AbandonReason</MudText>
+                                    <MudText Typo="Typo.body2">@_latestPri.AbandonReason</MudText>
                                 </dd>
                             </div>
                         }
                     }
 
-                    @if (_showTTGDue)
+                    @if (_showTtgDue)
                     {
                         <div class="description-pair">
                             <dt>
@@ -67,7 +84,7 @@
                             </dt>
                             <dd>
                                 <MudTooltip Text="@_priDueTooltipText">
-                                    <MudIcon Icon="@_priDueIcon" Size="@Size.Small" Color="@_priDueIconColor" />
+                                    <MudIcon Icon="@_priDueIcon" Size="@Size.Small" Color="@_priDueIconColor"/>
                                     <MudText Typo="Typo.body2">
                                         @_priDueInfo
                                     </MudText>
@@ -81,10 +98,10 @@
     </MudCardContent>
     <MudCardActions>
 
-        @if (CanAddPRI())
+        @if (CanAddPri())
         {
             <MudTooltip Text="Create PRI">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginPRI" />
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginPri" />
             </MudTooltip>
         }
 
