@@ -15,22 +15,10 @@ public class SessionService(IMemoryCache cache, IConfiguration configuration) : 
         new() { SlidingExpiration = _timeout };
 
     public void StartSession(string? userId)
-    {
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return;
-        }
-        cache.Set(Key(userId), DateTime.UtcNow, IdleOptions());
-    }
+        => SetSafe(userId);
 
     public void UpdateActivity(string? userId)
-    {
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return;
-        }
-        cache.Set(Key(userId), DateTime.UtcNow, IdleOptions());
-    }
+        => SetSafe(userId);
 
     public void InvalidateSession(string? userId)
     {
@@ -77,4 +65,13 @@ public class SessionService(IMemoryCache cache, IConfiguration configuration) : 
 
         return remaining;
     }
+    
+    private void SetSafe(string? userId)
+    {
+        if (!string.IsNullOrWhiteSpace(userId))
+        {
+            cache.Set(Key(userId), DateTime.UtcNow, IdleOptions());
+        }
+    }
+    
 }
