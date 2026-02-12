@@ -20,6 +20,7 @@ public class DocumentExportSupportAndReferralPaymentsIntegrationEventConsumer(
     {
         if (context.Key != DocumentTemplate.SupportAndReferralPayments.Name)
         {
+            logger.LogDebug("Export document not supported by this handler");
             return;
         }
 
@@ -27,6 +28,7 @@ public class DocumentExportSupportAndReferralPaymentsIntegrationEventConsumer(
 
         if (document is null)
         {
+            logger.LogError("Export support and referral payments document event raised for a document that does not exist. ({DocumentId})", context.DocumentId);
             return;
         }
 
@@ -72,7 +74,7 @@ public class DocumentExportSupportAndReferralPaymentsIntegrationEventConsumer(
             }
             else
             {
-                logger.LogError("Failed to upload document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
+                logger.LogError("Failed to upload support and referral document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
                 document.WithStatus(DocumentStatus.Error);
             }
 
@@ -81,7 +83,7 @@ public class DocumentExportSupportAndReferralPaymentsIntegrationEventConsumer(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error exporting document {DocumentId}", context.DocumentId);
+            logger.LogError(ex, "Error exporting support and referral document {DocumentId}: {ErrorMessage}", context.DocumentId, ex.Message);
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }

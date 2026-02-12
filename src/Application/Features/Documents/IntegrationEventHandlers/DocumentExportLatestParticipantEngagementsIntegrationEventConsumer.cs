@@ -1,6 +1,4 @@
-﻿using Cfo.Cats.Application.Features.Dashboard.DTOs;
-using Cfo.Cats.Application.Features.Dashboard.Queries;
-using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
+﻿using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Domain.Entities.Documents;
@@ -20,6 +18,7 @@ public class DocumentExportLatestParticipantEngagementsIntegrationEventConsumer(
     {
         if (context.Key != DocumentTemplate.ParticipantsLatestEngagement.Name)
         {
+            logger.LogDebug("Export document not supported by this handler");
             return;
         }
 
@@ -27,6 +26,7 @@ public class DocumentExportLatestParticipantEngagementsIntegrationEventConsumer(
 
         if (document is null)
         {
+            logger.LogError("Export participant latest engagements document event raised for a document that does not exist. ({DocumentId})", context.DocumentId);
             return;
         }
 
@@ -76,7 +76,7 @@ public class DocumentExportLatestParticipantEngagementsIntegrationEventConsumer(
             }
             else
             {
-                logger.LogError("Failed to upload document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
+                logger.LogError("Failed to upload participant latest engagement document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
                 document.WithStatus(DocumentStatus.Error);
             }
 
@@ -85,7 +85,7 @@ public class DocumentExportLatestParticipantEngagementsIntegrationEventConsumer(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error exporting latest participant engagements document {DocumentId}", context.DocumentId);
+            logger.LogError(ex, "Error exporting participant latest engagement document {DocumentId}: {ErrorMessage}", context.DocumentId, ex.Message);
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }

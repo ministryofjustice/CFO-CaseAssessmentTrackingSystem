@@ -20,6 +20,7 @@ public class DocumentExportActivityPaymentsIntegrationEventConsumer(
     {
         if (context.Key != DocumentTemplate.ActivityPayments.Name)
         {
+            logger.LogDebug("Export document not supported by this handler");
             return;
         }
 
@@ -27,6 +28,7 @@ public class DocumentExportActivityPaymentsIntegrationEventConsumer(
 
         if (document is null)
         {
+            logger.LogError("Export activity payments document event raised for a document that does not exist. ({DocumentId})", context.DocumentId);
             return;
         }
 
@@ -74,7 +76,7 @@ public class DocumentExportActivityPaymentsIntegrationEventConsumer(
             }
             else
             {
-                logger.LogError("Failed to upload document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
+                logger.LogError("Failed to upload activity payments document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
                 document.WithStatus(DocumentStatus.Error);
             }
 
@@ -83,7 +85,7 @@ public class DocumentExportActivityPaymentsIntegrationEventConsumer(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error exporting activity payments document {DocumentId}", context.DocumentId);
+            logger.LogError(ex, "Error exporting activity payments document {DocumentId}: {ErrorMessage}", context.DocumentId, ex.Message);
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }

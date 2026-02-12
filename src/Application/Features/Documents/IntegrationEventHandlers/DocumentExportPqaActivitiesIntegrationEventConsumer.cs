@@ -19,6 +19,7 @@ public class DocumentExportPqaActivitiesIntegrationEventConsumer(
     {
         if (context.Key != DocumentTemplate.PqaActivities.Name)
         {
+            logger.LogDebug("Export document not supported by this handler");
             return;
         }
 
@@ -26,6 +27,7 @@ public class DocumentExportPqaActivitiesIntegrationEventConsumer(
 
         if (document is null)
         {
+            logger.LogError("Export PQA activities document event raised for a document that does not exist. ({DocumentId})", context.DocumentId);
             return;
         }
 
@@ -66,7 +68,7 @@ public class DocumentExportPqaActivitiesIntegrationEventConsumer(
             }
             else
             {
-                logger.LogError("Failed to upload document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
+                logger.LogError("Failed to upload PQA activities document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
                 document.WithStatus(DocumentStatus.Error);
             }
 
@@ -75,7 +77,7 @@ public class DocumentExportPqaActivitiesIntegrationEventConsumer(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error exporting document {DocumentId}", context.DocumentId);
+            logger.LogError(ex, "Error exporting PQA activities document {DocumentId}: {ErrorMessage}", context.DocumentId, ex.Message);
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }

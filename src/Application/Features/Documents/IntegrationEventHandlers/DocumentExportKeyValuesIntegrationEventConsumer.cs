@@ -1,9 +1,7 @@
 ﻿using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Application.Features.KeyValues.DTOs;
 using Cfo.Cats.Application.Features.KeyValues.Queries.PaginationQuery;
-using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Domain.Entities.Documents;
-
 using Newtonsoft.Json;
 using Rebus.Handlers;
 
@@ -22,6 +20,7 @@ public class DocumentExportKeyValuesIntegrationEventConsumer(
     {
         if (context.Key != DocumentTemplate.KeyValues.Name)
         {
+            logger.LogDebug("Export document not supported by this handler");
             return;
         }
 
@@ -29,6 +28,7 @@ public class DocumentExportKeyValuesIntegrationEventConsumer(
 
         if (document is null)
         {
+            logger.LogError("Export key values document event raised for a document that does not exist. ({DocumentId})", context.DocumentId);
             return;
         }
 
@@ -64,7 +64,7 @@ public class DocumentExportKeyValuesIntegrationEventConsumer(
             }
             else
             {
-                logger.LogError("Failed to upload document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
+                logger.LogError("Failed to upload key values document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
                 document.WithStatus(DocumentStatus.Error);
             }
 
@@ -73,7 +73,7 @@ public class DocumentExportKeyValuesIntegrationEventConsumer(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error exporting key values document {DocumentId}", context.DocumentId);
+            logger.LogError(ex, "Error exporting key values document {DocumentId}: {ErrorMessage}", context.DocumentId, ex.Message);
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }

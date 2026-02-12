@@ -1,5 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Interfaces;
-using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
+﻿using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.Documents;
 using Rebus.Handlers;
 
@@ -17,7 +16,7 @@ public class DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer
 {
     public async Task Handle(ExportDocumentIntegrationEvent message)
     {
-        if(message.Key != DocumentTemplate.OutcomeQualityDipSample.Name)
+        if (message.Key != DocumentTemplate.OutcomeQualityDipSample.Name)
         {
             logger.LogDebug("Export document not supported by this handler");
             return;
@@ -25,15 +24,15 @@ public class DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer
 
         var document = await unitOfWork.DbContext.GeneratedDocuments.FindAsync(message.DocumentId);
 
-        if(document == null)
+        if (document == null)
         {
-            logger.LogError("Export document event raised for a document that does not exist. ({DocumentId})", message.DocumentId);
+            logger.LogError("Export outcome quality dip sample document event raised for a document that does not exist. ({DocumentId})", message.DocumentId);
             return;
         }
 
-        if(document.SearchCriteriaUsed is null)
+        if (document.SearchCriteriaUsed is null)
         {
-            logger.LogError("Document with id {DocumentId} has no search criteria", message.DocumentId);
+            logger.LogError("Outcome quality dip sample document with id {DocumentId} has no search criteria", message.DocumentId);
             return;
         }
 
@@ -75,15 +74,15 @@ public class DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer
 
             var summary = await query.FirstOrDefaultAsync();
 
-            if (summary == null) 
+            if (summary == null)
             {
-                logger.LogError("Document with id {DocumentId} references a dip sample {DipSampleId} that does not exist", message.DocumentId, dipSampleId);
+                logger.LogError("Outcome quality dip sample document with id {DocumentId} references a dip sample {DipSampleId} that does not exist", message.DocumentId, dipSampleId);
                 return;
             }
 
             excelService.WithDipSampleSummary(summary.Region, DateTime.Now.Date, summary.CPM, summary.Score!.Value);
 
-            foreach (var p in summary.Participants) 
+            foreach (var p in summary.Participants)
             {
                 excelService.AddParticipant(p.Participant, p.Type, p.CurrentLocation, p.EnrolledAt, p.SupportWorker, p.Compliant, p.CsoComments, p.CpmComments, p.FinalComments);
             }
@@ -100,7 +99,7 @@ public class DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer
             }
             else
             {
-                logger.LogError("Failed to upload document {DocumentId}: {Errors}", message.DocumentId, string.Join(", ", result.Errors));
+                logger.LogError("Failed to upload outcome quality dip sample document {DocumentId}: {Errors}", message.DocumentId, string.Join(", ", result.Errors));
                 document.WithStatus(DocumentStatus.Error);
             }
 
@@ -108,9 +107,9 @@ public class DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer
             await unitOfWork.CommitTransactionAsync();
 
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            logger.LogCritical(e, "Error exporting outcome quality dip sample document {DocumentId}", message.DocumentId);
+            logger.LogCritical(ex, "Error exporting outcome quality dip sample document {DocumentId}: {ErrorMessage}", message.DocumentId, ex.Message);
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }

@@ -1,10 +1,7 @@
-﻿using Cfo.Cats.Application.Common.Interfaces;
-using Cfo.Cats.Application.Features.Dashboard.DTOs;
+﻿using Cfo.Cats.Application.Features.Dashboard.DTOs;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Domain.Entities.Documents;
-
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Rebus.Handlers;
 
@@ -21,6 +18,7 @@ public class DocumentExportRiskDueAggregateIntegrationEventConsumer(
     {
         if (context.Key != DocumentTemplate.RiskDueAggregate.Name)
         {
+            logger.LogDebug("Export document not supported by this handler");
             return;
         }
 
@@ -28,6 +26,7 @@ public class DocumentExportRiskDueAggregateIntegrationEventConsumer(
 
         if (document is null)
         {
+            logger.LogError("Export risk due aggregate document event raised for a document that does not exist. ({DocumentId})", context.DocumentId);
             return;
         }
 
@@ -60,7 +59,7 @@ public class DocumentExportRiskDueAggregateIntegrationEventConsumer(
             }
             else
             {
-                logger.LogError("Failed to upload document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
+                logger.LogError("Failed to upload risk due aggregate document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
                 document.WithStatus(DocumentStatus.Error);
             }
 
@@ -69,7 +68,7 @@ public class DocumentExportRiskDueAggregateIntegrationEventConsumer(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error exporting document {DocumentId}", context.DocumentId);
+            logger.LogError(ex, "Error exporting risk due aggregate document {DocumentId}: {ErrorMessage}", context.DocumentId, ex.Message);
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }

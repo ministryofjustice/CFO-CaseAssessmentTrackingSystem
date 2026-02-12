@@ -15,8 +15,8 @@ public class UploadService : IUploadService
 
     public UploadService(IConfiguration configuration, IAmazonS3 client, ILogger<UploadService> logger)
     {
-        _bucketName = configuration.GetValue<string>("AWS:Bucket") ?? throw new Exception("Missing configuration details");
-        _rootFolder = configuration.GetValue<string>("AWS:RootFolder") ?? throw new Exception("Missing configuration details");
+        _bucketName = configuration.GetValue<string>("AWS:Bucket") ?? throw new Exception("Missing AWS:Bucket configuration details");
+        _rootFolder = configuration.GetValue<string>("AWS:RootFolder") ?? throw new Exception("Missing AWS:RootFolder configuration details");
         _client = client;
         _logger = logger;
     }
@@ -34,11 +34,11 @@ public class UploadService : IUploadService
                     _logger.LogWarning("Attempt to upload a document with a forward slash in the folder");
                     return Result<string>.Failure("Folder should not end in forward slash");
                 }
-                
+
                 string key = $"{_rootFolder}/{folder}/{Guid.CreateVersion7()}";
 
                 using var stream = new MemoryStream(uploadRequest.Data);
-         
+
                 var putRequest = new PutObjectRequest()
                 {
                     BucketName = _bucketName,
@@ -47,17 +47,17 @@ public class UploadService : IUploadService
                 };
 
                 _logger.LogDebug("Uploading to S3 bucket");
-              
-                    var result = await _client.PutObjectAsync(putRequest);
-                    if (result.HttpStatusCode == HttpStatusCode.OK)
-                    {
-                        return putRequest.Key;
-                    }
-                    
-                    _logger.LogError("S3 upload failed with status code: {StatusCode}", result.HttpStatusCode);
-                    return Result<string>.Failure(result.HttpStatusCode.ToString());             
-              
-            }            
+
+                var result = await _client.PutObjectAsync(putRequest);
+                if (result.HttpStatusCode == HttpStatusCode.OK)
+                {
+                    return putRequest.Key;
+                }
+
+                _logger.LogError("S3 upload failed with status code: {StatusCode}", result.HttpStatusCode);
+                return Result<string>.Failure(result.HttpStatusCode.ToString());
+
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error uploading file");
@@ -69,18 +69,18 @@ public class UploadService : IUploadService
     {
         var key = document.Download();
 
-        var getTagRequest = new GetObjectTaggingRequest(){
+        var getTagRequest = new GetObjectTaggingRequest()
+        {
             BucketName = _bucketName,
             Key = key
         };
 
         var tagResponse = await _client.GetObjectTaggingAsync(getTagRequest);
-        
-        if(tagResponse.HttpStatusCode == HttpStatusCode.OK)
-        {
 
+        if (tagResponse.HttpStatusCode == HttpStatusCode.OK)
+        {
             // the GuardDutyMalwareScanStatus must exist
-            if(tagResponse.Tagging.Any(t => t.Key == "GuardDutyMalwareScanStatus" && t.Value == "NO_THREATS_FOUND") == false)
+            if (tagResponse.Tagging.Any(t => t.Key == "GuardDutyMalwareScanStatus" && t.Value == "NO_THREATS_FOUND") == false)
             {
                 _logger.LogError("Malware scan verification failed for document {DocumentId}. Tags: {@Tags}", document.Id, tagResponse.Tagging);
                 return Result<Stream>.Failure("Cannot verify malware check");
@@ -100,7 +100,7 @@ public class UploadService : IUploadService
         }
 
         _logger.LogError("S3 GetObjectTagging failed with status code: {StatusCode} for document {DocumentId}", tagResponse.HttpStatusCode, document.Id);
-        return Result<Stream>.Failure("Could not download file");       
+        return Result<Stream>.Failure("Could not download file");
     }
 
     private static Dictionary<string, object> CreateScopeInformation(string folder, UploadRequest uploadRequest)

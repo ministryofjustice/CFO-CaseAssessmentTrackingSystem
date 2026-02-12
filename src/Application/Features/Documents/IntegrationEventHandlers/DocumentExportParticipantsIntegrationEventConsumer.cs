@@ -1,6 +1,4 @@
-﻿using Cfo.Cats.Application.Features.Dashboard.DTOs;
-using Cfo.Cats.Application.Features.Dashboard.Queries;
-using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
+﻿using Cfo.Cats.Application.Features.Documents.IntegrationEvents;
 using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Domain.Entities.Documents;
@@ -21,6 +19,7 @@ public class DocumentExportParticipantsIntegrationEventConsumer(
     {
         if (context.Key != DocumentTemplate.Participants.Name)
         {
+            logger.LogDebug("Export document not supported by this handler");
             return;
         }
 
@@ -28,12 +27,13 @@ public class DocumentExportParticipantsIntegrationEventConsumer(
 
         if (document is null)
         {
+            logger.LogError("Export participants document event raised for a document that does not exist. ({DocumentId})", context.DocumentId);
             return;
         }
 
         try
         {
-            var request = JsonConvert.DeserializeObject<ParticipantsWithPagination.Query>(context.SearchCriteria!) 
+            var request = JsonConvert.DeserializeObject<ParticipantsWithPagination.Query>(context.SearchCriteria!)
                 ?? throw new Exception();
 
             request.PageSize = int.MaxValue;
@@ -68,7 +68,7 @@ public class DocumentExportParticipantsIntegrationEventConsumer(
             }
             else
             {
-                logger.LogError("Failed to upload document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
+                logger.LogError("Failed to upload participants document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
                 document.WithStatus(DocumentStatus.Error);
             }
 
@@ -77,7 +77,7 @@ public class DocumentExportParticipantsIntegrationEventConsumer(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error exporting document {DocumentId}", context.DocumentId);
+            logger.LogError(ex, "Error exporting participants document {DocumentId}: {ErrorMessage}", context.DocumentId, ex.Message);
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }

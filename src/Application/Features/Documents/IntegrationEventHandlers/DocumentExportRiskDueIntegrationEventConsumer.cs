@@ -18,6 +18,7 @@ public class DocumentExportRiskDueIntegrationEventConsumer(
     {
         if (context.Key != DocumentTemplate.RiskDue.Name)
         {
+            logger.LogDebug("Export document not supported by this handler");
             return;
         }
 
@@ -25,6 +26,7 @@ public class DocumentExportRiskDueIntegrationEventConsumer(
 
         if (document is null)
         {
+            logger.LogError("Export risk due document event raised for a document that does not exist. ({DocumentId})", context.DocumentId);
             return;
         }
 
@@ -60,7 +62,7 @@ public class DocumentExportRiskDueIntegrationEventConsumer(
             }
             else
             {
-                logger.LogError("Failed to upload document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
+                logger.LogError("Failed to upload risk due document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
                 document.WithStatus(DocumentStatus.Error);
             }
 
@@ -69,7 +71,7 @@ public class DocumentExportRiskDueIntegrationEventConsumer(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error exporting document {DocumentId}", context.DocumentId);
+            logger.LogError(ex, "Error exporting risk due document {DocumentId}: {ErrorMessage}", context.DocumentId, ex.Message);
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }
