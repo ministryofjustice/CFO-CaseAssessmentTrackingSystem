@@ -7,4 +7,5 @@ public interface ISessionService
     void InvalidateSession(string? userId);
     
     void StartSession(string? userId);
+    TimeSpan? GetRemainingSessionTime(string? userId);
 }

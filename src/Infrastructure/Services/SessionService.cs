@@ -6,55 +6,72 @@ namespace Cfo.Cats.Infrastructure.Services;
 
 public class SessionService(IMemoryCache cache, IConfiguration configuration) : ISessionService
 {
-    private readonly TimeSpan _timeout = TimeSpan.FromMinutes(configuration.GetValue<int>("IdleTimeOutMinutes"));
+    private readonly TimeSpan _timeout =
+        TimeSpan.FromMinutes(configuration.GetValue<int>("IdleTimeOutMinutes"));
+
+    private static string Key(string userId) => $"LastActivity_{userId}";
+
+    private MemoryCacheEntryOptions IdleOptions() =>
+        new() { SlidingExpiration = _timeout };
 
     public void StartSession(string? userId)
-    {
-        if (string.IsNullOrEmpty(userId) == false)
-        {
-            cache.Set($"LastActivity_{userId}", DateTime.UtcNow, _timeout);
-        }
-    }
-    
-    public bool IsSessionValid(string? userId)
-    {
-        if (string.IsNullOrEmpty(userId))
-        {
-            return false;
-        }
+        => SetSafe(userId);
 
-        var lastActivity = cache.Get<DateTime?>($"LastActivity_{userId}");
-        
-        if (lastActivity.HasValue == false)
-        {
-            // No session found
-            return false; 
-        }
-
-        if (DateTime.UtcNow - lastActivity.Value > _timeout)
-        {
-            // The session has passed
-            InvalidateSession(userId);
-            return false;
-        }
-
-        return true;
-    }
-    
     public void UpdateActivity(string? userId)
-    {
-        if (string.IsNullOrEmpty(userId) == false)
-        {
-            cache.Set($"LastActivity_{userId}", DateTime.UtcNow, _timeout);
-        }
-    }
+        => SetSafe(userId);
 
     public void InvalidateSession(string? userId)
     {
-        if (string.IsNullOrEmpty(userId) == false)
+        if (string.IsNullOrWhiteSpace(userId))
         {
-            cache.Remove($"LastActivity_{userId}");
+            return;
         }
+        cache.Remove(Key(userId));
     }
 
+    public bool IsSessionValid(string? userId)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return false;
+        }
+        return cache.TryGetValue<DateTime>(Key(userId), out _);
+    }
+
+    public TimeSpan? GetRemainingSessionTime(string? userId)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return null;
+        }
+
+        if (cache.TryGetValue<DateTime>(Key(userId), out var lastActivityUtc) == false)
+        {
+            return null; 
+        }
+
+        var elapsed = DateTime.UtcNow - lastActivityUtc;
+        var remaining = _timeout - elapsed;
+
+        if (remaining <= TimeSpan.Zero)
+        {
+            return TimeSpan.Zero;
+        }
+
+        if (remaining > _timeout)
+        {
+            return _timeout; 
+        }
+
+        return remaining;
+    }
+    
+    private void SetSafe(string? userId)
+    {
+        if (!string.IsNullOrWhiteSpace(userId))
+        {
+            cache.Set(Key(userId), DateTime.UtcNow, IdleOptions());
+        }
+    }
+    
 }

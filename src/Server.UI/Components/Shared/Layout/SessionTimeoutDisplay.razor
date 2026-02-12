@@ -1,0 +1,12 @@
+@inject ISessionService SessionService
+@implements IAsyncDisposable
+
+@if (_remainingTime.HasValue)
+{
+    <MudTooltip Arrow="true" Text="Session timeout">
+        <MudChip T="string" Icon="@Icons.Material.Filled.Timer" Color="@GetChipColor()" Size="Size.Medium"
+                 OnClick="TimerClicked" Variant="Variant.Filled">
+            @FormatTime(_remainingTime.Value)
+        </MudChip>
+    </MudTooltip>
+}
