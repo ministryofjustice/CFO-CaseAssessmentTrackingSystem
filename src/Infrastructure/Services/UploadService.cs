@@ -53,6 +53,8 @@ public class UploadService : IUploadService
                     {
                         return putRequest.Key;
                     }
+                    
+                    _logger.LogError("S3 upload failed with status code: {StatusCode}", result.HttpStatusCode);
                     return Result<string>.Failure(result.HttpStatusCode.ToString());             
               
             }            
@@ -80,6 +82,7 @@ public class UploadService : IUploadService
             // the GuardDutyMalwareScanStatus must exist
             if(tagResponse.Tagging.Any(t => t.Key == "GuardDutyMalwareScanStatus" && t.Value == "NO_THREATS_FOUND") == false)
             {
+                _logger.LogError("Malware scan verification failed for document {DocumentId}. Tags: {@Tags}", document.Id, tagResponse.Tagging);
                 return Result<Stream>.Failure("Cannot verify malware check");
             }
 
@@ -96,6 +99,7 @@ public class UploadService : IUploadService
             return Result<Stream>.Success(stream);
         }
 
+        _logger.LogError("S3 GetObjectTagging failed with status code: {StatusCode} for document {DocumentId}", tagResponse.HttpStatusCode, document.Id);
         return Result<Stream>.Failure("Could not download file");       
     }
 

@@ -13,7 +13,8 @@ public class DocumentExportLatestParticipantEngagementsIntegrationEventConsumer(
     IUnitOfWork unitOfWork,
     IExcelService excelService,
     IUploadService uploadService,
-    IDomainEventDispatcher domainEventDispatcher) : IHandleMessages<ExportDocumentIntegrationEvent>
+    IDomainEventDispatcher domainEventDispatcher,
+    ILogger<DocumentExportLatestParticipantEngagementsIntegrationEventConsumer> logger) : IHandleMessages<ExportDocumentIntegrationEvent>
 {
     public async Task Handle(ExportDocumentIntegrationEvent context)
     {
@@ -67,15 +68,24 @@ public class DocumentExportLatestParticipantEngagementsIntegrationEventConsumer(
 
             var result = await uploadService.UploadAsync($"MyDocuments/{context.UserId}", uploadRequest);
 
-            document
-                .WithStatus(DocumentStatus.Available)
-                .SetURL(result);
+            if (result.Succeeded)
+            {
+                document
+                    .WithStatus(DocumentStatus.Available)
+                    .SetURL(result);
+            }
+            else
+            {
+                logger.LogError("Failed to upload document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
+                document.WithStatus(DocumentStatus.Error);
+            }
 
             await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, CancellationToken.None);
             await unitOfWork.CommitTransactionAsync();
         }
-        catch
+        catch (Exception ex)
         {
+            logger.LogError(ex, "Error exporting latest participant engagements document {DocumentId}", context.DocumentId);
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }

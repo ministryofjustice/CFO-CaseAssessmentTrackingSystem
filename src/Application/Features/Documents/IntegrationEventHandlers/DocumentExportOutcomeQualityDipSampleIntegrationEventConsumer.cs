@@ -93,8 +93,16 @@ public class DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer
 
             var result = await uploadService.UploadAsync($"MyDocuments/{message.UserId}", uploadRequest);
 
-            document.WithStatus(DocumentStatus.Available)
-                .SetURL(result);
+            if (result.Succeeded)
+            {
+                document.WithStatus(DocumentStatus.Available)
+                    .SetURL(result);
+            }
+            else
+            {
+                logger.LogError("Failed to upload document {DocumentId}: {Errors}", message.DocumentId, string.Join(", ", result.Errors));
+                document.WithStatus(DocumentStatus.Error);
+            }
 
             await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, CancellationToken.None);
             await unitOfWork.CommitTransactionAsync();
@@ -102,7 +110,7 @@ public class DocumentExportOutcomeQualityDipSampleIntegrationEventConsumer
         }
         catch (Exception e)
         {
-            logger.LogCritical(e, "Error exporting outcome quality dip sample");
+            logger.LogCritical(e, "Error exporting outcome quality dip sample document {DocumentId}", message.DocumentId);
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }
