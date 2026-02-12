@@ -32,10 +32,12 @@ public static class AddPRI
 
             string? assignee = null;
 
-            if(request.Code.PriCode is not null)
+            if (!string.IsNullOrWhiteSpace(request.Code.PriCode))
             {
+                var code = int.Parse(request.Code.PriCode.Trim());
+
                 assignee = await unitOfWork.DbContext.PriCodes
-                    .Where(p => p.Code == request.Code.PriCode && p.ParticipantId == request.ParticipantId)
+                    .Where(p => p.Code == code && p.ParticipantId == request.ParticipantId)
                     .Select(p => p.CreatedBy)
                     .SingleAsync(cancellationToken);
             }
@@ -106,10 +108,12 @@ public static class AddPRI
             {
                 assigneeTenantId = _currentUserService.TenantId;
             }
-            else if (command.Code.PriCode is not null)
+            else if (!string.IsNullOrWhiteSpace(command.Code.PriCode))
             {
+                var code = int.Parse(command.Code.PriCode.Trim());
+
                 var createdBy = await _unitOfWork.DbContext.PriCodes
-                    .Where(p => p.ParticipantId == command.ParticipantId && p.Code == command.Code.PriCode)
+                    .Where(p => p.ParticipantId == command.ParticipantId && p.Code == code)
                     .Select(p => p.CreatedBy)
                     .SingleAsync(cancellationToken);
 
@@ -136,57 +140,73 @@ public static class AddPRI
 
     public class PriCodeDto
     {
-        public int? PriCode;
-        
+        public string? PriCode { get; set; }
         public bool SelfAssign { get; set; }
         public bool IsSelfAssignmentAllowed { get; set; }
         public required string ParticipantId { get; init; }
 
         public class Validator : AbstractValidator<PriCodeDto>
         {
-            
             private readonly IUnitOfWork _unitOfWork;
 
             public Validator(IUnitOfWork unitOfWork)
             {
-               _unitOfWork = unitOfWork;
+                _unitOfWork = unitOfWork;
 
                 RuleFor(c => c.ParticipantId)
                     .NotNull();
 
-                When(c => c.PriCode.HasValue, () =>
+                // If user typed a code
+                When(c => !string.IsNullOrWhiteSpace(c.PriCode), () =>
                 {
                     RuleFor(c => c.PriCode)
-                        .NotNull()
-                        .WithMessage("Invalid format for code")
-                        .InclusiveBetween(100_000, 999_999)
-                        .DependentRules(() =>
+                        .Must(code =>
                         {
-                            RuleFor(c => c.PriCode)
-                                .MustAsync(async (command, code, canc) =>
-                                    await BeValid(command.ParticipantId, code!.Value, canc))
-                                .WithMessage("Invalid code");
-                        });
+                            if (string.IsNullOrWhiteSpace(code))
+                            {
+                                return false;
+                            }
+
+                            var trimmed = code.Trim();
+
+                            return trimmed.Length == 6 && trimmed.All(char.IsDigit);
+                        })
+                        .WithMessage("Code must be 6 digits")
+                        .MustAsync(BeValid)
+                        .WithMessage("Invalid code");
                 });
 
+                // Self assign logic
                 When(c => c.IsSelfAssignmentAllowed, () =>
-                {
-                    RuleFor(c => c.SelfAssign)
-                        .Equal(true)
-                        .When(c => c.PriCode is null)
-                        .WithMessage("You must self-assign when no PRI code is provided");
-                })
-                .Otherwise(() =>
-                {
-                    // Self assignment is not allowed
-                    RuleFor(c => c.PriCode)
-                        .NotEmpty()
-                        .WithMessage("You must provide a code");
-                });
+                    {
+                        RuleFor(c => c.SelfAssign)
+                            .Equal(true)
+                            .When(c => string.IsNullOrWhiteSpace(c.PriCode))
+                            .WithMessage("You must self-assign when no PRI code is provided");
+                    })
+                    .Otherwise(() =>
+                    {
+                        RuleFor(c => c.PriCode)
+                            .NotEmpty()
+                            .WithMessage("You must provide a code");
+                    });
             }
 
-            private async Task<bool> BeValid(string participantId, int code, CancellationToken cancellationToken)
-                => await _unitOfWork.DbContext.PriCodes.AnyAsync(pc => pc.Code == code && pc.ParticipantId == participantId, cancellationToken);
+            private async Task<bool> BeValid(PriCodeDto dto, string? code, CancellationToken ct)
+            {
+                if (string.IsNullOrWhiteSpace(code))
+                {
+                    return false;
+                }
+
+                if (!int.TryParse(code.Trim(), out var parsed))
+                {
+                    return false;
+                }
+
+                return await _unitOfWork.DbContext.PriCodes
+                    .AnyAsync(pc => pc.Code == parsed && pc.ParticipantId == dto.ParticipantId, ct);
+            }
         }
     }
 

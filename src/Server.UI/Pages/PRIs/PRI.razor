@@ -69,7 +69,7 @@
                                     InputMode="InputMode.numeric"
                                     Disabled="_model.Code.SelfAssign && _model.Code.IsSelfAssignmentAllowed"
                                     Class="mb-2" />
-
+                     
                                     @if(_model.Code.IsSelfAssignmentAllowed)
                                     {
                                         <MudCheckBox @bind-Value="_model.Code.SelfAssign"
@@ -208,7 +208,7 @@
 
         _model.Release.CustodyLocation = CurrentLocation;
     }
-
+    
     private async Task LocationChanged()
     {
         if(_model is { Release.ExpectedRegion: not null} )
