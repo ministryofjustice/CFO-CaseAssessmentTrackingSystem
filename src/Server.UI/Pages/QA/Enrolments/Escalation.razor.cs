@@ -6,6 +6,7 @@ using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.Features.QualityAssurance.Commands;
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
 using Cfo.Cats.Application.Features.QualityAssurance.Queries;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components;
 using IResult = Cfo.Cats.Application.Common.Interfaces.IResult;
 
@@ -89,7 +90,7 @@ public partial class Escalation
 
             bool submit = true;
 
-            if (Command is { IsMessageExternal: true, Message.Length: > 0 })
+            if (Command is { MessageToProvider.Length: > 0 })
             {
                 submit = await warningMessage!.ShowAsync();
             }
@@ -147,5 +148,23 @@ public partial class Escalation
             options.RequireInteraction = true;
             options.SnackbarVariant = Variant.Text;
         });
+    }
+    private void OnResponseChanged()
+    {
+        if (Command.Response == SubmitEscalationResponse.EscalationResponse.Accept)
+        {
+            Command.FeedbackType = null;
+            Command.MessageToProvider = string.Empty;
+        }
+        else if (Command.Response == SubmitEscalationResponse.EscalationResponse.Return)
+        {
+            Command.FeedbackType = FeedbackType.Returned;
+            Command.MessageToProvider = string.Empty;
+        }
+        else if (Command.Response == SubmitEscalationResponse.EscalationResponse.Comment)
+        {
+            Command.FeedbackType = null;
+            Command.MessageToProvider = string.Empty;
+        }
     }    
 }

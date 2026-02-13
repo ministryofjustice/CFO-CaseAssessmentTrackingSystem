@@ -3,10 +3,10 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 
-public static class GetEnrolmentsToProvider
+public static class GetActivitiesAdvisoriesToProvider
 {
     [RequestAuthorize(Policy = SecurityPolicies.Internal)]
-    public class Query : IRequest<Result<EnrolmentToProviderDto>>
+    public class Query : IRequest<Result<ActivitiesAdvisoriesToProviderDto>>
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
@@ -15,25 +15,30 @@ public static class GetEnrolmentsToProvider
         public required UserProfile CurrentUser { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<EnrolmentToProviderDto>>
+    public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<ActivitiesAdvisoriesToProviderDto>>
     {
-        public async Task<Result<EnrolmentToProviderDto>> Handle(Query request, CancellationToken cancellationToken)
+        
+        public async Task<Result<ActivitiesAdvisoriesToProviderDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var context = unitOfWork.DbContext;
 
-            var query = from pfa in context.ProviderFeedbackEnrolments
-                where pfa.FeedbackType == ((int)FeedbackType.Returned)
+            var query = from pfa in context.ProviderFeedbackActivities.AsNoTracking()
+                where pfa.Message != null
+                    && (pfa.FeedbackType == ((int)FeedbackType.Advisory) || pfa.FeedbackType == ((int)FeedbackType.AcceptedByException))
                     && pfa.ActionDate >= request.StartDate
                     && pfa.ActionDate < request.EndDate.AddDays(1)
+                    && pfa.TenantId.Length > 6
                     && (!string.IsNullOrWhiteSpace(request.TenantId) ? pfa.TenantId.StartsWith(request.TenantId) : true)
                 join cfoUser in context.Users on pfa.CfoUserId equals cfoUser.Id into cfoUserJoin
                 from cfoUser in cfoUserJoin.DefaultIfEmpty()
                 join sw in context.Users on pfa.SupportWorkerId equals sw.Id into swJoin
                 from sw in swJoin.DefaultIfEmpty()
+                join a in context.Activities on pfa.ActivityId equals a.Id.ToString() into activityJoin
+                from a in activityJoin.DefaultIfEmpty()
                 join submittedByUser in context.Users on pfa.ProviderQaUserId equals submittedByUser.Id into submittedByUserJoin
-                from submittedByUser in submittedByUserJoin.DefaultIfEmpty()                
+                from submittedByUser in submittedByUserJoin.DefaultIfEmpty()
 
-                select new EnrolmentsTabularData
+                select new ActivitiesAdvisoriesTabularData
                 {
                     ContractName =
                         (from con in context.Contracts
@@ -43,88 +48,70 @@ public static class GetEnrolmentsToProvider
                         .FirstOrDefault(),
                     ParticipantId = pfa.ParticipantId,
                     Queue = pfa.Queue,
+                    ActivityType = a.Type,
                     SupportWorker = sw.DisplayName,
                     CfoUser = cfoUser.DisplayName,
-                    PqaSubmittedDate = pfa.PqaSubmittedDate,
+                    PqaSubmittedDate = (DateTime?)pfa.PqaSubmittedDate,
                     PqaUser = submittedByUser.DisplayName,
-                    ReturnedDate = pfa.ActionDate,
-                    Message = (pfa.Message ?? "").Replace("\r", " ").Replace("\n", " ")
+                    AdvisoryDate = pfa.ActionDate,
+                    Message = pfa.Message ?? ""
                 };
 
-            var result = await query.OrderBy(r => r.ReturnedDate)
+            var result = await query.OrderBy(r => r.AdvisoryDate)
                             .AsNoTracking()
                             .ToArrayAsync(cancellationToken);
 
-            return new EnrolmentToProviderDto(result);
+            return new ActivitiesAdvisoriesToProviderDto(result.ToList());
 
         }
 
     }
 
-    public record EnrolmentToProviderDto
+    public record ActivitiesAdvisoriesToProviderDto
     {
-        public EnrolmentToProviderDto(EnrolmentsTabularData[] tabularData)
+        public ActivitiesAdvisoriesToProviderDto(List<ActivitiesAdvisoriesTabularData> tabularData)
         {
             TabularData = tabularData;
-
-            var allContracts = tabularData
-                .Select(td => td.ContractName)
-                .Distinct()
-                .OrderBy(c => c)
-                .ToList();
             
-            var grouped = tabularData
-                .GroupBy(td => new { td.ContractName, td.Queue })
-                .Select(g => new EnrolmentsChartData
+            ChartData = tabularData
+                .GroupBy(td => new { td.ContractName, td.ActivityType })
+                .OrderBy(g => g.Key.ContractName)
+                .ThenBy(g => g.Key.ActivityType?.Name)
+                .Select(g => new ActivitiesAdvisoriesChartData
                 {
                     ContractName = g.Key.ContractName,
-                    Queue = g.Key.Queue,
-                    Count = g.Count()
+                    ActivityType = g.Key.ActivityType,
+                    EscalationQueue = g.Count(x => x.Queue == "Escalation"),
+                    QA2Queue = g.Count(x => x.Queue == "QA2")
                 })
-                .ToList();
-            
-            var queues = new List<string> { "Escalation", "QA2" };
-            var completeData = new List<EnrolmentsChartData>();
-            
-            foreach (var queue in queues)
-            {
-                foreach (var contract in allContracts)
-                {
-                    var existing = grouped.FirstOrDefault(x => x.Queue == queue && x.ContractName == contract);
-                    completeData.Add(existing ?? new EnrolmentsChartData
-                    {
-                        ContractName = contract,
-                        Queue = queue,
-                        Count = 0
-                    });
-                }
-            }
-            
-            ChartData = completeData.ToArray();
+                .ToArray();
         }
-        public EnrolmentsTabularData[] TabularData { get;}
-        public EnrolmentsChartData[] ChartData { get;}
+        public List<ActivitiesAdvisoriesTabularData> TabularData { get;}
+        public ActivitiesAdvisoriesChartData[] ChartData { get;}
     }
 
-    public record EnrolmentsTabularData
+    public record ActivitiesAdvisoriesTabularData
     {
         public string? TenantId { get; set; }
         public string? ContractName { get; set; }
-        public string? ParticipantId { get; set; }
+        public ActivityType? ActivityType { get; set; }
         public string? Queue { get; set; }
+        public string? ActivityId { get; set; } 
+        public string? ParticipantId { get; set; }
         public string? SupportWorkerId { get; set; }
         public string? SupportWorker { get; set; }
         public string? PqaUser { get; set; }
         public string? CfoUser { get; set; }
         public DateTime? PqaSubmittedDate { get; set; }
-        public DateTime? ReturnedDate { get; set; }
+        public DateTime? AdvisoryDate { get; set; }
         public string? Message { get; set; }
     }
-    public record EnrolmentsChartData
+    public record ActivitiesAdvisoriesChartData
     {
         public string? ContractName { get; set; }
-        public string? Queue { get; set; }
-        public int Count { get; set; }
+        public ActivityType? ActivityType { get; set; }
+        public int EscalationQueue { get; set; }
+        public int QA2Queue { get; set; }
     }
 
 }

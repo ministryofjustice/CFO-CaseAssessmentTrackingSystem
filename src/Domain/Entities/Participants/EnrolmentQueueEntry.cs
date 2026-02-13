@@ -4,6 +4,7 @@ using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Events;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Domain.ValueObjects;
+using Cfo.Cats.Domain.Common.Enums;
 
 namespace Cfo.Cats.Domain.Entities.Participants;
 
@@ -42,7 +43,7 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>
 
     public abstract EnrolmentQueueEntry Return();
     
-    public EnrolmentQueueEntry AddNote(string? message, bool isExternal = false)
+    public EnrolmentQueueEntry AddNote(string? message, bool isExternal = false, FeedbackType? feedbackType = null)
     {
         if (string.IsNullOrWhiteSpace(message) == false)
         {
@@ -50,7 +51,8 @@ public abstract class EnrolmentQueueEntry : OwnerPropertyEntity<Guid>
             {
                 TenantId = TenantId,
                 Message = message,
-                IsExternal = isExternal
+                IsExternal = isExternal,
+                FeedbackType = feedbackType
             });
         }
         return this;

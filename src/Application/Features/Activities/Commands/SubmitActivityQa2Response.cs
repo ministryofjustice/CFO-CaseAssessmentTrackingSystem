@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -12,10 +13,12 @@ public static class SubmitActivityQa2Response
         public required Guid ActivityQueueEntryId { get; set; }
 
         public Qa2Response? Response { get; set; }
+        public FeedbackType? FeedbackType { get; set; }
 
         public string Message { get; set; } = default!;
 
-        public bool IsMessageExternal { get; set; }
+        public string MessageToProvider { get; set; } = default!;
+
         public UserProfile? CurrentUser { get; set; }
     }
 
@@ -39,7 +42,8 @@ public static class SubmitActivityQa2Response
                 return Result.Failure("Cannot find Activity queue item");
             }
 
-            entry.AddNote(request.Message, request.IsMessageExternal);
+            entry.AddNote(request.Message, isExternal: false)
+                 .AddNote(request.MessageToProvider, isExternal: true, request.FeedbackType);
 
             switch (request.Response)
             {
@@ -70,13 +74,47 @@ public static class SubmitActivityQa2Response
 
             RuleFor(x => x.Message)
                 .MaximumLength(ValidationConstants.NotesLength);
-
-            When(x => x.Response is Qa2Response.Return or Qa2Response.Escalate, () => {
+            
+            When(x => x.Response is Qa2Response.Escalate, () => {
                 RuleFor(x => x.Message)
                     .NotEmpty()
-                    .WithMessage("A message is required for this response")
+                    .WithMessage("Internal Message is required when escalating")
                     .Matches(ValidationConstants.Notes)
                     .WithMessage(string.Format(ValidationConstants.NotesMessage, "Message"));
+            });                
+            
+            RuleFor(x => x.MessageToProvider)
+                .MaximumLength(ValidationConstants.NotesLength);
+
+            When(x => x.Response == Qa2Response.Accept, () =>
+            {
+                RuleFor(x => x.FeedbackType)
+                    .NotNull()
+                    .WithMessage("You must select a feedback type when accepting")
+                    .Must(ft => ft != FeedbackType.Returned)
+                    .WithMessage("FeedbackType cannot be 'Returned' when accepting");
+            });
+
+            When(x => x.Response == Qa2Response.Return, () =>
+            {
+                RuleFor(x => x.FeedbackType)
+                    .Equal(FeedbackType.Returned)
+                    .WithMessage("FeedbackType must be 'Returned' when returning");
+                
+                RuleFor(x => x.MessageToProvider)
+                    .NotEmpty()
+                    .WithMessage("External Message is required when returning")
+                    .Matches(ValidationConstants.Notes)
+                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "External Message"));
+            });
+
+            When(x => x.Response == Qa2Response.Accept && (x.FeedbackType == FeedbackType.Advisory || x.FeedbackType == FeedbackType.AcceptedByException), () =>
+            {
+                RuleFor(x => x.MessageToProvider)
+                    .NotEmpty()
+                    .WithMessage("External Message is required for Advisory or Accepted By Exception")
+                    .Matches(ValidationConstants.Notes)
+                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "External Message"));
             });
         }
     }

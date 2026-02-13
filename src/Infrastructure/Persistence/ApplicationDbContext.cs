@@ -126,7 +126,8 @@ public class ApplicationDbContext
     public DbSet<Label> Labels => Set<Label>();
 
     public DbSet<PathwayPlanReview> PathwayPlanReviews => Set<PathwayPlanReview>();
-    
+    public DbSet<ProviderFeedbackEnrolment> ProviderFeedbackEnrolments => Set<ProviderFeedbackEnrolment>();
+    public DbSet<ProviderFeedbackActivity> ProviderFeedbackActivities => Set<ProviderFeedbackActivity>(); 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

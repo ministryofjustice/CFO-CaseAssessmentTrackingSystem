@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Domain.Common.Entities;
+﻿using Cfo.Cats.Domain.Common.Enums;
+using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Participants;
 
@@ -42,19 +43,20 @@ public abstract class ActivityQueueEntry : OwnerPropertyEntity<Guid>
 
     public abstract ActivityQueueEntry Return();
 
-    public ActivityQueueEntry AddNote(string? message, bool isExternal = false)
-    {
-        if (string.IsNullOrWhiteSpace(message) == false)
-        {
-            _notes.Add(new ActivityQueueEntryNote()
-            {
-                TenantId = TenantId,
-                Message = message,
-                IsExternal = isExternal
-            });
-        }
-        return this;
-    }
+    public ActivityQueueEntry AddNote(string? message, bool isExternal = false, FeedbackType? feedbackType = null)
+     {
+         if (string.IsNullOrWhiteSpace(message) == false)
+         {
+             _notes.Add(new ActivityQueueEntryNote()
+             {
+                 TenantId = TenantId,
+                 Message = message,
+                 IsExternal = isExternal,
+                 FeedbackType = feedbackType
+             });
+         }
+         return this;
+     }
 
     public string TenantId { get; set; } = default!;
 

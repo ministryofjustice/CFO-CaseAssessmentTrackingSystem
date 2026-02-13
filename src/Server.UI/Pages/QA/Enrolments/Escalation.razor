@@ -69,7 +69,7 @@
                     {
                         <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
                             <MudItem xs="12">
-                                <MudRadioGroup T="SubmitEscalationResponse.EscalationResponse?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
+                                <MudRadioGroup T="SubmitEscalationResponse.EscalationResponse?" @bind-Value="Command.Response" For="@(() => Command.Response)" @bind-Value:after="OnResponseChanged" Required="true">
                                     <MudRadio T="SubmitEscalationResponse.EscalationResponse?" Value="SubmitEscalationResponse.EscalationResponse.Accept" Color="Color.Primary">
                                         Accept
                                     </MudRadio>
@@ -81,33 +81,83 @@
                                     </MudRadio>
                                 </MudRadioGroup>
                             </MudItem>
-                            <MudDivider Class="py-4" />
 
-                            @if (Command.IsMessageExternal)
-                            {
+                            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                                This comment will only be visible to internal members of CFO staff
+                            </MudAlert>
+
+                            <MudGrid Class="py-4">
+                                <MudItem xs="12" md="9" xl="10">
+                                    <MudTextField @bind-Value="Command.Message" Label="Internal Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" />
+                                    <MudText Class="ml-2">Characters: @(Command.Message?.Length ?? 0) / 1000</MudText>
+                                </MudItem>
+                            </MudGrid>
+
+                            @if (Command.Response == SubmitEscalationResponse.EscalationResponse.Accept)
+                            {                                
+                                <MudDivider Class="py-4" />
+                                
+                                <MudItem xs="12">
+                                    <MudRadioGroup T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" @bind-Value="Command.FeedbackType" For="@(() => Command.FeedbackType)">
+                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.NotApplicable" Color="Color.Default">
+                                            N/A
+                                        </MudRadio>
+                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.Advisory" Color="Color.Primary">
+                                            Advisory
+                                        </MudRadio>
+                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.AcceptedByException" Color="Color.Secondary">
+                                            Accepted By Exception
+                                        </MudRadio>
+                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.Returned" Color="Color.Secondary" Disabled="true">
+                                            Returned
+                                        </MudRadio>  
+                                    </MudRadioGroup>
+                                </MudItem>
+                                
                                 <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
                                     This comment will be visible to PQA (and internal members of CFO staff)
                                 </MudAlert>
+                                
+                                <MudGrid Class="py-4">
+                                    <MudItem xs="12" md="9" xl="10">
+                                        <MudTextField @bind-Value="Command.MessageToProvider" Label="External Message" Lines="5" For="() => Command.MessageToProvider" MaxLength="@ValidationConstants.NotesLength" Immediate="true" />
+                                        <MudText Class="ml-2">Characters: @(Command.MessageToProvider?.Length ?? 0) / 1000</MudText>
+                                    </MudItem>
+                                </MudGrid>
                             }
-                            else
+                            
+                            @if (Command.Response == SubmitEscalationResponse.EscalationResponse.Return)
                             {
-                                <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
-                                    This comment will only be visible to internal members of CFO staff
-                                </MudAlert>
-                            }
+                                <MudDivider Class="py-4" />
 
-                            <MudGrid Class="py-4">
-                                <MudItem Class="d-flex align-center" xs="12" md="3" xl="2">
-                                    <MudSwitch @bind-Value="Command.IsMessageExternal"
-                                    For="() => Command.IsMessageExternal"
-                                    Label="External"
-                                    Color="Color.Primary" />
+                                <MudItem xs="12">
+                                    <MudRadioGroup T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" @bind-Value="Command.FeedbackType" For="@(() => Command.FeedbackType)">
+                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.NotApplicable" Color="Color.Default" Disabled="true">
+                                            N/A
+                                        </MudRadio>                                        
+                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.Advisory" Color="Color.Default" Disabled="true">
+                                            Advisory
+                                        </MudRadio>
+                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.AcceptedByException" Color="Color.Secondary" Disabled="true">
+                                            Accepted By Exception
+                                        </MudRadio>
+                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.Returned" Color="Color.Secondary" Disabled="true">
+                                            Returned
+                                        </MudRadio>  
+                                    </MudRadioGroup>
                                 </MudItem>
-                                <MudItem xs="12" md="9" xl="10">
-                                    <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" />
-                                    <MudText Class="ml-2">Characters: @characterCount / 1000</MudText>
-                                </MudItem>
-                            </MudGrid>
+                                
+                                <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+                                    This comment will be visible to PQA (and internal members of CFO staff)
+                                </MudAlert>
+                                
+                                <MudGrid Class="py-4">
+                                    <MudItem xs="12" md="9" xl="10">
+                                        <MudTextField @bind-Value="Command.MessageToProvider" Label="External Message" Lines="5" For="() => Command.MessageToProvider" MaxLength="@ValidationConstants.NotesLength" Immediate="true" />
+                                        <MudText Class="ml-2">Characters: @(Command.MessageToProvider?.Length ?? 0) / 1000</MudText>
+                                    </MudItem>
+                                </MudGrid>
+                            }
                         </MudForm>
 
                         <MudContainer Class="d-flex px-0 pt-8">

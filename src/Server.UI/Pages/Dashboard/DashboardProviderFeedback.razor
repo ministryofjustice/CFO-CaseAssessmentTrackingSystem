@@ -1,13 +1,14 @@
 @using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Components.Dashboard.QA
+@inherits CatsComponentBase
 
-
-@page "/pages/dashboard/qateam"
+@page "/pages/dashboard/providerfeedback"
 @attribute [Authorize(Policy = SecurityPolicies.Qa2)]
 
 
 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
     <MudText Typo="Typo.h3">
-        QA - Team Dashboard
+        Provider Feedback Dashboard
     </MudText>
     <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
         This page is still under development and may produce inaccurate results.
@@ -25,7 +26,7 @@
 			<MudLink OnClick="DisplayOptionsDialog" Disabled="@(CurrentUser.AssignedRoles is [])">
 				@SelectedDisplayName
 			</MudLink>
-		}            
+		}        
         <MudSwitch @bind-Value="_visualMode"
                    T="bool"
                    ThumbIcon="@Icons.Material.Filled.StackedBarChart"
@@ -37,20 +38,17 @@
 
 <MudStack>
         <MudTabs PanelClass="pa-6" ApplyEffectsToContainer="true" Outlined="true">
-            <MudTabPanel Text="Enrolments: First Pass" Class="pa-3">
-                <MudAlert Severity="Severity.Info">
-                    Under development, coming soon...
-                </MudAlert>
+            <MudTabPanel Text="Enrolments: Returns" Class="pa-3">
+                <EnrolmentsToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
-            <MudTabPanel Text="Returns To Providers" Class="pa-3">
-                <MudAlert Severity="Severity.Info">
-                    Under development, coming soon...
-                </MudAlert>
+            <MudTabPanel Text="Activities: Returns" Class="pa-3">
+                <ActivitiesToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
-            <MudTabPanel Text="Advisories to providers" Class="pa-3">
-                <MudAlert Severity="Severity.Info">
-                    Under development, coming soon...
-                </MudAlert>
+            <MudTabPanel Text="Enrolments: Advisories" Class="pa-3">
+                <EnrolmentAdvisoriesToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+            </MudTabPanel>
+            <MudTabPanel Text="Activities: Advisories" Class="pa-3">
+                <ActivitiesAdvisoriesToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
         </MudTabs>
 </MudStack>
