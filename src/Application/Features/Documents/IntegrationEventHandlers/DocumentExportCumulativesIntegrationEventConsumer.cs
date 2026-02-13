@@ -33,13 +33,13 @@ public class DocumentExportCumulativesIntegrationEventConsumer(
 
         if (document is null)
         {
-            logger.LogWarning("Cannot find document with id {DocumentId}", context.DocumentId);
+            logger.LogWarning("Cannot find cumulatives document with id {DocumentId}", context.DocumentId);
             return;
         }
 
         if (document.SearchCriteriaUsed is null)
         {
-            logger.LogWarning("Document with id {DocumentId} has no search criteria", context.DocumentId);
+            logger.LogWarning("Cumulatives document with id {DocumentId} has no search criteria", context.DocumentId);
             return;
         }
 
@@ -68,24 +68,31 @@ public class DocumentExportCumulativesIntegrationEventConsumer(
                 .WithLastMonthActuals(previousMonthActuals)
                 .WithLastMonthTargets(previousMonthsTargets)
                 .WithThisMonth(command.EndDate);
-                
-            
+
             var results = await excelService.ExportAsync();
 
             var uploadRequest = new UploadRequest(document.Title!, UploadType.Document, results);
 
             var result = await uploadService.UploadAsync($"MyDocuments/{context.UserId}", uploadRequest);
 
-            document
-                .WithStatus(DocumentStatus.Available)
-                .SetURL(result);
+            if (result.Succeeded)
+            {
+                document
+                    .WithStatus(DocumentStatus.Available)
+                    .SetURL(result);
+            }
+            else
+            {
+                logger.LogError("Failed to upload cumulatives document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
+                document.WithStatus(DocumentStatus.Error);
+            }
 
             await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, CancellationToken.None);
             await unitOfWork.CommitTransactionAsync();
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            logger.LogCritical(e, "Error exporting cumulatives");
+            logger.LogCritical(ex, "Error exporting cumulatives document {DocumentId}: {ErrorMessage}", context.DocumentId, ex.Message);
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }

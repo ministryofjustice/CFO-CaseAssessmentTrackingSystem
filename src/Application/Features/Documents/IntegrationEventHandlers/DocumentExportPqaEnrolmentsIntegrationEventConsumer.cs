@@ -12,12 +12,14 @@ public class DocumentExportPqaEnrolmentsIntegrationEventConsumer(
     IMapper mapper,
     IExcelService excelService,
     IUploadService uploadService,
-    IDomainEventDispatcher domainEventDispatcher) : IHandleMessages<ExportDocumentIntegrationEvent>
+    IDomainEventDispatcher domainEventDispatcher,
+    ILogger<DocumentExportPqaEnrolmentsIntegrationEventConsumer> logger) : IHandleMessages<ExportDocumentIntegrationEvent>
 {
     public async Task Handle(ExportDocumentIntegrationEvent context)
     {
         if (context.Key != DocumentTemplate.PqaEnrolments.Name)
         {
+            logger.LogDebug("Export document not supported by this handler");
             return;
         }
 
@@ -25,12 +27,13 @@ public class DocumentExportPqaEnrolmentsIntegrationEventConsumer(
 
         if (document is null)
         {
+            logger.LogError("Export PQA enrolments document event raised for a document that does not exist. ({DocumentId})", context.DocumentId);
             return;
         }
 
         try
         {
-            var request = JsonConvert.DeserializeObject<PqaQueueWithPagination.Query>(context.SearchCriteria!) 
+            var request = JsonConvert.DeserializeObject<PqaQueueWithPagination.Query>(context.SearchCriteria!)
                 ?? throw new Exception();
 
             request.PageSize = int.MaxValue;
@@ -53,15 +56,24 @@ public class DocumentExportPqaEnrolmentsIntegrationEventConsumer(
 
             var result = await uploadService.UploadAsync($"MyDocuments/{context.UserId}", uploadRequest);
 
-            document
-                .WithStatus(DocumentStatus.Available)
-                .SetURL(result);
+            if (result.Succeeded)
+            {
+                document
+                    .WithStatus(DocumentStatus.Available)
+                    .SetURL(result);
+            }
+            else
+            {
+                logger.LogError("Failed to upload PQA enrolments document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
+                document.WithStatus(DocumentStatus.Error);
+            }
 
             await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, CancellationToken.None);
             await unitOfWork.CommitTransactionAsync();
         }
-        catch
+        catch (Exception ex)
         {
+            logger.LogError(ex, "Error exporting PQA enrolments document {DocumentId}: {ErrorMessage}", context.DocumentId, ex.Message);
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }
