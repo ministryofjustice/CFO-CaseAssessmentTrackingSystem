@@ -25,9 +25,8 @@ public class ArchivedCase
         string contractId,
         int locationId,
         string locationType,
-        string tenantId)
-    {
-        return new ArchivedCase
+        string tenantId) =>
+        new()
         {
             Id = Guid.CreateVersion7(),
             ParticipantId = participantId,
@@ -47,9 +46,8 @@ public class ArchivedCase
             LocationType = locationType,
             TenantId = tenantId,
         };
-    }
 
-    public ArchivedCase Close(DateTime to, string? unarchiveAdditionalInfo, string? unarchiveReason)
+    public void Close(DateTime to, string? unarchiveAdditionalInfo, string? unarchiveReason)
     {
         if (To is not null)
         {
@@ -64,24 +62,23 @@ public class ArchivedCase
         To = to;
         UnarchiveReason = unarchiveReason;
         UnarchiveAdditionalInfo = unarchiveAdditionalInfo;
-        return this;
     }
 
-    public required Guid Id { get; set; }
-    public required string ParticipantId { get; set; }
-    public required string FirstName { get; set; }
-    public required string LastName { get; set; }
-    public required int EnrolmentHistoryId { get; set; }
-    public required DateTime Created { get; set; }
-    public required string CreatedBy { get; set; }
-    public required string? AdditionalInfo { get; set; }
-    public required string? ArchiveReason { get; set; }
+    public required Guid Id { get; init; }
+    public required string ParticipantId { get; init; }
+    public required string FirstName { get; init; }
+    public required string LastName { get; init; }
+    public required int EnrolmentHistoryId { get; init; }
+    public required DateTime Created { get; init; }
+    public required string CreatedBy { get; init; }
+    public required string? AdditionalInfo { get; init; }
+    public required string? ArchiveReason { get; init; }
     public required string? UnarchiveAdditionalInfo { get; set; }
     public required string? UnarchiveReason { get; set; }
-    public required DateTime From { get; set; }
+    public required DateTime From { get; init; }
     public required DateTime? To { get; set; }
-    public required string ContractId { get; set; }
-    public required int LocationId { get; set; }
-    public required string LocationType { get; set; }
-    public required string TenantId { get; set; }
+    public required string? ContractId { get; init; }
+    public required int LocationId { get; init; }
+    public required string LocationType { get; init; }
+    public required string TenantId { get; init; }
 }
