@@ -57,7 +57,6 @@ public class ArchivedCaseEntityTypeConfiguration
         builder.Property(x => x.To);
         
         builder.Property(x => x.ContractId)
-            .IsRequired()
             .HasMaxLength(12);
 
         builder.Property(x => x.LocationId)

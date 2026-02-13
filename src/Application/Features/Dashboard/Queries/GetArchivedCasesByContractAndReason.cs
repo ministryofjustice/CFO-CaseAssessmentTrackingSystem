@@ -8,10 +8,10 @@ public static class GetArchivedCasesByContractAndReason
     [RequestAuthorize(Policy = SecurityPolicies.Internal)]
     public class Query : IRequest<Result<ArchivedCasesByContractAndReasonDto>>
     {
-        public string? TenantId { get; set; }
-        public required UserProfile CurrentUser { get; set; }
-        public required DateTime StartDate { get; set; }
-        public required DateTime EndDate { get; set; }
+        public string? TenantId { get; init; }
+        public required UserProfile CurrentUser { get; init; }
+        public required DateTime StartDate { get; init; }
+        public required DateTime EndDate { get; init; }
         public string? UserId { get; set; }
     }
 
@@ -46,8 +46,8 @@ public static class GetArchivedCasesByContractAndReason
                     FirstName = x.ac.FirstName,
                     LastName = x.ac.LastName,
 
-                    ContractId = x.ac.ContractId,
-                    Contract = x.c.Description,   // ✅ SAME AS ACTIVITIES
+                    ContractId = x.ac.ContractId!,
+                    Contract = x.c.Description,  
 
                     Reason = x.ac.ArchiveReason ?? "Unknown",
 
@@ -93,28 +93,28 @@ public static class GetArchivedCasesByContractAndReason
     
     public record ArchivedCasesTabularData
     {
-        public string? ParticipantId { get; set; }
+        public string? ParticipantId { get; init; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
 
         public string ContractId { get; set; } = "";     
-        public string Contract { get; set; } = "";       
-        public string? Reason { get; set; }
+        public string Contract { get; init; } = "";       
+        public string? Reason { get; init; }
 
         public int LocationId { get; set; }
 
-        public DateTime Created { get; set; }
-        public DateTime From { get; set; }
-        public DateTime? To { get; set; }
+        public DateTime Created { get; init; }
+        public DateTime From { get; init; }
+        public DateTime? To { get; init; }
 
         public string? TenantId { get; set; }
-        public string? CreatedBy { get; set; }
+        public string? CreatedBy { get; init; }
     }
     
     public record ArchivedCasesChartData
     {
-        public string? Contract { get; set; }
-        public string? Reason { get; set; }
-        public int Count { get; set; }
+        public string? Contract { get; init; }
+        public string? Reason { get; init; }
+        public int Count { get; init; }
     }
 }
