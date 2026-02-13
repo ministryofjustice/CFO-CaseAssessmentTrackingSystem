@@ -1,3 +1,4 @@
+using System.Text;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Assessments.DTOs;
 using Cfo.Cats.Application.Features.Assessments.Queries;
@@ -13,18 +14,18 @@ namespace Cfo.Cats.Server.UI.Pages.QA.Enrolments;
 
 public partial class Escalation
 {
-    private int characterCount => Command.Message?.Length ?? 0;
-    private QaExternalMessageWarning? warningMessage;
+    private QaExternalMessageWarning? _warningMessage;
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry;
     private ParticipantDto? _participantDto;
     private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
-    private bool _saving = false;
+    private bool _saving;
+    
     [Parameter] public Guid Id { get; set; }
 
     [CascadingParameter] public UserProfile? UserProfile { get; set; }
 
-    private SubmitEscalationResponse.Command Command { get; set; } = default!;
+    private SubmitEscalationResponse.Command Command { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,6 +51,7 @@ public partial class Escalation
                     QueueEntryId = Id,
                     CurrentUser = UserProfile
                 };
+                
                 await SetLatestParticipantAssessment(_queueEntry.ParticipantId);
             }
 
@@ -57,7 +59,7 @@ public partial class Escalation
         }
     }
 
-    protected async Task SetLatestParticipantAssessment(string participantId)
+    private async Task SetLatestParticipantAssessment(string participantId)
     {
         if (!string.IsNullOrEmpty(participantId))
         {
@@ -68,14 +70,14 @@ public partial class Escalation
 
             var result = await GetNewMediator().Send(query);
 
-            if (result.Succeeded && result.Data != null)
+            if (result is { Succeeded: true, Data: not null })
             {
                 _latestParticipantAssessmentDto = result.Data.MaxBy(pa => pa.CreatedDate);
             }
         }
     }
 
-    protected async Task SubmitToQa()
+    private async Task SubmitToQa()
     {
         try
         {
@@ -87,11 +89,11 @@ public partial class Escalation
                 return;
             }
 
-            bool submit = true;
+            var submit = true;
 
             if (Command is { IsMessageExternal: true, Message.Length: > 0 })
             {
-                submit = await warningMessage!.ShowAsync();
+                submit = await _warningMessage!.ShowAsync();
             }
 
             if (submit)
@@ -128,21 +130,26 @@ public partial class Escalation
 
     private void ShowActionFailure(string title, IResult result)
     {
-        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        var html = new StringBuilder();
 
-        sb.Append("<div>");
-        sb.Append($"<h2>{title}</h2>");
-        sb.Append("<ul>");
-
+        html.Append($"<div>");
+        html.Append($"<h2>{title}</h2>");
+        html.Append($"<ul>");
+        
         foreach (var e in result.Errors)
         {
-            sb.Append($"<li>{e}</li>");
+            html.Append($"<li>{e}</li>");
         }
-
-        sb.Append("</ul>");
-        sb.Append("</div>");
-
-        Snackbar.Add(sb.ToString(), Severity.Error, options =>
+        
+        html.Append($"</ul>");
+        html.Append($"</div>");
+   
+        RenderFragment content = builder =>
+        {
+            builder.AddMarkupContent(0, html.ToString());
+        };
+        
+        Snackbar.Add(content, Severity.Error, options =>
         {
             options.RequireInteraction = true;
             options.SnackbarVariant = Variant.Text;

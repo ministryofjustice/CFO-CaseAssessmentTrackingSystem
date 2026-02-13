@@ -17,6 +17,7 @@ public static class ActivityQa2WithPagination
             SortDirection = "Desc";
             OrderBy = "Created";
         }
+        
         public ActivityQa2QueueEntrySpecification Specification => new(this);
     }
 
@@ -27,47 +28,71 @@ public static class ActivityQa2WithPagination
             var query = unitOfWork.DbContext
                 .ActivityQa2Queue
                 .AsNoTracking();
-
+            
             var sortExpression = GetSortExpression(request);
 
             var ordered = request.SortDirection.Equals("Descending", StringComparison.CurrentCultureIgnoreCase)
                 ? query.OrderByDescending(sortExpression)
                 : query.OrderBy(sortExpression);
 
-            var data = await ordered
-                .ProjectToPaginatedDataAsync<ActivityQa2QueueEntry, ActivityQueueEntryDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
+             var data = await ordered
+                .ProjectToPaginatedDataAsync<ActivityQa2QueueEntry, ActivityQueueEntryDto>(
+                    request.Specification,
+                    request.PageNumber,
+                    request.PageSize,
+                    mapper.ConfigurationProvider,
+                    cancellationToken);
 
+            var activityIds = data.Items
+                .Select(x => x.ActivityId)
+                .Distinct()
+                .ToArray();
+
+            var qa1Owners = await unitOfWork.DbContext.ActivityQa1Queue
+                .Where(q1 =>
+                    ((IEnumerable<Guid>)activityIds).Contains(q1.ActivityId) &&
+                    q1.IsCompleted)
+                .GroupBy(q1 => q1.ActivityId)
+                .Select(g => new
+                {
+                    ActivityId = g.Key,
+                    Qa1CompletedBy = g
+                        .OrderByDescending(x => x.LastModified)
+                        .Select(x => x.Owner!.DisplayName)
+                        .FirstOrDefault()
+                })
+                .ToDictionaryAsync(
+                    x => x.ActivityId,
+                    x => x.Qa1CompletedBy,
+                    cancellationToken);
+
+            foreach (var item in data.Items)
+            {
+                if (qa1Owners.TryGetValue(item.ActivityId, out var completedBy))
+                {
+                    item.Qa1CompletedBy = completedBy;
+                }
+            }
+            
             return data;
         }
 
         private Expression<Func<ActivityQa2QueueEntry, object?>> GetSortExpression(Query request)
         {
-            Expression<Func<ActivityQa2QueueEntry, object?>> sortExpression;
-            switch (request.OrderBy)
+            Expression<Func<ActivityQa2QueueEntry, object?>> sortExpression = request.OrderBy switch
             {
-                case "ParticipantId":
-                    sortExpression = (x => x.Participant!.FirstName + ' ' + x.Participant.LastName);
-                    break;
-                case "TenantId":
-                    sortExpression = (x => x.TenantId);
-                    break;
-                case "Created":
-                    sortExpression = (x => x.Created!);
-                    break;
-                case "SupportWorker":
-                    sortExpression = (x => x.Participant!.Owner!.DisplayName!);
-                    break;
-                case "AssignedTo":
-                    sortExpression = (x => x.OwnerId == null ? null : x.Owner!.DisplayName);
-                    break;
-                default:
-                    sortExpression = (x => x.Created!);
-                    break;
-            }
+                "ParticipantId" => (x => x.Participant!.FirstName + ' ' + x.Participant.LastName),
+                "TenantId" => (x => x.TenantId),
+                "Created" => (x => x.Created!),
+                "SupportWorker" => (x => x.Participant!.Owner!.DisplayName!),
+                "AssignedTo" => (x => x.OwnerId == null ? null : x.Owner!.DisplayName),
+                _ => (x => x.Created!)
+            };
 
             return sortExpression;
         }
     }
+    
     public class Validator : AbstractValidator<Query>
     {
         public Validator()

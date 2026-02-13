@@ -17,6 +17,7 @@ public static class Qa2WithPagination
             SortDirection = "Desc";
             OrderBy = "Created";
         }
+        
         public EnrolmentQa2QueueEntrySpecification Specification => new(this);
     }
 
@@ -37,37 +38,56 @@ public static class Qa2WithPagination
             var data = await ordered
                 .ProjectToPaginatedDataAsync<EnrolmentQa2QueueEntry, EnrolmentQueueEntryDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
 
+            var participantIds = data.Items
+                .Select(x => x.ParticipantId )
+                .Distinct()
+                .ToArray();
+            
+            var qa1Owners = await unitOfWork.DbContext.EnrolmentQa1Queue
+                .Where(q1 =>
+                    participantIds.Contains(q1.ParticipantId) &&
+                    q1.IsCompleted)
+                .GroupBy(q1 => q1.ParticipantId) 
+                .Select(g => new
+                {
+                    ParticipantId = g.Key,
+                    Qa1CompletedBy = g
+                        .OrderByDescending(x => x.LastModified) 
+                        .Select(x => x.Owner!.DisplayName)
+                        .FirstOrDefault()
+                })
+                .ToDictionaryAsync(
+                    x => x.ParticipantId,
+                    x => x.Qa1CompletedBy,
+                    cancellationToken);
+            
+            foreach (var item in data.Items)
+            {
+                if (qa1Owners.TryGetValue(item.ParticipantId, out var completedBy))
+                {
+                    item.Qa1CompletedBy = completedBy;
+                }
+            }
+            
             return data;
         }
         
         private Expression<Func<EnrolmentQa2QueueEntry, object?>> GetSortExpression(Query request)
         {
-            Expression<Func<EnrolmentQa2QueueEntry, object?>> sortExpression;
-            switch (request.OrderBy)
+            Expression<Func<EnrolmentQa2QueueEntry, object?>> sortExpression = request.OrderBy switch
             {
-                case "ParticipantId":
-                    sortExpression = (x => x.Participant!.FirstName + ' ' + x.Participant.LastName);
-                    break;
-                case "TenantId":
-                    sortExpression = (x => x.TenantId);
-                    break;
-                case "Created":
-                    sortExpression = (x => x.Created!);
-                    break;
-                case "SupportWorker":
-                    sortExpression = (x => x.SupportWorker!.DisplayName!);
-                    break;
-                case "AssignedTo":
-                    sortExpression = (x => x.OwnerId == null ? null : x.Owner!.DisplayName);
-                    break;
-                default:
-                    sortExpression = (x => x.Created!);
-                    break;
-            }
+                "ParticipantId" => (x => x.Participant!.FirstName + ' ' + x.Participant.LastName),
+                "TenantId" => (x => x.TenantId),
+                "Created" => (x => x.Created!),
+                "SupportWorker" => (x => x.SupportWorker!.DisplayName!),
+                "AssignedTo" => (x => x.OwnerId == null ? null : x.Owner!.DisplayName),
+                _ => (x => x.Created!)
+            };
 
             return sortExpression;
         }
     }
+    
     public class Validator : AbstractValidator<Query>
     {
         public Validator()
@@ -93,7 +113,6 @@ public static class Qa2WithPagination
             RuleFor(r => r.OrderBy)
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "OrderBy"));
-
         }
     }
 }

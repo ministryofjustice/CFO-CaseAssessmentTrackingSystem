@@ -13,22 +13,21 @@ namespace Cfo.Cats.Server.UI.Pages.QA.Enrolments;
 
 public partial class QA2
 {
-    private int characterCount => Command.Message?.Length ?? 0; 
-    private QaExternalMessageWarning? warningMessage;
+    private QaExternalMessageWarning? _warningMessage;
     private MudForm? _form;
-    private EnrolmentQueueEntryDto? _queueEntry = null;
-    private ParticipantDto? _participantDto = null;
+    private EnrolmentQueueEntryDto? _queueEntry;
+    private ParticipantDto? _participantDto;
     private ParticipantAssessmentDto? _latestParticipantAssessmentDto;
-    private bool _saving = false;
+    private bool _saving;
     
     [CascadingParameter]
-    public UserProfile? UserProfile { get; set; } = null!;
+    public UserProfile? UserProfile { get; set; }
 
-    private SubmitQa2Response.Command Command { get; set; } = default!;
+    private SubmitQa2Response.Command Command { get; set; } = null!;
 
     private async Task GetQueueItem()
     {
-        GrabQa2Entry.Command command = new GrabQa2Entry.Command()
+        var command = new GrabQa2Entry.Command()
         {
             CurrentUser = UserProfile!
         };
@@ -58,7 +57,7 @@ public partial class QA2
         }
     }
 
-    protected async Task SetLatestParticipantAssessment(string participantId)
+    private async Task SetLatestParticipantAssessment(string participantId)
     {
         if (!string.IsNullOrEmpty(participantId))
         {
@@ -69,7 +68,7 @@ public partial class QA2
 
             var result = await GetNewMediator().Send(query);
 
-            if (result.Succeeded && result.Data != null)
+            if (result is { Succeeded: true, Data: not null })
             {
                 _latestParticipantAssessmentDto = result.Data.MaxBy(pa => pa.CreatedDate);
             }
@@ -88,11 +87,11 @@ public partial class QA2
                 return;
             }
 
-            bool submit = true;
+            var submit = true;
 
             if (Command is { IsMessageExternal: true, Message.Length: > 0 })
             {
-                submit = await warningMessage!.ShowAsync();
+                submit = await _warningMessage!.ShowAsync();
             }
 
             if (submit)
@@ -120,10 +119,12 @@ public partial class QA2
         html.Append($"<div>");
         html.Append($"<h2>{title}</h2>");
         html.Append($"<ul>");
+        
         foreach (var e in result.Errors)
         {
             html.Append($"<li>{e}</li>");
         }
+        
         html.Append($"</ul>");
         html.Append($"</div>");
 

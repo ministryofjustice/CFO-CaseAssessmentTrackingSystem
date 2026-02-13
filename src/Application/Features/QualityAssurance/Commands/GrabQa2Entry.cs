@@ -12,7 +12,7 @@ public static class GrabQa2Entry
     [RequestAuthorize(Policy = SecurityPolicies.Qa2)]
     public class Command : IRequest<Result<EnrolmentQueueEntryDto>>
     {
-        public required UserProfile CurrentUser { get; set; }        
+        public required UserProfile CurrentUser { get; init; }        
     }
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result<EnrolmentQueueEntryDto>>
@@ -25,39 +25,63 @@ public static class GrabQa2Entry
 
             try
             {
-                var entry = await unitOfWork.DbContext.EnrolmentQa2Queue
+               var entryWithUser = await unitOfWork.DbContext.EnrolmentQa2Queue
                     .Include(q => q.SupportWorker)
                     .Where(x => x.OwnerId == request.CurrentUser.UserId)
                     .Where(x => x.IsCompleted == false)
+                    .Join(
+                        unitOfWork.DbContext.Users,
+                        q => q.CreatedBy,
+                        u => u.Id,
+                        (q, u) => new
+                        {
+                            Entry = q,
+                            CreatedByDisplayName = u.DisplayName
+                        })
                     .FirstOrDefaultAsync(cancellationToken);
-
-                if (entry is null)
+                
+                if (entryWithUser is null)
                 {
-                    entry = await unitOfWork.DbContext.EnrolmentQa2Queue
+                    entryWithUser = await unitOfWork.DbContext.EnrolmentQa2Queue
                         .Include(q => q.SupportWorker)
-                        .Where(x => x.IsCompleted == false && x.OwnerId == null && x.CreatedBy != request.CurrentUser.UserId)
+                        .Where(x =>
+                            x.IsCompleted == false &&
+                            x.OwnerId == null &&
+                            x.CreatedBy != request.CurrentUser.UserId)
                         .OrderBy(x => x.Created)
+                        .Join(
+                            unitOfWork.DbContext.Users,
+                            q => q.CreatedBy,
+                            u => u.Id,
+                            (q, u) => new
+                            {
+                                Entry = q,
+                                CreatedByDisplayName = u.DisplayName
+                            })
                         .FirstOrDefaultAsync(cancellationToken);
 
-                    if (entry is not null)
+                    if (entryWithUser is not null)
                     {
-                        entry.OwnerId = request.CurrentUser.UserId;
+                        entryWithUser.Entry.OwnerId = request.CurrentUser.UserId;
                         await unitOfWork.CommitTransactionAsync();
                     }
                 }
 
-                if (entry is not null)
+                if (entryWithUser is null)
                 {
-                    return Result<EnrolmentQueueEntryDto>.Success(mapper.Map<EnrolmentQueueEntryDto>(entry));
+                    return Result<EnrolmentQueueEntryDto>.Failure("Nothing assignable");    
                 }
-                return Result<EnrolmentQueueEntryDto>.Failure("Nothing assignable");
+                
+                var dto = mapper.Map<EnrolmentQueueEntryDto>(entryWithUser.Entry);
+                
+                dto.Qa1CompletedBy = entryWithUser.CreatedByDisplayName;
+                
+                return Result<EnrolmentQueueEntryDto>.Success(dto);
             }
             finally
             {
-                
                 Semaphore.Release();
             }
         }
     }
-    
 }

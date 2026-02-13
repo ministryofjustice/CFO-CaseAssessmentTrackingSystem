@@ -2,9 +2,6 @@
 
 @using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.Activities.Commands
-@using Cfo.Cats.Application.Features.Activities.DTOs
-@using Cfo.Cats.Application.Features.Activities.Queries
-@using Cfo.Cats.Application.Features.Documents.Queries
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.QA.Activities.Components
@@ -16,7 +13,7 @@
 <style>
     .document-container {
         width: 90%;
-        height: calc(100vh - 150px);
+        height: calc(100vh - 350px);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -24,7 +21,7 @@
 
 </style>
 
-<ActivityQaExternalMessageWarning @ref="warningMessage" />
+<ActivityQaExternalMessageWarning @ref="_warningMessage" />
 
 <MudContainer Style="width: 100%; min-width: 480px;" MaxWidth="MaxWidth.ExtraLarge">
     <MudText Typo="Typo.h5" Class="mb-5">
@@ -57,7 +54,10 @@
             <MudItem xs="8" Style="height: 100%; width: 100%;">
                 <MudTabs>
                     <MudTabPanel Text="QA Notes">
-                        <QaNotes ActivityId="@_activityQaDetailsDto.ActivityId" />
+                        <MudItem xs="12" md="9" xl="10">
+                            First Pass User:  @_queueEntry.Qa1CompletedBy
+                        </MudItem>
+                        <QaNotes ActivityId="@_activityQaDetailsDto.ActivityId"/>
                     </MudTabPanel>
 
                     <MudTabPanel Text="Previous Activities" Style="min-width: 185px;" BadgeColor="Color.Info">
@@ -71,6 +71,7 @@
                         @if (_queueEntry.IsCompleted == false)
                         {
                             <MudForm Model="@Command" @ref="_form" Validation="@(Validator.ValidateValue(Command))">
+                                
                                 <MudItem xs="12">
                                     <MudRadioGroup T="SubmitActivityQa2Response.Qa2Response?" @bind-Value="Command.Response" For="@(() => Command.Response)" Required="true">
                                         <MudRadio T="SubmitActivityQa2Response.Qa2Response?" Value="SubmitActivityQa2Response.Qa2Response.Accept" Color="Color.Primary">
@@ -85,7 +86,7 @@
                                     </MudRadioGroup>
                                 </MudItem>
 
-                                <MudDivider Class="py-4" />
+                                <MudDivider Class="py-4"/>
 
                                 @if (Command.IsMessageExternal)
                                 {
@@ -103,20 +104,26 @@
                                 <MudGrid Class="py-4">
                                     <MudItem Class="d-flex align-center" xs="12" md="3" xl="2">
                                         <MudSwitch @bind-Value="Command.IsMessageExternal"
-                                        For="() => Command.IsMessageExternal"
-                                        Label="External"
-                                        Color="Color.Primary" />
+                                                   For="() => Command.IsMessageExternal"
+                                                   Label="External"
+                                                   Color="Color.Primary"/>
                                     </MudItem>
                                     <MudItem xs="12" md="9" xl="10">
-                                        <MudTextField @bind-Value="Command.Message" Label="Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" oninput="UpdateCharacterCount" />
-                                        <MudText Class="ml-2">Characters: @characterCount / 1000</MudText>
+                                        <MudTextField @bind-Value="Command.Message"
+                                                      Label="Message"
+                                                      Lines="5"
+                                                      For="() => Command.Message"
+                                                      MaxLength="@ValidationConstants.NotesLength"
+                                                      Immediate="true"
+                                                      Counter=@ValidationConstants.NotesLength>
+                                        </MudTextField>
                                     </MudItem>
                                 </MudGrid>
 
                             </MudForm>
 
                             <MudContainer Class="d-flex px-0 pt-8">
-                                <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
+                                <MudButton Color="Color.Primary" OnClick="@SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
                             </MudContainer>
                         }
                         else
@@ -133,83 +140,7 @@
 </MudContainer>
 
 @code {
-    private ActivityQaExternalMessageWarning? warningMessage;
-    private MudForm? _form;
-    private ActivityQueueEntryDto? _queueEntry = null;
-    private ActivityQaDetailsDto? _activityQaDetailsDto = null;
-    
-    [CascadingParameter]
-    public UserProfile? UserProfile { get; set; } = null!;
-
-    private SubmitActivityQa2Response.Command Command { get; set; } = default!;
-
-    private async Task GetQueueItem()
-    {
-        GrabActivityQa2Entry.Command command = new GrabActivityQa2Entry.Command()
-            {
-                CurrentUser = UserProfile!
-            };
-
-        var result = await GetNewMediator().Send(command);
-
-        if (result.Succeeded)
-        {
-            _queueEntry = result.Data!;
-
-            var activity = await GetNewMediator().Send(new GetActivityById.Query()
-                {
-                    Id = _queueEntry.ActivityId
-                });
-            _activityQaDetailsDto = Mapper.Map<ActivityQaDetailsDto>(activity);
-            _activityQaDetailsDto.ActivityId = activity!.Id;
-
-            Command = new SubmitActivityQa2Response.Command()
-                {
-                    ActivityQueueEntryId = _queueEntry.Id,
-                    CurrentUser = UserProfile
-                };
-        }
-        else
-        {
-            Snackbar.Add(result.ErrorMessage, Severity.Info);
-        }
-    }
-
-    protected async Task SubmitToQa()
-    {
-        await _form!.Validate();
-
-        if (_form.IsValid is false)
-        {
-            return;
-        }
-
-        bool submit = true;
-
-        if (Command is { IsMessageExternal: true, Message.Length: > 0 })
-        {
-            submit = await warningMessage!.ShowAsync();
-        }
-
-        if (submit)
-        {
-            var result = await GetNewMediator().Send(Command);
-
-            if (result.Succeeded)
-            {
-                Snackbar.Add("Activity submitted", Severity.Info);
-                Navigation.NavigateTo("/pages/qa/activities/qa2", true);
-            }
-            else
-            {
-                ShowActionFailure("Failed to submit", result);
-            }
-        }
-    }
-
-    private void ShowActionFailure(string title, IResult result)
-    {
-        Snackbar.Add(
+    private RenderFragment RenderFailure(string title, IResult result) =>
         @<div>
             <h2>@title</h2>
             <ul>
@@ -218,17 +149,5 @@
                     <li>@e</li>
                 }
             </ul>
-        </div>
-        , Severity.Error, options => {
-            options.RequireInteraction = true;
-            options.SnackbarVariant = Variant.Text;
-        });
-    }
-
-    private int characterCount => Command.Message?.Length ?? 0;
-
-    private void UpdateCharacterCount(ChangeEventArgs args)
-    {
-        Command.Message = args?.Value?.ToString() ?? string.Empty;
-    }
+        </div>;
 }
