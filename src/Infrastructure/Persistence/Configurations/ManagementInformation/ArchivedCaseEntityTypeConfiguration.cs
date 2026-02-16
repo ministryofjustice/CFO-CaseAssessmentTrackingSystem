@@ -25,7 +25,7 @@ public class ArchivedCaseEntityTypeConfiguration
             .IsRequired()
             .HasMaxLength(50);
 
-      builder.Property(p => p.LastName)
+        builder.Property(p => p.LastName)
             .IsRequired()
             .HasMaxLength(50);
         
