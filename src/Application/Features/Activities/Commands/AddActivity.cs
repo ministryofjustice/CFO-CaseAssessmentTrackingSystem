@@ -187,7 +187,7 @@ public static class AddActivity
                 }                
                 else                
                 {
-                    return Result.Failure("Failed to upload template");
+                    return Result.Failure($"Failed to upload template: {string.Join(", ", result.Errors)}");                    
                 }
 
                 templatedActivity.AddTemplate(document);

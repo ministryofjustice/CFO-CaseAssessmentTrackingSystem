@@ -13,12 +13,14 @@ public class DocumentExportEnrolmentPaymentsIntegrationEventConsumer(
     IExcelService excelService,
     IUploadService uploadService,
     IDomainEventDispatcher domainEventDispatcher,
-    ITargetsProvider targetsProvider) : IHandleMessages<ExportDocumentIntegrationEvent>
+    ITargetsProvider targetsProvider,
+    ILogger<DocumentExportEnrolmentPaymentsIntegrationEventConsumer> logger) : IHandleMessages<ExportDocumentIntegrationEvent>
 {
     public async Task Handle(ExportDocumentIntegrationEvent context)
     {
         if (context.Key != DocumentTemplate.EnrolmentPayments.Name)
         {
+            logger.LogDebug("Export document not supported by this handler");
             return;
         }
 
@@ -26,6 +28,7 @@ public class DocumentExportEnrolmentPaymentsIntegrationEventConsumer(
 
         if (document is null)
         {
+            logger.LogError("Export enrolment payments document event raised for a document that does not exist. ({DocumentId})", context.DocumentId);
             return;
         }
 
@@ -62,15 +65,24 @@ public class DocumentExportEnrolmentPaymentsIntegrationEventConsumer(
 
             var result = await uploadService.UploadAsync($"MyDocuments/{context.UserId}", uploadRequest);
 
-            document
-                .WithStatus(DocumentStatus.Available)
-                .SetURL(result);
+            if (result.Succeeded)
+            {
+                document
+                    .WithStatus(DocumentStatus.Available)
+                    .SetURL(result);
+            }
+            else
+            {
+                logger.LogError("Failed to upload enrolment payments document {DocumentId}: {Errors}", context.DocumentId, string.Join(", ", result.Errors));
+                document.WithStatus(DocumentStatus.Error);
+            }
 
             await domainEventDispatcher.DispatchEventsAsync(unitOfWork.DbContext, CancellationToken.None);
             await unitOfWork.CommitTransactionAsync();
         }
-        catch
+        catch (Exception ex)
         {
+            logger.LogError(ex, "Error exporting enrolment payments document {DocumentId}: {ErrorMessage}", context.DocumentId, ex.Message);
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }
