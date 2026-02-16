@@ -28,7 +28,7 @@
                     <div class="d-flex flex-column">
                         @if (ParticipantIsActive)
                         {
-                            <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="@ReviewPathwayPlan">Review Pathway Plan</MudButton>
+                            <MudButton Color="Color.Primary" Variant="Variant.Outlined" Size="Size.Small" OnClick="@ReviewPathwayPlan">Review Pathway Plan</MudButton>
                         }
                         @if(Model.LastReviewed.HasValue)
                         {

@@ -26,7 +26,7 @@ public class LabelTests
             "Test Label",
             "Test Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
@@ -35,7 +35,7 @@ public class LabelTests
         label.Name.ShouldBe("Test Label");
         label.Description.ShouldBe("Test Description");
         label.Colour.ShouldBe(AppColour.Primary);
-        label.Variant.ShouldBe(AppVariant.Filled);
+        label.Variant.ShouldBe(AppVariant.Outlined);
         label.ContractId.ShouldBe("CONTRACT-001");
     }
 
@@ -47,7 +47,7 @@ public class LabelTests
                 null!,
                 "Description",
                 AppColour.Primary,
-                AppVariant.Filled,
+                AppVariant.Outlined,
             AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
@@ -62,7 +62,7 @@ public class LabelTests
                 "",
                 "Description",
                 AppColour.Primary,
-                AppVariant.Filled,
+                AppVariant.Outlined,
             AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
@@ -77,7 +77,7 @@ public class LabelTests
                 "   ",
                 "Description",
                 AppColour.Primary,
-                AppVariant.Filled,
+                AppVariant.Outlined,
             AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
@@ -92,7 +92,7 @@ public class LabelTests
                 "A",
                 "Description",
                 AppColour.Primary,
-                AppVariant.Filled,
+                AppVariant.Outlined,
             AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
@@ -107,7 +107,7 @@ public class LabelTests
                 new string('x', 201),
                 "Description",
                 AppColour.Primary,
-                AppVariant.Filled,
+                AppVariant.Outlined,
             AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
@@ -124,7 +124,7 @@ public class LabelTests
                 "Duplicate",
                 "Description",
                 AppColour.Primary,
-                AppVariant.Filled,
+                AppVariant.Outlined,
             AppIcon.Label,
                 "CONTRACT-001",
                 _labelCounter))
@@ -140,7 +140,7 @@ public class LabelTests
             "Same Name",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-002",
             _labelCounter);
@@ -156,7 +156,7 @@ public class LabelTests
             "Test Label",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
@@ -171,7 +171,7 @@ public class LabelTests
             "Original",
             "Original Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
@@ -197,7 +197,7 @@ public class LabelTests
             "Original",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
@@ -208,7 +208,7 @@ public class LabelTests
             "NewName",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             _labelCounter);
 
@@ -222,7 +222,7 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
@@ -233,7 +233,7 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Secondary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             _labelCounter);
 
@@ -272,7 +272,7 @@ public class LabelTests
             "Label",
             "Original",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
@@ -283,7 +283,7 @@ public class LabelTests
             "Label",
             "Updated Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             _labelCounter);
 
@@ -297,7 +297,7 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
@@ -308,7 +308,7 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             _labelCounter);
 
@@ -322,7 +322,7 @@ public class LabelTests
             "Global",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             null,
             _labelCounter);
@@ -342,7 +342,7 @@ public class LabelTests
             "Global",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             null,
             _labelCounter);
@@ -361,7 +361,7 @@ public class LabelTests
             "Contract",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
@@ -381,7 +381,7 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
@@ -401,7 +401,7 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
@@ -421,7 +421,7 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
@@ -443,7 +443,7 @@ public class LabelTests
             "Original",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
@@ -455,7 +455,7 @@ public class LabelTests
                 "ExistingLabel",
                 "Description",
                 AppColour.Primary,
-                AppVariant.Filled,
+                AppVariant.Outlined,
                 AppIcon.Label,
                 _labelCounter))
             .Message.ShouldContain("Cannot rename label");
@@ -468,7 +468,7 @@ public class LabelTests
             "Original",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
@@ -479,7 +479,7 @@ public class LabelTests
             "NewUniqueName",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             _labelCounter);
 
@@ -493,7 +493,7 @@ public class LabelTests
             "Original",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);

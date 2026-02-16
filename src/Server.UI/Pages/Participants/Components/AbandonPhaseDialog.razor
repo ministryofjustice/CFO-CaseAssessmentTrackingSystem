@@ -48,8 +48,8 @@
         </MudPaper>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Loading="@saving" Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">@ConstantString.AbandonPhase</MudLoadingButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Warning" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.DeleteSweep" Loading="@saving" OnClick="Submit">@ConstantString.AbandonPhase</MudLoadingButton>
     </DialogActions>
 </MudDialog>
 

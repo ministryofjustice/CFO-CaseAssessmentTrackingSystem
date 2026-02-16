@@ -77,7 +77,7 @@
             </div>            
             <div class="d-flex gap-2 align-center mr-4">
                 <MudTooltip Text="Actions">
-                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Disabled="Model.IsCompleted || !ParticipantIsActive " Size="Size.Small" Dense>
+                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Disabled="Model.IsCompleted || !ParticipantIsActive " Size="Size.Small" Dense>
                         <MudMenuItem OnClick="AdjustDate">Adjust date</MudMenuItem>
                         @if(Model.CanBeRenamed)
                         {
@@ -86,7 +86,7 @@
                     </MudMenu>
                 </MudTooltip>
                 <MudTooltip Text="Record">
-                    <MudMenu Icon="@Icons.Material.Filled.LibraryAdd" Variant="Variant.Filled" Disabled="Model.IsCompleted || !ParticipantIsActive" Size="Size.Small" Dense>
+                    <MudMenu Icon="@Icons.Material.Filled.LibraryAdd" Variant="Variant.Outlined" Disabled="Model.IsCompleted || !ParticipantIsActive" Size="Size.Small" Dense>
                         @if(Model.CanAddActivity)
                         {
                             <MudMenuItem OnClick="AddActivity">Add Activity/ETE</MudMenuItem>
@@ -95,12 +95,12 @@
                     </MudMenu>
                 </MudTooltip>
                 <MudTooltip Text="Expand">
-                    <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="Expand" Variant="Variant.Filled" Size="Size.Small" />
+                    <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="Expand" Variant="Variant.Outlined" Size="Size.Small" />
                 </MudTooltip>
                 @if(Model.CanAddActivity)
                 {
                     <MudTooltip Text="Activity/ETE History">
-                        <MudIconButton Icon="@Icons.Material.Filled.LibraryBooks" OnClick="ShowActivityHistory" Variant="Variant.Filled" Size="Size.Small" />
+                        <MudIconButton Icon="@Icons.Material.Filled.LibraryBooks" OnClick="ShowActivityHistory" Variant="Variant.Outlined" Size="Size.Small" />
                     </MudTooltip>
                 }
                 <MudTooltip>

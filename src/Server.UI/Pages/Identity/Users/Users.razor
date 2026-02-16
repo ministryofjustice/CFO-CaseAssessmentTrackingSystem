@@ -109,7 +109,7 @@
                 <CellTemplate>
                     @if (_canEdit || _canArchive || _canManageRoles || _canResetPassword || _canToggleActiveStatus || _canManagePermissions || _canUnlock)
                     {
-                        <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                        <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Size="Size.Small"
                         Dense="true"
                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
 
@@ -145,7 +145,7 @@
                     }
                     else
                     {
-                        <MudButton Variant="Variant.Filled"
+                        <MudButton Variant="Variant.Outlined"
                         StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary" Size="Size.Small"
                         Color="Color.Surface">
                             @ConstantString.NoAllowed

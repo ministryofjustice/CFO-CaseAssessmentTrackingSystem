@@ -6,15 +6,18 @@
 
 <MudDialog>
     <DialogContent>
-        <UserForm @ref="@userForm" Model="Model" OnFormSubmit="OnFormSubmitHandler"></UserForm>
+        <UserForm @ref="@_userForm" Model="Model" OnFormSubmit="OnFormSubmitHandler"></UserForm>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">@ConstantString.Ok</MudButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Save" Loading="_loading"   OnClick="Submit">@ConstantString.Ok</MudLoadingButton>
     </DialogActions>
 </MudDialog>
 
 @code{
+
+    private bool _loading = false;
+    
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
     public UserProfile UserProfile { get; set; } = default!;
 
@@ -22,11 +25,19 @@
 
     [Parameter] public ApplicationUserDto Model { get; set; } = default!;
 
-    private UserForm? userForm;
+    private UserForm? _userForm;
 
     protected async Task Submit()
     {
-        await userForm!.Submit();
+        try
+        {
+            _loading = true;
+            await _userForm!.Submit();
+        }
+        finally
+        {
+            _loading = false;
+        }
     }
 
     private void Cancel()

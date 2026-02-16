@@ -40,8 +40,8 @@
                         <MudText Typo="Typo.h6">Success</MudText>
                         
                         <MudContainer Class="d-flex px-0 mt-8 justify-space-between">
-                            <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="OnCancelClicked">Back to Search</MudButton>
-                            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="() => NavigateToEnrolment(SelectedCandidateId)">Proceed with the enrolment</MudButton>
+                            <MudButton Color="Color.Secondary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.RestartAlt" OnClick="OnCancelClicked">Back to Search</MudButton>
+                            <MudButton Color="Color.Primary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.NotStarted" OnClick="() => NavigateToEnrolment(SelectedCandidateId)">Proceed with the enrolment</MudButton>
                         </MudContainer>
                     </MudContainer>
 

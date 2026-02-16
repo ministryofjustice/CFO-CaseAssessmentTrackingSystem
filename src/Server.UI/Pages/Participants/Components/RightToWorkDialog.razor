@@ -10,8 +10,8 @@
         <RightToWork @ref="RightToWork" Model="Model" />
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Loading="@_saving" Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">
+        <MudButton Color="Color.Secondary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Save" Loading="@_saving" OnClick="Submit">
             @if (_saving)
             {
                 @ConstantString.Saving

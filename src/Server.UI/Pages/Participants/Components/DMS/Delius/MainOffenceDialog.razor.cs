@@ -6,7 +6,7 @@ public partial class MainOffenceDialog
 {
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
     [Parameter] public DisposalDto[] Disposals { get; set; } = [];
-    private void Ok() => MudDialog.Cancel();
+    private void Close() => MudDialog.Cancel();
 
     private MudDataGrid<DisposalDto> _dataGrid = null!;
 }

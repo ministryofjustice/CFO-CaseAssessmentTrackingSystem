@@ -19,8 +19,8 @@
         </MudContainer>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Loading="downloading" Color="Color.Primary" OnClick="Download" Disabled="acknowledged is false">
+        <MudButton Color="Color.Secondary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.CloudDownload" Loading="downloading" OnClick="Download" Disabled="acknowledged is false">
             @(downloading ? ConstantString.Downloading : ConstantString.Download)
         </MudLoadingButton>
     </DialogActions>
