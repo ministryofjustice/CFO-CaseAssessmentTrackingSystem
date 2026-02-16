@@ -9,7 +9,7 @@
 	</DialogContent>
 	<DialogActions>
 		<MudButton OnClick="Dialog.Cancel">@ConstantString.Cancel</MudButton>
-		<MudLoadingButton Loading="saving" Color="Color.Primary" OnClick="Submit" Disabled="@(SelectedTenant.TenantId == string.Empty)">@ConstantString.Ok</MudLoadingButton>
+		<MudLoadingButton Loading="saving" Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit" Disabled="@(SelectedTenant.TenantId == string.Empty)">@ConstantString.Ok</MudLoadingButton>
 	</DialogActions>
 </MudDialog>
 

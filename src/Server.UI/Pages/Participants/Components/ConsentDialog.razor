@@ -10,7 +10,7 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Loading="@_saving" Color="Color.Primary" OnClick="Submit">
+        <MudLoadingButton Loading="@_saving" Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">
             @if (_saving)
             {
                 @ConstantString.Saving
