@@ -8,7 +8,7 @@ public class PriNeverBeenInLocationException : DomainException
     /// region.
     /// </summary>
     public PriNeverBeenInLocationException()
-        : base("Task cannot be completed as notice of the participants transfer to the expected release region has not yet been received.")
+        : base("Task cannot be completed as notice of the participant's transfer to the expected release region has not yet been received.")
     {
         
     }
