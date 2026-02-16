@@ -22,7 +22,7 @@ internal class PreventCompletionOfTaskWithoutRelease(IUnitOfWork unitOfWork) : I
 
             if (pri.ActualReleaseDate is null)
             {
-                throw new PriMissingAcutalReleaseDateException();
+                throw new PriMissingActualReleaseDateException();
             }
 
             // Has the participant been in the expected release region after the PRI was created?
