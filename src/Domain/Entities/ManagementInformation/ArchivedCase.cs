@@ -22,7 +22,7 @@ public class ArchivedCase
         string? unarchiveReason,
         DateTime from,
         DateTime? to,
-        string contractId,
+        string? contractId,
         int locationId,
         string locationType,
         string tenantId) =>

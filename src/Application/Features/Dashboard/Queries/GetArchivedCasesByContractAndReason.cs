@@ -26,16 +26,23 @@ public static class GetArchivedCasesByContractAndReason
 
             var query =
                 from ac in context.ArchivedCases.AsNoTracking()
-                join c in context.Contracts on ac.ContractId equals c.Id
-                join u in context.Users on c.CreatedBy equals u.Id
+                
+                join c in context.Contracts on ac.ContractId equals c.Id into contractJoin
+                from c in contractJoin.DefaultIfEmpty()
+
+                join u in context.Users on ac.CreatedBy equals u.Id into userJoin
+                from u in userJoin.DefaultIfEmpty()
+
                 where ac.From <= request.EndDate
                       && (ac.To == null || ac.To >= request.StartDate)
-                      && c.Tenant!.Id.StartsWith(request.CurrentUser.TenantId!)
+                      && (c == null || c.Tenant!.Id.StartsWith(request.CurrentUser.TenantId!))
                 select new { ac, c,u };
 
             if (!string.IsNullOrWhiteSpace(request.TenantId))
             {
-                query = query.Where(x => x.c.Tenant!.Id.StartsWith(request.TenantId));
+                query = query.Where(x =>
+                    x.c == null ||
+                    x.c.Tenant!.Id.StartsWith(request.TenantId));
             }
             
             var tabularData = await query
@@ -46,8 +53,8 @@ public static class GetArchivedCasesByContractAndReason
                     FirstName = x.ac.FirstName,
                     LastName = x.ac.LastName,
 
-                    ContractId = x.ac.ContractId!,
-                    Contract = x.c.Description,  
+                    ContractId = x.ac.ContractId ?? "",
+                    Contract = x.c != null ? x.c.Description : "Unknown",
 
                     Reason = x.ac.ArchiveReason ?? "Unknown",
 
@@ -58,7 +65,7 @@ public static class GetArchivedCasesByContractAndReason
                     To = x.ac.To,
 
                     TenantId = x.ac.TenantId,
-                    CreatedBy = x.u.DisplayName
+                    CreatedBy = x.u != null ? x.u.DisplayName : x.ac.CreatedBy
                 })
                 .ToArrayAsync(cancellationToken);
 
@@ -97,7 +104,7 @@ public static class GetArchivedCasesByContractAndReason
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
 
-        public string ContractId { get; set; } = "";     
+        public string? ContractId { get; set; } = "";     
         public string Contract { get; init; } = "";       
         public string? Reason { get; init; }
 

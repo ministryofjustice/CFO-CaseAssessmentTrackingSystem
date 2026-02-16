@@ -70,14 +70,14 @@ public class RecordArchivedCaseConsumer(IUnitOfWork unitOfWork)
                 LastName = p.LastName,
                 EnrolmentHistoryId = peh.Id,
                 Created = context.OccuredOn,
-                CreatedBy = u.CreatedBy!,
+                CreatedBy = peh.CreatedBy!,
                 ArchiveAdditionalInfo = peh.AdditionalInformation!,
                 ArchiveReason = peh.Reason,
                 UnarchiveAdditionalInfo = null,
                 UnarchiveReason = null,
                 From = peh.From,
                 To = peh.To,
-                ContractId = l.Contract!.Id,
+                ContractId = l.Contract != null ? l.Contract.Id : null,
                 LocationId = l.Id,
                 LocationType = l.LocationType.Name,
                 TenantId = u.TenantId!
@@ -111,7 +111,7 @@ public class RecordArchivedCaseConsumer(IUnitOfWork unitOfWork)
         public required string? UnarchiveReason { get; set; }
         public required DateTime From { get; set; }
         public required DateTime? To { get; set; }
-        public required string ContractId { get; set; }
+        public required string? ContractId { get; set; }
         public required int LocationId { get; set; }
         public required string LocationType { get; set; }
         public required string TenantId { get; set; }
