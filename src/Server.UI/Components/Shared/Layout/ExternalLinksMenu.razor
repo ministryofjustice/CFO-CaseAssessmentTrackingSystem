@@ -3,14 +3,17 @@
 
 <MudTooltip Arrow="true" Text="@L["External Links"]">
     <MudMenu AnchorOrigin="Origin.BottomRight"
-             Icon="@Icons.Material.Filled.Web"
-             Color="Color.Tertiary"
              Class="mx-1"
              LockScroll="true"
              TransformOrigin="Origin.TopRight">
-             <MudMenuItem Icon="@Icons.Material.Filled.Web" Href="https://www.creatingfutureopportunities.gov.uk/" Target="_blank">CFO Website</MudMenuItem>
-             <MudMenuItem Icon="@Icons.Material.Filled.Map" Href="https://www.creatingfutureopportunities.gov.uk/map/" Target="_blank">CFO Delivery Map</MudMenuItem>
-             <MudMenuItem Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/" Target="_blank">Github Repository</MudMenuItem>
+             <ActivatorContent>
+                <MudIconButton Icon="@Icons.Material.Filled.Web" Style="color: white;" />
+             </ActivatorContent>
+             <ChildContent>
+                <MudMenuItem Icon="@Icons.Material.Filled.Web" Href="https://www.creatingfutureopportunities.gov.uk/" Target="_blank">CFO Website</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.Map" Href="https://www.creatingfutureopportunities.gov.uk/map/" Target="_blank">CFO Delivery Map</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/ministryofjustice/CFO-CaseAssessmentTrackingSystem/" Target="_blank">Github Repository</MudMenuItem>
+             </ChildContent>
     </MudMenu>
     <form method="post" hidden>
         <AntiforgeryToken />

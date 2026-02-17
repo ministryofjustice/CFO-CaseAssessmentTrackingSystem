@@ -17,12 +17,12 @@ public static class Theme
             PaletteLight = new PaletteLight
             {
                 Primary = primaryColour, // the default CFO Purple
-                Secondary = "#494f56",
+                Secondary = "#34586E",
                 Success = "#62ae2f",
-                Info = "#0c6980",
+                Info = "#DFB160",
                 Black = "#000000",
                 TableLines = primaryColour,
-                Tertiary = "#FFFFFF",
+                Tertiary = "#DFB160",
                 AppbarBackground = primaryColour,
                 AppbarText = "#FFFFFF",
                 Error = "#CC0033",
@@ -36,7 +36,7 @@ public static class Theme
                 Info = "#1493A3", // Brighter than #0c6980 for better contrast
                 Black = "#FFFFFF", // White to contrast dark backgrounds
                 TableLines = primaryColour, // Same as Primary to maintain consistency
-                Tertiary = "#FFFFFF", // Very dark grey for background contrast
+                Tertiary = "#DFB160", 
                 AppbarBackground = primaryColour, // Matching Tertiary for a unified dark theme
                 AppbarText = "#FFFFFF",
                 Error = "#FF4D4D", // Brighter red than #CC0033 for better visibility,

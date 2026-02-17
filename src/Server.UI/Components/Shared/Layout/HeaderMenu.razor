@@ -19,11 +19,12 @@
     
     <SessionTimeoutDisplay />
     
+    <MudDivider Class="mx-3 my-5" DividerType="DividerType.Middle" Vertical="true" FlexItem="true"></MudDivider>
     <MudHidden Breakpoint="Breakpoint.SmAndDown">
         <!-- These icons are hidden if the screen is size SM or smaller -->
         <MudTooltip Arrow="true"
                     Text="@L["Search (CTL + K)"]">
-            <MudIconButton Color="Color.Tertiary"
+            <MudIconButton Style="color: white;"
                            Edge="Edge.Start"
                            Icon="@Icons.Material.Filled.Search"
                            OnClick="OpenSearchDialog"/>
@@ -38,12 +39,11 @@
     <MudDivider Class="mx-3 my-5" DividerType="DividerType.Middle" Vertical="true" FlexItem="true"></MudDivider>
     <MudTooltip Arrow="true" Text="@L["Toggle menu"]">
         <MudToggleIconButton Class="mr-3"
-                             Color="Color.Tertiary"
+                             Style="color: white;"
                              Icon="@Icons.Material.Filled.MenuOpen"
                              Size="Size.Medium"
                              Toggled="NavigationMenuDrawerOpen"
                              ToggledChanged="ToggleNavigationMenuDrawer"
-                             ToggledColor="Color.Tertiary"
                              ToggledIcon="@Icons.Material.Filled.Menu"/>
 
     </MudTooltip>
