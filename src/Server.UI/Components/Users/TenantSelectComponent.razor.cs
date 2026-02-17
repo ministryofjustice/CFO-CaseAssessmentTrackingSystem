@@ -14,7 +14,7 @@ public partial class TenantSelectComponent
     [Parameter] public string? Placeholder { get; set; } = "Choose a tenant...";
     [Parameter] public bool Required { get; set; }
     [Parameter] public bool Disabled { get; set; }
-    [Parameter] public Variant Variant { get; set; } = MudBlazor.Variant.Outlined;
+    [Parameter] public Variant Variant { get; set; } = MudBlazor.Variant.Filled;
     private TenantDto[] _tenants = [];
     protected override void OnInitialized() => _tenants = TenantService.DataSource
         .Where(d => d.Id!.StartsWith(TenantId))

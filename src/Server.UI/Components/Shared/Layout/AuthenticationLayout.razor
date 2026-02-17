@@ -20,7 +20,7 @@
                     @if(Env.EnvironmentName is not "Production")
                     {
                         <MudAlert Severity="Severity.Warning" 
-                                  Variant="Variant.Outlined" Square="true" 
+                                  Variant="Variant.Filled" Square="true" 
                                   ContentAlignment="HorizontalAlignment.Center"
                                   Icon="@Icons.Material.Filled.Construction">
                                   @Env.EnvironmentName
@@ -28,7 +28,7 @@
                     }
                     @if(string.IsNullOrEmpty(Configuration["PreLoginMessage"]) == false)
                     {
-                        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Square="true" 
+                        <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Square="true" 
                             ContentAlignment="HorizontalAlignment.Center"
                             Icon="@Icons.Material.Filled.EventNote">
                             @Configuration["PreLoginMessage"]

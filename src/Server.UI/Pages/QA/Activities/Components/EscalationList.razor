@@ -28,7 +28,7 @@
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                        <MudButton Variant="Variant.Outlined"
+                        <MudButton Variant="Variant.Filled"
                                    Size="Size.Small"
                                    Disabled="@_loading"
                                    OnClick="@(() => OnRefresh())"
@@ -147,7 +147,7 @@
         </PropertyColumn>
         <TemplateColumn Title="@ConstantString.Actions" Sortable="false">
             <CellTemplate>
-                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Size="Size.Small"
+                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                          Dense="true"
                          EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">                         
                     <MudMenuItem OnClick="@(() => ViewActivity(context.Item))">

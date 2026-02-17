@@ -42,7 +42,7 @@
                 <MudStack>
                     <MudStack Row="true">
                         <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                            <MudButton Variant="Variant.Outlined"
+                            <MudButton Variant="Variant.Filled"
                                        Size="Size.Small"
                                        Disabled="@_loading"
                                        OnClick="@(() => OnRefresh())"
@@ -52,11 +52,10 @@
                                 @ConstantString.Refresh
                             </MudButton>
                             <MudButton Disabled="@_downloading"
-                                       Variant="Variant.Outlined"
+                                       Variant="Variant.Filled"
                                        Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Download"
+                                       StartIcon="@Icons.Material.Filled.CloudDownload"
                                        Size="Size.Small"
-                                       Style="margin-right: 4px; margin-bottom: 4px"
                                        OnClick="OnExport">                                       
                                 @if (_downloading)
                                 {

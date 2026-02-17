@@ -30,7 +30,7 @@ public class EditLabelCommandTests
             "Original",
             "Original Description",
             AppColour.Primary,
-            AppVariant.Outlined,
+            AppVariant.Filled,
             AppIcon.Label,
             "CONTRACT-001",
             new TestLabelCounter());
@@ -43,7 +43,7 @@ public class EditLabelCommandTests
             NewName = "Updated",
             NewDescription = "Updated Description",
             NewColour = AppColour.Secondary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Person
         };
 
@@ -53,7 +53,7 @@ public class EditLabelCommandTests
         existingLabel.Name.ShouldBe("Updated");
         existingLabel.Description.ShouldBe("Updated Description");
         existingLabel.Colour.ShouldBe(AppColour.Secondary);
-        existingLabel.Variant.ShouldBe(AppVariant.Outlined);
+        existingLabel.Variant.ShouldBe(AppVariant.Filled);
     }
 
     [Test]
@@ -65,7 +65,7 @@ public class EditLabelCommandTests
             NewName = "Updated",
             NewDescription = "Description",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -81,7 +81,7 @@ public class EditLabelCommandTests
             "Name1",
             "Desc1",
             AppColour.Primary,
-            AppVariant.Outlined,
+            AppVariant.Filled,
             AppIcon.Label,
             "CONTRACT-001",
             new TestLabelCounter());
@@ -113,7 +113,7 @@ public class EditLabelCommandTests
             "Original",
             "Description",
             AppColour.Primary,
-            AppVariant.Outlined,
+            AppVariant.Filled,
             AppIcon.Label,
             "CONTRACT-001",
             new TestLabelCounter());
@@ -126,7 +126,7 @@ public class EditLabelCommandTests
             NewName = "Changed",
             NewDescription = "Description",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -146,7 +146,7 @@ public class EditLabelCommandTests
             NewName = "",
             NewDescription = "Description",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -166,7 +166,7 @@ public class EditLabelCommandTests
             NewName = "A",
             NewDescription = "Description",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -186,7 +186,7 @@ public class EditLabelCommandTests
             NewName = new string('x', 201),
             NewDescription = "Description",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -206,7 +206,7 @@ public class EditLabelCommandTests
             NewName = "Valid",
             NewDescription = "",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -226,7 +226,7 @@ public class EditLabelCommandTests
             NewName = "Valid",
             NewDescription = "AB",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -246,7 +246,7 @@ public class EditLabelCommandTests
             NewName = "Valid",
             NewDescription = new string('A', 201),
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -266,7 +266,7 @@ public class EditLabelCommandTests
             NewName = "Valid",
             NewDescription = "Valid Description",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -285,7 +285,7 @@ public class EditLabelCommandTests
             NewName = "Invalid123",
             NewDescription = "Description",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -306,7 +306,7 @@ public class EditLabelCommandTests
             NewName = "Valid_Name",
             NewDescription = "Description",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -325,7 +325,7 @@ public class EditLabelCommandTests
             NewName = "Valid",
             NewDescription = "Description with £, $, @, punctuation & symbols!",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -344,7 +344,7 @@ public class EditLabelCommandTests
             NewName = "Valid",
             NewDescription = "Description 123 with numbers",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -363,7 +363,7 @@ public class EditLabelCommandTests
             NewName = "Valid",
             NewDescription = "Line 1\r\nLine 2",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -382,7 +382,7 @@ public class EditLabelCommandTests
             NewName = "Valid",
             NewDescription = "Invalid characters: <html> tags",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -403,7 +403,7 @@ public class EditLabelCommandTests
             NewName = new string('A', 25),
             NewDescription = "Valid Description",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -419,7 +419,7 @@ public class EditLabelCommandTests
             "Original",
             "Description",
             AppColour.Primary,
-            AppVariant.Outlined,
+            AppVariant.Filled,
             AppIcon.Label,
             "CONTRACT-001",
             new TestLabelCounter());
@@ -433,7 +433,7 @@ public class EditLabelCommandTests
             NewName = "ExistingLabel",
             NewDescription = "Description",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 
@@ -449,7 +449,7 @@ public class EditLabelCommandTests
             "Original",
             "Description",
             AppColour.Primary,
-            AppVariant.Outlined,
+            AppVariant.Filled,
             AppIcon.Label,
             "CONTRACT-001",
             new TestLabelCounter());
@@ -463,7 +463,7 @@ public class EditLabelCommandTests
             NewName = "NewUniqueName",
             NewDescription = "Description",
             NewColour = AppColour.Primary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
         };
 

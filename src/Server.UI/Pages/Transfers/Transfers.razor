@@ -43,7 +43,7 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="@ConstantString.Actions">
-            <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+            <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                 <MudMenuItem OnClick="async() => await Process(context)">Process and Assign</MudMenuItem>
                 <MudMenuItem OnClick="() => View(context.ParticipantId)">View Participant</MudMenuItem>
                 <MudMenuItem OnClick="async () => await ViewOffenderManagerSummary(context.ParticipantId)">View Offender Manager Summary</MudMenuItem>
@@ -119,7 +119,7 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="@ConstantString.Actions">
-            <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+            <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                 <MudMenuItem OnClick="() => View(context.ParticipantId)">View Participant</MudMenuItem>
             </MudMenu>
         </MudTd>

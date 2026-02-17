@@ -155,7 +155,7 @@
                         }
                         <MudStack Row="true">
                             <MudButton Disabled="@(_canReview == false && sample.Status == DipSampleStatus.AwaitingReview)"
-                                       Variant="Variant.Outlined"
+                                       Variant="Variant.Filled"
                                        Color="Color.Secondary"
                                        Size="Size.Small"
                                        StartIcon="@Icons.Material.Filled.Pageview"
@@ -164,10 +164,10 @@
                                 @ConstantString.View
                             </MudButton>
                         
-                            <MudButton Disabled="@(sample.DocumentId is null)" Variant="Variant.Outlined"
+                            <MudButton Disabled="@(sample.DocumentId is null)" Variant="Variant.Filled"
                                        Color="Color.Secondary"
                                        Size="Size.Small"
-                                       StartIcon="@Icons.Material.Filled.Download"
+                                       StartIcon="@Icons.Material.Filled.CloudDownload"
                                        IconColor="Color.Surface"
                                        OnClick="@(() => Download(sample.DocumentId))">
                                 @ConstantString.Export  

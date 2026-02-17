@@ -15,7 +15,7 @@
                 <MudText Typo="Typo.subtitle2">@DateTime.Now</MudText>
                 @if (HostEnvironment.IsDevelopment())
                 {
-                    <MudButton Color="Color.Primary" Variant="Variant.Outlined" OnClick="@(() => ShowStackTrace = !ShowStackTrace)">More</MudButton>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => ShowStackTrace = !ShowStackTrace)">More</MudButton>
                 }
             </div>
             @if (HostEnvironment.IsDevelopment() && ShowStackTrace)
@@ -30,7 +30,7 @@
         </div>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Primary" Variant="Variant.Outlined" OnClick="OnRefresh">@ConstantString.Refresh</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OnRefresh">@ConstantString.Refresh</MudButton>
     </DialogActions>
 </MudDialog>
 

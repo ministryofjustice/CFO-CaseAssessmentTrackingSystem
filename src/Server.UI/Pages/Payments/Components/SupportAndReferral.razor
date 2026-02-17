@@ -29,23 +29,14 @@
                     <MudSpacer />
                     <MudStack Row="true">
                         <MudTextField @bind-Value="_searchString" @bind-Value:after="OnSearch" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-                        <MudButton Disabled="@_downloading"
-                                   Variant="Variant.Outlined"
+                        <MudLoadingButton Disabled="@_downloading"
+                                   Variant="Variant.Filled"
                                    Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.Download"
+                                   StartIcon="@Icons.Material.Filled.CloudDownload"
                                    Size="Size.Small"
-                                   OnClick="OnExport"
-                                   IconColor="Color.Surface">
-                            @if (_downloading)
-                            {
-                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                                <MudText Class="ms-2"> @ConstantString.Downloading</MudText>
-                            }
-                            else
-                            {
-                                <MudText>@ConstantString.Export</MudText>
-                            }
-                        </MudButton>
+                                   OnClick="OnExport">
+                                @ConstantString.Export
+                            </MudLoadingButton>
                     </MudStack>
                 </ToolBarContent>
                 <HeaderContent>

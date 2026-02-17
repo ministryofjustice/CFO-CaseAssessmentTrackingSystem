@@ -39,7 +39,7 @@
                 <CatsMudStepper HeaderTextView="HeaderTextView.All"
                                 HeaderBadgeView="HeaderBadgeView.GreyOutIncomplete"
                                 Color="Color.Primary" @ref="Stepper"
-                                Variant="Variant.Outlined"
+                                Variant="Variant.Filled"
                                 OnChangeAsync="OnChangeAsync"
                                 ActiveStepChanged="StepChanged"
                                 ContentClass="mb-8"
@@ -81,14 +81,14 @@
                     <ActionContent>
                         @if (Stepper?.IsResultStep is false)
                         {
-                            <MudButton hidden="@(showSaveAndExit is false)" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="SaveAndExit">Save & exit</MudButton>
+                            <MudButton hidden="@(showSaveAndExit is false)" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="SaveAndExit">Save & exit</MudButton>
                             <MudSpacer />
                         }
                         else
                         {
-                            <MudButton Color="Color.Secondary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.RestartAlt" OnClick="ReturnToSearch">Return to Search</MudButton>
+                            <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.RestartAlt" OnClick="ReturnToSearch">Return to Search</MudButton>
                             <MudSpacer />
-                            <MudButton Color="Color.Primary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Assessment" OnClick="BeginAssessment">Continue</MudButton>
+                            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Assessment" OnClick="BeginAssessment">Continue</MudButton>
                         }
                     </ActionContent>
                 </CatsMudStepper>

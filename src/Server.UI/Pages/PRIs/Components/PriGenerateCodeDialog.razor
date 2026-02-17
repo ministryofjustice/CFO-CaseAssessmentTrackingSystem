@@ -17,7 +17,7 @@
                             @bind-Value="Model.ParticipantId"
                             For="() => Model.ParticipantId"
                             Class="mt-4"
-                            Variant="Variant.Outlined" />
+                            Variant="Variant.Filled" />
                         </MudItem>
                         @if (_priCodeGenerated)
                         {
@@ -34,9 +34,9 @@
     </DialogContent>
 
     <DialogActions>        
-        <MudLoadingButton StartIcon="@Icons.Material.Filled.AutoAwesome" Loading="_loading" Color="Color.Secondary" OnClick="GeneratePriCode" Variant="Variant.Outlined" Disabled="_priCodeGenerated">Generate</MudLoadingButton>
+        <MudLoadingButton StartIcon="@Icons.Material.Filled.AutoAwesome" Loading="_loading" Color="Color.Secondary" OnClick="GeneratePriCode" Variant="Variant.Filled" Disabled="_priCodeGenerated">Generate</MudLoadingButton>
         <MudSpacer />
-        <MudButton Color="Color.Secondary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel" Disabled="_priCodeGenerated">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton StartIcon="@Icons.Material.Filled.Check" Variant="Variant.Outlined" Color="Color.Primary" OnClick="Close" Disabled="!_priCodeGenerated">@ConstantString.Continue</MudLoadingButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel" Disabled="_priCodeGenerated">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton StartIcon="@Icons.Material.Filled.Check" Variant="Variant.Filled" Color="Color.Primary" OnClick="Close" Disabled="!_priCodeGenerated">@ConstantString.Continue</MudLoadingButton>
     </DialogActions>
 </MudDialog>

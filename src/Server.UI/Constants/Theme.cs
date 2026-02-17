@@ -19,7 +19,7 @@ public static class Theme
                 Primary = primaryColour, // the default CFO Purple
                 Secondary = "#34586E",
                 Success = "#62ae2f",
-                Info = "#DFB160",
+                Info = "#34586E",
                 Black = "#000000",
                 TableLines = primaryColour,
                 Tertiary = "#DFB160",

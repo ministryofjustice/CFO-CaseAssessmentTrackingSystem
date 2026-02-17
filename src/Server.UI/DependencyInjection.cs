@@ -54,7 +54,7 @@ public static class DependencyInjection
                 mudServicesConfiguration.SnackbarConfiguration.VisibleStateDuration = 3000;
                 mudServicesConfiguration.SnackbarConfiguration.HideTransitionDuration = 500;
                 mudServicesConfiguration.SnackbarConfiguration.ShowTransitionDuration = 500;
-                mudServicesConfiguration.SnackbarConfiguration.SnackbarVariant = Variant.Outlined;
+                mudServicesConfiguration.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
                 mudServicesConfiguration.SnackbarConfiguration.PreventDuplicates = false;
             });
 

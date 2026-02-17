@@ -13,7 +13,7 @@
         Support Worker Dashboard
     </MudText>
     
-    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">
         This page is still under development and may produce inaccurate results.
     </MudAlert>
   
@@ -42,7 +42,7 @@
 <MudStack>
 	@if(SelectedUserId is null)
     {
-        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+        <MudAlert Severity="Severity.Info" Variant="Variant.Filled">
             Please select a user.
         </MudAlert>
     }
@@ -65,8 +65,8 @@
                 <div style="max-width: 640px;">
                     <MudDateRangePicker @ref="_picker" Label="Date Range" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="@_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
                         <PickerActions>
-                            <MudButton Color="Color.Secondary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
-                            <MudButton Color="Color.Primary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
+                            <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+                            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
                         </PickerActions>
                     </MudDateRangePicker>    
                 </div>

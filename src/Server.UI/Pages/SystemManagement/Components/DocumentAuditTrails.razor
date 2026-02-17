@@ -29,7 +29,7 @@
 
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
-                    <MudButton Variant="Variant.Outlined"
+                    <MudButton Variant="Variant.Filled"
                                Size="Size.Small"
                                OnClick="@(() => OnRefresh())"
                                StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
@@ -54,7 +54,7 @@
     <Columns>
         <TemplateColumn CellStyle="width:60px" Title="@ConstantString.Actions" Sortable="false">
             <CellTemplate>
-                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Size="Size.Small"
+                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                          Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                     <MudMenuItem OnClick="@(() => Download(context.Item))">@ConstantString.Download</MudMenuItem>
                 </MudMenu>

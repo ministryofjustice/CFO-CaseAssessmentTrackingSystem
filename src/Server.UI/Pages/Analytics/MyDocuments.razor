@@ -34,7 +34,7 @@ Class="mb-8 pa-4">
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="@ConstantString.Actions">
-            <MudMenu Disabled="context.IsReadyForDownload is false" Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+            <MudMenu Disabled="context.IsReadyForDownload is false" Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small" Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                 <MudMenuItem OnClick="async() => await Download(context)">Download</MudMenuItem>
             </MudMenu>
         </MudTd>

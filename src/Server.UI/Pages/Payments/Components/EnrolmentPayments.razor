@@ -31,9 +31,9 @@
                     <MudStack Row="true">
                         <MudTextField @bind-Value="_searchString" @bind-Value:after="OnSearch" Placeholder="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                         <MudButton Disabled="@_downloading"
-                                   Variant="Variant.Outlined"
+                                   Variant="Variant.Filled"
                                    Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.Download"
+                                   StartIcon="@Icons.Material.Filled.CloudDownload"
                                    Size="Size.Small"
                                    OnClick="OnExport"
                                    IconColor="Color.Surface">

@@ -30,7 +30,7 @@ public class DeleteLabelCommandTests
             "ToDelete",
             "Description",
             AppColour.Primary,
-            AppVariant.Outlined,
+            AppVariant.Filled,
             AppIcon.Label,
             "CONTRACT-001",
             new TestLabelCounter());
@@ -71,7 +71,7 @@ public class DeleteLabelCommandTests
             "Global",
             "Description",
             AppColour.Primary,
-            AppVariant.Outlined,
+            AppVariant.Filled,
             AppIcon.Label,
             null,
             new TestLabelCounter());
@@ -97,7 +97,7 @@ public class DeleteLabelCommandTests
             "Global",
             "Description",
             AppColour.Primary,
-            AppVariant.Outlined,
+            AppVariant.Filled,
             AppIcon.Label,
             null,
             new TestLabelCounter());
@@ -123,7 +123,7 @@ public class DeleteLabelCommandTests
             "LinkedLabel",
             "Description",
             AppColour.Primary,
-            AppVariant.Outlined,
+            AppVariant.Filled,
             AppIcon.Label,
             "CONTRACT-001",
             new TestLabelCounter());
@@ -149,7 +149,7 @@ public class DeleteLabelCommandTests
             "Contract",
             "Description",
             AppColour.Primary,
-            AppVariant.Outlined,
+            AppVariant.Filled,
             AppIcon.Label,
             "CONTRACT-001",
             new TestLabelCounter());

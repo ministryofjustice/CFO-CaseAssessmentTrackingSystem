@@ -42,7 +42,7 @@
                 <GroupHeaderTemplate>
                     <MudTh Class="mud-table-cell-custom-group" colspan="3">@context.Key: @context.Items.First().Description</MudTh>
                     <MudTh Class="mud-table-cell-custom-group">
-                        <MudButton Disabled="@(_isTriggering || (_scheduler?.InStandbyMode ?? false))" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => TriggerJob(context.Key!.ToString()!)">
+                        <MudButton Disabled="@(_isTriggering || (_scheduler?.InStandbyMode ?? false))" Variant="Variant.Filled" Color="Color.Primary" OnClick="() => TriggerJob(context.Key!.ToString()!)">
                             @if(_isTriggering)
                             {
                                 <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
@@ -64,8 +64,8 @@
             </MudTable>
         </MudCardContent>
         <MudCardActions>
-            <MudButton Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => PauseScheduler()">Pause Scheduler</MudButton>
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => StartScheduler()">Resume Scheduler</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick="() => PauseScheduler()">Pause Scheduler</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => StartScheduler()">Resume Scheduler</MudButton>
         </MudCardActions>
     </MudCard>
 </MudItem>

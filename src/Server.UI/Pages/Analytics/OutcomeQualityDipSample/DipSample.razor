@@ -43,7 +43,7 @@
                 <MudStack>
                     <MudStack Row="true" Class="gap-0">
                         <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipReview">
-                            <MudButton Variant="Variant.Outlined"
+                            <MudButton Variant="Variant.Filled"
                                         Color="Color.Secondary"
                                         StartIcon="@Icons.Material.Filled.Reviews"
                                         Size="Size.Small"
@@ -54,7 +54,7 @@
                             </MudButton>
                         </AuthorizeView>
                         <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
-                            <MudButton Variant="Variant.Outlined"
+                            <MudButton Variant="Variant.Filled"
                                         Color="Color.Secondary"
                                         StartIcon="@Icons.Material.Filled.Done"
                                         Size="Size.Small"
@@ -65,7 +65,7 @@
                             </MudButton>
                         </AuthorizeView>
                         <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipFinalise">
-                            <MudButton Variant="Variant.Outlined"
+                            <MudButton Variant="Variant.Filled"
                                         Color="Color.Secondary"
                                         StartIcon="@Icons.Material.Filled.DoneAll"
                                         Size="Size.Small"
@@ -76,9 +76,9 @@
                             </MudButton>
                         </AuthorizeView>
                         <MudButton Disabled="@(_sample?.DocumentId is null)"
-                                   Variant="Variant.Outlined"
+                                   Variant="Variant.Filled"
                                    Color="Color.Secondary"
-                                   StartIcon="@Icons.Material.Filled.Download"
+                                   StartIcon="@Icons.Material.Filled.CloudDownload"
                                    Size="Size.Small"
                                    OnClick="OnExport"
                                    IconColor="Color.Surface">@ConstantString.Export
@@ -102,7 +102,7 @@
         <Columns>
             <TemplateColumn Title="@ConstantString.Actions" Sortable="false">
                 <CellTemplate>
-                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Size="Size.Small"
+                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                                 Dense="true"
                                 EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
                         <MudMenuItem Href="@($"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/{context.Item.ParticipantId}")">

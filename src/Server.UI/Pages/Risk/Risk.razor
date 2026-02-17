@@ -11,7 +11,7 @@
 
 @if(_model is not null)
 {
-    <CatsMudStepper @ref="stepper" Color="Color.Primary" Variant="Variant.Outlined"
+    <CatsMudStepper @ref="stepper" Color="Color.Primary" Variant="Variant.Filled"
                     MobileView="false" HeaderBadgeView="HeaderBadgeView.GreyOutIncomplete" HeaderTextView="HeaderTextView.All"
                     ActiveStepChanged="@OnStepChange" OnChangeAsync="OnChange" ShowSkipButton="false" Linear>
         <ChildContent>

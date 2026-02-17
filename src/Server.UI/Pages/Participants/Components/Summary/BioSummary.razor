@@ -50,21 +50,21 @@
         @if (CanBeginBio())
         {
             <MudTooltip Text="Create Bio">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginBio" />
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="BeginBio" />
             </MudTooltip>
         }
 
         @if (CanContinueBio())
         {
             <MudTooltip Text="Continue Bio">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinueBio" />
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Filled" OnClick="ContinueBio" />
             </MudTooltip>
         }
 
         @if (CanRestartBio())
         {
             <MudTooltip Text="Restart Bio">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginBio" />
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" OnClick="BeginBio" />
             </MudTooltip>
         }
     </MudCardActions>

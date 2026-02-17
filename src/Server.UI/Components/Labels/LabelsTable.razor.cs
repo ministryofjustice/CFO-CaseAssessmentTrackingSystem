@@ -18,7 +18,7 @@ public partial class LabelsTable
         AddLabel.Command command = new AddLabel.Command()
         {
             Colour = AppColour.Default,
-            Variant = AppVariant.Outlined,
+            Variant = AppVariant.Filled,
             Name = string.Empty,
             Description = string.Empty,
             ContractId = null

@@ -70,7 +70,7 @@
                 <div class="d-flex">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
                       
-                          <MudButton Variant="Variant.Outlined"
+                          <MudButton Variant="Variant.Filled"
                                    Size="Size.Small"
                                    Disabled="@_loading"
                                    OnClick="@(() => OnRefresh())"
@@ -79,7 +79,7 @@
                                    Style="margin-right: 4px; margin-bottom:4px">
                             @ConstantString.Refresh
                         </MudButton>
-                        <MudButton Variant="Variant.Outlined"
+                        <MudButton Variant="Variant.Filled"
                                    Size="Size.Small"
                                    Disabled="@(ParticipantIdsToReassign.Any() == false || _loading)"
                                    OnClick="@(() => ReassignSelectedItems())"

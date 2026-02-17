@@ -32,7 +32,7 @@
     @if (_participantDto is null)
     {
         <MudButton OnClick="@GetQueueItem" ButtonType="ButtonType.Button" StartIcon="@Icons.Material.Filled.QueuePlayNext"
-            Variant="Variant.Outlined" Color="Color.Primary">
+            Variant="Variant.Filled" Color="Color.Primary">
             Get Next
         </MudButton>
     }
@@ -99,13 +99,13 @@
 
                                 @if (Command.IsMessageExternal)
                                 {
-                                    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+                                    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">
                                         This comment will be visible to PQA (and internal members of CFO staff)
                                     </MudAlert>
                                 }
                                 else
                                 {
-                                    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                                    <MudAlert Severity="Severity.Info" Variant="Variant.Filled">
                                         This comment will only be visible to internal members of CFO staff
                                     </MudAlert>
                                 }
@@ -131,12 +131,12 @@
                             </MudForm>
 
                             <MudContainer Class="d-flex px-0 pt-8">
-                                <MudLoadingButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Outlined" Loading="_saving">Submit</MudLoadingButton>
+                                <MudLoadingButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled" Loading="_saving">Submit</MudLoadingButton>
                             </MudContainer>
                         }
                         else
                         {
-                            <MudAlert Variant="Variant.Outlined" Severity="Severity.Info">
+                            <MudAlert Variant="Variant.Filled" Severity="Severity.Info">
                                 This entry has already been processed
                             </MudAlert>
                         }

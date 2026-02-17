@@ -58,21 +58,21 @@
             @if (CanBeginAssessment())
             {
                 <MudTooltip Text="Create Assessment">
-                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="BeginAssessment" />
+                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="BeginAssessment" />
                 </MudTooltip>
             }
 
             @if (CanContinueAssessment())
             {
                 <MudTooltip Text="Continue Assessment">
-                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Outlined" OnClick="ContinueAssessment" />
+                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.ChevronRight" Variant="Variant.Filled" OnClick="ContinueAssessment" />
                 </MudTooltip>
             }
 
             @if (CanReassess())
             {
                 <MudTooltip Text="Reassess">
-                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="BeginAssessment" />
+                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" OnClick="BeginAssessment" />
                 </MudTooltip>
             }
         </MudStack>

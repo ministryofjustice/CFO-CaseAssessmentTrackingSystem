@@ -12,7 +12,7 @@
 @if (_model != null && string.IsNullOrEmpty(assessmentWarningMessage))
 {
     <div tabindex="-1" @ref="topOfPageElement"></div>
-    <CatsMudStepper @ref="@Stepper" Color="Color.Primary" Variant="Variant.Outlined"
+    <CatsMudStepper @ref="@Stepper" Color="Color.Primary" Variant="Variant.Filled"
     MobileView="false" HeaderBadgeView="HeaderBadgeView.All" HeaderTextView="HeaderTextView.All"
     ActiveStepChanged="@OnStepChange" ShowSkipButton="false" ShowPreviousButton="@_showPrevious">
         <ChildContent>
@@ -29,7 +29,7 @@
         <ActionContent>
             @if (_showDelete)
             {
-                <MudButton Color="Color.Warning" Variant="Variant.Outlined" 
+                <MudButton Color="Color.Warning" Variant="Variant.Filled" 
                 StartIcon="@Icons.Material.Filled.Delete"
                 OnClick="DeleteAssessment"
                 Style="margin-right: 16px; margin-bottom:4px"
@@ -46,12 +46,12 @@ else
     {
         <MudContainer Class="d-flex flex-column align-center justify-center">
 
-            <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">
+            <MudAlert Severity="Severity.Error" Variant="Variant.Filled">
                 @assessmentWarningMessage
             </MudAlert>
 
             <MudContainer Class="d-flex px-0 mt-8 justify-space-between">
-                <MudButton Color="Color.Secondary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">
+                <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">
                     @ConstantString.Cancel
                 </MudButton>
             </MudContainer>

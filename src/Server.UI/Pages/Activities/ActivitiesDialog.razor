@@ -134,7 +134,7 @@
 
                                 @if (activity.Status.AllowsChanges)
                                 {
-                                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Size="Size.Small"
+                                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                                                 Dense="true"
                                                 EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
 
@@ -167,7 +167,7 @@
         </MudList>
     </DialogContent>
     <DialogActions>
-        <MudLoadingButton StartIcon="@Icons.Material.Filled.Close" Color="Color.Primary" Variant="Variant.Outlined" OnClick="Dialog.Cancel">@ConstantString.Close</MudLoadingButton>
+        <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Close" OnClick="Dialog.Cancel">@ConstantString.Close</MudLoadingButton>
     </DialogActions>
 </MudDialog>
 

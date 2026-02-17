@@ -51,13 +51,13 @@
         @if (CanAddRiskInformation())
         {
             <MudTooltip Text="Add Information">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" OnClick="OnClickAddRiskInformation" />
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="OnClickAddRiskInformation" />
             </MudTooltip>
         }
         @if (CanReviewRiskInformation())
         {
             <MudTooltip Text="Review Information">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Outlined" OnClick="ReviewRiskInformation" />
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" OnClick="ReviewRiskInformation" />
             </MudTooltip>
         }
     </MudCardActions>

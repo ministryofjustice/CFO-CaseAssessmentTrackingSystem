@@ -79,7 +79,7 @@
                 }
                 
                 <MudStack Row="true">
-                     <MudButton Variant="Variant.Outlined"
+                     <MudButton Variant="Variant.Filled"
                                Size="Size.Small"
                                Disabled="@_loading"
                                OnClick="@(OnRefresh)"
@@ -89,7 +89,7 @@
                     </MudButton>
                     @if (_canCreate)
                     {
-                        <MudButton Variant="Variant.Outlined" 
+                        <MudButton Variant="Variant.Filled" 
                                 Color="Color.Primary"
                                    StartIcon="@Icons.Material.Filled.Add"
                                    Size="Size.Small"
@@ -110,7 +110,7 @@
                 <CellTemplate>
                     @if (_canEdit || _canArchive || _canManageRoles || _canResetPassword || _canToggleActiveStatus || _canManagePermissions || _canUnlock)
                     {
-                        <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Size="Size.Small"
+                        <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                         Dense="true"
                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
 
@@ -146,7 +146,7 @@
                     }
                     else
                     {
-                        <MudButton Variant="Variant.Outlined"
+                        <MudButton Variant="Variant.Filled"
                         StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary" Size="Size.Small"
                         Color="Color.Surface">
                             @ConstantString.NoAllowed
