@@ -1,0 +1,107 @@
+@using Cfo.Cats.Application.Features.Dashboard.Queries
+@inherits CatsComponent<GetArchivedCasesByContractAndReason.ArchivedCasesByContractAndReasonDto>
+
+@if (Loading)
+{
+    <MudLoading Text="Loading" />
+}
+
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@if (Data is not null && Data.ChartData.Any())
+{
+    if (VisualMode)
+    {
+        <ApexCharts.ApexChart TItem="GetArchivedCasesByContractAndReason.ArchivedCasesChartData"
+                              Options="@Options"
+                              Height="650"
+                              Width="@( "100%" )">
+
+            @foreach (var series in SeriesByReason)
+            {
+                <ApexCharts.ApexPointSeries
+                    TItem="GetArchivedCasesByContractAndReason.ArchivedCasesChartData"
+                    Items="@(series.Items)"
+                    SeriesType="ApexCharts.SeriesType.Bar"
+                    Name="@(series.Reason)"
+                    XValue="@(e => e.Contract)"
+                    YValue="@(e => e.Count)"
+                    ShowDataLabels="true" />
+            }
+
+        </ApexCharts.ApexChart>
+    }
+    else
+    {
+        <MudTable Items="@Data.TabularData" MultiSelection="false" Striped="true" Hover="true">
+            <HeaderContent>               
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByContractAndReason.ArchivedCasesTabularData, object>(x => x.Contract!)">
+                        Contract 
+                    </MudTableSortLabel>
+                </MudTh>
+
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByContractAndReason.ArchivedCasesTabularData, object>(x => x.Reason!)">
+                        Reason
+                    </MudTableSortLabel>
+                </MudTh>
+
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByContractAndReason.ArchivedCasesTabularData, object>(x => x.ParticipantId!)">
+                        Participant
+                    </MudTableSortLabel>
+                </MudTh>
+
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByContractAndReason.ArchivedCasesTabularData, object>(x => x.Created)">
+                        Created
+                    </MudTableSortLabel>
+                </MudTh>
+
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByContractAndReason.ArchivedCasesTabularData, object>(x => x.From)">
+                        From
+                    </MudTableSortLabel>
+                </MudTh>
+
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetArchivedCasesByContractAndReason.ArchivedCasesTabularData, object>(x => x.To!)">
+                        To
+                    </MudTableSortLabel>
+                </MudTh>
+
+                <MudTh>
+                    Created By
+                </MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Contract Name">@context.Contract</MudTd>
+                <MudTd DataLabel="Reason">@context.Reason</MudTd>
+                <MudTd DataLabel="Participant">@context.ParticipantId</MudTd>
+                <MudTd DataLabel="Created">@context.Created.ToShortDateString()</MudTd>
+                <MudTd DataLabel="From">@context.From.ToShortDateString()</MudTd>
+                <MudTd DataLabel="To">@context.To?.ToShortDateString()</MudTd>
+                <MudTd DataLabel="Created By">@context.CreatedBy</MudTd>
+            </RowTemplate>
+
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 10, 20 }" />
+            </PagerContent>
+        </MudTable>
+    }
+}
+else
+{
+    <MudText Typo="Typo.body2"
+             Color="Color.Secondary"
+             Align="MudBlazor.Align.Center">
+        No data available
+    </MudText>
+}
