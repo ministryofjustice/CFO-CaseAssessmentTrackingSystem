@@ -247,7 +247,7 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
