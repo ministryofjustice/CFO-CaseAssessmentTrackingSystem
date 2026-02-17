@@ -21,8 +21,9 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
         _activator = new BuiltinHandlerActivator();
 
         _activator.Handle<PriTaskCompletedWatcherConsumer>(provider)
-            .Handle<RaisePaymentsAfterApprovalConsumer>(provider);
-
+            .Handle<RaisePaymentsAfterApprovalConsumer>(provider)
+            .Handle<RecordArchivedCaseConsumer>(provider)
+            .Handle<CloseOffLastArchivedCaseEntry>(provider);
         _bus = Configure.With(_activator)
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.TasksService)
                 .ExchangeNames(options.Value.DirectExchange, options.Value.TopicExchange))
