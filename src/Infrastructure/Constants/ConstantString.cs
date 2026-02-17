@@ -242,4 +242,6 @@ public static class ConstantString
     public static string NonPayable => Localize("Non-Payable");
     public static string PreReleaseSupport => Localize("Pre-Release Support");
     public static string ThroughTheGate => Localize("Through the Gate");
+
+    public static string Trigger => Localize("Trigger");
 }

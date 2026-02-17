@@ -42,17 +42,9 @@
                 <GroupHeaderTemplate>
                     <MudTh Class="mud-table-cell-custom-group" colspan="3">@context.Key: @context.Items.First().Description</MudTh>
                     <MudTh Class="mud-table-cell-custom-group">
-                        <MudButton Disabled="@(_isTriggering || (_scheduler?.InStandbyMode ?? false))" Variant="Variant.Filled" Color="Color.Primary" OnClick="() => TriggerJob(context.Key!.ToString()!)">
-                            @if(_isTriggering)
-                            {
-                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                                <MudText Class="ms-2">Triggering</MudText>
-                            }
-                            else
-                            {
-                                <MudText>Trigger</MudText>
-                            }
-                        </MudButton>
+                        <MudLoadingButton Color="Color.Warning" Variant="Variant.Filled" Disabled="@(_scheduler?.InStandbyMode ?? false)" Loading="@_isTriggering"  OnClick="() => TriggerJob(context.Key!.ToString()!)">
+                            @ConstantString.Trigger
+                        </MudLoadingButton>
                     </MudTh>
                 </GroupHeaderTemplate>
                 <RowTemplate>
