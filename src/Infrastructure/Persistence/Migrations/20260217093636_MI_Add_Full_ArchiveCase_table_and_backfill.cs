@@ -132,7 +132,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                                      FROM Participant.EnrolmentHistory peh
                                      WHERE peh.ParticipantId = p.Id
                                        AND peh.[From] > eh.[From]
-                                       AND peh.[From] <= eh.[To]
+                                       AND (eh.[To] IS NULL OR peh.[From] <= eh.[To])
                                        AND peh.EnrolmentStatus <> 4
                                      ORDER BY peh.[From] ASC
                                  ) unarchive
