@@ -44,18 +44,17 @@
                                    Size="Size.Small"
                                    OnClick="OnRefresh"
                                    Disabled="@_loading"
-                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
-                                   Style="margin-right: 4px; margin-bottom:4px">
+                                   StartIcon="@Icons.Material.Filled.Refresh"  
+                                   Color="Color.Secondary">
                             @ConstantString.Refresh
                         </MudButton>
                         @if (_canCreate)
                         {
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                            <MudButton Variant="Variant.Filled" 
+                                      Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.Add"
                                        Size="Size.Small"
-                                       OnClick="OnCreate"
-                                       Style="margin-right: 4px; margin-bottom:4px"
-                                       IconColor="Color.Surface">
+                                       OnClick="OnCreate">
                                 @ConstantString.New
                             </MudButton>
                         }
@@ -65,9 +64,7 @@
                                        StartIcon="@Icons.Material.Filled.Delete"
                                        Disabled="@(!(_selectedItems.Count > 0))"
                                        OnClick="OnDeleteChecked"
-                                       Size="Size.Small"
-                                       Style="margin-right: 4px; margin-bottom:4px"
-                                       IconColor="Color.Surface">
+                                       Size="Size.Small">
                                 @ConstantString.Delete
                             </MudButton>
                         }

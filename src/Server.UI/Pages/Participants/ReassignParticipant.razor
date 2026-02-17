@@ -74,18 +74,16 @@
                                    Size="Size.Small"
                                    Disabled="@_loading"
                                    OnClick="@(() => OnRefresh())"
-                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" 
-                                   Color="Color.Secondary"
-                                   Style="margin-right: 4px; margin-bottom:4px">
+                                   StartIcon="@Icons.Material.Filled.Refresh"
+                                   Color="Color.Secondary">
                             @ConstantString.Refresh
                         </MudButton>
                         <MudButton Variant="Variant.Filled"
                                    Size="Size.Small"
                                    Disabled="@(ParticipantIdsToReassign.Any() == false || _loading)"
                                    OnClick="@(() => ReassignSelectedItems())"
-                                   StartIcon="@Icons.Material.Filled.MoveDown" IconColor="Color.Surface" 
-                                   Color="Color.Primary"
-                                   Style="margin-right: 4px; margin-bottom:4px">
+                                   StartIcon="@Icons.Material.Filled.MoveDown"
+                                   Color="Color.Primary">
                             @ConstantString.Reassign
                         </MudButton>   
 

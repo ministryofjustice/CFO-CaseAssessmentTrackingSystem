@@ -28,21 +28,36 @@ public static class Theme
                 Error = "#CC0033",
                 White = "#FFFFFF",
             },
+
             PaletteDark = new PaletteDark
             {
-                Primary = primaryColour, // Adjusted CFO Purple for dark mode
-                Secondary = "#666B73", // Lighter than #494f56 for better contrast on dark backgrounds
-                Success = "#76c043", // Slightly brighter than #62ae2f for visibility
-                Info = "#1493A3", // Brighter than #0c6980 for better contrast
-                Black = "#FFFFFF", // White to contrast dark backgrounds
-                TableLines = primaryColour, // Same as Primary to maintain consistency
-                Tertiary = "#DFB160", 
-                AppbarBackground = primaryColour, // Matching Tertiary for a unified dark theme
-                AppbarText = "#FFFFFF",
-                Error = "#FF4D4D", // Brighter red than #CC0033 for better visibility,
+                // keep your brand colors...
+                Primary = "#8A437A",
+                Secondary = "#34586E",
+                Success = "#76c043",
+                Info = "#1493A3",
+                Error = "#FF4D4D",
+                Tertiary = "#DFB160",
+
+                // critical for dialog readability:
+                Background = "#121212",     // page background
+                Surface = "#1E1E1E",        // dialog/paper surfaces (slightly lighter than Background)
+                
+                TextPrimary = "#E6E6E6",
+                TextSecondary = "#B3B3B3",
+
+                Divider = "rgba(255,255,255,0.12)",
+                LinesDefault = "rgba(255,255,255,0.12)",
+
+                OverlayDark = "rgba(0,0,0,0.60)",
+
+                // keep these sane
                 White = "#FFFFFF",
-                TextPrimary = "#FFFFFF",
-            },
+                Black = "#000000",
+
+                PrimaryContrastText = "#FFFFFF",
+            }
+,
             Typography = new Typography
             {
                 Default = new DefaultTypography

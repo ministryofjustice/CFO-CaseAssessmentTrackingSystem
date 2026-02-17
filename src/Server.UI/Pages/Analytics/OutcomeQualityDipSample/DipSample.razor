@@ -48,8 +48,7 @@
                                         StartIcon="@Icons.Material.Filled.Reviews"
                                         Size="Size.Small"
                                         OnClick="OnReview"
-                                        Disabled="@(_sample?.Status != DipSampleStatus.AwaitingReview)"
-                                        IconColor="Color.Secondary">
+                                        Disabled="@(_sample?.Status != DipSampleStatus.AwaitingReview)">
                                 <MudText>@ConstantString.Reviewed</MudText>
                             </MudButton>
                         </AuthorizeView>
@@ -59,8 +58,7 @@
                                         StartIcon="@Icons.Material.Filled.Done"
                                         Size="Size.Small"
                                         OnClick="OnVerify"
-                                        Disabled="@(_sample?.Status != DipSampleStatus.Reviewed)"
-                                        IconColor="Color.Secondary">
+                                        Disabled="@(_sample?.Status != DipSampleStatus.Reviewed)">
                                 <MudText>@ConstantString.Verify</MudText>
                             </MudButton>
                         </AuthorizeView>
@@ -70,8 +68,7 @@
                                         StartIcon="@Icons.Material.Filled.DoneAll"
                                         Size="Size.Small"
                                         OnClick="OnFinalise"
-                                        Disabled="@(_sample?.Status != DipSampleStatus.Verified)"
-                                        IconColor="Color.Secondary">
+                                        Disabled="@(_sample?.Status != DipSampleStatus.Verified)">
                                 <MudText>@ConstantString.Finalise</MudText>
                             </MudButton>
                         </AuthorizeView>
@@ -80,8 +77,8 @@
                                    Color="Color.Secondary"
                                    StartIcon="@Icons.Material.Filled.CloudDownload"
                                    Size="Size.Small"
-                                   OnClick="OnExport"
-                                   IconColor="Color.Surface">@ConstantString.Export
+                                   OnClick="OnExport">
+                                   @ConstantString.Export
                         </MudButton>
                     </MudStack>
                     <MudTextField DebounceInterval="500" @bind-Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
@@ -104,7 +101,7 @@
                 <CellTemplate>
                     <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                                 Dense="true"
-                                EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                                EndIcon="@Icons.Material.Filled.KeyboardArrowDown" AnchorOrigin="Origin.CenterLeft">
                         <MudMenuItem Href="@($"/pages/analytics/outcome-quality-dip-sampling/{SampleId}/{context.Item.ParticipantId}")">
                             @ConstantString.Review
                         </MudMenuItem>

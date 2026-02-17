@@ -49,35 +49,10 @@
                                    Size="Size.Small"
                                    OnClick="OnRefresh"
                                    Disabled="@_loading"
-                                   StartIcon="@Icons.Material.Filled.Refresh" 
-                                   Color="Color.Secondary"
-                                   Style="margin-right: 4px; margin-bottom:4px">
+                                   Color="Color.Secondary">
                             @ConstantString.Refresh
                         </MudButton>
-                        @if (_canImport)
-                        {
-                            <MudButton Disabled="@_uploading" 
-                            Variant="Variant.Filled" 
-                            Color="Color.Success"
-                            StartIcon="@Icons.Material.Filled.Upload"
-                            Size="Size.Small"
-                            Style="margin-right:4px; margin-bottom:4px"
-                            for="importdataInput"
-                            HtmlTag="label">
-                                @if (_uploading)
-                                {
-                                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                                    <MudText Class="ms-2"> @ConstantString.Uploading</MudText>
-                                }
-                                else
-                                {
-                                    <MudText>@ConstantString.Import</MudText>
-                                }
-
-                            </MudButton>
-                            <InputFile id="importdataInput" OnChange="OnImportData" hidden accept=".xlsx"/>
-                        }
-                        @if (_canExport)
+                       @if (_canExport)
                         {
                             <MudLoadingButton Loading="@_downloading" 
                             Variant="Variant.Filled" 
@@ -94,9 +69,7 @@
                             <MudButton Variant="Variant.Filled" Color="Color.Primary"
                             StartIcon="@Icons.Material.Filled.Add"
                             Size="Size.Small"
-                            OnClick="OnCreate"
-                            Style="margin-right: 4px; margin-bottom:4px"
-                            IconColor="Color.Surface">
+                            OnClick="OnCreate">
                                 @ConstantString.New
                             </MudButton>
                         }
@@ -110,9 +83,7 @@
                             Color="Color.Primary"
                             StartIcon="@Icons.Material.Filled.Add"
                             Size="Size.Small"
-                            OnClick="OnCreate"
-                            Style="margin-right: 4px; margin-bottom:4px"
-                            IconColor="Color.Surface">
+                            OnClick="OnCreate">
                                 @ConstantString.New
                             </MudButton>
                         }
@@ -181,7 +152,6 @@
     private bool _canExport;
     private bool Readonly => !_canCreate || !_canEdit;
     private bool _loading;
-    private bool _uploading;
     private bool _downloading;
 
     protected override async Task OnInitializedAsync()
@@ -371,7 +341,7 @@
 
     private async Task OnImportData(InputFileChangeEventArgs e)
     {
-        _uploading = true;
+        
         var stream = new MemoryStream();
         await e.File.OpenReadStream(GlobalVariable.MaxAllowedSize).CopyToAsync(stream);
         var command = new ImportKeyValuesCommand(e.File.Name, stream.ToArray());
@@ -389,7 +359,6 @@
             }
         }
 
-        _uploading = false;
     }
 
 }
