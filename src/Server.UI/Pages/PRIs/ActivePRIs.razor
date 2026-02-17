@@ -52,6 +52,15 @@
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                         <MudButton Variant="Variant.Outlined"
+                                   Size="Size.Small"
+                                   Disabled="@_loading"
+                                   OnClick="@(() => OnRefresh())"
+                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" 
+                                   Color="Color.Secondary"
+                                   Style="margin-right: 4px; margin-bottom:4px">
+                            @ConstantString.Refresh
+                        </MudButton>      
                         <MudHidden Breakpoint="Breakpoint.SmAndDown">
                             <MudButton Variant="Variant.Outlined"
                                        Size="Size.Small"
@@ -61,15 +70,7 @@
                                        Style="margin-right: 4px; margin-bottom:4px">
                                 Generate PRI code
                             </MudButton>
-                        </MudHidden>
-                        <MudButton Variant="Variant.Outlined"
-                                   Size="Size.Small"
-                                   Disabled="@_loading"
-                                   OnClick="@(() => OnRefresh())"
-                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
-                                   Style="margin-right: 4px; margin-bottom:4px">
-                            @ConstantString.Refresh
-                        </MudButton>             
+                        </MudHidden>       
                     </MudHidden>
                     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
 

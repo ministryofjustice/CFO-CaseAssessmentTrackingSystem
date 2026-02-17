@@ -46,7 +46,8 @@
                                        Size="Size.Small"
                                        Disabled="@_loading"
                                        OnClick="@(() => OnRefresh())"
-                                       StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Refresh"  
+                                       Color="Color.Secondary"
                                        Style="margin-right: 4px; margin-bottom:4px">
                                 @ConstantString.Refresh
                             </MudButton>
@@ -56,8 +57,7 @@
                                        StartIcon="@Icons.Material.Filled.Download"
                                        Size="Size.Small"
                                        Style="margin-right: 4px; margin-bottom: 4px"
-                                       OnClick="OnExport"
-                                       IconColor="Color.Surface">
+                                       OnClick="OnExport">                                       
                                 @if (_downloading)
                                 {
                                     <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />

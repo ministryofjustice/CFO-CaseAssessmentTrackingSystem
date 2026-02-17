@@ -49,42 +49,21 @@
                                    Size="Size.Small"
                                    OnClick="OnRefresh"
                                    Disabled="@_loading"
-                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Refresh" 
+                                   Color="Color.Secondary"
                                    Style="margin-right: 4px; margin-bottom:4px">
                             @ConstantString.Refresh
                         </MudButton>
-                        @if (_canCreate)
-                        {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                            StartIcon="@Icons.Material.Filled.Add"
-                            Size="Size.Small"
-                            OnClick="OnCreate"
-                            Style="margin-right: 4px; margin-bottom:4px"
-                            IconColor="Color.Surface">
-                                @ConstantString.New
-                            </MudButton>
-                        }
-                        @if (_canDelete)
-                        {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
-                            StartIcon="@Icons.Material.Filled.Delete"
-                            Disabled="@(!(_selectedItems.Count > 0))"
-                            OnClick="OnDeleteChecked"
-                            Size="Size.Small"
-                            Style="margin-right: 4px; margin-bottom:4px"
-                            IconColor="Color.Surface">
-                                @ConstantString.Delete
-                            </MudButton>
-                        }
                         @if (_canImport)
                         {
-                            <MudButton Disabled="@_uploading" Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton Disabled="@_uploading" 
+                            Variant="Variant.Outlined" 
+                            Color="Color.Success"
                             StartIcon="@Icons.Material.Filled.Upload"
                             Size="Size.Small"
                             Style="margin-right:4px; margin-bottom:4px"
                             for="importdataInput"
-                            HtmlTag="label"
-                            IconColor="Color.Surface">
+                            HtmlTag="label">
                                 @if (_uploading)
                                 {
                                     <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
@@ -100,12 +79,13 @@
                         }
                         @if (_canExport)
                         {
-                            <MudButton Disabled="@_downloading" Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton Disabled="@_downloading" 
+                            Variant="Variant.Outlined" 
+                            Color="Color.Secondary"
                             StartIcon="@Icons.Material.Filled.Download"
                             Size="Size.Small"
                             Style="margin-right: 4px; margin-bottom:4px"
-                            OnClick="OnExport"
-                            IconColor="Color.Surface">
+                            OnClick="OnExport">
                                 @if (_downloading)
                                 {
                                     <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
@@ -117,8 +97,7 @@
                                 }
                             </MudButton>
                         }
-                    </MudHidden>
-                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                        
                         @if (_canCreate)
                         {
                             <MudButton Variant="Variant.Outlined" Color="Color.Primary"
@@ -130,18 +109,23 @@
                                 @ConstantString.New
                             </MudButton>
                         }
-                        @if (_canDelete)
+
+                    </MudHidden>
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                        @if (_canCreate)
                         {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
-                            StartIcon="@Icons.Material.Filled.Delete"
-                            Disabled="@(!(_selectedItems.Count > 0))"
-                            OnClick="OnDeleteChecked"
+                            <MudButton 
+                            Variant="Variant.Outlined" 
+                            Color="Color.Primary"
+                            StartIcon="@Icons.Material.Filled.Add"
                             Size="Size.Small"
+                            OnClick="OnCreate"
                             Style="margin-right: 4px; margin-bottom:4px"
                             IconColor="Color.Surface">
-                                @ConstantString.Delete
+                                @ConstantString.New
                             </MudButton>
                         }
+                        
                     </MudHidden>
                 </div>
                 @if (_canSearch)

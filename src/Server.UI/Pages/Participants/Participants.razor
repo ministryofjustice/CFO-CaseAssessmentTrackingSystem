@@ -58,20 +58,12 @@
                         <MudSpacer/>
                         <MudStack>
                             <MudStack Row="true">
-                                @if (_canEnrol)
-                                {
-                                    <MudButton Variant="Variant.Outlined"
-                                    Size="Size.Small"
-                                    Disabled="@_loading"
-                                    OnClick="@(() => OnEnrol())"
-                                    StartIcon="@Icons.Material.Filled.PersonAdd" IconColor="Color.Surface" Color="Color.Primary">
-                                        Enrol
-                                    </MudButton>
-                                }
-                                <MudIconButton Variant="Variant.Outlined" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" />
+                                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Secondary">
+                                    Refresh
+                                </MudButton>
                                 <MudButton Disabled="@_downloading"
                                             Variant="Variant.Outlined"
-                                            Color="Color.Primary"
+                                            Color="Color.Secondary"
                                             StartIcon="@Icons.Material.Filled.Download"
                                             Size="Size.Small"
                                             OnClick="OnExport"
@@ -86,6 +78,16 @@
                                         <MudText>@ConstantString.Export</MudText>
                                     }
                                 </MudButton>
+                                @if (_canEnrol)
+                                {
+                                    <MudButton Variant="Variant.Outlined"
+                                    Size="Size.Small"
+                                    Disabled="@_loading"
+                                    OnClick="@(() => OnEnrol())"
+                                    StartIcon="@Icons.Material.Filled.PersonAdd" IconColor="Color.Surface" Color="Color.Primary">
+                                        Enrol
+                                    </MudButton>
+                                }
                             </MudStack>
 
                             @if (_canSearch)
