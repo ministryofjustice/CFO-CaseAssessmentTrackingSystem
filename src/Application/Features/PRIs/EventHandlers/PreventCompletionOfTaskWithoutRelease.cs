@@ -1,9 +1,11 @@
 ﻿using Cfo.Cats.Domain.Events;
-
+using Cfo.Cats.Domain.Common.Exceptions;
 namespace Cfo.Cats.Application.Features.PRIs.EventHandlers;
 
 internal class PreventCompletionOfTaskWithoutRelease(IUnitOfWork unitOfWork) : INotificationHandler<ObjectiveTaskCompletedDomainEvent>
 {
+    
+    // TODO: Replace this with a business rule?
     public async Task Handle(ObjectiveTaskCompletedDomainEvent notification, CancellationToken cancellationToken)
     {
         if (notification.Item is { IsMandatory: true, Index: 2 } && notification.Item.CompletedStatus == CompletionStatus.Done)
@@ -20,7 +22,7 @@ internal class PreventCompletionOfTaskWithoutRelease(IUnitOfWork unitOfWork) : I
 
             if (pri.ActualReleaseDate is null)
             {
-                throw new ApplicationException("Cannot accept this task as the actual release date is missing from the PRI");
+                throw new PriMissingActualReleaseDateException();
             }
 
             // Has the participant been in the expected release region after the PRI was created?
@@ -32,7 +34,7 @@ internal class PreventCompletionOfTaskWithoutRelease(IUnitOfWork unitOfWork) : I
 
             if (hasBeenReleasedToLocation is false)
             {
-                throw new ApplicationException("Cannot accept this task as notice of the participants release to the expected release region has not yet been received.");
+                throw new PriNeverBeenInLocationException();
             }
         }
     }
