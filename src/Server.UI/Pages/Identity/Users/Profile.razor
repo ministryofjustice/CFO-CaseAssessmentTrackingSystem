@@ -86,7 +86,7 @@
                                 <MudTextField For="@(() => Model.PhoneNumber)" @bind-Value="Model.PhoneNumber" Label="@L["Phone Number"]" Variant="Variant.Text"></MudTextField>
                             </MudItem>
                             <MudItem sm="12" xs="12" Class="d-flex justify-end">
-                                <MudButton ButtonType="ButtonType.Button" Disabled="@submitting" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">
+                                <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" Loading="@submitting" StartIcon="@Icons.Material.Filled.Save" Class="ml-auto" OnClick="@(async () => await Submit())">
                                     @if (submitting)
                                     {
                                         <MudProgressCircular Class="ms-n1" Size="MudBlazor.Size.Small" Indeterminate="true"/>
@@ -96,7 +96,7 @@
                                     {
                                         <MudText>@ConstantString.Save</MudText>
                                     }
-                                </MudButton>
+                                </MudLoadingButton>
                             </MudItem>
                         </MudGrid>
                     </MudForm>
@@ -134,17 +134,9 @@
                             </MudItem>
                             <input type="hidden" id="ReturnUrl" name="ReturnUrl" /> 
                             <MudItem sm="12" xs="12" Class="d-flex justify-end">
-                                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await ChangePassword())">
-                                    @if (submitting)
-                                    {
-                                        <MudProgressCircular Class="ms-n1" Size="MudBlazor.Size.Small" Indeterminate="true"/>
-                                        <MudText Class="ms-2">@ConstantString.Waiting </MudText>
-                                    }
-                                    else
-                                    {
-                                        <MudText>@L["Change Password"]</MudText>
-                                    }
-                                </MudButton>
+                                <MudLoadingButton Loading="submitting" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await ChangePassword())">
+                                    @L["Change Password"]
+                                </MudLoadingButton>
                             </MudItem>
                         </MudGrid>
                     </MudForm>

@@ -40,7 +40,7 @@
 <MudStack>
 	@if(SelectedTenantId is null)
     {
-        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+        <MudAlert Severity="Severity.Info" Variant="Variant.Filled">
             Please select a Tenant.
         </MudAlert>
     }
@@ -62,8 +62,8 @@
                 <div style="max-width: 640px;">
                     <MudDateRangePicker @ref="_picker" Label="Date Range" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="@_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
                         <PickerActions>
-                            <MudButton OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
-                            <MudButton Color="Color.Primary" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
+                            <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+                            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
                         </PickerActions>
                     </MudDateRangePicker>    
                 </div>

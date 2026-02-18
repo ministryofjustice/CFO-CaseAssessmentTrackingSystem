@@ -3,12 +3,11 @@
 
 <MudTooltip Arrow="true" Text="@L["User Profile"]">
     <MudMenu AnchorOrigin="Origin.BottomRight"
-             Icon="@Icons.Material.Filled.PermIdentity"
-             Color="Color.Tertiary"
              Class="mx-1"
              LockScroll="true"
              TransformOrigin="Origin.TopRight">
-        <ChildContent>
+                <ActivatorContent>        <MudIconButton Icon="@Icons.Material.Filled.PermIdentity"                       Style="color:white;" />    </ActivatorContent>   
+            <ChildContent>
             <div class="pb-4"
                  style="min-width: 260px;margin-bottom:0px!important">
                 <MudStack Row="true" AlignItems="AlignItems.Center" Class="ma-4">
@@ -45,7 +44,7 @@
                 <MudMenuItem Href="/user/profile">
                     <div class="d-flex">
                         <MudIcon Class="mx-2"
-                                 Color="@Color.Tertiary"
+                                 Style="color: white;"
                                  Icon="@Icons.Material.Filled.Person" />
                         <MudText>@L["Profile"]</MudText>
                     </div>
@@ -58,7 +57,7 @@
                                    ButtonType="ButtonType.Submit"
                                    FullWidth="true"
                                    StartIcon="@Icons.Material.Filled.Logout"
-                                   Variant="Variant.Outlined">
+                                   Variant="Variant.Filled">
                             @L["Logout"]
                         </MudButton>
                     </form>

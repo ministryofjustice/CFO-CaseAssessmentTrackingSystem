@@ -45,12 +45,12 @@ else
     {
         <MudContainer Class="d-flex flex-column align-center justify-center">
 
-            <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">
+            <MudAlert Severity="Severity.Error" Variant="Variant.Filled">
                 @bioWarningMessage
             </MudAlert>
 
             <MudContainer Class="d-flex px-0 mt-8 justify-space-between">
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" OnClick="Cancel">
+                <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">
                     @ConstantString.Cancel
                 </MudButton>
             </MudContainer>

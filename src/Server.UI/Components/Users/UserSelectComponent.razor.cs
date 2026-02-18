@@ -13,7 +13,7 @@ public partial class UserSelectComponent
     [Parameter] public string? Placeholder { get; set; } = "Choose a user...";
     [Parameter] public bool Required { get; set; }
     [Parameter] public bool Disabled { get; set; }
-    [Parameter] public Variant Variant { get; set; } = MudBlazor.Variant.Outlined;
+    [Parameter] public Variant Variant { get; set; } = MudBlazor.Variant.Filled;
     private ApplicationUserDto[] _users = [];
     protected override void OnInitialized() => _users = UserService.DataSource
         .Where(d => d.TenantId!.StartsWith(TenantId))

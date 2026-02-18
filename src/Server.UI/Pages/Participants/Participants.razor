@@ -58,34 +58,30 @@
                         <MudSpacer/>
                         <MudStack>
                             <MudStack Row="true">
-                                @if (_canEnrol)
-                                {
-                                    <MudButton Variant="Variant.Outlined"
-                                    Size="Size.Small"
-                                    Disabled="@_loading"
-                                    OnClick="@(() => OnEnrol())"
-                                    StartIcon="@Icons.Material.Filled.PersonAdd" IconColor="Color.Surface" Color="Color.Primary">
-                                        Enrol
-                                    </MudButton>
-                                }
-                                <MudIconButton Variant="Variant.Outlined" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" />
-                                <MudButton Disabled="@_downloading"
-                                            Variant="Variant.Outlined"
-                                            Color="Color.Primary"
-                                            StartIcon="@Icons.Material.Filled.Download"
+                                <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Refresh">
+                                    @ConstantString.Refresh
+                                </MudButton>
+                                <MudLoadingButton 
+                                            Color="Color.Secondary"
+                                            Variant="Variant.Filled"
+                                            StartIcon="@Icons.Material.Filled.CloudDownload"
                                             Size="Size.Small"
                                             OnClick="OnExport"
-                                            IconColor="Color.Surface">
-                                    @if (_downloading)
-                                    {
-                                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                                        <MudText Class="ms-2"> @ConstantString.Downloading</MudText>
-                                    }
-                                    else
-                                    {
-                                        <MudText>@ConstantString.Export</MudText>
-                                    }
-                                </MudButton>
+                                            Loading="_downloading">
+                                        @ConstantString.Export
+                                </MudLoadingButton>
+                                @if (_canEnrol)
+                                {
+                                    <MudButton 
+                                        Color="Color.Primary"
+                                        Variant="Variant.Filled"
+                                        Size="Size.Small"
+                                        Disabled="@_loading"
+                                        OnClick="@(() => OnEnrol())"
+                                        StartIcon="@Icons.Material.Filled.PersonAdd">
+                                            Enrol
+                                    </MudButton>
+                                }
                             </MudStack>
 
                             @if (_canSearch)

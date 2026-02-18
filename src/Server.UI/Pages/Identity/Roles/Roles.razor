@@ -40,45 +40,41 @@
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                        <MudButton Variant="Variant.Outlined"
+                        <MudButton Variant="Variant.Filled"
                                    Size="Size.Small"
                                    OnClick="OnRefresh"
                                    Disabled="@_loading"
-                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
-                                   Style="margin-right: 4px; margin-bottom:4px">
+                                   StartIcon="@Icons.Material.Filled.Refresh"  
+                                   Color="Color.Secondary">
                             @ConstantString.Refresh
                         </MudButton>
                         @if (_canCreate)
                         {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton Variant="Variant.Filled" 
+                                      Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.Add"
                                        Size="Size.Small"
-                                       OnClick="OnCreate"
-                                       Style="margin-right: 4px; margin-bottom:4px"
-                                       IconColor="Color.Surface">
+                                       OnClick="OnCreate">
                                 @ConstantString.New
                             </MudButton>
                         }
                         @if (_canDelete)
                         {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Error"
+                            <MudButton Variant="Variant.Filled" Color="Color.Error"
                                        StartIcon="@Icons.Material.Filled.Delete"
                                        Disabled="@(!(_selectedItems.Count > 0))"
                                        OnClick="OnDeleteChecked"
-                                       Size="Size.Small"
-                                       Style="margin-right: 4px; margin-bottom:4px"
-                                       IconColor="Color.Surface">
+                                       Size="Size.Small">
                                 @ConstantString.Delete
                             </MudButton>
                         }
 
                         @if (_canExport)
                         {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Download"
-                                       Size="Size.Small"
-                                       Style="margin-right: 4px; margin-bottom:4px"
-                                       IconColor="Color.Surface">
+                            <MudButton Variant="Variant.Filled" 
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.CloudDownload"
+                                       Size="Size.Small">
                                 @ConstantString.Export
                             </MudButton>
                         }
@@ -88,7 +84,7 @@
                                 <ActivatorContent>
                                     <MudButton HtmlTag="label"
                                                Size="Size.Small"
-                                               Variant="Variant.Outlined"
+                                               Variant="Variant.Filled"
                                                Color="Color.Primary"
                                                Disabled="@_loading"
                                                StartIcon="@Icons.Material.Filled.Upload">
@@ -109,7 +105,7 @@
                     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
                         @if (_canCreate)
                         {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.Add"
                                        Size="Size.Small"
                                        OnClick="OnCreate"
@@ -120,7 +116,7 @@
                         }
                         @if (_canDelete)
                         {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Error"
+                            <MudButton Variant="Variant.Filled" Color="Color.Error"
                                        StartIcon="@Icons.Material.Filled.Delete"
                                        Disabled="@(!(_selectedItems.Count > 0))"
                                        OnClick="OnDeleteChecked"

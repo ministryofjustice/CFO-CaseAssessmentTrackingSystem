@@ -10,15 +10,15 @@
     <MudText Typo="Typo.h3">
         QA Dashboard
     </MudText>
-    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">
         This page is still under development and may produce inaccurate results.
     </MudAlert>
     <MudStack Row="true" AlignItems="AlignItems.Center">
 
         <MudDateRangePicker @ref="_picker" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="@_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
             <PickerActions>
-                <MudButton OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
-                <MudButton Color="Color.Primary" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
+                <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
             </PickerActions>
         </MudDateRangePicker>
 		@if (CurrentUser.AssignedRoles is not [])

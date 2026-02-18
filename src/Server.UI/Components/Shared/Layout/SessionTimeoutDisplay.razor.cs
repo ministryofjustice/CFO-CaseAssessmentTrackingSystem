@@ -69,9 +69,9 @@ public partial class SessionTimeoutDisplay
     private Color GetChipColor()
     => _remainingTime switch
     {
-        { TotalMinutes: <= 2 } => Color.Error,
-        { TotalMinutes: <= 5 } => Color.Warning,
-        _ => Color.Default
+        { TotalMinutes: <= 2 } => Color.Warning,
+        { TotalMinutes: <= 5 } => Color.Tertiary,
+        _ => Color.Secondary
     };
 
     public async ValueTask DisposeAsync()

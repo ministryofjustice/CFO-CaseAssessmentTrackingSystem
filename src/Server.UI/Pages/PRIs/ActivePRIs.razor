@@ -52,24 +52,24 @@
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                        <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                            <MudButton Variant="Variant.Outlined"
-                                       Size="Size.Small"
-                                       Disabled="@_loading"
-                                       OnClick="@(() => CreatePriCode())"
-                                       StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface" Color="Color.Primary"
-                                       Style="margin-right: 4px; margin-bottom:4px">
-                                Generate PRI code
-                            </MudButton>
-                        </MudHidden>
-                        <MudButton Variant="Variant.Outlined"
+                         <MudButton Variant="Variant.Filled"
                                    Size="Size.Small"
                                    Disabled="@_loading"
                                    OnClick="@(() => OnRefresh())"
-                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
-                                   Style="margin-right: 4px; margin-bottom:4px">
+                                   StartIcon="@Icons.Material.Filled.Refresh"
+                                   Color="Color.Secondary">
                             @ConstantString.Refresh
-                        </MudButton>             
+                        </MudButton>      
+                        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                            <MudButton Variant="Variant.Filled"
+                                       Size="Size.Small"
+                                       Disabled="@_loading"
+                                       OnClick="@(() => CreatePriCode())"
+                                       StartIcon="@Icons.Material.Filled.Add"
+                                       Color="Color.Primary">
+                                Generate PRI code
+                            </MudButton>
+                        </MudHidden>       
                     </MudHidden>
                     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
 

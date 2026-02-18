@@ -35,7 +35,7 @@
     @if (_activityQaDetailsDto is null)
     {
         <MudButton OnClick="GetQueueItem" ButtonType="ButtonType.Button" StartIcon="@Icons.Material.Filled.QueuePlayNext"
-        Variant="Variant.Outlined" Color="Color.Primary">
+        Variant="Variant.Filled" Color="Color.Primary">
             Get Next
         </MudButton>
     }
@@ -85,7 +85,7 @@
 
                                 <MudDivider Class="py-4" />
 
-                                <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                                <MudAlert Severity="Severity.Info" Variant="Variant.Filled">
                                     This comment will only be visible to internal members of CFO staff
                                 </MudAlert>
 
@@ -103,7 +103,7 @@
                         }
                         else
                         {
-                            <MudAlert Variant="Variant.Outlined" Severity="Severity.Info">
+                            <MudAlert Variant="Variant.Filled" Severity="Severity.Info">
                                 This entry has already been processed
                             </MudAlert>
                         }

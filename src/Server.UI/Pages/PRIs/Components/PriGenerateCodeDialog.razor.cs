@@ -4,7 +4,9 @@ namespace Cfo.Cats.Server.UI.Pages.PRIs.Components;
 
 public partial class PriGenerateCodeDialog
 {
-    private MudForm? form = new();
+    private bool _loading = false;
+    private MudForm? _form = new();
+    private bool _priCodeGenerated = false;
 
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; } = default!;
@@ -12,38 +14,42 @@ public partial class PriGenerateCodeDialog
     [EditorRequired]
     [Parameter]
     public UpsertPriCode.Command? Model { get; set; }
-
-    private bool PRICodeGenerated = false;
-
+    
     private string _code = string.Empty;
 
     public async Task GeneratePriCode()
     {
-        await form!.Validate();
-
-        if (form.IsValid is false)
+        try
         {
-            return;
+            _loading = true;
+
+            await _form!.Validate();
+
+            if (_form.IsValid is false)
+            {
+                return;
+            }
+
+            var result = await GetNewMediator().Send(Model!);
+
+            if (result.Succeeded)
+            {
+                _code = result.Data.ToString();
+                _priCodeGenerated = true;
+                Snackbar.Add($"{L["PRI code: " + _code + " successfully generated"]}", Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
+            }
         }
-
-        var result = await GetNewMediator().Send(Model!);
-
-        if (result.Succeeded)
+        finally
         {
-            _code = result.Data.ToString();
-            PRICodeGenerated = true;
-            Snackbar.Add($"{L["PRI code: " + _code + " successfully generated"]}", Severity.Info);
-        }
-        else
-        {
-            Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
+            _loading = false;    
         }
     }
 
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
+    private void Cancel() => MudDialog.Cancel();
 
     private void Close() => MudDialog.Close(DialogResult.Ok(true));
 }

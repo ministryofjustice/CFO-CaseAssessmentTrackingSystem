@@ -51,7 +51,7 @@ public class AddLabelCommandTests
             Name = "New Label",
             Description = "Description",
             Colour = AppColour.Secondary,
-            Variant = AppVariant.Outlined,
+            Variant = AppVariant.Filled,
             AppIcon = AppIcon.Person,
             ContractId = null
         };

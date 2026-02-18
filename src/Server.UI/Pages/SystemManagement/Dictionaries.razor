@@ -45,103 +45,49 @@
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                        <MudButton Variant="Variant.Outlined"
+                        <MudButton Variant="Variant.Filled"
                                    Size="Size.Small"
                                    OnClick="OnRefresh"
                                    Disabled="@_loading"
-                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
-                                   Style="margin-right: 4px; margin-bottom:4px">
+                                   Color="Color.Secondary">
                             @ConstantString.Refresh
                         </MudButton>
+                       @if (_canExport)
+                        {
+                            <MudLoadingButton Loading="@_downloading" 
+                            Variant="Variant.Filled" 
+                            Color="Color.Secondary"
+                            StartIcon="@Icons.Material.Filled.CloudDownload"
+                            Size="Size.Small"
+                            OnClick="OnExport">
+                                @ConstantString.Export
+                            </MudLoadingButton>
+                        }
+                        
                         @if (_canCreate)
                         {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary"
                             StartIcon="@Icons.Material.Filled.Add"
                             Size="Size.Small"
-                            OnClick="OnCreate"
-                            Style="margin-right: 4px; margin-bottom:4px"
-                            IconColor="Color.Surface">
+                            OnClick="OnCreate">
                                 @ConstantString.New
                             </MudButton>
                         }
-                        @if (_canDelete)
-                        {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
-                            StartIcon="@Icons.Material.Filled.Delete"
-                            Disabled="@(!(_selectedItems.Count > 0))"
-                            OnClick="OnDeleteChecked"
-                            Size="Size.Small"
-                            Style="margin-right: 4px; margin-bottom:4px"
-                            IconColor="Color.Surface">
-                                @ConstantString.Delete
-                            </MudButton>
-                        }
-                        @if (_canImport)
-                        {
-                            <MudButton Disabled="@_uploading" Variant="Variant.Outlined" Color="Color.Primary"
-                            StartIcon="@Icons.Material.Filled.Upload"
-                            Size="Size.Small"
-                            Style="margin-right:4px; margin-bottom:4px"
-                            for="importdataInput"
-                            HtmlTag="label"
-                            IconColor="Color.Surface">
-                                @if (_uploading)
-                                {
-                                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                                    <MudText Class="ms-2"> @ConstantString.Uploading</MudText>
-                                }
-                                else
-                                {
-                                    <MudText>@ConstantString.Import</MudText>
-                                }
 
-                            </MudButton>
-                            <InputFile id="importdataInput" OnChange="OnImportData" hidden accept=".xlsx"/>
-                        }
-                        @if (_canExport)
-                        {
-                            <MudButton Disabled="@_downloading" Variant="Variant.Outlined" Color="Color.Primary"
-                            StartIcon="@Icons.Material.Filled.Download"
-                            Size="Size.Small"
-                            Style="margin-right: 4px; margin-bottom:4px"
-                            OnClick="OnExport"
-                            IconColor="Color.Surface">
-                                @if (_downloading)
-                                {
-                                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                                    <MudText Class="ms-2"> @ConstantString.Downloading</MudText>
-                                }
-                                else
-                                {
-                                    <MudText>@ConstantString.Export</MudText>
-                                }
-                            </MudButton>
-                        }
                     </MudHidden>
                     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
                         @if (_canCreate)
                         {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton 
+                            Variant="Variant.Filled" 
+                            Color="Color.Primary"
                             StartIcon="@Icons.Material.Filled.Add"
                             Size="Size.Small"
-                            OnClick="OnCreate"
-                            Style="margin-right: 4px; margin-bottom:4px"
-                            IconColor="Color.Surface">
+                            OnClick="OnCreate">
                                 @ConstantString.New
                             </MudButton>
                         }
-                        @if (_canDelete)
-                        {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
-                            StartIcon="@Icons.Material.Filled.Delete"
-                            Disabled="@(!(_selectedItems.Count > 0))"
-                            OnClick="OnDeleteChecked"
-                            Size="Size.Small"
-                            Style="margin-right: 4px; margin-bottom:4px"
-                            IconColor="Color.Surface">
-                                @ConstantString.Delete
-                            </MudButton>
-                        }
+                        
                     </MudHidden>
                 </div>
                 @if (_canSearch)
@@ -171,10 +117,10 @@
         <PropertyColumn Property="x => x.Description" Title="@L[SelectedItem.GetMemberDescription(x => x.Description)]"/>
         <TemplateColumn CellStyle="width:60px" Title="@ConstantString.Delete" Sortable="false">
             <CellTemplate>
-                <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Outlined" Color="Color.Secondary" Disabled="@(!_canDelete)" Size="Size.Small" OnClick="@(() => DeleteItem(context.Item))"/>
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Secondary" Disabled="@(!_canDelete)" Size="Size.Small" OnClick="@(() => DeleteItem(context.Item))"/>
             </CellTemplate>
             <EditTemplate>
-                <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Outlined" Color="Color.Secondary" Disabled="@(!_canDelete)" Size="Size.Small" OnClick="@(() => DeleteItem(context.Item))"/>
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Secondary" Disabled="@(!_canDelete)" Size="Size.Small" OnClick="@(() => DeleteItem(context.Item))"/>
             </EditTemplate>
         </TemplateColumn>
     </Columns>
@@ -206,7 +152,6 @@
     private bool _canExport;
     private bool Readonly => !_canCreate || !_canEdit;
     private bool _loading;
-    private bool _uploading;
     private bool _downloading;
 
     protected override async Task OnInitializedAsync()
@@ -396,7 +341,7 @@
 
     private async Task OnImportData(InputFileChangeEventArgs e)
     {
-        _uploading = true;
+        
         var stream = new MemoryStream();
         await e.File.OpenReadStream(GlobalVariable.MaxAllowedSize).CopyToAsync(stream);
         var command = new ImportKeyValuesCommand(e.File.Name, stream.ToArray());
@@ -414,7 +359,6 @@
             }
         }
 
-        _uploading = false;
     }
 
 }

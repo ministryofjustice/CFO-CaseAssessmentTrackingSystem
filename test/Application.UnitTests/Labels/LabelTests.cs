@@ -180,14 +180,14 @@ public class LabelTests
             "Updated",
             "Updated Description",
             AppColour.Secondary,
-            AppVariant.Outlined,
+            AppVariant.Filled,
             AppIcon.Label,
             _labelCounter);
 
         label.Name.ShouldBe("Updated");
         label.Description.ShouldBe("Updated Description");
         label.Colour.ShouldBe(AppColour.Secondary);
-        label.Variant.ShouldBe(AppVariant.Outlined);
+        label.Variant.ShouldBe(AppVariant.Filled);
     }
 
     [Test]
@@ -247,7 +247,7 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Primary,
-            AppVariant.Filled,
+            AppVariant.Outlined,
             AppIcon.Label,
             "CONTRACT-001",
             _labelCounter);
@@ -258,7 +258,7 @@ public class LabelTests
             "Label",
             "Description",
             AppColour.Primary,
-            AppVariant.Outlined,
+            AppVariant.Filled,
             AppIcon.Label,
             _labelCounter);
 
@@ -504,7 +504,7 @@ public class LabelTests
             "Original",
             "Updated Description",
             AppColour.Secondary,
-            AppVariant.Outlined,
+            AppVariant.Filled,
             AppIcon.Star,
             _labelCounter);
 

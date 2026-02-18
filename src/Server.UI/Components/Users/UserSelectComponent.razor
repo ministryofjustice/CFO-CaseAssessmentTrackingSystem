@@ -28,7 +28,7 @@
                                 <MudStack Row="true">
                                     @foreach(var role in context.Value?.AssignedRoles ?? [])
                                     {
-                                        <MudChip T="string" Color="Color.Info" Variant="Variant.Outlined" Size="Size.Small">@role</MudChip>
+                                        <MudChip T="string" Color="Color.Info" Variant="Variant.Filled" Size="Size.Small">@role</MudChip>
                                     }
                                 </MudStack>
                                

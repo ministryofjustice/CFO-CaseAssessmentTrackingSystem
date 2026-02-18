@@ -23,6 +23,7 @@ public static class ConstantString
     public static string Refresh => Localize("Refresh");
     public static string Edit => Localize("Edit");
     public static string View => Localize("View");
+    public static string ViewAll => Localize("View All");
     public static string Verify => Localize("Verify");
     public static string Submit => Localize("Submit");
     public static string Delete => Localize("Delete");
@@ -241,4 +242,6 @@ public static class ConstantString
     public static string NonPayable => Localize("Non-Payable");
     public static string PreReleaseSupport => Localize("Pre-Release Support");
     public static string ThroughTheGate => Localize("Through the Gate");
+
+    public static string Trigger => Localize("Trigger");
 }

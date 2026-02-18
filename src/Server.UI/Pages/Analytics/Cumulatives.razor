@@ -14,7 +14,7 @@
 
 @if (_noAccessToContracts)
 {
-    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Class="mt-3">
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Class="mt-3">
         <MudStack>
             Cumulative figures are only available at the Contract level.
         </MudStack>
@@ -44,25 +44,15 @@ else
         </MudItem>
         <MudSpacer />
         <MudItem xs="12" md="2">
-            <MudButton Disabled="@_downloading"
-                       Variant="Variant.Outlined"
-                       Color="Color.Primary"
-                       StartIcon="@Icons.Material.Filled.Download"
+            <MudLoadingButton 
+                        Loading="@_downloading"
+                       Variant="Variant.Filled"
+                       Color="Color.Secondary"
+                       StartIcon="@Icons.Material.Filled.CloudDownload"
                        Size="Size.Small"
-                       Style="margin-right: 4px; margin-bottom: 4px"
-                       OnClick="OnExport"
-                       IconColor="Color.Surface">
-
-                @if (_downloading)
-                {
-                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                    <MudText Class="ms-2"> @ConstantString.Processing</MudText>
-                }
-                else
-                {
-                    <MudText>@ConstantString.Export</MudText>
-                }
-            </MudButton>
+                       OnClick="OnExport">
+                       @ConstantString.Export
+            </MudLoadingButton>
         </MudItem>
     </MudGrid>
 

@@ -79,23 +79,24 @@
                 }
                 
                 <MudStack Row="true">
-                    @if (_canCreate)
-                    {
-                        <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.Add"
-                                   Size="Size.Small"
-                                   OnClick="OnCreate"
-                                   IconColor="Color.Surface">
-                            @ConstantString.New
-                        </MudButton>
-                    }
-                    <MudButton Variant="Variant.Outlined"
+                     <MudButton Variant="Variant.Filled"
                                Size="Size.Small"
                                Disabled="@_loading"
                                OnClick="@(OnRefresh)"
-                               StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary">
+                               StartIcon="@Icons.Material.Filled.Refresh" 
+                               Color="Color.Secondary">
                         @ConstantString.Refresh
                     </MudButton>
+                    @if (_canCreate)
+                    {
+                        <MudButton Variant="Variant.Filled" 
+                                Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Add"
+                                   Size="Size.Small"
+                                   OnClick="OnCreate">
+                            @ConstantString.New
+                        </MudButton>
+                    }
                 </MudStack>
                 
 

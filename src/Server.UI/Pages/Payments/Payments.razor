@@ -9,7 +9,7 @@
 
 @if (_noAccessToContracts)
 {
-    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Class="mt-3">
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Class="mt-3">
         <MudStack>
             Performance based dashboards are coming soon
         </MudStack>
@@ -41,7 +41,7 @@ else
             <MudSwitch @bind-Value="DataView" Label="Data View" Color="Color.Info" />
         </MudItem>
         <MudItem xs="12">
-            <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+            <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">
                 These figures are subject to change following data verification checks.
             </MudAlert>
         </MudItem>

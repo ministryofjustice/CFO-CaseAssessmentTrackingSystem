@@ -21,7 +21,7 @@
             <MudPaper Class="pa-2 ma-2" Style="min-height: 90vh;" Elevation="3">
                 @if (_participant.PostLicenceCaseClosureEnd.HasValue)
                 {
-					<MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Square="true" Class="my-2">@string.Format(_notActiveInFeedAlertMessage, _participant.PostLicenceCaseClosureEnd.Value.ToShortDateString())</MudAlert>
+					<MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Square="true" Class="my-2">@string.Format(_notActiveInFeedAlertMessage, _participant.PostLicenceCaseClosureEnd.Value.ToShortDateString())</MudAlert>
                 }
                 <MudGrid Class="pa-1" Justify="Justify.FlexStart">
                     <MudItem xs="12">
@@ -52,7 +52,7 @@
                     <ParticipantActionMenu OnUpdate="() => Refresh()"/>
                     @if (_showRightToWorkWarning)
                     {
-                        <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Square="true" Class="my-2">@_rightToWorkAlertMessage</MudAlert>
+                        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Square="true" Class="my-2">@_rightToWorkAlertMessage</MudAlert>
                     }
 
                     <MudTabs Class="primary-tabs mt-2" Outlined="true" Color="Color.Info" Border="true" Style="height: 100%;">

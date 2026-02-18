@@ -10,16 +10,16 @@
         <MudPaper Height="300px" Elevation="0">
             @if (Model is not null)
             {
-                <MudForm @ref="form" Model="Model" Validation="Validator.ValidateValue(Model)">
+                <MudForm @ref="_form" Model="Model" Validation="Validator.ValidateValue(Model)">
                     <MudGrid>
                         <MudItem xs="12">
                             <MudTextField Label="@Model.GetMemberDescription(x => x.ParticipantId)"
                             @bind-Value="Model.ParticipantId"
                             For="() => Model.ParticipantId"
                             Class="mt-4"
-                            Variant="Variant.Outlined" />
+                            Variant="Variant.Filled" />
                         </MudItem>
-                        @if (PRICodeGenerated)
+                        @if (_priCodeGenerated)
                         {
                             <MudItem xs="12">
                                 <MudItem xs="4">
@@ -34,9 +34,9 @@
     </DialogContent>
 
     <DialogActions>        
-        <MudButton Color="Color.Primary" OnClick="GeneratePriCode" Variant="Variant.Filled" Disabled="PRICodeGenerated">Generate</MudButton>
+        <MudLoadingButton StartIcon="@Icons.Material.Filled.AutoAwesome" Loading="_loading" Color="Color.Secondary" OnClick="GeneratePriCode" Variant="Variant.Filled" Disabled="_priCodeGenerated">Generate</MudLoadingButton>
         <MudSpacer />
-        <MudButton OnClick="Cancel" Disabled="PRICodeGenerated">@ConstantString.Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Close" Disabled="!PRICodeGenerated">@ConstantString.Continue</MudButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel" Disabled="_priCodeGenerated">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton StartIcon="@Icons.Material.Filled.Check" Variant="Variant.Filled" Color="Color.Primary" OnClick="Close" Disabled="!_priCodeGenerated">@ConstantString.Continue</MudLoadingButton>
     </DialogActions>
 </MudDialog>

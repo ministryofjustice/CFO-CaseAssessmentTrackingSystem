@@ -8,7 +8,7 @@
         
         @if (Candidate is { IsInCustody: true, CommunityLocation: not null })
         {
-            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+            <MudAlert Severity="Severity.Info" Variant="Variant.Filled">
                 
                 <MudStack>
                     <MudText Typo="Typo.body1">
@@ -26,7 +26,7 @@
         }
         else
         {
-            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+            <MudAlert Severity="Severity.Info" Variant="Variant.Filled">
                 We have found a match: @(string.Join(' ', new [] { Candidate.FirstName, Candidate.SecondName, Candidate.LastName})) (@Candidate.Identifier)
 
                 We have them located at @(Candidate.LocationDescription ?? "Unmapped Location")
@@ -35,7 +35,7 @@
         
         @if (Candidate is { IsInCustody: true, CommunityLocation: null })
         {
-            <MudAlert Class="mt-3" Severity="Severity.Warning" Variant="Variant.Outlined">
+            <MudAlert Class="mt-3" Severity="Severity.Warning" Variant="Variant.Filled">
                 We do not have a valid release location for this candidate.
             </MudAlert>
         }
@@ -82,11 +82,12 @@
     </MudForm>
     
     <MudContainer Class="d-flex px-0 mt-8 justify-space-between">
-        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="BackToSearch">Back to Search</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.RestartAlt" OnClick="BackToSearch">Back to Search</MudButton>
         <MudLoadingButton 
                     Loading="loading"
                     Color="Color.Success" 
                     Variant="Variant.Filled"
+                    StartIcon="@Icons.Material.Filled.NotStarted"
                     OnClick="EnrolCandidate"
                     Disabled="@(Model.Confirmation is false)">
             Enrol Candidate

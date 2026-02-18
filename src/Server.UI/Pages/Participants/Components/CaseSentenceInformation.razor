@@ -16,7 +16,7 @@
                             <MudText Typo="Typo.h6">Record</MudText>
                         </CardHeaderContent>
                         <CardHeaderAvatar>
-                            <MudAvatar Color="Color.Primary">
+                            <MudAvatar Color="Color.Tertiary">
                                 <MudIcon Icon="@Icons.Material.Filled.Person" />
                             </MudAvatar>
                         </CardHeaderAvatar>
@@ -43,7 +43,7 @@
                             <MudText Typo="Typo.h6">@ConstantString.OffenderManagerDeliusFeed</MudText>
                         </CardHeaderContent>
                         <CardHeaderAvatar>
-                            <MudAvatar Color="Color.Primary">
+                            <MudAvatar Color="Color.Tertiary">
                                 <MudIcon Icon="@Icons.Material.Filled.Person" />
                             </MudAvatar>
                         </CardHeaderAvatar>
@@ -71,10 +71,15 @@
                             @if (ParticipantIsActive)
                             {
                                 <MudTooltip Text="Edit">
-                                    <MudIconButton OnClick="Edit" Icon="@Icons.Material.Filled.Edit" />
+                                    <MudIconButton OnClick="Edit" Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" />
                                 </MudTooltip>
                             }
                         </CardHeaderActions>
+                        <CardHeaderAvatar>
+                            <MudAvatar Color="Color.Tertiary">
+                                <MudIcon Icon="@Icons.Material.Filled.Security" />
+                            </MudAvatar>
+                        </CardHeaderAvatar>
                     </MudCardHeader>
                     <MudCardContent>
                         <MudTextField Value="Model.Supervisor.Name"

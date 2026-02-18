@@ -43,7 +43,7 @@ public class EditLabelCommandTests
             NewName = "Updated",
             NewDescription = "Updated Description",
             NewColour = AppColour.Secondary,
-            NewVariant = AppVariant.Outlined,
+            NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Person
         };
 
@@ -53,7 +53,7 @@ public class EditLabelCommandTests
         existingLabel.Name.ShouldBe("Updated");
         existingLabel.Description.ShouldBe("Updated Description");
         existingLabel.Colour.ShouldBe(AppColour.Secondary);
-        existingLabel.Variant.ShouldBe(AppVariant.Outlined);
+        existingLabel.Variant.ShouldBe(AppVariant.Filled);
     }
 
     [Test]
