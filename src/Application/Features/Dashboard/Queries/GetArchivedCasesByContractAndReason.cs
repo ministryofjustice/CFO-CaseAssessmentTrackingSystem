@@ -33,9 +33,10 @@ public static class GetArchivedCasesByContractAndReason
                 join u in context.Users on ac.CreatedBy equals u.Id into userJoin
                 from u in userJoin.DefaultIfEmpty()
 
-                where ac.From < request.EndDate.AddDays(1).Date
-                      && (ac.To == null || ac.To >= request.StartDate)
+                where ac.From >= request.StartDate.Date
+                      && ac.From < request.EndDate.AddDays(1).Date
                       && (c == null || c.Tenant!.Id.StartsWith(request.CurrentUser.TenantId!))
+
                 select new { ac, c,u };
 
             if (!string.IsNullOrWhiteSpace(request.TenantId))
