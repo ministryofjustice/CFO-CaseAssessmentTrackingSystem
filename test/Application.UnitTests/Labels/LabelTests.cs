@@ -25,6 +25,7 @@ public class LabelTests
         var label = Label.Create(
             "Test Label",
             "Test Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -34,6 +35,7 @@ public class LabelTests
         label.ShouldNotBeNull();
         label.Name.ShouldBe("Test Label");
         label.Description.ShouldBe("Test Description");
+        label.Scope.ShouldBe(LabelScope.User);
         label.Colour.ShouldBe(AppColour.Primary);
         label.Variant.ShouldBe(AppVariant.Filled);
         label.ContractId.ShouldBe("CONTRACT-001");
@@ -46,6 +48,7 @@ public class LabelTests
             Label.Create(
                 null!,
                 "Description",
+                LabelScope.User,
                 AppColour.Primary,
                 AppVariant.Filled,
             AppIcon.Label,
@@ -61,6 +64,7 @@ public class LabelTests
             Label.Create(
                 "",
                 "Description",
+                LabelScope.User,
                 AppColour.Primary,
                 AppVariant.Filled,
             AppIcon.Label,
@@ -76,6 +80,7 @@ public class LabelTests
             Label.Create(
                 "   ",
                 "Description",
+                LabelScope.User,
                 AppColour.Primary,
                 AppVariant.Filled,
             AppIcon.Label,
@@ -91,6 +96,7 @@ public class LabelTests
             Label.Create(
                 "A",
                 "Description",
+                LabelScope.User,
                 AppColour.Primary,
                 AppVariant.Filled,
             AppIcon.Label,
@@ -106,6 +112,7 @@ public class LabelTests
             Label.Create(
                 new string('x', 201),
                 "Description",
+                LabelScope.User,
                 AppColour.Primary,
                 AppVariant.Filled,
             AppIcon.Label,
@@ -123,6 +130,7 @@ public class LabelTests
             Label.Create(
                 "Duplicate",
                 "Description",
+                LabelScope.User,
                 AppColour.Primary,
                 AppVariant.Filled,
             AppIcon.Label,
@@ -139,6 +147,7 @@ public class LabelTests
         var label = Label.Create(
             "Same Name",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -155,6 +164,7 @@ public class LabelTests
         var label = Label.Create(
             "Test Label",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -170,6 +180,7 @@ public class LabelTests
         var label = Label.Create(
             "Original",
             "Original Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -179,6 +190,7 @@ public class LabelTests
         label.Edit(
             "Updated",
             "Updated Description",
+            LabelScope.User,
             AppColour.Secondary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -196,6 +208,7 @@ public class LabelTests
         var label = Label.Create(
             "Original",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -207,6 +220,7 @@ public class LabelTests
         label.Edit(
             "NewName",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -221,6 +235,7 @@ public class LabelTests
         var label = Label.Create(
             "Label",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -232,6 +247,7 @@ public class LabelTests
         label.Edit(
             "Label",
             "Description",
+            LabelScope.User,
             AppColour.Secondary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -246,6 +262,7 @@ public class LabelTests
         var label = Label.Create(
             "Label",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Outlined,
             AppIcon.Label,
@@ -257,6 +274,7 @@ public class LabelTests
         label.Edit(
             "Label",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -271,6 +289,7 @@ public class LabelTests
         var label = Label.Create(
             "Label",
             "Original",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -282,6 +301,7 @@ public class LabelTests
         label.Edit(
             "Label",
             "Updated Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -296,6 +316,7 @@ public class LabelTests
         var label = Label.Create(
             "Label",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -307,6 +328,7 @@ public class LabelTests
         label.Edit(
             "Label",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -316,11 +338,68 @@ public class LabelTests
     }
 
     [Test]
+    public void Edit_WhenScopeChanges_ShouldRaiseLabelScopeChangedEvent()
+    {
+        var label = Label.Create(
+            "Label",
+            "Description",
+            LabelScope.User,
+            AppColour.Primary,
+            AppVariant.Filled,
+            AppIcon.Label,
+            "CONTRACT-001",
+            _labelCounter);
+
+        label.ClearDomainEvents();
+
+        label.Edit(
+            "Label",
+            "Description",
+            LabelScope.System,
+            AppColour.Primary,
+            AppVariant.Filled,
+            AppIcon.Label,
+            _labelCounter);
+
+        label.DomainEvents.ShouldContain(e => e is LabelScopeChangedDomainEvent);
+        label.Scope.ShouldBe(LabelScope.System);
+    }
+
+    [Test]
+    public void Edit_WhenAppIconChanges_ShouldRaiseLabelAppIconChangedEvent()
+    {
+        var label = Label.Create(
+            "Label",
+            "Description",
+            LabelScope.User,
+            AppColour.Primary,
+            AppVariant.Filled,
+            AppIcon.Label,
+            "CONTRACT-001",
+            _labelCounter);
+
+        label.ClearDomainEvents();
+
+        label.Edit(
+            "Label",
+            "Description",
+            LabelScope.User,
+            AppColour.Primary,
+            AppVariant.Filled,
+            AppIcon.Star,
+            _labelCounter);
+
+        label.DomainEvents.ShouldContain(e => e is LabelAppIconChangedDomainEvent);
+        label.AppIcon.ShouldBe(AppIcon.Star);
+    }
+
+    [Test]
     public void Delete_AsInternalUser_OnGlobalLabel_ShouldSucceed()
     {
         var label = Label.Create(
             "Global",
             "Description",
+            LabelScope.System,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -341,6 +420,7 @@ public class LabelTests
         var label = Label.Create(
             "Global",
             "Description",
+            LabelScope.System,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -360,6 +440,7 @@ public class LabelTests
         var label = Label.Create(
             "Contract",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -380,6 +461,7 @@ public class LabelTests
         var label = Label.Create(
             "Label",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -400,6 +482,7 @@ public class LabelTests
         var label = Label.Create(
             "Label",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -420,6 +503,7 @@ public class LabelTests
         var label = Label.Create(
             "Label",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -442,6 +526,7 @@ public class LabelTests
         var label = Label.Create(
             "Original",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -454,6 +539,7 @@ public class LabelTests
             label.Edit(
                 "ExistingLabel",
                 "Description",
+                LabelScope.User,
                 AppColour.Primary,
                 AppVariant.Filled,
                 AppIcon.Label,
@@ -467,6 +553,7 @@ public class LabelTests
         var label = Label.Create(
             "Original",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -478,6 +565,7 @@ public class LabelTests
         label.Edit(
             "NewUniqueName",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -492,6 +580,7 @@ public class LabelTests
         var label = Label.Create(
             "Original",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -503,6 +592,7 @@ public class LabelTests
         label.Edit(
             "Original",
             "Updated Description",
+            LabelScope.User,
             AppColour.Secondary,
             AppVariant.Filled,
             AppIcon.Star,

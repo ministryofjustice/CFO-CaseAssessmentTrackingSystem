@@ -15,7 +15,8 @@ public class Label : BaseAuditableEntity<LabelId>
 
     private Label(
         string name, 
-        string description, 
+        string description,
+        LabelScope scope, 
         AppColour colour, 
         AppVariant variant, 
         AppIcon appIcon,
@@ -31,6 +32,7 @@ public class Label : BaseAuditableEntity<LabelId>
         Id = new  LabelId(Guid.CreateVersion7());
         Name = name;
         Description =  description;
+        Scope = scope;
         Colour = colour;
         Variant = variant;
         ContractId = contractId;
@@ -42,12 +44,13 @@ public class Label : BaseAuditableEntity<LabelId>
     public static Label Create(
         string name, 
         string description, 
+        LabelScope scope,
         AppColour colour, 
         AppVariant variant,
         AppIcon appIcon,
         string? contractId,
         ILabelCounter labelCounter)
-        => new (name, description, colour, variant, appIcon, contractId, labelCounter);
+        => new (name, description, scope, colour, variant, appIcon, contractId, labelCounter);
     
     /// <summary>
     /// The name of the label. Used for display and filtering.
@@ -58,6 +61,11 @@ public class Label : BaseAuditableEntity<LabelId>
     /// A longer description of the label and its intended use
     /// </summary>
     public string Description { get; private set; }
+
+    /// <summary>
+    /// The scope for the label (are we added via the system or the user?) 
+    /// </summary>
+    public LabelScope Scope {get; private set;}
     
     /// <summary>
     /// The colour for the label
@@ -79,6 +87,7 @@ public class Label : BaseAuditableEntity<LabelId>
     public Label Edit(
         string name, 
         string description, 
+        LabelScope scope,
         AppColour colour,
         AppVariant variant,
         AppIcon appIcon,
@@ -87,7 +96,8 @@ public class Label : BaseAuditableEntity<LabelId>
                 .EditDescription(description)
                 .EditColour(colour)
                 .EditVariant(variant)
-                .EditAppIcon(appIcon);  
+                .EditAppIcon(appIcon)
+                .EditScope(scope);  
                 
     private Label EditName(string name, ILabelCounter labelCounter)
     {
@@ -133,6 +143,16 @@ public class Label : BaseAuditableEntity<LabelId>
             Description = newDescription;
         }
         
+        return this;
+    }
+
+    private Label EditScope(LabelScope newScope)
+    {
+        if(Scope != newScope)
+        {
+            AddDomainEvent(new LabelScopeChangedDomainEvent(Id, Scope, newScope));
+            Scope = newScope;
+        }
         return this;
     }
 

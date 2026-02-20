@@ -1,4 +1,3 @@
-using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Labels;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -36,6 +35,12 @@ public class LabelEntityTypeConfiguration : IEntityTypeConfiguration<Label>
         
         builder.Property(x => x.LastModifiedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+
+        builder.Property(e => e.Scope)
+            .IsRequired()
+            .HasConversion(
+            s => s!.Value,
+            s => LabelScope.FromValue(s));
 
     }
 }

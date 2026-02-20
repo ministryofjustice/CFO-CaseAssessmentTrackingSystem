@@ -12,34 +12,87 @@
             <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
                 <MudGrid>
                     <MudItem xs="12">
-                        <MudTextField T="string" @bind-Value="Model.Name" For="@(() => Model.Name)" Label="Name" Required="true" MaxLength="@LabelConstants.NameMaximumLength" data-1p-ignore />
-                        <MudText Color="Color.Secondary">
-                            Characters: @Model.Name.Length / @LabelConstants.NameMaximumLength
-                        </MudText>
+                        <MudTextField 
+                            T="string" 
+                            @bind-Value="Model.Name" 
+                            For="@(() => Model.Name)" 
+                            Label="@Model.LabelFor(x => x.Name)"
+                            HelperText="@Model.HelperTextFor(x => x.Name)" 
+                            Required="true" 
+                            MaxLength="@LabelConstants.NameMaximumLength" 
+                            Counter = "@LabelConstants.NameMaximumLength"
+                            data-1p-ignore />                        
                     </MudItem>
                     <MudItem xs="12">
-                        <MudTextField T="string" @bind-Value="Model.Description"  For="@(() => Model.Description)" Label="Description" Lines="3" MaxLength="@LabelConstants.DescriptionMaximumLength"
-                                      Required="true" Immediate="true" />
-                        <MudText Color="Color.Secondary">
-                            Characters: @Model.Description.Length / @LabelConstants.DescriptionMaximumLength
-                        </MudText>
+                        <MudTextField 
+                            T="string" 
+                            @bind-Value="Model.Description"  
+                            For="@(() => Model.Description)" 
+                            Label="@Model.LabelFor(x => x.Description)"
+                            HelperText="@Model.HelperTextFor(x => x.Description)" 
+                            Lines="3" 
+                            MaxLength="@LabelConstants.DescriptionMaximumLength"
+                            Counter="@LabelConstants.DescriptionMaximumLength"
+                            Required="true" 
+                            Immediate="true" />
                     </MudItem>
                     <MudItem xs="12">
-                      <ContractAutoComplete TenantId="@(CurrentUser?.TenantId ?? "xxx")" @bind-Value="SelectedContract" />
+                        <MudSelect 
+                            T="LabelScope"
+                            Label="@Model.LabelFor(x => x.Scope)" 
+                            HelperText="@Model.HelperTextFor(x => x.Scope)"
+                            MultiSelection="false" 
+                            Clearable="false"
+                            AnchorOrigin="Origin.BottomLeft"
+                            @bind-Value="Model.Scope" 
+                            For="@(() => Model.Scope)"
+                            Class="mr-2">
+                                <MudSelectItem T="LabelScope" Value="@LabelScope.User">
+                                    @LabelScope.User.Name
+                                </MudSelectItem>
+                                <MudSelectItem T="LabelScope" Value="@LabelScope.System">
+                                    @LabelScope.System.Name
+                                </MudSelectItem>
+                        </MudSelect>
                     </MudItem>
                     <MudItem xs="12">
-                        <MudEnumSelect TEnum="AppColour" Required="true" Label="Colour" For="@(() => Model.Colour)" @bind-Value="Model.Colour" />
+                      <ContractAutoComplete 
+                        TenantId="@(CurrentUser?.TenantId ?? "xxx")" 
+                        @bind-Value="SelectedContract"
+                        Label="@Model.LabelFor(x => x.ContractId)"
+                        HelperText="@Model.HelperTextFor(x => x.ContractId)" />
                     </MudItem>
                     <MudItem xs="12">
-                        <MudEnumSelect TEnum="AppVariant" Required="true" Label="Style" For="@(() => Model.Variant)" @bind-Value="Model.Variant" />
+                        <MudEnumSelect 
+                            TEnum="AppColour" 
+                            Required="true" 
+                            Label="@Model.LabelFor(x => x.Colour)"
+                            HelperText="@Model.HelperTextFor(x => x.Colour)" 
+                            For="@(() => Model.Colour)" 
+                            @bind-Value="Model.Colour" />
                     </MudItem>
                     <MudItem xs="12">
-                        <MudEnumSelect TEnum="AppIcon" Required="true" Label="Icon" For="@(() => Model.AppIcon)" @bind-Value="Model.AppIcon" />
+                        <MudEnumSelect 
+                            TEnum="AppVariant" 
+                            Required="true" 
+                            Label="@Model.LabelFor(x => x.Variant)"
+                            HelperText="@Model.HelperTextFor(x => x.Variant)" 
+                            For="@(() => Model.Variant)" 
+                            @bind-Value="Model.Variant" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudEnumSelect 
+                            TEnum="AppIcon" 
+                            Required="true" 
+                            Label="@Model.LabelFor(x => x.AppIcon)"
+                            HelperText="@Model.HelperTextFor(x => x.AppIcon)" 
+                            For="@(() => Model.AppIcon)" 
+                            @bind-Value="Model.AppIcon" />
                     </MudItem>
                     <MudItem xs="12">
                         <MudStack Row="true">
                             <MudText Typo="Typo.body2">Example</MudText>
-                            <CatsChip Label="Model.Label" Variant="Model.Variant" Colour="Model.Colour" Icon="Model.AppIcon"/>
+                            <CatsChip Description="Model.Description" Label="Model.Label" Variant="Model.Variant" Colour="Model.Colour" Icon="Model.AppIcon"/>
                         </MudStack>
                     </MudItem>
                 </MudGrid>

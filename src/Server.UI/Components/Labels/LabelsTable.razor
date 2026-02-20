@@ -50,6 +50,9 @@
                 <MudTableSortLabel SortBy="new Func<LabelDto, object>(x => x.Contract)">Contract</MudTableSortLabel>
             </MudTh>
             <MudTh>
+                <MudTableSortLabel SortBy="new Func<LabelDto, object>(x => x.Scope.Name)">Scope</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
                 Example
             </MudTh>
         </HeaderContent>
@@ -75,8 +78,11 @@
                 @context.Variant
             </MudTd>
             <MudTd DataLabel="Contract">@context.Contract</MudTd>
+            <MudTd DataLabel="Scope">
+                @context.Scope    
+            </MudTd>
             <MudTd DataLabel="Example">
-                <CatsChip Label="@context.Name" Variant="@context.Variant" Colour="@context.Colour" Icon="@context.AppIcon"/>
+                <CatsChip Description="@context.Description" Label="@context.Name" Variant="@context.Variant" Colour="@context.Colour" Icon="@context.AppIcon"/>
             </MudTd>
         </RowTemplate>
         <PagerContent>

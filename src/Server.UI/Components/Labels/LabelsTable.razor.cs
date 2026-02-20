@@ -17,6 +17,7 @@ public partial class LabelsTable
     {
         AddLabel.Command command = new AddLabel.Command()
         {
+            Scope = LabelScope.User,
             Colour = AppColour.Default,
             Variant = AppVariant.Filled,
             Name = string.Empty,
@@ -48,7 +49,9 @@ public partial class LabelsTable
             NewName = context.Name,
             NewDescription = context.Description,
             LabelId = new LabelId(context.Id),
-            NewVariant = context.Variant
+            NewVariant = context.Variant,
+            NewScope =  context.Scope,
+            NewAppIcon = context.AppIcon
         };
 
         var parameters = new DialogParameters<EditLabelDialog>()

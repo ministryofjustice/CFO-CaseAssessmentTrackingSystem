@@ -29,6 +29,7 @@ public class EditLabelCommandTests
         var existingLabel = Label.Create(
             "Original",
             "Original Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -42,6 +43,7 @@ public class EditLabelCommandTests
             LabelId = existingLabel.Id,
             NewName = "Updated",
             NewDescription = "Updated Description",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Secondary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Person
@@ -64,6 +66,7 @@ public class EditLabelCommandTests
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = "Updated",
             NewDescription = "Description",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -80,6 +83,7 @@ public class EditLabelCommandTests
         var existingLabel = Label.Create(
             "Name1",
             "Desc1",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -93,6 +97,7 @@ public class EditLabelCommandTests
             LabelId = existingLabel.Id,
             NewName = "Name2",
             NewDescription = "Desc2",
+            NewScope = LabelScope.System,
             NewColour = AppColour.Info,
             NewVariant = AppVariant.Text,
             NewAppIcon = AppIcon.Star
@@ -102,6 +107,7 @@ public class EditLabelCommandTests
 
         existingLabel.Name.ShouldBe("Name2");
         existingLabel.Description.ShouldBe("Desc2");
+        existingLabel.Scope.ShouldBe(LabelScope.System);
         existingLabel.Colour.ShouldBe(AppColour.Info);
         existingLabel.Variant.ShouldBe(AppVariant.Text);
     }
@@ -112,6 +118,7 @@ public class EditLabelCommandTests
         var existingLabel = Label.Create(
             "Original",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -125,6 +132,7 @@ public class EditLabelCommandTests
             LabelId = existingLabel.Id,
             NewName = "Changed",
             NewDescription = "Description",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -145,6 +153,7 @@ public class EditLabelCommandTests
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = "",
             NewDescription = "Description",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -165,6 +174,7 @@ public class EditLabelCommandTests
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = "A",
             NewDescription = "Description",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -185,6 +195,7 @@ public class EditLabelCommandTests
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = new string('x', 201),
             NewDescription = "Description",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -205,6 +216,7 @@ public class EditLabelCommandTests
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = "Valid",
             NewDescription = "",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -225,6 +237,7 @@ public class EditLabelCommandTests
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = "Valid",
             NewDescription = "AB",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -245,6 +258,7 @@ public class EditLabelCommandTests
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = "Valid",
             NewDescription = new string('A', 201),
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -265,6 +279,7 @@ public class EditLabelCommandTests
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = "Valid",
             NewDescription = "Valid Description",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -284,6 +299,7 @@ public class EditLabelCommandTests
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = "Invalid123",
             NewDescription = "Description",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -305,6 +321,7 @@ public class EditLabelCommandTests
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = "Valid_Name",
             NewDescription = "Description",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -324,6 +341,7 @@ public class EditLabelCommandTests
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = "Valid",
             NewDescription = "Description with £, $, @, punctuation & symbols!",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -343,6 +361,7 @@ public class EditLabelCommandTests
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = "Valid",
             NewDescription = "Description 123 with numbers",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -362,6 +381,7 @@ public class EditLabelCommandTests
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = "Valid",
             NewDescription = "Line 1\r\nLine 2",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -381,6 +401,7 @@ public class EditLabelCommandTests
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = "Valid",
             NewDescription = "Invalid characters: <html> tags",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -402,6 +423,7 @@ public class EditLabelCommandTests
             LabelId = new LabelId(Guid.NewGuid()),
             NewName = new string('A', 25),
             NewDescription = "Valid Description",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -418,6 +440,7 @@ public class EditLabelCommandTests
         var existingLabel = Label.Create(
             "Original",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -432,6 +455,7 @@ public class EditLabelCommandTests
             LabelId = existingLabel.Id,
             NewName = "ExistingLabel",
             NewDescription = "Description",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -448,6 +472,7 @@ public class EditLabelCommandTests
         var existingLabel = Label.Create(
             "Original",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -462,6 +487,7 @@ public class EditLabelCommandTests
             LabelId = existingLabel.Id,
             NewName = "NewUniqueName",
             NewDescription = "Description",
+            NewScope = LabelScope.User,
             NewColour = AppColour.Primary,
             NewVariant = AppVariant.Filled,
             NewAppIcon = AppIcon.Label
@@ -471,6 +497,102 @@ public class EditLabelCommandTests
 
         result.Succeeded.ShouldBeTrue();
         existingLabel.Name.ShouldBe("NewUniqueName");
+    }
+
+    [Test]
+    public async Task Handle_WhenScopeChanges_ShouldUpdateScope()
+    {
+        var existingLabel = Label.Create(
+            "Original",
+            "Description",
+            LabelScope.User,
+            AppColour.Primary,
+            AppVariant.Filled,
+            AppIcon.Label,
+            "CONTRACT-001",
+            new TestLabelCounter());
+
+        _repository.SetExistingLabel(existingLabel);
+
+        var command = new EditLabel.Command
+        {
+            LabelId = existingLabel.Id,
+            NewName = "Original",
+            NewDescription = "Description",
+            NewScope = LabelScope.System,
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled,
+            NewAppIcon = AppIcon.Label
+        };
+
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        result.Succeeded.ShouldBeTrue();
+        existingLabel.Scope.ShouldBe(LabelScope.System);
+    }
+
+    [Test]
+    public async Task Handle_WhenScopeRemainsTheSame_ShouldNotChangeScope()
+    {
+        var existingLabel = Label.Create(
+            "Original",
+            "Description",
+            LabelScope.User,
+            AppColour.Primary,
+            AppVariant.Filled,
+            AppIcon.Label,
+            "CONTRACT-001",
+            new TestLabelCounter());
+
+        _repository.SetExistingLabel(existingLabel);
+
+        var command = new EditLabel.Command
+        {
+            LabelId = existingLabel.Id,
+            NewName = "Original",
+            NewDescription = "Description",
+            NewScope = LabelScope.User,
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled,
+            NewAppIcon = AppIcon.Label
+        };
+
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        result.Succeeded.ShouldBeTrue();
+        existingLabel.Scope.ShouldBe(LabelScope.User);
+    }
+
+    [Test]
+    public async Task Handle_WhenAppIconChanges_ShouldUpdateAppIcon()
+    {
+        var existingLabel = Label.Create(
+            "Original",
+            "Description",
+            LabelScope.User,
+            AppColour.Primary,
+            AppVariant.Filled,
+            AppIcon.Label,
+            "CONTRACT-001",
+            new TestLabelCounter());
+
+        _repository.SetExistingLabel(existingLabel);
+
+        var command = new EditLabel.Command
+        {
+            LabelId = existingLabel.Id,
+            NewName = "Original",
+            NewDescription = "Description",
+            NewScope = LabelScope.User,
+            NewColour = AppColour.Primary,
+            NewVariant = AppVariant.Filled,
+            NewAppIcon = AppIcon.Star
+        };
+
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        result.Succeeded.ShouldBeTrue();
+        existingLabel.AppIcon.ShouldBe(AppIcon.Star);
     }
     
     private class TestLabelRepository : ILabelRepository

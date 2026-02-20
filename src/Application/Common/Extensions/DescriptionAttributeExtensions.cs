@@ -1,4 +1,6 @@
-﻿namespace Cfo.Cats.Application.Common.Extensions;
+﻿using Cfo.Cats.Application.Features.Delius.DTOs;
+
+namespace Cfo.Cats.Application.Common.Extensions;
 
 public static class DescriptionAttributeExtensions
 {

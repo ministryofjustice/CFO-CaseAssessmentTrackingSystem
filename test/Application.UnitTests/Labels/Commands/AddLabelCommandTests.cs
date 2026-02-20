@@ -28,6 +28,7 @@ public class AddLabelCommandTests
     {
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "Test Label",
             Description = "Test Description",
             Colour = AppColour.Primary,
@@ -48,6 +49,7 @@ public class AddLabelCommandTests
     {
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "New Label",
             Description = "Description",
             Colour = AppColour.Secondary,
@@ -67,6 +69,7 @@ public class AddLabelCommandTests
         var validator = new AddLabel.Validator();
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "",
             Description = "Description",
             Colour = AppColour.Primary,
@@ -87,6 +90,7 @@ public class AddLabelCommandTests
         var validator = new AddLabel.Validator();
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "A",
             Description = "Description",
             Colour = AppColour.Primary,
@@ -107,6 +111,7 @@ public class AddLabelCommandTests
         var validator = new AddLabel.Validator();
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = new  string('A', 201),
             Description = "Description",
             Colour = AppColour.Primary,
@@ -127,6 +132,7 @@ public class AddLabelCommandTests
         var validator = new AddLabel.Validator();
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "Valid",
             Description = new string('A', 201),
             Colour = AppColour.Primary,
@@ -147,6 +153,7 @@ public class AddLabelCommandTests
         var validator = new AddLabel.Validator();
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "Valid",
             Description = "AB",
             Colour = AppColour.Primary,
@@ -167,6 +174,7 @@ public class AddLabelCommandTests
         var validator = new AddLabel.Validator();
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "Valid",
             Description = "Valid Description",
             Colour = AppColour.Primary,
@@ -186,6 +194,7 @@ public class AddLabelCommandTests
         var validator = new AddLabel.Validator();
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "Invalid123",
             Description = "Description",
             Colour = AppColour.Primary,
@@ -207,6 +216,7 @@ public class AddLabelCommandTests
         var validator = new AddLabel.Validator();
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "Valid_Name",
             Description = "Description",
             Colour = AppColour.Primary,
@@ -226,6 +236,7 @@ public class AddLabelCommandTests
         var validator = new AddLabel.Validator();
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "Valid",
             Description = "Description with £, $, @, punctuation & symbols!",
             Colour = AppColour.Primary,
@@ -245,6 +256,7 @@ public class AddLabelCommandTests
         var validator = new AddLabel.Validator();
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "Valid",
             Description = "Description 123 with numbers",
             Colour = AppColour.Primary,
@@ -264,6 +276,7 @@ public class AddLabelCommandTests
         var validator = new AddLabel.Validator();
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "Valid",
             Description = "Line 1\r\nLine 2",
             Colour = AppColour.Primary,
@@ -283,6 +296,7 @@ public class AddLabelCommandTests
         var validator = new AddLabel.Validator();
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "Valid",
             Description = "Invalid characters: <html> tags",
             Colour = AppColour.Primary,
@@ -304,6 +318,7 @@ public class AddLabelCommandTests
         var validator = new AddLabel.Validator();
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = new string('A', 25),
             Description = "Valid Description",
             Colour = AppColour.Primary,
@@ -323,6 +338,7 @@ public class AddLabelCommandTests
         _labelCounter.SetVisibleLabelCount(1);
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "Duplicate",
             Description = "Description",
             Colour = AppColour.Primary,
@@ -340,6 +356,7 @@ public class AddLabelCommandTests
     {
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "Global",
             Description = "Global Label",
             Colour = AppColour.Primary,
@@ -359,6 +376,7 @@ public class AddLabelCommandTests
     {
         var command = new AddLabel.Command
         {
+            Scope = LabelScope.User,
             Name = "Contract",
             Description = "Contract Label",
             Colour = AppColour.Primary,
