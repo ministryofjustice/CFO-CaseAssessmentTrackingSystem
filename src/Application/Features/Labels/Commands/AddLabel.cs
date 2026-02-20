@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Labels.DTOs;
@@ -11,12 +12,25 @@ public static class AddLabel
     [RequestAuthorize(Policy = SecurityPolicies.ManageLabels)]
     public class Command : IRequest<Result>
     {
+        [Display(Name = "Name", Description = "The display name of the label. Must be unique within a contract")]
         public required string Name { get; set; }
+
+        [Display(Name="Description", Description = "A textual description of the label. Will appear as a tool tip")]
         public required string Description { get; set; }
+
+        [Display(Name = "Scope", Description = "The scope for adding a label (system labels are not available for user selection)")]
+        public required LabelScope Scope { get; set; }
+
+        [Display(Name="Colour", Description = "The colour for the label. More pronounced on Filled labels.")]
         public required AppColour Colour { get; set; }
         
+        [Display(Name = "Variant", Description = "Label display mode (Text/Outlined/Filled)")]
         public required AppVariant Variant { get; set; }
+
+        [Display(Name ="Icon", Description = "The icon to display (or None)")]
         public AppIcon AppIcon { get; set; }
+
+        [Display(Name="Contract", Description = "Option contract to limit user applicability and visibility")]
         public string? ContractId { get; set; }
        
     }
@@ -31,7 +45,8 @@ public static class AddLabel
         {
             var l = Label.Create(
                 request.Name, 
-                request.Description, 
+                request.Description,
+                request.Scope, 
                 request.Colour, 
                 request.Variant, 
                 request.AppIcon,

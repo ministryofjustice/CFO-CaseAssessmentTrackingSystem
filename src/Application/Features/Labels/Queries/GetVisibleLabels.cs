@@ -27,7 +27,8 @@ public static class GetVisibleLabels
                                         [Label].[Colour] as [{nameof(LabelDto.Colour)}],
                                         [Label].[Variant] as [{nameof(LabelDto.Variant)}],
                                         NULL as [{nameof(LabelDto.Contract)}],
-                                        [Label].[AppIcon] as [{nameof(LabelDto.AppIcon)}]
+                                        [Label].[AppIcon] as [{nameof(LabelDto.AppIcon)}],
+                                        [Label].[Scope] as [{nameof(LabelDto.Scope)}]
                                     FROM [Configuration].[Label] as [Label]
                                     WHERE [ContractId] IS NULL
                                     UNION
@@ -38,7 +39,8 @@ public static class GetVisibleLabels
                                         [Label].[Colour] as [{nameof(LabelDto.Colour)}],
                                         [Label].[Variant] as [{nameof(LabelDto.Variant)}],
                                         [Contract].[Description] as [{nameof(LabelDto.Contract)}],
-                                        [Label].[AppIcon] as [{nameof(LabelDto.AppIcon)}]
+                                        [Label].[AppIcon] as [{nameof(LabelDto.AppIcon)}],
+                                        [Label].[Scope] as [{nameof(LabelDto.Scope)}]
                                     FROM [Configuration].[Label] as [Label]
                                     INNER JOIN [Configuration].[Contract] as [Contract]
                                         ON [Label].[ContractId] = [Contract].[Id]

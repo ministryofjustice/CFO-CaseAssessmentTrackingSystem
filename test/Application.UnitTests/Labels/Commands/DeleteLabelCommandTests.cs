@@ -29,6 +29,7 @@ public class DeleteLabelCommandTests
         var label = Label.Create(
             "ToDelete",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -70,6 +71,7 @@ public class DeleteLabelCommandTests
         var globalLabel = Label.Create(
             "Global",
             "Description",
+            LabelScope.System,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -96,6 +98,7 @@ public class DeleteLabelCommandTests
         var globalLabel = Label.Create(
             "Global",
             "Description",
+            LabelScope.System,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -122,6 +125,7 @@ public class DeleteLabelCommandTests
         var label = Label.Create(
             "LinkedLabel",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,
@@ -148,6 +152,7 @@ public class DeleteLabelCommandTests
         var contractLabel = Label.Create(
             "Contract",
             "Description",
+            LabelScope.User,
             AppColour.Primary,
             AppVariant.Filled,
             AppIcon.Label,

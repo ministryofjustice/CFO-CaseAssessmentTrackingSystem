@@ -18,6 +18,7 @@ using Cfo.Cats.Domain.Labels;
 using Cfo.Cats.Infrastructure.Configurations;
 using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
 using Cfo.Cats.Infrastructure.Jobs;
+using Cfo.Cats.Infrastructure.Persistence.Converters;
 using Cfo.Cats.Infrastructure.Persistence.Interceptors;
 using Cfo.Cats.Infrastructure.Persistence.Repositories;
 using Cfo.Cats.Infrastructure.Services.Candidates;
@@ -29,6 +30,7 @@ using Cfo.Cats.Infrastructure.Services.MultiTenant;
 using Cfo.Cats.Infrastructure.Services.OffLoc;
 using Cfo.Cats.Infrastructure.Services.Ordnance;
 using Cfo.Cats.Infrastructure.Services.Serialization;
+using Dapper;
 using MediatR;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -185,6 +187,8 @@ public static class DependencyInjection
         });
 
         services.AddScoped<ILabelRepository, LabelRepository>();
+        
+        SqlMapper.AddTypeHandler(typeof(LabelScope), new SmartEnumIntHandler<LabelScope>());
         
         return services;
     }

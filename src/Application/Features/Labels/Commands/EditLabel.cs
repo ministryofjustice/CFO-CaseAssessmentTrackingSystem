@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.Features.Labels.DTOs;
@@ -12,10 +14,23 @@ public static class EditLabel
     public class Command : IRequest<Result>
     {
         public required LabelId LabelId { get; set; }
+
+        [Display(Name = "Name", Description = "The display name of the label. Must be unique within a contract")]
         public required string NewName { get; set; }
-        public required string NewDescription { get; set; }
+
+        [Display(Name="Description", Description = "A textual description of the label. Will appear as a tool tip")]
+        public required string NewDescription { get; set; } 
+        
+        [Display(Name = "Scope", Description = "The scope for adding a label (system labels are not available for user selection)")]
+        public required LabelScope NewScope { get; set; }
+        
+        [Display(Name="Colour", Description = "The colour for the label. More pronounced on Filled labels.")]
         public AppColour NewColour { get; set; }
+        
+        [Display(Name = "Variant", Description = "Label display mode (Text/Outlined/Filled)")]        
         public AppVariant NewVariant { get; set; }
+        
+       [Display(Name ="Icon", Description = "The icon to display (or None)")]
         public AppIcon NewAppIcon { get; set; }
         
     }
@@ -31,7 +46,7 @@ public static class EditLabel
                 throw new NotFoundException("Label does not exist");
             }
             
-            label.Edit(request.NewName, request.NewDescription, request.NewColour, request.NewVariant, request.NewAppIcon, labelCounter);
+            label.Edit(request.NewName, request.NewDescription,  request.NewScope, request.NewColour, request.NewVariant, request.NewAppIcon, labelCounter);
             
             return Result.Success();
         }

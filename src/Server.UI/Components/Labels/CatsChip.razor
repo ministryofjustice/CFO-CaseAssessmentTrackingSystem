@@ -1,20 +1,24 @@
-@if(Icon.AsMudIcon() is string icon){
-    <MudChip 
-        T="string"
-        Variant="Variant.AsMudVariant()"
-        Color="Colour.AsMudColour()"
-        Size="Size.Small"
-        Icon="@icon">
-        @Label
-    </MudChip>
-}
-else 
-{
-    <MudChip 
-        T="string"
-        Variant="Variant.AsMudVariant()"
-        Color="Colour.AsMudColour()"
-        Size="Size.Small">
-        @Label
-    </MudChip>
-}
+<MudTooltip Text="@Description">
+    @if (Icon.AsMudIcon() is string icon)
+    {
+
+        <MudChip 
+            T="string"        
+            Variant="Variant.AsMudVariant()"       
+            Color="Colour.AsMudColour()"        
+            Size="Size.Small" 
+            Icon="@icon">
+            @Label
+        </MudChip>
+    }
+    else
+    {
+        <MudChip 
+            T="string" 
+            Variant="Variant.AsMudVariant()" 
+            Color="Colour.AsMudColour()" 
+            Size="Size.Small">
+            @Label
+        </MudChip>
+    }
+</MudTooltip>

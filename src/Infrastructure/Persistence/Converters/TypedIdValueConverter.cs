@@ -10,3 +10,5 @@ public class TypedIdValueConverter<T> : ValueConverter<T, Guid>
         : base(id => id.Value, value => factory(value))
     {}
 }
+
+// write int to DB    }    public override TEnum Parse(object value)    {        return SmartEnum<TEnum, int>.FromValue((int)value); // read int from DB    }}
