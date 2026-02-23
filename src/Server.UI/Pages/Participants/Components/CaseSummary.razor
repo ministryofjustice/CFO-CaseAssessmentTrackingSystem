@@ -1,7 +1,4 @@
-@using System.Globalization
-@using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.Summary
-@using Humanizer
 @using Cfo.Cats.Server.UI.Components.Participants
 
 @inherits CatsComponentBase
@@ -11,7 +8,7 @@
         <!-- Details -->
         <MudItem xs="12" md="4">
             <!-- This will need moving out from here when the rest of the components are done. -->
-            <ParticipantDetailsCardComponent ParticipantId="@ParticipantSummaryDto.Id"/>
+            <ParticipantDetailsCardComponent ParticipantId="@ParticipantSummaryDto!.Id"/>
         </MudItem>
 
         <!-- Assessment -->
@@ -21,7 +18,7 @@
 
         <!-- Risk -->
         <MudItem xs="12" md="4">
-            <RiskSummary />
+            <RiskSummary ReloadParticipant="Reload" />
         </MudItem>
 
         <!-- Bio -->

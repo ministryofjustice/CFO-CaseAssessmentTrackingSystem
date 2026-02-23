@@ -10,8 +10,8 @@ public static class SaveRisk
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command : IRequest<Result<Guid>>
     {
-        public required Guid RiskId { get; set; }
-        public required RiskDto Risk { get; set; }
+        public required Guid RiskId { get; init; }
+        public required RiskDto Risk { get; init; }
     }
 
     public class Handler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService) : IRequestHandler<Command, Result<Guid>>
@@ -20,7 +20,7 @@ public static class SaveRisk
         {
             var risk = await unitOfWork.DbContext.Risks
                 .Include(x => x.Participant)
-                .FirstOrDefaultAsync(x => x.Id == request.RiskId);
+                .FirstOrDefaultAsync(x => x.Id == request.RiskId, cancellationToken: cancellationToken);
 
             if(risk is null)
             {
@@ -47,7 +47,12 @@ public static class SaveRisk
             _unitOfWork = unitOfWork;
 
             RuleFor(r => r.RiskId)
-                .NotNull();
+                .NotNull()           
+                .WithMessage("RiskId is required");
+
+            RuleFor(r => r.Risk)
+                .NotNull()
+                .SetValidator(new RiskDto.Validator());
 
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
@@ -71,7 +76,7 @@ public static class SaveRisk
                                  select p.Id
                                    )
                         .AsNoTracking()
-                        .FirstOrDefaultAsync();
+                        .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             return participantId != null;
         }

@@ -9,7 +9,7 @@
                     Risk Information
                 </MudText>
                 <MudTooltip Text="Expand">
-                    <MudIconButton OnClick="ExpandRiskInformation" Icon="@Icons.Material.Outlined.OpenInNew" />
+                    <MudIconButton OnClick="@ExpandRiskInformation" Icon="@Icons.Material.Outlined.OpenInNew" />
                 </MudTooltip>
             </div>
         </CardHeaderContent>
@@ -38,7 +38,7 @@
             }
         </MudStack>
         <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
-            <MudText><strong>Review Reason</strong></MudText>
+            <MudText><strong>Risk Due Reason</strong></MudText>
             <MudChip Size="Size.Small"
                      T="string"
                      Color="@(ParticipantSummaryDto.RiskDue < DateTime.Today ? Color.Error : Color.Info)">
@@ -50,14 +50,14 @@
     <MudCardActions>
         @if (CanAddRiskInformation())
         {
-            <MudTooltip Text="Add Information">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="OnClickAddRiskInformation" />
+            <MudTooltip Text="Add Risk Information">
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@OnClickAddRiskInformation" />
             </MudTooltip>
         }
         @if (CanReviewRiskInformation())
         {
-            <MudTooltip Text="Review Information">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" OnClick="ReviewRiskInformation" />
+            <MudTooltip Text="Review Risk Information">
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" OnClick="@ReviewRiskInformation" />
             </MudTooltip>
         }
     </MudCardActions>

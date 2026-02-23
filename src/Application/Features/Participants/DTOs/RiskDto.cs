@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Entities.Participants;
 using Newtonsoft.Json;
@@ -10,21 +11,25 @@ public class RiskDto
     public LocationType? LocationType { get; set; }
 
     [Description("Activity Recommendations")]
+    [MaxLength(10000)]
     public string? ActivityRecommendations { get; set; }
 
     [Description("Date Latest Activity Recommendations Received")]
     public DateTime? ActivityRecommendationsReceived { get; set; }
 
     [Description("Activity Restrictions")]
+    [MaxLength(15000)]
     public string? ActivityRestrictions { get; set; }
 
     [Description("Date Latest Activity Restrictions Received")]
     public DateTime? ActivityRestrictionsReceived { get; set; }
 
     [Description("Additional Information")]
+    [MaxLength(15000)]
     public string? AdditionalInformation { get; set; }
 
     [Description("License Conditions")]
+    [MaxLength(15000)]
     public string? LicenseConditions { get; set; }
 
     [Description("License/Supervision End Date")]
@@ -46,6 +51,7 @@ public class RiskDto
     }
 
     [Description("PSF Restrictions")]
+    [MaxLength(10000)]
     public string? PSFRestrictions { get; set; }
 
     [Description("Date Latest PSF Restrictions Received")]
@@ -54,11 +60,9 @@ public class RiskDto
     public RiskDetail CustodyRiskDetail { get; set; } = new();
     public RiskDetail CommunityRiskDetail { get; set; } = new();
 
-    [Description("Custody")]
-    public bool IsRelevantToCustody { get; set; } = false;
+    [Description("Custody")] public bool IsRelevantToCustody { get; set; }
 
-    [Description("Community")]
-    public bool IsRelevantToCommunity { get; set; } = false;
+    [Description("Community")] public bool IsRelevantToCommunity { get; set; }
 
     [Description("Sexual Harm Prevention Order (SHPO)")]
     public ConfirmationStatus? IsSubjectToSHPO { get; set; }
@@ -67,12 +71,15 @@ public class RiskDto
     public ConfirmationStatus? NSDCase { get; set; }
 
     [Description("Specific Risk(s)")]
+    [MaxLength(10000)]
     public string? SpecificRisk { get; set; }
 
     [Description("Full Name")]
+    [MaxLength(200)]
     public string? ReferrerName { get; set; }
 
     [Description("Email Address")]
+    [MaxLength(320)]
     public string? ReferrerEmail { get; set; }
 
     [Description("Date Completed")]
@@ -198,7 +205,9 @@ public class RiskDto
                 .NotEmpty()
                 .WithMessage("You must provide activity recommendations")
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Activity Recommendations"));
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Activity Recommendations"))
+                .MaximumLength(ValidationConstants.RiskMediumText)
+                .WithMessage("Activity Recommendations cannot exceed 10000 characters");
 
             RuleFor(x => x.ActivityRecommendationsReceived)
                 .NotEmpty()
@@ -210,7 +219,9 @@ public class RiskDto
                 .NotEmpty()
                 .WithMessage("You must provide activity restrictions")
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Activity Restrictions"));
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Activity Restrictions"))
+                .MaximumLength(ValidationConstants.RiskLongText)
+                .WithMessage("Activity Restriction cannot exceed 15000 characters");
 
             RuleFor(x => x.ActivityRestrictionsReceived)
                 .NotEmpty()
@@ -222,13 +233,17 @@ public class RiskDto
                 .NotEmpty()
                 .WithMessage("You must provide additional information")
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Additional Information"));
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Additional Information"))
+                .MaximumLength(ValidationConstants.RiskLongText)
+                .WithMessage("Additional information cannot exceed 15000 characters");
 
             RuleFor(x => x.LicenseConditions)
                 .NotEmpty()
                 .WithMessage("You must provide license conditions")
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(string.Format(ValidationConstants.NotesMessage, "License Conditions"));
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "License Conditions"))
+                .MaximumLength(ValidationConstants.RiskLongText)
+                .WithMessage("Licence conditions cannot exceed 15000 characters");
 
             RuleFor(x => x.LicenseEnd)
                 .NotEmpty()
@@ -241,8 +256,10 @@ public class RiskDto
                 .NotEmpty()
                 .WithMessage("You must provide PSF restrictions")
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(string.Format(ValidationConstants.NotesMessage, "PSF Restrictions"));
-
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "PSF Restrictions"))
+                .MaximumLength(ValidationConstants.RiskMediumText)
+                .WithMessage("PSF Restrictions cannot exceed 10000 characters");
+                
             RuleFor(x => x.PSFRestrictionsReceived)
                 .NotEmpty()
                 .WithMessage("You must provide the date PSF restrictions were received")
@@ -253,7 +270,9 @@ public class RiskDto
                 .NotEmpty()
                 .WithMessage("You must provide specific risks")
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Specific Risks"));
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Specific Risks"))
+                .MaximumLength(ValidationConstants.RiskMediumText)
+                .WithMessage("Specific risk cannot exceed 10000 characters");
 
             RuleFor(x => x.IsRelevantToCommunity)
                 .Equal(true)
@@ -301,13 +320,17 @@ public class RiskDto
                 .NotEmpty()
                 .WithMessage("You must provide the name")
                 .Matches(ValidationConstants.NameCompliantWithDMS)
-                .WithMessage(string.Format(ValidationConstants.NameCompliantWithDMSMessage, "Name"));
+                .WithMessage(string.Format(ValidationConstants.NameCompliantWithDMSMessage, "Name"))
+                .MaximumLength(200)
+                .WithMessage("Referrer Name cannot exceed 200 characters");
 
             RuleFor(x => x.ReferrerEmail)
                 .NotEmpty()
                 .WithMessage("You must provide the email")
                 .EmailAddress()
-                .WithMessage("Must be a valid email address");
+                .WithMessage("Must be a valid email address")
+                .MaximumLength(320)
+                .WithMessage("Referrer Email cannot exceed 320 characters");
 
             RuleFor(x => x.ReferredOn)
                 .NotEmpty()
@@ -316,5 +339,4 @@ public class RiskDto
                 .WithMessage(ValidationConstants.DateMustBeInPast);
         }
     }
-
 }

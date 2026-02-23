@@ -3263,18 +3263,21 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ActivityRecommendations")
+                        .HasMaxLength(10000)
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("ActivityRecommendationsReceived")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ActivityRestrictions")
+                        .HasMaxLength(15000)
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("ActivityRestrictionsReceived")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("AdditionalInformation")
+                        .HasMaxLength(15000)
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("Completed")
@@ -3308,6 +3311,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("LicenseConditions")
+                        .HasMaxLength(15000)
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("LicenseEnd")
@@ -3323,6 +3327,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("PSFRestrictions")
+                        .HasMaxLength(10000)
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("PSFRestrictionsReceived")
@@ -3336,15 +3341,18 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ReferrerEmail")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
 
                     b.Property<string>("ReferrerName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("RegistrationDetailsJson")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReviewJustification")
+                        .HasMaxLength(5000)
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReviewReason")
@@ -3390,6 +3398,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SpecificRisk")
+                        .HasMaxLength(10000)
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
