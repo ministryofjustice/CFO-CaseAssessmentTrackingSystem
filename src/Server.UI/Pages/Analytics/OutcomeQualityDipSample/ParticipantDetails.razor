@@ -1,5 +1,6 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.Analytics.Components
+@using Cfo.Cats.Server.UI.Pages.Participants.Components
 
 @attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
 
@@ -7,92 +8,77 @@
 
 @inherits CatsComponentBase
 
-<style>
-    .readonly-toggle {
-        pointer-events: none;
-        filter: grayscale(100%);
-    }
-
-    .two-columns {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Two columns */
-        gap: 10px; /* Adjust the gap between items as needed */
-    }
-
-    .toggle-item {
-        box-sizing: border-box; /* Ensure padding and borders are included in width/height */
-        padding: 10px; /* Add padding if needed */
-        justify-content: left !important;
-    }
-</style>
-
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
     @if (_isLoading)
     {
         <MudLoading Text="Loading sample" Color="Color.Primary"/>
     }
-
-    @if (_isLoading == false && _error is not null)
+    else
     {
-        <MudAlert Severity="Severity.Error">
-            <MudText>
-                @_error
-            </MudText>
-        </MudAlert>
-    }
+        @if (_error is not null)
+        {
+            <MudAlert Severity="Severity.Error">
+                <MudText>
+                    @_error
+                </MudText>
+            </MudAlert>
+        }
 
-    @if (_isLoading == false && _participant is not null)
-    {
-        <CatsBreadcrumbs Items="@Items"></CatsBreadcrumbs>
+        @if (_participant is not null)
+        {
+            <CatsBreadcrumbs Items="@Items"></CatsBreadcrumbs>
 
-        <MudGrid>
-            <MudItem xs="2">
-                <MudStack style="align-self: flex-start; position: sticky; top: 16px; width: 100%;" Class="mr-2" Wrap="Wrap.Wrap">
-                    <MudTextField ReadOnly="true" Label="Participant Id" Value="_participant.ParticipantId"/>
-                    <MudTextField ReadOnly="true" Label="First Name" Value="_participant.FirstName"/>
-                    <MudTextField ReadOnly="true" Label="Last Name" Value="_participant.LastName"/>
-                    <MudTextField ReadOnly="true" Label="Date Of Birth" Value="_participant.DateOfBirth"/>
-                    <MudTextField ReadOnly="true" Label="Nationality" Value="_participant.Nationality"/>
-                    <MudTextField ReadOnly="true" Label="Current Owner" Value="_participant.SupportWorker"/>
-                    <MudTextField ReadOnly="true" Label="Enrolment Location" Value="_participant.EnrolmentLocation"/>
-                    <MudTextField ReadOnly="true" Label="Current Location" Value="_participant.CurrentLocation" />
-                    <MudTextField ReadOnly="true" Label="Enrolment Justification" Value="_participant.EnrolmentJustification" Lines="5" />
-                </MudStack>
-            </MudItem>
+            <MudGrid>
+                <MudItem xs="12" md="2">
+                    <MudStack style="align-self: flex-start; position: sticky; top: 16px; width: 100%;" Class="mr-2" Wrap="Wrap.Wrap">
+                        <MudTextField ReadOnly="true" Label="Participant Id" Value="_participant.ParticipantId"/>
+                        <MudTextField ReadOnly="true" Label="First Name" Value="_participant.FirstName"/>
+                        <MudTextField ReadOnly="true" Label="Last Name" Value="_participant.LastName"/>
+                        <MudTextField ReadOnly="true" Label="Date Of Birth" Value="_participant.DateOfBirth"/>
+                        <MudTextField ReadOnly="true" Label="Nationality" Value="_participant.Nationality"/>
+                        <MudTextField ReadOnly="true" Label="Current Owner" Value="_participant.SupportWorker"/>
+                        <MudTextField ReadOnly="true" Label="Enrolment Location" Value="_participant.EnrolmentLocation"/>
+                        <MudTextField ReadOnly="true" Label="Current Location" Value="_participant.CurrentLocation"/>
+                        <MudTextField ReadOnly="true" Label="Enrolment Justification" Value="_participant.EnrolmentJustification" Lines="5"/>
+                    </MudStack>
+                </MudItem>
 
-            <MudItem xs="10">
-                <MudTabs>
-                    <MudTabPanel Text="Events">
-                        <OutcomeQualityDipSampleTimelineComponent Participant="_participant"/>
-                    </MudTabPanel>
-                    <MudTabPanel Text="Details">
-                        <OutcomeQualityDipSamplePathwayPlanComponent ParticipantId="@_participant.ParticipantId"/>
-                    </MudTabPanel>
-                    <MudTabPanel Text="Assessments">
-                        <OutcomeQualityDipSampleAssessmentComponent ParticipantId="@_participant.ParticipantId" />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Risk">
-                        <Cfo.Cats.Server.UI.Pages.Risk.RiskComponents.RiskHistory ParticipantId="@_participant.ParticipantId" />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Notes">
-                        <Cfo.Cats.Server.UI.Pages.Participants.Components.CaseNotes ParticipantId="@_participant.ParticipantId" />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Review">
-                        <SubmitCsoResponseComponent Command="@SubmitCsoCommand" OnFormSubmit="CsoResponseSubmitted" Status="_participant.DipSampleStatus" />
-                    </MudTabPanel>
-                    <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
-                        <MudTabPanel Text="Verification" Disabled="_participant.CsoAnswer.IsAnswer is false">
-                            <SubmitCpmResponseComponent Command="@SubmitCpmCommand" OnFormSubmit="CpmResponseSubmitted" Status="_participant.DipSampleStatus" />
+                <MudItem xs="10">
+                    <MudTabs KeepPanelsAlive="true">
+                        <MudTabPanel Text="Events">
+                            <OutcomeQualityDipSampleTimelineComponent Participant="_participant"/>
                         </MudTabPanel>
-                    </AuthorizeView>
-                    <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipFinalise">
-                        <MudTabPanel Text="Finalise" Disabled="_participant.CpmAnswer.IsAnswer is false">
-                            <SubmitFinalResponseComponent Command="@SubmitFinalCommand" Status="_participant.DipSampleStatus" OnFormSubmit="FinalResponseSubmitted" />
+                        <MudTabPanel Text="Details">
+                            <OutcomeQualityDipSamplePathwayPlanComponent ParticipantId="@_participant.ParticipantId"/>
                         </MudTabPanel>
-                    </AuthorizeView>
-
-                </MudTabs>
-            </MudItem>
-        </MudGrid>
+                        <MudTabPanel Text="Pathway Plan Review">
+                            <PathwayPlanReviewHistory ParticipantId="@_participant.ParticipantId"/>
+                        </MudTabPanel>
+                        <MudTabPanel Text="Assessments">
+                            <OutcomeQualityDipSampleAssessmentComponent ParticipantId="@_participant.ParticipantId"/>
+                        </MudTabPanel>
+                        <MudTabPanel Text="Risk">
+                            <Cfo.Cats.Server.UI.Pages.Risk.RiskComponents.RiskHistory ParticipantId="@_participant.ParticipantId"/>
+                        </MudTabPanel>
+                        <MudTabPanel Text="Notes">
+                            <CaseNotes ParticipantId="@_participant.ParticipantId"/>
+                        </MudTabPanel>
+                        <MudTabPanel Text="Review">
+                            <SubmitCsoResponseComponent Command="@SubmitCsoCommand" OnFormSubmit="CsoResponseSubmitted" Status="_participant.DipSampleStatus"/>
+                        </MudTabPanel>
+                        <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipVerification">
+                            <MudTabPanel Text="Verification" Disabled="_participant.CsoAnswer.IsAnswer is false">
+                                <SubmitCpmResponseComponent Command="@SubmitCpmCommand" OnFormSubmit="CpmResponseSubmitted" Status="_participant.DipSampleStatus"/>
+                            </MudTabPanel>
+                        </AuthorizeView>
+                        <AuthorizeView Policy="@SecurityPolicies.OutcomeQualityDipFinalise">
+                            <MudTabPanel Text="Finalise" Disabled="_participant.CpmAnswer.IsAnswer is false">
+                                <SubmitFinalResponseComponent Command="@SubmitFinalCommand" Status="_participant.DipSampleStatus" OnFormSubmit="FinalResponseSubmitted"/>
+                            </MudTabPanel>
+                        </AuthorizeView>
+                    </MudTabs>
+                </MudItem>
+            </MudGrid>
+        }
     }
 </MudContainer>
