@@ -11,7 +11,7 @@ public static class AddRisk
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command : IRequest<Result<Guid>>
     {
-        public required string ParticipantId { get; set; }
+        public required string ParticipantId { get; init; }
         [Description("Risk location")]
         public LocationDto? Location { get; set; }
         [Description("Reason for review")] public RiskReviewReason ReviewReason { get; set; } = RiskReviewReason.ChangeToCircumstances;
@@ -32,18 +32,19 @@ public static class AddRisk
             // We do nothing async in this method. Await the complete task.
             await Task.CompletedTask;
 
-            Risk? risk = await _unitOfWork.DbContext.Risks
+            var risk = await _unitOfWork.DbContext.Risks
                 .Include(x => x.Participant)
                 .OrderByDescending(r => r.Created)
-                .FirstOrDefaultAsync(r => r.ParticipantId == request.ParticipantId);
+                .FirstOrDefaultAsync(r => r.ParticipantId == request.ParticipantId, cancellationToken: cancellationToken);
 
-            if (risk is null)
+            if (risk is not null)
             {
-                risk = Risk.Create(Guid.CreateVersion7(), request.ParticipantId, request.ReviewReason, request.Location!.Id, request.Justification);
+                risk = Risk.Review(risk, request.ReviewReason, request.Justification, request.Location!.Id);
             }
             else
             {
-                risk = Risk.Review(risk, request.ReviewReason, request.Justification, request.Location!.Id);
+                risk = Risk.Create(Guid.CreateVersion7(), request.ParticipantId, request.ReviewReason,
+                    request.Location!.Id, request.Justification);
             }
 
             await _unitOfWork.DbContext.Risks.AddAsync(risk, cancellationToken);
@@ -71,7 +72,10 @@ public static class AddRisk
                 .When(c => c.ReviewReason.RequiresJustification)
                 .WithMessage("You must provide a justification for the selected review reason")
                 .Matches(ValidationConstants.Notes)
-                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"))
+                .MaximumLength(ValidationConstants.NotesLength)
+                .WithMessage("Justification cannot exceed {MaxLength} characters");
+            
             RuleFor(x => x.Location)
                 .NotNull()
                 .WithMessage("You must choose a location");

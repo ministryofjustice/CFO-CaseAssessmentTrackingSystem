@@ -57,8 +57,8 @@ public class RiskDto
     [Description("Date Latest PSF Restrictions Received")]
     public DateTime? PSFRestrictionsReceived { get; set; }
 
-    public RiskDetail CustodyRiskDetail { get; set; } = new();
-    public RiskDetail CommunityRiskDetail { get; set; } = new();
+    public RiskDetail CustodyRiskDetail { get; init; } = new();
+    public RiskDetail CommunityRiskDetail { get; init; } = new();
 
     [Description("Custody")] public bool IsRelevantToCustody { get; set; }
 
@@ -84,7 +84,7 @@ public class RiskDto
 
     [Description("Date Completed")]
     public DateTime? ReferredOn { get; set; }
-    public string[] RegistrationDetails { get; set; } = [];
+    public string[] RegistrationDetails { get; init; } = [];
 
     private class Mapping : Profile
     {
@@ -148,7 +148,7 @@ public class RiskDto
         }
     }
 
-    public record class RiskDetail
+    public record RiskDetail
     {
         [Description("Risk to Children")]
         public RiskLevel? RiskToChildren { get; set; }
@@ -172,27 +172,27 @@ public class RiskDto
             {
                 RuleFor(x => x.RiskToChildren)
                     .NotNull()
-                    .WithMessage("This option is mandatory");
+                    .WithMessage("Risk to Children option is mandatory");
 
                 RuleFor(x => x.RiskToPublic)
                     .NotNull()
-                    .WithMessage("This option is mandatory");
+                    .WithMessage("Risk to Public option is mandatory");
 
                 RuleFor(x => x.RiskToKnownAdult)
                     .NotNull()
-                    .WithMessage("This option is mandatory");
+                    .WithMessage("Risk to Known Adult option is mandatory");
 
                 RuleFor(x => x.RiskToStaff)
                     .NotNull()
-                    .WithMessage("This option is mandatory");
+                    .WithMessage("Risk To Staff option is mandatory");
 
                 RuleFor(x => x.RiskToOtherPrisoners)
                     .NotNull()
-                    .WithMessage("This option is mandatory");
+                    .WithMessage("Risk To Other Prisoners option is mandatory");
 
                 RuleFor(x => x.RiskToSelfNew)
                     .NotNull()
-                    .WithMessage("This option is mandatory");
+                    .WithMessage("Risk To Self option is mandatory");
             }
         }
     }
@@ -207,7 +207,7 @@ public class RiskDto
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Activity Recommendations"))
                 .MaximumLength(ValidationConstants.RiskMediumText)
-                .WithMessage("Activity Recommendations cannot exceed 10000 characters");
+                .WithMessage("Activity Recommendations cannot exceed {MaxLength} characters");
 
             RuleFor(x => x.ActivityRecommendationsReceived)
                 .NotEmpty()
@@ -221,8 +221,8 @@ public class RiskDto
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Activity Restrictions"))
                 .MaximumLength(ValidationConstants.RiskLongText)
-                .WithMessage("Activity Restriction cannot exceed 15000 characters");
-
+                .WithMessage("Activity Restriction cannot exceed {MaxLength} characters");
+         
             RuleFor(x => x.ActivityRestrictionsReceived)
                 .NotEmpty()
                 .WithMessage("You must provide the date activity restrictions were received")
@@ -235,15 +235,15 @@ public class RiskDto
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Additional Information"))
                 .MaximumLength(ValidationConstants.RiskLongText)
-                .WithMessage("Additional information cannot exceed 15000 characters");
-
+                .WithMessage("Additional information cannot exceed {MaxLength} characters");
+                
             RuleFor(x => x.LicenseConditions)
                 .NotEmpty()
                 .WithMessage("You must provide license conditions")
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "License Conditions"))
                 .MaximumLength(ValidationConstants.RiskLongText)
-                .WithMessage("Licence conditions cannot exceed 15000 characters");
+                .WithMessage("License conditions cannot exceed {MaxLength} characters");
 
             RuleFor(x => x.LicenseEnd)
                 .NotEmpty()
@@ -258,8 +258,8 @@ public class RiskDto
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "PSF Restrictions"))
                 .MaximumLength(ValidationConstants.RiskMediumText)
-                .WithMessage("PSF Restrictions cannot exceed 10000 characters");
-                
+                .WithMessage("PSF Restrictions cannot exceed {MaxLength} characters");
+                 
             RuleFor(x => x.PSFRestrictionsReceived)
                 .NotEmpty()
                 .WithMessage("You must provide the date PSF restrictions were received")
@@ -272,7 +272,7 @@ public class RiskDto
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Specific Risks"))
                 .MaximumLength(ValidationConstants.RiskMediumText)
-                .WithMessage("Specific risk cannot exceed 10000 characters");
+                .WithMessage("Specific risks cannot exceed {MaxLength} characters");
 
             RuleFor(x => x.IsRelevantToCommunity)
                 .Equal(true)
@@ -321,16 +321,16 @@ public class RiskDto
                 .WithMessage("You must provide the name")
                 .Matches(ValidationConstants.NameCompliantWithDMS)
                 .WithMessage(string.Format(ValidationConstants.NameCompliantWithDMSMessage, "Name"))
-                .MaximumLength(200)
-                .WithMessage("Referrer Name cannot exceed 200 characters");
+                .MaximumLength(ValidationConstants.RiskReferrerName)
+                .WithMessage("Name cannot exceed {MaxLength} characters");
 
             RuleFor(x => x.ReferrerEmail)
                 .NotEmpty()
                 .WithMessage("You must provide the email")
                 .EmailAddress()
                 .WithMessage("Must be a valid email address")
-                .MaximumLength(320)
-                .WithMessage("Referrer Email cannot exceed 320 characters");
+                .MaximumLength(ValidationConstants.RiskEmail)
+                .WithMessage("Email cannot exceed {MaxLength} characters");
 
             RuleFor(x => x.ReferredOn)
                 .NotEmpty()

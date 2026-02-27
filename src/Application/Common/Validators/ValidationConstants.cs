@@ -50,6 +50,8 @@ public static class ValidationConstants
 
     public const int RiskLongText = 15000;
     public const int RiskMediumText = 10000;
+    public const int RiskEmail = 320;
+    public const int RiskReferrerName = 200;
     
     public static class RuleSet
     {

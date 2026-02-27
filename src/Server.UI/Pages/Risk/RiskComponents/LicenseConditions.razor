@@ -1,42 +1,34 @@
-﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+﻿@using Cfo.Cats.Application.Common.Validators
+@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Server.UI.Components.Stepper
-@using FluentValidation.Internal
 
 @inherits CatsComponentBase
 @implements IValidatorStrategy<RiskDto>
 
+
 @if (Model is not null)
 {
     <CatsMudStep Title="License Conditions">
-        <MudTextField @bind-Value="@Model.LicenseConditions" 
+        <MudTextField @bind-Value="@Model.LicenseConditions"
                       Label="@Model.GetMemberDescription(x => x.LicenseConditions)"
                       Lines="5"
                       For="@(() => Model.LicenseConditions)"
-                      Placeholder="All conditions must be relevant to the Participant and linked to their involvement to the CFO Evolution Programme. This must be clear and concise, e.g. exclusion zone in place which restricts XX from entering XX City Centre." />
+                      Placeholder="All conditions must be relevant to the Participant and linked to their involvement to the CFO Evolution Programme. This must be clear and concise, e.g. exclusion zone in place which restricts XX from entering XX City Centre."
+                      MaxLength="@ValidationConstants.RiskLongText"
+                      Counter="@ValidationConstants.RiskLongText"
+                      Immediate="true">
+        </MudTextField>
 
-        <MudCheckBox @bind-Value="@Model.NoLicenseEndDate" Label="@Model.GetMemberDescription(x => x.NoLicenseEndDate)" />
-        <MudTextField ReadOnly Underline="false" For="@(() => Model.NoLicenseEndDate)" hidden />
+        <MudCheckBox @bind-Value="@Model.NoLicenseEndDate" Label="@Model.GetMemberDescription(x => x.NoLicenseEndDate)"/>
+        <MudTextField ReadOnly Underline="false" For="@(() => Model.NoLicenseEndDate)" hidden/>
         @if (Model.NoLicenseEndDate is not true)
         {
-            <MudDatePicker @bind-Date="Model.LicenseEnd" 
+            <MudDatePicker @bind-Date="Model.LicenseEnd"
                            Label="@Model.GetMemberDescription(x => x.LicenseEnd)"
                            For="@(() => Model.LicenseEnd)"
-                           MinDate="DateTime.UtcNow.Date" 
+                           MinDate="DateTime.UtcNow.Date"
                            Class="mt-4"
-                           Editable="true" />
+                           Editable="true"/>
         }
     </CatsMudStep>
-}
-
-@code {
-    [Parameter, EditorRequired]
-    public required RiskDto Model { get; set; }
-
-    public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
-    {
-        options.IncludeProperties(x => x.LicenseConditions);
-        options.IncludeProperties(x => x.LicenseEnd);
-        options.IncludeProperties(x => x.NoLicenseEndDate);
-    };
-
 }
