@@ -1,7 +1,4 @@
-﻿@using Cfo.Cats.Application.Features.Activities.DTOs
-@using Cfo.Cats.Application.Features.Participants.Queries
-@using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Server.UI.Pages.Activities.Components
+﻿@using Cfo.Cats.Domain.Common.Enums
 
 @inherits CatsComponentBase
 
@@ -24,7 +21,7 @@
    
     <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
         <MudText Typo="Typo.body1"><strong>Participant</strong></MudText>
-        <MudText Typo="Typo.body1">@Activity.Participant!.FullName</MudText>
+        <MudText Typo="Typo.body1">@Activity.Participant!.FirstName @Activity.Participant!.LastName</MudText>
     </MudStack>
     
     <MudDivider />
@@ -44,7 +41,7 @@
         <MudText Typo="Typo.body1">@Activity.Location!.Name</MudText>
     </MudStack>
 
-    @if (hasParticpantBeenAtThisLocationOnThisDate == false)
+    @if (_hasParticipantBeenAtThisLocationOnThisDate == false)
     {
         <MudStack Row="true" StretchItems="StretchItems.Start" Breakpoint="Breakpoint.Md">
             <MudAlert Severity="Severity.Warning">
@@ -192,26 +189,3 @@
         </MudStack>
     }
 </MudStack>
-    
-@code{
-    [Parameter, EditorRequired]
-    public ActivityQaDetailsDto Activity { get; set; } = default!;
-
-    bool hasParticpantBeenAtThisLocationOnThisDate;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await CheckParticipantBeenAtThisLocationOnDate();
-        await base.OnInitializedAsync();
-    }
-
-    private async Task CheckParticipantBeenAtThisLocationOnDate()
-    {
-        hasParticpantBeenAtThisLocationOnThisDate = await GetNewMediator().Send(new GetParticipantWasAtThisLocationCheck.Query()
-        {
-            ParticipantId = Activity.ParticipantId,
-            LocationId = Activity.Location!.Id,
-            DateAtLocation = Activity.CommencedOn
-        });
-    }
-}
