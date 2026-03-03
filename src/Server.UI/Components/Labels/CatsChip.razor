@@ -1,13 +1,15 @@
 <MudTooltip Text="@Description">
     @if (Icon.AsMudIcon() is string icon)
     {
-
         <MudChip 
             T="string"        
             Variant="Variant.AsMudVariant()"       
             Color="Colour.AsMudColour()"        
             Size="Size.Small" 
-            Icon="@icon">
+            Icon="@icon"
+            OnClose="OnClose"
+            Label="true"
+            Disabled="Disabled">
             @Label
         </MudChip>
     }
@@ -17,7 +19,10 @@
             T="string" 
             Variant="Variant.AsMudVariant()" 
             Color="Colour.AsMudColour()" 
-            Size="Size.Small">
+            Size="Size.Small"
+            OnClose="OnClose"
+            Label="true"
+            Disabled="Disabled">
             @Label
         </MudChip>
     }

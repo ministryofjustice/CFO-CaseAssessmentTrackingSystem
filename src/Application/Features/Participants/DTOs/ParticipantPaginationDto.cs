@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using Cfo.Cats.Application.Features.Labels.DTOs;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Domain.Entities.Participants;
 
@@ -36,20 +38,7 @@ public class ParticipantPaginationDto
     [Description] 
     public RiskDueReason RiskDueReason { get; set; } = RiskDueReason.Unknown;
 
-    private class Mapper : Profile
-    {
-        public Mapper() =>
-            CreateMap<Participant, ParticipantPaginationDto>(MemberList.None)
-                .ForMember(target => target.Id, options => options.MapFrom(source => source.Id))
-                .ForMember(target => target.EnrolmentStatus, options => options.MapFrom(source => source.EnrolmentStatus))
-                .ForMember(target => target.ConsentStatus, options => options.MapFrom(source => source.ConsentStatus))
-                .ForMember(target => target.ParticipantName, options => options.MapFrom(source => source.FirstName + " " + source.LastName))
-                .ForMember(target => target.CurrentLocation, options => options.MapFrom(source => source.CurrentLocation))
-                .ForMember(target => target.EnrolmentLocation, options => options.MapFrom(source => source.EnrolmentLocation))
-                .ForMember(target => target.Owner, options => options.MapFrom(source => source.Owner!.DisplayName))
-                .ForMember(target => target.Tenant, options => options.MapFrom(source => source.Owner!.TenantName))
-                .ForMember(target => target.RiskDue, options => options.MapFrom(source => source.RiskDue))
-                .ForMember(target => target.RiskDueReason, options => options.MapFrom(source => source.RiskDueReason));
-    }
+    [Display(Name = "Labels", Description = "A collection of labels linked to this participant")]
+    public LabelDto[] Labels { get; set; } = [];
 
 }

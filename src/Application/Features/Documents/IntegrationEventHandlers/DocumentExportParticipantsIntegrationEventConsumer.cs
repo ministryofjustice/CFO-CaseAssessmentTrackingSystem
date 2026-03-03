@@ -11,7 +11,6 @@ public class DocumentExportParticipantsIntegrationEventConsumer(
     IUnitOfWork unitOfWork,
     IExcelService excelService,
     IUploadService uploadService,
-    IMapper mapper,
     IDomainEventDispatcher domainEventDispatcher,
     ILogger<DocumentExportParticipantsIntegrationEventConsumer> logger) : IHandleMessages<ExportDocumentIntegrationEvent>
 {
@@ -39,7 +38,7 @@ public class DocumentExportParticipantsIntegrationEventConsumer(
             request.PageSize = int.MaxValue;
 
             // Hack: call handler directly (skips Authorization pipeline, as we're outside of the HttpContext).
-            var data = await new ParticipantsWithPagination.Handler(unitOfWork, mapper).Handle(request!, CancellationToken.None);
+            var data = await new ParticipantsWithPagination.Handler(unitOfWork).Handle(request!, CancellationToken.None);
 
             var results = await excelService.ExportAsync(data?.Data?.Items ?? [],
                 new Dictionary<string, Func<ParticipantPaginationDto, object?>>
@@ -52,7 +51,8 @@ public class DocumentExportParticipantsIntegrationEventConsumer(
                     { "Enrolled At", item => item.EnrolmentLocation?.Name },
                     { "Assignee", item => item.Owner },
                     { "Risk Due", item => item.RiskDue },
-                    { "Risk Due Reason", item => item.RiskDueReason.Name }
+                    { "Risk Due Reason", item => item.RiskDueReason.Name },
+                    { "Labels", item => string.Join(", ", item.Labels.Select(l => l.Name)) },
                 }
             );
 

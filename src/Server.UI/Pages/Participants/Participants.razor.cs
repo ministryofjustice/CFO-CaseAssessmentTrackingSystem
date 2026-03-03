@@ -1,6 +1,9 @@
-﻿using Cfo.Cats.Application.Common.Interfaces.Locations;
+﻿using Cfo.Cats.Application.Common.Extensions;
+using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Dashboard.Export;
+using Cfo.Cats.Application.Features.Labels.DTOs;
+using Cfo.Cats.Application.Features.Labels.Queries;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Participants.Caching;
 using Cfo.Cats.Application.Features.Participants.Commands;
@@ -33,6 +36,8 @@ public partial class Participants
     private ParticipantPaginationDto _currentDto = new() { Id = "" };
     private ParticipantsWithPagination.Query? Query { get; set; }
 
+    private LabelDto[] _labels = [];
+
     private void OnResumeEnrolment(ParticipantPaginationDto participant) => Navigation.NavigateTo($"/pages/enrolments/{participant.Id}");
 
     private string GetMultiSelectionText(List<string> selectedValues) => $"{selectedValues.Count} location{(selectedValues.Count == 1 ? " has" : "s have")} been selected";
@@ -54,6 +59,12 @@ public partial class Participants
         await _table.ReloadServerData();
     }
 
+    private async Task LabelsValueChanged(LabelDto? labelDto)
+    {
+        Query!.Label = labelDto;
+        await _table.ReloadServerData();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         Title = L["Participants"];
@@ -72,6 +83,9 @@ public partial class Participants
         Locations = LocationService.GetVisibleLocations(UserProfile!.TenantId!)
             .OrderByDescending(l => l.LocationType.IsCustody)
             .ThenBy(l => l.Name).ToArray();
+
+        _labels = await GetNewMediator().Send(new GetVisibleLabels.Query(UserProfile!));
+        
     }
 
     private async Task<GridData<ParticipantPaginationDto>> ServerReload(GridState<ParticipantPaginationDto> state)
