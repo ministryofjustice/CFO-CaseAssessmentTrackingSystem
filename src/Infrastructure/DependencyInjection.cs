@@ -15,6 +15,7 @@ using Cfo.Cats.Application.Features.PRIs.IntegrationEventHandlers;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Identity;
 using Cfo.Cats.Domain.Labels;
+using Cfo.Cats.Domain.ParticipantLabels;
 using Cfo.Cats.Infrastructure.Configurations;
 using Cfo.Cats.Infrastructure.Constants.ClaimTypes;
 using Cfo.Cats.Infrastructure.Jobs;
@@ -187,6 +188,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<ILabelRepository, LabelRepository>();
+        services.AddScoped<IParticipantLabelRepository, ParticipantLabelRepository>();  
         
         SqlMapper.AddTypeHandler(typeof(LabelScope), new SmartEnumIntHandler<LabelScope>());
         

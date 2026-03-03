@@ -14,6 +14,7 @@ using Cfo.Cats.Domain.Entities.Notifications;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Entities.PRIs;
 using Cfo.Cats.Domain.Labels;
+using Cfo.Cats.Domain.ParticipantLabels;
 
 namespace Cfo.Cats.Application.Common.Interfaces;
 
@@ -121,4 +122,6 @@ public interface IApplicationDbContext
     DbSet<PathwayPlanReview> PathwayPlanReviews { get; }
     
     DbSet<ArchivedCase> ArchivedCases { get; }
+    
+    DbSet<ParticipantLabel> ParticipantLabels { get; }
 }
