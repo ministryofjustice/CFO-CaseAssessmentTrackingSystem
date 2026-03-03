@@ -33,6 +33,8 @@ public enum AppIcon
     Home,
     Lock,
 
+    Court,
+
     /// <summary>
     /// Existing app icons from the assessment
     /// </summary>

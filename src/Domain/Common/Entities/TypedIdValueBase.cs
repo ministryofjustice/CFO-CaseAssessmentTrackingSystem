@@ -26,7 +26,7 @@ public abstract class TypedIdValueBase : IEquatable<TypedIdValueBase>
 
     public override int GetHashCode() => Value.GetHashCode();
 
-    public bool Equals(TypedIdValueBase? other) => this.Value == other?.Value;
+    public bool Equals(TypedIdValueBase? other) => Value == other?.Value;
 
     public static bool operator ==(TypedIdValueBase obj1, TypedIdValueBase obj2)
     {

@@ -54,6 +54,7 @@ public static class EnumExtensions
         AppIcon.School => Icons.Material.Filled.School,
         AppIcon.Home => Icons.Material.Filled.Home,
         AppIcon.Lock => Icons.Material.Filled.Lock,
+        AppIcon.Court => Icons.Material.Filled.Gavel,
 
         // Existing app icons from the assessment
         AppIcon.Enrolment => Icons.Material.Filled.HowToReg,

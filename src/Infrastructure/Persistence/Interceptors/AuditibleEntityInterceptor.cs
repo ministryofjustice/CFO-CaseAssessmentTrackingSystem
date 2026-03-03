@@ -44,8 +44,8 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
 
     private void UpdateEntities(DbContext context)
     {
-        var userId = currentUserService.UserId;
-        var tenantId = currentUserService.TenantId;
+        var userId = currentUserService.UserId ?? "2a9b3450-1feb-4be3-ab94-24e64cd34829"; // System User if no user is specified
+        var tenantId = currentUserService.TenantId ?? "1."; // top level;
 
         var changes = context.ChangeTracker.Entries<IAuditable>().ToList();
 

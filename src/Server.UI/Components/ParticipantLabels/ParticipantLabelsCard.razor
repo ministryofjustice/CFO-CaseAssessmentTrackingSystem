@@ -1,0 +1,107 @@
+@using ApexCharts
+@using Cfo.Cats.Application.Features.Labels.DTOs
+@using Cfo.Cats.Application.Features.Labels.Queries
+@using Cfo.Cats.Application.Features.ParticipantLabels.CloseLabel
+@using Cfo.Cats.Application.Features.ParticipantLabels.GetParticipantLabels
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Domain.ParticipantLabels
+@using Cfo.Cats.Domain.Participants
+@using Cfo.Cats.Server.UI.Components.Labels
+@using Cfo.Cats.Server.UI.Components.ParticipantLabels
+@using Cfo.Cats.Server.UI.Components.Participants
+@using Size = MudBlazor.Size
+
+@inherits ParticipantComponent<GetParticipantLabelsDto>
+
+    <MudCard Style="Height: 100%; min-height: 300px">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">Labels</MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                <MudSwitch @bind-Value="IncludeClosed" Label="Show Closed" Color="Color.Secondary"/>
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            @if(Loading)
+            {
+                <MudLoading Text="Fetching labels.." />
+            }
+
+            @if(ErrorMessage is not null)
+            {
+                <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
+                    @ErrorMessage
+                </MudAlert>
+            }
+
+            @if(Data is not null)
+            {
+
+       
+
+                <MudStack Row="true" Wrap="Wrap.Wrap">
+                    @foreach(ParticipantLabelDto label in Data.Labels.Where(x =>  IncludeClosed || x.LifetimeEnd > DateTime.UtcNow)
+                    .OrderByDescending(pl => pl.Name))
+                    {
+                        
+                        <MudTooltip>
+                            <ChildContent>
+                                <CatsChip
+                                    Icon="@label.AppIcon" 
+                                    Colour="@label.Colour"
+                                    Label="@label.Name"
+                                    Description=""
+                                    Variant="@label.Variant"
+                                    ShowDelete="true"
+                                    OnClose="@(()=> DeleteLabel(label))"
+                                    Disabled="@(label.LifetimeEnd < DateTime.UtcNow)">
+                                </CatsChip>
+                            </ChildContent>
+                            <TooltipContent>
+                                @if (label.AppIcon is not AppIcon.None)
+                                {
+                                    <MudIcon
+                                        Size="Size.Large"
+                                        Icon="@label.AppIcon.AsMudIcon()">
+                                        
+                                    </MudIcon>
+                                }
+                                <MudText Typo="Typo.h6">@label.Name</MudText>
+                                <MudText Typo="Typo.body1">
+                                    @label.Description
+                                </MudText>
+                                <MudText Typo="Typo.body2">
+                                    Added by @label.AddedBy (@label.LifetimeStart.ToShortDateString())
+                                </MudText>
+                                @if (label.LifetimeEnd <= DateTime.UtcNow)
+                                {
+                                    <MudText Typo="Typo.body2">
+                                        Closed by @label.ClosedBy (@label.LifetimeEnd.ToShortDateString())
+                                    </MudText>     
+                                }
+                            </TooltipContent>
+                        </MudTooltip>
+                        
+                        
+                      
+                    }
+                </MudStack>
+            }
+        </MudCardContent>
+        <MudCardActions>
+        
+            @if (Data is not null && VisibleLabels is { Length: > 0 })
+            {   
+                <AddLabelMenu 
+                    ParticipantId="new ParticipantId(ParticipantId)" 
+                    VisibleLabels="@VisibleLabels" 
+                    AlreadySelected="@(Data.Labels.Where(x => x.LifetimeEnd > DateTime.UtcNow).Select( l => l.LabelId).ToArray())" 
+                    LabelAdded="LabelAddedEventHandler" />
+            }
+        
+             
+        </MudCardActions>
+    </MudCard>
+
+

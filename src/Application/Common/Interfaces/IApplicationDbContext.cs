@@ -14,6 +14,7 @@ using Cfo.Cats.Domain.Entities.Notifications;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Entities.PRIs;
 using Cfo.Cats.Domain.Labels;
+using Cfo.Cats.Domain.ParticipantLabels;
 
 namespace Cfo.Cats.Application.Common.Interfaces;
 
@@ -123,4 +124,6 @@ public interface IApplicationDbContext
     DbSet<ArchivedCase> ArchivedCases { get; }
     DbSet<ProviderFeedbackEnrolment> ProviderFeedbackEnrolments { get; }
     DbSet<ProviderFeedbackActivity> ProviderFeedbackActivities { get; }
+    
+    DbSet<ParticipantLabel> ParticipantLabels { get; }
 }

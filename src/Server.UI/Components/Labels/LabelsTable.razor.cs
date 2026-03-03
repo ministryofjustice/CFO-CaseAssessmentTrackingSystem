@@ -15,7 +15,7 @@ public partial class LabelsTable
 
     private async Task OnAddLabel()
     {
-        AddLabel.Command command = new AddLabel.Command()
+        AddLabelCommand command = new() 
         {
             Scope = LabelScope.User,
             Colour = AppColour.Default,
@@ -43,7 +43,7 @@ public partial class LabelsTable
 
     private async Task OnEdit(LabelDto context)
     {
-        var command = new EditLabel.Command()
+        var command = new EditLabelCommand()
         {
             NewColour = context.Colour,
             NewName = context.Name,
@@ -71,7 +71,7 @@ public partial class LabelsTable
 
     private async Task OnDelete(LabelDto context)
     {
-        var command = new DeleteLabel.Command()
+        var command = new DeleteLabelCommand()
         {
             LabelId = new LabelId(context.Id),
             UserProfile = CurrentUser,

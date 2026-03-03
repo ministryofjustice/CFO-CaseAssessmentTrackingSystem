@@ -2,70 +2,40 @@
 using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Features.Labels;
 using Cfo.Cats.Domain.Labels;
+using Dapper;
+using Moq;
+using Moq.Dapper;
 using NUnit.Framework;
 using Shouldly;
 using System.Data;
-using Microsoft.Extensions.Logging;
 
 namespace Cfo.Cats.Application.UnitTests.Labels;
 
 public class LabelCounterTests
 {
-    [Test]
-    public void CountParticipants_ShouldReturnZero()
+    private static readonly TestCaseData[] ExpectedCounts =
+    [
+        new TestCaseData(0).SetName("CountParticipants_WhenNoParticipants_ShouldReturn0"),
+        new TestCaseData(1).SetName("CountParticipants_WhenOneParticipants_ShouldReturn1"),
+        new TestCaseData(10).SetName("CountParticipants_WhenTenParticipants_ShouldReturn10"),
+    ];
+
+    [TestCaseSource(nameof(ExpectedCounts))]
+    public void CountParticipants_ShouldReturnExpectedCount(int expectedCount)
     {
-        var sqlFactory = new TestSqlConnectionFactory();
-        var logger = new TestLogger();
-        var counter = new LabelCounter(sqlFactory, logger);
+        var connection = new Mock<IDbConnection>();
+        connection
+            .SetupDapper(c => c.QuerySingle<int>(It.IsAny<string>(), It.IsAny<object>(), null, null, null))
+            .Returns(expectedCount);
+
+        var sqlFactory = new Mock<ISqlConnectionFactory>();
+        sqlFactory.Setup(x => x.GetOpenConnection()).Returns(connection.Object);
+
+        var counter = new LabelCounter(sqlFactory.Object);
         var labelId = new LabelId(Guid.NewGuid());
 
         var count = counter.CountParticipants(labelId);
 
-        count.ShouldBe(0);
-    }
-
-    [Test]
-    public void CountParticipants_ShouldLogWarning()
-    {
-        var sqlFactory = new TestSqlConnectionFactory();
-        var logger = new TestLogger();
-        var counter = new LabelCounter(sqlFactory, logger);
-        var labelId = new LabelId(Guid.NewGuid());
-
-        counter.CountParticipants(labelId);
-
-        logger.WarningLogged.ShouldBeTrue();
-        logger.LogMessage.ShouldContain("Counting participants");
-        logger.LogMessage.ShouldContain("is currently not implemented");
-    }
-
-    private class TestSqlConnectionFactory : ISqlConnectionFactory
-    {
-        public IDbConnection GetOpenConnection() => null!;
-        public IDbConnection CreateNewConnection() => null!;
-        public string GetConnectionString() => "";
-    }
-
-    private class TestLogger : ILogger<LabelCounter>
-    {
-        public bool WarningLogged { get; private set; }
-        public string LogMessage { get; private set; } = "";
-
-        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
-        public bool IsEnabled(LogLevel logLevel) => true;
-
-        public void Log<TState>(
-            LogLevel logLevel, 
-            EventId eventId, 
-            TState state, 
-            Exception? exception, 
-            Func<TState, Exception?, string> formatter)
-        {
-            if (logLevel == LogLevel.Warning)
-            {
-                WarningLogged = true;
-                LogMessage = formatter(state, exception);
-            }
-        }
+        count.ShouldBe(expectedCount);
     }
 }
