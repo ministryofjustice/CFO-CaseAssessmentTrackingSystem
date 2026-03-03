@@ -1,10 +1,13 @@
 @page "/pages/participants"
 
+@using Cfo.Cats.Application.Features.Labels.DTOs
 @using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Analytics
 @using Cfo.Cats.Server.UI.Pages.Participants.Components
 @using Cfo.Cats.Application.Features.Participants.Specifications
 @using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Components.Labels
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults
 @inject IStringLocalizer<Participants> L
 
@@ -37,15 +40,33 @@
                 Bordered="false">
                     <ToolBarContent>
 
-                        <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large"/>
-                        <MudText Typo="Typo.caption" Class="mr-2">@L[_currentDto.GetClassDescription()]</MudText>
-                        <MudEnumSelect Class="mr-2" TEnum="ParticipantListView" ValueChanged="OnChangedListView" Value="Query.ListView" Dense="false" Label="Enrolment Status">
-                        </MudEnumSelect>
-                        <MudSelect T="LocationDto"
-                        Label="@Query.GetMemberDescription(x => x.Locations)" MultiSelection="true" Clearable="true"
-                        MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))"
-                        SelectedValuesChanged="LocationValuesChanged!" AnchorOrigin="Origin.BottomCenter"
-                        Class="mr-2">
+                        <MudStack Row="true"
+                                  StretchItems="StretchItems.All"
+                                  Justify="Justify.SpaceBetween"
+                                  Wrap="Wrap.Wrap"
+                                  Class="w-100"
+                                  Style="flex: 1 1 100%; min-width: 0;">
+                            <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large"/>
+                            
+                             <MudEnumSelect 
+                                TEnum="ParticipantListView" 
+                                ValueChanged="OnChangedListView" 
+                                Value="Query.ListView" 
+                                Dense="true" 
+                                Label="Enrolment Status"
+                                FullWidth="false"
+                                FitContent="true">
+                            </MudEnumSelect>
+                            <MudSelect T="LocationDto"
+                                Label="@Query.GetMemberDescription(x => x.Locations)" 
+                                MultiSelection="true" 
+                                Clearable="true"
+                                MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))"
+                                SelectedValuesChanged="LocationValuesChanged!" 
+                                AnchorOrigin="Origin.BottomLeft"
+                                FullWidth="false"
+                                FitContent="true"
+                                Dense="true">
 
                             @foreach (var item in Locations!)
                             {
@@ -54,42 +75,58 @@
                                 </MudSelectItem>
                             }
                         </MudSelect>
+                        <MudSelect T="LabelDto"
+                                    Label="Label"
+                                    AnchorOrigin="Origin.BottomLeft"
+                                    FullWidth="false"
+                                    FitContent="true"
+                                    Dense="true"
+                                    ValueChanged="LabelsValueChanged!"
+                                    Clearable="true">
+                                    @foreach(var label in _labels.OrderBy(l => l.Name))
+                                    {
+                                        <MudSelectItem T="LabelDto" Value="@label">
+                                            @label.Name
+                                        </MudSelectItem>
+                                    }
+                        </MudSelect>
                         <MudSwitch T="bool" Value="@Query.JustMyCases" Label="Just My Participants" Color="Color.Primary" ValueChanged="OnShowEveryoneChanged"></MudSwitch>
-                        <MudSpacer/>
-                        <MudStack>
-                            <MudStack Row="true">
-                                <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Refresh">
-                                    @ConstantString.Refresh
-                                </MudButton>
-                                <MudLoadingButton 
-                                            Color="Color.Secondary"
-                                            Variant="Variant.Filled"
-                                            StartIcon="@Icons.Material.Filled.CloudDownload"
-                                            Size="Size.Small"
-                                            OnClick="OnExport"
-                                            Loading="_downloading">
-                                        @ConstantString.Export
-                                </MudLoadingButton>
-                                @if (_canEnrol)
-                                {
-                                    <MudButton 
-                                        Color="Color.Primary"
-                                        Variant="Variant.Filled"
-                                        Size="Size.Small"
-                                        Disabled="@_loading"
-                                        OnClick="@(() => OnEnrol())"
-                                        StartIcon="@Icons.Material.Filled.PersonAdd">
-                                            Enrol
+                        
+                            <MudStack>
+                                <MudStack Row="true">
+                                    <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Refresh">
+                                        @ConstantString.Refresh
                                     </MudButton>
+                                    <MudLoadingButton 
+                                                Color="Color.Secondary"
+                                                Variant="Variant.Filled"
+                                                StartIcon="@Icons.Material.Filled.CloudDownload"
+                                                Size="Size.Small"
+                                                OnClick="OnExport"
+                                                Loading="_downloading">
+                                            @ConstantString.Export
+                                    </MudLoadingButton>
+                                    @if (_canEnrol)
+                                    {
+                                        <MudButton 
+                                            Color="Color.Primary"
+                                            Variant="Variant.Filled"
+                                            Size="Size.Small"
+                                            Disabled="@_loading"
+                                            OnClick="@(() => OnEnrol())"
+                                            StartIcon="@Icons.Material.Filled.PersonAdd">
+                                                Enrol
+                                        </MudButton>
+                                    }
+                                </MudStack>
+
+                                @if (_canSearch)
+                                {
+                                    <MudTextField T="string" ValueChanged="@(OnSearch)" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                                                    AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                                    </MudTextField>
                                 }
                             </MudStack>
-
-                            @if (_canSearch)
-                            {
-                                <MudTextField T="string" ValueChanged="@(OnSearch)" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
-                                                AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
-                                </MudTextField>
-                            }
                         </MudStack>
                     </ToolBarContent>
                     <ColGroup>
@@ -101,13 +138,14 @@
                         <col />
                         <col />
                         <col style="width: 50px;" />
+                        <col />
                     </ColGroup>
                     <Columns>
                         <TemplateColumn Title="@ConstantString.Actions" Sortable="false">
                             <CellTemplate>
                                 <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
-                                            Dense="true"
-                                            EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                                         Dense="true"
+                                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
 
                                     @if (context.Item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus)
                                     {
@@ -144,8 +182,8 @@
                             </CellTemplate>
                         </PropertyColumn>
                         <PropertyColumn Property="x => x.CurrentLocation"
-                        Title="@L[_currentDto.GetMemberDescription(x => x.CurrentLocation)]"
-                        SortBy="x => x.CurrentLocation.Name">
+                                        Title="@L[_currentDto.GetMemberDescription(x => x.CurrentLocation)]"
+                                        SortBy="x => x.CurrentLocation.Name">
                             <CellTemplate>
                                 <MudText>@context.Item.CurrentLocation.Name</MudText>
                             </CellTemplate>
@@ -169,6 +207,7 @@
                                 </MudStack>
                             </CellTemplate>
                         </PropertyColumn>
+                      
                         <PropertyColumn Property="x => x.RiskDue"
                                         Title="@L[_currentDto.GetMemberDescription(x => x.RiskDue)]">
                             <CellTemplate>
@@ -178,14 +217,69 @@
                                         <MudText Typo="Typo.body2">@context.Item.RiskDue.Value.ToShortDateString()</MudText>
 
                                         <MudChip Size="Size.Small"
-                                                    T="string"
-                                                    Color="@( context.Item.RiskDue < DateTime.Today ? Color.Error : Color.Info )">
+                                                 T="string"
+                                                 Color="@( context.Item.RiskDue < DateTime.Today ? Color.Error : Color.Info )">
                                             @context.Item.RiskDueReason
                                         </MudChip>
                                     </MudStack>
                                 }
                             </CellTemplate>
                         </PropertyColumn>
+                        <TemplateColumn Title="@ConstantString.Labels">
+                            <CellTemplate>
+                               
+                                @if (context.Item.Labels is { Length: > 0 })
+                                {
+                                    
+                                    var first = Query?.Label ??
+                                        context.Item.Labels[0]; 
+                                    
+                                    <MudTooltip Color="Color.Default">
+                                        <ChildContent>
+                                            <MudBadge Content="@context.Item.Labels.Count()" Overlap="true" Color="Color.Success">
+                                                <CatsChip Colour="@first.Colour" 
+                                                          Description="" 
+                                                          Icon="@first.AppIcon" 
+                                                          Label="@first.Name" 
+                                                          ShowDelete="false" 
+                                                          Variant="@first.Variant" 
+                                                          Disabled="false"/> 
+                                            </MudBadge>
+                                        </ChildContent>
+                                        <TooltipContent>
+                                            @if (context.Item.Labels.Length > 1)
+                                            {
+                                                <MudStack Row="false">
+                                                    @foreach (var label in context.Item.Labels.Except( [first] ))
+                                                    {
+                                                        <CatsChip Colour="@label.Colour" 
+                                                                  Description="" 
+                                                                  Icon="@label.AppIcon" 
+                                                                  Label="@label.Name" 
+                                                                  ShowDelete="false" 
+                                                                  Variant="@label.Variant" 
+                                                                  Disabled="false"/> 
+                                                    }
+                                                </MudStack>
+                                            }
+                                            else
+                                            {
+                                                @(string.Empty)
+                                            }
+                                           
+                                        </TooltipContent>
+                                    </MudTooltip>
+                                    
+                                    
+                                   
+                                    
+                                 
+                                        
+                                   
+                                   
+                                }
+                            </CellTemplate>
+                        </TemplateColumn>
                     </Columns>
                     <NoRecordsContent>
                         <MudText>@ConstantString.NoRecords</MudText>
