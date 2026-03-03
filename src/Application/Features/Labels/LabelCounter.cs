@@ -3,12 +3,23 @@ using Dapper;
 
 namespace Cfo.Cats.Application.Features.Labels;
 
-public class LabelCounter(ISqlConnectionFactory sqlConnectionFactory, ILogger<LabelCounter> logger) : ILabelCounter
+public class LabelCounter(ISqlConnectionFactory sqlConnectionFactory) : ILabelCounter
 {
     public int CountParticipants(LabelId labelId)
     {
-        logger.LogWarning("Counting participants for label {LabelId} is currently not implemented", labelId.Value);
-        return 0;
+        var connection = sqlConnectionFactory.GetOpenConnection();
+        
+        const string sql = """
+                           SELECT Count(*) 
+                           FROM [Participant].[ParticipantLabel] as [Label]
+                           WHERE 
+                              [Label].[LabelId] = @Id
+                           """;
+
+        return connection.QuerySingle<int>(sql, new
+        {
+            Id = @labelId.Value
+        });
     }
 
     public int CountVisibleLabels(string name, string? contractId)

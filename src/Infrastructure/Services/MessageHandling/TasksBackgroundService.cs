@@ -1,4 +1,6 @@
-﻿using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
+﻿using Cfo.Cats.Application.Features.Bios.IntegrationEvents;
+using Cfo.Cats.Application.Features.ManagementInformation.IntegrationEventHandlers;
+using Cfo.Cats.Application.Features.ParticipantLabels.IntegrationEventHandlers;
 using Cfo.Cats.Application.Features.Participants.IntegrationEvents;
 using Cfo.Cats.Application.Features.PathwayPlans.IntegrationEvents;
 using Cfo.Cats.Application.Features.PRIs.IntegrationEventHandlers;
@@ -23,7 +25,8 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
         _activator.Handle<PriTaskCompletedWatcherConsumer>(provider)
             .Handle<RaisePaymentsAfterApprovalConsumer>(provider)
             .Handle<RecordArchivedCaseConsumer>(provider)
-            .Handle<CloseOffLastArchivedCaseEntry>(provider);
+            .Handle<CloseOffLastArchivedCaseEntry>(provider)
+            .Handle<RecordVeteranLabelStatusConsumer>(provider);
         _bus = Configure.With(_activator)
             .Transport(t => t.UseRabbitMq(configuration.GetConnectionString("rabbit"), options.Value.TasksService)
                 .ExchangeNames(options.Value.DirectExchange, options.Value.TopicExchange))
@@ -37,6 +40,7 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
 
         await _bus.Subscribe<ObjectiveTaskCompletedIntegrationEvent>();
         await _bus.Subscribe<ParticipantTransitionedIntegrationEvent>();
+        await _bus.Subscribe<BioSubmittedIntegrationEvent>();
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)

@@ -16,6 +16,7 @@ using Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformation;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Entities.PRIs;
 using Cfo.Cats.Domain.Labels;
+using Cfo.Cats.Domain.ParticipantLabels;
 
 namespace Cfo.Cats.Infrastructure.Persistence;
 
@@ -128,6 +129,8 @@ public class ApplicationDbContext
     public DbSet<PathwayPlanReview> PathwayPlanReviews => Set<PathwayPlanReview>();
     
     public DbSet<ArchivedCase> ArchivedCases => Set<ArchivedCase>();
+    
+    public DbSet<ParticipantLabel> ParticipantLabels => Set<ParticipantLabel>();
     
     protected override void OnModelCreating(ModelBuilder builder)
     {

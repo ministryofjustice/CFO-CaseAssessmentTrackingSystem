@@ -12,7 +12,7 @@ public partial class EditLabelDialog
 
     [Parameter, EditorRequired] public UserProfile CurrentUser { get; set; } = null!;
 
-    [Parameter, EditorRequired] public EditLabel.Command Model { get; set; } = null!;
+    [Parameter, EditorRequired] public EditLabelCommand Model { get; set; } = null!;
 
     private void Cancel() => MudDialog.Cancel();
 

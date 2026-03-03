@@ -39,5 +39,6 @@ public static class QueryableExtensions
             .ProjectTo<TResult>(configuration)
             .ToListAsync(cancellationToken);
         return new PaginatedData<TResult>(data, count, pageNumber, pageSize);
-    }       
+    }
+
 }

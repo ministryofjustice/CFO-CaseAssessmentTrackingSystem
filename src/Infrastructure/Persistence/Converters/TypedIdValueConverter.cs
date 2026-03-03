@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Cfo.Cats.Domain.Common.Entities;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -8,7 +9,6 @@ public class TypedIdValueConverter<T> : ValueConverter<T, Guid>
 {
     public TypedIdValueConverter(Func<Guid, T> factory)
         : base(id => id.Value, value => factory(value))
-    {}
+    {
+    }
 }
-
-// write int to DB    }    public override TEnum Parse(object value)    {        return SmartEnum<TEnum, int>.FromValue((int)value); // read int from DB    }}

@@ -3,9 +3,11 @@ using Cfo.Cats.Application.Common.Interfaces;
 using Cfo.Cats.Application.Features.Labels;
 using Cfo.Cats.Application.Features.ManagementInformation;
 using Cfo.Cats.Application.Features.ManagementInformation.Providers;
+using Cfo.Cats.Application.Features.ParticipantLabels;
 using Cfo.Cats.Application.Features.PerformanceManagement.Providers;
 using Cfo.Cats.Application.Pipeline;
 using Cfo.Cats.Domain.Labels;
+using Cfo.Cats.Domain.ParticipantLabels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -70,6 +72,7 @@ public static class DependencyInjection
             .WithScopedLifetime());
 
         services.AddScoped<ILabelCounter, LabelCounter>();
+        services.AddScoped<IParticipantLabelsCounter, ParticipantLabelsCounter>();
         
         return services;
     }
