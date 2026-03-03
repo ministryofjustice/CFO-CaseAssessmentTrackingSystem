@@ -41,7 +41,7 @@ public static class SubmitEscalationResponse
             }
 
             entry.AddNote(request.Message, isExternal: false)
-                 .AddNote(request.MessageToProvider, isExternal: true, request.FeedbackType);
+                 .AddNote(request.MessageToProvider, isExternal: true, feedbackType: request.FeedbackType);
 
             switch (request.Response)
             {

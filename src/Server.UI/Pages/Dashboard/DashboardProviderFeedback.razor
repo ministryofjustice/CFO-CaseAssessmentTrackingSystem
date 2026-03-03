@@ -44,14 +44,14 @@
             <MudTabPanel Text="Activities: Returns" Class="pa-3">
                 <ActivitiesToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
-            <MudTabPanel Text="Archived Cases by contract count" Class="pa-3">
-                <ArchivedCasesByContractAndReasonDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
-            </MudTabPanel>
             <MudTabPanel Text="Enrolments: Advisories" Class="pa-3">
                 <EnrolmentAdvisoriesToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
             <MudTabPanel Text="Activities: Advisories" Class="pa-3">
                 <ActivitiesAdvisoriesToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
+            </MudTabPanel>
+            <MudTabPanel Text="Archived Cases by contract count" Class="pa-3">
+                <ArchivedCasesByContractAndReasonDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>
         </MudTabs>
 </MudStack>

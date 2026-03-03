@@ -234,10 +234,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            // Clear all backfilled data
-            migrationBuilder.Sql(@"
-                DELETE FROM [MI].[ProviderFeedbackActivity];
-            ");
+
         }
     }
 }

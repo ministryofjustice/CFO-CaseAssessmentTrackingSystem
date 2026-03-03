@@ -41,7 +41,7 @@ public static class SubmitActivityEscalationResponse
             }
 
             entry.AddNote(request.Message, isExternal: false)
-                 .AddNote(request.MessageToProvider, isExternal: true, request.FeedbackType);
+                 .AddNote(request.MessageToProvider, isExternal: true, feedbackType: request.FeedbackType);
 
             switch (request.Response)
             {
@@ -74,16 +74,8 @@ public static class SubmitActivityEscalationResponse
             
             RuleFor(x => x.MessageToProvider)
                 .MaximumLength(ValidationConstants.NotesLength);
-            
-            When(x => x.Response is EscalationResponse.Comment, () =>
-            {
-                RuleFor(x => x.Message)
-                    .NotEmpty()
-                    .WithMessage("Internal Message is required for this response.")
-                    .MaximumLength(ValidationConstants.NotesLength)
-                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "Message"));
-            });
 
+            // Accept response: FeedbackType is required
             When(x => x.Response == EscalationResponse.Accept, () =>
             {
                 RuleFor(x => x.FeedbackType)
@@ -93,6 +85,7 @@ public static class SubmitActivityEscalationResponse
                     .WithMessage("FeedbackType cannot be 'Returned' when accepting");
             });
 
+            // Return response: FeedbackType must be Returned and MessageToProvider is mandatory
             When(x => x.Response == EscalationResponse.Return, () =>
             {
                 RuleFor(x => x.FeedbackType)
@@ -106,6 +99,7 @@ public static class SubmitActivityEscalationResponse
                     .WithMessage(string.Format(ValidationConstants.NotesMessage, "External Message"));
             });
 
+            // Accept response: MessageToProvider required if FeedbackType is Advisory or AcceptedByException
             When(x => x.Response == EscalationResponse.Accept && (x.FeedbackType == FeedbackType.Advisory || x.FeedbackType == FeedbackType.AcceptedByException), () =>
             {
                 RuleFor(x => x.MessageToProvider)

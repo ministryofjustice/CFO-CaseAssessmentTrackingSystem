@@ -184,83 +184,7 @@
 </MudContainer>
 
 @code {
-    private ActivityQaExternalMessageWarning? warningMessage;
-    private MudForm? _form;
-    private ActivityQueueEntryDto? _queueEntry = null;
-    private ActivityQaDetailsDto? _activityQaDetailsDto = null;
-    
-    [CascadingParameter]
-    public UserProfile? UserProfile { get; set; } = null!;
-
-    private SubmitActivityQa2Response.Command Command { get; set; } = default!;
-
-    private async Task GetQueueItem()
-    {
-        GrabActivityQa2Entry.Command command = new GrabActivityQa2Entry.Command()
-            {
-                CurrentUser = UserProfile!
-            };
-
-        var result = await GetNewMediator().Send(command);
-
-        if (result.Succeeded)
-        {
-            _queueEntry = result.Data!;
-
-            var activity = await GetNewMediator().Send(new GetActivityById.Query()
-                {
-                    Id = _queueEntry.ActivityId
-                });
-            _activityQaDetailsDto = Mapper.Map<ActivityQaDetailsDto>(activity);
-            _activityQaDetailsDto.ActivityId = activity!.Id;
-
-            Command = new SubmitActivityQa2Response.Command()
-                {
-                    ActivityQueueEntryId = _queueEntry.Id,
-                    CurrentUser = UserProfile
-                };
-        }
-        else
-        {
-            Snackbar.Add(result.ErrorMessage, Severity.Info);
-        }
-    }
-
-    protected async Task SubmitToQa()
-    {
-        await _form!.Validate();
-
-        if (_form.IsValid is false)
-        {
-            return;
-        }
-
-        bool submit = true;
-
-        if (Command is { MessageToProvider.Length: > 0 })
-        {
-            submit = await warningMessage!.ShowAsync();
-        }
-
-        if (submit)
-        {
-            var result = await GetNewMediator().Send(Command);
-
-            if (result.Succeeded)
-            {
-                Snackbar.Add("Activity submitted", Severity.Info);
-                Navigation.NavigateTo("/pages/qa/activities/qa2", true);
-            }
-            else
-            {
-                ShowActionFailure("Failed to submit", result);
-            }
-        }
-    }
-
-    private void ShowActionFailure(string title, IResult result)
-    {
-        Snackbar.Add(
+    private RenderFragment RenderFailure(string title, IResult result) =>
         @<div>
             <h2>@title</h2>
             <ul>
@@ -269,35 +193,5 @@
                     <li>@e</li>
                 }
             </ul>
-        </div>
-        , Severity.Error, options => {
-            options.RequireInteraction = true;
-            options.SnackbarVariant = Variant.Text;
-        });
-    }
-
-    private int characterCount => Command.Message?.Length ?? 0;
-
-    private void UpdateCharacterCount(ChangeEventArgs args)
-    {
-        Command.Message = args?.Value?.ToString() ?? string.Empty;
-    }
-    private void OnResponseChanged()
-    {
-        if (Command.Response == SubmitActivityQa2Response.Qa2Response.Accept)
-        {
-            Command.FeedbackType = null;
-            Command.MessageToProvider = string.Empty;
-        }
-        else if (Command.Response == SubmitActivityQa2Response.Qa2Response.Return)
-        {
-            Command.FeedbackType = FeedbackType.Returned;
-            Command.MessageToProvider = string.Empty;
-        }
-        else if (Command.Response == SubmitActivityQa2Response.Qa2Response.Escalate)
-        {
-            Command.FeedbackType = null;
-            Command.MessageToProvider = string.Empty;
-        }
-    }
+        </div>;
 }

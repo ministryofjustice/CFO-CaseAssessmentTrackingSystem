@@ -27,8 +27,7 @@ public class ProviderFeedbackActivityEntityTypeConfiguration : IEntityTypeConfig
             .IsRequired();
 
         builder.Property(x => x.NoteId)
-            .IsRequired()
-            .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
+            .IsRequired();
         
         builder.Property(x => x.ActivityId)
             .IsRequired()

@@ -26,7 +26,7 @@ internal class TasksBackgroundService(IServiceProvider provider, IConfiguration 
             .Handle<RecordEnrolmentReturnedFeedbackConsumer>(provider)
             .Handle<RecordEnrolmentAdvisoryFeedbackConsumer>(provider)
             .Handle<RecordActivityReturnedFeedbackConsumer>(provider)
-            .Handle<RecordActivityAdvisoryFeedbackConsumer>(provider);
+            .Handle<RecordActivityAdvisoryFeedbackConsumer>(provider)
             .Handle<RecordArchivedCaseConsumer>(provider)
             .Handle<CloseOffLastArchivedCaseEntry>(provider);
         _bus = Configure.With(_activator)
