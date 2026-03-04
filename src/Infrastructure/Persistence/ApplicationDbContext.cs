@@ -139,8 +139,6 @@ public class ApplicationDbContext
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-        builder.ApplyGlobalFilters<ISoftDelete>(s => s.Deleted == null);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
