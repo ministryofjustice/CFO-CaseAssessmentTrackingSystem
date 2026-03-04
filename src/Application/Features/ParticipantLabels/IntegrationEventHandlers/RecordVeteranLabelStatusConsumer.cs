@@ -56,7 +56,7 @@ public class RecordVeteranLabelStatusConsumer(IUnitOfWork unitOfWork, IParticipa
                 {
                     if(l.Label.Id == veteranId && l.Lifetime.EndDate >= DateTime.UtcNow)
                     {
-                        l.Close(force: true);   
+                        l.Close(force: true, closedBy: participantBio.LastModifiedBy);   
                     }
                 }
             }
@@ -67,7 +67,8 @@ public class RecordVeteranLabelStatusConsumer(IUnitOfWork unitOfWork, IParticipa
 
                 var label = ParticipantLabel.Create(participantId,
                     veteranLabel,
-                    counter
+                    counter,
+                    participantBio.LastModifiedBy
                 );
 
                 await participantLabelRepository.AddAsync(label);
