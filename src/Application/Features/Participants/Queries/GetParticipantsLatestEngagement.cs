@@ -24,12 +24,6 @@ public static class GetParticipantsLatestEngagement
             var query =
                 from participant in db.Participants
                 join engagement in db.ParticipantEngagements
-                        .Where(e =>
-                            string.IsNullOrWhiteSpace(request.Keyword) ||
-                            e.Description.Contains(request.Keyword) ||
-                            e.Category.Contains(request.Keyword) ||
-                            e.EngagedAtLocation.Contains(request.Keyword)
-                        )
                     on participant.Id equals engagement.ParticipantId into leftJoin
                 from engagement in leftJoin
                     .OrderByDescending(pe => pe.EngagedOn)
