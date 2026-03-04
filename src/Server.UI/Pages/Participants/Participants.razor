@@ -122,8 +122,12 @@
 
                                 @if (_canSearch)
                                 {
-                                    <MudTextField T="string" ValueChanged="@(OnSearch)" Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
-                                                    AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                                    <MudTextField 
+                                        T="string" 
+                                        ValueChanged="@(OnSearch)" 
+                                        Value="@Query.Keyword" 
+                                        Placeholder="@ConstantString.Search" 
+                                        Clearable="true">
                                     </MudTextField>
                                 }
                             </MudStack>
