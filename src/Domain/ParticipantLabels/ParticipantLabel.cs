@@ -21,7 +21,7 @@ public class ParticipantLabel : BaseAuditableEntity<ParticipantLabelId>, ILifeti
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     
-    private ParticipantLabel(ParticipantId participantId, Label label, IParticipantLabelsCounter counter)
+    private ParticipantLabel(ParticipantId participantId, Label label, string? createdBy, IParticipantLabelsCounter counter)
     {
         CheckRule(new LabelMustNotAlreadyBeOpen(participantId, label.Id, counter));
         
@@ -30,6 +30,7 @@ public class ParticipantLabel : BaseAuditableEntity<ParticipantLabelId>, ILifeti
         _participantId = participantId.Value;
         Label = label;
         Lifetime = new Lifetime(DateTime.UtcNow, DateTime.MaxValue);
+        CreatedBy = createdBy;
         
         AddDomainEvent(new ParticipantLabelCreatedDomainEvent(this));
     }
@@ -40,13 +41,15 @@ public class ParticipantLabel : BaseAuditableEntity<ParticipantLabelId>, ILifeti
     /// <param name="participantId">The identifier of the participant.</param>
     /// <param name="label">The label to link to the participant.</param>
     /// <param name="counter">An implementation that will provide counts of open participants</param>
+    /// <param name="createdBy">Optional user who the label creation is being attributed to</param>
     /// <returns></returns>
     /// <exception cref="BusinessRuleValidationException">If the participant label is already open on the participant id</exception>
     public static ParticipantLabel Create(
         ParticipantId participantId,
         Label label, 
-        IParticipantLabelsCounter counter
-        ) => new (participantId, label, counter);
+        IParticipantLabelsCounter counter,
+        string? createdBy = null
+        ) => new (participantId, label, createdBy, counter);
         
     /// <summary>
     /// Closes the label.
@@ -54,12 +57,14 @@ public class ParticipantLabel : BaseAuditableEntity<ParticipantLabelId>, ILifeti
     /// System labels must be closed by forcing.
     /// </summary>
     /// <param name="force">Indicates the label should be forcibly closed, even if it is a system label.</param>
+    /// <param name="closedBy">An optional closed by method</param>
     /// <exception cref="BusinessRuleValidationException">If the participant label is as System scoped label and force has not been set to true</exception>
-    public void Close(bool force = false)
+    public void Close(bool force = false, string? closedBy = null)
     {
         CheckRule(new CannotCloseSystemLabelsWithoutForcing(Label,force));
         
         Lifetime = Lifetime.Close();
+        LastModifiedBy = closedBy;
         AddDomainEvent(new ParticipantLabelClosedDomainEvent(this));
     }
 
