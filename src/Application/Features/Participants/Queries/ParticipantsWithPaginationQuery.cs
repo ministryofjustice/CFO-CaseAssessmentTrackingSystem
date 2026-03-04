@@ -63,9 +63,18 @@ public static class ParticipantsWithPagination
 
             if (!string.IsNullOrWhiteSpace(request.Keyword))
             {
-                query = query.Where(p => p.FirstName.Contains(request.Keyword)
-                             || p.LastName!.Contains(request.Keyword)
-                             || p.Id.Contains(request.Keyword));
+                if(request.Keyword.Split(" ") is { Length: 2 } segments)
+                {
+                    query = query.Where( p=> p.FirstName.Contains(segments[0]) && p.LastName.Contains(segments[1]));
+                }
+                else
+                {
+                    query = query.Where(p => p.FirstName.Contains(request.Keyword)
+                                || p.LastName!.Contains(request.Keyword)
+                                || p.Id.Contains(request.Keyword)
+                                || p.ExternalIdentifiers.Any(ei => ei.Value.Contains(request.Keyword)));
+                    
+                }
             }
 
             query = request.ListView switch
