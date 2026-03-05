@@ -40,20 +40,36 @@ public class DocumentExportParticipantsIntegrationEventConsumer(
             // Hack: call handler directly (skips Authorization pipeline, as we're outside of the HttpContext).
             var data = await new ParticipantsWithPagination.Handler(unitOfWork).Handle(request!, CancellationToken.None);
 
+            var dataToColumnMapper = new Dictionary<string, Func<ParticipantPaginationDto, object?>>
+            {
+                { "Id", item => item.Id },
+                { "Participant", item => item.ParticipantName },
+                { "Status", item => item.EnrolmentStatus },
+                { "Consent", item => item.ConsentStatus },
+                { "Location", item => item.CurrentLocation.Name },
+                { "Enrolled At", item => item.EnrolmentLocation?.Name },
+                { "Assignee", item => item.Owner },
+                { "Risk Due", item => item.RiskDue },
+                { "Risk Due Reason", item => item.RiskDueReason.Name },
+            };
+            
+            if(!data.Succeeded || data?.Data is null)
+            {
+                throw new ApplicationException("Failed to fetch participant data");
+            }
+            
+            // get a list of labels from all the participants
+            var allLabels = data.Data.Items.SelectMany(p => p.Labels)
+                .GroupBy(label => label.Name)
+                .Select(labelGroup => labelGroup.Key);
+
+            foreach (var label in allLabels)
+            {
+                dataToColumnMapper.Add(label, dto => dto.Labels.Any(l => l.Name == label) ? "Y" : "N");
+            }
+            
             var results = await excelService.ExportAsync(data?.Data?.Items ?? [],
-                new Dictionary<string, Func<ParticipantPaginationDto, object?>>
-                {
-                    { "Id", item => item.Id },
-                    { "Participant", item => item.ParticipantName },
-                    { "Status", item => item.EnrolmentStatus },
-                    { "Consent", item => item.ConsentStatus },
-                    { "Location", item => item.CurrentLocation.Name },
-                    { "Enrolled At", item => item.EnrolmentLocation?.Name },
-                    { "Assignee", item => item.Owner },
-                    { "Risk Due", item => item.RiskDue },
-                    { "Risk Due Reason", item => item.RiskDueReason.Name },
-                    { "Labels", item => string.Join(", ", item.Labels.Select(l => l.Name)) },
-                }
+                dataToColumnMapper
             );
 
             var uploadRequest = new UploadRequest(document.Title!, UploadType.Document, results);
