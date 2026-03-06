@@ -1,0 +1,126 @@
+﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.PathwayPlans.Commands
+@using Cfo.Cats.Domain.Common.Enums
+
+@inject ILocationService Locations;
+@inject ICurrentUserService CurrentUser;
+@inject IValidationService Validator
+
+@inherits CatsComponentBase
+
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form"
+                 Model="Model"
+                 Validation="@(Validator.ValidateValue(Model))">
+
+            <MudSelect T="PathwayPlanReviewReason"
+                       @bind-Value="Model.ReviewReason"
+                       Label="Review Reason"
+                       Required="true"
+                       ReadOnly="true">
+                @foreach (var item in PathwayPlanReviewReason.OrderedList)
+                {
+                    <MudSelectItem Value="@item">@item.Name</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudTextField @bind-Value="Model.Review"
+                          Label="Review"
+                          Required="true"
+                          Lines="5"
+                          Immediate="true"
+                          Class="mt-4" />
+
+            <MudDatePicker Label="Review Date"
+                           @bind-Date="Model.ReviewDate"
+                           MaxDate="DateTime.Today"
+                           PickerVariant="PickerVariant.Dialog"
+                           Class="mt-4" 
+                           ReadOnly="true"/>
+
+            <MudSelect T="LocationDto"
+                       @bind-Value="_selectedLocation"
+                       Label="Location"
+                       ToStringFunc="l => l?.Name"
+                       Class="mt-4"     
+                       ReadOnly="true">
+                @foreach (var location in _locations)
+                {
+                    <MudSelectItem Value="@location">@location.Name</MudSelectItem>
+                }
+            </MudSelect>
+
+        </MudForm>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="@Cancel"
+                   Color="Color.Secondary"
+                   Variant="Variant.Filled">
+            Cancel
+        </MudButton>
+
+        <MudLoadingButton OnClick="@Submit"
+                          Loading="_saving"
+                          Color="Color.Primary"
+                          Variant="Variant.Filled">
+            Save
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private MudForm? _form;
+    private bool _saving;
+
+    private IEnumerable<LocationDto> _locations = [];
+    private LocationDto? _selectedLocation;
+
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter, EditorRequired] public required EditPathwayPlanReview.Command Model { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _locations = Locations
+            .GetVisibleLocations(CurrentUser.TenantId!)
+            .ToList();
+
+        _selectedLocation = _locations.FirstOrDefault(x => x.Id == Model.LocationId);
+
+        base.OnInitialized();
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        if (_form is null)
+            return;
+
+        try
+        {
+            _saving = true;
+
+            await _form.Validate();
+
+            if (!_form.IsValid)
+                return;
+
+            if (_selectedLocation is not null)
+                Model.LocationId = _selectedLocation.Id;
+
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

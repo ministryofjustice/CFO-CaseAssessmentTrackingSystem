@@ -13,6 +13,8 @@ public class PathwayPlanReview : BaseAuditableEntity<Guid>
 
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
+    public PathwayPlan PathwayPlan { get; private set; } = null!;
+    
     public static PathwayPlanReview Create(Guid pathwayPlanId, string participantId, int locationId,
         DateTime reviewDate, string? review, PathwayPlanReviewReason reviewReason)
     {
@@ -30,7 +32,21 @@ public class PathwayPlanReview : BaseAuditableEntity<Guid>
 
         return pathwayPlanReview;
     }
+    
+    public void Update(
+        int locationId,
+        DateTime reviewDate,
+        string? review,
+        PathwayPlanReviewReason reviewReason)
+    {
+        LocationId = locationId;
+        ReviewDate = reviewDate;
+        Review = review;
+        ReviewReason = reviewReason;
 
+        AddDomainEvent(new PathwayPlanReviewUpdatedDomainEvent(this));
+    }
+    
     public Guid PathwayPlanId { get; private set; }
     public int LocationId { get; private set; }
     public DateTime ReviewDate { get; private set; }

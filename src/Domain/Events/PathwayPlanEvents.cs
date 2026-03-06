@@ -37,3 +37,8 @@ public sealed class PathwayPlanReviewAddedDomainEvent(PathwayPlanReview pathwayP
 {
     public PathwayPlanReview Item { get; set; } = pathwayPlanReview;
 }
+
+public sealed class PathwayPlanReviewUpdatedDomainEvent(PathwayPlanReview pathwayPlanReview) : DomainEvent
+{
+    public PathwayPlanReview Item { get; set; } = pathwayPlanReview;
+}

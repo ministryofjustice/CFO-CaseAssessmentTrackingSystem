@@ -6,7 +6,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.PathwayPlans.Queries;
 
-public static class GetPathwayPlanReviewHistoryHistory
+public static class GetPathwayPlanReviewHistory
 {
     [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : ParticipantDetailsQuery<PathwayPlanReviewHistoryDto[]>;
@@ -16,59 +16,79 @@ public static class GetPathwayPlanReviewHistoryHistory
         public async Task<Result<PathwayPlanReviewHistoryDto[]>> Handle(Query request,
             CancellationToken cancellationToken)
         {
-            var baseQuery = unitOfWork.DbContext.PathwayPlans
-                .Where(pp => pp.ParticipantId == request.ParticipantId)
-                .SelectMany(pp => pp.PathwayPlanReviews, (pp, review) => new { pp, review })
-                .Join(unitOfWork.DbContext.Locations, x => x.review.LocationId, l => l.Id,
-                    (x, l) => new { x.review, x.pp, Location = l })
-                .Join(unitOfWork.DbContext.Users, x => x.review.CreatedBy, u => u.Id, (x, u) =>
-                    new PathwayPlanReviewHistoryDto
-                    {
-                        Id = x.review.Id,
-                        ParticipantId = x.review.ParticipantId,
-                        ReviewDate = x.review.ReviewDate,
-                        ReviewedBy = u.DisplayName!,
-                        LocationId = x.Location.Id,
-                        LocationName = x.Location.Name,
-                        ReviewReason = x.review.ReviewReason,
-                        Created = x.review.Created!.Value,
-                        Review = x.review.Review
-                    })
-                .AsNoTracking()
-                .OrderByDescending(r => r.ReviewDate);
+            var baseQuery =
+                from review in unitOfWork.DbContext.PathwayPlanReviews.AsNoTracking()
+             
+                join participant in unitOfWork.DbContext.Participants
+                    on review.PathwayPlan.ParticipantId equals participant.Id
+                join location in unitOfWork.DbContext.Locations
+                    on review.LocationId equals location.Id
+                join user in unitOfWork.DbContext.Users
+                    on review.CreatedBy equals user.Id
+                    
+                where review.PathwayPlan.ParticipantId == request.ParticipantId
+                orderby review.ReviewDate descending
+                select new
+                {
+                    review.Id,
+                    review.ParticipantId,
+                    review.ReviewDate,
+                    review.ReviewReason,
+                    review.Review,
+                    review.Created,
+                    review.CreatedBy,
 
-            var queryResultList = await baseQuery.ToListAsync(cancellationToken);
+                    UserDisplayName = user.DisplayName,
 
+                    LocationId = location.Id,
+                    LocationName = location.Name,
+
+                    EnrolmentStatus = participant.EnrolmentStatus
+                };
+            
+            var queryResultList = await baseQuery
+                .ToListAsync(cancellationToken);
+            
+            var aWeekAgo = DateTime.UtcNow.Date.AddDays(-7);
+            var count = queryResultList.Count;
+            
             var result = queryResultList
-                .Select((item, index) =>
+                .Select((x, index) =>
                 {
                     int? daysSinceLastReview = null;
 
-                    if (index < queryResultList.Count - 1)
+                    if (index < count - 1)
                     {
                         var previousReviewDate = queryResultList[index + 1].ReviewDate.Date;
-                        var currentReviewDate = item.ReviewDate.Date;
+                        var currentReviewDate = x.ReviewDate.Date;
 
                         daysSinceLastReview =
                             (currentReviewDate - previousReviewDate).Days;
                     }
 
+                    var isActive = x.EnrolmentStatus?.ParticipantIsActive() == true;
+
+                    var canEdit = x.Created >= aWeekAgo;
+
+                    var correctUser = x.CreatedBy == request.CurrentUser.UserId;
+
                     return new PathwayPlanReviewHistoryDto
                     {
-                        Id = item.Id,
-                        ParticipantId = item.ParticipantId,
-                        ReviewDate = item.ReviewDate,
-                        ReviewedBy = item.ReviewedBy,
-                        LocationId = item.LocationId,
-                        LocationName = item.LocationName,
-                        ReviewReason = item.ReviewReason,
-                        Review = item.Review,
-                        Created = item.Created,
-                        DaysSinceLastReview = daysSinceLastReview
+                        Id = x.Id,
+                        ParticipantId = x.ParticipantId,
+                        ReviewDate = x.ReviewDate,
+                        ReviewedBy = x.UserDisplayName,
+                        LocationId = x.LocationId,
+                        LocationName = x.LocationName,
+                        ReviewReason = x.ReviewReason,
+                        Review = x.Review,
+                        Created = x.Created!.Value,
+                        DaysSinceLastReview = daysSinceLastReview,
+                        IsEditable = isActive && canEdit && correctUser
                     };
                 })
                 .ToArray();
-            
+
             return Result<PathwayPlanReviewHistoryDto[]>.Success(result);
         }
     }
@@ -82,14 +102,11 @@ public static class GetPathwayPlanReviewHistoryHistory
             _unitOfWork = unitOfWork;
 
             RuleFor(x => x.ParticipantId)
-                .NotNull();
-
-            RuleFor(x => x.ParticipantId)
-                .MinimumLength(9)
-                .MaximumLength(9)
+                .NotEmpty()
+                .Length(9)
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
-            
+
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
                 RuleFor(c => c.ParticipantId)
@@ -97,7 +114,7 @@ public static class GetPathwayPlanReviewHistoryHistory
                     .WithMessage("Participant does not exist");
             });
         }
-        
+
         private async Task<bool> Exist(string identifier, CancellationToken cancellationToken)
             => await _unitOfWork.DbContext.Participants.AnyAsync(e => e.Id == identifier, cancellationToken);
     }

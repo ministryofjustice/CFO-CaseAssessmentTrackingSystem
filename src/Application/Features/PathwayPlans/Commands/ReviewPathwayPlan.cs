@@ -10,8 +10,8 @@ public static class ReviewPathwayPlan
     [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
     public class Command : IRequest<Result>
     {
-        public required Guid PathwayPlanId { get; set; }
-        public required string ParticipantId { get; set; }
+        public required Guid PathwayPlanId { get; init; }
+        public required string ParticipantId { get; init; }
         public LocationDto? Location { get; set; }
         
         [Description(description: "Review Date")]
@@ -28,17 +28,17 @@ public static class ReviewPathwayPlan
         {
             var pathwayPlan = await unitOfWork.DbContext.PathwayPlans.FirstOrDefaultAsync(x => x.Id == request.PathwayPlanId, cancellationToken);
 
-            if (pathwayPlan is not null)
+            if (pathwayPlan is null)
             {
-                pathwayPlan.Review(request.PathwayPlanId, request.ParticipantId, request.Location!.Id,
-                    request.ReviewDate!.Value, request.Review, request.ReviewReason);
-
-                await unitOfWork.SaveChangesAsync(cancellationToken);
-
-                return Result.Success();
+                throw new NotFoundException("Cannot find pathway plan", request.PathwayPlanId);
             }
 
-            throw new NotFoundException("Cannot find pathway plan", request.PathwayPlanId);
+            pathwayPlan.Review(request.PathwayPlanId, request.ParticipantId, request.Location!.Id,
+                request.ReviewDate!.Value, request.Review, request.ReviewReason);
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return Result.Success();
         }
     }
 
@@ -106,10 +106,9 @@ public static class ReviewPathwayPlan
                 return false;
             }
 
-            var latestReviewDate = await _unitOfWork.DbContext.PathwayPlans
-                .Where(pp => pp.ParticipantId == participantId)
-                .SelectMany(pp => pp.PathwayPlanReviews)
-                .MaxAsync(ppr => (DateTime?)ppr.ReviewDate, cancellationToken);
+            var latestReviewDate = await _unitOfWork.DbContext.PathwayPlanReviews
+                .Where(r => r.PathwayPlan.ParticipantId == participantId)
+                .MaxAsync(r => (DateTime?)r.ReviewDate, cancellationToken);
             
             if (latestReviewDate is null)
             {
