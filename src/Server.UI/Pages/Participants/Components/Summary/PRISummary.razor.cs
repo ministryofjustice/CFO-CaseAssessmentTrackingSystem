@@ -1,5 +1,4 @@
-﻿using Cfo.Cats.Application.Common.Interfaces.Identity;
-using Cfo.Cats.Application.Features.Participants.DTOs;
+﻿using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
 using Humanizer;
@@ -10,9 +9,6 @@ public partial class PRISummary
 {
     [CascadingParameter]
     public ParticipantSummaryDto ParticipantSummaryDto { get; set; } = null!;
-
-    [Inject]
-    private IUserService UserService { get; set; } = null!;
 
     private PriSummaryDto? _latestPri;
 
@@ -83,5 +79,5 @@ public partial class PRISummary
         && ParticipantSummaryDto.LocationType.IsMapped
         && ParticipantSummaryDto.IsActive;
 
-    public void BeginPri() => Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/PRI");
+    private void BeginPri() => Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/PRI");
 }
