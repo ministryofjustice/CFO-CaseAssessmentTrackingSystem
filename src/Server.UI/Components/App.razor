@@ -21,12 +21,12 @@
     <Routes @rendermode="RenderModeForPage" />
     <script>
         function timeOutCall(dotnethelper) {
-        document.onmousedown = resetTimeDelay;
-        document.onkeypress = resetTimeDelay;
+            document.onmousedown = resetTimeDelay;
+            document.onkeypress = resetTimeDelay;
 
-        function resetTimeDelay() {
-        dotnethelper.invokeMethodAsync("TimerInterval");
-        }
+            function resetTimeDelay() {
+                dotnethelper.invokeMethodAsync("TimerInterval");
+            }
         }
     </script>
     <script src="_framework/blazor.web.js?v=@Version" autostart="false"></script>

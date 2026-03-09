@@ -34,8 +34,10 @@ public static class ParticipantsWithPagination
         /// The current location of the participant
         /// </summary>
         public int[] Locations { get; set; } = [];
-        public LabelDto? Label { get; set; }
-
+        public LabelId? Label { get; set; }
+        public string? OwnerId { get; set; }
+        public string? TenantId { get; set; }
+        public DateTime? RiskDue { get; set; }
     }
 
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<PaginatedData<ParticipantPaginationDto>>>
@@ -105,15 +107,28 @@ public static class ParticipantsWithPagination
 
             if(request.Label is not null)
             {
-                var labelId = new LabelId(request.Label.Id);
-
                 query = from p in query
                         join pl in context.ParticipantLabels on p.Id equals EF.Property<string>(pl, "_participantId")
-                        where EF.Property<LabelId>(pl, "LabelId") == labelId
+                        where EF.Property<LabelId>(pl, "LabelId") == request.Label
                             && pl.Lifetime.EndDate > DateTime.UtcNow
                         select p;
 
                 query = query.Distinct();
+            }
+
+            if(string.IsNullOrEmpty(request.OwnerId) == false)
+            {
+                query = query.Where(p => p.OwnerId == request.OwnerId);
+            }
+
+            if(string.IsNullOrEmpty(request.TenantId) == false)
+            {
+                query = query.Where(p => p.Owner!.TenantId!.StartsWith(request.TenantId));
+            }
+
+            if (request.RiskDue.HasValue)
+            {
+                query = query.Where(p => p.RiskDue <= request.RiskDue);
             }
     
             var count = await query.AsNoTracking().CountAsync(cancellationToken);
@@ -131,6 +146,7 @@ public static class ParticipantsWithPagination
                         Name = p.CurrentLocation.Name,
                         GenderProvision = p.CurrentLocation.GenderProvision,
                         LocationType = p.CurrentLocation.LocationType,
+                        ContractName = p.CurrentLocation.Contract!.Description
                     },
                     Id = p.Id,
                     EnrolmentLocation = p.EnrolmentLocation == null
@@ -141,6 +157,7 @@ public static class ParticipantsWithPagination
                             GenderProvision = p.EnrolmentLocation.GenderProvision,
                             LocationType = p.EnrolmentLocation.LocationType,
                             Id = p.EnrolmentLocation.Id,
+                            ContractName = p.EnrolmentLocation.Contract!.Description
                         },
                     ParticipantName = p.FirstName + " " + p.LastName,
                     RiskDue = p.RiskDue,
@@ -161,7 +178,8 @@ public static class ParticipantsWithPagination
                                 AppIcon = pl.Label.AppIcon,
                                 Colour = pl.Label.Colour,
                                 Variant = pl.Label.Variant
-                            }).ToArray()
+                            }).ToArray(),
+                    ConsentGranted = p.DateOfFirstConsent
                 };
 
             var sortColumn = request.OrderBy.Trim().ToLowerInvariant() switch
