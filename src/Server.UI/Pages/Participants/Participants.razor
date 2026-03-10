@@ -17,7 +17,6 @@
 
 <PageTitle>@Title</PageTitle>
 
-
 <MudGrid Class="mt-2">        
     @if (Query is not null)
         {
@@ -83,7 +82,7 @@
                                     Dense="true"
                                     ValueChanged="LabelsValueChanged!"
                                     Clearable="true">
-                                    @foreach(var label in _labels.OrderBy(l => l.Name))
+                                    @foreach(var label in _labels.Values.OrderBy(l => l.Name))
                                     {
                                         <MudSelectItem T="LabelDto" Value="@label">
                                             @label.Name
@@ -235,8 +234,8 @@
                                 @if (context.Item.Labels is { Length: > 0 })
                                 {
                                     
-                                    var first = Query?.Label ??
-                                        context.Item.Labels[0]; 
+                                    var first = Query?.Label is null ? context.Item.Labels[0]
+                                            : _labels[Query.Label.Value]; 
                                     
                                     <MudTooltip Color="Color.Default">
                                         <ChildContent>

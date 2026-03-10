@@ -6,6 +6,8 @@ public record LocationDto
 {
     public int Id { get; set; } 
     public required string Name { get; set; }
+
+    public required string ContractName { get; set; }
     public required GenderProvision GenderProvision { get; set; } 
     
     public required LocationType LocationType { get; set; }
@@ -29,7 +31,8 @@ public record LocationDto
                 .ForMember(t => t.ParentLocationId, o => o.MapFrom(s => s.ParentLocation!.Id))
                 .ForMember(t => t.ParentLocationName, o => o.MapFrom(s => s.ParentLocation!.Name))
                 .ForMember(t => t.Name, o => o.MapFrom(s => s.Name))
-                .ForMember(t => t.Tenants, o => o.MapFrom(l => l.Tenants.Select(t => t.Id).ToArray()));
+                .ForMember(t => t.Tenants, o => o.MapFrom(l => l.Tenants.Select(t => t.Id).ToArray()))
+                .ForMember(t => t.ContractName, o => o.MapFrom(l => l.Contract!.Description));
         }
     }
 
