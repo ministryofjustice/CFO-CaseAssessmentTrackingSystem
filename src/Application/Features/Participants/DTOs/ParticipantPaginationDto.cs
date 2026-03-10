@@ -40,4 +40,7 @@ public class ParticipantPaginationDto
 
     [Display(Name = "Labels", Description = "A collection of labels linked to this participant")]
     public LabelDto[] Labels { get; set; } = [];
+    
+    public DateOnly? ConsentGranted { get; set; }
+    
 }

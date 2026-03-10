@@ -1,0 +1,75 @@
+
+@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Features.Delius.DTOs
+@using Cfo.Cats.Application.Features.Locations.DTOs
+@using DocumentFormat.OpenXml.Office2013.PowerPoint.Roaming
+
+@inject ILocationService LocationService
+
+<MudSelectExtended 
+    T="LocationDto"
+    ItemCollection="@_locations"
+    Value="Value"
+    ValueChanged="HandleValueChanged"
+    Placeholder="Select a location"
+    Required="false"
+    Variant="Variant.Outlined"
+    SearchBox="true"
+    SearchBoxAutoFocus="true"
+    SearchBoxClearable="true"
+    SearchFunc="@(new Func<LocationDto?, string, bool>(Search))"
+    ToStringFunc="@GetDisplayName">
+
+</MudSelectExtended>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public string TenantId { get; set; } = null!;
+
+    [Parameter] 
+    public LocationDto? Value { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<LocationDto?> ValueChanged { get; set; }
+
+    private LocationDto[] _locations = [];
+
+    private async Task HandleValueChanged(LocationDto? locationDto)
+    {
+        Value = locationDto;
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private string GetDisplayName(LocationDto? locationDto) => locationDto?.Name ?? string.Empty;
+
+    protected override void OnInitialized()
+        => _locations = LocationService.GetVisibleLocations(TenantId)
+            .OrderBy(l =>l.Name)
+            .ToArray();
+
+    private bool Search(LocationDto? location, string searchText)
+    {
+        if (location == null)
+        {
+            return true;
+        }
+
+        if (location.Name.Contains(searchText, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return true;
+        }
+
+        if(location.LocationType.Name.Contains(searchText, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return true;
+        }       
+
+        if(location.GenderProvision.Name.Contains(searchText, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return true;
+        }
+        return false;
+    }
+
+}
