@@ -1,0 +1,202 @@
+@page "/pages/participantsV2"
+
+@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Features.Labels.DTOs
+@using Cfo.Cats.Application.Features.Labels.Queries
+@using Cfo.Cats.Application.Features.Locations.DTOs
+@using Cfo.Cats.Application.Features.Participants.DTOs
+@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Pages.Analytics
+@using Cfo.Cats.Server.UI.Pages.Participants.Components
+@using Cfo.Cats.Application.Features.Participants.Specifications
+@using Cfo.Cats.Application.SecurityConstants
+@using Cfo.Cats.Server.UI.Components.Labels
+@using Cfo.Cats.Server.UI.Components.Locations
+@using CommunityToolkit.HighPerformance
+
+@inject IStringLocalizer<ParticipantsV2> L
+
+@inherits OwningComponentBase<IMediator>
+
+@attribute [Authorize(Policy = SecurityPolicies.AuthorizedUser)]
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+
+    <MudStack>
+        <!-- Header/Filter row -->
+        <MudStack Row="true" Justify="Justify.FlexEnd">
+            <MudMenu Label="Filters" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem OnClick="@(() => ApplyMyParticipantsFilter())">My Participants</MudMenuItem>
+                <MudMenuItem OnClick="@(() => ApplyOverdueRiskFilter())">Overdue risk</MudMenuItem>
+            </MudMenu>
+            <MudTextField T="string" Value="@Query.Keyword" Placeholder="@ConstantString.Search"
+                          ValueChanged="@(OnSearch)" Clearable="true" ShrinkLabel="true"
+                          AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
+                          AdornmentColor="Color.Secondary">
+            </MudTextField>
+            <MudSpacer />
+            <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Info"
+                       StartIcon="@Icons.Material.Filled.Refresh" OnClick="OnRefresh">
+                @ConstantString.Refresh
+            </MudButton>
+            <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" Loading="_downloading" OnClick="OnExport"
+                              StartIcon="@Icons.Material.Filled.CloudDownload" Size="Size.Small">
+                @ConstantString.Export
+            </MudLoadingButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small"
+                       StartIcon="@Icons.Material.Filled.PersonAdd" OnClick="OnEnrol">
+                Enrol
+            </MudButton>
+        </MudStack>
+
+        <!-- Additional filters row -->
+        <MudStack Row="true" Class="pt-4" Justify="Justify.FlexEnd">
+
+            <MudPagination 
+                Selected="Query.PageNumber"
+                Count="@_totalPages"
+                MiddleCount="2"
+                BoundaryCount="1"
+                SelectedChanged="PageChanged">
+            </MudPagination>
+
+            <MudSpacer />
+
+            <!-- Enrolment Status -->
+            <MudMenu Size="Size.Small" Label="@Query.ListView.GetDescription()" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem Label="Default" OnClick="@(() => ListViewChanged(ParticipantListView.Default))" />
+                <MudMenuItem Label="Identified" OnClick="@(() => ListViewChanged(ParticipantListView.Identified))" />
+                <MudMenuItem Label="Enrolling" OnClick="@(() => ListViewChanged(ParticipantListView.Enrolling))" />
+                <MudMenuItem Label="PQA" OnClick="@(() => ListViewChanged(ParticipantListView.SubmittedToProvider))" />
+                <MudMenuItem Label="CFO QA" OnClick="@(() => ListViewChanged(ParticipantListView.SubmittedToQa))" />
+                <MudMenuItem Label="Any QA" OnClick="@(() => ListViewChanged(ParticipantListView.SubmittedToAny))" />
+                <MudMenuItem Label="Approved" OnClick="@(() => ListViewChanged(ParticipantListView.Approved))" />
+                <MudMenuItem Label="Dormant" OnClick="@(() => ListViewChanged(ParticipantListView.Dormant))" />
+                <MudMenuItem Label="Archived" OnClick="@(() => ListViewChanged(ParticipantListView.Archived))" />
+                <MudMenuItem Label="All" OnClick="@(() => ListViewChanged(ParticipantListView.All))" />
+            </MudMenu>
+             <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowAssigneeDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                @if(string.IsNullOrEmpty(Query.OwnerId))
+                {
+                    @("All Assignees")
+                }
+                else
+                {
+                    @_users[Query.OwnerId]
+                }
+            </MudButton>
+            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowTenantDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                @if(string.IsNullOrEmpty(Query.TenantId))
+                {
+                    @("All Tenants")
+                }
+                else
+                {
+                    @_tenants[Query.TenantId]
+                }
+            </MudButton>
+            <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="ShowSelectLocationDialog" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                @if(Query.Locations is [])
+                {
+                    @("All Locations")
+                }
+                else
+                {
+                    @_locations[Query.Locations[0]]
+                }
+            </MudButton>
+
+            <MudMenu Size="Size.Small" Label="@(Query.Label is null ? "All Labels" : _labels[Query.Label!.Value].Name)" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem Label="All" OnClick="@(() => LabelsValueChanged(null))" />
+                @foreach(var l in _labels.Values.OrderBy(l => l.Name))
+                {
+                    <MudMenuItem Label="@l.Name" Icon="@l.AppIcon.AsMudIcon()" IconColor="@l.Colour.AsMudColour()" OnClick="@(() => LabelsValueChanged(l))"></MudMenuItem>
+                }
+            </MudMenu>
+
+            <MudMenu Size="Size.Small" Label="Sort By" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                <MudMenuItem Label="Id" OnClick="@(() => SortBy("Id"))"/>
+                <MudMenuItem Label="Participant" OnClick="@(() => SortBy("ParticipantName"))"/>
+                <MudMenuItem Label="Assignee" OnClick="@(() => SortBy("Owner"))"/>
+                <MudMenuItem Label="Tenant" OnClick="@(() => SortBy("Tenant"))"/>
+                <MudMenuItem Label="Risk Due" OnClick="@(() => SortBy("RiskDue"))"/>
+                <MudMenuItem Label="Current Location" OnClick="@(() => SortBy("CurrentLocation"))"/>
+                <MudMenuItem Label="Enrolment Location" OnClick="@(() => SortBy("EnrolmentLocation"))"/>
+                <MudMenuItem Label="Enrolment Status" OnClick="@(() => SortBy("EnrolmentStatus"))"/>
+            </MudMenu>
+            <MudTooltip Text="Clear search parameters">
+                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Clear" OnClick="@(() => ClearSearch())" />
+            </MudTooltip>
+        </MudStack>
+    </MudStack>
+
+   
+    @if (_data is { Length: > 0 })
+    {
+
+        <MudStack class="mt-4">
+            @foreach (var item in _data)
+            {
+                <MudPaper Outlined="true" Class="pa-4">
+                    <MudStack>
+                        <MudStack Row="true" Justify="Justify.FlexEnd">
+                            <MudText Typo="Typo.h5">@item.Id @item.ParticipantName</MudText>
+                            <MudSpacer />
+                            <MudText Typo="Typo.h5">@item.CurrentLocation.Name</MudText>
+                        </MudStack>
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.body2">
+                                Enrolled at @item.EnrolmentLocation!.Name (@item.EnrolmentStatus.Name).
+                                @if (item.ConsentStatus == ConsentStatus.GrantedStatus)
+                                {
+                                    @($"Consent granted {item.ConsentGranted!.Value.ToShortDateString()}")
+                                }
+                            </MudText>
+                            <MudSpacer />
+                            <MudText Typo="Typo.body2">
+                                Assigned to @item.Owner (@item.Tenant)
+                            </MudText>
+                        </MudStack>
+                        <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+                            @if (item.RiskDue.HasValue)
+                            {
+                                <MudChip Size="Size.Small"
+                                         T="string"
+                                         Color="@( item.RiskDue < DateTime.Today ? Color.Error : Color.Info )"
+                                         Variant="Variant.Outlined">
+                                    Risk Due @item.RiskDue.Value.ToShortDateString() @item.RiskDueReason
+                                </MudChip>
+                            }
+                            <MudSpacer />
+                            @if (item.Labels.Length > 0)
+                            {
+                                    
+                                
+                                @foreach (var l in item.Labels)
+                                {                
+                                    <CatsChip Variant="l.Variant" Colour="l.Colour" Description="" Icon="l.AppIcon" Disabled="false"
+                                              Label="@l.Name" ShowDelete="false" />
+                                }
+                                    
+                            }
+                        </MudStack>
+                    </MudStack>
+                    <MudDivider Class="mt-4 mb-2" />
+                    <MudStack Row="true" Justify="Justify.FlexEnd" >
+                        <MudButton 
+                            Variant="Variant.Filled" 
+                            Color="Color.Primary" 
+                            StartIcon="@(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? Icons.Material.Filled.NotStarted : Icons.Material.Filled.AssignmentInd )"
+                            OnClick="@(() => ViewParticipant(item))">
+                            @(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? "Continue Enrolment" : "View")
+                            
+                        </MudButton>
+                            
+                        
+                    </MudStack>
+                </MudPaper>
+            }
+        </MudStack>
+    }
+</MudContainer>

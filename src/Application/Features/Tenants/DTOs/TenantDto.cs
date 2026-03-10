@@ -12,7 +12,7 @@ public record TenantDto
     public string? ParentId { get; private set; }
 
     [Description("Tenant Name")]
-    public string? Name { get; set; }
+    public string Name { get; set; } = null!;
 
     [Description("Description")]
     public string? Description { get; set; }

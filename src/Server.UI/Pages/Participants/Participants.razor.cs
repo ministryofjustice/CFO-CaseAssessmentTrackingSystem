@@ -1,4 +1,5 @@
-﻿using Cfo.Cats.Application.Common.Extensions;
+﻿using System.Reflection.Emit;
+using Cfo.Cats.Application.Common.Extensions;
 using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Dashboard.Export;
@@ -36,7 +37,7 @@ public partial class Participants
     private ParticipantPaginationDto _currentDto = new() { Id = "" };
     private ParticipantsWithPagination.Query? Query { get; set; }
 
-    private LabelDto[] _labels = [];
+    private IDictionary<Guid, LabelDto> _labels = new Dictionary<Guid, LabelDto>();
 
     private void OnResumeEnrolment(ParticipantPaginationDto participant) => Navigation.NavigateTo($"/pages/enrolments/{participant.Id}");
 
@@ -61,7 +62,7 @@ public partial class Participants
 
     private async Task LabelsValueChanged(LabelDto? labelDto)
     {
-        Query!.Label = labelDto;
+        Query!.Label = labelDto == null ? null : new Domain.Labels.LabelId(labelDto.Id);
         await _table.ReloadServerData();
     }
 
@@ -84,8 +85,11 @@ public partial class Participants
             .OrderByDescending(l => l.LocationType.IsCustody)
             .ThenBy(l => l.Name).ToArray();
 
-        _labels = await GetNewMediator().Send(new GetVisibleLabels.Query(UserProfile!));
-        
+        var labelsResult = await GetNewMediator().Send(new GetVisibleLabels.Query(UserProfile!));
+        if(labelsResult is { Succeeded: true, Data: not null })
+        {
+            _labels = labelsResult.Data.ToDictionary(k => k.Id, v => v);
+        }
     }
 
     private async Task<GridData<ParticipantPaginationDto>> ServerReload(GridState<ParticipantPaginationDto> state)
