@@ -7,103 +7,68 @@
             <MudText Typo="Typo.h6">Latest Pre-Release Inventory (PRI)</MudText>
         </CardHeaderContent>
     </MudCardHeader>
-    <MudCardContent Class="d-flex justify-space-between align-center">
-
+    <MudCardContent>
         @if (_latestPri is null)
         {
             <MudText Typo="Typo.body2">@_noPriInfo</MudText>
         }
         else
         {
-            <div>
-                <dl class="description-list">
-                    <div class="description-pair">
-                        <dt>
-                            <MudText Typo="Typo.subtitle2">Date Created</MudText>
-                        </dt>
-                        <dd>
-                            <MudText Typo="Typo.body2">@_latestPri.Created.ToString("dd/MM/yyyy")</MudText>
-                        </dd>
-                    </div>
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText><strong>Date Created</strong></MudText>
+                <MudText>@_latestPri.Created.ToString("dd/MM/yyyy")</MudText>
+            </MudStack>
 
+            <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                <MudText><strong>Actual Release Date</strong></MudText>
 
-                    <div class="description-pair">
-                        <dt>
-                            <MudText Typo="Typo.subtitle2">Actual Release Date</MudText>
-                        </dt>
-                        <dd>
-                            @if (_latestPri.ActualReleaseDate != null)
-                            {
-                                <MudText Typo="Typo.body2">@_latestPri.ActualReleaseDate?.ToString("dd/MM/yyyy")</MudText>
-                            }
-                            else
-                            {
-                                <MudText Typo="Typo.body2">None</MudText>
-                            }
-                        </dd>
-                    </div>
+                @if (_latestPri.ActualReleaseDate != null)
+                {
+                    <MudText>@_latestPri.ActualReleaseDate?.ToString("dd/MM/yyyy")</MudText>
+                }
+                else
+                {
+                    <MudText>None</MudText>
+                }
+            </MudStack>
 
-                    @if (_latestPri.Status == PriStatus.Completed || _latestPri.Status == PriStatus.Abandoned)
-                    {
-                        <div class="description-pair">
-                            <dt>
-                                <MudText Typo="Typo.subtitle2">Date @_latestPri.Status.Name</MudText>
-                            </dt>
-                            <dd>
-                                <MudText Typo="Typo.body2">@_latestPri.CompletedOn?.ToString("dd/MM/yyyy")</MudText>
-                            </dd>
-                        </div>
+            @if (_latestPri.Status == PriStatus.Completed || _latestPri.Status == PriStatus.Abandoned)
+            {
+                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                    <MudText><strong>Date @_latestPri.Status.Name</strong></MudText>
+                    <MudText Typo="Typo.body2">@_latestPri.CompletedOn?.ToString("dd/MM/yyyy")</MudText>
+                </MudStack>
 
-                        <div class="description-pair">
-                            <dt>
-                                <MudText Typo="Typo.subtitle2">@_latestPri.Status.Name By</MudText>
-                            </dt>
-                            <dd>
-                                <MudText Typo="Typo.body2">@UserService.DataSource.First(u => u.Id == _latestPri.CompletedBy).DisplayName </MudText>
-                            </dd>
-                        </div>
+                if (_latestPri.Status == PriStatus.Abandoned)
+                {
+                    <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                        <MudText><strong>@_latestPri.Status.Name Reason</strong></MudText>
+                        <MudText Typo="Typo.body2">@_latestPri.AbandonReason</MudText>
+                    </MudStack>
+                }
+            }
 
-                        if (_latestPri.Status == PriStatus.Abandoned)
-                        {
-                            <div class="description-pair">
-                                <dt>
-                                    <MudText Typo="Typo.subtitle2">@_latestPri.Status.Name Reason</MudText>
-                                </dt>
-                                <dd>
-                                    <MudText Typo="Typo.body2">@_latestPri.AbandonReason</MudText>
-                                </dd>
-                            </div>
-                        }
-                    }
-
-                    @if (_showTtgDue)
-                    {
-                        <div class="description-pair">
-                            <dt>
-                                <MudText Typo="Typo.subtitle2">TTG Due</MudText>
-                            </dt>
-                            <dd>
-                                <MudTooltip Text="@_priDueTooltipText">
-                                    <MudIcon Icon="@_priDueIcon" Size="@Size.Small" Color="@_priDueIconColor"/>
-                                    <MudText Typo="Typo.body2">
-                                        @_priDueInfo
-                                    </MudText>
-                                </MudTooltip>
-                            </dd>
-                        </div>
-                    }
-                </dl>
-            </div>
+            @if (_showTtgDue)
+            {
+                <MudStack Row="true" StretchItems="StretchItems.Start" Class="mb-2">
+                    <MudText><strong>TTG Due</strong></MudText>
+                    <MudTooltip Text="@_priDueTooltipText">
+                        <MudIcon Icon="@_priDueIcon" Size="@Size.Small" Color="@_priDueIconColor"/>
+                        <MudText>
+                            @_priDueInfo
+                        </MudText>
+                    </MudTooltip>
+                </MudStack>
+            }
         }
     </MudCardContent>
+    
     <MudCardActions>
-
         @if (CanAddPri())
         {
             <MudTooltip Text="Create PRI">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="BeginPri" />
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="@BeginPri" />
             </MudTooltip>
         }
-
     </MudCardActions>
 </MudCard>
