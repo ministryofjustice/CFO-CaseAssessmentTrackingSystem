@@ -1,5 +1,6 @@
 ﻿@using Cfo.Cats.Server.UI.Components.Participants;
 @using Cfo.Cats.Application.Features.PathwayPlans.DTOs
+
 @using Humanizer
 
 @inherits ParticipantComponent<Cfo.Cats.Application.Features.PathwayPlans.DTOs.PathwayPlanReviewHistoryDto[]>
@@ -42,27 +43,25 @@
             </TemplateColumn>
             <TemplateColumn Title="Since Last Review" Sortable="true" SortBy="x => x.DaysSinceLastReview">
                 <CellTemplate>
-                    @if (context.Item.DaysSinceLastReview is null)
+                    @switch (context.Item.DaysSinceLastReview)
                     {
-                        <MudText Color="Color.Dark">—</MudText>
-                    }
-                    else if (context.Item.DaysSinceLastReview > 6)
-                    {
-                        <MudText>
-                            @(
-                            TimeSpan
-                                .FromDays(context.Item.DaysSinceLastReview.Value)
-                                .Humanize(minUnit: TimeUnit.Week)
-                            )
-                        </MudText>
-                    }
-                    else
-                    {
-                        <MudText>
-                            @(context.Item.DaysSinceLastReview == 1
-                                ? "1 day"
-                                : $"{context.Item.DaysSinceLastReview} days")
-                        </MudText>
+                        case null:
+                            <MudText Color="Color.Dark">—</MudText>
+                            break;
+                        case > 6:
+                            <MudText>
+                                @(TimeSpan
+                                    .FromDays(context.Item.DaysSinceLastReview.Value)
+                                    .Humanize(minUnit: TimeUnit.Week))
+                            </MudText>
+                            break;
+                        default:
+                            <MudText>
+                                @(context.Item.DaysSinceLastReview == 1
+                                    ? "1 day"
+                                    : $"{context.Item.DaysSinceLastReview} days")
+                            </MudText>
+                            break;
                     }
                 </CellTemplate>
 
@@ -75,6 +74,19 @@
                 </CellTemplate>
             </TemplateColumn>
             <PropertyColumn Property="x => x.LocationName" Title="Location" Sortable="true"/>
+            <TemplateColumn Title="@ConstantString.Actions" Sortable="false">
+            <CellTemplate>
+                @if (context.Item.IsEditable)
+                {                  
+                    <MudButton Size="Size.Small"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               OnClick="() => EditPathwayPlanReview(context.Item)">
+                        @ConstantString.Edit 
+                    </MudButton>
+                }
+            </CellTemplate>
+            </TemplateColumn>
         </Columns>
         <ChildRowContent>
             <MudTextField Disabled Label="Review" Value="@context.Item.Review" Lines="2" AutoGrow="true"  />

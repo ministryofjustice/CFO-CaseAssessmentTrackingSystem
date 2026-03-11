@@ -1,0 +1,52 @@
+﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
+
+@inject ILocationService Locations;
+@inject ICurrentUserService CurrentUser;
+
+@inherits CatsComponentBase
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form"
+                 Model="Model"
+                 Validation="@(Validator.ValidateValue(Model))">
+
+            <MudTextField Value="Model.ReviewReason!.Name"
+                          Label="Review Reason"
+                          ReadOnly="true" />
+            
+            <MudTextField @bind-Value="Model.Review"
+                          Label="Review"
+                          Required="true"
+                          Lines="5"
+                          Immediate="true"
+                          Class="mt-4" />
+
+            <MudTextField Value="Model.ReviewDate.ToShortDateOrEmptyString()"
+                          Label="Review Date"
+                          ReadOnly="true"
+                          Class="mt-4" />
+
+            <MudTextField Value="_selectedLocation?.Name"
+                          Label="Location"
+                          ReadOnly="true"
+                          Class="mt-4" />
+        </MudForm>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="@Cancel"
+                   Color="Color.Secondary"
+                   Variant="Variant.Filled">
+            Cancel
+        </MudButton>
+
+        <MudLoadingButton OnClick="@Submit"
+                          Loading="_saving"
+                          Disabled="string.IsNullOrWhiteSpace(Model.Review)"
+                          Color="Color.Primary"
+                          Variant="Variant.Filled">
+            Save
+        </MudLoadingButton>
+    </DialogActions>
+</MudDialog>
