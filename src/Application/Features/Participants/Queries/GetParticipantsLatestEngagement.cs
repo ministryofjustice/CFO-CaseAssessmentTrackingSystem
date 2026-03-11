@@ -19,17 +19,15 @@ public static class GetParticipantsLatestEngagement
         public async Task<Result<PaginatedData<ParticipantEngagementDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var db = unitOfWork.DbContext;
+            var threeMonthsAgo = DateOnly.FromDateTime(DateTime.Today).AddMonths(-3);
 
 #pragma warning disable CS8602, CS8604
             var query =
                 from participant in db.Participants
+                where participant.Owner.TenantId.StartsWith(request.CurrentUser.TenantId)
+                where request.JustMyCases == false || participant.Owner.Id == request.CurrentUser.UserId
+                where participant.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
                 join engagement in db.ParticipantEngagements
-                        .Where(e =>
-                            string.IsNullOrWhiteSpace(request.Keyword) ||
-                            e.Description.Contains(request.Keyword) ||
-                            e.Category.Contains(request.Keyword) ||
-                            e.EngagedAtLocation.Contains(request.Keyword)
-                        )
                     on participant.Id equals engagement.ParticipantId into leftJoin
                 from engagement in leftJoin
                     .OrderByDescending(pe => pe.EngagedOn)
@@ -38,20 +36,17 @@ public static class GetParticipantsLatestEngagement
                     .DefaultIfEmpty()
                 join owner in db.Users on participant.OwnerId equals owner.Id
                 join currentLocation in db.Locations on participant.CurrentLocation.Id equals currentLocation.Id
-                where participant.Owner.TenantId.StartsWith(request.CurrentUser.TenantId)
-                where request.JustMyCases == false || participant.Owner.Id == request.CurrentUser.UserId
-                where participant.EnrolmentStatus != EnrolmentStatus.ArchivedStatus.Value
-                where request.HideRecentEngagements == false || (engagement == null || engagement.EngagedOn < DateOnly.FromDateTime(DateTime.Today).AddMonths(-3))
+                where request.HideRecentEngagements == false || (engagement == null || engagement.EngagedOn < threeMonthsAgo)
                 where string.IsNullOrWhiteSpace(request.Keyword)
+                      || participant.FirstName.Contains(request.Keyword)
+                      || participant.LastName.Contains(request.Keyword)
+                      || participant.Id.Contains(request.Keyword)
                       || (engagement != null &&
                           (
                               engagement.Description.Contains(request.Keyword) ||
                               engagement.Category.Contains(request.Keyword) ||
                               engagement.EngagedAtLocation.Contains(request.Keyword)
                           ))
-                      || participant.FirstName.Contains(request.Keyword)
-                      || participant.LastName.Contains(request.Keyword)
-                      || participant.Id.Contains(request.Keyword)
                 select new
                 {
                     participant.Id,
@@ -64,14 +59,13 @@ public static class GetParticipantsLatestEngagement
                     engagement.EngagedWithTenant,
                     owner.DisplayName,
                     CurrentLocationName = currentLocation.Name,
-                    engagement.EngagedOn 
+                    engagement.EngagedOn
                 };
 #pragma warning restore CS8602, CS8604
 
             var count = await query.CountAsync(cancellationToken);
 
             var engagements = await query
-                .AsQueryable()
                 .OrderBy($"{request.OrderBy} {request.SortDirection}")
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)

@@ -28,8 +28,8 @@
                                             @ConstantString.Export                               
                             </MudLoadingButton>
                             <MudTextField DebounceInterval="500" @bind-Value="@Query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
-                                            AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
-                            </MudTextField>
+                                            AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Clearable="true">
+                            </MudTextField>                        
                         </MudStack>
                     </MudStack>
                 </MudForm>
