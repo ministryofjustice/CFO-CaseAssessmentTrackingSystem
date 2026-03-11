@@ -45,7 +45,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     private void UpdateEntities(DbContext context)
     {
         var userId = currentUserService.UserId;
-        var tenantId = currentUserService.TenantId;
+        var tenantId = currentUserService.TenantId; // top level;
 
         var changes = context.ChangeTracker.Entries<IAuditable>().ToList();
 
@@ -54,7 +54,9 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Entity.CreatedBy = userId;
+                    // if the CurrentUserService is not null, go off the entity created by to allow
+                    // system users to set the created by manually
+                    entry.Entity.CreatedBy = userId ?? entry.Entity.CreatedBy;
                     entry.Entity.Created = dateTime.Now;
                     if (entry.Entity is IMustHaveTenant mustTenant && string.IsNullOrEmpty(mustTenant.TenantId))
                     {
@@ -67,19 +69,9 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                     }
 
                     break;
-
                 case EntityState.Modified:
-                    entry.Entity.LastModifiedBy = userId;
+                    entry.Entity.LastModifiedBy = userId ?? entry.Entity.LastModifiedBy ;
                     entry.Entity.LastModified = dateTime.Now;
-                    break;
-                case EntityState.Deleted:
-                    if (entry.Entity is ISoftDelete softDelete)
-                    {
-                        softDelete.DeletedBy = userId;
-                        softDelete.Deleted = dateTime.Now;
-                        entry.State = EntityState.Modified;
-                    }
-
                     break;
                 case EntityState.Unchanged:
                     if (entry.HasChangedOwnedEntities())
@@ -87,7 +79,6 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                         entry.Entity.LastModifiedBy = userId;
                         entry.Entity.LastModified = dateTime.Now;
                     }
-
                     break;
             }
         }
@@ -95,8 +86,8 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
 
     private List<AuditTrail> TryInsertTemporaryAuditTrail(DbContext context)
     {
-        var userId = currentUserService.UserId;
-        var tenantId = currentUserService.TenantId;
+        string? userId = currentUserService.UserId;
+
         context.ChangeTracker.DetectChanges();
         var temporaryAuditEntries = new List<AuditTrail>();
 
@@ -116,6 +107,19 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                 EntityState.Added => AuditType.Create,
                 _ => throw new ArgumentOutOfRangeException($"No audit setup for {entry.State}")
             };
+
+            if(userId is null)
+            {
+                // if the ICurrentUserService returns null we may be running under a 
+                // service account, in which case try to go off the entity values
+                userId = auditType switch
+                {
+                    AuditType.Create => entry.Entity.CreatedBy,
+                    AuditType.Update => entry.Entity.LastModifiedBy,
+                    AuditType.Delete => entry.Entity.LastModifiedBy,
+                    _ => null,
+                };
+            }
 
             var auditEntry = AuditTrail.Create(entry.Entity.GetType().Name, userId, auditType, dateTime.Now);
   
@@ -180,7 +184,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
 
         return temporaryAuditEntries;
     }
-
+    
     private async Task TryUpdateTemporaryPropertiesForAuditTrail(
         DbContext context,
         CancellationToken cancellationToken = default

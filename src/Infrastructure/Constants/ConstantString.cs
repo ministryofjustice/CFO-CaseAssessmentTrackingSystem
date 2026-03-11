@@ -244,4 +244,6 @@ public static class ConstantString
     public static string ThroughTheGate => Localize("Through the Gate");
 
     public static string Trigger => Localize("Trigger");
+    
+    public static string Labels => Localize(nameof(Labels));
 }

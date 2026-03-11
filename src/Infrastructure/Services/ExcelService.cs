@@ -35,6 +35,11 @@ public class ExcelService(IStringLocalizer<ExcelService> localizer) : IExcelServ
             colIndex++;
         }
 
+        if (colIndex > 1)
+        {
+            ws.Range(1, 1, 1, colIndex - 1).SetAutoFilter();
+        }
+
         using var stream = new MemoryStream();
         workbook.SaveAs(stream);
         //var base64 = Convert.ToBase64String(stream.ToArray());
@@ -70,6 +75,11 @@ public class ExcelService(IStringLocalizer<ExcelService> localizer) : IExcelServ
             cell.Value = header;
 
             colIndex++;
+        }
+
+        if (colIndex > 1)
+        {
+            ws.Range(1, 1, rowIndex, colIndex - 1).SetAutoFilter();
         }
 
         var dataList = data.ToList();

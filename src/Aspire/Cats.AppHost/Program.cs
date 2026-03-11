@@ -19,6 +19,8 @@ var catsDb = sql.AddDatabase("CatsDb");
 
 var rabbit = builder.AddRabbitMQ("rabbit",
         port: 5672)
+    .WithDataVolume("cats-aspire-rabbit")
+    .WithLifetime(ContainerLifetime.Persistent)
     .WithManagementPlugin(port: 15672);
 
 var migrator = builder.AddProject<Projects.DatabaseMigrator>("Migrator")

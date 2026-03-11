@@ -4,6 +4,7 @@ using Cfo.Cats.Application.Features.Labels.Commands;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Common.Exceptions;
 using Cfo.Cats.Domain.Labels;
+using Moq;
 using NUnit.Framework;
 using Shouldly;
 
@@ -11,22 +12,27 @@ namespace Cfo.Cats.Application.UnitTests.Labels.Commands;
 
 public class AddLabelCommandTests
 {
-    private TestLabelRepository _repository = null!;
-    private TestLabelCounter _labelCounter = null!;
-    private AddLabel.Handler _handler = null!;
+    private Mock<ILabelRepository> _repository = null!;
+    private Mock<ILabelCounter> _labelCounter = null!;
+    private AddLabelCommandHandler _handler = null!;
 
     [SetUp]
     public void Setup()
     {
-        _repository = new TestLabelRepository();
-        _labelCounter = new TestLabelCounter();
-        _handler = new AddLabel.Handler(_repository, _labelCounter);
+        _repository = new Mock<ILabelRepository>();
+        _labelCounter = new Mock<ILabelCounter>();
+        _handler = new AddLabelCommandHandler(_repository.Object, _labelCounter.Object);
     }
 
     [Test]
     public async Task Handle_WithValidCommand_ShouldCreateLabel()
     {
-        var command = new AddLabel.Command
+        Label? addedLabel = null;
+        _repository.Setup(r => r.AddAsync(It.IsAny<Label>()))
+            .Callback<Label>(label => addedLabel = label)
+            .Returns(Task.CompletedTask);
+
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "Test Label",
@@ -40,14 +46,17 @@ public class AddLabelCommandTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         result.Succeeded.ShouldBeTrue();
-        _repository.AddedLabel.ShouldNotBeNull();
-        _repository.AddedLabel.Name.ShouldBe("Test Label");
+        addedLabel.ShouldNotBeNull();
+        addedLabel.Name.ShouldBe("Test Label");
     }
 
     [Test]
     public async Task Handle_WithValidCommand_ShouldCallRepositoryAdd()
     {
-        var command = new AddLabel.Command
+        _repository.Setup(r => r.AddAsync(It.IsAny<Label>()))
+            .Returns(Task.CompletedTask);
+
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "New Label",
@@ -60,14 +69,14 @@ public class AddLabelCommandTests
 
         await _handler.Handle(command, CancellationToken.None);
 
-        _repository.AddAsyncCalled.ShouldBeTrue();
+        _repository.Verify(r => r.AddAsync(It.IsAny<Label>()), Times.Once);
     }
 
     [Test]
     public void Validator_WithInvalidName_ShouldFail()
     {
-        var validator = new AddLabel.Validator();
-        var command = new AddLabel.Command
+        var validator = new AddLabelCommandValidator();
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "",
@@ -87,8 +96,8 @@ public class AddLabelCommandTests
     [Test]
     public void Validator_WithNameTooShort_ShouldFail()
     {
-        var validator = new AddLabel.Validator();
-        var command = new AddLabel.Command
+        var validator = new AddLabelCommandValidator();
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "A",
@@ -108,8 +117,8 @@ public class AddLabelCommandTests
     [Test]
     public void Validator_WithNameTooLong_ShouldFail()
     {
-        var validator = new AddLabel.Validator();
-        var command = new AddLabel.Command
+        var validator = new AddLabelCommandValidator();
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = new  string('A', 201),
@@ -129,8 +138,8 @@ public class AddLabelCommandTests
     [Test]
     public void Validator_WithDescriptionOver200Chars_ShouldFail()
     {
-        var validator = new AddLabel.Validator();
-        var command = new AddLabel.Command
+        var validator = new AddLabelCommandValidator();
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "Valid",
@@ -150,8 +159,8 @@ public class AddLabelCommandTests
     [Test]
     public void Validator_WithDescriptionTooShort_ShouldFail()
     {
-        var validator = new AddLabel.Validator();
-        var command = new AddLabel.Command
+        var validator = new AddLabelCommandValidator();
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "Valid",
@@ -171,8 +180,8 @@ public class AddLabelCommandTests
     [Test]
     public void Validator_WithValidCommand_ShouldPass()
     {
-        var validator = new AddLabel.Validator();
-        var command = new AddLabel.Command
+        var validator = new AddLabelCommandValidator();
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "Valid",
@@ -191,8 +200,8 @@ public class AddLabelCommandTests
     [Test]
     public void Validator_WithNameContainingInvalidCharacters_ShouldFail()
     {
-        var validator = new AddLabel.Validator();
-        var command = new AddLabel.Command
+        var validator = new AddLabelCommandValidator();
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "Invalid123",
@@ -213,8 +222,8 @@ public class AddLabelCommandTests
     [Test]
     public void Validator_WithNameContainingUnderscores_ShouldPass()
     {
-        var validator = new AddLabel.Validator();
-        var command = new AddLabel.Command
+        var validator = new AddLabelCommandValidator();
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "Valid_Name",
@@ -233,8 +242,8 @@ public class AddLabelCommandTests
     [Test]
     public void Validator_WithDescriptionContainingCommonPunctuation_ShouldPass()
     {
-        var validator = new AddLabel.Validator();
-        var command = new AddLabel.Command
+        var validator = new AddLabelCommandValidator();
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "Valid",
@@ -253,8 +262,8 @@ public class AddLabelCommandTests
     [Test]
     public void Validator_WithDescriptionContainingNumbers_ShouldPass()
     {
-        var validator = new AddLabel.Validator();
-        var command = new AddLabel.Command
+        var validator = new AddLabelCommandValidator();
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "Valid",
@@ -273,8 +282,8 @@ public class AddLabelCommandTests
     [Test]
     public void Validator_WithDescriptionContainingMultiLine_ShouldPass()
     {
-        var validator = new AddLabel.Validator();
-        var command = new AddLabel.Command
+        var validator = new AddLabelCommandValidator();
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "Valid",
@@ -293,8 +302,8 @@ public class AddLabelCommandTests
     [Test]
     public void Validator_WithDescriptionContainingInvalidCharacters_ShouldFail()
     {
-        var validator = new AddLabel.Validator();
-        var command = new AddLabel.Command
+        var validator = new AddLabelCommandValidator();
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "Valid",
@@ -315,8 +324,8 @@ public class AddLabelCommandTests
     [Test]
     public void Validator_WithNameAt25Characters_ShouldPass()
     {
-        var validator = new AddLabel.Validator();
-        var command = new AddLabel.Command
+        var validator = new AddLabelCommandValidator();
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = new string('A', 25),
@@ -335,8 +344,10 @@ public class AddLabelCommandTests
     [Test]
     public void Handle_WithDuplicateName_ShouldThrowBusinessRuleException()
     {
-        _labelCounter.SetVisibleLabelCount(1);
-        var command = new AddLabel.Command
+        _labelCounter.Setup(c => c.CountVisibleLabels(It.IsAny<string>(), It.IsAny<string?>()))
+            .Returns(1);
+
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "Duplicate",
@@ -354,7 +365,12 @@ public class AddLabelCommandTests
     [Test]
     public async Task Handle_WithGlobalScope_ShouldCreateWithNullContractId()
     {
-        var command = new AddLabel.Command
+        Label? addedLabel = null;
+        _repository.Setup(r => r.AddAsync(It.IsAny<Label>()))
+            .Callback<Label>(label => addedLabel = label)
+            .Returns(Task.CompletedTask);
+
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "Global",
@@ -367,14 +383,19 @@ public class AddLabelCommandTests
 
         await _handler.Handle(command, CancellationToken.None);
 
-        _repository.AddedLabel.ShouldNotBeNull();
-        _repository.AddedLabel.ContractId.ShouldBeNull();
+        addedLabel.ShouldNotBeNull();
+        addedLabel.ContractId.ShouldBeNull();
     }
 
     [Test]
     public async Task Handle_WithContractScope_ShouldCreateWithContractId()
     {
-        var command = new AddLabel.Command
+        Label? addedLabel = null;
+        _repository.Setup(r => r.AddAsync(It.IsAny<Label>()))
+            .Callback<Label>(label => addedLabel = label)
+            .Returns(Task.CompletedTask);
+
+        var command = new AddLabelCommand
         {
             Scope = LabelScope.User,
             Name = "Contract",
@@ -387,33 +408,7 @@ public class AddLabelCommandTests
 
         await _handler.Handle(command, CancellationToken.None);
 
-        _repository.AddedLabel.ShouldNotBeNull();
-        _repository.AddedLabel.ContractId.ShouldBe("CONTRACT-001");
-    }
-
-    private class TestLabelRepository : ILabelRepository
-    {
-        public Label? AddedLabel { get; private set; }
-        public bool AddAsyncCalled { get; private set; }
-
-        public Task AddAsync(Label label)
-        {
-            AddedLabel = label;
-            AddAsyncCalled = true;
-            return Task.CompletedTask;
-        }
-
-        public Task<Label?> GetByIdAsync(LabelId labelId) => Task.FromResult<Label?>(null);
-        public Task<int> CountParticipants(LabelId labelId) => Task.FromResult(0);
-    }
-
-    private class TestLabelCounter : ILabelCounter
-    {
-        private int _visibleLabelCount;
-
-        public void SetVisibleLabelCount(int count) => _visibleLabelCount = count;
-
-        public int CountVisibleLabels(string name, string? contractId) => _visibleLabelCount;
-        public int CountParticipants(LabelId labelId) => 0;
+        addedLabel.ShouldNotBeNull();
+        addedLabel.ContractId.ShouldBe("CONTRACT-001");
     }
 }
