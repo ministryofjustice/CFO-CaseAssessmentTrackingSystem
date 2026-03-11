@@ -29,12 +29,17 @@
                         }
 
                         <MudItem xs="12">
-                                <MudAutocomplete T="LocationDto" Label="@Model.GetMemberDescription(x => x.Location)" 
-                                                @bind-Value="Model.Location" @bind-Value:after="CheckParticipantBeenAtThisLocationOnDate"
-                                                SearchFunc="@SearchLocations"
-                                                 Required="true" RequiredError="Location is required"
-                                                 ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
-                                                 AdornmentColor="Color.Primary" ToStringFunc="@(e => e == null ? null : e.Name)" />
+                            <MudSelect @bind-Value="Model.Location"
+                                       @bind-Value:after="CheckParticipantBeenAtThisLocationOnDate"
+                                       Label="@Model.GetMemberDescription(x => x.Location)"
+                                       For="() => Model.Location"
+                                       Clearable="true"
+                                       ToStringFunc="location => location?.Name">
+                                @foreach (var location in Locations ?? [])
+                                {
+                                    <MudSelectItem Value="location">@location.Name</MudSelectItem>
+                                }
+                            </MudSelect>
                         </MudItem>                        
                     </MudGrid>
                 </MudForm>
@@ -46,79 +51,3 @@
         <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="@saving" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>
-
-
-@code {
-    private MudForm? form;
-
-    [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; } = default!;
-
-    [EditorRequired]
-    [Parameter]
-    public LocationDto[]? Locations { get; set; }
-
-    [EditorRequired]
-    [Parameter]
-    public AddWingInduction.Command? Model { get; set; }
-
-    private bool saving;
-
-    bool hasParticpantBeenAtThisLocationOnThisDate;
-
-    private void Cancel()
-    { 
-        MudDialog.Cancel();
-    }
-
-    private async Task Submit()
-    {
-        try
-        {
-            saving = true;
-
-            await form!.Validate();
-
-            if(form!.IsValid == false)
-            {
-                return;
-            }
-
-            var result = await GetNewMediator().Send(Model!);
-            if(result.Succeeded)
-            {
-                MudDialog.Close(DialogResult.Ok(true));
-                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
-            }
-            else
-            {
-                Snackbar.Add(result.ErrorMessage, Severity.Error);
-            }
-        }
-        finally
-        {
-            saving = false;
-        }
-    }
-
-    private async Task<IEnumerable<LocationDto>> SearchLocations(string value, CancellationToken token)
-    {
-        if(string.IsNullOrEmpty(value)){
-            return new LocationDto[0];
-        }
-        return await Task.FromResult(Locations!.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)));
-    }
-
-    async Task CheckParticipantBeenAtThisLocationOnDate()
-    {
-        if (Model?.InductionDate == null || Model?.Location?.Id == null)
-            return;
-        
-        hasParticpantBeenAtThisLocationOnThisDate = await GetNewMediator().Send(new GetParticipantWasAtThisLocationCheck.Query()
-            {
-                ParticipantId = Model!.ParticipantId,
-                LocationId = Model.Location!.Id,
-                DateAtLocation = Model.InductionDate
-            });        
-    }
-}
