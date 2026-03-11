@@ -5,6 +5,7 @@ using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Application.Features.QualityAssurance.Commands;
 using Cfo.Cats.Application.Features.QualityAssurance.DTOs;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Pages.QA.Enrolments.Components;
 using System.Text;
 using IResult = Cfo.Cats.Application.Common.Interfaces.IResult;
@@ -89,7 +90,7 @@ public partial class QA2
 
             var submit = true;
 
-            if (Command is { IsMessageExternal: true, Message.Length: > 0 })
+            if (Command is { MessageToProvider.Length: > 0 })
             {
                 submit = await _warningMessage!.ShowAsync();
             }
@@ -139,4 +140,22 @@ public partial class QA2
             options.SnackbarVariant = Variant.Text;
         });
     }
+    private void OnResponseChanged()
+    {
+        if (Command.Response == SubmitQa2Response.Qa2Response.Accept)
+        {
+            Command.FeedbackType = null;
+            Command.MessageToProvider = string.Empty;
+        }
+        else if (Command.Response == SubmitQa2Response.Qa2Response.Return)
+        {
+            Command.FeedbackType = FeedbackType.Returned;
+            Command.MessageToProvider = string.Empty;
+        }
+        else if (Command.Response == SubmitQa2Response.Qa2Response.Escalate)
+        {
+            Command.FeedbackType = null;
+            Command.MessageToProvider = string.Empty;
+        }
+    }    
 }

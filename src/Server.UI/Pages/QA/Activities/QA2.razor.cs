@@ -2,6 +2,7 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.Commands;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Queries;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Pages.QA.Activities.Components;
 using IResult = Cfo.Cats.Application.Common.Interfaces.IResult;
 
@@ -64,7 +65,7 @@ public partial class QA2
 
         var submit = true;
 
-        if (Command is { IsMessageExternal: true, Message.Length: > 0 })
+        if (Command is { MessageToProvider.Length: > 0 })
         {
             submit = await _warningMessage!.ShowAsync();
         }
@@ -84,7 +85,24 @@ public partial class QA2
             }
         }
     }
-
+    private void OnResponseChanged()
+    {
+        if (Command.Response == SubmitActivityQa2Response.Qa2Response.Accept)
+        {
+            Command.FeedbackType = null;
+            Command.MessageToProvider = string.Empty;
+        }
+        else if (Command.Response == SubmitActivityQa2Response.Qa2Response.Return)
+        {
+            Command.FeedbackType = FeedbackType.Returned;
+            Command.MessageToProvider = string.Empty;
+        }
+        else if (Command.Response == SubmitActivityQa2Response.Qa2Response.Escalate)
+        {
+            Command.FeedbackType = null;
+            Command.MessageToProvider = string.Empty;
+        }
+    }
     private void ShowActionFailure(string title, IResult result) =>
         Snackbar.Add(
             RenderFailure(title, result),

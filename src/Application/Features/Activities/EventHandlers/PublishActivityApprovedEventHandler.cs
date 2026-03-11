@@ -12,5 +12,6 @@ public class PublishActivityApprovedEventHandler(IUnitOfWork unitOfWork) : INoti
         {
             await unitOfWork.DbContext.InsertOutboxMessage(new ActivityApprovedIntegrationEvent(notification.Item.Id, notification.DateOccurred.DateTime));
         }
+        await unitOfWork.DbContext.InsertOutboxMessage(new ActivityTransitionedIntegrationEvent(notification.Item.Id, notification.From.Name, notification.To.Name, notification.DateOccurred.DateTime));
     }
 }

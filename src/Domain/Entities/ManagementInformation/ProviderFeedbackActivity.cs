@@ -1,0 +1,196 @@
+namespace Cfo.Cats.Domain.Entities.ManagementInformation;
+
+public class ProviderFeedbackActivity
+{
+#pragma warning disable CS8618 
+    private ProviderFeedbackActivity(){}
+#pragma warning restore CS8618    
+
+    public Guid Id { get; set; } = Guid.CreateVersion7();
+    public required DateTime CreatedOn { get; set; }
+
+    public required string SourceTable { get; set; }        
+
+    public required string Queue { get; set; }
+
+    public required Guid QueueEntryId { get; set; }
+    
+    public required int NoteId { get; set; }
+
+    public required  string ActivityId { get; set; }
+
+    public required int ActivityType { get; set; }
+    
+    public required string TenantId { get; set; }
+
+    public required string ContractId { get; set; }
+
+    public required string ParticipantId { get; set; }
+
+    public required string SupportWorkerId { get; set; }
+
+    public required string ProviderQaUserId { get; set; }
+
+    public required string CfoUserId { get; set; }
+
+    public required DateTime PqaSubmittedDate { get; set; }
+
+    public required DateTime ActionDate { get; set; }
+
+    public string Message { get; set; }
+
+    public int? FeedbackType{get; set;}
+
+    public static ProviderFeedbackActivity CreateReturnedQA2Activity(
+        Guid queueEntryId,
+        int noteId,
+        string activityId,
+        int activityType,
+        string tenantId,
+        string contractId,
+        string participantId,
+        string supportWorkerId,
+        string providerQaUserId,
+        string cfoUserId,
+        DateTime pqaSubmittedDate,
+        DateTime actionDate,
+        string message,
+        int? feedbackType)
+    {
+        return new ProviderFeedbackActivity()
+        {
+            Id = Guid.CreateVersion7(),
+            CreatedOn = DateTime.UtcNow,
+            SourceTable = "Activities.Qa2QueueNote",
+            Queue = "QA2",
+            QueueEntryId = queueEntryId,
+            NoteId = noteId,
+            ActivityId = activityId,
+            ActivityType = activityType,
+            TenantId = tenantId,
+            ContractId = contractId,
+            ParticipantId = participantId,
+            SupportWorkerId = supportWorkerId,
+            ProviderQaUserId = providerQaUserId,
+            CfoUserId = cfoUserId,
+            PqaSubmittedDate = pqaSubmittedDate,
+            ActionDate = actionDate,
+            Message = message,
+            FeedbackType = feedbackType
+        };
+    }
+    public static ProviderFeedbackActivity CreateReturnedEscalationActivity(
+        Guid queueEntryId,
+        int noteId,
+        string activityId,
+        int activityType,
+        string tenantId,
+        string contractId,
+        string participantId,
+        string supportWorkerId,
+        string providerQaUserId,
+        string cfoUserId,
+        DateTime pqaSubmittedDate,
+        DateTime actionDate,
+        string message,
+        int? feedbackType)
+    {
+        return new ProviderFeedbackActivity()
+        {
+            Id = Guid.CreateVersion7(),
+            CreatedOn = DateTime.UtcNow,
+            SourceTable = "Activities.EscalationNote",
+            Queue = "Escalation",
+            QueueEntryId = queueEntryId,
+            NoteId = noteId,
+            ActivityId = activityId,
+            ActivityType = activityType,
+            TenantId = tenantId,
+            ContractId = contractId,
+            ParticipantId = participantId,
+            SupportWorkerId = supportWorkerId,
+            ProviderQaUserId = providerQaUserId,
+            CfoUserId = cfoUserId,
+            PqaSubmittedDate = pqaSubmittedDate,
+            ActionDate = actionDate,
+            Message = message,
+            FeedbackType = feedbackType
+        };
+    }    
+    public static ProviderFeedbackActivity CreateAdvisoryQA2Activity(
+        Guid queueEntryId,
+        int noteId,
+        string activityId,
+        int activityType,
+        string tenantId,
+        string contractId,
+        string participantId,
+        string supportWorkerId,
+        string providerQaUserId,
+        string cfoUserId,
+        DateTime pqaSubmittedDate,
+        DateTime actionDate,
+        string message,
+        int? feedbackType)
+    {
+        return new ProviderFeedbackActivity()
+        {
+            Id = Guid.CreateVersion7(),
+            CreatedOn = DateTime.UtcNow,
+            SourceTable = "Activities.Qa2QueueNote",
+            Queue = "QA2",
+            QueueEntryId = queueEntryId,
+            NoteId = noteId,
+            ActivityId = activityId,
+            ActivityType = activityType,
+            TenantId = tenantId,
+            ContractId = contractId,
+            ParticipantId = participantId,
+            SupportWorkerId = supportWorkerId,
+            ProviderQaUserId = providerQaUserId,
+            CfoUserId = cfoUserId,
+            PqaSubmittedDate = pqaSubmittedDate,
+            ActionDate = actionDate,
+            Message = message,
+            FeedbackType = feedbackType
+        };
+    }
+    public static ProviderFeedbackActivity CreateAdvisoryEscalationActivity(
+        Guid queueEntryId,
+        int noteId,
+        string activityId,
+        int activityType,
+        string tenantId,
+        string contractId,
+        string participantId,
+        string supportWorkerId,
+        string providerQaUserId,
+        string cfoUserId,
+        DateTime pqaSubmittedDate,
+        DateTime actionDate,
+        string message,
+        int? feedbackType)
+    {
+        return new ProviderFeedbackActivity()
+        {
+            Id = Guid.CreateVersion7(),
+            CreatedOn = DateTime.UtcNow,
+            SourceTable = "Activities.EscalationNote",
+            Queue = "Escalation",
+            QueueEntryId = queueEntryId,
+            NoteId = noteId,
+            ActivityId = activityId,
+            ActivityType = activityType,
+            TenantId = tenantId,
+            ContractId = contractId,
+            ParticipantId = participantId,
+            SupportWorkerId = supportWorkerId,
+            ProviderQaUserId = providerQaUserId,
+            CfoUserId = cfoUserId,
+            PqaSubmittedDate = pqaSubmittedDate,
+            ActionDate = actionDate,
+            Message = message,
+            FeedbackType = feedbackType
+        };
+    }    
+}

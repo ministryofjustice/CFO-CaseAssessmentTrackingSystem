@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260127170000_BackfillProviderFeedbackEnrolment")]
+    partial class BackfillProviderFeedbackEnrolment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1115,85 +1118,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.ToTable("ActivityPayment", "Mi");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.ManagementInformation.ArchivedCase", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AdditionalInfo")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("ArchiveReason")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("ContractId")
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<int>("EnrolmentHistoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("From")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("LocationType")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("To")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UnarchiveAdditionalInfo")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("UnarchiveReason")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParticipantId", "EnrolmentHistoryId", "TenantId", "From")
-                        .HasDatabaseName("ix_ArchivedCase_Participant_Enrolment");
-
-                    b.ToTable("ArchivedCase", "Mi");
-                });
-
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.ManagementInformation.DateDimension", b =>
                 {
                     b.Property<DateTime>("TheDate")
@@ -1858,14 +1782,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("ActionDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ActivityId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<int>("ActivityType")
-                        .HasColumnType("int");
-
                     b.Property<string>("CfoUserId")
                         .IsRequired()
                         .HasMaxLength(36)
@@ -1879,17 +1795,15 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("FeedbackType")
-                        .HasColumnType("int");
+                    b.Property<string>("Dashboard")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("NoteId")
-                        .HasMaxLength(36)
-                        .HasColumnType("int");
 
                     b.Property<string>("ParticipantId")
                         .IsRequired()
@@ -1898,6 +1812,9 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTime>("PqaSubmittedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("ProviderFeedbackType")
+                        .HasColumnType("int");
 
                     b.Property<string>("ProviderQaUserId")
                         .IsRequired()
@@ -1908,14 +1825,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<Guid>("QueueEntryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("SourceTable")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("SupportWorkerId")
                         .IsRequired()
@@ -1929,12 +1838,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SourceTable", "QueueEntryId", "NoteId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_ProviderFeedbackActivity_SourceTable_QueueEntryId_NoteId");
-
-                    b.HasIndex("SourceTable", "TenantId", "ActionDate")
-                        .HasDatabaseName("ix_ProviderFeedbackActivity_SourceTable_TenantId_ActionDate");
+                    b.HasIndex("Dashboard", "TenantId")
+                        .HasDatabaseName("ix_ProviderFeedbackActivity_Dashboard_TenantId");
 
                     b.ToTable("ProviderFeedbackActivity", "Mi");
                 });
@@ -1961,17 +1866,15 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("FeedbackType")
-                        .HasColumnType("int");
+                    b.Property<string>("Dashboard")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("NoteId")
-                        .HasMaxLength(36)
-                        .HasColumnType("int");
 
                     b.Property<string>("ParticipantId")
                         .IsRequired()
@@ -1991,14 +1894,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid>("QueueEntryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("SourceTable")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<string>("SupportWorkerId")
                         .IsRequired()
                         .HasMaxLength(36)
@@ -2011,12 +1906,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SourceTable", "QueueEntryId", "NoteId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_ProviderFeedbackEnrolment_SourceTable_QueueEntryId_NoteId");
-
-                    b.HasIndex("SourceTable", "TenantId", "ActionDate")
-                        .HasDatabaseName("ix_ProviderFeedbackEnrolment_SourceTable_TenantId_ActionDate");
+                    b.HasIndex("Dashboard", "TenantId")
+                        .HasDatabaseName("ix_ProviderFeedbackEnrolment_Dashboard_TenantId");
 
                     b.ToTable("ProviderFeedbackEnrolment", "Mi");
                 });
@@ -3789,9 +3680,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("AppIcon")
-                        .HasColumnType("int");
-
                     b.Property<int>("Colour")
                         .HasColumnType("int");
 
@@ -3819,11 +3707,8 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
-
-                    b.Property<int>("Scope")
-                        .HasColumnType("int");
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<int>("Variant")
                         .HasColumnType("int");

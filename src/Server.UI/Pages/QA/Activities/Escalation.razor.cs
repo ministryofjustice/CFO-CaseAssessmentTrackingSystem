@@ -2,6 +2,7 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.Commands;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Queries;
+using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Pages.QA.Activities.Components;
 using IResult = Cfo.Cats.Application.Common.Interfaces.IResult;
 
@@ -70,40 +71,57 @@ public partial class Escalation
 
         var submit = true;
 
-        if (Command is { IsMessageExternal: true, Message.Length: > 0 })
+        if (Command is { MessageToProvider.Length: > 0 })
         {
             submit = await _warningMessage!.ShowAsync();
         }
 
-        if (submit == false)
+        if (submit)
         {
-            return;
-        }
 
-        var result = await GetNewMediator().Send(Command);
+            var result = await GetNewMediator().Send(Command);
 
-        if (result.Succeeded)
-        {
-            var message = Command.Response switch
+            if (result.Succeeded)
             {
-                SubmitActivityEscalationResponse.EscalationResponse.Accept => "Activity accepted",
-                SubmitActivityEscalationResponse.EscalationResponse.Return => "Activity returned to PQA",
-                _ => "Comment added"
-            };
+                var message = Command.Response switch
+                {
+                    SubmitActivityEscalationResponse.EscalationResponse.Accept => "Activity accepted",
+                    SubmitActivityEscalationResponse.EscalationResponse.Return => "Activity returned to PQA",
+                    _ => "Comment added"
+                };
 
-            Snackbar.Add(message, Severity.Info);
-            Navigation.NavigateTo("/pages/qa/activities/activities");
-        }
-        else
-        {
-            var message = Command.Response switch
+                Snackbar.Add(message, Severity.Info);
+                Navigation.NavigateTo("/pages/qa/activities/activities");
+            }
+            else
             {
-                SubmitActivityEscalationResponse.EscalationResponse.Accept => "Failed to accept activity",
-                SubmitActivityEscalationResponse.EscalationResponse.Return => "Failed to return activity",
-                _ => "Failed to add Comment"
-            };
+                var message = Command.Response switch
+                {
+                    SubmitActivityEscalationResponse.EscalationResponse.Accept => "Failed to accept activity",
+                    SubmitActivityEscalationResponse.EscalationResponse.Return => "Failed to return activity",
+                    _ => "Failed to add Comment"
+                };
 
-            ShowActionFailure(message, result);
+                ShowActionFailure(message, result);
+            }
+        }
+    }
+    private void OnResponseChanged()
+    {
+        if (Command.Response == SubmitActivityEscalationResponse.EscalationResponse.Accept)
+        {
+            Command.FeedbackType = null;
+            Command.MessageToProvider = string.Empty;
+        }
+        else if (Command.Response == SubmitActivityEscalationResponse.EscalationResponse.Return)
+        {
+            Command.FeedbackType = FeedbackType.Returned;
+            Command.MessageToProvider = string.Empty;
+        }
+        else if (Command.Response == SubmitActivityEscalationResponse.EscalationResponse.Comment)
+        {
+            Command.FeedbackType = null;
+            Command.MessageToProvider = string.Empty;
         }
     }
 
