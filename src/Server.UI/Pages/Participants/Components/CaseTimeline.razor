@@ -49,54 +49,20 @@
 
             }
         </MudTimeline>
+        <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-2">
+            <MudSpacer />
+            <MudText Typo="Typo.body2" Class="mr-2">Rows per page:</MudText>
+            <MudSelect T="int" Value="pageSize" ValueChanged="OnPageSizeChanged" Margin="Margin.Dense" Variant="Variant.Text" Dense="true" FitContent="true">
+                @foreach (var size in pageSizeOptions)
+                {
+                    <MudSelectItem Value="size">@size</MudSelectItem>
+                }
+            </MudSelect>
+            <MudText Typo="Typo.body2" Class="mx-4">@ItemRangeLabel</MudText>
+            <MudPagination Count="_model.TotalPages" Selected="pageNumber" SelectedChanged="OnPageChanged"
+                           Color="Color.Primary" Variant="Variant.Text"
+                           ShowFirstButton="true" ShowLastButton="true"
+                           BoundaryCount="1" MiddleCount="1" />
+        </MudStack>        
     }
-
-
-@code
-{
-    [CascadingParameter]
-    public ParticipantSummaryDto ParticipantSummaryDto { get; set; } = default!;
-
-    [CascadingParameter]
-    public UserProfile UserProfile { get; set; } = default!;
-
-    private PaginatedData<TimelineDto>? _model = null;
-
-    //Hide CFO Users from providers on time line
-    private bool hideUser = true;
-    private HashSet<string> CFOTenantIds = new HashSet<string> { "1.", "1.1." };
-    private string[] allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (_model is null)
-        {
-            _model = await GetNewMediator().Send(new TimelinesWithPaginationQuery.Query()
-            {
-                ParticipantId = ParticipantSummaryDto.Id,
-                CurrentUser = UserProfile,
-                PageSize = 300
-            });
-        }
-        
-        if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
-        {            
-            hideUser = false;
-        }
-    }
-
-    private Color GetColour(TimelineDto dto)
-    {
-        return dto.Title switch
-        {
-            nameof(TimelineEventType.Participant) => Color.Primary,
-            nameof(TimelineEventType.Enrolment) => Color.Success,
-            nameof(TimelineEventType.Consent) => Color.Secondary,
-            nameof(TimelineEventType.Assessment) => Color.Info,
-            nameof(TimelineEventType.PathwayPlan) => Color.Warning,
-            nameof(TimelineEventType.Bio) => Color.Error,
-            nameof(TimelineEventType.Dms) => Color.Dark,
-            _ => Color.Primary
-        };
-    }
-}
+    
