@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260219121528_Risk_Table_Add_Max_Column_Sizes")]
+    partial class Risk_Table_Add_Max_Column_Sizes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1849,178 +1852,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.ToTable("ParticipantEngagement", "Mi");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.ManagementInformation.ProviderFeedbackActivity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ActionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ActivityId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<int>("ActivityType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CfoUserId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("ContractId")
-                        .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("FeedbackType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("NoteId")
-                        .HasMaxLength(36)
-                        .HasColumnType("int");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<DateTime>("PqaSubmittedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ProviderQaUserId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("Queue")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<Guid>("QueueEntryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("SourceTable")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("SupportWorkerId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SourceTable", "QueueEntryId", "NoteId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_ProviderFeedbackActivity_SourceTable_QueueEntryId_NoteId");
-
-                    b.HasIndex("SourceTable", "TenantId", "ActionDate")
-                        .HasDatabaseName("ix_ProviderFeedbackActivity_SourceTable_TenantId_ActionDate");
-
-                    b.ToTable("ProviderFeedbackActivity", "Mi");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.Entities.ManagementInformation.ProviderFeedbackEnrolment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ActionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CfoUserId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("ContractId")
-                        .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("FeedbackType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("NoteId")
-                        .HasMaxLength(36)
-                        .HasColumnType("int");
-
-                    b.Property<string>("ParticipantId")
-                        .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
-
-                    b.Property<DateTime>("PqaSubmittedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ProviderQaUserId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("Queue")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<Guid>("QueueEntryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("SourceTable")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("SupportWorkerId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SourceTable", "QueueEntryId", "NoteId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_ProviderFeedbackEnrolment_SourceTable_QueueEntryId_NoteId");
-
-                    b.HasIndex("SourceTable", "TenantId", "ActionDate")
-                        .HasDatabaseName("ix_ProviderFeedbackEnrolment_SourceTable_TenantId_ActionDate");
-
-                    b.ToTable("ProviderFeedbackEnrolment", "Mi");
-                });
-
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.ManagementInformation.ReassessmentPayment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3831,9 +3662,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
-                    b.Property<int>("Scope")
-                        .HasColumnType("int");
-
                     b.Property<int>("Variant")
                         .HasColumnType("int");
 
@@ -4123,9 +3951,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                             b1.Property<string>("CreatedBy")
                                 .HasMaxLength(36)
                                 .HasColumnType("nvarchar(36)");
-
-                            b1.Property<int?>("FeedbackType")
-                                .HasColumnType("int");
 
                             b1.Property<bool>("IsExternal")
                                 .HasColumnType("bit");
@@ -4444,9 +4269,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                             b1.Property<string>("CreatedBy")
                                 .HasMaxLength(36)
                                 .HasColumnType("nvarchar(36)");
-
-                            b1.Property<int?>("FeedbackType")
-                                .HasColumnType("int");
 
                             b1.Property<bool>("IsExternal")
                                 .HasColumnType("bit");
@@ -5026,9 +4848,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                             b1.Property<Guid>("EnrolmentEscalationQueueEntryId")
                                 .HasColumnType("uniqueidentifier");
 
-                            b1.Property<int?>("FeedbackType")
-                                .HasColumnType("int");
-
                             b1.Property<bool>("IsExternal")
                                 .HasColumnType("bit");
 
@@ -5352,9 +5171,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 
                             b1.Property<Guid>("EnrolmentQa2QueueEntryId")
                                 .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int?>("FeedbackType")
-                                .HasColumnType("int");
 
                             b1.Property<bool>("IsExternal")
                                 .HasColumnType("bit");

@@ -1,6 +1,5 @@
 ﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
-@using Cfo.Cats.Application.Features.Locations.DTOs
-@using Cfo.Cats.Application.Features.Participants.Commands
+@using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Domain.Common.Enums
 
 @inject ILocationService Locations;
@@ -9,7 +8,7 @@
 
 <MudDialog>
     <DialogContent>
-        <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+        <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
             <MudSelect @bind-Value="Model.ReviewReason"
             Label="@Model.GetMemberDescription(x => x.ReviewReason)"
             For="@(() => Model.ReviewReason)">
@@ -27,17 +26,21 @@
             </MudSelect>
 
             <MudTextField @bind-Value="Model.Justification"
-            Label="@Model.GetMemberDescription(x => x.Justification)"
-            For="@(() => Model.Justification)"
-            Lines="5" 
-            Class="mt-4" />
+                            Label="@Model.GetMemberDescription(x => x.Justification)"
+                            For="@(() => Model.Justification)"
+                            Lines="5" 
+                            Class="mt-4" 
+                            MaxLength="@ValidationConstants.NotesLength"
+                            Counter="@ValidationConstants.NotesLength"
+                            Immediate="true">
+            </MudTextField>
 
             <MudSelect @bind-Value="Model.Location"
                         Label="@Model.GetMemberDescription(x => x.Location)"
                         For="() => Model.Location"
                         Clearable="true"
                         ToStringFunc="location => location?.Name">
-                @foreach (var location in locations)
+                @foreach (var location in _locations)
                 {
                     <MudSelectItem Value="location">@location.Name</MudSelectItem>
                 }
@@ -46,65 +49,7 @@
         </MudForm>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.NotStarted" Loading="saving" OnClick="Submit">Start</MudLoadingButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.NotStarted" Loading="_saving" OnClick="@Submit">Start</MudLoadingButton>
     </DialogActions>
 </MudDialog>
-
-@code {
-    bool saving = false;
-    MudForm? form;
-
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
-
-    [Parameter, EditorRequired]
-    public required AddRisk.Command Model { get; set; }
-
-    [Parameter]
-    public bool AddReviewRequest { get; set; }
-
-    IEnumerable<LocationDto> locations = [];
-
-    protected override void OnInitialized()
-    {
-        locations = Locations
-            .GetVisibleLocations(CurrentUser.TenantId!)
-            .ToList();
-
-        base.OnInitialized();
-    }
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
-
-    private async Task Submit()
-    {
-        try
-        {
-            saving = true;
-
-            if(form is null)
-            {
-                saving = false;
-                return;
-            }
-
-            await form.Validate();
-
-            if(form.IsValid)
-            {
-                MudDialog.Close(DialogResult.Ok(true));
-            }
-            else
-            {
-                return;
-            }
-
-        }
-        finally
-        {
-            saving = false;
-        }
-    }
-}

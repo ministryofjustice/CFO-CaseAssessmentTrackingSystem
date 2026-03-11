@@ -1,9 +1,10 @@
-﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+﻿@using Cfo.Cats.Application.Common.Validators
+@using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Server.UI.Components.Stepper
-@using FluentValidation.Internal
 
 @inherits CatsComponentBase
 @implements IValidatorStrategy<RiskDto>
+
 
 @if (Model is not null)
 {
@@ -12,7 +13,10 @@
                       For="@(() => Model.ActivityRestrictions)"
                       Lines="5"
                       Label="@Model.GetMemberDescription(x => x.ActivityRestrictions)"
-                      Placeholder="Include here any activity that you are aware of at this time that would not be appropriate." />
+                      Placeholder="Include here any activity that you are aware of at this time that would not be appropriate."
+                      MaxLength="@ValidationConstants.RiskLongText"
+                      Counter="@ValidationConstants.RiskLongText"
+                      Immediate="true"/>
 
         <MudDatePicker @bind-Date="Model.ActivityRestrictionsReceived"
                        Label="@Model.GetMemberDescription(x => x.ActivityRestrictionsReceived)"
@@ -24,11 +28,14 @@
 
         <MudDivider Class="mt-8 mb-8"/>
 
-        <MudTextField @bind-Value="@Model.PSFRestrictions" 
+        <MudTextField @bind-Value="@Model.PSFRestrictions"
                       For="@(() => Model.PSFRestrictions)"
                       Lines="5"
                       Label="@Model.GetMemberDescription(x => x.PSFRestrictions)"
-                      Placeholder="Include here any Participant Support Fund (PSF) restrictions you are aware of at this time that would not be appropriate." />
+                      Placeholder="Include here any Participant Support Fund (PSF) restrictions you are aware of at this time that would not be appropriate."
+                      MaxLength="@ValidationConstants.RiskMediumText"
+                      Counter="@ValidationConstants.RiskMediumText"
+                      Immediate="true"/>
 
         <MudDatePicker @bind-Date="Model.PSFRestrictionsReceived"
                        Label="@Model.GetMemberDescription(x => x.PSFRestrictionsReceived)"
@@ -38,17 +45,4 @@
                        Editable="true"
                        PickerVariant="PickerVariant.Dialog"/>
     </CatsMudStep>
-}
-
-@code {
-    [Parameter, EditorRequired]
-    public required RiskDto Model { get; set; }
-
-    public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
-    {
-        options.IncludeProperties(x => x.ActivityRestrictions);
-        options.IncludeProperties(x => x.ActivityRestrictionsReceived);
-        options.IncludeProperties(x => x.PSFRestrictions);
-        options.IncludeProperties(x => x.PSFRestrictionsReceived);
-    };
 }

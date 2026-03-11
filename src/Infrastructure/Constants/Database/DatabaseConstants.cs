@@ -150,5 +150,15 @@ internal static class DatabaseConstants
         /// The maximum length for a contract id.
         /// </summary>
         public const int ContractId = 12;
+        
+        /// <summary>
+        /// The maximum length for Risk Text.
+        /// </summary>
+        public const int RiskLongText = 15000;
+        
+        /// <summary>
+        /// The medium length for Risk Text.
+        /// </summary>     
+        public const int RiskMediumText = 10000;
     }
 }

@@ -1,0 +1,15 @@
+using Cfo.Cats.Application.Features.Participants.DTOs;
+using FluentValidation.Internal;
+
+namespace Cfo.Cats.Server.UI.Pages.Risk.RiskComponents;
+
+public partial class Recommendations
+{
+    [Parameter, EditorRequired] public required RiskDto Model { get; set; }
+
+    public Action<ValidationStrategy<RiskDto>> Strategy => (options) =>
+    {
+        options.IncludeProperties(x => x.ActivityRecommendations);
+        options.IncludeProperties(x => x.ActivityRecommendationsReceived);
+    };
+}

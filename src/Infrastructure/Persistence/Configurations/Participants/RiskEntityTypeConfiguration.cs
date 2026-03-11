@@ -128,6 +128,34 @@ public class RiskEntityTypeConfiguration : IEntityTypeConfiguration<Risk>
             .WithMany()
             .HasForeignKey(r => r.LocationId)
             .OnDelete(DeleteBehavior.Restrict);
-    }
+        
+        // ---- Text Length Constraints ----
 
+        builder.Property(x => x.ActivityRecommendations)
+            .HasMaxLength(DatabaseConstants.FieldLengths.RiskMediumText);
+
+        builder.Property(x => x.ActivityRestrictions)
+            .HasMaxLength(DatabaseConstants.FieldLengths.RiskLongText);
+
+        builder.Property(x => x.AdditionalInformation)
+            .HasMaxLength(DatabaseConstants.FieldLengths.RiskLongText);
+
+        builder.Property(x => x.LicenseConditions)
+            .HasMaxLength(DatabaseConstants.FieldLengths.RiskLongText);
+
+        builder.Property(x => x.PSFRestrictions)
+            .HasMaxLength(DatabaseConstants.FieldLengths.RiskMediumText);
+
+        builder.Property(x => x.ReferrerName)
+            .HasMaxLength(200);
+
+        builder.Property(x => x.ReferrerEmail)
+            .HasMaxLength(320);
+
+        builder.Property(x => x.ReviewJustification)
+            .HasMaxLength(5000);
+
+        builder.Property(x => x.SpecificRisk)
+            .HasMaxLength(DatabaseConstants.FieldLengths.RiskMediumText);
+    }
 }
