@@ -21,8 +21,6 @@
         justify-content: center;
         align-items: center;
     }
-
-
  </style>
 
 <ActivityQaExternalMessageWarning @ref="warningMessage" />
@@ -39,8 +37,7 @@
             Get Next
         </MudButton>
     }
-
-    @if (_activityQaDetailsDto is not null && _activityQaDetailsDto.Status== ActivityStatus.SubmittedToAuthorityStatus)
+    else if(_activityQaDetailsDto.Status == ActivityStatus.SubmittedToAuthorityStatus)
     {
         @if (_queueEntry!.IsAccepted)
         {
@@ -111,6 +108,12 @@
                 </MudTabs>
             </MudItem>
         </MudGrid>
+    }
+    else
+    {
+        <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
+            Something has gone wrong, cannot process an activity that is @_activityQaDetailsDto.Status.Name
+        </MudAlert>
     }
 
 </MudContainer>
