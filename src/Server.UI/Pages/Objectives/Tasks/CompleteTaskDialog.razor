@@ -1,11 +1,10 @@
-@using Cfo.Cats.Application.Features.PathwayPlans.Commands
 @using Cfo.Cats.Domain.Common.Enums
 
 @inherits CatsComponentBase
 
 <MudDialog>
     <DialogContent>
-        <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+        <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
             <MudSelect @bind-Value="Model.Reason"
                        Label="@Model.GetMemberDescription(x => x.Reason)"
                        For="@(() => Model.Reason)">
@@ -18,7 +17,11 @@
                           Label="@Model.GetMemberDescription(x => x.Justification)"
                           For="@(() => Model.Justification)"
                           Lines="5"
-                          Class="mt-4" />
+                          Class="mt-4" 
+                          MaxLength=3000 
+                          Immediate="true" 
+                          Counter=3000
+                          />
         </MudForm>
         <MudAlert Class="mt-4" Severity="Severity.Warning">
             No further Activities, ETE's, or PSF's can be added for this task once completed. 
@@ -27,51 +30,8 @@
     </DialogContent>
     <DialogActions>
         <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="saving" OnClick="Submit">
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="_saving" OnClick="Submit">
             @($"{ConstantString.Complete} Task")
         </MudLoadingButton>
     </DialogActions>
 </MudDialog>
-
-@code {
-    MudForm? form;
-    bool saving;
-
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
-
-    [Parameter, EditorRequired]
-    public required CompleteTask.Command Model { get; set; }
-
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
-
-    private async Task Submit()
-    {
-        try
-        {
-            saving = true;
-
-            if (form is null)
-            {
-                saving = false;
-                return;
-            }
-
-            await form.Validate();
-
-            if (form.IsValid)
-            {
-                MudDialog.Close(DialogResult.Ok(true));
-            }
-
-        }
-        finally
-        {
-            saving = false;
-        }
-    }
-
-
-}

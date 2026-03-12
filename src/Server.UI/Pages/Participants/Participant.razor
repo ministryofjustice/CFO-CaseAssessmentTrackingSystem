@@ -90,7 +90,7 @@
                             <CaseAssessment ParticipantId="@Id" ConsentDate="@_participant.DateOfFirstConsent"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Pathway Plan">
-                            <CasePathwayPlan ParticipantId="@Id" ParticipantIsActive="@_participant.IsActive"/>
+                            <CasePathwayPlan ParticipantId="@Id" ParticipantName="@_participant.ParticipantName" ParticipantIsActive="@_participant.IsActive"/>
                         </MudTabPanel>
                         <MudTabPanel Text="PRI">
                             <CasePRI ParticipantId="@Id" OnUpdate="() => Refresh()" />

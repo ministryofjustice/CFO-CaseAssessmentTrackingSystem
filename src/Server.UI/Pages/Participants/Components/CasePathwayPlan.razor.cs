@@ -7,4 +7,7 @@ public partial class CasePathwayPlan
     
     [Parameter, EditorRequired]
     public bool ParticipantIsActive { get; set; }
+    
+    [Parameter, EditorRequired]
+    public string? ParticipantName { get; set; }
 }

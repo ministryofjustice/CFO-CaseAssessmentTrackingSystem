@@ -1,4 +1,5 @@
 ﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
+@using Cfo.Cats.Application.Common.Validators
 
 @inject ILocationService Locations;
 @inject ICurrentUserService CurrentUser;
@@ -14,13 +15,17 @@
             <MudTextField Value="Model.ReviewReason!.Name"
                           Label="Review Reason"
                           ReadOnly="true" />
-            
+
             <MudTextField @bind-Value="Model.Review"
-                          Label="Review"
+                          Label="@Model.GetMemberDescription(x => x.Review)"
+                          For="@(() => Model.Review)"
                           Required="true"
-                          Lines="5"
                           Immediate="true"
-                          Class="mt-4" />
+                          RequiredError="Review is required!"
+                          Lines="5"
+                          MaxLength=@ValidationConstants.NotesLength
+                          Counter=@ValidationConstants.NotesLength
+                          Class="mt-4"/>
 
             <MudTextField Value="Model.ReviewDate.ToShortDateOrEmptyString()"
                           Label="Review Date"

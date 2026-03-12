@@ -14,7 +14,7 @@ public partial class ViewPathwayPlan
     private bool _hideCompletedTasks;
 
     private string _selector = "Created";
-    private Dictionary<string, Func<ObjectiveDto, dynamic>> _selectors = new()
+    private readonly Dictionary<string, Func<ObjectiveDto, dynamic>> _selectors = new()
     {
         { "Created", (objective) => objective.Created },
         { "Title", (objective) => objective.Description },
@@ -28,6 +28,9 @@ public partial class ViewPathwayPlan
 
     [Parameter, EditorRequired]
     public bool ParticipantIsActive { get; set; }
+    
+    [Parameter, EditorRequired]
+    public string? ParticipantName { get; set; }
 
     public PathwayPlanDto? Model { get; set; }
 
@@ -59,7 +62,7 @@ public partial class ViewPathwayPlan
         }
     }
 
-    public async Task AddObjective()
+    private async Task AddObjective()
     {
         var command = new AddObjective.Command()
         {
@@ -72,7 +75,8 @@ public partial class ViewPathwayPlan
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true, BackdropClick = false };
-        var dialog = await DialogService.ShowAsync<AddObjectiveDialog>("Add thematic objective", parameters, options);
+        var dialogTitle = "Add thematic objective for " + ParticipantName + " Ref: " + ParticipantId;
+        var dialog = await DialogService.ShowAsync<AddObjectiveDialog>(dialogTitle, parameters, options);
 
         if (await dialog.Result is { Canceled: false })
         {
