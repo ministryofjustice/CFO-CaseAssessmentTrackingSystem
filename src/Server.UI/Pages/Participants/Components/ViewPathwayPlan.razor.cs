@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.Queries;
@@ -23,33 +24,36 @@ public partial class ViewPathwayPlan
 
     private SortDirection _sortDirection = SortDirection.Ascending;
 
-    [Parameter, EditorRequired]
-    public required string ParticipantId { get; set; }
-
-    [Parameter, EditorRequired]
-    public bool ParticipantIsActive { get; set; }
+    [CascadingParameter(Name = "ParticipantDetails")]
+    public ParticipantCascadingDetailDto? ParticipantDetails { get; set; }
     
-    [Parameter, EditorRequired]
-    public string? ParticipantName { get; set; }
-
     public PathwayPlanDto? Model { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        await OnRefresh(firstRender: true);
-        await base.OnInitializedAsync();
-    }
+        if (ParticipantDetails is null)
+        {
+            return;
+        }
 
+        await OnRefresh(firstRender: true);
+    }
+    
     private async Task OnRefresh(bool firstRender = false)
     {
+        if (ParticipantDetails is null)
+        {
+            return;
+        }
+
         _loading = true;
 
         try
         {
             Model = await GetNewMediator().Send(new GetPathwayPlanByParticipantId.Query()
             {
-                ParticipantId = ParticipantId
-                           });
+                ParticipantId = ParticipantDetails.Id
+            });
 
             if (firstRender is false)
             {
@@ -75,7 +79,7 @@ public partial class ViewPathwayPlan
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true, BackdropClick = false };
-        var dialogTitle = "Add thematic objective for " + ParticipantName + " Ref: " + ParticipantId;
+        var dialogTitle = $"Add thematic objective for {ParticipantDetails?.FullName} Ref: {ParticipantDetails?.Id}";
         var dialog = await DialogService.ShowAsync<AddObjectiveDialog>(dialogTitle, parameters, options);
 
         if (await dialog.Result is { Canceled: false })
@@ -99,7 +103,7 @@ public partial class ViewPathwayPlan
         var command = new ReviewPathwayPlan.Command
         {
             PathwayPlanId = Model!.Id,
-            ParticipantId = ParticipantId,
+            ParticipantId = ParticipantDetails!.Id,
             ReviewDate = DateTime.UtcNow,
             ReviewReason = PathwayPlanReviewReason.Default
         };

@@ -14,14 +14,14 @@
 </style>
 
 <MudContainer Style="height: 100%; width: 100%; min-width: 480px" MaxWidth="MaxWidth.ExtraExtraLarge">
-    @if (_participant is not null)
+  @if (_participantCascading is not null && _participant is not null)
     {
-        <CascadingValue Value="_participant">
-
+        <CascadingValue Value="_participant" IsFixed="true">
+        <CascadingValue Value="_participantCascading" Name="ParticipantDetails" IsFixed="true">
             <MudPaper Class="pa-2 ma-2" Style="min-height: 90vh;" Elevation="3">
                 @if (_participant.PostLicenceCaseClosureEnd.HasValue)
                 {
-					<MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Square="true" Class="my-2">@string.Format(_notActiveInFeedAlertMessage, _participant.PostLicenceCaseClosureEnd.Value.ToShortDateString())</MudAlert>
+                    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Square="true" Class="my-2">@string.Format(_notActiveInFeedAlertMessage, _participant.PostLicenceCaseClosureEnd.Value.ToShortDateString())</MudAlert>
                 }
                 <MudGrid Class="pa-1" Justify="Justify.FlexStart">
                     <MudItem xs="12">
@@ -90,7 +90,7 @@
                             <CaseAssessment ParticipantId="@Id" ConsentDate="@_participant.DateOfFirstConsent"/>
                         </MudTabPanel>
                         <MudTabPanel Text="Pathway Plan">
-                            <CasePathwayPlan ParticipantId="@Id" ParticipantName="@_participant.ParticipantName" ParticipantIsActive="@_participant.IsActive"/>
+                             <CasePathwayPlan/>
                         </MudTabPanel>
                         <MudTabPanel Text="PRI">
                             <CasePRI ParticipantId="@Id" OnUpdate="() => Refresh()" />
@@ -109,7 +109,7 @@
                         </MudTabPanel>
 
                         @if (UserProfile.AssignedRoles.Any(r =>
-                      r is RoleNames.SystemSupport or RoleNames.SMT or RoleNames.QAManager))
+                                 r is RoleNames.SystemSupport or RoleNames.SMT or RoleNames.QAManager))
                         {
                             <MudTabPanel Text="Audit">
                                 <ParticipantAudit Id="@Id" />
@@ -119,6 +119,7 @@
                     </MudTabs>
                 }
             </MudPaper>
+        </CascadingValue>
         </CascadingValue>
     }
 </MudContainer>

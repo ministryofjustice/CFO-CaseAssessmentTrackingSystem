@@ -17,7 +17,7 @@
         <MudList T="ObjectiveTaskDto">
             <MudListSubheader Class="pb-8 px-8">
                 <div class="d-flex gap-4 align-center">
-                    @if (ParticipantIsActive)
+                    @if (ParticipantDetails?.IsActive==true)
                     {
                         <MudTooltip Text="New objective">
                             <MudIconButton OnClick="@AddObjective" Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Class="rounded-circle" />
@@ -26,7 +26,7 @@
                     }
                     <MudSpacer />
                     <div class="d-flex flex-column">
-                        @if (ParticipantIsActive)
+                        @if (ParticipantDetails?.IsActive==true)
                         {
                             <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="@ReviewPathwayPlan">Review Pathway Plan</MudButton>
                         }
@@ -58,7 +58,7 @@
            .Where(objective => objective.IsCompleted is false || _hideCompletedObjectives is false)
            .OrderByDirection(_sortDirection, _selectors[_selector]))
             {
-                <Objective Model="objective" HideCompletedTasks="_hideCompletedTasks" ParticipantId="@Model.ParticipantId" ParticipantIsActive="@ParticipantIsActive" ParticipantName="@ParticipantName" OnChange="async() => await OnRefresh()" />
+                <Objective Model="objective" HideCompletedTasks="_hideCompletedTasks" ParticipantId="@Model.ParticipantId" ParticipantIsActive="@ParticipantDetails!.IsActive" ParticipantName="@ParticipantDetails.FullName" OnChange="async() => await OnRefresh()" />
                 <MudDivider />
             }
         </MudList>

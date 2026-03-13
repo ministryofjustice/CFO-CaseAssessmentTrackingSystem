@@ -10,17 +10,18 @@ namespace Cfo.Cats.Server.UI.Pages.Participants;
 
 public partial class Participant
 {
-    [Parameter] public string Id { get; set; } = default!;
+    [Parameter] public string Id { get; set; } = null!;
 
-    [CascadingParameter] public UserProfile UserProfile { get; set; } = default!;
+    [CascadingParameter] public UserProfile UserProfile { get; set; } = null!;
 
-    private ParticipantSummaryDto? _participant = null;
-    private ParticipantAssessmentDto? _latestParticipantAssessment = null;
+    private ParticipantSummaryDto? _participant;
+    private ParticipantCascadingDetailDto? _participantCascading;
+    private ParticipantAssessmentDto? _latestParticipantAssessment;
 
-    private bool _showRightToWorkWarning = false;
-    private string _rightToWorkAlertMessage = ConstantString.RightToWorkIsRequiredMessage;
+    private bool _showRightToWorkWarning;
+    private readonly string _rightToWorkAlertMessage = ConstantString.RightToWorkIsRequiredMessage;
 
-    private string _notActiveInFeedAlertMessage = ConstantString.LicenceEndedWarning;
+    private readonly string _notActiveInFeedAlertMessage = ConstantString.LicenceEndedWarning;
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,7 +45,6 @@ public partial class Participant
             {
                 _latestParticipantAssessment = result.Data.MaxBy(pa => pa.CreatedDate);
             }
-
         }
     }
 
@@ -62,6 +62,17 @@ public partial class Participant
             ParticipantId = Id,
             CurrentUser = UserProfile
         }, cancellationToken);
+        
+        if (_participant is not null)
+        {
+            _participantCascading = new ParticipantCascadingDetailDto
+            {
+                Id = _participant.Id,
+                FullName = _participant.ParticipantName,
+                IsActive = _participant.IsActive,
+                ConsentStatus = _participant.ConsentStatus,
+                DateOfFirstConsent = _participant.DateOfFirstConsent
+            };
+        }
     }
-
 }
