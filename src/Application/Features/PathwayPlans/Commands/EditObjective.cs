@@ -10,10 +10,10 @@ public static class EditObjective
     public class Command : IRequest<Result>
     {
         [Description("Objective Id")]
-        public required Guid ObjectiveId { get; set; }
+        public required Guid ObjectiveId { get; init; }
 
         [Description("Pathway Plan Id")]
-        public required Guid PathwayPlanId { get; set; }
+        public required Guid PathwayPlanId { get; init; }
 
         [Description("Description")]
         public required string Description { get; set; }
@@ -23,7 +23,7 @@ public static class EditObjective
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            var pathwayPlan = await unitOfWork.DbContext.PathwayPlans.FindAsync(request.PathwayPlanId)
+            var pathwayPlan = await unitOfWork.DbContext.PathwayPlans.FindAsync(request.PathwayPlanId, cancellationToken)
                 ?? throw new NotFoundException("Cannot find pathway plan", request.PathwayPlanId);
 
             var objective = pathwayPlan.Objectives.FirstOrDefault(o => o.Id == request.ObjectiveId)
@@ -43,21 +43,21 @@ public static class EditObjective
         {
             _unitOfWork = unitOfWork;
 
-            var today = DateTime.UtcNow;
-
             RuleFor(x => x.ObjectiveId)
                 .NotNull();
 
             RuleFor(x => x.PathwayPlanId)
                 .NotNull()
                 .WithMessage("You must provide a Pathway Plan");
-             
+
             RuleFor(x => x.Description)
                 .NotEmpty()
                 .WithMessage("You must provide a description")
+                .MaximumLength(2000)
+                .WithMessage($"Maximum length of description is 2000")
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
-
+             
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
                 RuleFor(x => x.PathwayPlanId)                    
@@ -75,7 +75,7 @@ public static class EditObjective
                                        select p.Id
                                        )
                             .AsNoTracking()
-                            .FirstOrDefaultAsync();
+                            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             return participantId != null;
         }

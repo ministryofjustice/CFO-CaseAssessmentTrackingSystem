@@ -3,37 +3,35 @@
 
 @inherits CatsComponentBase
 
-<CascadingValue Value="ParticipantSummaryDto">
-    <MudGrid Class="pa-3" Spacing="4">
-        <!-- Details -->
-        <MudItem xs="12" md="4">
-            <!-- This will need moving out from here when the rest of the components are done. -->
-            <ParticipantDetailsCardComponent ParticipantId="@ParticipantSummaryDto!.Id"/>
-        </MudItem>
+<MudGrid Class="pa-3" Spacing="4">
+    <!-- Details -->
+    <MudItem xs="12" md="4">
+        <!-- This will need moving out from here when the rest of the components are done. -->
+        <ParticipantDetailsCardComponent ParticipantId="@ParticipantSummaryDto!.Id"/>
+    </MudItem>
 
-        <!-- Assessment -->
-        <MudItem xs="12" md="4">
-            <AssessmentSummary />
-        </MudItem>
+    <!-- Assessment -->
+    <MudItem xs="12" md="4">
+        <AssessmentSummary />
+    </MudItem>
 
-        <!-- Risk -->
-        <MudItem xs="12" md="4">
-            <RiskSummary ReloadParticipant="Reload" />
-        </MudItem>
+    <!-- Risk -->
+    <MudItem xs="12" md="4">
+        <RiskSummary ReloadParticipant="Reload" />
+    </MudItem>
 
-        <!-- Bio -->
-        <MudItem xs="12" md="4">
-            <BioSummary />
-        </MudItem>
+    <!-- Bio -->
+    <MudItem xs="12" md="4">
+        <BioSummary />
+    </MudItem>
 
-        <!-- Pathway Plan -->
-        <MudItem xs="12" md="4">
-            <PathwayPlanSummary />
-        </MudItem>
+    <!-- Pathway Plan -->
+    <MudItem xs="12" md="4">
+        <PathwayPlanSummary />
+    </MudItem>
 
-        <!-- PRI -->
-        <MudItem xs="12" md="4">
-            <PRISummary />
-        </MudItem>
-    </MudGrid>
-</CascadingValue>
+    <!-- PRI -->
+    <MudItem xs="12" md="4">
+        <PRISummary />
+    </MudItem>
+</MudGrid>

@@ -11,7 +11,7 @@ public static class AddObjective
     public class Command : IRequest<Result>
     {
         [Description("Pathway Plan Id")]
-        public required Guid PathwayPlanId { get; set; }
+        public required Guid PathwayPlanId { get; init; }
 
         [Description("Description")]
         public string? Description { get; set; }
@@ -32,7 +32,7 @@ public static class AddObjective
         {
             var objective = mapper.Map<Objective>(request);
 
-            var pathwayPlan = await unitOfWork.DbContext.PathwayPlans.FindAsync(request.PathwayPlanId);
+            var pathwayPlan = await unitOfWork.DbContext.PathwayPlans.FindAsync(request.PathwayPlanId, cancellationToken);
 
             if (pathwayPlan is null)
             {
@@ -62,6 +62,8 @@ public static class AddObjective
             RuleFor(x => x.Description)
                 .NotEmpty()
                 .WithMessage("You must provide a description")
+                .MaximumLength(2000)
+                .WithMessage($"Maximum length of description is 2000")
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Description"));
 
@@ -82,7 +84,7 @@ public static class AddObjective
                                  select p.Id
                                        )
                             .AsNoTracking()
-                            .FirstOrDefaultAsync();
+                            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             return participantId != null;
         }

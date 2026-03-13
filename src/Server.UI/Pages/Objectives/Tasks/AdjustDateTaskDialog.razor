@@ -1,66 +1,24 @@
-﻿@using Cfo.Cats.Application.Features.PathwayPlans.Commands
+﻿@inherits CatsComponentBase
 
-@inherits CatsComponentBase
-
-<MudDialog>
+<MudDialog Style="height: 410px; max-height: 90vh; overflow: auto;">
     <DialogContent>
-        <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+      
+        <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
             <MudDatePicker @bind-Date="Model.Due"
                            FixDay="1"
                            DateFormat="MMM, yyyy"
                            TitleDateFormat="MMM, yyyy"
                            MinDate="new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1)"
                            Label="@Model.GetMemberDescription(x => x.Due)"
-                           For="@(() => Model.Due)" 
-                           Editable="true"
-                           PickerVariant="PickerVariant.Dialog"/>
+                           For="@(() => Model.Due)"
+                           Editable="false"
+                           PickerVariant="PickerVariant.Dialog"
+                           Disabled="Model.Due == default"/>
         </MudForm>
+      
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="saving" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="_saving" OnClick="@Submit">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>
-
-@code {
-    MudForm? form;
-    bool saving;
-
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
-
-    [Parameter, EditorRequired]
-    public required EditTask.Command Model { get; set; }
-
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
-
-    private async Task Submit()
-    {
-        try
-        {
-            saving = true;
-
-            if (form is null)
-            {
-                saving = false;
-                return;
-            }
-
-            await form.Validate();
-
-            if (form.IsValid)
-            {
-                MudDialog.Close(DialogResult.Ok(true));
-            }
-
-        }
-        finally
-        {
-            saving = false;
-        }
-    }
-
-
-}

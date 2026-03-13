@@ -1,8 +1,5 @@
 @using Cfo.Cats.Application.Common.Interfaces.Locations
-@using Cfo.Cats.Application.Features.Activities.Commands
-@using Cfo.Cats.Application.Features.Activities.Queries
-@using Cfo.Cats.Application.Features.Locations.DTOs
-@using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Activities.Components
 
@@ -13,56 +10,56 @@
 
 <MudGrid>
     <MudItem xs="12">
-        <MudSelect @bind-Value="Model.Location" 
-        @bind-Value:after="LocationChanged" 
-        Label="@Model.GetMemberDescription(x => x.Location)"
-        For="() => Model.Location"
-        Clearable="true"
-        ToStringFunc="location => location?.Name"
-        Disabled="Model.CanChangeLocation is false">
-            @foreach (var location in locations)
+        <MudSelect @bind-Value="Model.Location"
+                   @bind-Value:after="LocationChanged"
+                   Label="@Model.GetMemberDescription(x => x.Location)"
+                   For="() => Model.Location"
+                   Clearable="true"
+                   ToStringFunc="location => location?.Name"
+                   Disabled="Model.CanChangeLocation is false">
+            @foreach (var location in _locations)
             {
                 <MudSelectItem Value="location">@location.Name</MudSelectItem>
             }
         </MudSelect>
     </MudItem>
     <MudItem xs="12">
-        <MudChipSet @bind-SelectedValues="filteredTypes"
-        Disabled="Disabled || Model.CanChangeActivityDefinition is false"
-        SelectionMode="SelectionMode.MultiSelection">
+        <MudChipSet @bind-SelectedValues="_filteredTypes"
+                    Disabled="Disabled || Model.CanChangeActivityDefinition is false"
+                    SelectionMode="SelectionMode.MultiSelection">
             @foreach (var type in ActivityType.List)
             {
                 <MudChip Value="type"
-                SelectedColor="Color.Info"
-                Text="@type.Name"
-                OnClick="ClearSelectedActivity"
-                Disabled="IsAvailableAtSelectedLocation(type) is false" />
+                         SelectedColor="Color.Info"
+                         Text="@type.Name"
+                         OnClick="@ClearSelectedActivity"
+                         Disabled="IsAvailableAtSelectedLocation(type) is false"/>
             }
         </MudChipSet>
-    </MudItem> 
+    </MudItem>
     <MudItem xs="12">
-        <MudAutocomplete @ref="activityDropdown"
-        T="ActivityDefinition"
-        @bind-Value="Model.Definition"
-        @bind-Value:after="OnActivityChanged"
-        Disabled="Disabled || Model.CanChangeActivityDefinition is false"
-        Label="@Model.GetMemberDescription(x => x.Definition)"
-        For="() => Model.Definition"
-        SearchFunc="@SearchActivities"
-        ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
-        AdornmentColor="Color.Primary"
-        ToStringFunc="activity => activity?.Category.Name"
-        MaxItems="null">
+        <MudAutocomplete @ref="_activityDropdown"
+                         T="ActivityDefinition"
+                         @bind-Value="Model.Definition"
+                         @bind-Value:after="OnActivityChanged"
+                         Disabled="Disabled || Model.CanChangeActivityDefinition is false"
+                         Label="@Model.GetMemberDescription(x => x.Definition)"
+                         For="() => Model.Definition!"
+                         SearchFunc="@SearchActivities"
+                         ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                         AdornmentColor="Color.Primary"
+                         ToStringFunc="activity => activity?.Category.Name"
+                         MaxItems="null">
             <ItemTemplate>
                 <div class="d-flex gap-2 align-center">
-                    <MudChip T="string" Size="Size.Small" Text="@context.Type.Name" Color="Color.Secondary" />
+                    <MudChip T="string" Size="Size.Small" Text="@context.Type.Name" Color="Color.Secondary"/>
                     @context.Category.Name
                 </div>
             </ItemTemplate>
         </MudAutocomplete>
     </MudItem>
 
-    @if (hasSelectedActivityAlreadyBeenAddedOnThisDate && Model.CommencedOn is not null)
+    @if (_hasSelectedActivityAlreadyBeenAddedOnThisDate && Model.CommencedOn is not null)
     {
         <MudItem xs="12">
             <MudAlert Severity="Severity.Warning">
@@ -71,25 +68,25 @@
         </MudItem>
     }
 
-    @if (hasParticpantBeenAtThisLocationOnThisDate == false && Model?.CommencedOn is not null && Model?.Location is not null)
+    @if (_hasParticipantBeenAtThisLocationOnThisDate == false && Model.CommencedOn is not null && Model?.Location is not null)
     {
         <MudItem xs="12">
             <MudAlert Severity="Severity.Warning">
                 Participant was not at @Model.Location!.Name on selected date.
             </MudAlert>
-        </MudItem>        
+        </MudItem>
     }
 
     <MudItem xs="12">
-        <MudDatePicker @bind-Date="Model.CommencedOn" @bind-Date:after="OnDateChanged"
-        For="() => Model!.CommencedOn"
-        MaxDate="DateTime.UtcNow"
-        MinDate="Model!.Definition?.Classification.IsClaimableMoreThanThreeMonthsAgo is not true ? DateTime.Today.AddMonths(-3) : null"
-        Label="@Model.GetMemberDescription(x => x.CommencedOn)"
-        PickerVariant="PickerVariant.Dialog"
-        ImmediateText="true"
-        Editable="true" 
-        Disabled="Model.Definition is null" />
+        <MudDatePicker @bind-Date="Model!.CommencedOn" @bind-Date:after="OnDateChanged"
+                       For="() => Model!.CommencedOn"
+                       MaxDate="DateTime.UtcNow"
+                       MinDate="Model!.Definition?.Classification.IsClaimableMoreThanThreeMonthsAgo is not true ? DateTime.Today.AddMonths(-3) : null"
+                       Label="@Model.GetMemberDescription(x => x.CommencedOn)"
+                       PickerVariant="PickerVariant.Dialog"
+                       ImmediateText="true"
+                       Editable="true"
+                       Disabled="Model.Definition is null"/>
     </MudItem>
 
     @if (Model!.Definition is { Classification.RequiresFurtherInformation: true })
@@ -99,40 +96,40 @@
 
             @if (Model.Definition.Classification == ClassificationType.Employment)
             {
-                <Employment Model="Model.EmploymentTemplate" />
+                <Employment Model="Model.EmploymentTemplate"/>
             }
             else if (Model.Definition.Classification == ClassificationType.EducationAndTraining)
             {
-                <EducationTraining Model="Model.EducationTrainingTemplate" MinCourseCommencedDate="Model.CommencedOn" />
+                <EducationTraining Model="Model.EducationTrainingTemplate" MinCourseCommencedDate="Model.CommencedOn"/>
             }
             else if (Model.Definition.Classification == ClassificationType.ISWActivity)
             {
-                <Isw Model="Model.ISWTemplate" />
+                <Isw Model="Model.ISWTemplate"/>
             }
 
             <MudItem xs="12">
                 <div class="mt-4">
                     <MudFileUpload @bind-Files="Model.Document"
-                    For="() => Model.Document"
-                    MaximumFileCount="1"
-                    Accept=".pdf">
+                                   For="() => Model.Document"
+                                   MaximumFileCount="1"
+                                   Accept=".pdf">
                         <ActivatorContent>
-                            <MudLoadingButton Loading="uploading"
-                            Variant="Variant.Filled"
-                            Color="Color.Primary"
-                            StartIcon="@Icons.Material.Filled.Upload">
-                                @if(Model.ActivityId is null)
+                            <MudLoadingButton Loading="_uploading"
+                                              Variant="Variant.Filled"
+                                              Color="Color.Primary"
+                                              StartIcon="@Icons.Material.Filled.Upload">
+                                @if (Model.ActivityId is null)
                                 {
-                                    @string.Format("{0} Template", uploading ? ConstantString.Uploading : ConstantString.Upload)
+                                    @string.Format("{0} Template", _uploading ? ConstantString.Uploading : ConstantString.Upload)
                                 }
                                 else
                                 {
-                                    @string.Format("{0} Template", uploading ? "Replacing" : "Replace")
+                                    @string.Format("{0} Template", _uploading ? "Replacing" : "Replace")
                                 }
                             </MudLoadingButton>
                         </ActivatorContent>
                         <SelectedTemplate>
-                            <br />
+                            <br/>
                             @if (context is null)
                             {
                                 <MudText>@string.Format("{0}", Model.ActivityId is null ? "No Files" : "Document already uploaded")</MudText>
@@ -141,7 +138,7 @@
                             {
                                 <MudText>Template uploaded: @context.Name</MudText>
                             }
-                            <br />
+                            <br/>
                         </SelectedTemplate>
                     </MudFileUpload>
                 </div>
@@ -151,136 +148,20 @@
     }
     <MudItem xs="12">
         <MudTextField @bind-Value="Model.AdditionalInformation"
-        Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
-        For="() => Model.AdditionalInformation"
-        Lines="5" />
+                      Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
+                      For="() => Model.AdditionalInformation"
+                      Lines="5"
+                      MaxLength=@ValidationConstants.NotesLength
+                      Counter=@ValidationConstants.NotesLength
+                      Immediate="true"/>
     </MudItem>
-    @if(Model.Definition is { RequiresQa: true })
+    @if (Model.Definition is { RequiresQa: true })
     {
         <MudItem xs="12">
             <MudAlert Severity="Severity.Warning">
-                Submission of this type of Activity/ETE is subject to Quality Assurance (QA) checks. 
+                Submission of this type of Activity/ETE is subject to Quality Assurance (QA) checks.
                 Are you sure you would like to submit to Provider QA?
             </MudAlert>
         </MudItem>
     }
 </MudGrid>
-
-@code {
-    IEnumerable<ActivityDefinition> activities = [];
-    MudAutocomplete<ActivityDefinition?> activityDropdown = new();
-    MudForm form = new();
-    bool uploading = false;
-    IReadOnlyCollection<ActivityType> filteredTypes = [];
-    IEnumerable<LocationDto> locations = [];
-
-    bool hasSelectedActivityAlreadyBeenAddedOnThisDate;
-    bool Disabled => Model.Location is null;
-
-    bool hasParticpantBeenAtThisLocationOnThisDate = true;
-    
-    [Parameter, EditorRequired]
-    public required AddActivity.Command Model { get; set; }
-
-    protected override void OnInitialized()
-    {
-        SetActivities();
-
-        locations = Locations
-                .GetVisibleLocations(CurrentUser.TenantId!)
-                .ToList();
-
-        base.OnInitialized();
-    }
-
-    void SetActivities() => activities = Model.Location is null ? [] : ActivityDefinition.GetActivitiesForLocation(Model.Location.LocationType);
-
-    void LocationChanged()
-    {
-        SetActivities();
-        filteredTypes = [];
-        ClearSelectedActivity();
-        ClearSelectedActivityDate();
-    }
-
-    async Task OnActivityChanged()
-    {
-        hasSelectedActivityAlreadyBeenAddedOnThisDate = Model.Definition is not null && await GetNewMediator().Send(new ExistsByCategory.Query()
-        {
-            Category = Model.Definition.Category,
-            ParticipantId = Model.ParticipantId,
-            CommencedOn = Model.CommencedOn
-        });
-
-        ClearTemplates();
-    }
-
-    async Task OnDateChanged()
-    {
-        if(Model.CommencedOn.HasValue)
-        {
-            hasSelectedActivityAlreadyBeenAddedOnThisDate = Model.Definition is not null && await GetNewMediator().Send(new ExistsByCategory.Query()
-            {
-                Category = Model.Definition.Category,
-                ParticipantId = Model.ParticipantId,
-                CommencedOn = Model.CommencedOn
-            });
-
-            await CheckParticipantBeenAtThisLocationOnDate();
-        }
-
-        ClearTemplates();
-    }
-
-    async Task CheckParticipantBeenAtThisLocationOnDate()
-    {
-        hasParticpantBeenAtThisLocationOnThisDate = await GetNewMediator().Send(new GetParticipantWasAtThisLocationCheck.Query()
-        {
-            ParticipantId = Model.ParticipantId,
-            LocationId = Model.Location!.Id,
-            DateAtLocation = Model.CommencedOn
-        });
-    }   
-
-    void ClearTemplates()
-    {
-        Model.ISWTemplate = new() { ParticipantId = Model.ParticipantId };
-        Model.EducationTrainingTemplate = new() { ParticipantId = Model.ParticipantId };
-        Model.EmploymentTemplate = new() { ParticipantId = Model.ParticipantId };
-    }
-
-    void ClearSelectedActivity()
-    {
-        if (activityDropdown.Value is not null)
-        {
-            activityDropdown.ResetAsync();
-        }
-    }
-    
-    void ClearSelectedActivityDate()
-    {
-        if (Model.CommencedOn is not null)
-        {
-            Model.CommencedOn = null;
-        }
-    }
-
-    bool IsAvailableAtSelectedLocation(ActivityType type) => activities.Any(activity => activity.Type == type);
-    private Task<IEnumerable<ActivityDefinition>> SearchActivities(string searchText, CancellationToken cancellationToken)
-    {
-        IEnumerable<ActivityDefinition> result;
-        IEnumerable<ActivityDefinition> filteredActivities = activities
-                        .Where(activity => filteredTypes.Count is 0 || filteredTypes.Contains(activity.Type))
-                        .OrderBy(activity => activity.Name);
-        if (string.IsNullOrEmpty(searchText))
-        {
-            result = filteredActivities;
-        }
-        else
-        {
-            result = filteredActivities.Where(x => x.Category.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase));
-        }
-
-        return Task.FromResult(result);
-    }
-}
