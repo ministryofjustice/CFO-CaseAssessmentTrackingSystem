@@ -9,12 +9,10 @@ public class ExternalIdentifierDto
     
     private class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<ExternalIdentifier, ExternalIdentifierDto>(MemberList.None)
                 .ForMember(x => x.Value, o => o.MapFrom(s => s.Value))
                 .ForMember(x => x.Type, o => o.MapFrom(s => s.Type.Name));
-        }
     }
 
 }

@@ -16,8 +16,5 @@ public class AuditTrailsWithPaginationQuery
     public string CacheKey => SystemAuditTrailsCacheKey.GetPaginationCacheKey($"{this}");
     public MemoryCacheEntryOptions? Options => SystemAuditTrailsCacheKey.MemoryCacheEntryOptions;
 
-    public override string ToString()
-    {
-        return $"Listview:{ListView},AuditType:{AuditType},Search:{Keyword},Sort:{SortDirection},OrderBy:{OrderBy},{PageNumber},{PageSize}";
-    }
+    public override string ToString() => $"Listview:{ListView},AuditType:{AuditType},Search:{Keyword},Sort:{SortDirection},OrderBy:{OrderBy},{PageNumber},{PageSize}";
 }

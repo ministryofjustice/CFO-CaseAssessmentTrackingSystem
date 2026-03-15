@@ -332,11 +332,9 @@ public static class AddActivity
             return activity.Status == ActivityStatus.PendingStatus;
         }
 
-        private bool HaveAHubInduction(string participantId, LocationDto location)
-        {
-            return unitOfWork.DbContext.HubInductions.Any(induction => 
+        private bool HaveAHubInduction(string participantId, LocationDto location) =>
+            unitOfWork.DbContext.HubInductions.Any(induction => 
                 induction.ParticipantId == participantId && induction.LocationId == location.Id);
-        }
 
         private static bool NotExceedMaximumFileSize(IBrowserFile? file, double maxSizeMB)
         => file?.Size < ByteSize.FromMegabytes(maxSizeMB).Bytes;

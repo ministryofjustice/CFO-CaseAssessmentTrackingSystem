@@ -15,8 +15,7 @@ public class NotificationDto
 
     private class Mapper : Profile
     {
-        public Mapper()
-        {
+        public Mapper() =>
             CreateMap<Notification, NotificationDto>(MemberList.Destination)
                 .ForMember(t => t.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(t => t.Heading, opt => opt.MapFrom(src => src.Heading))
@@ -24,7 +23,6 @@ public class NotificationDto
                 .ForMember(t => t.NotificationDate, opt => opt.MapFrom(src => src.NotificationDate))
                 .ForMember(t => t.ReadDate, opt => opt.MapFrom(src => src.ReadDate))
                 .ForMember(t => t.Link, opt => opt.MapFrom(src => src.Link));
-        }
     }
 
 }

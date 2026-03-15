@@ -12,9 +12,8 @@ public class AuditTrail : IEntity<int>
     {
     }
 
-    public static AuditTrail Create(string tableName, string? userId, AuditType auditType, DateTime dateTime)
-    {
-        return new AuditTrail()
+    public static AuditTrail Create(string tableName, string? userId, AuditType auditType, DateTime dateTime) =>
+        new()
         {
             TableName = tableName,
             UserId = userId,
@@ -24,7 +23,6 @@ public class AuditTrail : IEntity<int>
             NewValues = new Dictionary<string, object?>(),
             OldValues = new Dictionary<string, object?>()
         };
-    }
 
     public int Id { get; private set; }
     public string? UserId { get; set; }

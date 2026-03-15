@@ -12,9 +12,6 @@ public class ParticipantIdentifierDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
-            CreateMap<ExternalIdentifier, ParticipantIdentifierDto>(MemberList.None);
-        }
+        public Mapping() => CreateMap<ExternalIdentifier, ParticipantIdentifierDto>(MemberList.None);
     }
 }

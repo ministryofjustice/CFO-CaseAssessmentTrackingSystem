@@ -49,12 +49,9 @@ public partial class Participant
         }
     }
 
-    private void ShowRightToWorkWarning()
-    {
-        _showRightToWorkWarning = _participant!.IsRightToWorkRequired
+    private void ShowRightToWorkWarning() => _showRightToWorkWarning = _participant!.IsRightToWorkRequired
                                   && _participant!.ConsentStatus == ConsentStatus.GrantedStatus
                                   && _participant.HasActiveRightToWork == false;
-    }
 
     private async Task Refresh(CancellationToken cancellationToken = default)
     {

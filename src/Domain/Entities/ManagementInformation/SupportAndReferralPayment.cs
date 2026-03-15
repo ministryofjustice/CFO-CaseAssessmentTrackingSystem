@@ -20,9 +20,8 @@ public class SupportAndReferralPayment
         int locationId,
         string tenantId,
         DateOnly paymentPeriod,
-        IneligibilityReason reason)
-    {
-        return new SupportAndReferralPayment
+        IneligibilityReason reason) =>
+        new()
         {
             Id = Guid.CreateVersion7(),
             PriId = priId,
@@ -40,8 +39,7 @@ public class SupportAndReferralPayment
             IneligibilityReason = reason.Value,
             PaymentPeriod = paymentPeriod.ToDateTime(TimeOnly.MinValue)
         };
-    }
-    
+
     public static SupportAndReferralPayment CreatePayable (
         Guid priId, 
         string participantId, 

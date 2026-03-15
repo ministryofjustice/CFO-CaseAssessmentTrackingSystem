@@ -39,7 +39,7 @@ public class RiskDto
     [Description("No License/Supervision End Date")]
     public bool? NoLicenseEndDate
     {
-        get { return _noLicenseEndDate; }
+        get => _noLicenseEndDate;
         set
         {
             _noLicenseEndDate = value;
@@ -88,8 +88,7 @@ public class RiskDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<Risk, RiskDto>(MemberList.None)
                 .ForMember(dest => dest.RegistrationDetails, opt => opt.MapFrom((dest, src) =>
                 {
@@ -145,7 +144,6 @@ public class RiskDto
                 .ForPath(src => src.RiskToSelfInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToSelfNew == null ? dest.CustodyRiskDetail.RiskToSelf : null))
                 .ForPath(src => src.RiskToSelfInCustodyNew, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToSelfNew))
                 .ForPath(src => src.RiskToOtherPrisonersInCustody, opt => opt.MapFrom(dest => dest.CustodyRiskDetail.RiskToOtherPrisoners));
-        }
     }
 
     public record RiskDetail

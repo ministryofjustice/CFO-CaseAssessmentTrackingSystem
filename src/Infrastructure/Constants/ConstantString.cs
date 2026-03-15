@@ -14,10 +14,7 @@ public static class ConstantString
         rm = new ResourceManager(ConstantStringResourceId, typeof(ConstantString).Assembly);
     }
 
-    public static string Localize(string key)
-    {
-        return rm.GetString(key, CultureInfo.CurrentCulture) ?? key;
-    }
+    public static string Localize(string key) => rm.GetString(key, CultureInfo.CurrentCulture) ?? key;
 
     public static string Rename => Localize("Rename");
     public static string Refresh => Localize("Refresh");

@@ -20,10 +20,7 @@ public partial class CaseWorkload
 
     private GetCaseWorkload.Query Query { get; set; } = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        await OnRefresh();
-    }
+    protected override async Task OnInitializedAsync() => await OnRefresh();
 
     private async Task OnRefresh()
     {

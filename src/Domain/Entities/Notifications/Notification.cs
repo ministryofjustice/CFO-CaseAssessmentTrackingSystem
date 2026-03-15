@@ -22,10 +22,8 @@ public class Notification : OwnerPropertyEntity<Guid>
         AddDomainEvent(new NotificationCreatedDomainEvent(this));
     }
 
-    public static Notification Create(string heading, string details, string userId)
-    {
-        return new Notification(heading, details, userId);
-    }
+    public static Notification Create(string heading, string details, string userId) 
+        => new(heading, details, userId);
 
     public Notification SetLink(string url)
     {

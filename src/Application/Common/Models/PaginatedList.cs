@@ -33,10 +33,8 @@ public abstract class PaginatedList
 public class PaginatedList<T> : PaginatedList
 {
     public PaginatedList(IReadOnlyCollection<T> items, int count, int pageNumber, int pageSize)
-        : base(count, pageNumber, pageSize)
-    {
+        : base(count, pageNumber, pageSize) =>
         Items = items;
-    }
 
     public IReadOnlyCollection<T> Items { get; }
 

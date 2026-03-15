@@ -22,10 +22,7 @@ public static class AddRisk
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public Handler(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;         
-        }
+        public Handler(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
 
         public async Task<Result<Guid>> Handle(Command request, CancellationToken cancellationToken)
         {

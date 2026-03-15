@@ -17,11 +17,8 @@ public partial class PqaList
 
     private PqaQueueWithPagination.Query Query { get; set; } = new();
     private EnrolmentQueueEntryDto _currentDto = new();
- 
-    private void RowClicked(DataGridRowClickEventArgs<EnrolmentQueueEntryDto> args)
-    {
-        Navigation.NavigateTo($"/pages/qa/enrolments/pqa/{args.Item.Id}");
-    }
+
+    private void RowClicked(DataGridRowClickEventArgs<EnrolmentQueueEntryDto> args) => Navigation.NavigateTo($"/pages/qa/enrolments/pqa/{args.Item.Id}");
 
     private async Task<GridData<EnrolmentQueueEntryDto>> ServerReload(GridState<EnrolmentQueueEntryDto> state)
     {

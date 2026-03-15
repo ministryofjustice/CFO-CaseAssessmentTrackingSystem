@@ -17,11 +17,8 @@ public partial class PqaList
 
     private ActivityPqaQueueWithPagination.Query Query { get; set; } = new();
     private ActivityQueueEntryDto _currentDto = new();
-    
-    private void RowClicked(DataGridRowClickEventArgs<ActivityQueueEntryDto> args)
-    {
-        Navigation.NavigateTo($"/pages/qa/activities/pqa/{args.Item.Id}");
-    }
+
+    private void RowClicked(DataGridRowClickEventArgs<ActivityQueueEntryDto> args) => Navigation.NavigateTo($"/pages/qa/activities/pqa/{args.Item.Id}");
 
     private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state)
     {

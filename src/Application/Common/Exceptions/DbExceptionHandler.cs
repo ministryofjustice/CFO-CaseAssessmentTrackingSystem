@@ -8,10 +8,7 @@ public class DbExceptionHandler<TRequest, TResponse, TException>
 {
     private readonly ILogger<DbExceptionHandler<TRequest, TResponse, TException>> _logger;
 
-    public DbExceptionHandler(ILogger<DbExceptionHandler<TRequest, TResponse, TException>> logger)
-    {
-        _logger = logger;
-    }
+    public DbExceptionHandler(ILogger<DbExceptionHandler<TRequest, TResponse, TException>> logger) => _logger = logger;
 
     public Task Handle(
         TRequest request,

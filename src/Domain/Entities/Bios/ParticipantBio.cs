@@ -42,10 +42,8 @@ public class ParticipantBio : BaseAuditableEntity<Guid>, IAuditTrial
         return this;
     }
 
-    public static ParticipantBio Create(Guid id, string participantId, string bioJson)
-    {
-        return new ParticipantBio(id, participantId, bioJson, BioStatus.InProgress);
-    }
+    public static ParticipantBio Create(Guid id, string participantId, string bioJson) 
+        => new(id, participantId, bioJson, BioStatus.InProgress);
 
     public ParticipantBio UpdateStatus(BioStatus status)
     {

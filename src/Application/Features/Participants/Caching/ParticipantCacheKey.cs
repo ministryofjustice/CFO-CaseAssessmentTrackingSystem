@@ -5,11 +5,8 @@ public static class ParticipantCacheKey
     private static readonly TimeSpan RefreshInterval = TimeSpan.FromSeconds(30);
     private static CancellationTokenSource tokenSource;
 
-    static ParticipantCacheKey()
-    {
-        tokenSource = new CancellationTokenSource(RefreshInterval);
-    }
-    
+    static ParticipantCacheKey() => tokenSource = new CancellationTokenSource(RefreshInterval);
+
     public static MemoryCacheEntryOptions MemoryCacheEntryOptions =>
         new MemoryCacheEntryOptions().AddExpirationToken(
             new CancellationChangeToken(SharedExpiryTokenSource().Token)
@@ -28,8 +25,5 @@ public static class ParticipantCacheKey
         return tokenSource;
     }
     
-    public static void Refresh()
-    {
-        SharedExpiryTokenSource().Cancel();
-    }
+    public static void Refresh() => SharedExpiryTokenSource().Cancel();
 }

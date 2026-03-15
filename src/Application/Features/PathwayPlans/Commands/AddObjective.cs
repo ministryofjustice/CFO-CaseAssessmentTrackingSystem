@@ -18,11 +18,9 @@ public static class AddObjective
 
         public class Mapping : Profile
         {
-            public Mapping()
-            {
+            public Mapping() =>
                 CreateMap<Command, Objective>(MemberList.None)
                     .ConstructUsing(dto => Objective.Create(dto.Description!, dto.PathwayPlanId, false));
-            }
         }
     }
 

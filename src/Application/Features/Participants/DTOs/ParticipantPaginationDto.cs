@@ -38,8 +38,7 @@ public class ParticipantPaginationDto
 
     private class Mapper : Profile
     {
-        public Mapper()
-        {
+        public Mapper() =>
             CreateMap<Participant, ParticipantPaginationDto>(MemberList.None)
                 .ForMember(target => target.Id, options => options.MapFrom(source => source.Id))
                 .ForMember(target => target.EnrolmentStatus, options => options.MapFrom(source => source.EnrolmentStatus))
@@ -51,8 +50,6 @@ public class ParticipantPaginationDto
                 .ForMember(target => target.Tenant, options => options.MapFrom(source => source.Owner!.TenantName))
                 .ForMember(target => target.RiskDue, options => options.MapFrom(source => source.RiskDue))
                 .ForMember(target => target.RiskDueReason, options => options.MapFrom(source => source.RiskDueReason));
-            
-        }
     }
 
 }

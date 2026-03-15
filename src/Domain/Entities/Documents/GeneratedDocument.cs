@@ -20,10 +20,8 @@ public class GeneratedDocument : Document
         AddDomainEvent(new GeneratedDocumentCreatedDomainEvent(this));
     }
 
-    public static GeneratedDocument Create(DocumentTemplate template, string title, string description, string createdBy, string tenantId, string? searchCriteria = null)
-    {
-        return new(template, title, description, createdBy, tenantId, searchCriteria);
-    }
+    public static GeneratedDocument Create(DocumentTemplate template, string title, string description, string createdBy, string tenantId, string? searchCriteria = null) 
+        => new(template, title, description, createdBy, tenantId, searchCriteria);
 
     public GeneratedDocument WithStatus(DocumentStatus status)
     {

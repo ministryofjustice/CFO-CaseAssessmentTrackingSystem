@@ -67,11 +67,9 @@ public static class GetMyParticipantsDashboard
 
     public  class Validator : AbstractValidator<Query>
     {
-        public Validator()
-        {
+        public Validator() =>
             RuleFor(q => q.CurrentUser)
                 .NotNull();
-        }
     }
 
 }

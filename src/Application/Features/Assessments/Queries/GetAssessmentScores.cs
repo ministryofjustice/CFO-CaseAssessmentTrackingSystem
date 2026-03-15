@@ -18,10 +18,7 @@ public static class GetAssessmentScores
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public Handler(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;            
-        }
+        public Handler(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
 
         public async Task<Result<IEnumerable<ParticipantAssessmentDto>>> Handle(Query request, CancellationToken cancellationToken)
         {

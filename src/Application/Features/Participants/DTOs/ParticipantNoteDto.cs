@@ -15,12 +15,10 @@ public class ParticipantNoteDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<Note, ParticipantNoteDto>(MemberList.None)
                 .ForMember(x => x.CreatedBy, opts => opts.MapFrom(c => c.CreatedByUser!.DisplayName))
                 .ForMember(x => x.CreatedByEmail, opts => opts.MapFrom(c => c.CreatedByUser!.Email));
-        }
     }
 
 }

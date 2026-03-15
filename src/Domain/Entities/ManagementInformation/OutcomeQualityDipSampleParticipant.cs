@@ -11,15 +11,13 @@ public class OutcomeQualityDipSampleParticipant : BaseAuditableEntity<int>
     private OutcomeQualityDipSampleParticipant() { /* this is for EF Core */}
 #pragma warning restore CS8618
 
-    public static OutcomeQualityDipSampleParticipant Create(Guid sampleId, string participantId, string locationType)
-    {
-        return new OutcomeQualityDipSampleParticipant()
+    public static OutcomeQualityDipSampleParticipant Create(Guid sampleId, string participantId, string locationType) =>
+        new()
         {
             DipSampleId = sampleId,
             ParticipantId = participantId,
             LocationType = locationType
         };
-    }
 
     public string ParticipantId { get; private set; }
     public Guid DipSampleId { get; private set; }

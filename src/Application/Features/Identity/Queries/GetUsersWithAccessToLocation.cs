@@ -64,10 +64,8 @@ public static class GetUsersWithAccessToLocation
             });
         }
 
-        private async Task<bool> Exist(int locationId, CancellationToken cancellationToken)
-        {
-            return await unitOfWork.DbContext.Locations
+        private async Task<bool> Exist(int locationId, CancellationToken cancellationToken) =>
+            await unitOfWork.DbContext.Locations
                 .SingleOrDefaultAsync(l => l.Id == locationId, cancellationToken) is not null;
-        }
     }
 }

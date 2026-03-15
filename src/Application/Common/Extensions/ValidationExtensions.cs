@@ -22,12 +22,10 @@ public static class ValidationExtensions
         return validationResults.SelectMany(r => r.Errors).Where(f => f != null).ToList();
     }
 
-    public static Dictionary<string, string[]> ToDictionary(this List<ValidationFailure>? failures)
-    {
-        return failures != null && failures.Any()
+    public static Dictionary<string, string[]> ToDictionary(this List<ValidationFailure>? failures) =>
+        failures != null && failures.Any()
             ? failures
                 .GroupBy(e => e.PropertyName, e => e.ErrorMessage)
                 .ToDictionary(g => g.Key, g => g.ToArray())
             : new Dictionary<string, string[]>();
-    }
 }

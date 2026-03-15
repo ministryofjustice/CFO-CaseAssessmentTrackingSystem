@@ -7,10 +7,7 @@ public class AssessmentsCacheKey
     private static readonly TimeSpan RefreshInterval = TimeSpan.FromMinutes(60);
     private static CancellationTokenSource tokenSource;
 
-    static AssessmentsCacheKey()
-    {
-        tokenSource = new CancellationTokenSource(RefreshInterval);
-    }
+    static AssessmentsCacheKey() => tokenSource = new CancellationTokenSource(RefreshInterval);
 
     public static MemoryCacheEntryOptions MemoryCacheEntryOptions =>
         new MemoryCacheEntryOptions()
@@ -26,8 +23,5 @@ public class AssessmentsCacheKey
         return tokenSource;
     }
 
-    public static void Refresh()
-    {
-        SharedExpiryTokenSource().Cancel();
-    }
+    public static void Refresh() => SharedExpiryTokenSource().Cancel();
 }

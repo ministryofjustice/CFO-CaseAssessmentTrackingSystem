@@ -14,12 +14,10 @@ public class DocumentAuditTrailDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<DocumentAuditTrail, DocumentAuditTrailDto>(MemberList.None)
                 .ForMember(dest => dest.DocumentTitle, src => src.MapFrom(opts => opts.Document!.Title))
                 .ForMember(dest => dest.DocumentDescription, src => src.MapFrom(opts => opts.Document!.Description))
                 .ForMember(dest => dest.UserName, src => src.MapFrom(opts => opts.User!.Email));
-        }
     }
 }

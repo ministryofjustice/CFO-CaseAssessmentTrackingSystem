@@ -18,23 +18,18 @@ public static class CheckParticipantExistsById
     public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, bool>
     {
         
-        public async Task<bool> Handle(Query request, CancellationToken cancellationToken)
-        {
-            return await unitOfWork.DbContext.Participants
+        public async Task<bool> Handle(Query request, CancellationToken cancellationToken) =>
+            await unitOfWork.DbContext.Participants
                 .AnyAsync(p => p.Id == request.Id, cancellationToken);
-        }
     }
     public class Validator : AbstractValidator<Query>
     {
-        public Validator()
-        {
+        public Validator() =>
             RuleFor(x => x.Id)
                 .MinimumLength(9)
                 .MaximumLength(9)
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
-
-        }
     }
 }
 

@@ -43,11 +43,9 @@ public static class GetEscalationEntryById
 
     public class Validator : AbstractValidator<Query>
     {
-        public Validator()
-        {
+        public Validator() =>
             RuleFor(r => r.Id)
                 .NotEmpty()
                 .WithMessage(string.Format(ValidationConstants.GuidMessage, "Id"));
-        }
     }
 }

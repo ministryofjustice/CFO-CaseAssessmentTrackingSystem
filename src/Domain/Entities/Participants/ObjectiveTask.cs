@@ -37,15 +37,9 @@ public class ObjectiveTask : BaseAuditableEntity<Guid>
         return task;
     }
 
-    public void Extend(DateTime due)
-    {
-        Due = due;
-    }
+    public void Extend(DateTime due) => Due = due;
 
-    public void Rename(string description)
-    {
-        Description = description;
-    }
+    public void Rename(string description) => Description = description;
 
     public ObjectiveTask AtIndex(int index)
     {

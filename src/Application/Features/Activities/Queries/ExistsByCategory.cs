@@ -15,13 +15,11 @@ public static class ExistsByCategory
 
     private class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, bool>
     {
-        public async Task<bool> Handle(Query request, CancellationToken cancellationToken)
-        {
-            return await unitOfWork.DbContext.Activities
+        public async Task<bool> Handle(Query request, CancellationToken cancellationToken) =>
+            await unitOfWork.DbContext.Activities
                 .AnyAsync(a => a.ParticipantId == request.ParticipantId 
-                    && a.Category == request.Category
-                    && (request.CommencedOn == null || request.CommencedOn.Value.Date == a.CommencedOn.Date), cancellationToken); 
-        }
+                               && a.Category == request.Category
+                               && (request.CommencedOn == null || request.CommencedOn.Value.Date == a.CommencedOn.Date), cancellationToken);
     }
 
 }

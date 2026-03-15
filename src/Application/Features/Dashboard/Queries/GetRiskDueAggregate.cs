@@ -27,16 +27,13 @@ public static class GetRiskDueAggregate
             return data;
         }
 
-        private async Task<RiskDueAggregateDto[]> GetData(Query request)
-        {
-            return request.GroupingType switch
+        private async Task<RiskDueAggregateDto[]> GetData(Query request) =>
+            request.GroupingType switch
             {
                 RiskAggregateGroupingType.User => await GetRiskAggregateByUser(request),
                 RiskAggregateGroupingType.Tenant => await GetRiskAggregateByTenant(request),
                 _ => throw new ArgumentOutOfRangeException()
             };
-
-        }
 
         private async Task<RiskDueAggregateDto[]> GetRiskAggregateByUser(Query request)
         {

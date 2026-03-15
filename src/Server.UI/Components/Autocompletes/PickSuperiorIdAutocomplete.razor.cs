@@ -22,10 +22,7 @@ public class PickSuperiorIdAutocomplete : MudAutocomplete<string>
         MaxItems = 200;
     }
 
-    protected override async Task OnParametersSetAsync()
-    {
-        await LoadUserDataAsync();
-    }
+    protected override async Task OnParametersSetAsync() => await LoadUserDataAsync();
 
     private Task LoadUserDataAsync()
     {
@@ -60,8 +57,5 @@ public class PickSuperiorIdAutocomplete : MudAutocomplete<string>
         return Task.FromResult(result.AsEnumerable());
     }
 
-    private string ConvertIdToUserName(string? id)
-    {
-        return _userList?.FirstOrDefault(x => x.Id.Equals(id, StringComparison.OrdinalIgnoreCase))?.UserName ?? string.Empty;
-    }
+    private string ConvertIdToUserName(string? id) => _userList?.FirstOrDefault(x => x.Id.Equals(id, StringComparison.OrdinalIgnoreCase))?.UserName ?? string.Empty;
 }

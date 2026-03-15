@@ -140,35 +140,32 @@ public class ThroughTheGatePaymentTests
         payment.EligibleForPayment.ShouldBe(true);
     }
 
-    private static RecordThroughTheGatePaymentConsumer.Data GetData()
+    private static RecordThroughTheGatePaymentConsumer.Data GetData() => new RecordThroughTheGatePaymentConsumer.Data
     {
-        return new RecordThroughTheGatePaymentConsumer.Data
-        {
-            PriId = Guid.NewGuid(),
-            ActivityInput = priCreated,
-            DateOfFirstConsent = DateOnly.FromDateTime(dateOfConsent),
-            ActualReleaseDate = DateOnly.FromDateTime(actualReleaseDate),
-            Approved = priCreated.AddDays(1),
-            CommunityLocationId = 1,
-            ContractId = "DUMMY-CONTRACT-001",
-            CountOfPayments = 0,
-            CustodyLocationId = 0,
-            Locations =
+        PriId = Guid.NewGuid(),
+        ActivityInput = priCreated,
+        DateOfFirstConsent = DateOnly.FromDateTime(dateOfConsent),
+        ActualReleaseDate = DateOnly.FromDateTime(actualReleaseDate),
+        Approved = priCreated.AddDays(1),
+        CommunityLocationId = 1,
+        ContractId = "DUMMY-CONTRACT-001",
+        CountOfPayments = 0,
+        CustodyLocationId = 0,
+        Locations =
             [
                 new() { LocationId = 0, From = actualReleaseDate.AddMonths(-1) } ,
                 new() { LocationId = 1, From = actualReleaseDate } ,
             ],
-            LocationType = "Community",
-            SupportWorker = Guid.NewGuid().ToString(),
-            MeetingAttendedOn = DateOnly.FromDateTime(meetingAttendedOn),
-            ParticipantId = "1AAA1111A",
-            Tasks =
+        LocationType = "Community",
+        SupportWorker = Guid.NewGuid().ToString(),
+        MeetingAttendedOn = DateOnly.FromDateTime(meetingAttendedOn),
+        ParticipantId = "1AAA1111A",
+        Tasks =
             [
                 new() { IsMandatory = true, Index = 1, Completed = priCreated, CompletionStatus = CompletionStatus.Done },
                 new() { IsMandatory = true, Index = 2, Completed = priCreated.AddDays(1), CompletionStatus = CompletionStatus.Done },
             ],
-            TenantId = "1.",
-            CountOfApprovals = 0
-        };
-    }
+        TenantId = "1.",
+        CountOfApprovals = 0
+    };
 }

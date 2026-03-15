@@ -16,10 +16,7 @@ public static class RenameTenant
         
         private class Mapping : Profile
         {
-            public Mapping()
-            {
-                CreateMap<TenantDto, Command>(MemberList.None);
-            }
+            public Mapping() => CreateMap<TenantDto, Command>(MemberList.None);
         }
         
     }

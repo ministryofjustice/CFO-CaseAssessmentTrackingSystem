@@ -10,15 +10,9 @@ public class ContractAutoComplete : MudAutocomplete<ContractDto>
 
     [Parameter, EditorRequired] public string TenantId { get; set; } = default!;
 
-    protected override void OnInitialized()
-    {
-        ContractService.OnChange += ContractService_OnChange;
-    }
+    protected override void OnInitialized() => ContractService.OnChange += ContractService_OnChange;
 
-    private void ContractService_OnChange()
-    {
-        InvokeAsync(StateHasChanged);
-    }
+    private void ContractService_OnChange() => InvokeAsync(StateHasChanged);
 
     protected override ValueTask DisposeAsyncCore()
     {

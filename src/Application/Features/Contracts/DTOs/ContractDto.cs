@@ -10,10 +10,8 @@ public class ContractDto
 
     private class Mapper : Profile
     {
-        public Mapper()
-        {
+        public Mapper() =>
             CreateMap<Contract, ContractDto>()
                 .ForMember(target => target.Name, options => options.MapFrom(source => source.Description));
-        }
     }
 }

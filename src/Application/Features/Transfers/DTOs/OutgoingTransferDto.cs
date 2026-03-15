@@ -20,13 +20,11 @@ public class OutgoingTransferDto
 
     private class Mapper : Profile
     {
-        public Mapper()
-        {
+        public Mapper() =>
             CreateMap<ParticipantOutgoingTransferQueueEntry, OutgoingTransferDto>()
                 .ForMember(t => t.ParticipantId, options => options.MapFrom(source => source.ParticipantId))
                 .ForMember(t => t.ParticipantFullName, options => options.MapFrom(source => source.Participant!.FirstName + " " + source.Participant.LastName))
                 .ForMember(p => p.FromContract, options => options.MapFrom(src => src.FromContract == null ? null : src.FromContract.Description))
                 .ForMember(p => p.ToContract, options => options.MapFrom(src => src.ToContract == null ? null : src.ToContract.Description));
-        }
     }
 }

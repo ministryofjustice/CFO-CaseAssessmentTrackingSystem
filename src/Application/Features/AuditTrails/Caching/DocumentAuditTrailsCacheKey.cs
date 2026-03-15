@@ -6,20 +6,14 @@ public static class DocumentAuditTrailsCacheKey
     private static readonly TimeSpan RefreshInterval = TimeSpan.FromMilliseconds(30);
     private static CancellationTokenSource tokenSource;
 
-    static DocumentAuditTrailsCacheKey()
-    {
-        tokenSource = new CancellationTokenSource(RefreshInterval);
-    }
+    static DocumentAuditTrailsCacheKey() => tokenSource = new CancellationTokenSource(RefreshInterval);
 
     public static MemoryCacheEntryOptions MemoryCacheEntryOptions =>
         new MemoryCacheEntryOptions().AddExpirationToken(
             new CancellationChangeToken(SharedExpiryTokenSource().Token)
         );
 
-    public static string GetPaginationCacheKey(string parameters)
-    {
-        return $"DocumentAuditTrailsWithPaginationQuery,{parameters}";
-    }
+    public static string GetPaginationCacheKey(string parameters) => $"DocumentAuditTrailsWithPaginationQuery,{parameters}";
 
     public static CancellationTokenSource SharedExpiryTokenSource()
     {
@@ -31,8 +25,5 @@ public static class DocumentAuditTrailsCacheKey
         return tokenSource;
     }
 
-    public static void Refresh()
-    {
-        SharedExpiryTokenSource().Cancel();
-    }
+    public static void Refresh() => SharedExpiryTokenSource().Cancel();
 }

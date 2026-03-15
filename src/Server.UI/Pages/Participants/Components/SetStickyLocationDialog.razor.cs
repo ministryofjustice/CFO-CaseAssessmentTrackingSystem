@@ -16,13 +16,10 @@ public partial class SetStickyLocationDialog
 
     [EditorRequired][Parameter] public string ParticipantId { get; set; } = default!;
 
-    protected override void OnInitialized()
+    protected override void OnInitialized() => Model = new SetCandidateStickyLocation.Command()
     {
-        Model = new SetCandidateStickyLocation.Command()
-        {
-            ParticipantId = ParticipantId
-        };
-    }
+        ParticipantId = ParticipantId
+    };
 
     private async Task Submit()
     {
@@ -55,8 +52,5 @@ public partial class SetStickyLocationDialog
         }
     }
 
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
+    private void Cancel() => MudDialog.Cancel();
 }

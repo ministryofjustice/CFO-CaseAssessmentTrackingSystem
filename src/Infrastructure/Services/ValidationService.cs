@@ -15,16 +15,10 @@ public class ValidationService : IValidationService
         this.serviceProvider = serviceProvider;
     }
 
-    public Func<object, string, Task<IEnumerable<string>>> ValidateValue<TRequest>()
-    {
-        return async (model, propertyName) =>
-            await ValidatePropertyAsync((TRequest)model, propertyName.Split('.').Last());
-    }
+    public Func<object, string, Task<IEnumerable<string>>> ValidateValue<TRequest>() => async (model, propertyName) =>
+                                                                                                 await ValidatePropertyAsync((TRequest)model, propertyName.Split('.').Last());
 
-    public Func<object, string, Task<IEnumerable<string>>> ValidateValue<TRequest>(TRequest model)
-    {
-        return ValidateValue<TRequest>();
-    }
+    public Func<object, string, Task<IEnumerable<string>>> ValidateValue<TRequest>(TRequest model) => ValidateValue<TRequest>();
 
     public async Task<IDictionary<string, string[]>> ValidateAsync<TRequest>(
         TRequest model,

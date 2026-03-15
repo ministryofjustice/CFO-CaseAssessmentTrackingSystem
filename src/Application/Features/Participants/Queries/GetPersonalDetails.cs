@@ -14,13 +14,11 @@ public static class GetPersonalDetails
 
     private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, ParticipantPersonalDetailDto?>
     {
-        public async Task<ParticipantPersonalDetailDto?> Handle(Query request, CancellationToken cancellationToken)
-        {
-            return await unitOfWork.DbContext.Participants
+        public async Task<ParticipantPersonalDetailDto?> Handle(Query request, CancellationToken cancellationToken) =>
+            await unitOfWork.DbContext.Participants
                 .Where(p => p.Id == request.ParticipantId)
                 .Select(p => p.PersonalDetail)
                 .ProjectTo<ParticipantPersonalDetailDto>(mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync(cancellationToken);
-        }
     }
 }

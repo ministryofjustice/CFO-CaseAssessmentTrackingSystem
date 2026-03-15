@@ -14,10 +14,7 @@ public partial class MyNotifications
         PageSize = 5
     };
 
-    protected override async Task OnInitializedAsync()
-    {
-        await OnRefresh();
-    }
+    protected override async Task OnInitializedAsync() => await OnRefresh();
 
     private async Task DismissNotification(Guid id)
     {

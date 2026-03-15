@@ -16,8 +16,7 @@ public class ParticipantAssessmentDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<ParticipantAssessment, ParticipantAssessmentDto>()
                 .ForMember(p => p.Id, options => options.MapFrom(source => source.Id))
                 .ForMember(p => p.CreatedDate, options => options.MapFrom(source => source.Created))
@@ -26,7 +25,6 @@ public class ParticipantAssessmentDto
                 .ForMember(p => p.CompletedBy, options => options.MapFrom(source => source.CompletedBy))
                 .ForMember(p => p.LocationId, options => options.MapFrom(source => source.LocationId))
                 .ForMember(p => p.LocationName, options => options.Ignore());
-        }
     }
 }
 

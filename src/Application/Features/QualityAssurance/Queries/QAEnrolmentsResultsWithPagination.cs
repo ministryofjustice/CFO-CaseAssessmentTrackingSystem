@@ -164,11 +164,9 @@ public static class QAEnrolmentsResultsWithPagination
 
         public class Validator : AbstractValidator<Query>
         {
-            public Validator()
-            {
+            public Validator() =>
                 RuleFor(x => x.UserProfile.UserId)
                     .NotNull();
-            }
         }
     }
 }

@@ -47,10 +47,7 @@ public class Objective : BaseAuditableEntity<Guid>
         return this;
     }
 
-    public void Rename(string description)
-    {
-        Description = description;
-    }
+    public void Rename(string description) => Description = description;
 
     public void Complete(CompletionStatus status, string completedBy, string? justification)
     {

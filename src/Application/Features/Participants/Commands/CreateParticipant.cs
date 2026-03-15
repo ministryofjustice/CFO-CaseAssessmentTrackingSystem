@@ -35,10 +35,7 @@ public static class CreateParticipant
         public CancellationTokenSource? SharedExpiryTokenSource 
             => ParticipantCacheKey.SharedExpiryTokenSource();
 
-        public override string ToString()
-        {
-            return $"Id:{Identifier}";
-        }
+        public override string ToString() => $"Id:{Identifier}";
     }
 
     public class Handler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) 

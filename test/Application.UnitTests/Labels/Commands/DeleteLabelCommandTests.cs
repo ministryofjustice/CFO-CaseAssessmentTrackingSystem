@@ -173,27 +173,21 @@ public class DeleteLabelCommandTests
         result.Succeeded.ShouldBeTrue();
     }
 
-    private static UserProfile CreateInternalUserProfile()
+    private static UserProfile CreateInternalUserProfile() => new UserProfile
     {
-        return new UserProfile
-        {
-            UserId = Guid.NewGuid().ToString(),
-            UserName = "internal.user",
-            Email = "internal.user@justice.gov.uk",
-            TenantId = "1."
-        };
-    }
+        UserId = Guid.NewGuid().ToString(),
+        UserName = "internal.user",
+        Email = "internal.user@justice.gov.uk",
+        TenantId = "1."
+    };
 
-    private static UserProfile CreateExternalUserProfile()
+    private static UserProfile CreateExternalUserProfile() => new UserProfile
     {
-        return new UserProfile
-        {
-            UserId = Guid.NewGuid().ToString(),
-            UserName = "external.user",
-            Email = "external.user@example.com",
-            TenantId = "1."
-        };
-    }
+        UserId = Guid.NewGuid().ToString(),
+        UserName = "external.user",
+        Email = "external.user@example.com",
+        TenantId = "1."
+    };
 
     private class TestLabelRepository : ILabelRepository
     {
@@ -203,10 +197,7 @@ public class DeleteLabelCommandTests
 
         public Task AddAsync(Label label) => Task.CompletedTask;
 
-        public Task<Label?> GetByIdAsync(LabelId labelId)
-        {
-            return Task.FromResult(_existingLabel != null && _existingLabel.Id == labelId ? _existingLabel : null);
-        }
+        public Task<Label?> GetByIdAsync(LabelId labelId) => Task.FromResult(_existingLabel != null && _existingLabel.Id == labelId ? _existingLabel : null);
 
         public Task<int> CountParticipants(LabelId labelId) => Task.FromResult(0);
     }

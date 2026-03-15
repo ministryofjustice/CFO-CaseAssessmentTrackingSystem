@@ -2,8 +2,5 @@
 
 public class BioValidator : AbstractValidator<Bio>
 {
-    public BioValidator()
-    {
-        RuleForEach(model => model.Pathways).SetValidator(new BioPathwayValidator());
-    }
+    public BioValidator() => RuleForEach(model => model.Pathways).SetValidator(new BioPathwayValidator());
 }

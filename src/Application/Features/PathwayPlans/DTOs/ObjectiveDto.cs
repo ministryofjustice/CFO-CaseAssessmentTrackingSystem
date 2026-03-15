@@ -22,9 +22,6 @@ public class ObjectiveDto
 
     public class Mapping : Profile
     {
-        public Mapping()
-        {
-            CreateMap<Objective, ObjectiveDto>();
-        }
+        public Mapping() => CreateMap<Objective, ObjectiveDto>();
     }
 }

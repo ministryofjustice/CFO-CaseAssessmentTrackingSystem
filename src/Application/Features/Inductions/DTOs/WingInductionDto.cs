@@ -7,8 +7,7 @@ public record WingInductionDto(Guid Id, string ParticipantId, string WingName, D
 {
     private class Mapper : Profile
     {
-        public Mapper()
-        {
+        public Mapper() =>
             CreateMap<WingInduction, WingInductionDto>(MemberList.None)
                 .ForCtorParam(nameof(Id), options => options.MapFrom(source => source.Id))
                 .ForCtorParam(nameof(ParticipantId), options => options.MapFrom(source => source.ParticipantId))
@@ -17,9 +16,8 @@ public record WingInductionDto(Guid Id, string ParticipantId, string WingName, D
                 .ForCtorParam(nameof(InductedBy), options => options.MapFrom(source => source.Owner!.DisplayName))
                 .ForCtorParam(nameof(Phases), options => options.MapFrom(source =>
                     source.Phases
-                      .OrderBy(p => p.StartDate) 
-                      .ThenBy(p => p.CompletedDate) 
-                      .ToArray()));
-        }
+                        .OrderBy(p => p.StartDate) 
+                        .ThenBy(p => p.CompletedDate) 
+                        .ToArray()));
     }
 }

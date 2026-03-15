@@ -21,14 +21,12 @@ public record TenantDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<Tenant, TenantDto>()
                 .ForMember(tenantDto => tenantDto.Domains, 
                     options => options.MapFrom(tenant => tenant.Domains.Select(d => d.Domain)))
                 .ForMember(tenantDto => tenantDto.ParentId, 
                     options => options.MapFrom(tenant => tenant.Id.Substring(0, tenant.Id.Length - 2)))
                 .ReverseMap();
-        }
     }
 }

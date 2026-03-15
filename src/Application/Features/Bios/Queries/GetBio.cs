@@ -23,10 +23,7 @@ public static class GetBio
     internal class Handler : IRequestHandler<Query, Result<Bio>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        public Handler(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
+        public Handler(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
 
         public async Task<Result<Bio>> Handle(Query request, CancellationToken cancellationToken)
         {

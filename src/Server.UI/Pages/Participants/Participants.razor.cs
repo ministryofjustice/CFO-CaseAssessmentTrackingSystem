@@ -33,15 +33,9 @@ public partial class Participants
     private ParticipantPaginationDto _currentDto = new() { Id = "" };
     private ParticipantsWithPagination.Query? Query { get; set; }
 
-    private void OnResumeEnrolment(ParticipantPaginationDto participant)
-    {
-        Navigation.NavigateTo($"/pages/enrolments/{participant.Id}");
-    }
+    private void OnResumeEnrolment(ParticipantPaginationDto participant) => Navigation.NavigateTo($"/pages/enrolments/{participant.Id}");
 
-    private string GetMultiSelectionText(List<string> selectedValues)
-    {
-        return $"{selectedValues.Count} location{(selectedValues.Count == 1 ? " has" : "s have")} been selected";
-    }
+    private string GetMultiSelectionText(List<string> selectedValues) => $"{selectedValues.Count} location{(selectedValues.Count == 1 ? " has" : "s have")} been selected";
 
     private async Task LocationValuesChanged(IEnumerable<LocationDto>? selectedValues)
     {
@@ -49,10 +43,7 @@ public partial class Participants
         await _table.ReloadServerData();
     }
 
-    private void Edit(ParticipantPaginationDto participant)
-    {
-        Navigation.NavigateTo($"/pages/participants/{participant.Id}");
-    }
+    private void Edit(ParticipantPaginationDto participant) => Navigation.NavigateTo($"/pages/participants/{participant.Id}");
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
     [CascadingParameter] private UserProfile? UserProfile { get; set; }
@@ -139,10 +130,7 @@ public partial class Participants
         await _table.ReloadServerData();
     }
 
-    private void OnEnrol()
-    {
-        Navigation.NavigateTo("/pages/candidates/search");
-    }
+    private void OnEnrol() => Navigation.NavigateTo("/pages/candidates/search");
 
     private async Task OnExport()
     {

@@ -18,24 +18,18 @@ public class InMemoryTargetsProvider : ITargetsProvider
         { "con_24046" , "South East"}
     };
 
-    public InMemoryTargetsProvider()
-    {
-        _targets = AddTargets();
-    }
+    public InMemoryTargetsProvider() => _targets = AddTargets();
 
-    public ContractTargetDto GetTarget(string contract, int month, int year)
-    {
-        return _targets[contract];
-    }
+    public ContractTargetDto GetTarget(string contract, int month, int year) => _targets[contract];
+
     public ContractTargetDto GetTargetById(string contractId, int month, int year)
     {
         string name = _idMappings[contractId];
         return _targets[name];
     }
 
-    private Dictionary<string, ContractTargetDto> AddTargets()
-    {
-        return new Dictionary<string, ContractTargetDto>()
+    private Dictionary<string, ContractTargetDto> AddTargets() =>
+        new()
         {
             { "East Midlands", new ContractTargetDto("East Midlands", 102, 65, 5, 50, 82, 57, 501, 48, 90, 5, 15, 42) },
             {
@@ -58,5 +52,4 @@ public class InMemoryTargetsProvider : ITargetsProvider
                 new ContractTargetDto("Yorkshire and Humberside", 144, 161, 15, 150, 115, 81, 915, 143, 270, 15, 27, 76)
             }
         };
-    }
 }

@@ -12,10 +12,7 @@ public abstract class ValueObject
         return left?.Equals(right) != false;
     }
 
-    protected static bool NotEqualOperator(ValueObject left, ValueObject right)
-    {
-        return !EqualOperator(left, right);
-    }
+    protected static bool NotEqualOperator(ValueObject left, ValueObject right) => !EqualOperator(left, right);
 
     protected abstract IEnumerable<object> GetEqualityComponents();
 
@@ -30,10 +27,8 @@ public abstract class ValueObject
         return GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
     }
 
-    public override int GetHashCode()
-    {
-        return GetEqualityComponents()
-            .Select(x => x != null ? x.GetHashCode() : 0)
+    public override int GetHashCode() =>
+        GetEqualityComponents()
+            .Select(x => x.GetHashCode())
             .Aggregate((x, y) => x ^ y);
-    }   
 }

@@ -84,8 +84,7 @@ public static class GetOutcomeQualityDipSamples
 
     private class Validator : AbstractValidator<Query>
     {
-        public Validator()
-        {
+        public Validator() =>
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
                 RuleFor(q => q.Month)
@@ -96,6 +95,5 @@ public static class GetOutcomeQualityDipSamples
                     .LessThanOrEqualTo(DateTime.Today.Year)
                     .WithMessage("Cannot be in the future");
             });
-        }
     }
 }

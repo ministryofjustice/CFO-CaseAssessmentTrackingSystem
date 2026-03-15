@@ -37,12 +37,10 @@ public static class GetOutcomeQualityDipSample
 
     private class Validator : AbstractValidator<Query>
     {
-        public Validator()
-        {
+        public Validator() =>
             RuleFor(x => x.DipSampleId)
                 .NotEmpty()
                 .WithMessage(string.Format(ValidationConstants.GuidMessage, nameof(Query.DipSampleId)));
-        }
     }
 
 }

@@ -8,10 +8,7 @@ namespace Cfo.Cats.Application.Features.KeyValues.Queries.ByName;
 [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
 public class KeyValuesQueryByName : ICacheableRequest<IEnumerable<KeyValueDto>>
 {
-    public KeyValuesQueryByName(Picklist name)
-    {
-        Name = name;
-    }
+    public KeyValuesQueryByName(Picklist name) => Name = name;
 
     public Picklist Name { get; set; }
 

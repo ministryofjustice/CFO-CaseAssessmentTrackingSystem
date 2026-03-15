@@ -21,14 +21,11 @@ public partial class SelectUserDialog
         Dialog.Close(DialogResult.Ok(SelectedUser));
     }
 
-    private void OnUserSelectedChanged(ApplicationUserDto? dto)
+    private void OnUserSelectedChanged(ApplicationUserDto? dto) => SelectedUser = SelectedUser with
     {
-        SelectedUser = SelectedUser with
-        {
-            UserId = dto?.Id ?? string.Empty,
-            DisplayName = dto?.DisplayName ?? string.Empty
-        };
-    }
+        UserId = dto?.Id ?? string.Empty,
+        DisplayName = dto?.DisplayName ?? string.Empty
+    };
 }
 
 public record SelectedUser(string UserId, string DisplayName);

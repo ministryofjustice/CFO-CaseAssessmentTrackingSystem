@@ -21,11 +21,7 @@ public partial class BioSummary
 
     private BioSummaryDto? _bio;
 
-    protected override void OnParametersSet()
-    {
-        _bio = ParticipantSummaryDto.BioSummary;
-
-    }
+    protected override void OnParametersSet() => _bio = ParticipantSummaryDto.BioSummary;
 
     protected override void OnInitialized()
     {
@@ -72,36 +68,24 @@ public partial class BioSummary
         }
     }
 
-    public void ContinueBio()
-    {
-        Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/bio/{_bio!.BioId}");
-    }
+    public void ContinueBio() => Navigation.NavigateTo($"/pages/participants/{ParticipantSummaryDto.Id}/bio/{_bio!.BioId}");
 
     /// <summary>
     /// If true, indicates we are creating Bio. 
     /// </summary>
-    private bool CanBeginBio()
-    {
-        return _bio == null
+    private bool CanBeginBio() => _bio == null
                 && ParticipantSummaryDto.IsActive;
-    }
 
-    private bool CanRestartBio()
-    {
-        return _bio?.BioStatus == BioStatus.Complete
+    private bool CanRestartBio() => _bio?.BioStatus == BioStatus.Complete
                && ParticipantSummaryDto.IsActive;
-    }
 
     /// <summary>
     /// If true indicates we have a Bio that is continuable
     /// (i.e. Id is not null or do we need a status (Complete or Incomplete etc.))
     /// </summary>
     /// <returns></returns>
-    private bool CanContinueBio()
-    {
-        return _bio is not null
+    private bool CanContinueBio() => _bio is not null
             && (_bio.BioStatus == BioStatus.InProgress || _bio.BioStatus == BioStatus.SkippedForNow)
             && ParticipantSummaryDto.IsActive;
-    }
 
 }

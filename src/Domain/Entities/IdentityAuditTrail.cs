@@ -35,9 +35,8 @@ public class IdentityAuditTrail : IEntity<int>
 
     public void ClearDomainEvents() { }
 
-    public static IdentityAuditTrail Create(string? userName, string? performedBy, IdentityActionType actionType, string ipAddress )
-    {
-        return new IdentityAuditTrail()
+    public static IdentityAuditTrail Create(string? userName, string? performedBy, IdentityActionType actionType, string ipAddress ) =>
+        new()
         {
             UserName = userName,
             PerformedBy = performedBy,                
@@ -45,7 +44,6 @@ public class IdentityAuditTrail : IEntity<int>
             ActionType = actionType,
             IpAddress = ipAddress
         };
-    }
 }
 
 public enum IdentityActionType 

@@ -118,8 +118,5 @@ public partial class QAActivitiesResults
         });
     }
 
-    private void EditParticipant(string participantId)
-    {
-        Navigation.NavigateTo($"/pages/participants/{participantId}");
-    }
+    private void EditParticipant(string participantId) => Navigation.NavigateTo($"/pages/participants/{participantId}");
 }

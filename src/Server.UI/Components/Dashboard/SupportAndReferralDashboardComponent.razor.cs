@@ -29,9 +29,7 @@ public partial class SupportAndReferralDashboardComponent
          EndDate = DateRange?.End ?? throw new InvalidOperationException("DateRange not set")
      };
 
-    private List<ChartDataPoint> GetChartData(string supportType)
-    {
-            return Data?.Details
+    private List<ChartDataPoint> GetChartData(string supportType) => Data?.Details
                 .Where(d => d.SupportType == supportType && d.Payable > 0)
                 .Select(d => new ChartDataPoint
                 {
@@ -39,8 +37,6 @@ public partial class SupportAndReferralDashboardComponent
                     Count = d.Payable
                 })
                 .ToList() ?? new List<ChartDataPoint>();
-        
-    }
 
     private ApexChartOptions<ChartDataPoint> GetChartOptions(string color, string xAxisTitle) =>
         new()

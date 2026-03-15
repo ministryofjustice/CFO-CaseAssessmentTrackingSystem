@@ -161,10 +161,8 @@ public class EnrolmentPaymentBuilder
         return this;
     }
 
-    public EnrolmentPayment Build()
-    {
-
-        return new EnrolmentPayment
+    public EnrolmentPayment Build() =>
+        new()
         {
             ParticipantId = _participantId ?? throw new ApplicationException("ParticipantId must be set before calling build"), 
             SupportWorker = _supportWorker ?? throw new ApplicationException("SupportWorker must be set before calling build"), 
@@ -184,7 +182,4 @@ public class EnrolmentPaymentBuilder
                 ? throw new ApplicationException("EligibleForPayment must be set before calling build when not eligible for payment") 
                 : _ineligibilityReason
         };
-    }
-
-    
 }

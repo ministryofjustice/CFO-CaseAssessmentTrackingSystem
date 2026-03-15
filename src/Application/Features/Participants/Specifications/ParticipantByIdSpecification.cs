@@ -4,8 +4,5 @@ namespace Cfo.Cats.Application.Features.Participants.Specifications;
 
 public class ParticipantByIdSpecification : Specification<Participant>
 {
-    public ParticipantByIdSpecification(string id)
-    {
-        Query.Where(p => p.Id == id);
-    }
+    public ParticipantByIdSpecification(string id) => Query.Where(p => p.Id == id);
 }
