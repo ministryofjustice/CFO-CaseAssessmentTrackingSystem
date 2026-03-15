@@ -5,6 +5,7 @@ using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
+using Cfo.Cats.Server.UI.Models;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants;
 
@@ -15,7 +16,7 @@ public partial class Participant
     [CascadingParameter] public UserProfile UserProfile { get; set; } = null!;
 
     private ParticipantSummaryDto? _participant;
-    private ParticipantCascadingDetailDto? _participantCascading;
+    private ParticipantCascadingDetails? _participantCascading;
     private ParticipantAssessmentDto? _latestParticipantAssessment;
 
     private bool _showRightToWorkWarning;
@@ -65,7 +66,7 @@ public partial class Participant
         
         if (_participant is not null)
         {
-            _participantCascading = new ParticipantCascadingDetailDto
+            _participantCascading = new ParticipantCascadingDetails
             {
                 Id = _participant.Id,
                 FullName = _participant.ParticipantName,

@@ -4,6 +4,7 @@ using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.Queries;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
+using Cfo.Cats.Server.UI.Models;
 using Cfo.Cats.Server.UI.Pages.Objectives;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
@@ -25,7 +26,7 @@ public partial class ViewPathwayPlan
     private SortDirection _sortDirection = SortDirection.Ascending;
 
     [CascadingParameter(Name = "ParticipantDetails")]
-    public ParticipantCascadingDetailDto? ParticipantDetails { get; set; }
+    public ParticipantCascadingDetails? ParticipantDetails { get; set; }
     
     public PathwayPlanDto? Model { get; set; }
 
