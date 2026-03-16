@@ -1,11 +1,6 @@
 ﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
-@using Cfo.Cats.Application.Features.Activities.Commands
 @using Cfo.Cats.Application.Features.Activities.DTOs
-@using Cfo.Cats.Application.Features.Activities.Queries
-@using Cfo.Cats.Application.Features.Locations.DTOs
-@using Cfo.Cats.Application.Features.PathwayPlans.DTOs
 @using Cfo.Cats.Domain.Common.Enums
-@using Cfo.Cats.Server.UI.Pages.Activities.Components
 @using Humanizer
 
 @inherits CatsComponentBase
@@ -30,12 +25,12 @@
                             @if (Task is not null)
                             {
                                 <MudText Typo="Typo.body1" Class="mb-1">Viewing all activities for task</MudText>
-                                <MudText Typo="Typo.subtitle2">@Task.DisplayName</MudText>
+                                <MudText Typo="Typo.subtitle2" Style="word-break: break-word;">@Task.DisplayName</MudText>
                             }
                             else if (Objective is not null)
                             {
                                 <MudText Typo="Typo.body1" Class="mb-1">Viewing all activities for objective</MudText>
-                                <MudText Typo="Typo.subtitle2">@Objective.DisplayName</MudText>
+                                <MudText Typo="Typo.subtitle2" Style="word-break: break-word;">@Objective.DisplayName</MudText>
                             }
                         </MudAlert>
                     </MudItem>
@@ -51,7 +46,7 @@
                         @bind-Value:after="OnLocationChanged"
                         Label="Location"
                         Clearable="true">
-                            @foreach (var location in locations)
+                            @foreach (var location in _locations)
                             {
                                 <MudSelectItem Value="location">@location.Name</MudSelectItem>
                             }
@@ -74,9 +69,9 @@
                     </MudItem>
                 </MudGrid>
             </MudListSubheader>
-            @if(activities is not null)
+            @if(_activities is not null)
             {
-                foreach (var activity in activities.Items)
+                foreach (var activity in _activities.Items)
                 {
                     var created = activity.Created.ToLocalTime();
                     var commencedOn = activity.CommencedOn.ToLocalTime();
@@ -161,7 +156,7 @@
                     <MudDivider />
                 }
                 <MudListSubheader Class="d-flex justify-center mt-2">
-                    <MudPagination Count="@activities.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
+                    <MudPagination Count="@_activities.TotalPages" ShowFirstButton="true" ShowLastButton="true" SelectedChanged="OnPaginationChanged" />
                 </MudListSubheader>
             }
         </MudList>
@@ -170,129 +165,3 @@
         <MudLoadingButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Close" OnClick="Dialog.Cancel">@ConstantString.Close</MudLoadingButton>
     </DialogActions>
 </MudDialog>
-
-@code {
-    IEnumerable<LocationDto> locations = [];
-    PaginatedData<ActivitySummaryDto>? activities;
-    
-    [Parameter, EditorRequired]
-    public required ActivitiesWithPagination.Query Model { get; set; }
-
-    [Parameter, EditorRequired]
-    public required ObjectiveDto Objective { get; set; }
-
-    [CascadingParameter]
-    public required IMudDialogInstance Dialog { get; set; }
-
-    [Parameter]
-    public ObjectiveTaskDto? Task { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            //loading = true;
-            locations = Locations
-                .GetVisibleLocations(CurrentUser.TenantId!)
-                .ToList();
-
-            await OnRefresh();
-
-        }
-        finally
-        {
-            //loading = false;
-        }
-
-        await base.OnInitializedAsync();
-    }
-
-    async Task OnRefresh()
-    {
-        Model.PageSize = 5;
-        Model.OrderBy = "Created";
-        Model.SortDirection = $"{SortDirection.Descending}";
-
-        activities = await GetNewMediator().Send(Model);
-    }
-
-    Task OnPaginationChanged(int arg)
-    {
-        Model.PageNumber = arg;
-        return OnRefresh();
-    }
-
-    Task OnDateRangeChanged(DateRange range)
-    {
-        Model.CommencedStart = range.Start;
-        Model.CommencedEnd = range.End;
-        return OnRefresh();
-    }
-
-    Task OnLocationChanged() => OnRefresh();
-
-    Task OnActivityTypesChanged(IReadOnlyCollection<ActivityType>? types)
-    {
-        Model.IncludeTypes = types?.ToList();
-        return OnRefresh();
-    }
-
-    Task OnExcludeNotInProgress(bool exclude)
-    {
-        Model.Status = exclude ? ActivityStatus.PendingStatus : null;
-        return OnRefresh();
-    }
-
-    async Task Edit(ActivitySummaryDto activity)
-    {
-        Dialog.Close();
-
-        var parameters = new DialogParameters<EditActivityDialog>()
-        {
-            {
-                x => x.ActivityId, activity.Id 
-            }
-        };
-
-        var dialog = await DialogService.ShowAsync<EditActivityDialog>("Edit Activity/ETE", parameters, new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small,
-            FullWidth = true,
-            CloseButton = true
-        });
-
-        var result = await dialog.Result;
-
-        if (result!.Canceled == false)
-        {
-            await OnRefresh();
-        }
-    }
-
-    async Task Abandon(ActivitySummaryDto activity)
-    {
-        Dialog.Close();
-
-        var parameters = new DialogParameters<AbandonActivityDialog>()
-        {
-            { x => x.model, new AbandonActivity.Command()
-            {
-                ActivityId= activity.Id,
-                AbandonJustification="",
-                AbandonReason=ActivityAbandonReason.Other,
-                AbandonedBy=CurrentUser.UserId!
-            } }            
-        };
-
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, BackdropClick = false };
-
-        var dialog = await DialogService.ShowAsync<AbandonActivityDialog>("Abandon Activity/ETE", parameters, options);
-
-         var result = await dialog.Result;
-
-        if (result!.Canceled == false)
-        {
-            await OnRefresh();
-        }
-    }
-}

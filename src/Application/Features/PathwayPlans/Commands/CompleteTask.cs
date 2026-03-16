@@ -10,13 +10,13 @@ public class CompleteTask
     public class Command : IRequest<Result>
     {
         [Description("Task Id")]
-        public required Guid TaskId { get; set; }
+        public required Guid TaskId { get; init; }
 
         [Description("Objective Id")]
-        public required Guid ObjectiveId { get; set; }
+        public required Guid ObjectiveId { get; init; }
 
         [Description("Pathway Plan Id")]
-        public required Guid PathwayPlanId { get; set; }
+        public required Guid PathwayPlanId { get; init; }
 
         [Description("Reason")]
         public CompletionStatus Reason { get; set; } = CompletionStatus.Done;
@@ -31,7 +31,7 @@ public class CompleteTask
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            var pathwayPlan = await unitOfWork.DbContext.PathwayPlans.FindAsync(request.PathwayPlanId)
+            var pathwayPlan = await unitOfWork.DbContext.PathwayPlans.FindAsync(request.PathwayPlanId, cancellationToken)
                 ?? throw new NotFoundException("Cannot find pathway plan", request.PathwayPlanId);
 
             var objective = pathwayPlan.Objectives.FirstOrDefault(o => o.Id == request.ObjectiveId)
@@ -63,15 +63,13 @@ public class CompleteTask
             RuleFor(x => x.PathwayPlanId)
                 .NotNull()
                 .WithMessage("You must provide a Pathway Plan");                
-
-            When(x => x.Reason.RequiresJustification, () =>
-            {
-                RuleFor(x => x.Justification)
-                    .NotEmpty()
-                    .WithMessage("Justification is required for the selected reason");
-            });
-
+            
             RuleFor(x => x.Justification)
+                .NotEmpty()
+                .When(c => c.Reason.RequiresJustification)
+                .WithMessage("Justification is required for the selected reason")
+                .MaximumLength(3000)
+                .WithMessage($"Maximum length of justification is 3000")
                 .Matches(ValidationConstants.Notes)
                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
 
@@ -92,7 +90,7 @@ public class CompleteTask
                                        select p.Id
                                        )
                             .AsNoTracking()
-                            .FirstOrDefaultAsync();
+                            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             return participantId != null;
         }

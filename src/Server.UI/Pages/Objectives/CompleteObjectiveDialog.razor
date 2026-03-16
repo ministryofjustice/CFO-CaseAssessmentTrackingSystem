@@ -1,11 +1,11 @@
-﻿@using Cfo.Cats.Application.Features.PathwayPlans.Commands
+﻿@using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Domain.Common.Enums
 
 @inherits CatsComponentBase
 
 <MudDialog>
     <DialogContent>
-        <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
+        <MudForm @ref="_form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
             <MudSelect @bind-Value="Model.Reason"
                        Label="@Model.GetMemberDescription(x => x.Reason)"
                        For="@(() => Model.Reason)">
@@ -19,61 +19,20 @@
                           Label="@Model.GetMemberDescription(x => x.Justification)"
                           For="@(() => Model.Justification)"
                           Lines="5"
-                          Class="mt-4" />
+                          Class="mt-4"
+                          MaxLength="2000" 
+                          Immediate="true" 
+                          Counter="2000"/>
 
-            <MudCheckBox @bind-Value="understood" 
+            <MudCheckBox @bind-Value="_understood" 
                          Label="@(@"I understand that completing this objective will also complete any outstanding tasks and I won't be able to make any further changes.")"
                          Class="mt-4" />
         </MudForm>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="saving" OnClick="Submit" Disabled="understood is false">
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Loading="_saving" OnClick="@Submit" Disabled="_understood is false">
             @($"{ConstantString.Complete} Objective")
         </MudLoadingButton>
     </DialogActions>
 </MudDialog>
-
-@code {
-    MudForm? form;
-    bool saving;
-    bool understood;
-
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
-
-    [Parameter, EditorRequired]
-    public required CompleteObjective.Command Model { get; set; }
-
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
-
-    private async Task Submit()
-    {
-        try
-        {
-            saving = true;
-
-            if (form is null)
-            {
-                saving = false;
-                return;
-            }
-
-            await form.Validate();
-
-            if (form.IsValid)
-            {
-                MudDialog.Close(DialogResult.Ok(true));
-            }
-
-        }
-        finally
-        {
-            saving = false;
-        }
-    }
-
-
-}

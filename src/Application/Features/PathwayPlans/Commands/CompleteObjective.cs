@@ -10,10 +10,10 @@ public static class CompleteObjective
     public class Command : IRequest<Result>
     {
         [Description("Pathway Plan Id")]
-        public required Guid PathwayPlanId { get; set; }
+        public required Guid PathwayPlanId { get; init; }
 
         [Description("Objective Id")]
-        public required Guid ObjectiveId { get; set; }
+        public required Guid ObjectiveId { get; init; }
 
         public CompletionStatus Reason { get; set; } = CompletionStatus.Done;
 
@@ -26,7 +26,7 @@ public static class CompleteObjective
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            var pathwayPlan = await unitOfWork.DbContext.PathwayPlans.FindAsync(request.PathwayPlanId)
+            var pathwayPlan = await unitOfWork.DbContext.PathwayPlans.FindAsync(request.PathwayPlanId, cancellationToken)
                 ?? throw new NotFoundException("Cannot find pathway plan", request.PathwayPlanId);
 
             var objective = pathwayPlan.Objectives.FirstOrDefault(o => o.Id == request.ObjectiveId)
@@ -55,13 +55,15 @@ public static class CompleteObjective
                 .MustAsync(ParticipantMustNotBeArchived)
                 .WithMessage("Participant is archived");
 
-            When(x => x.Reason.RequiresJustification, () =>
-            {
-                RuleFor(x => x.Justification)
-                    .NotEmpty()
-                    .WithMessage("Justification is required for the selected reason");
-            });
-
+            RuleFor(x => x.Justification)
+                .NotEmpty()
+                .When(c => c.Reason.RequiresJustification)
+                .WithMessage("You must provide a justification for the selected reason")
+                .MaximumLength(ValidationConstants.NotesLength)
+                .WithMessage($"Maximum length of justification is {ValidationConstants.NotesLength}")
+                .Matches(ValidationConstants.Notes)
+                .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
+            
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
                 RuleFor(x => x.PathwayPlanId)
@@ -79,7 +81,7 @@ public static class CompleteObjective
                                        select p.Id
                                        )
                             .AsNoTracking()
-                            .FirstOrDefaultAsync();
+                            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             return participantId != null;
         }

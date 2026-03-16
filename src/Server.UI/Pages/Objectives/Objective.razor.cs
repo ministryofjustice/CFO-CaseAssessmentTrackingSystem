@@ -13,8 +13,11 @@ public partial class Objective
     public required string ParticipantId { get; set; }
 
     [Parameter, EditorRequired]
-    public bool ParticipantIsActive { get; set; } = default!;
+    public bool ParticipantIsActive { get; set; }
 
+    [Parameter, EditorRequired]
+    public required string ParticipantName { get; set; }
+    
     [Parameter, EditorRequired]
     public required ObjectiveDto Model { get; set; }
 
@@ -24,7 +27,7 @@ public partial class Objective
     [Parameter]
     public EventCallback OnChange { get; set; }
 
-    public async Task Complete()
+    private async Task Complete()
     {
         var command = new CompleteObjective.Command()
         {
@@ -38,7 +41,8 @@ public partial class Objective
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
-        var dialog = await DialogService.ShowAsync<CompleteObjectiveDialog>("Complete objective", parameters, options);
+        var dialogTitle = "Complete objective for " + ParticipantName + " Ref: " + ParticipantId;
+        var dialog = await DialogService.ShowAsync<CompleteObjectiveDialog>(dialogTitle, parameters, options);
 
         var state = await dialog.Result;
 
@@ -58,7 +62,7 @@ public partial class Objective
         }
     }
 
-    public async Task AddTask()
+    private async Task AddTask()
     {
         var command = new AddTask.Command()
         {
@@ -72,7 +76,8 @@ public partial class Objective
         };
 
         var options = SetDialogOptions();
-        var dialog = await DialogService.ShowAsync<AddTaskDialog>("Add task to objective", parameters, options);
+        var dialogTitle = "Add task to objective for " + ParticipantName + " Ref: " + ParticipantId;
+        var dialog = await DialogService.ShowAsync<AddTaskDialog>(dialogTitle, parameters, options);
 
         var state = await dialog.Result;
 
@@ -92,7 +97,7 @@ public partial class Objective
         }
     }
 
-    public async Task Expand()
+    private async Task Expand()
     {
         var options = SetDialogOptions();
         await DialogService.ShowAsync<ExpandObjectiveDialog>
@@ -106,7 +111,7 @@ public partial class Objective
         );
     }
 
-    public async Task Rename()
+    private async Task Rename()
     {
         var command = new EditObjective.Command()
         {
@@ -121,7 +126,8 @@ public partial class Objective
         };
 
         var options = SetDialogOptions();
-        var dialog = await DialogService.ShowAsync<RenameObjectiveDialog>("Rename objective", parameters, options);
+        var dialogTitle = "Rename objective for " + ParticipantName + " Ref: " + ParticipantId;
+        var dialog = await DialogService.ShowAsync<RenameObjectiveDialog>(dialogTitle, parameters, options);
 
         var state = await dialog.Result;
 
@@ -156,7 +162,8 @@ public partial class Objective
         };
 
         var options = SetDialogOptions();
-        var dialog = await DialogService.ShowAsync<ActivitiesDialog>("Activity/ETE history for objective", parameters, options);
+        var dialogTitle = "Activity/ETE history for objective " + ParticipantName + " Ref: " + ParticipantId;
+        var dialog = await DialogService.ShowAsync<ActivitiesDialog>(dialogTitle, parameters, options);
 
         if (await dialog.Result is not { Canceled: true })
         {

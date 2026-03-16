@@ -1,8 +1,10 @@
+using Cfo.Cats.Application.Features.Participants.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.Queries;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Infrastructure.Constants;
+using Cfo.Cats.Server.UI.Models;
 using Cfo.Cats.Server.UI.Pages.Objectives;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
@@ -14,7 +16,7 @@ public partial class ViewPathwayPlan
     private bool _hideCompletedTasks;
 
     private string _selector = "Created";
-    private Dictionary<string, Func<ObjectiveDto, dynamic>> _selectors = new()
+    private readonly Dictionary<string, Func<ObjectiveDto, dynamic>> _selectors = new()
     {
         { "Created", (objective) => objective.Created },
         { "Title", (objective) => objective.Description },
@@ -23,30 +25,36 @@ public partial class ViewPathwayPlan
 
     private SortDirection _sortDirection = SortDirection.Ascending;
 
-    [Parameter, EditorRequired]
-    public required string ParticipantId { get; set; }
-
-    [Parameter, EditorRequired]
-    public bool ParticipantIsActive { get; set; }
-
+    [CascadingParameter(Name = "ParticipantDetails")]
+    public ParticipantCascadingDetails? ParticipantDetails { get; set; }
+    
     public PathwayPlanDto? Model { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        await OnRefresh(firstRender: true);
-        await base.OnInitializedAsync();
-    }
+        if (ParticipantDetails is null)
+        {
+            return;
+        }
 
+        await OnRefresh(firstRender: true);
+    }
+    
     private async Task OnRefresh(bool firstRender = false)
     {
+        if (ParticipantDetails is null)
+        {
+            return;
+        }
+
         _loading = true;
 
         try
         {
             Model = await GetNewMediator().Send(new GetPathwayPlanByParticipantId.Query()
             {
-                ParticipantId = ParticipantId
-                           });
+                ParticipantId = ParticipantDetails.Id
+            });
 
             if (firstRender is false)
             {
@@ -59,7 +67,7 @@ public partial class ViewPathwayPlan
         }
     }
 
-    public async Task AddObjective()
+    private async Task AddObjective()
     {
         var command = new AddObjective.Command()
         {
@@ -72,7 +80,8 @@ public partial class ViewPathwayPlan
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true, BackdropClick = false };
-        var dialog = await DialogService.ShowAsync<AddObjectiveDialog>("Add thematic objective", parameters, options);
+        var dialogTitle = $"Add thematic objective for {ParticipantDetails?.FullName} Ref: {ParticipantDetails?.Id}";
+        var dialog = await DialogService.ShowAsync<AddObjectiveDialog>(dialogTitle, parameters, options);
 
         if (await dialog.Result is { Canceled: false })
         {
@@ -95,7 +104,7 @@ public partial class ViewPathwayPlan
         var command = new ReviewPathwayPlan.Command
         {
             PathwayPlanId = Model!.Id,
-            ParticipantId = ParticipantId,
+            ParticipantId = ParticipantDetails!.Id,
             ReviewDate = DateTime.UtcNow,
             ReviewReason = PathwayPlanReviewReason.Default
         };
