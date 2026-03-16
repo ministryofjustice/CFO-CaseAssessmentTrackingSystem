@@ -18,11 +18,11 @@ public partial class CaseTimeline
     [CascadingParameter]
     public UserProfile UserProfile { get; set; } = default!;
 
-    private PaginatedData<TimelineDto>? _model = null;
-
-    private int pageNumber = 1;
-    private int pageSize = 10;
-    private readonly int[] pageSizeOptions = [10, 30, 100];
+    private List<TimelineDto> _items = [];
+    private int _totalItems;
+    private int _pageNumber = 1;
+    private bool _loadingMore;
+    private const int PageSize = 50;
 
     //Hide CFO Users from providers on time line
     private bool hideUser = true;
@@ -31,7 +31,7 @@ public partial class CaseTimeline
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadDataAsync();
+        await LoadPageAsync();
 
         if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
         {
@@ -39,46 +39,45 @@ public partial class CaseTimeline
         }
     }
 
-    private async Task LoadDataAsync()
+    private async Task LoadPageAsync()
     {
-        _model = await GetNewMediator().Send(new TimelinesWithPaginationQuery.Query()
+        var result = await GetNewMediator().Send(BuildQuery());
+
+        _items.AddRange(result.Items);
+        _totalItems = result.TotalItems;
+    }
+    private TimelinesWithPaginationQuery.Query BuildQuery() =>
+    new()
+    {
+        ParticipantId = ParticipantSummaryDto.Id,
+        CurrentUser = UserProfile,
+        PageNumber = _pageNumber,
+        PageSize = PageSize
+    };
+    private async Task ShowMoreAsync()
+    {
+        try
         {
-            ParticipantId = ParticipantSummaryDto.Id,
-            CurrentUser = UserProfile,
-            PageNumber = pageNumber,
-            PageSize = pageSize
-        });
-    }
-
-    private async Task OnPageChanged(int page)
-    {
-        pageNumber = page;
-        await LoadDataAsync();
-    }
-
-    private async Task OnPageSizeChanged(int size)
-    {
-        pageSize = size;
-        pageNumber = 1;
-        await LoadDataAsync();
-    }
-
-    private string ItemRangeLabel =>
-        _model is null ? string.Empty
-        : $"{(_model.CurrentPage - 1) * pageSize + 1}-{Math.Min(_model.CurrentPage * pageSize, _model.TotalItems)} of {_model.TotalItems}";
-
-    private Color GetColour(TimelineDto dto)
-    {
-        return dto.Title switch
+            _loadingMore = true;
+            _pageNumber++;
+            await LoadPageAsync();
+        }
+        finally
         {
-            nameof(TimelineEventType.Participant) => Color.Primary,
-            nameof(TimelineEventType.Enrolment) => Color.Success,
-            nameof(TimelineEventType.Consent) => Color.Secondary,
-            nameof(TimelineEventType.Assessment) => Color.Info,
-            nameof(TimelineEventType.PathwayPlan) => Color.Warning,
-            nameof(TimelineEventType.Bio) => Color.Error,
-            nameof(TimelineEventType.Dms) => Color.Dark,
-            _ => Color.Primary
-        };
+            _loadingMore = false;
+        }
     }
+
+    private Color GetColour(TimelineDto dto) => dto.Title switch
+    {
+        nameof(TimelineEventType.Participant) => Color.Primary,
+        nameof(TimelineEventType.Enrolment) => Color.Success,
+        nameof(TimelineEventType.Consent) => Color.Secondary,
+        nameof(TimelineEventType.Assessment) => Color.Info,
+        nameof(TimelineEventType.PathwayPlan) => Color.Warning,
+        nameof(TimelineEventType.Bio) => Color.Error,
+        nameof(TimelineEventType.Dms) => Color.Dark,
+        _ => Color.Primary
+    };
+
 }

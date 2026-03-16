@@ -8,10 +8,10 @@
 @inherits CatsComponentBase
 
 
-    @if (_model is not null)
+    @if (_items.Count > 0)
     {
         <MudTimeline TimelinePosition="TimelinePosition.Start" Modifiers="true">
-            @foreach (var model in _model.Items)
+            @foreach (var model in _items)
             {
                 Color color = GetColour(model);
                 
@@ -49,20 +49,16 @@
 
             }
         </MudTimeline>
-        <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-2">
-            <MudSpacer />
-            <MudText Typo="Typo.body2" Class="mr-2">Rows per page:</MudText>
-            <MudSelect T="int" Value="pageSize" ValueChanged="OnPageSizeChanged" Margin="Margin.Dense" Variant="Variant.Text" Dense="true" FitContent="true">
-                @foreach (var size in pageSizeOptions)
-                {
-                    <MudSelectItem Value="size">@size</MudSelectItem>
-                }
-            </MudSelect>
-            <MudText Typo="Typo.body2" Class="mx-4">@ItemRangeLabel</MudText>
-            <MudPagination Count="_model.TotalPages" Selected="pageNumber" SelectedChanged="OnPageChanged"
-                           Color="Color.Primary" Variant="Variant.Text"
-                           ShowFirstButton="true" ShowLastButton="true"
-                           BoundaryCount="1" MiddleCount="1" />
-        </MudStack>        
+
+
+            <MudStack Row="true" Justify="Justify.Center" Class="mt-2 mb-4">
+                <MudText Typo="Typo.body2" Class="align-self-center">@_items.Count of @_totalItems</MudText>
+        @if (_items.Count < _totalItems)
+        {                
+                <MudLoadingButton Loading="@_loadingMore" Color="Color.Secondary" Variant="Variant.Filled"
+                                  StartIcon="@Icons.Material.Filled.ExpandMore" OnClick="ShowMoreAsync">
+                    Show More
+                </MudLoadingButton>
+        }
+            </MudStack>
     }
-    
