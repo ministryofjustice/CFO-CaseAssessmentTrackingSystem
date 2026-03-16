@@ -74,6 +74,7 @@ internal static class DatabaseConstants
         public const string ActivityQa1Queue = nameof(ActivityQa1Queue);
         public const string ActivityQa2Queue = nameof(ActivityQa2Queue);
         public const string ActivityEscalationQueue = nameof(ActivityEscalationQueue);
+        public const string ActivityFeedback = nameof(ActivityFeedback);
 
         public const string PRI = nameof(PRI);
         

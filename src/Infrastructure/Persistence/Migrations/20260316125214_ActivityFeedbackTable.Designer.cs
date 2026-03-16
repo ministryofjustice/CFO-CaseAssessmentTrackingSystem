@@ -4,6 +4,7 @@ using Cfo.Cats.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cfo.Cats.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260316125214_ActivityFeedbackTable")]
+    partial class ActivityFeedbackTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.5")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -3978,44 +3981,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.ToTable("Label", "Configuration");
                 });
 
-            modelBuilder.Entity("Cfo.Cats.Domain.ParticipantLabels.ParticipantLabel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<Guid>("LabelId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<string>("_participantId")
-                        .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)")
-                        .HasColumnName("ParticipantId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LabelId");
-
-                    b.HasIndex("_participantId");
-
-                    b.ToTable("Label", "Participant");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
                 {
                     b.Property<int>("Id")
@@ -6412,47 +6377,6 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.HasOne("Cfo.Cats.Domain.Entities.Administration.Contract", null)
                         .WithMany()
                         .HasForeignKey("ContractId");
-                });
-
-            modelBuilder.Entity("Cfo.Cats.Domain.ParticipantLabels.ParticipantLabel", b =>
-                {
-                    b.HasOne("Cfo.Cats.Domain.Labels.Label", "Label")
-                        .WithMany()
-                        .HasForeignKey("LabelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", null)
-                        .WithMany()
-                        .HasForeignKey("_participantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsOne("Cfo.Cats.Domain.ValueObjects.Lifetime", "Lifetime", b1 =>
-                        {
-                            b1.Property<Guid>("ParticipantLabelId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<DateTime>("EndDate")
-                                .HasColumnType("datetime2")
-                                .HasColumnName("LifetimeEnd");
-
-                            b1.Property<DateTime>("StartDate")
-                                .HasColumnType("datetime2")
-                                .HasColumnName("LifetimeStart");
-
-                            b1.HasKey("ParticipantLabelId");
-
-                            b1.ToTable("Label", "Participant");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ParticipantLabelId");
-                        });
-
-                    b.Navigation("Label");
-
-                    b.Navigation("Lifetime")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("TenantLocation", b =>
