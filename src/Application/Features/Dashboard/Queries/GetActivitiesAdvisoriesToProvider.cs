@@ -54,6 +54,7 @@ public static class GetActivitiesAdvisoriesToProvider
                     PqaSubmittedDate = (DateTime?)pfa.PqaSubmittedDate,
                     PqaUser = submittedByUser.DisplayName,
                     AdvisoryDate = pfa.ActionDate,
+                    FeedbackType = pfa.FeedbackType,
                     Message = pfa.Message ?? ""
                 };
 
@@ -104,6 +105,7 @@ public static class GetActivitiesAdvisoriesToProvider
         public string? CfoUser { get; set; }
         public DateTime? PqaSubmittedDate { get; set; }
         public DateTime? AdvisoryDate { get; set; }
+        public int? FeedbackType { get; set; }
         public string? Message { get; set; }
     }
     public record ActivitiesAdvisoriesChartData
