@@ -205,14 +205,11 @@ public partial class ObjectiveTask
         }
     }
 
-    private DialogOptions SetDialogOptions()
+    private DialogOptions SetDialogOptions() => new DialogOptions
     {
-        return new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small,
-            FullWidth = true,
-            CloseButton = true,
-            BackdropClick = false
-        };
-    }
+        MaxWidth = MaxWidth.Small,
+        FullWidth = true,
+        CloseButton = true,
+        BackdropClick = false
+    };
 }
