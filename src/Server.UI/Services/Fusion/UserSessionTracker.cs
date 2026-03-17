@@ -31,10 +31,7 @@ public class UserSessionTracker : IUserSessionTracker
        
     }
 
-    public virtual  Task<(string PageComponent, string[] UserSessions)[]> GetUserSessions(CancellationToken cancellationToken = default)
-    {
-        return Task.FromResult(_pageUserSessions.Select(kvp => (kvp.Key, kvp.Value.ToArray())).ToArray());
-    }
+    public virtual Task<(string PageComponent, string[] UserSessions)[]> GetUserSessions(CancellationToken cancellationToken = default) => Task.FromResult(_pageUserSessions.Select(kvp => (kvp.Key, kvp.Value.ToArray())).ToArray());
 
     public async Task RemoveUserSession(string pageComponent, string userName, CancellationToken cancellationToken = default)
     {

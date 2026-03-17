@@ -12,15 +12,9 @@ public class LocationAutoComplete : MudAutocomplete<LocationDto>
     [EditorRequired]
     public string TenantId { get; set; } = default!;
 
-    protected override void OnInitialized()
-    {
-        LocationService.OnChange += LocationService_OnChange;
-    }
+    protected override void OnInitialized() => LocationService.OnChange += LocationService_OnChange;
 
-    private void LocationService_OnChange()
-    {
-        InvokeAsync(StateHasChanged);
-    }
+    private void LocationService_OnChange() => InvokeAsync(StateHasChanged);
 
     protected override ValueTask DisposeAsyncCore()
     {

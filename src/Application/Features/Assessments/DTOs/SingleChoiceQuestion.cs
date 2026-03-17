@@ -37,9 +37,7 @@ public abstract class SingleChoiceQuestion : QuestionBase
     ///     Checks the validity of the answer given.
     /// </summary>
     /// <returns>true if the answer has been entered, and is contained in our option list, otherwise false</returns>
-    public override bool IsValid()
-    {
-        return string.IsNullOrEmpty(Answer) == false
-               && Options.Any(a => a == Answer);
-    }
+    public override bool IsValid() =>
+        string.IsNullOrEmpty(Answer) == false
+        && Options.Any(a => a == Answer);
 }

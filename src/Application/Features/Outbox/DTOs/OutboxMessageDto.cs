@@ -27,10 +27,7 @@ public class OutboxMessageDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
-            CreateMap<OutboxMessage, OutboxMessageDto>();
-        }
+        public Mapping() => CreateMap<OutboxMessage, OutboxMessageDto>();
     }
 
 }

@@ -45,9 +45,8 @@ public class ApplicationUserDto
 
     [Description("Notes")] public List<ApplicationUserNoteDto> Notes { get; set; } = [];
 
-    public UserProfile ToUserProfile()
-    {
-        return new UserProfile
+    public UserProfile ToUserProfile() =>
+        new()
         {
             UserId = Id,
             ProfilePictureDataUrl = ProfilePictureDataUrl,
@@ -63,35 +62,29 @@ public class ApplicationUserDto
             AssignedRoles = AssignedRoles,
             DefaultRole = DefaultRole
         };
-    }
 
-    public bool IsInRole(string role)
-    {
-        return AssignedRoles?.Contains(role) ?? false;
-    }
+    public bool IsInRole(string role) => AssignedRoles?.Contains(role) ?? false;
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<ApplicationUser, ApplicationUserDto>(MemberList.None)
                 .ForMember(x => x.SuperiorName, s => s.MapFrom(y => y.Superior!.UserName))
                 .ForMember(x => x.TenantName, s => s.MapFrom(y => y.Tenant!.Name))
                 .ForMember(x => x.AssignedRoles, s => s.MapFrom(y => y.UserRoles.Select(r => r.Role.Name)))
                 .ForMember(x => x.PhoneNumber, s => s.MapFrom(x => x.PhoneNumber))
-            .ReverseMap()
+                .ReverseMap()
                 .ForMember(x => x.UserName, s => s.MapFrom(y => y.Email))
                 .ForMember(x => x.Notes, s => s.Ignore())
                 .ForMember(x => x.Tenant, s => s.Ignore())
                 .ForMember(x => x.Superior, s => s.Ignore())
-            .AfterMap((dto, entity, context) =>
-            {
-                foreach(var noteDto in dto.Notes)
+                .AfterMap((dto, entity, context) =>
                 {
-                    var note = context.Mapper.Map<Note>(noteDto);
-                    entity.AddNote(note);
-                }
-            });
-        }
+                    foreach(var noteDto in dto.Notes)
+                    {
+                        var note = context.Mapper.Map<Note>(noteDto);
+                        entity.AddNote(note);
+                    }
+                });
     }
 }

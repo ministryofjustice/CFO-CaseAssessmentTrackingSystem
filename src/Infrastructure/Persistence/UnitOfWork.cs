@@ -8,11 +8,8 @@ public class UnitOfWork(IDbContextFactory<ApplicationDbContext> dbContextFactory
     private IDbContextTransaction? _currentTransaction;
 
     public IApplicationDbContext DbContext => _dbContext ??= dbContextFactory.CreateDbContext();
-    
-    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        return await ((DbContext)DbContext).SaveChangesAsync(cancellationToken);
-    }
+
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => await ((DbContext)DbContext).SaveChangesAsync(cancellationToken);
 
     public async Task BeginTransactionAsync()
     {

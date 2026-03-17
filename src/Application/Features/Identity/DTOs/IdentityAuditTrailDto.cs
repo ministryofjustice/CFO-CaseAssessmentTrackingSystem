@@ -25,10 +25,7 @@ public class IdentityAuditTrailDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
-            CreateMap<IdentityAuditTrail, IdentityAuditTrailDto>();
-        }
+        public Mapping() => CreateMap<IdentityAuditTrail, IdentityAuditTrailDto>();
     }
 
 }

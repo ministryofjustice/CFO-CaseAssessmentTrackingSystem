@@ -31,10 +31,8 @@ public class Timeline : BaseAuditableEntity<int>
     public string? Line2 { get; private set; }
     public string? Line3 { get; private set; }
 
-    public static Timeline CreateTimeline(string participantId, TimelineEventType eventType, string createdBy, string line1, string? line2, string? line3)
-    {
-        return new Timeline(participantId, eventType, createdBy, line1, line2, line3);
-    }
+    public static Timeline CreateTimeline(string participantId, TimelineEventType eventType, string createdBy, string line1, string? line2, string? line3) 
+        => new(participantId, eventType, createdBy, line1, line2, line3);
 
     public virtual ApplicationUser? CreatedByUser { get; private set; }
 }

@@ -20,11 +20,9 @@ public class PriCodeDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<PriCode, PriCodeDto>(MemberList.None)
                 .ForMember(x => x.CommunitySupportWorker, s => s.MapFrom(y => y.CreatedBy));
-        }
     }
 
 }

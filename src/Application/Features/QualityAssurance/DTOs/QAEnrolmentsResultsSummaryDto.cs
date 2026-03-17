@@ -19,10 +19,7 @@ public class QAEnrolmentsResultsSummaryDto
 
     public EnrolmentQaNoteDto[] Notes { get; set; } = [];
 
-    public EnrolmentSummaryNote[] GetNotes()
-    {
-        return (PQA.Union(QA1).Union(QA2).Union(Escalations)).OrderBy(x => x.Created).ToArray();
-    }
+    public EnrolmentSummaryNote[] GetNotes() => (PQA.Union(QA1).Union(QA2).Union(Escalations)).OrderBy(x => x.Created).ToArray();
 
     public record EnrolmentSummaryNote(string Message, string CreatedBy, string TenantId, string TenantName, DateTime Created)
     {

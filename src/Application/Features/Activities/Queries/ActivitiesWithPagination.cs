@@ -18,14 +18,12 @@ public static class ActivitiesWithPagination
     private class Handler(IUnitOfWork unitOfWork, IMapper mapper) 
         : IRequestHandler<Query, PaginatedData<ActivitySummaryDto>>
     {
-        public async Task<PaginatedData<ActivitySummaryDto>> Handle(Query request, CancellationToken cancellationToken)
-        {
-            return await unitOfWork.DbContext.Activities
+        public async Task<PaginatedData<ActivitySummaryDto>> Handle(Query request, CancellationToken cancellationToken) =>
+            await unitOfWork.DbContext.Activities
                 .Include(a => a.TookPlaceAtLocation)
                 .OrderByDescending(a => a.Status == ActivityStatus.PendingStatus.Value) // push "Pending" activities to top
                 .ThenBy($"{request.OrderBy} {request.SortDirection}")
                 .ProjectToPaginatedDataAsync<Activity, ActivitySummaryDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
-        }
     }
 
     public class Validator : AbstractValidator<Query>

@@ -11,8 +11,7 @@ public class PathwayPlanSummaryDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<PathwayPlan, PathwayPlanSummaryDto>(MemberList.None)
                 .ForMember(target => target.LastReviewed, options =>
                     options.MapFrom(source => source.PathwayPlanReviews
@@ -24,6 +23,5 @@ public class PathwayPlanSummaryDto
                         .OrderByDescending(history => history.Created)
                         .Select(history => history.CreatedBy)
                         .FirstOrDefault()));
-        }
     }
 }

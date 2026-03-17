@@ -31,13 +31,10 @@ public partial class CaseNotes
         }
     }
 
-    private async Task OnRefresh()
+    private async Task OnRefresh() => _notes = await GetNewMediator().Send(new GetParticipantNotes.Query()
     {
-        _notes = await GetNewMediator().Send(new GetParticipantNotes.Query()
-        {
-            ParticipantId = ParticipantId
-        });
-    }
+        ParticipantId = ParticipantId
+    });
 
     public async Task OnAddNote()
     {

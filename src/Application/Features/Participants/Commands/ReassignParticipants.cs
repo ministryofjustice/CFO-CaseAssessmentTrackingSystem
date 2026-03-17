@@ -102,13 +102,11 @@ public static class ReassignParticipants
                 .WithMessage("This assessment is created by you hence must not be processed at PQA stage by you");
         }
 
-        private async Task<bool> ValidAssignee(Command c, CancellationToken cancellationToken)
-        {
-            return await _unitOfWork.DbContext.Users.Where(x => x.TenantId!.StartsWith(c.CurrentUser!.TenantId!)
-                                                                && x.Id == c.CurrentUser.UserId
-                                                                && x.IsActive == true
+        private async Task<bool> ValidAssignee(Command c, CancellationToken cancellationToken) =>
+            await _unitOfWork.DbContext.Users.Where(x => x.TenantId!.StartsWith(c.CurrentUser!.TenantId!)
+                                                         && x.Id == c.CurrentUser.UserId
+                                                         && x.IsActive == true
             ).AnyAsync(cancellationToken);
-        }
     }
 
     public class C_ParticipantMustNotHaveAnOpenTransfer : AbstractValidator<Command>
@@ -123,10 +121,8 @@ public static class ReassignParticipants
                 .WithMessage((command, participantId) => $"Participant {participantId} has an active transfer, you must first complete the transfer before reassigning.");
         }
 
-        private bool NotHaveAnOpenTransfer(string participantId)
-        {
-            return _unitOfWork.DbContext.ParticipantIncomingTransferQueue
+        private bool NotHaveAnOpenTransfer(string participantId) =>
+            _unitOfWork.DbContext.ParticipantIncomingTransferQueue
                 .Any(p => p.ParticipantId == participantId && p.Completed == false) is false;
-        }
     }
 }

@@ -47,10 +47,7 @@ public partial class UserAuditDialog
         await _table.ReloadServerData();
     }
 
-    private async Task OnRefresh()
-    {
-        await _table.ReloadServerData();
-    }
+    private async Task OnRefresh() => await _table.ReloadServerData();
 
     private async Task OnSearch(IdentityActionType? identityActionType)
     {

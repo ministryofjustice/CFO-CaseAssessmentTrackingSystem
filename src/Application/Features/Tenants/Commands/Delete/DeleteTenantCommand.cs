@@ -7,10 +7,7 @@ namespace Cfo.Cats.Application.Features.Tenants.Commands.Delete;
 [RequestAuthorize(Policy = SecurityPolicies.SystemFunctionsWrite)]
 public class DeleteTenantCommand : ICacheInvalidatorRequest<Result<int>>
 {
-    public DeleteTenantCommand(string[] id)
-    {
-        Id = id;
-    }
+    public DeleteTenantCommand(string[] id) => Id = id;
 
     public string[] Id { get; }
     public string[] CacheKeys => [TenantCacheKey.GetAllCacheKey];

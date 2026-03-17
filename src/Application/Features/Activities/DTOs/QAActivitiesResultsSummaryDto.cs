@@ -25,10 +25,7 @@ public class QAActivitiesResultsSummaryDto
 
     public required string TookPlaceAtLocationName { get; set; }
 
-    public ActSummaryNote[] GetNotes()
-    {
-        return (PQA.Union(QA1).Union(QA2).Union(Escalations)).OrderBy(x => x.Created).ToArray();
-    }
+    public ActSummaryNote[] GetNotes() => (PQA.Union(QA1).Union(QA2).Union(Escalations)).OrderBy(x => x.Created).ToArray();
 
     public record ActSummaryNote(string Message, string CreatedBy, string TenantId, string TenantName, DateTime Created)
     {

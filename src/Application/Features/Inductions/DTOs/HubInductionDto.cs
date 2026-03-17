@@ -6,13 +6,11 @@ public record HubInductionDto(string ParticipantId, string HubName, DateTime Ind
 {
     private class Mapper : Profile
     {
-        public Mapper()
-        {
+        public Mapper() =>
             CreateMap<HubInduction, HubInductionDto>(MemberList.None)
                 .ForCtorParam(nameof(ParticipantId), options => options.MapFrom(source => source.ParticipantId))
                 .ForCtorParam(nameof(HubName), options => options.MapFrom(source => source.Location!.Name))
                 .ForCtorParam(nameof(InductionDate), options => options.MapFrom(source => source.InductionDate))
                 .ForCtorParam(nameof(InductedBy), options => options.MapFrom(source => source.Owner!.DisplayName));
-        }
     }
 }

@@ -14,10 +14,8 @@ public class ApplicationUserNoteDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<Note, ApplicationUserNoteDto>(MemberList.None)
                 .ReverseMap();
-        }
     }
 }

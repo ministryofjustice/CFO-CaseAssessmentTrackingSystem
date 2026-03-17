@@ -31,16 +31,13 @@ public static class GetByParticipantId
     }
     public class Validator : AbstractValidator<Query>
     {
-        public Validator()
-        {
+        public Validator() =>
             RuleFor(x => x.ParticipantId.ToString())
                 .NotEmpty()
                 .MinimumLength(9)
                 .MaximumLength(9)
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
-
-        }
     }
 }
 

@@ -21,10 +21,8 @@ public abstract partial class QuestionBase
     }
 
     protected QuestionBase(string question, string otherInformation, string[] options)
-        : this(question, options)
-    {
+        : this(question, options) =>
         this.OtherInformation = otherInformation;
-    }
 
     /// <summary>
     ///     The question we are asking

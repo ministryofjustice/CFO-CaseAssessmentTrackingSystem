@@ -99,12 +99,10 @@ public class AddOrUpdatePersonalDetail
     public class C_ValidNationalInsuranceNumber : AbstractValidator<Command>
     {
         
-        public C_ValidNationalInsuranceNumber()
-        {
+        public C_ValidNationalInsuranceNumber() =>
             RuleFor(c => c.PersonalDetails.NINo)
                 .Must(IsValid)
                 .WithMessage("Invalid National Insurance Number");
-        }
 
         // Regular expression for National Insurance Number
         private static readonly Regex _ninoRegex = new Regex(

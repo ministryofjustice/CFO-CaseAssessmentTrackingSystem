@@ -3,8 +3,5 @@
 public class SendTwoFactorTextCodeNotificationHandler(ICommunicationsService communicationsService) 
     : INotificationHandler<SendTwoFactorTextCodeNotification>
 {
-    public async Task Handle(SendTwoFactorTextCodeNotification notification, CancellationToken cancellationToken)
-    {
-        await communicationsService.SendSmsCodeAsync(notification.MobileNumber, notification.AuthenticatorCode);
-    }
+    public async Task Handle(SendTwoFactorTextCodeNotification notification, CancellationToken cancellationToken) => await communicationsService.SendSmsCodeAsync(notification.MobileNumber, notification.AuthenticatorCode);
 }

@@ -35,10 +35,7 @@ public partial class QA1List
         }
     }
 
-    private void ViewParticipant(EnrolmentQueueEntryDto dto)
-    {
-        Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
-    }
+    private void ViewParticipant(EnrolmentQueueEntryDto dto) => Navigation.NavigateTo($"/pages/participants/{dto.ParticipantId}");
 
     private async Task OnSearch(string text)
     {

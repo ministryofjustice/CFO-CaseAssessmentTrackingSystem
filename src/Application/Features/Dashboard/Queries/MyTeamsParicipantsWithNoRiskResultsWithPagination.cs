@@ -30,15 +30,13 @@ public static class MyTeamsParicipantsWithNoRiskResultsWithPagination
             return data;  
         }
 
-        private async Task<PaginatedData<MyTeamsParticipantsWithNoRiskDto>> GetData(Query request, CancellationToken cancellationToken)
-        {
-            return request.GroupingType switch
+        private async Task<PaginatedData<MyTeamsParticipantsWithNoRiskDto>> GetData(Query request, CancellationToken cancellationToken) =>
+            request.GroupingType switch
             {
                 MyTeamsParticipantsWithNoRiskGroupingType.User => await GetParticipantsWithNoRiskAggregateByUser(request, cancellationToken),
                 MyTeamsParticipantsWithNoRiskGroupingType.Tenant => await GetParticipantsWithNoRiskAggregateByTenant(request, cancellationToken),
                 _ => throw new ArgumentOutOfRangeException()
             };
-        }
 
         private async Task<PaginatedData<MyTeamsParticipantsWithNoRiskDto>> GetParticipantsWithNoRiskAggregateByTenant(Query request, CancellationToken cancellationToken)
         {

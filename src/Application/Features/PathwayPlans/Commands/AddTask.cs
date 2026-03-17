@@ -23,11 +23,9 @@ public static class AddTask
 
         public class Mapping : Profile
         {
-            public Mapping()
-            {
+            public Mapping() =>
                 CreateMap<Command, ObjectiveTask>(MemberList.None)
                     .ConstructUsing(dto => ObjectiveTask.Create(dto.Description!, dto.Due!.Value, false));
-            }
         }
     }
 

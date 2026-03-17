@@ -29,10 +29,7 @@ public class Tenant : BaseAuditableEntity<string>
         AddDomainEvent(new TenantCreatedDomainEvent(this));
     }
 
-    public static Tenant Create(string id, string name, string description, string? contractId)
-    {
-        return new Tenant(id, name, description, contractId);
-    }
+    public static Tenant Create(string id, string name, string description, string? contractId) => new(id, name, description, contractId);
 
     public string Name { get; private set; }
     public string Description { get; private set; }

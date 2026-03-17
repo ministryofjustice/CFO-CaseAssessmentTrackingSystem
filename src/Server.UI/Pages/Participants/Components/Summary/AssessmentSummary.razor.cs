@@ -95,11 +95,8 @@ public partial class AssessmentSummary
     /// <summary>
     /// If true, indicates we are creating our first ever assessment. 
     /// </summary>
-    private bool CanBeginAssessment()
-    {
-        return _latestAssessment == null
+    private bool CanBeginAssessment() => _latestAssessment == null
             && ParticipantSummaryDto.IsActive;
-    }
 
     /// <summary>
     /// If true indicates we have an assessment that is continuable
@@ -107,27 +104,20 @@ public partial class AssessmentSummary
     /// </summary>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    private bool CanContinueAssessment()
+    private bool CanContinueAssessment() => _latestAssessment is
     {
-        return _latestAssessment is
-        {
-            AssessmentScored: false
-        }
-        && ParticipantSummaryDto.IsActive;
-
+        AssessmentScored: false
     }
+        && ParticipantSummaryDto.IsActive;
 
     /// <summary>
     /// If true indicates we have an assessment that is recreatable
     /// (i.e. we have a scored assessment and are not in QA)
     /// </summary>
-    private bool CanReassess()
+    private bool CanReassess() => _latestAssessment is
     {
-        return _latestAssessment is
-        {
-            AssessmentScored: true
-        }
+        AssessmentScored: true
+    }
         && ParticipantSummaryDto.EnrolmentStatus.SupportsReassessment()
         && ParticipantSummaryDto.IsActive;
-    }
 }

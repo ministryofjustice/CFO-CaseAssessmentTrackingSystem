@@ -17,9 +17,6 @@ public class KeyValueDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
-            CreateMap<KeyValue, KeyValueDto>(MemberList.None).ReverseMap();
-        }
+        public Mapping() => CreateMap<KeyValue, KeyValueDto>(MemberList.None).ReverseMap();
     }
 }

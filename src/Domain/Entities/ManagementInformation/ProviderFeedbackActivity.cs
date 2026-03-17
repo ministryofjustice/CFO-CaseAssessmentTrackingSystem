@@ -55,9 +55,7 @@ public class ProviderFeedbackActivity
         DateTime pqaSubmittedDate,
         DateTime actionDate,
         string message,
-        int? feedbackType)
-    {
-        return new ProviderFeedbackActivity()
+        int? feedbackType) => new()
         {
             Id = Guid.CreateVersion7(),
             CreatedOn = DateTime.UtcNow,
@@ -78,7 +76,6 @@ public class ProviderFeedbackActivity
             Message = message,
             FeedbackType = feedbackType
         };
-    }
     public static ProviderFeedbackActivity CreateReturnedEscalationActivity(
         Guid queueEntryId,
         int noteId,
@@ -93,9 +90,7 @@ public class ProviderFeedbackActivity
         DateTime pqaSubmittedDate,
         DateTime actionDate,
         string message,
-        int? feedbackType)
-    {
-        return new ProviderFeedbackActivity()
+        int? feedbackType) => new()
         {
             Id = Guid.CreateVersion7(),
             CreatedOn = DateTime.UtcNow,
@@ -116,7 +111,6 @@ public class ProviderFeedbackActivity
             Message = message,
             FeedbackType = feedbackType
         };
-    }    
     public static ProviderFeedbackActivity CreateAdvisoryQA2Activity(
         Guid queueEntryId,
         int noteId,
@@ -131,9 +125,7 @@ public class ProviderFeedbackActivity
         DateTime pqaSubmittedDate,
         DateTime actionDate,
         string message,
-        int? feedbackType)
-    {
-        return new ProviderFeedbackActivity()
+        int? feedbackType) => new()
         {
             Id = Guid.CreateVersion7(),
             CreatedOn = DateTime.UtcNow,
@@ -154,7 +146,6 @@ public class ProviderFeedbackActivity
             Message = message,
             FeedbackType = feedbackType
         };
-    }
     public static ProviderFeedbackActivity CreateAdvisoryEscalationActivity(
         Guid queueEntryId,
         int noteId,
@@ -169,9 +160,7 @@ public class ProviderFeedbackActivity
         DateTime pqaSubmittedDate,
         DateTime actionDate,
         string message,
-        int? feedbackType)
-    {
-        return new ProviderFeedbackActivity()
+        int? feedbackType) => new()
         {
             Id = Guid.CreateVersion7(),
             CreatedOn = DateTime.UtcNow,
@@ -192,5 +181,4 @@ public class ProviderFeedbackActivity
             Message = message,
             FeedbackType = feedbackType
         };
-    }    
 }

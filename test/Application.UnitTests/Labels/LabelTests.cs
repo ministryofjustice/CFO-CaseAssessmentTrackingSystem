@@ -14,10 +14,7 @@ public class LabelTests
     private TestLabelCounter _labelCounter = null!;
 
     [SetUp]
-    public void Setup()
-    {
-        _labelCounter = new TestLabelCounter();
-    }
+    public void Setup() => _labelCounter = new TestLabelCounter();
 
     [Test]
     public void Create_WithValidData_ShouldSucceed()
@@ -42,84 +39,69 @@ public class LabelTests
     }
 
     [Test]
-    public void Create_WithNullName_ShouldThrowBusinessRuleException()
-    {
-        Should.Throw<BusinessRuleValidationException>(() =>
-            Label.Create(
-                null!,
-                "Description",
-                LabelScope.User,
-                AppColour.Primary,
-                AppVariant.Filled,
-            AppIcon.Label,
-                "CONTRACT-001",
-                _labelCounter))
+    public void Create_WithNullName_ShouldThrowBusinessRuleException() => Should.Throw<BusinessRuleValidationException>(() =>
+                                                                                   Label.Create(
+                                                                                       null!,
+                                                                                       "Description",
+                                                                                       LabelScope.User,
+                                                                                       AppColour.Primary,
+                                                                                       AppVariant.Filled,
+                                                                                   AppIcon.Label,
+                                                                                       "CONTRACT-001",
+                                                                                       _labelCounter))
             .Message.ShouldContain("Label Name cannot be null or empty.");
-    }
 
     [Test]
-    public void Create_WithEmptyName_ShouldThrowBusinessRuleException()
-    {
-        Should.Throw<BusinessRuleValidationException>(() =>
-            Label.Create(
-                "",
-                "Description",
-                LabelScope.User,
-                AppColour.Primary,
-                AppVariant.Filled,
-            AppIcon.Label,
-                "CONTRACT-001",
-                _labelCounter))
+    public void Create_WithEmptyName_ShouldThrowBusinessRuleException() => Should.Throw<BusinessRuleValidationException>(() =>
+                                                                                    Label.Create(
+                                                                                        "",
+                                                                                        "Description",
+                                                                                        LabelScope.User,
+                                                                                        AppColour.Primary,
+                                                                                        AppVariant.Filled,
+                                                                                    AppIcon.Label,
+                                                                                        "CONTRACT-001",
+                                                                                        _labelCounter))
             .Message.ShouldContain("Label Name cannot be null or empty.");
-    }
 
     [Test]
-    public void Create_WithWhitespaceName_ShouldThrowBusinessRuleException()
-    {
-        Should.Throw<BusinessRuleValidationException>(() =>
-            Label.Create(
-                "   ",
-                "Description",
-                LabelScope.User,
-                AppColour.Primary,
-                AppVariant.Filled,
-            AppIcon.Label,
-                "CONTRACT-001",
-                _labelCounter))
+    public void Create_WithWhitespaceName_ShouldThrowBusinessRuleException() => Should.Throw<BusinessRuleValidationException>(() =>
+                                                                                         Label.Create(
+                                                                                             "   ",
+                                                                                             "Description",
+                                                                                             LabelScope.User,
+                                                                                             AppColour.Primary,
+                                                                                             AppVariant.Filled,
+                                                                                         AppIcon.Label,
+                                                                                             "CONTRACT-001",
+                                                                                             _labelCounter))
             .Message.ShouldContain("Label Name cannot be null or empty.");
-    }
 
     [Test]
-    public void Create_WithNameTooShort_ShouldThrowBusinessRuleException()
-    {
-        Should.Throw<BusinessRuleValidationException>(() =>
-            Label.Create(
-                "A",
-                "Description",
-                LabelScope.User,
-                AppColour.Primary,
-                AppVariant.Filled,
-            AppIcon.Label,
-                "CONTRACT-001",
-                _labelCounter))
+    public void Create_WithNameTooShort_ShouldThrowBusinessRuleException() => Should.Throw<BusinessRuleValidationException>(() =>
+                                                                                       Label.Create(
+                                                                                           "A",
+                                                                                           "Description",
+                                                                                           LabelScope.User,
+                                                                                           AppColour.Primary,
+                                                                                           AppVariant.Filled,
+                                                                                       AppIcon.Label,
+                                                                                           "CONTRACT-001",
+                                                                                           _labelCounter))
             .Message.ShouldContain("Label must be between 2 and 25 characters");
-    }
 
     [Test]
-    public void Create_WithNameTooLong_ShouldThrowBusinessRuleException()
-    {
-        Should.Throw<BusinessRuleValidationException>(() =>
-            Label.Create(
-                new string('x', 201),
-                "Description",
-                LabelScope.User,
-                AppColour.Primary,
-                AppVariant.Filled,
-            AppIcon.Label,
-                "CONTRACT-001",
-                _labelCounter))
+    public void Create_WithNameTooLong_ShouldThrowBusinessRuleException() => Should.Throw<BusinessRuleValidationException>(() =>
+                                                                                      Label.Create(
+                                                                                          new string('x', 201),
+                                                                                          "Description",
+                                                                                          LabelScope.User,
+                                                                                          AppColour.Primary,
+                                                                                          AppVariant.Filled,
+                                                                                      AppIcon.Label,
+                                                                                          "CONTRACT-001",
+                                                                                          _labelCounter))
             .Message.ShouldContain("Label must be between 2 and 25 characters");
-    }
 
     [Test]
     public void Create_WithDuplicateNameSameContract_ShouldThrowBusinessRuleException()

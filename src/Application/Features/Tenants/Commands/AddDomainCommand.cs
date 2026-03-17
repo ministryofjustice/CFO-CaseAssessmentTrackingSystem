@@ -21,10 +21,7 @@ public static class AddDomainCommand
 
         private class Mapping : Profile
         {
-            public Mapping()
-            {
-                CreateMap<Command, TenantDomain>(MemberList.None);
-            }
+            public Mapping() => CreateMap<Command, TenantDomain>(MemberList.None);
         }
     }
 

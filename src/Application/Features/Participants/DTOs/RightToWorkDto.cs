@@ -15,8 +15,7 @@ public class RightToWorkDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<RightToWork, RightToWorkDto>()
                 .ForMember(rtw => rtw.DocumentId,
                     options => options.MapFrom(source => source.Document!.Id))
@@ -28,6 +27,5 @@ public class RightToWorkDto
                     options => options.MapFrom(source => source.Lifetime.EndDate))
                 .ForMember(o => o.Created, 
                     options => options.MapFrom(source => source.Created));
-        }
     }
 }

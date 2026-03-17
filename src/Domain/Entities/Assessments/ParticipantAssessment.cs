@@ -64,10 +64,8 @@ public class ParticipantAssessment : OwnerPropertyEntity<Guid>, IMayHaveTenant, 
         return this;
     }
 
-    public static ParticipantAssessment Create(Guid id, string participantId, string assessmentJson, string tenantId, int locationId)
-    {
-        return new ParticipantAssessment(id, participantId, assessmentJson, tenantId, locationId);
-    }
+    public static ParticipantAssessment Create(Guid id, string participantId, string assessmentJson, string tenantId, int locationId) 
+        => new(id, participantId, assessmentJson, tenantId, locationId);
 
     public string? TenantId {get; set;}
 

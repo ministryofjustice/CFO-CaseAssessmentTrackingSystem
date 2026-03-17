@@ -18,10 +18,7 @@ public static class GetDocumentAuditTrailsWithPagination
         public string CacheKey => DocumentAuditTrailsCacheKey.GetPaginationCacheKey($"{this}");
         public MemoryCacheEntryOptions? Options => DocumentAuditTrailsCacheKey.MemoryCacheEntryOptions;
 
-        public override string ToString()
-        {
-            return $"Search:{Keyword},Sort:{SortDirection},OrderBy:{OrderBy},{PageNumber},{PageSize}";
-        }
+        public override string ToString() => $"Search:{Keyword},Sort:{SortDirection},OrderBy:{OrderBy},{PageNumber},{PageSize}";
     }
 
     private class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, PaginatedData<DocumentAuditTrailDto>>

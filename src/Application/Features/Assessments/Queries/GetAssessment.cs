@@ -23,10 +23,7 @@ public static class GetAssessment
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public Handler(IUnitOfWork unitOfWork)
-        {
-            this._unitOfWork = unitOfWork;
-        }
+        public Handler(IUnitOfWork unitOfWork) => this._unitOfWork = unitOfWork;
 
         public async Task<Result<Assessment>> Handle(Query request, CancellationToken cancellationToken)
         {

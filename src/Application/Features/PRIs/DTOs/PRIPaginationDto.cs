@@ -32,11 +32,9 @@ public class PRIPaginationDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<Domain.Entities.PRIs.PRI, PRIPaginationDto>()
                 .ForMember(dest => dest.ParticipantName, opt => opt.MapFrom(src => src.Participant!.FullName))
                 .ForMember(dest => dest.ParticipantIsActive, opt => opt.MapFrom(src => src.Participant!.IsActive()));
-        }
     }
 }

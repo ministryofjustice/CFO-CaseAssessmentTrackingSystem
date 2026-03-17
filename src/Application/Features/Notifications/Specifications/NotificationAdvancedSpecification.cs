@@ -4,9 +4,7 @@ namespace Cfo.Cats.Application.Features.Notifications.Specifications;
 
 public sealed class NotificationAdvancedSpecification : Specification<Notification>
 {
-    public NotificationAdvancedSpecification(NotificationsAdvancedFilter filter)
-    {
+    public NotificationAdvancedSpecification(NotificationsAdvancedFilter filter) =>
         Query.Where(r => r.ReadDate == null, filter.ShowReadNotifications == false)
             .Where(n => n.OwnerId == filter.CurrentUser!.UserId);
-    }
 }

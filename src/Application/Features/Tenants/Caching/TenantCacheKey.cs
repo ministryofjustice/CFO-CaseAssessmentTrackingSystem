@@ -7,20 +7,14 @@ public static class TenantCacheKey
     private static readonly TimeSpan RefreshInterval = TimeSpan.FromHours(1);
     private static CancellationTokenSource tokenSource;
 
-    static TenantCacheKey()
-    {
-        tokenSource = new CancellationTokenSource(RefreshInterval);
-    }
+    static TenantCacheKey() => tokenSource = new CancellationTokenSource(RefreshInterval);
 
     public static MemoryCacheEntryOptions MemoryCacheEntryOptions =>
         new MemoryCacheEntryOptions().AddExpirationToken(
             new CancellationChangeToken(SharedExpiryTokenSource().Token)
         );
 
-    public static string GetPaginationCacheKey(string parameters)
-    {
-        return $"TenantsWithPaginationQuery,{parameters}";
-    }
+    public static string GetPaginationCacheKey(string parameters) => $"TenantsWithPaginationQuery,{parameters}";
 
     public static CancellationTokenSource SharedExpiryTokenSource()
     {
@@ -32,8 +26,5 @@ public static class TenantCacheKey
         return tokenSource;
     }
 
-    public static void Refresh()
-    {
-        SharedExpiryTokenSource().Cancel();
-    }
+    public static void Refresh() => SharedExpiryTokenSource().Cancel();
 }

@@ -7,10 +7,7 @@ public static class DataGridExtensions
     public static IQueryable<T> EfOrderBySortDefinitions<T, T1>(
         this IQueryable<T> source,
         GridState<T1> state
-    )
-    {
-        return source.EfOrderBySortDefinitions(state.SortDefinitions);
-    }
+    ) => source.EfOrderBySortDefinitions(state.SortDefinitions);
 
     public static IQueryable<T> EfOrderBySortDefinitions<T, T1>(
         this IQueryable<T> source,

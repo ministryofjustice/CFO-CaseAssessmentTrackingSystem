@@ -14,17 +14,16 @@ public class TimelineDto
 
     private class Mapper : Profile
     {
-        public Mapper()
-        {
+        public Mapper() =>
             CreateMap<Timeline, TimelineDto>(MemberList.None)
                 .ForMember(t => t.Title, options => {
                     options.MapFrom(source => source.EventType.Name);
                 })
                 .ForMember(t => t.User, options => {
                     options.MapFrom(source =>
-                                    source.CreatedByUser != null
-                                         ? source.CreatedByUser.DisplayName
-                                         : "System Update");
+                        source.CreatedByUser != null
+                            ? source.CreatedByUser.DisplayName
+                            : "System Update");
                 })
                 .ForMember(t => t.Line1, options => {
                     options.MapFrom(source => source.Line1);
@@ -36,10 +35,9 @@ public class TimelineDto
                     options.MapFrom(source => source.Created);
                 }).ForMember(t => t.UserTenantId, options => {
                     options.MapFrom(source =>
-                                    source.CreatedByUser != null
-                                        ? source.CreatedByUser.TenantId
-                                        : null);
+                        source.CreatedByUser != null
+                            ? source.CreatedByUser.TenantId
+                            : null);
                 });
-        }
     }
 }

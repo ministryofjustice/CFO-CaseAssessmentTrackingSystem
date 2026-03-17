@@ -10,10 +10,8 @@ public class ValidationExceptionHandler<TRequest, TResponse, TException>
 
     public ValidationExceptionHandler(
         ILogger<ValidationExceptionHandler<TRequest, TResponse, TException>> logger
-    )
-    {
+    ) =>
         _logger = logger;
-    }
 
     public Task Handle(
         TRequest request,

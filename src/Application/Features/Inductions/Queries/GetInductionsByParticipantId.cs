@@ -37,14 +37,12 @@ public static class GetInductionsByParticipantId
 
     public class Validator : AbstractValidator<Query>
     {
-        public Validator()
-        {
+        public Validator() =>
             RuleFor(x => x.ParticipantId)
                 .NotNull()
                 .MaximumLength(9)
                 .MinimumLength(9)
                 .Matches(ValidationConstants.AlphaNumeric)
                 .WithMessage(string.Format(ValidationConstants.AlphaNumericMessage, "Participant Id"));
-        }
     }
 }

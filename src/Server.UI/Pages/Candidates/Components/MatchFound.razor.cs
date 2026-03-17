@@ -50,10 +50,7 @@ public partial class MatchFound
         await base.OnInitializedAsync();
     }
 
-    private Task BackToSearch()
-    {
-        return OnCanceled.InvokeAsync();
-    }
+    private Task BackToSearch() => OnCanceled.InvokeAsync();
 
     private async Task EnrolCandidate()
     {

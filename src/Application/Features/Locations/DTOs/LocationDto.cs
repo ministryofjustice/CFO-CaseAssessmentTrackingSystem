@@ -20,8 +20,7 @@ public record LocationDto
     public string? ParentLocationName { get; set; }
     private class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<Location, LocationDto>()
                 .ForMember(t => t.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(t => t.GenderProvision, o => o.MapFrom(s => s.GenderProvision))
@@ -30,7 +29,6 @@ public record LocationDto
                 .ForMember(t => t.ParentLocationName, o => o.MapFrom(s => s.ParentLocation!.Name))
                 .ForMember(t => t.Name, o => o.MapFrom(s => s.Name))
                 .ForMember(t => t.Tenants, o => o.MapFrom(l => l.Tenants.Select(t => t.Id).ToArray()));
-        }
     }
 
  

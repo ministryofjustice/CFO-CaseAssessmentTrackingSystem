@@ -7,8 +7,5 @@ public class PaginationFilter : BaseFilter
     public string OrderBy { get; set; } = "Id";
     public string SortDirection { get; set; } = "Descending";
 
-    public override string ToString()
-    {
-        return $"PageNumber:{PageNumber},PageSize:{PageSize},OrderBy:{OrderBy},SortDirection:{SortDirection},Keyword:{Keyword}";
-    }
+    public override string ToString() => $"PageNumber:{PageNumber},PageSize:{PageSize},OrderBy:{OrderBy},SortDirection:{SortDirection},Keyword:{Keyword}";
 }

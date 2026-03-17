@@ -21,10 +21,8 @@ public class ParticipantSupervisorDto
 
     public class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<Supervisor, ParticipantSupervisorDto>(MemberList.None)
                 .ReverseMap();
-        }
     }
 }

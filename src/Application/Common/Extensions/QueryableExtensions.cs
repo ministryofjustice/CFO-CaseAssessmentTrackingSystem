@@ -13,10 +13,8 @@ public static class QueryableExtensions
         ISpecification<T> spec,
         bool evaluateCriteriaOnly = false
     )
-        where T : class, IEntity
-    {
-        return SpecificationEvaluator.Default.GetQuery(query, spec, evaluateCriteriaOnly);
-    }
+        where T : class, IEntity =>
+        SpecificationEvaluator.Default.GetQuery(query, spec, evaluateCriteriaOnly);
 
     public static async Task<PaginatedData<TResult>> ProjectToPaginatedDataAsync<T, TResult>(
         this IOrderedQueryable<T> query,

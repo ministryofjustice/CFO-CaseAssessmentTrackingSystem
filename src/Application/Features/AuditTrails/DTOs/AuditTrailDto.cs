@@ -41,8 +41,7 @@ public class AuditTrailDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<AuditTrail, AuditTrailDto>(MemberList.None)
                 .ForMember(
                     x => x.PrimaryKey,
@@ -54,6 +53,5 @@ public class AuditTrailDto
                             )
                         )
                 );
-        }
     }
 }

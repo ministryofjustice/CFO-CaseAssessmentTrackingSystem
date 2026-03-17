@@ -7,9 +7,6 @@ public partial class AuthenticationLayout
 
     protected string PrimaryColour => Configuration["PrimaryColour"] ?? Constants.Theme.DefaultPrimaryColour;
 
-    protected override void OnInitialized()
-    {
-        _theme = Constants.Theme.ApplicationTheme(PrimaryColour);
-    }
-  
+    protected override void OnInitialized() => _theme = Constants.Theme.ApplicationTheme(PrimaryColour);
+
 }

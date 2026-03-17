@@ -17,9 +17,6 @@ public class GeneratedDocumentDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
-            CreateMap<GeneratedDocument, GeneratedDocumentDto>(MemberList.None);
-        }
+        public Mapping() => CreateMap<GeneratedDocument, GeneratedDocumentDto>(MemberList.None);
     }
 }

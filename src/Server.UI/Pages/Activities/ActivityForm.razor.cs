@@ -75,16 +75,13 @@ public partial class ActivityForm
         ClearTemplates();
     }
 
-    private async Task CheckParticipantBeenAtThisLocationOnDate()
-    {
-        _hasParticipantBeenAtThisLocationOnThisDate = await GetNewMediator().Send(
+    private async Task CheckParticipantBeenAtThisLocationOnDate() => _hasParticipantBeenAtThisLocationOnThisDate = await GetNewMediator().Send(
             new GetParticipantWasAtThisLocationCheck.Query()
             {
                 ParticipantId = Model.ParticipantId,
                 LocationId = Model.Location!.Id,
                 DateAtLocation = Model.CommencedOn
             });
-    }
 
     private void ClearTemplates()
     {

@@ -49,9 +49,8 @@ public class ProviderFeedbackEnrolment
         DateTime pqaSubmittedDate,
         DateTime actionDate,
         string message,
-        int? feedbackType)
-    {
-        return new ProviderFeedbackEnrolment()
+        int? feedbackType) =>
+        new()
         {
             Id = Guid.CreateVersion7(),
             CreatedOn = DateTime.UtcNow,
@@ -70,7 +69,7 @@ public class ProviderFeedbackEnrolment
             Message = message,
             FeedbackType = feedbackType
         };
-    }
+
     public static ProviderFeedbackEnrolment CreateReturnedEscalationEnrolment(
         Guid queueEntryId,
         int noteId,
@@ -83,9 +82,7 @@ public class ProviderFeedbackEnrolment
         DateTime pqaSubmittedDate,
         DateTime actionDate,
         string message,
-        int? feedbackType)
-    {
-        return new ProviderFeedbackEnrolment()
+        int? feedbackType) => new ProviderFeedbackEnrolment()
         {
             Id = Guid.CreateVersion7(),
             CreatedOn = DateTime.UtcNow,
@@ -104,7 +101,6 @@ public class ProviderFeedbackEnrolment
             Message = message,
             FeedbackType = feedbackType
         };
-    }    
     public static ProviderFeedbackEnrolment CreateAdvisoryQA2Enrolment(
         Guid queueEntryId,
         int noteId,
@@ -117,9 +113,7 @@ public class ProviderFeedbackEnrolment
         DateTime pqaSubmittedDate,
         DateTime actionDate,
         string message,
-        int? feedbackType)
-    {
-        return new ProviderFeedbackEnrolment()
+        int? feedbackType) => new ProviderFeedbackEnrolment()
         {
             Id = Guid.CreateVersion7(),
             CreatedOn = DateTime.UtcNow,
@@ -138,7 +132,6 @@ public class ProviderFeedbackEnrolment
             Message = message,
             FeedbackType = feedbackType
         };
-    }
     public static ProviderFeedbackEnrolment CreateAdvisoryEscalationEnrolment(
         Guid queueEntryId,
         int noteId,
@@ -151,9 +144,7 @@ public class ProviderFeedbackEnrolment
         DateTime pqaSubmittedDate,
         DateTime actionDate,
         string message,
-        int? feedbackType)
-    {
-        return new ProviderFeedbackEnrolment()
+        int? feedbackType) => new ProviderFeedbackEnrolment()
         {
             Id = Guid.CreateVersion7(),
             CreatedOn = DateTime.UtcNow,
@@ -172,5 +163,4 @@ public class ProviderFeedbackEnrolment
             Message = message,
             FeedbackType = feedbackType
         };
-    }    
 }

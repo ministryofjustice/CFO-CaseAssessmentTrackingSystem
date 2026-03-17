@@ -6,10 +6,7 @@ namespace Cfo.Cats.Infrastructure.Persistence.Configurations.Activities;
 
 public class NonISWActivityEntityTypeConfiguration : IEntityTypeConfiguration<NonISWActivity>
 {
-    public void Configure(EntityTypeBuilder<NonISWActivity> builder)
-    {
-        builder.ToTable(
-            DatabaseConstants.Tables.NonIsqActivity, 
+    public void Configure(EntityTypeBuilder<NonISWActivity> builder) => builder.ToTable(
+            DatabaseConstants.Tables.NonIsqActivity,
             DatabaseConstants.Schemas.Activities);
-    }
 }

@@ -30,10 +30,7 @@ public class ObjectiveTaskDto
 
     public class Mapping : Profile
     {
-        public Mapping()
-        {
-            CreateMap<ObjectiveTask, ObjectiveTaskDto>();
-        }
+        public Mapping() => CreateMap<ObjectiveTask, ObjectiveTaskDto>();
     }
 
     /// <summary>

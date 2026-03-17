@@ -18,15 +18,12 @@ public class EnrolmentQaNoteDto
     private class Mapper : Profile
     {
             
-        public Mapper()
-        {
+        public Mapper() =>
             CreateMap<EnrolmentQueueEntryNote, EnrolmentQaNoteDto>()
                 .ForMember(target => target.CreatedBy, options => options.MapFrom(source=>source.CreatedByUser.DisplayName))
                 .ForMember(target => target.Message, options => options.MapFrom(source => source.Message))
                 .ForMember(target => target.Created, options => options.MapFrom(source => source.Created))
                 .ForMember(target => target.TenantName, options => options.MapFrom(source => source.CreatedByUser.TenantName));
-        }
-
     }
 
 }

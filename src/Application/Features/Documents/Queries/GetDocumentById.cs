@@ -51,12 +51,9 @@ public static class GetDocumentById
     }
     public class Validator : AbstractValidator<Query>
     {
-        public Validator()
-        {
+        public Validator() =>
             RuleFor(x => x.Id.ToString())
                 .NotEmpty()
                 .WithMessage(string.Format(ValidationConstants.GuidMessage, "Id"));
-
-        }
     }
 }

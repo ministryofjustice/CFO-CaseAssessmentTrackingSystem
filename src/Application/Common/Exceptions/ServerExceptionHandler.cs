@@ -10,10 +10,8 @@ public class ServerExceptionHandler<TRequest, TResponse, TException>
 
     public ServerExceptionHandler(
         ILogger<ServerExceptionHandler<TRequest, TResponse, TException>> logger
-    )
-    {
+    ) =>
         _logger = logger;
-    }
 
     public Task Handle(
         TRequest request,

@@ -18,10 +18,7 @@ public static class AddNote
 
         private class Mapping : Profile
         {
-            public Mapping()
-            {
-                CreateMap<Command, Note>(MemberList.None);
-            }
+            public Mapping() => CreateMap<Command, Note>(MemberList.None);
         }
     }
 

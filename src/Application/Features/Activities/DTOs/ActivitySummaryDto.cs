@@ -22,10 +22,8 @@ public class ActivitySummaryDto
 
     public class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<Activity, ActivitySummaryDto>()
                 .ForMember(dest => dest.TookPlaceAtLocationName, opts => opts.MapFrom(src => src.TookPlaceAtLocation.Name));
-        }
     }
 }

@@ -116,9 +116,7 @@ public class WingInduction : OwnerPropertyEntity<Guid>
     /// <returns></returns>
     /// <exception cref="ApplicationException">If there isn't an open phase</exception>
     /// <exception cref="InvalidOperationException">If there are more than one open phases</exception>
-    public InductionPhase GetOpenPhase()
-    {
-        return _phases.SingleOrDefault(c => c.CompletedDate is null)
-               ?? throw new ApplicationException("Call to GetOpenPhase when no phases are open");
-    }
+    public InductionPhase GetOpenPhase() =>
+        _phases.SingleOrDefault(c => c.CompletedDate is null)
+        ?? throw new ApplicationException("Call to GetOpenPhase when no phases are open");
 }

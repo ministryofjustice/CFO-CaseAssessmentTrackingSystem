@@ -112,17 +112,15 @@ public static class AbandonActivity
 
     public class D_AbandonedActvitiyRequiresJustification : AbstractValidator<Command>
     {
-        public D_AbandonedActvitiyRequiresJustification()
-        {
+        public D_AbandonedActvitiyRequiresJustification() =>
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
                 RuleFor(c => c.AbandonJustification)
-                 .NotEmpty()
-                 .When(c => c.AbandonReason.RequiresJustification)
-                 .WithMessage("You must provide a justification for the selected Archive reason")
-                 .Matches(ValidationConstants.Notes)
-                 .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
+                    .NotEmpty()
+                    .When(c => c.AbandonReason.RequiresJustification)
+                    .WithMessage("You must provide a justification for the selected Archive reason")
+                    .Matches(ValidationConstants.Notes)
+                    .WithMessage(string.Format(ValidationConstants.NotesMessage, "Justification"));
             });
-        }
     }
 }

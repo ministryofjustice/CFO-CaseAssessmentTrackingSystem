@@ -2,8 +2,5 @@
 
 public class AssessmentValidator : AbstractValidator<Assessment>
 {
-    public AssessmentValidator()
-    {
-        RuleForEach(model => model.Pathways).SetValidator(new AssessmentPathwayValidator());
-    }
+    public AssessmentValidator() => RuleForEach(model => model.Pathways).SetValidator(new AssessmentPathwayValidator());
 }

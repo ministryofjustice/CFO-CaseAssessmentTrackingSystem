@@ -19,8 +19,5 @@ public class KeyValuesWithPaginationQuery : KeyValueAdvancedFilter, ICacheableRe
     [JsonIgnore]
     public MemoryCacheEntryOptions? Options => KeyValueCacheKey.MemoryCacheEntryOptions;
 
-    public override string ToString()
-    {
-        return $"Picklist:{Picklist},Search:{Keyword},OrderBy:{OrderBy} {SortDirection},{PageNumber},{PageSize}";
-    }
+    public override string ToString() => $"Picklist:{Picklist},Search:{Keyword},OrderBy:{OrderBy} {SortDirection},{PageNumber},{PageSize}";
 }

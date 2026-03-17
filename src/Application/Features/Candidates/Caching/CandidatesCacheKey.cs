@@ -20,18 +20,9 @@ public static class CandidatesCacheKey
         return tokenSource;
     }
     
-    public static string GetCandidateCacheKey(string parameters)
-    {
-        return $"EnrolmentsWithPaginationQuery,{parameters}";
-    }
-    
-    public static void Refresh()
-    {
-        SharedExpiryTokenSource().Cancel();
-    }
-    
-    static CandidatesCacheKey()
-    {
-        tokenSource = new CancellationTokenSource(RefreshInterval);
-    }
+    public static string GetCandidateCacheKey(string parameters) => $"EnrolmentsWithPaginationQuery,{parameters}";
+
+    public static void Refresh() => SharedExpiryTokenSource().Cancel();
+
+    static CandidatesCacheKey() => tokenSource = new CancellationTokenSource(RefreshInterval);
 }

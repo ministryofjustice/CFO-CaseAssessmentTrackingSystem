@@ -36,9 +36,6 @@ public class PriSummaryDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
-            CreateMap<PRI, PriSummaryDto>(MemberList.None);
-        }
+        public Mapping() => CreateMap<PRI, PriSummaryDto>(MemberList.None);
     }
 }

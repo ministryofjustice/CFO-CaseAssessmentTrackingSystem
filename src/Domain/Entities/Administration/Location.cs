@@ -40,10 +40,8 @@ public class Location : BaseAuditableEntity<int>, ILifetime
     }
 
     public static Location Create(string name, int genderProvisionId, LocationType locationType, string contractId,
-        DateTime lifetimeStart, DateTime lifetimeEnd)
-    {
-        return new(name, genderProvisionId, locationType, contractId, lifetimeStart, lifetimeEnd);
-    }
+        DateTime lifetimeStart, DateTime lifetimeEnd) =>
+        new(name, genderProvisionId, locationType, contractId, lifetimeStart, lifetimeEnd);
 
     public string Name => _name;
 

@@ -21,10 +21,7 @@ public static class DeleteDomainCommand
 
         private class Mapping : Profile
         {
-            public Mapping()
-            {
-                CreateMap<Command, TenantDomain>(MemberList.None);
-            }
+            public Mapping() => CreateMap<Command, TenantDomain>(MemberList.None);
         }
     }
 
@@ -50,13 +47,10 @@ public static class DeleteDomainCommand
     }
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
-        {
+        public Validator() =>
             RuleFor(r => r.TenantId)
                 .NotNull()
                 .NotEmpty()
                 .Matches(ValidationConstants.TenantId).WithMessage(ValidationConstants.TenantIdMessage);
-
-        }
     }
 }

@@ -9,11 +9,9 @@ public class ParticipantBioDto
 
     private class Mapping : Profile
     {
-        public Mapping()
-        {
+        public Mapping() =>
             CreateMap<ParticipantBio, ParticipantBioDto>()
                 .ForMember(p => p.CreatedDate, options => options.MapFrom(source => source.Created));
-        }
     }
 }
 

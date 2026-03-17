@@ -16,10 +16,7 @@ public sealed class TenantProvider : ITenantProvider
         }
     }
 
-    public void Clear()
-    {
-        callbacks.Clear();
-    }
+    public void Clear() => callbacks.Clear();
 
     public void Update()
     {

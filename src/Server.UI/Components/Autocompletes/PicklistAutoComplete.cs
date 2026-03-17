@@ -16,13 +16,8 @@ public class PicklistAutoComplete : MudAutocomplete<string>
         PicklistService.OnChange += PicklistService_OnChange;
         await base.OnInitializedAsync();
     }
-    
-    
-    
-    private void PicklistService_OnChange()
-    {
-        InvokeAsync(StateHasChanged);
-    }
+
+    private void PicklistService_OnChange() => InvokeAsync(StateHasChanged);
 
     protected override ValueTask DisposeAsyncCore()
     {
@@ -38,23 +33,18 @@ public class PicklistAutoComplete : MudAutocomplete<string>
         ResetValueOnEmptyText = true;
         return base.SetParametersAsync(parameters);
     }
-    
-    private Task<IEnumerable<string>> SearchKeyValues(string? value, CancellationToken cancellation=default)
-    {
+
+    private Task<IEnumerable<string>> SearchKeyValues(string? value, CancellationToken cancellation = default) =>
         // if text is null or empty, show complete list
-        return string.IsNullOrEmpty(value)
+        string.IsNullOrEmpty(value)
             ? Task.FromResult(PicklistService.DataSource
                 .Where(x => x.Name == Picklist)
                 .Select(x => x.Value ?? string.Empty))
             : Task.FromResult(PicklistService.DataSource
                 .Where(x => x.Name == Picklist && Contains(x, value))
                 .Select(x => x.Value ?? string.Empty));
-    }
-    
-    private static bool Contains(KeyValueDto model, string value)
-    {
-        return (model.Value != null && model.Value.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+
+    private static bool Contains(KeyValueDto model, string value) => (model.Value != null && model.Value.Contains(value, StringComparison.InvariantCultureIgnoreCase))
                || (model.Text != null && model.Text.Contains(value, StringComparison.InvariantCultureIgnoreCase));
-    }
-    
+
 }

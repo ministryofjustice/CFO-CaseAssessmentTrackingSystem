@@ -10,8 +10,5 @@ public partial class MovedParticipants
         participantAccess = await GetNewMediator().Send(new GetParticipantsWithAccessEndingSoon.Query());
         await base.OnInitializedAsync();
     }
-    private void View(string participantId)
-    {
-        Navigation.NavigateTo($"/pages/participants/{participantId}");
-    }
+    private void View(string participantId) => Navigation.NavigateTo($"/pages/participants/{participantId}");
 }

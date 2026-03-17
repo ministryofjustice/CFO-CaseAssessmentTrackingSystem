@@ -127,13 +127,7 @@ public class IdentityService : IIdentityService
         return result;
     }
 
-    public void RemoveApplicationUserCache(string userName)
-    {
-        _fusionCache.Remove(GetApplicationUserCacheKey(userName));
-    }
+    public void RemoveApplicationUserCache(string userName) => _fusionCache.Remove(GetApplicationUserCacheKey(userName));
 
-    private string GetApplicationUserCacheKey(string userName)
-    {
-        return $"GetApplicationUserDto:{userName}";
-    }
+    private string GetApplicationUserCacheKey(string userName) => $"GetApplicationUserDto:{userName}";
 }

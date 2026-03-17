@@ -24,8 +24,5 @@ public class PublishEnrolmentApprovedAtQaEventHandler(IUnitOfWork unitOfWork)
             await Publish(notification.Entry.ParticipantId, notification.DateOccurred.DateTime);
         }
     }
-    private Task Publish(string participantId, DateTime dateOccurred)
-    {
-        return unitOfWork.DbContext.InsertOutboxMessage(new EnrolmentApprovedAtQaIntegrationEvent(participantId, dateOccurred));
-    }
+    private Task Publish(string participantId, DateTime dateOccurred) => unitOfWork.DbContext.InsertOutboxMessage(new EnrolmentApprovedAtQaIntegrationEvent(participantId, dateOccurred));
 }

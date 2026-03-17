@@ -21,11 +21,7 @@ public class ApplicationRoleDto
 
     public class Mapping : Profile
     {
-        public Mapping()
-        {
-            CreateMap<ApplicationRole, ApplicationRoleDto>(MemberList.None);
-        }
-
+        public Mapping() => CreateMap<ApplicationRole, ApplicationRoleDto>(MemberList.None);
     }
 
 }

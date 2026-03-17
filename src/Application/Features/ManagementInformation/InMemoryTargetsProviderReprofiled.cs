@@ -43,9 +43,8 @@ public class InMemoryTargetsProviderReprofiled : ITargetsProvider
         return _targets[name];
     }
 
-    private Dictionary<string, ContractTargetDto> AddTargets()
-    {
-        return new Dictionary<string, ContractTargetDto>
+    private Dictionary<string, ContractTargetDto> AddTargets() =>
+        new()
         {
             { "East Midlands", new ContractTargetDto("East Midlands", 102, 65, 5, 50, 56, 25, 501, 48, 90, 5, 15, 42) },
             {
@@ -69,7 +68,6 @@ public class InMemoryTargetsProviderReprofiled : ITargetsProvider
                 new ContractTargetDto("Yorkshire and Humberside", 144, 161, 15, 150, 79, 36, 915, 143, 270, 15, 27, 76)
             }
         };
-    }
 
     private bool IsBeforeReprofile(int month, int year)
     {

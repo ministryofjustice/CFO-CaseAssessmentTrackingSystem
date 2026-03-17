@@ -21,12 +21,9 @@ public class MappingTests
         configuration = new MapperConfiguration(cfg => cfg.AddMaps(Assembly.GetAssembly(typeof(IApplicationDbContext))));
         mapper = configuration.CreateMapper();
     }
-    
+
     [Test]
-    public void ShouldHaveValidConfiguration()
-    {
-        configuration.AssertConfigurationIsValid();
-    }
+    public void ShouldHaveValidConfiguration() => configuration.AssertConfigurationIsValid();
 
     [Test]
     [TestCase(typeof(Participant), typeof(ParticipantDto), false)]

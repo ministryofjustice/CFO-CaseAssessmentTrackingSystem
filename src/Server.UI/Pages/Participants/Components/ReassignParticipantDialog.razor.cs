@@ -23,11 +23,9 @@ public partial class ReassignParticipantDialog
 
     private void Cancel() => MudDialog.Close();
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() =>
         //TODO: replace this with new user lookup when that is merged into main.
         _userManager = ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();
-    }
 
     private async Task Submit()
     {

@@ -603,10 +603,7 @@ public class EditLabelCommandTests
 
         public Task AddAsync(Label label) => Task.CompletedTask;
 
-        public Task<Label?> GetByIdAsync(LabelId labelId)
-        {
-            return Task.FromResult(_existingLabel != null && _existingLabel.Id == labelId ? _existingLabel : null);
-        }
+        public Task<Label?> GetByIdAsync(LabelId labelId) => Task.FromResult(_existingLabel != null && _existingLabel.Id == labelId ? _existingLabel : null);
 
         public Task<int> CountParticipants(LabelId labelId) => Task.FromResult(0);
     }

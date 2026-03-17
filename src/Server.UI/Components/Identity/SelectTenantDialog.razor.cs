@@ -21,14 +21,11 @@ public partial class SelectTenantDialog
         Dialog.Close(DialogResult.Ok(SelectedTenant));
     }
 
-    private void OnTenantSelectedChanged(TenantDto? dto)
+    private void OnTenantSelectedChanged(TenantDto? dto) => SelectedTenant = SelectedTenant with
     {
-        SelectedTenant = SelectedTenant with
-        {
-            TenantId = dto?.Id ?? string.Empty,
-            DisplayName = dto?.Name ?? string.Empty
-        };
-    }
+        TenantId = dto?.Id ?? string.Empty,
+        DisplayName = dto?.Name ?? string.Empty
+    };
 }
 
 public record SelectedTenant(string TenantId, string DisplayName);

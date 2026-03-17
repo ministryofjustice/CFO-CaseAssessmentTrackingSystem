@@ -7,18 +7,12 @@ public static class KeyValueCacheKey
     private static readonly TimeSpan RefreshInterval = TimeSpan.FromHours(1);
     private static CancellationTokenSource _tokenSource;
 
-    static KeyValueCacheKey()
-    {
-        _tokenSource = new CancellationTokenSource(RefreshInterval);
-    }
+    static KeyValueCacheKey() => _tokenSource = new CancellationTokenSource(RefreshInterval);
 
     public static MemoryCacheEntryOptions MemoryCacheEntryOptions =>
         new MemoryCacheEntryOptions().AddExpirationToken(new CancellationChangeToken(SharedExpiryTokenSource().Token));
 
-    public static string GetCacheKey(string name)
-    {
-        return $"{name}-keyvalues";
-    }
+    public static string GetCacheKey(string name) => $"{name}-keyvalues";
 
     public static CancellationTokenSource SharedExpiryTokenSource()
     {

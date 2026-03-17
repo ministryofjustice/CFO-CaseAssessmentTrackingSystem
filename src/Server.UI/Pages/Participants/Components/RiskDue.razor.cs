@@ -18,10 +18,7 @@ public partial class RiskDue
 
     [Inject] private IUserService UserService { get; set; } = default!;
 
-    protected override Task OnInitializedAsync()
-    {
-        return Refresh();
-    }
+    protected override Task OnInitializedAsync() => Refresh();
 
     private async Task Refresh()
     {

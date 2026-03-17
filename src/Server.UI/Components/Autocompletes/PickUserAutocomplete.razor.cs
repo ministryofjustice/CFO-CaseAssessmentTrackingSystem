@@ -13,15 +13,9 @@ public class PickUserAutocomplete : MudAutocomplete<ApplicationUserDto>
     [Inject]
     private IUserService UserService { get; set; } = default!;
 
-    protected override void OnInitialized()
-    {
-        UserService.OnChange += TenantsService_OnChange;
-    }
+    protected override void OnInitialized() => UserService.OnChange += TenantsService_OnChange;
 
-    private void TenantsService_OnChange()
-    {
-        InvokeAsync(StateHasChanged);
-    }
+    private void TenantsService_OnChange() => InvokeAsync(StateHasChanged);
 
     protected override ValueTask DisposeAsyncCore()
     {
