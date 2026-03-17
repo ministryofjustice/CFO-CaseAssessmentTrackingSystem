@@ -24,5 +24,8 @@ public class Lifetime : ValueObject
         yield return EndDate;
     }
 
-    public Lifetime Extend(DateTime to) => new(this.StartDate, to);
+    public Lifetime Extend(DateTime to) => new(StartDate, to);
+
+    public Lifetime Close() =>
+        new (StartDate, DateTime.UtcNow);
 }

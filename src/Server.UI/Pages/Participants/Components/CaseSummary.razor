@@ -1,3 +1,4 @@
+@using Cfo.Cats.Server.UI.Components.ParticipantLabels
 @using Cfo.Cats.Server.UI.Pages.Participants.Components.Summary
 @using Cfo.Cats.Server.UI.Components.Participants
 
@@ -30,8 +31,14 @@
         <PathwayPlanSummary />
     </MudItem>
 
-    <!-- PRI -->
-    <MudItem xs="12" md="4">
-        <PRISummary />
-    </MudItem>
-</MudGrid>
+        <!-- PRI -->
+        <MudItem xs="12" md="4">
+            <PRISummary />
+        </MudItem>
+
+        <!-- Labels -->
+        <MudItem xs="12" md="4">
+            <ParticipantLabelsCard ParticipantId="@ParticipantSummaryDto!.Id" />
+        </MudItem>
+
+    </MudGrid>

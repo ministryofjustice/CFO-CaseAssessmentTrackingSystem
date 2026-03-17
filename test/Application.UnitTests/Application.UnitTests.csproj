@@ -8,6 +8,8 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.NET.Test.Sdk" />
+            <PackageReference Include="Moq" />
+            <PackageReference Include="Moq.Dapper" />
       <PackageReference Include="Newtonsoft.Json" />
       <PackageReference Include="NUnit" />
       <PackageReference Include="NUnit3TestAdapter" />

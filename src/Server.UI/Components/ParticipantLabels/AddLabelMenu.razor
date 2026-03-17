@@ -1,0 +1,26 @@
+@using Cfo.Cats.Application.Features.Labels.DTOs
+@using Cfo.Cats.Application.Features.ParticipantLabels.AddParticipantLabel
+@using Cfo.Cats.Domain.Labels
+@using Cfo.Cats.Domain.Participants
+
+@inherits OwningComponentBase<IMediator>
+
+<MudMenu 
+    Label="Add"
+    StartIcon="@Icons.Material.Filled.Add" 
+    Color="Color.Primary"
+    Variant="Variant.Filled"
+    AriaLabel="Open add label menu">
+    
+    @foreach (var label in VisibleLabels.Where(v => v.Scope == LabelScope.User))
+    {
+        <MudMenuItem 
+            Label="@label.Name" 
+            Icon="@label.AppIcon.AsMudIcon()" 
+            Disabled="@(AlreadySelected.Any(l => l == label.Id))"
+            OnClick="@(() => AddLabel(label))"/>
+    }
+
+</MudMenu>
+
+

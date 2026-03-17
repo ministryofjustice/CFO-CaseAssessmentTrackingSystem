@@ -70,6 +70,12 @@ public class MenuService : IMenuService
                             },
                             new()
                             {
+                                Title = "All (version 2)",
+                                Href = "/pages/participantsV2",
+                                PageStatus = PageStatus.Wip
+                            },
+                            new()
+                            {
                                 Title = "Moved Participants",
                                 Href = "/pages/participants/movedparticipants",
                                 PageStatus = PageStatus.Completed

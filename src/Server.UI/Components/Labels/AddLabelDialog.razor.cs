@@ -14,7 +14,7 @@ public partial class AddLabelDialog
 
     [Parameter, EditorRequired] public UserProfile CurrentUser { get; set; } = null!;
 
-    [Parameter, EditorRequired] public AddLabel.Command Model { get; set; } = null!;
+    [Parameter, EditorRequired] public AddLabelCommand Model { get; set; } = null!;
 
     private void Cancel() => MudDialog.Cancel();
 

@@ -16,6 +16,7 @@ using Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformation;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Entities.PRIs;
 using Cfo.Cats.Domain.Labels;
+using Cfo.Cats.Domain.ParticipantLabels;
 
 namespace Cfo.Cats.Infrastructure.Persistence;
 
@@ -129,14 +130,15 @@ public class ApplicationDbContext
     
     public DbSet<ArchivedCase> ArchivedCases => Set<ArchivedCase>();
     
+    public DbSet<ParticipantLabel> ParticipantLabels => Set<ParticipantLabel>();
+
     public DbSet<ProviderFeedbackEnrolment> ProviderFeedbackEnrolments => Set<ProviderFeedbackEnrolment>();
     public DbSet<ProviderFeedbackActivity> ProviderFeedbackActivities => Set<ProviderFeedbackActivity>(); 
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-        builder.ApplyGlobalFilters<ISoftDelete>(s => s.Deleted == null);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

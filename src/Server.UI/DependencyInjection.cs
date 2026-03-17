@@ -14,6 +14,7 @@ using Toolbelt.Blazor.Extensions.DependencyInjection;
 using ActualLab.Fusion.Extensions;
 using Cfo.Cats.Server.UI.Middlewares;
 using ApexCharts;
+using Cfo.Cats.Server.UI.Pages.Participants;
 
 namespace Cfo.Cats.Server.UI;
 
@@ -122,6 +123,8 @@ public static class DependencyInjection
             options.ForwardedHeaders =
                 ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
         });
+
+        services.AddScoped<ParticipantsSessionStorage>();
         
         return builder;
     }

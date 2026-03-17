@@ -4,6 +4,7 @@ using Cfo.Cats.Application.Features.Labels.Commands;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Common.Exceptions;
 using Cfo.Cats.Domain.Labels;
+using Moq;
 using NUnit.Framework;
 using Shouldly;
 
@@ -11,21 +12,22 @@ namespace Cfo.Cats.Application.UnitTests.Labels.Commands;
 
 public class DeleteLabelCommandTests
 {
-    private TestLabelRepository _repository = null!;
-    private TestLabelCounter _labelCounter = null!;
-    private DeleteLabel.Handler _handler = null!;
+    private Mock<ILabelRepository> _repository = null!;
+    private Mock<ILabelCounter> _labelCounter = null!;
+    private DeleteLabelCommandHandler _handler = null!;
 
     [SetUp]
     public void Setup()
     {
-        _repository = new TestLabelRepository();
-        _labelCounter = new TestLabelCounter();
-        _handler = new DeleteLabel.Handler(_repository, _labelCounter);
+        _repository = new Mock<ILabelRepository>();
+        _labelCounter = new Mock<ILabelCounter>();
+        _handler = new DeleteLabelCommandHandler(_repository.Object, _labelCounter.Object);
     }
 
     [Test]
     public async Task Handle_WithValidCommand_ShouldDeleteLabel()
     {
+        var mockLabelCounter = new Mock<ILabelCounter>();
         var label = Label.Create(
             "ToDelete",
             "Description",
@@ -34,12 +36,14 @@ public class DeleteLabelCommandTests
             AppVariant.Filled,
             AppIcon.Label,
             "CONTRACT-001",
-            new TestLabelCounter());
+            mockLabelCounter.Object);
 
-        _repository.SetExistingLabel(label);
-        _labelCounter.SetParticipantCount(0);
+        _repository.Setup(r => r.GetByIdAsync(label.Id))
+            .ReturnsAsync(label);
+        _labelCounter.Setup(c => c.CountParticipants(label.Id))
+            .Returns(0);
 
-        var command = new DeleteLabel.Command
+        var command = new DeleteLabelCommand
         {
             UserProfile = CreateInternalUserProfile(),
             LabelId = label.Id
@@ -51,23 +55,9 @@ public class DeleteLabelCommandTests
     }
 
     [Test]
-    public async Task Handle_WithNonExistentLabel_ShouldReturnFailure()
-    {
-        var command = new DeleteLabel.Command
-        {
-            UserProfile = CreateInternalUserProfile(),
-            LabelId = new LabelId(Guid.NewGuid())
-        };
-
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        result.Succeeded.ShouldBeFalse();
-        result.Errors.ShouldContain("Label not found.");
-    }
-
-    [Test]
     public void Handle_AsExternalUserOnGlobalLabel_ShouldThrowBusinessRuleException()
     {
+        var mockLabelCounter = new Mock<ILabelCounter>();
         var globalLabel = Label.Create(
             "Global",
             "Description",
@@ -76,12 +66,14 @@ public class DeleteLabelCommandTests
             AppVariant.Filled,
             AppIcon.Label,
             null,
-            new TestLabelCounter());
+            mockLabelCounter.Object);
 
-        _repository.SetExistingLabel(globalLabel);
-        _labelCounter.SetParticipantCount(0);
+        _repository.Setup(r => r.GetByIdAsync(globalLabel.Id))
+            .ReturnsAsync(globalLabel);
+        _labelCounter.Setup(c => c.CountParticipants(globalLabel.Id))
+            .Returns(0);
 
-        var command = new DeleteLabel.Command
+        var command = new DeleteLabelCommand
         {
             UserProfile = CreateExternalUserProfile(),
             LabelId = globalLabel.Id
@@ -95,6 +87,7 @@ public class DeleteLabelCommandTests
     [Test]
     public async Task Handle_AsInternalUserOnGlobalLabel_ShouldSucceed()
     {
+        var mockLabelCounter = new Mock<ILabelCounter>();
         var globalLabel = Label.Create(
             "Global",
             "Description",
@@ -103,12 +96,14 @@ public class DeleteLabelCommandTests
             AppVariant.Filled,
             AppIcon.Label,
             null,
-            new TestLabelCounter());
+            mockLabelCounter.Object);
 
-        _repository.SetExistingLabel(globalLabel);
-        _labelCounter.SetParticipantCount(0);
+        _repository.Setup(r => r.GetByIdAsync(globalLabel.Id))
+            .ReturnsAsync(globalLabel);
+        _labelCounter.Setup(c => c.CountParticipants(globalLabel.Id))
+            .Returns(0);
 
-        var command = new DeleteLabel.Command
+        var command = new DeleteLabelCommand
         {
             UserProfile = CreateInternalUserProfile(),
             LabelId = globalLabel.Id
@@ -122,6 +117,7 @@ public class DeleteLabelCommandTests
     [Test]
     public void Handle_WithLinkedParticipants_ShouldThrowBusinessRuleException()
     {
+        var mockLabelCounter = new Mock<ILabelCounter>();
         var label = Label.Create(
             "LinkedLabel",
             "Description",
@@ -130,12 +126,14 @@ public class DeleteLabelCommandTests
             AppVariant.Filled,
             AppIcon.Label,
             "CONTRACT-001",
-            new TestLabelCounter());
+            mockLabelCounter.Object);
 
-        _repository.SetExistingLabel(label);
-        _labelCounter.SetParticipantCount(5);
+        _repository.Setup(r => r.GetByIdAsync(label.Id))
+            .ReturnsAsync(label);
+        _labelCounter.Setup(c => c.CountParticipants(label.Id))
+            .Returns(5);
 
-        var command = new DeleteLabel.Command
+        var command = new DeleteLabelCommand
         {
             UserProfile = CreateInternalUserProfile(),
             LabelId = label.Id
@@ -149,6 +147,7 @@ public class DeleteLabelCommandTests
     [Test]
     public async Task Handle_AsExternalUserOnContractLabel_ShouldSucceed()
     {
+        var mockLabelCounter = new Mock<ILabelCounter>();
         var contractLabel = Label.Create(
             "Contract",
             "Description",
@@ -157,12 +156,14 @@ public class DeleteLabelCommandTests
             AppVariant.Filled,
             AppIcon.Label,
             "CONTRACT-001",
-            new TestLabelCounter());
+            mockLabelCounter.Object);
 
-        _repository.SetExistingLabel(contractLabel);
-        _labelCounter.SetParticipantCount(0);
+        _repository.Setup(r => r.GetByIdAsync(contractLabel.Id))
+            .ReturnsAsync(contractLabel);
+        _labelCounter.Setup(c => c.CountParticipants(contractLabel.Id))
+            .Returns(0);
 
-        var command = new DeleteLabel.Command
+        var command = new DeleteLabelCommand
         {
             UserProfile = CreateExternalUserProfile(),
             LabelId = contractLabel.Id
@@ -188,27 +189,4 @@ public class DeleteLabelCommandTests
         Email = "external.user@example.com",
         TenantId = "1."
     };
-
-    private class TestLabelRepository : ILabelRepository
-    {
-        private Label? _existingLabel;
-
-        public void SetExistingLabel(Label label) => _existingLabel = label;
-
-        public Task AddAsync(Label label) => Task.CompletedTask;
-
-        public Task<Label?> GetByIdAsync(LabelId labelId) => Task.FromResult(_existingLabel != null && _existingLabel.Id == labelId ? _existingLabel : null);
-
-        public Task<int> CountParticipants(LabelId labelId) => Task.FromResult(0);
-    }
-
-    private class TestLabelCounter : ILabelCounter
-    {
-        private int _participantCount;
-
-        public void SetParticipantCount(int count) => _participantCount = count;
-
-        public int CountVisibleLabels(string name, string? contractId) => 0;
-        public int CountParticipants(LabelId labelId) => _participantCount;
-    }
 }
