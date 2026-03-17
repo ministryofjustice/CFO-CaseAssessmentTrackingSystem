@@ -138,6 +138,20 @@ public class ExcelService(IStringLocalizer<ExcelService> localizer) : IExcelServ
         return await Task.FromResult(stream.ToArray());
     }
 
+    public async Task<byte[]> MergeSheetsAsync(params (string SheetName, byte[] Data)[] sheets)
+    {
+        using var combined = new XLWorkbook();
+        foreach (var (sheetName, data) in sheets)
+        {
+            using var temp = new XLWorkbook(new MemoryStream(data));
+            temp.Worksheet(1).CopyTo(combined, sheetName);
+        }
+        using var stream = new MemoryStream();
+        combined.SaveAs(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+        return await Task.FromResult(stream.ToArray());
+    }
+
     public async Task<IResult<IEnumerable<TEntity>>> ImportAsync<TEntity>(
         byte[] data,
         Dictionary<string, Func<DataRow, TEntity, object?>> mappers,

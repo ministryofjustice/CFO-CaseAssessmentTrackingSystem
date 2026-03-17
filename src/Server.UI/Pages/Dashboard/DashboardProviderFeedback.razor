@@ -1,5 +1,6 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Components.Dashboard.QA
+@using Cfo.Cats.Infrastructure.Constants
 @inherits CatsComponentBase
 
 @page "/pages/dashboard/providerfeedback"
@@ -35,6 +36,25 @@
         </MudSwitch>
     </MudStack>
 </MudStack>
+
+<MudPaper Class="pa-3 mb-2" Elevation="0" Outlined="true">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
+        <MudText Typo="Typo.body2" Class="mr-2"><b>Export sheets:</b></MudText>
+        <MudCheckBox @bind-Value="_includeEnrolmentReturns" T="bool" Label="Enrolment: Returns" Color="Color.Primary" Size="Size.Small" />
+        <MudCheckBox @bind-Value="_includeActivitiesReturns" T="bool" Label="Activities: Returns" Color="Color.Primary" Size="Size.Small" />
+        <MudCheckBox @bind-Value="_includeEnrolmentAdvisories" T="bool" Label="Enrolment: Advisories" Color="Color.Primary" Size="Size.Small" />
+        <MudCheckBox @bind-Value="_includeActivitiesAdvisories" T="bool" Label="Activities: Advisories" Color="Color.Primary" Size="Size.Small" />
+        <MudLoadingButton Loading="@_downloading"
+                          Variant="Variant.Filled"
+                          Color="Color.Secondary"
+                          StartIcon="@Icons.Material.Filled.CloudDownload"
+                          Size="Size.Small"
+                          Disabled="@(!_includeEnrolmentReturns && !_includeActivitiesReturns && !_includeEnrolmentAdvisories && !_includeActivitiesAdvisories)"
+                          OnClick="OnExport">
+            @ConstantString.Export
+        </MudLoadingButton>
+    </MudStack>
+</MudPaper>
 
 <MudStack>
         <MudTabs TabPanelsClass="pa-6" ApplyEffectsToContainer="true" Outlined="true">
