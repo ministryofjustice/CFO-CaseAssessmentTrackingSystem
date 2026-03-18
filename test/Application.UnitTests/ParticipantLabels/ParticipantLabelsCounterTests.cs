@@ -23,8 +23,7 @@ public class ParticipantLabelsCounterTests
 
     private class TestSqlConnectionFactory : ISqlConnectionFactory
     {
-        public IDbConnection GetOpenConnection() => null!;
-        public IDbConnection CreateNewConnection() => null!;
+        public IDbConnection CreateOpenConnection() => null!;
         public string GetConnectionString() => "";
     }
 }

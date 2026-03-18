@@ -2,9 +2,7 @@ namespace Cfo.Cats.Application.Common.Interfaces;
 
 public interface ISqlConnectionFactory
 {
-    IDbConnection GetOpenConnection();
-
-    IDbConnection CreateNewConnection();
+    IDbConnection CreateOpenConnection();
 
     string GetConnectionString();
 }
