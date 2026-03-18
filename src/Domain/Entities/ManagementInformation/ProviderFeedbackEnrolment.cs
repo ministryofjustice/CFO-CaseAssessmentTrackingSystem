@@ -82,7 +82,8 @@ public class ProviderFeedbackEnrolment
         DateTime pqaSubmittedDate,
         DateTime actionDate,
         string message,
-        int? feedbackType) => new ProviderFeedbackEnrolment()
+        int? feedbackType) => 
+        new()
         {
             Id = Guid.CreateVersion7(),
             CreatedOn = DateTime.UtcNow,
@@ -113,7 +114,8 @@ public class ProviderFeedbackEnrolment
         DateTime pqaSubmittedDate,
         DateTime actionDate,
         string message,
-        int? feedbackType) => new ProviderFeedbackEnrolment()
+        int? feedbackType) => 
+        new()
         {
             Id = Guid.CreateVersion7(),
             CreatedOn = DateTime.UtcNow,
@@ -144,7 +146,8 @@ public class ProviderFeedbackEnrolment
         DateTime pqaSubmittedDate,
         DateTime actionDate,
         string message,
-        int? feedbackType) => new ProviderFeedbackEnrolment()
+        int? feedbackType) => 
+        new()
         {
             Id = Guid.CreateVersion7(),
             CreatedOn = DateTime.UtcNow,
