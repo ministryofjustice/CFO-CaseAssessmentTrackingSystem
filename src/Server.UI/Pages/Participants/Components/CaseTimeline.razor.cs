@@ -25,17 +25,17 @@ public partial class CaseTimeline
     private const int PageSize = 50;
 
     //Hide CFO Users from providers on time line
-    private bool hideUser = true;
-    private HashSet<string> CFOTenantIds = new HashSet<string> { "1.", "1.1." };
-    private string[] allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
+    private bool _hideUser = true;
+    private readonly HashSet<string> _cfoTenantIds = new HashSet<string> { "1.", "1.1." };
+    private readonly string[] _allowedRoles = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
 
     protected override async Task OnInitializedAsync()
     {
         await LoadPageAsync();
 
-        if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
+        if (UserProfile.AssignedRoles.Any(r => _allowedRoles.Contains(r)))
         {
-            hideUser = false;
+            _hideUser = false;
         }
     }
 
