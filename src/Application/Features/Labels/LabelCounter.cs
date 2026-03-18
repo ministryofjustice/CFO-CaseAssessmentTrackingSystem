@@ -7,7 +7,7 @@ public class LabelCounter(ISqlConnectionFactory sqlConnectionFactory) : ILabelCo
 {
     public int CountParticipants(LabelId labelId)
     {
-        var connection = sqlConnectionFactory.GetOpenConnection();
+        using var connection = sqlConnectionFactory.CreateOpenConnection();
         
         const string sql = """
                            SELECT Count(*) 
@@ -24,7 +24,7 @@ public class LabelCounter(ISqlConnectionFactory sqlConnectionFactory) : ILabelCo
 
     public int CountVisibleLabels(string name, string? contractId)
     {
-        var connection = sqlConnectionFactory.GetOpenConnection();
+        using var connection = sqlConnectionFactory.CreateOpenConnection();
         
         const string sql = """
                          SELECT Count(*) 

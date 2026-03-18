@@ -18,7 +18,7 @@ public static class GetLabelById
     {
         public async Task<Result<LabelDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var connection = sqlConnectionFactory.GetOpenConnection();
+            using var connection = sqlConnectionFactory.CreateOpenConnection();
 
             const string sql = $"""
                                 SELECT 

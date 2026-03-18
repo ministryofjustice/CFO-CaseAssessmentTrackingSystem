@@ -9,7 +9,7 @@ public class ParticipantLabelsCounter(ISqlConnectionFactory sqlConnectionFactory
 {
     public int CountOpenLabels(ParticipantId participantId, LabelId labelId)
     {
-        var connection = sqlConnectionFactory.GetOpenConnection();
+        using var connection = sqlConnectionFactory.CreateOpenConnection();
 
         const string sql = """
                             SELECT COUNT(*)

@@ -8,7 +8,7 @@ public class GetParticipantLabelsQueryHandler(ISqlConnectionFactory sqlConnectio
 {
     public async Task<Result<GetParticipantLabelsDto>> Handle(GetParticipantLabelsQuery request, CancellationToken cancellationToken)
     {
-        var connection = sqlConnectionFactory.GetOpenConnection();
+        using var connection = sqlConnectionFactory.CreateOpenConnection();
 
         var sql = """
             select

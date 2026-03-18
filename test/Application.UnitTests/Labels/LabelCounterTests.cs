@@ -29,7 +29,7 @@ public class LabelCounterTests
             .Returns(expectedCount);
 
         var sqlFactory = new Mock<ISqlConnectionFactory>();
-        sqlFactory.Setup(x => x.GetOpenConnection()).Returns(connection.Object);
+        sqlFactory.Setup(x => x.CreateOpenConnection()).Returns(connection.Object);
 
         var counter = new LabelCounter(sqlFactory.Object);
         var labelId = new LabelId(Guid.NewGuid());
