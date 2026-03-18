@@ -54,10 +54,17 @@ public class RecordActivityAdvisoryFeedbackConsumer(IUnitOfWork unitOfWork, ILog
         var qa2Record = await (
             from q in dbContext.ActivityQa2Queue
             from n in q.Notes
+            let pqaSubmission = dbContext.ActivityPqaQueue
+                .Where(pqa => pqa.ActivityId == q.ActivityId
+                    && pqa.LastModified < q.Created)
+                .OrderByDescending(pqa => pqa.LastModified)
+                .FirstOrDefault()
             where q.ActivityId == context.ActivityId 
                 && q.IsCompleted == true 
                 && q.IsAccepted == true
+                && n.IsExternal == true
                 && (n.FeedbackType! == FeedbackType.Advisory || n.FeedbackType! == FeedbackType.AcceptedByException)
+                && q.Id == EF.Property<Guid>(n, "ActivityQa2QueueEntryId")
             orderby q.LastModified descending
             select new
             {
@@ -66,10 +73,10 @@ public class RecordActivityAdvisoryFeedbackConsumer(IUnitOfWork unitOfWork, ILog
                 q.TenantId,
                 q.ParticipantId,
                 q.SupportWorkerId,
-                ProviderQaUserId = q.LastModifiedBy ?? string.Empty,
-                CfoUserId = q.OwnerId ?? string.Empty,
-                PqaSubmittedDate = q.LastModified ?? DateTime.UtcNow,
-                ActionDate = q.Created ?? DateTime.UtcNow,
+                ProviderQaUserId = pqaSubmission != null ? pqaSubmission.LastModifiedBy ?? q.CreatedBy ?? string.Empty : q.CreatedBy ?? string.Empty,
+                CfoUserId = n.CreatedBy ?? string.Empty,
+                PqaSubmittedDate = pqaSubmission != null ? pqaSubmission.LastModified ?? q.Created ?? DateTime.UtcNow : q.Created ?? DateTime.UtcNow,
+                ActionDate = n.Created ?? DateTime.UtcNow,
                 n.Message,
                 FeedbackType = (int?)n.FeedbackType,
                 Queue = "QA2",
@@ -78,29 +85,36 @@ public class RecordActivityAdvisoryFeedbackConsumer(IUnitOfWork unitOfWork, ILog
             }).FirstOrDefaultAsync();
 
         var escRecord = await (
-            from eq in dbContext.ActivityEscalationQueue
-            from en in eq.Notes
-            where eq.ActivityId == context.ActivityId 
-                && eq.IsCompleted == true 
-                && eq.IsAccepted == true
+            from aq in dbContext.ActivityEscalationQueue
+            from en in aq.Notes
+            let pqaSubmission = dbContext.ActivityPqaQueue
+                .Where(pqa => pqa.ActivityId == aq.ActivityId
+                    && pqa.LastModified < aq.Created)
+                .OrderByDescending(pqa => pqa.LastModified)
+                .FirstOrDefault()
+            where aq.ActivityId == context.ActivityId 
+                && aq.IsCompleted == true 
+                && aq.IsAccepted == true
+                && en.IsExternal == true
                 && (en.FeedbackType! == FeedbackType.Advisory || en.FeedbackType! == FeedbackType.AcceptedByException)
-            orderby eq.LastModified descending
+                && aq.Id == EF.Property<Guid>(en, "ActivityEscalationQueueEntryId")
+            orderby aq.LastModified descending
             select new
             {
-                QueueEntryId = eq.Id,
+                QueueEntryId = aq.Id,
                 NoteId = EF.Property<int>(en, "Id"),
-                eq.TenantId,
-                eq.ParticipantId,
-                eq.SupportWorkerId,
-                ProviderQaUserId = eq.LastModifiedBy ?? string.Empty,
-                CfoUserId = eq.CreatedBy ?? string.Empty,
-                PqaSubmittedDate = eq.LastModified ?? DateTime.UtcNow,
-                ActionDate = eq.Created ?? DateTime.UtcNow,
+                aq.TenantId,
+                aq.ParticipantId,
+                aq.SupportWorkerId,
+                ProviderQaUserId = pqaSubmission != null ? pqaSubmission.LastModifiedBy ?? aq.CreatedBy ?? string.Empty : aq.CreatedBy ?? string.Empty,
+                CfoUserId = en.CreatedBy ?? string.Empty,
+                PqaSubmittedDate = pqaSubmission != null ? pqaSubmission.LastModified ?? aq.Created ?? DateTime.UtcNow : aq.Created ?? DateTime.UtcNow,
+                ActionDate = en.Created ?? DateTime.UtcNow,
                 en.Message,
                 FeedbackType = (int?)en.FeedbackType,
                 Queue = "Escalation",
                 SourceTable = "Activities.EscalationNote",
-                eq.LastModified
+                aq.LastModified
             }).FirstOrDefaultAsync();
 
         var latestRecord = new[] { qa2Record, escRecord }

@@ -54,9 +54,15 @@ public class RecordActivityReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILog
         var qa2Record = await (
             from q in dbContext.ActivityQa2Queue
             from n in q.Notes
+            let pqaSubmission = dbContext.ActivityPqaQueue
+                .Where(pqa => pqa.ActivityId == q.ActivityId
+                    && pqa.LastModified < q.Created)
+                .OrderByDescending(pqa => pqa.LastModified)
+                .FirstOrDefault()
             where q.ActivityId == context.ActivityId 
                 && q.IsCompleted == true 
                 && q.IsAccepted == false
+                && n.IsExternal == true
             orderby q.LastModified descending
             select new
             {
@@ -65,9 +71,9 @@ public class RecordActivityReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILog
                 q.TenantId,
                 q.ParticipantId,
                 q.SupportWorkerId,
-                ProviderQaUserId = q.LastModifiedBy ?? string.Empty,
+                ProviderQaUserId = pqaSubmission != null ? pqaSubmission.LastModifiedBy ?? q.LastModifiedBy ?? string.Empty : q.LastModifiedBy ?? string.Empty,
                 CfoUserId = q.OwnerId ?? string.Empty,
-                PqaSubmittedDate = q.LastModified ?? DateTime.UtcNow,
+                PqaSubmittedDate = pqaSubmission != null ? pqaSubmission.LastModified ?? q.LastModified ?? DateTime.UtcNow : q.LastModified ?? DateTime.UtcNow,
                 ActionDate = q.Created ?? DateTime.UtcNow,
                 n.Message,
                 FeedbackType = (int?)n.FeedbackType,
@@ -79,9 +85,15 @@ public class RecordActivityReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILog
         var escRecord = await (
             from eq in dbContext.ActivityEscalationQueue
             from en in eq.Notes
+            let pqaSubmission = dbContext.ActivityPqaQueue
+                .Where(pqa => pqa.ActivityId == eq.ActivityId
+                    && pqa.LastModified < eq.Created)
+                .OrderByDescending(pqa => pqa.LastModified)
+                .FirstOrDefault()
             where eq.ActivityId == context.ActivityId 
                 && eq.IsCompleted == true 
                 && eq.IsAccepted == false
+                && en.IsExternal == true
             orderby eq.LastModified descending
             select new
             {
@@ -90,9 +102,9 @@ public class RecordActivityReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILog
                 eq.TenantId,
                 eq.ParticipantId,
                 eq.SupportWorkerId,
-                ProviderQaUserId = eq.LastModifiedBy ?? string.Empty,
+                ProviderQaUserId = pqaSubmission != null ? pqaSubmission.LastModifiedBy ?? eq.LastModifiedBy ?? string.Empty : eq.LastModifiedBy ?? string.Empty,
                 CfoUserId = eq.CreatedBy ?? string.Empty,
-                PqaSubmittedDate = eq.LastModified ?? DateTime.UtcNow,
+                PqaSubmittedDate = pqaSubmission != null ? pqaSubmission.LastModified ?? eq.LastModified ?? DateTime.UtcNow : eq.LastModified ?? DateTime.UtcNow,
                 ActionDate = eq.Created ?? DateTime.UtcNow,
                 en.Message,
                 FeedbackType = (int?)en.FeedbackType,
