@@ -4,8 +4,6 @@ using Cfo.Cats.Application.Features.Timelines.DTOs;
 using Cfo.Cats.Application.Features.Timelines.PaginationQuery;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Common.Enums;
-using Microsoft.EntityFrameworkCore;
-using MudExtensions;
 using Color = MudBlazor.Color;
 
 namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
