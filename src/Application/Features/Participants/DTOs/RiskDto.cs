@@ -164,9 +164,9 @@ public class RiskDto
         [Description("Risk to Other Prisoners")]
         public RiskLevel? RiskToOtherPrisoners { get; set; }
 
-        public class Validator : AbstractValidator<RiskDetail>
+        public class CustodyValidator : AbstractValidator<RiskDetail>
         {
-            public Validator()
+            public CustodyValidator()
             {
                 RuleFor(x => x.RiskToChildren)
                     .NotNull()
@@ -187,7 +187,33 @@ public class RiskDto
                 RuleFor(x => x.RiskToOtherPrisoners)
                     .NotNull()
                     .WithMessage("Risk To Other Prisoners option is mandatory");
+                    
+                RuleFor(x => x.RiskToSelfNew)
+                    .NotNull()
+                    .WithMessage("Risk To Self option is mandatory");
+            }
+        }
 
+        public class CommunityValidator : AbstractValidator<RiskDetail>
+        {
+            public CommunityValidator()
+            {
+                RuleFor(x => x.RiskToChildren)
+                    .NotNull()
+                    .WithMessage("Risk to Children option is mandatory");
+
+                RuleFor(x => x.RiskToPublic)
+                    .NotNull()
+                    .WithMessage("Risk to Public option is mandatory");
+
+                RuleFor(x => x.RiskToKnownAdult)
+                    .NotNull()
+                    .WithMessage("Risk to Known Adult option is mandatory");
+
+                RuleFor(x => x.RiskToStaff)
+                    .NotNull()
+                    .WithMessage("Risk To Staff option is mandatory");
+                    
                 RuleFor(x => x.RiskToSelfNew)
                     .NotNull()
                     .WithMessage("Risk To Self option is mandatory");
@@ -282,28 +308,16 @@ public class RiskDto
                 .When(x => x.IsRelevantToCommunity is false)
                 .WithMessage("You must pick one");
 
-            When(x => x.IsRelevantToCommunity, () =>
+            When(x => x.IsRelevantToCommunity || x.LocationType?.IsCommunity == true, () =>
             {
                 RuleFor(x => x.CommunityRiskDetail)
-                    .SetValidator(new RiskDetail.Validator());
+                    .SetValidator(new RiskDetail.CommunityValidator());
             });
 
-            When(x => x.IsRelevantToCustody, () =>
+            When(x => x.IsRelevantToCustody || x.LocationType?.IsCustody == true, () =>
             {
                 RuleFor(x => x.CustodyRiskDetail)
-                    .SetValidator(new RiskDetail.Validator());
-            });
-
-            When(x => x.LocationType?.IsCommunity == true, () =>
-            {
-                RuleFor(x => x.CommunityRiskDetail)
-                    .SetValidator(new RiskDetail.Validator());
-            });
-
-            When(x => x.LocationType?.IsCustody == true, () =>
-            {
-                RuleFor(x => x.CustodyRiskDetail)
-                    .SetValidator(new RiskDetail.Validator());
+                    .SetValidator(new RiskDetail.CustodyValidator());
             });
 
             RuleFor(x => x.IsSubjectToSHPO)
