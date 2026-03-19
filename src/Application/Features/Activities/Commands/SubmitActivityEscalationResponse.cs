@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.Entities.Activities;
 
 namespace Cfo.Cats.Application.Features.Activities.Commands;
 
@@ -9,15 +10,15 @@ public static class SubmitActivityEscalationResponse
     [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
     public class Command : IRequest<Result>
     {
-        public required Guid ActivityQueueEntryId { get; set; }
+        public required Guid ActivityQueueEntryId { get; init; }
 
         public EscalationResponse? Response { get; set; }
         public FeedbackType? FeedbackType { get; set; }        
 
-        public string Message { get; set; } = default!;
-        public string MessageToProvider { get; set; } = default!;
-
-        public UserProfile? CurrentUser { get; set; }
+        public string Message { get; set; } = null!;
+        public string MessageToProvider { get; set; } = null!;
+        public string MessageToQa1 { get; set; } = null!;
+        public UserProfile? CurrentUser { get; init; }
     }
 
     public enum EscalationResponse
@@ -33,17 +34,27 @@ public static class SubmitActivityEscalationResponse
         {
             var entry = await unitOfWork.DbContext.ActivityEscalationQueue
                 .Include(pqa => pqa.Participant)
+                .Include(x => x.Activity)
                 .FirstOrDefaultAsync(x => x.Id == request.ActivityQueueEntryId, cancellationToken: cancellationToken);
-
+               
             if (entry == null)
             {
-                return Result.Failure("Cannot find activity queue item");
+                return Result.Failure("Cannot find activity escalation queue item");
             }
 
-            entry.AddNote(request.Message, isExternal: false)
-                 .AddNote(request.MessageToProvider, isExternal: true, feedbackType: request.FeedbackType);
+            if (!string.IsNullOrWhiteSpace(request.Message))
+            {
+                entry.AddNote(request.Message, isExternal: false);
+            }
 
-            switch (request.Response)
+            if (!string.IsNullOrWhiteSpace(request.MessageToProvider))
+            {
+                entry.AddNote(request.MessageToProvider, isExternal: true, feedbackType: request.FeedbackType);
+            }
+            
+            var response = request.Response!.Value;
+
+            switch (response)
             {
                 case EscalationResponse.Accept:
                     entry.Accept();
@@ -57,6 +68,30 @@ public static class SubmitActivityEscalationResponse
                     throw new ArgumentOutOfRangeException();
             }
 
+            if (!string.IsNullOrWhiteSpace(request.MessageToQa1))
+            {
+                var outcome = response switch
+                {
+                    EscalationResponse.Accept => FeedbackOutcome.Approved,
+                    EscalationResponse.Return => FeedbackOutcome.Returned,
+                    EscalationResponse.Comment => FeedbackOutcome.EscalatedComment,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                
+                var activityFeedback = ActivityFeedback.Create(
+                    entry.ActivityId,
+                    entry.ParticipantId!,
+                    entry.CreatedBy!,
+                    request.MessageToQa1,
+                    outcome,
+                    FeedbackStage.Escalation,
+                    request.CurrentUser!.UserId,
+                    entry.TenantId
+                );
+
+                unitOfWork.DbContext.ActivityFeedbacks.Add(activityFeedback);
+            }
+            
             return Result.Success();
         }
     }

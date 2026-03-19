@@ -10,14 +10,14 @@ namespace Cfo.Cats.Domain.Entities.Activities;
 public class ActivityFeedback : OwnerPropertyEntity<Guid>
 {
     public Guid ActivityId { get; init; }
-    public string ParticipantId { get; protected init; }
+    public string ParticipantId { get; init; }
 
     public string RecipientUserId { get; init; }
     public ApplicationUser? RecipientUser { get; init; }
 
     public string Message { get; init; } = null!;
 
-    public FeedbackOutcome Outcome { get; init; }
+    public FeedbackOutcome Outcome { get; private set; }
     public FeedbackStage Stage { get; init; }
 
     public DateTime ActivityProcessedDate { get; private set; }
@@ -29,15 +29,14 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
 
     public virtual Activity? Activity { get; private set; }
     public virtual Participant? Participant { get; protected init; }
-    public virtual Tenant? Tenant { get; private set; }
+    public virtual Tenant? Tenant { get; set; }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private ActivityFeedback()
     {
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    
-    
+
     public static ActivityFeedback Create(
         Guid activityId,
         string participantId,
@@ -45,11 +44,10 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
         string message,
         FeedbackOutcome outcome,
         FeedbackStage stage,
-        DateTime activityProcessedDate,
         string createdBy,
-        string tenantId )
+        string tenantId)
     {
-       var feedback = new ActivityFeedback
+        var feedback = new ActivityFeedback
         {
             Id = Guid.CreateVersion7(),
             ActivityId = activityId,
@@ -58,15 +56,15 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
             Message = message,
             Outcome = outcome,
             Stage = stage,
-            ActivityProcessedDate = activityProcessedDate,
+            ActivityProcessedDate = DateTime.UtcNow,
             CreatedBy = createdBy,
             Created = DateTime.UtcNow,
             IsRead = false,
             TenantId = tenantId
         };
 
-         feedback.AddDomainEvent(
-             new ActivityFeedbackCreatedDomainEvent(feedback));
+        feedback.AddDomainEvent(
+            new ActivityFeedbackCreatedDomainEvent(feedback));
 
         return feedback;
     }

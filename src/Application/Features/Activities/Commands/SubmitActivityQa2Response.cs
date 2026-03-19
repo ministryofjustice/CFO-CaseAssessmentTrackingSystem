@@ -1,7 +1,7 @@
-﻿using Cfo.Cats.Domain.Common.Enums;
-using Cfo.Cats.Application.Common.Security;
+﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.Entities.Activities;
 
 namespace Cfo.Cats.Application.Features.Activities.Commands;
 
@@ -10,16 +10,18 @@ public static class SubmitActivityQa2Response
     [RequestAuthorize(Policy = SecurityPolicies.Qa2)]
     public class Command : IRequest<Result>
     {
-        public required Guid ActivityQueueEntryId { get; set; }
+        public required Guid ActivityQueueEntryId { get; init; }
 
         public Qa2Response? Response { get; set; }
         public FeedbackType? FeedbackType { get; set; }
 
-        public string Message { get; set; } = default!;
+        public string Message { get; set; } = null!;
 
-        public string MessageToProvider { get; set; } = default!;
+        public string MessageToProvider { get; set; } = null!;
+        
+        public string MessageToQa1 { get; set; } = null!;
 
-        public UserProfile? CurrentUser { get; set; }
+        public UserProfile? CurrentUser { get; init; }
     }
 
     public enum Qa2Response
@@ -33,19 +35,29 @@ public static class SubmitActivityQa2Response
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            var entry = await unitOfWork.DbContext.ActivityQa2Queue
-                .Include(pqa => pqa.Participant)
-                .FirstOrDefaultAsync(x => x.Id == request.ActivityQueueEntryId, cancellationToken: cancellationToken);
-
+             var entry = await unitOfWork.DbContext.ActivityQa2Queue
+                .Include(x => x.Participant)
+                .Include(x => x.Activity)
+                .FirstOrDefaultAsync(x => x.Id == request.ActivityQueueEntryId, cancellationToken);
+            
             if (entry == null)
             {
-                return Result.Failure("Cannot find Activity queue item");
+                return Result.Failure("Cannot find activity Qa2 queue item");
             }
 
-            entry.AddNote(request.Message, isExternal: false)
-                 .AddNote(request.MessageToProvider, isExternal: true, feedbackType: request.FeedbackType);
+            if (!string.IsNullOrWhiteSpace(request.Message))
+            {
+                entry.AddNote(request.Message, isExternal: false);
+            }
 
-            switch (request.Response)
+            if (!string.IsNullOrWhiteSpace(request.MessageToProvider))
+            {
+                entry.AddNote(request.MessageToProvider, isExternal: true, feedbackType: request.FeedbackType);
+            }
+            
+            var response = request.Response!.Value;
+
+            switch (response)
             {
                 case Qa2Response.Accept:
                     entry.Accept();
@@ -56,10 +68,34 @@ public static class SubmitActivityQa2Response
                 case Qa2Response.Escalate:
                     entry.Escalate();
                     break;
-                default:
+                default: 
                     throw new ArgumentOutOfRangeException();
             }
+            
+            if (!string.IsNullOrWhiteSpace(request.MessageToQa1))
+            {
+                var outcome = response switch
+                {
+                    Qa2Response.Accept => FeedbackOutcome.Approved,
+                    Qa2Response.Return => FeedbackOutcome.Returned,
+                    Qa2Response.Escalate => FeedbackOutcome.Escalated,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                
+                var activityFeedback = ActivityFeedback.Create(
+                    entry.ActivityId,
+                    entry.ParticipantId!,
+                    entry.CreatedBy!,
+                    request.MessageToQa1,
+                    outcome,
+                    FeedbackStage.Qa2,
+                    request.CurrentUser!.UserId,
+                    entry.TenantId
+                );
 
+                unitOfWork.DbContext.ActivityFeedbacks.Add(activityFeedback);
+            }
+           
             return Result.Success();
         }
     }
@@ -121,7 +157,7 @@ public static class SubmitActivityQa2Response
 
     public class B_EntryMustExist : AbstractValidator<Command>
     {
-        private IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         public B_EntryMustExist(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -140,7 +176,7 @@ public static class SubmitActivityQa2Response
 
     public class C_ShouldNotBeComplete : AbstractValidator<Command>
     {
-        private IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public C_ShouldNotBeComplete(IUnitOfWork unitOfWork)
         {
@@ -165,7 +201,7 @@ public static class SubmitActivityQa2Response
 
     public class D_ShouldBeAtSubmittedToAuthorityStatus : AbstractValidator<Command>
     {
-        private IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public D_ShouldBeAtSubmittedToAuthorityStatus(IUnitOfWork unitOfWork)
         {
@@ -190,7 +226,7 @@ public static class SubmitActivityQa2Response
 
     public class E_OwnerShouldNotBeApprover : AbstractValidator<Command>
     {
-        private IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         public E_OwnerShouldNotBeApprover(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
