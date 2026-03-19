@@ -7,7 +7,6 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.QA.Activities.Components
-@using Cfo.Cats.Application.Features.Activities.DTOs
 @inherits CatsComponentBase
 
 <style>
@@ -84,22 +83,32 @@
                                 </MudItem>
                             </MudGrid>
 
+                            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                                Anonymous internal feedback for Qa1 user
+                            </MudAlert>
+                                
+                            <MudGrid Class="py-4"> <MudItem xs="12" md="9" xl="10">
+                                    <MudTextField @bind-Value="Command.MessageToQa1" Label="Qa1 Feedback" Lines="5" For="() => Command.MessageToQa1" MaxLength="@ValidationConstants.NotesLength" Immediate="true"/>
+                                    <MudText Class="ml-2">Characters: @(Command.MessageToQa1?.Length ?? 0) / 1000</MudText>
+                                </MudItem> 
+                            </MudGrid>
+                            
                             @if (Command.Response == SubmitActivityEscalationResponse.EscalationResponse.Accept)
                             {        
                                 <MudDivider Class="py-4" />
 
                                 <MudItem xs="12">
-                                    <MudRadioGroup T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" @bind-Value="Command.FeedbackType" For="@(() => Command.FeedbackType)">
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.NotApplicable" Color="Color.Default">
+                                    <MudRadioGroup T="FeedbackType?" @bind-Value="Command.FeedbackType" For="@(() => Command.FeedbackType)">
+                                        <MudRadio T="FeedbackType?" Value="FeedbackType.NotApplicable" Color="Color.Default">
                                             N/A
                                         </MudRadio>
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.Advisory" Color="Color.Primary">
+                                        <MudRadio T="FeedbackType?" Value="FeedbackType.Advisory" Color="Color.Primary">
                                             Advisory
                                         </MudRadio>
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.AcceptedByException" Color="Color.Secondary">
+                                        <MudRadio T="FeedbackType?" Value="FeedbackType.AcceptedByException" Color="Color.Secondary">
                                             Accepted By Exception
                                         </MudRadio>
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.Returned" Color="Color.Secondary" Disabled="true">
+                                        <MudRadio T="FeedbackType?" Value="FeedbackType.Returned" Color="Color.Secondary" Disabled="true">
                                             Returned
                                         </MudRadio>  
                                     </MudRadioGroup>
@@ -122,17 +131,17 @@
                                 <MudDivider Class="py-4" />
 
                                 <MudItem xs="12">
-                                    <MudRadioGroup T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" @bind-Value="Command.FeedbackType" For="@(() => Command.FeedbackType)">
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.NotApplicable" Color="Color.Default" Disabled="true">
+                                    <MudRadioGroup T="FeedbackType?" @bind-Value="Command.FeedbackType" For="@(() => Command.FeedbackType)">
+                                        <MudRadio T="FeedbackType?" Value="FeedbackType.NotApplicable" Color="Color.Default" Disabled="true">
                                             N/A
                                         </MudRadio>                                        
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.Advisory" Color="Color.Default" Disabled="true">
+                                        <MudRadio T="FeedbackType?" Value="FeedbackType.Advisory" Color="Color.Default" Disabled="true">
                                             Advisory
                                         </MudRadio>
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.AcceptedByException" Color="Color.Secondary" Disabled="true">
+                                        <MudRadio T="FeedbackType?" Value="FeedbackType.AcceptedByException" Color="Color.Secondary" Disabled="true">
                                             Accepted By Exception
                                         </MudRadio>
-                                        <MudRadio T="Cfo.Cats.Domain.Common.Enums.FeedbackType?" Value="Cfo.Cats.Domain.Common.Enums.FeedbackType.Returned" Color="Color.Secondary" Disabled="true">
+                                        <MudRadio T="FeedbackType?" Value="FeedbackType.Returned" Color="Color.Secondary" Disabled="true">
                                             Returned
                                         </MudRadio>  
                                     </MudRadioGroup>

@@ -126,4 +126,6 @@ public interface IApplicationDbContext
     DbSet<ProviderFeedbackActivity> ProviderFeedbackActivities { get; }
     
     DbSet<ParticipantLabel> ParticipantLabels { get; }
+    
+    DbSet<ActivityFeedback> ActivityFeedbacks { get; }
 }
