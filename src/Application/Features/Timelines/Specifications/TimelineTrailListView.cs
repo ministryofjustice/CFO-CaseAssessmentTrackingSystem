@@ -12,4 +12,14 @@ public enum TimelineTrailListView
     Consent = 3,
     [Description("Assessment")]
     Assessment = 4,
+    [Description("Pathway Plan")]
+    PathwayPlan = 5,
+    [Description("Bio")]
+    Bio = 6,
+    [Description("Dms")]
+    Dms = 7,
+    [Description("PRI")]
+    PRI = 8,
+    [Description("Activity")]
+    Activity = 9,
 }

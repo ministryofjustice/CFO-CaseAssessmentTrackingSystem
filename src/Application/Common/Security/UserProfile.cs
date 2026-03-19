@@ -1,9 +1,12 @@
-﻿using Cfo.Cats.Domain.Common;
+﻿using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.Common;
 
 namespace Cfo.Cats.Application.Common.Security;
 
 public class UserProfile
 {
+    
+
     public string? Provider { get; set; }
     public string? SuperiorName { get; set; }
     public string? SuperiorId { get; set; }
@@ -24,8 +27,11 @@ public class UserProfile
 
     public DomainUser AsDomainUser() =>
         new (
-            this.UserId,
-            this.UserName,
-            this.TenantId!,
-            this.Email.EndsWith("@justice.gov.uk", StringComparison.CurrentCultureIgnoreCase));
+            UserId,
+            UserName,
+            TenantId!,
+            Email.EndsWith("@justice.gov.uk", StringComparison.CurrentCultureIgnoreCase));
+
+    public bool HasInternalRole()
+        => AssignedRoles.Any(a => RoleNames.InternalRoles.Contains(a));
 }

@@ -4,61 +4,94 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Domain.Common.Enums
 @using Humanizer
+@using Cfo.Cats.Application.Features.Timelines.Specifications
 
-@inherits CatsComponentBase
+@inherits CatsComponent<PaginatedData<TimelineDto>>
+
+<MudPaper Elevation="0" Class="mt-2">
 
 
-    @if (_items.Count > 0)
+    @if (Loading)
     {
-        <MudTimeline TimelinePosition="TimelinePosition.Start" Modifiers="true">
-            @foreach (var model in _items)
-            {
-                Color color = GetColour(model);
-                
-                <MudTimelineItem Size="Size.Medium" Color="@color" Elevation="25">
-                    
-                        <MudCard Outlined="false" Elevation="25">
-                            <MudCardContent>
-                                <MudText Typo="Typo.h6">@model.Line1</MudText>
-
-                                @if (model.Line2 is not null)
-                                {
-                                    <MudText Typo="Typo.body2">@model.Line2</MudText>
-                                }
-                                @if (model.Line3 is not null)
-                                {
-                                    <MudText Typo="Typo.body2">@model.Line3</MudText>
-                                }
-                            </MudCardContent>
-                            <MudCardActions>
-                                @if (hideUser && CFOTenantIds.Contains(model.UserTenantId))
-                                {
-                                    <MudTooltip Text="@model.OccurredOn.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
-                                        <MudText Typo="Typo.body2">CFO User @model.OccurredOn.Humanize()</MudText>
-                                    </MudTooltip>
-                                }
-                                else
-                                {
-                                    <MudTooltip Text="@model.OccurredOn.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
-                                        <MudText Typo="Typo.body2">@model.User @model.OccurredOn.Humanize()</MudText>
-                                    </MudTooltip>
-                                }
-                            </MudCardActions>
-                        </MudCard> 
-                </MudTimelineItem>
-
-            }
-        </MudTimeline>
-
-
-            <MudStack Row="true" Justify="Justify.Center" Class="mt-2 mb-4">
-                <MudText Typo="Typo.body2" Class="align-self-center">@_items.Count of @_totalItems</MudText>
-        @if (_items.Count < _totalItems)
-        {                
-                <MudLoadingButton Loading="@_loadingMore" Color="Color.Secondary" Variant="Variant.Filled"
-                                  StartIcon="@Icons.Material.Filled.ExpandMore" OnClick="ShowMoreAsync">
-                    Show More
-                </MudLoadingButton>
-        }
-            </MudStack>
+        <MudLoading Text="Loading" />
     }
+
+    @if (ErrorMessage is not null)
+    {
+        <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
+            @ErrorMessage
+        </MudAlert>
+    }
+
+    @if (Data is not null)
+    {
+        <MudStack>
+            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                <MudStack Row="true" AlignItems="AlignItems.Center">
+                    @* this is commented out for now while we analise timeline topics
+                    <MudMenu Size="Size.Small" Label="@_listView.GetDescription()" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                        <MudMenuItem Label="All" OnClick="@(() => OnListViewChanged(TimelineTrailListView.All))" />
+                        <MudMenuItem Label="Activity" OnClick="@(() => OnListViewChanged(TimelineTrailListView.Activity))" />
+                        <MudMenuItem Label="Assessment" OnClick="@(() => OnListViewChanged(TimelineTrailListView.Assessment))" />
+                        <MudMenuItem Label="Bio" OnClick="@(() => OnListViewChanged(TimelineTrailListView.Bio))" />
+                        <!-- <MudMenuItem Label="Consent" OnClick="@(() => OnListViewChanged(TimelineTrailListView.Consent))" /> -->
+                        <MudMenuItem Label="Dms" OnClick="@(() => OnListViewChanged(TimelineTrailListView.Dms))" />
+                        <MudMenuItem Label="Enrolment" OnClick="@(() => OnListViewChanged(TimelineTrailListView.Enrolment))" />
+                        <MudMenuItem Label="Participant" OnClick="@(() => OnListViewChanged(TimelineTrailListView.Participant))" />
+                        <MudMenuItem Label="Pathway Plan" OnClick="@(() => OnListViewChanged(TimelineTrailListView.PathwayPlan))" />
+                        <MudMenuItem Label="PRI" OnClick="@(() => OnListViewChanged(TimelineTrailListView.PRI))" />
+                    </MudMenu>
+                    *@
+                    <MudText Typo="Typo.body1"> 
+                        @Data.TotalItems timeline entries
+                    </MudText>
+                </MudStack>
+                <MudPagination Count="@Data.TotalPages" ShowFirstButton="true" ShowLastButton="true"
+                               SelectedChanged="OnPaginationChanged">
+                </MudPagination>
+            </MudStack>
+            <MudStack>
+                <MudTimeline TimelinePosition="TimelinePosition.Start" Modifiers="true">
+                    @foreach (var model in Data.Items)
+                    {
+                        Color color = GetColour(model);
+
+                        <MudTimelineItem Size="Size.Medium" Color="@color" Elevation="25">
+
+                            <MudCard Outlined="false" Elevation="25">
+                                <MudCardContent>
+                                    <MudText Typo="Typo.h6">@model.Line1</MudText>
+                                 
+                                    @if (model.Line2 is not null)
+                                    {
+                                        <MudText Typo="Typo.body2">@model.Line2</MudText>
+                                    }
+                                    @if (model.Line3 is not null)
+                                    {
+                                        <MudText Typo="Typo.body2">@model.Line3</MudText>
+                                    }
+                                </MudCardContent>
+                                <MudCardActions>
+                                    @if (_hideUser && _cfoTenantIds.Contains(model.UserTenantId))
+                                    {
+                                        <MudTooltip Text="@model.OccurredOn.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
+                                            <MudText Typo="Typo.body2">CFO User @model.OccurredOn.Humanize()</MudText>
+                                        </MudTooltip>
+                                    }
+                                    else
+                                    {
+                                        <MudTooltip Text="@model.OccurredOn.ToLocalTime().ToString("ddd, dd MMM yyyy 'at' HH:mm")">
+                                            <MudText Typo="Typo.body2">@model.User @model.OccurredOn.Humanize()</MudText>
+                                        </MudTooltip>
+                                    }
+                                </MudCardActions>
+                            </MudCard>
+                        </MudTimelineItem>
+
+                    }
+                </MudTimeline>
+            </MudStack>
+        </MudStack>
+
+    }
+</MudPaper>
