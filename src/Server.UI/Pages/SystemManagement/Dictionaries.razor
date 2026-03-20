@@ -212,9 +212,9 @@
         await _table.ReloadServerData();
     }
 
-    private void CommittedItemChanges(KeyValueDto item)
+    private async Task<DataGridEditFormAction> CommittedItemChanges(KeyValueDto item)
     {
-        InvokeAsync(async () => {
+        await InvokeAsync(async () => {
             var command = Mapper.Map<AddEditKeyValueCommand>(item);
             var result = await GetNewMediator().Send(command);
             if (!result.Succeeded)
@@ -224,6 +224,7 @@
 
             StateHasChanged();
         });
+        return DataGridEditFormAction.Close;
     }
 
     private async Task DeleteItem(KeyValueDto item)
