@@ -92,7 +92,7 @@ public partial class Participants
         }
     }
 
-    private async Task<GridData<ParticipantPaginationDto>> ServerReload(GridState<ParticipantPaginationDto> state)
+    private async Task<GridData<ParticipantPaginationDto>> ServerReload(GridState<ParticipantPaginationDto> state, CancellationToken cancellationToken)
     {
         try
         {

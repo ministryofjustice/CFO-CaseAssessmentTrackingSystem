@@ -20,7 +20,7 @@ public partial class PqaList
 
     private void RowClicked(DataGridRowClickEventArgs<ActivityQueueEntryDto> args) => Navigation.NavigateTo($"/pages/qa/activities/pqa/{args.Item.Id}");
 
-    private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state)
+    private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state, CancellationToken cancellationToken)
     {
         try
         {

@@ -166,7 +166,7 @@
         _canExport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Export)).Succeeded;
     }
 
-    private async Task<GridData<KeyValueDto>> ServerReload(GridState<KeyValueDto> state)
+    private async Task<GridData<KeyValueDto>> ServerReload(GridState<KeyValueDto> state, CancellationToken cancellationToken)
     {
         try
         {

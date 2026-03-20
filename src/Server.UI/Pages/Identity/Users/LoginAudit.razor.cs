@@ -28,7 +28,7 @@ public partial class LoginAudit : CatsComponentBase
         await _table.ReloadServerData();
     }
     
-    private async Task<GridData<IdentityAuditTrailDto>> ServerReload(GridState<IdentityAuditTrailDto> state)
+    private async Task<GridData<IdentityAuditTrailDto>> ServerReload(GridState<IdentityAuditTrailDto> state, CancellationToken cancellationToken)
     {
         try
         {

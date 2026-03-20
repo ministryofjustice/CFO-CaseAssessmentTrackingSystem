@@ -15,7 +15,7 @@ public partial class QA1List
     private Qa1WithPagination.Query Query { get; set; } = new();
     private EnrolmentQueueEntryDto _currentDto = new();
      
-    private async Task<GridData<EnrolmentQueueEntryDto>> ServerReload(GridState<EnrolmentQueueEntryDto> state)
+    private async Task<GridData<EnrolmentQueueEntryDto>> ServerReload(GridState<EnrolmentQueueEntryDto> state, CancellationToken cancellationToken)
     {
         try
         {

@@ -26,7 +26,7 @@ public partial class DipSample
 
     protected override Task OnInitializedAsync() => RefreshAsync();
 
-    private async Task<GridData<DipSampleParticipantSummaryDto>> ServerReload(GridState<DipSampleParticipantSummaryDto> state)
+    private async Task<GridData<DipSampleParticipantSummaryDto>> ServerReload(GridState<DipSampleParticipantSummaryDto> state, CancellationToken cancellationToken)
     {
         try
         {
