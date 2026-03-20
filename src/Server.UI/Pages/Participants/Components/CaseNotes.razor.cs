@@ -60,6 +60,6 @@ public partial class CaseNotes
     public async Task OnExpandNote(string message)
     {
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        await DialogService.ShowMessageBox("Note", message, options: options);
+        await DialogService.ShowMessageBoxAsync("Note", message, options: options);
     }
 }
