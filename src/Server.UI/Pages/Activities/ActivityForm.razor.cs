@@ -3,6 +3,7 @@ using Cfo.Cats.Application.Features.Activities.Queries;
 using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Participants.Queries;
 using Cfo.Cats.Domain.Common.Enums;
+using MudBlazor.Extensions;
 
 namespace Cfo.Cats.Server.UI.Pages.Activities;
 
@@ -92,7 +93,7 @@ public partial class ActivityForm
 
     private void ClearSelectedActivity()
     {
-        if (_activityDropdown.Value is not null)
+        if (_activityDropdown.GetState(x => x.Value) is not null)
         {
             _activityDropdown.ResetAsync();
         }
