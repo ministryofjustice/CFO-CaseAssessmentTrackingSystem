@@ -75,7 +75,7 @@
     {
         if(stepper.IsResultStep is false)
         {
-            form!.ResetValidation();
+            await form!.ResetValidationAsync();
             return;
         }
 
