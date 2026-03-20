@@ -41,7 +41,7 @@ public partial class Participants
 
     private void OnResumeEnrolment(ParticipantPaginationDto participant) => Navigation.NavigateTo($"/pages/enrolments/{participant.Id}");
 
-    private string GetMultiSelectionText(List<string> selectedValues) => $"{selectedValues.Count} location{(selectedValues.Count == 1 ? " has" : "s have")} been selected";
+    private string GetMultiSelectionText(IReadOnlyList<string> selectedValues) => $"{selectedValues.Count} location{(selectedValues.Count == 1 ? " has" : "s have")} been selected";
 
     private async Task LocationValuesChanged(IEnumerable<LocationDto>? selectedValues)
     {
