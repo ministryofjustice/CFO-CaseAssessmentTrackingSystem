@@ -75,7 +75,7 @@
                                    For="() => Model.Document"
                                    MaximumFileCount="1" 
                                    Accept=".pdf">
-                        <ActivatorContent>
+                        <CustomContent>
                             <MudLoadingButton Loading="_uploading"
                                               Variant="Variant.Filled"
                                               Color="Color.Primary"
@@ -89,7 +89,7 @@
                                     @ConstantString.Upload
                                 }
                             </MudLoadingButton>
-                        </ActivatorContent>
+                        </CustomContent>
                         <SelectedTemplate>
                             <br />
                             @if (context != null)

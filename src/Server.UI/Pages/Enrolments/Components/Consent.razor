@@ -41,7 +41,7 @@
                             For="() => Model.Document"
                             MaximumFileCount="1" 
                             Accept=".pdf">
-                <ActivatorContent>                         
+                <CustomContent>                         
                          @if(!consentUploaded)
                     { 
                     <MudLoadingButton Loading="_uploading"
@@ -59,7 +59,7 @@
                         }                      
                     </MudLoadingButton>
                      } 
-                </ActivatorContent>
+                 </CustomContent>
                 <SelectedTemplate>
                     <br />
                         @if (@Model.Document==null)

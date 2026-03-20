@@ -81,7 +81,7 @@
                         @if (_canImport)
                         {
                             <MudFileUpload T="IBrowserFile" FilesChanged="OnImportData" Accept=".xlsx" Style="margin-top:0px;">
-                                <ActivatorContent>
+                                <CustomContent>
                                     <MudButton HtmlTag="label"
                                                Size="Size.Small"
                                                Variant="Variant.Filled"
@@ -98,7 +98,7 @@
                                             @ConstantString.Import
                                         }
                                     </MudButton>
-                                </ActivatorContent>
+                                </CustomContent>
                             </MudFileUpload>
                         }
                     </MudHidden>

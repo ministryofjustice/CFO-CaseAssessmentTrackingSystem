@@ -1,6 +1,6 @@
 <div class="d-flex gap-2">
     <MudFileUpload Files="[]" T="IReadOnlyList<IBrowserFile>" Class="flex-none" Accept="@Accept" FilesChanged="OnFilesChanged" SuppressOnChangeWhenInvalid="true">
-        <ActivatorContent>
+        <CustomContent>
             <MudLoadingButton HtmlTag="label"
                               Variant="Variant.Filled"
                               Color="Color.Primary"
@@ -9,7 +9,7 @@
                 @UploadText
             </MudLoadingButton>
 
-        </ActivatorContent>
+        </CustomContent>
     </MudFileUpload>
 
     <MudTooltip Text="Maximum upload size of 4MB. Supported file types: .pdf, .jpeg, .png">
