@@ -9,30 +9,24 @@ namespace Cfo.Cats.Application.Features.Timelines.PaginationQuery;
 
 public static class TimelinesWithPaginationQuery
 {
-
     [RequestAuthorize(Policy = SecurityPolicies.CandidateSearch)]
-    public class Query : TimelineAdvancedFilter, IRequest<PaginatedData<TimelineDto>>
+    public class Query : TimelineAdvancedFilter, IRequest<Result<PaginatedData<TimelineDto>>>
     {
         public TimelineAdvancedSpecification Specification => new(this);
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, PaginatedData<TimelineDto>>
+    public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<PaginatedData<TimelineDto>>>
     {
-
-        public async Task<PaginatedData<TimelineDto>> Handle(Query request, CancellationToken cancellationToken)
-        {
-            var data = await unitOfWork.DbContext.Timelines
+        public async Task<Result<PaginatedData<TimelineDto>>> Handle(Query request, CancellationToken cancellationToken) 
+            => await unitOfWork.DbContext.Timelines
                 .OrderBy("Created DESC")
                 .ProjectToPaginatedDataAsync<Timeline, TimelineDto>(
-                request.Specification,
-                request.PageNumber,
-                request.PageSize,
-                mapper.ConfigurationProvider,
-                cancellationToken
+                    request.Specification,
+                    request.PageNumber,
+                    request.PageSize,
+                    mapper.ConfigurationProvider,
+                    cancellationToken
                 );
-
-            return data;
-        }
     }
 
     public class Validator : AbstractValidator<Query>

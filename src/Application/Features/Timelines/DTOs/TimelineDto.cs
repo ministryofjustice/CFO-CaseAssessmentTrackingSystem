@@ -11,7 +11,7 @@ public class TimelineDto
     public string? Line3 { get; set; } 
     public DateTime OccurredOn { get; set; }
     public string UserTenantId { get; set; } = default!;
-
+    
     private class Mapper : Profile
     {
         public Mapper() =>

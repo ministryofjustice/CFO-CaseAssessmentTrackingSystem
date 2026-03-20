@@ -11,14 +11,16 @@ public class TimelineAdvancedSpecification : Specification<Timeline>
             p => p.ParticipantId == filter.ParticipantId
         );
 
-        Query.Where(
-        c => c.EventType == (filter.ListView == TimelineTrailListView.Participant ? TimelineEventType.Participant :
-            filter.ListView == TimelineTrailListView.Enrolment ? TimelineEventType.Enrolment :
-            filter.ListView == TimelineTrailListView.Consent ? TimelineEventType.Consent :
-            filter.ListView == TimelineTrailListView.Assessment ? TimelineEventType.Assessment : TimelineEventType.Participant),
-            filter.ListView != TimelineTrailListView.All
-        );
-
+        Query.Where(te => te.EventType == TimelineEventType.Participant, filter.ListView == TimelineTrailListView.Participant);
+        Query.Where(te => te.EventType == TimelineEventType.Enrolment, filter.ListView == TimelineTrailListView.Enrolment);
+        Query.Where(te => te.EventType == TimelineEventType.Consent, filter.ListView == TimelineTrailListView.Consent);
+        Query.Where(te => te.EventType == TimelineEventType.Assessment, filter.ListView == TimelineTrailListView.Assessment);
+        Query.Where(te => te.EventType == TimelineEventType.PathwayPlan, filter.ListView == TimelineTrailListView.PathwayPlan);
+        Query.Where(te => te.EventType == TimelineEventType.Bio, filter.ListView == TimelineTrailListView.Bio);
+        Query.Where(te => te.EventType == TimelineEventType.Dms, filter.ListView == TimelineTrailListView.Dms);
+        Query.Where(te => te.EventType == TimelineEventType.PRI, filter.ListView == TimelineTrailListView.PRI);
+        Query.Where(te => te.EventType == TimelineEventType.Activity, filter.ListView == TimelineTrailListView.Activity);
+        
         Query.OrderByDescending(t => t.Created);
 
     }
