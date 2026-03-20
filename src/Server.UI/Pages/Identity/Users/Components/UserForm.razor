@@ -190,7 +190,7 @@
     {
         if (form is not null)
         {
-            await form.Validate();
+            await form.ValidateAsync();
             if (form.IsValid)
             {
                 Model.ProviderId = Model.TenantId;
@@ -201,7 +201,7 @@
                     CallReference = CallReference,
                     ApplicationUserId = Model.Id
                 });
-                await form.Validate();
+                await form.ValidateAsync();
                 
                 if (form.IsValid)
                 {

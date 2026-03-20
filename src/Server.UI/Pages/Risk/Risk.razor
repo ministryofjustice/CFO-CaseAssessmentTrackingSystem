@@ -79,7 +79,7 @@
             return;
         }
 
-        await form!.Validate();
+        await form!.ValidateAsync();
 
         if(form.IsValid)
         {
@@ -149,7 +149,7 @@
         {
             var validator = new RiskDto.Validator();
             var result = await validator.ValidateAsync(_model, partial.Strategy);
-            await form!.Validate();
+            await form!.ValidateAsync();
             isValid = result.IsValid;
         }
 

@@ -27,7 +27,7 @@ public partial class SetStickyLocationDialog
         {
             _saving = true;
 
-            await _form!.Validate();
+            await _form!.ValidateAsync();
 
             if (_form!.IsValid == false)
             {

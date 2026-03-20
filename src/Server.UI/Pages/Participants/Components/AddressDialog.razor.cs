@@ -40,7 +40,7 @@ public partial class AddressDialog(IAddressLookupService addressLookupService)
         {
             _saving = true;
 
-            await _form.Validate();
+            await _form.ValidateAsync();
 
             if (!_form.IsValid)
             {
@@ -72,7 +72,7 @@ public partial class AddressDialog(IAddressLookupService addressLookupService)
         IValidator<TModel> validator)
     {
         // Run MudBlazor validation (field-level)
-        await form.Validate();
+        await form.ValidateAsync();
 
         // Run FluentValidation (model-level)
         var fluentResult = validator.Validate(model);

@@ -18,7 +18,7 @@ public partial class SubmitCpmResponseComponent
 
     private async Task OnSubmit()
     {
-        await form.Validate();
+        await form.ValidateAsync();
 
         if (form.IsValid)
         {

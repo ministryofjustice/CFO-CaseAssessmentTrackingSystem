@@ -182,7 +182,7 @@
         submitting = true;
         try
         {
-            await form!.Validate();
+            await form!.ValidateAsync();
             if (form.IsValid)
             {
                 var state = await AuthState;
@@ -205,7 +205,7 @@
         submitting = true;
         try
         {
-            await passwordForm!.Validate();
+            await passwordForm!.ValidateAsync();
             if (passwordForm!.IsValid)
             {
                 var user = await userManager.Users.FirstOrDefaultAsync (u => u.Id == Model!.UserId!);

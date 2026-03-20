@@ -20,7 +20,7 @@ public partial class AddActivityDialog
         {
             _saving = true;
 
-            await _form.Validate();
+            await _form.ValidateAsync();
 
             if (_form.IsValid is false)
             {

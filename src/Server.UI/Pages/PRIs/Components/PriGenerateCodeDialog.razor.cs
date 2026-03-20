@@ -23,7 +23,7 @@ public partial class PriGenerateCodeDialog
         {
             _loading = true;
 
-            await _form!.Validate();
+            await _form!.ValidateAsync();
 
             if (_form.IsValid is false)
             {

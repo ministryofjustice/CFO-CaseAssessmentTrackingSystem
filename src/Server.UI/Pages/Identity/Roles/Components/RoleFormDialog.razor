@@ -45,7 +45,7 @@
         try
         {
             _loading = true;
-            await form!.Validate();
+            await form!.ValidateAsync();
             if (form!.IsValid)
             {
                 MudDialog.Close(DialogResult.Ok(true));

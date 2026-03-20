@@ -266,7 +266,7 @@
 
     async Task<bool> IsValid(MudForm form)
     {
-        await form.Validate();
+        await form.ValidateAsync();
         return form.IsValid;
     }
 }
