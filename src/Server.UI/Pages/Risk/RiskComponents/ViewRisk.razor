@@ -18,68 +18,74 @@
 }
 else if (_model is not null)
 {
-    <MudForm @ref="form" ReadOnly Disabled>
-        <CascadingValue Value="form">
-            <MudExpansionPanels MultiExpansion="true">
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <MudText>License Conditions</MudText>
-                    </TitleContent>
-                    <ChildContent>
-                        <LicenseConditions Model="_model" />
-                    </ChildContent>
-                </MudExpansionPanel>
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <MudText>Risk Overview</MudText>
-                    </TitleContent>
-                    <ChildContent>
-                        <RiskOverview Model="_model" />
-                    </ChildContent>
-                </MudExpansionPanel>
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <MudText>Registration Details / MAPPA</MudText>
-                    </TitleContent>
-                    <ChildContent>
-                        <Mappa Model="_model" />
-                    </ChildContent>
-                </MudExpansionPanel>
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <MudText>Specific Risk(s)</MudText>
-                    </TitleContent>
-                    <ChildContent>
-                        <SpecificRisk Model="_model" />
-                    </ChildContent>
-                </MudExpansionPanel>
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <MudText>Recommendations</MudText>
-                    </TitleContent>
-                    <ChildContent>
-                        <Recommendations Model="_model" />
-                    </ChildContent>
-                </MudExpansionPanel>
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <MudText>Restrictions</MudText>
-                    </TitleContent>
-                    <ChildContent>
-                        <Restrictions Model="_model" />
-                    </ChildContent>
-                </MudExpansionPanel>
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <MudText>Additional Information</MudText>
-                    </TitleContent>
-                    <ChildContent>
-                        <AdditionalInformation Model="_model" />
-                    </ChildContent>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-        </CascadingValue>
-    </MudForm>
+    <ErrorBoundary>
+        <ChildContent>
+            <MudForm @ref="form" ReadOnly Disabled>
+                <CascadingValue Value="form">
+                    <MudExpansionPanels MultiExpansion="true">
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <MudText>License Conditions</MudText>
+                            </TitleContent>
+                            <ChildContent>
+                                <LicenseConditions Model="_model" ViewMode="RiskComponentViewMode.OutsideStepper" />
+                            </ChildContent>
+                        </MudExpansionPanel>
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <MudText>Risk Overview</MudText>
+                            </TitleContent>
+                            <ChildContent>
+                                <RiskOverview Model="_model" ViewMode="RiskComponentViewMode.OutsideStepper" />
+                            </ChildContent>
+                        </MudExpansionPanel>
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <MudText>Registration Details / MAPPA</MudText>
+                            </TitleContent>
+                            <ChildContent>
+                                <Mappa Model="_model" ViewMode="RiskComponentViewMode.OutsideStepper" />
+                            </ChildContent>
+                        </MudExpansionPanel>
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <MudText>Specific Risk(s)</MudText>
+                            </TitleContent>
+                            <ChildContent>
+                                <SpecificRisk Model="_model" ViewMode="RiskComponentViewMode.OutsideStepper" />
+                            </ChildContent>
+                        </MudExpansionPanel>
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <MudText>Recommendations</MudText>
+                            </TitleContent>
+                            <ChildContent>
+                                <Recommendations Model="_model" ViewMode="RiskComponentViewMode.OutsideStepper" />
+                            </ChildContent>
+                        </MudExpansionPanel>
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <MudText>Restrictions</MudText>
+                            </TitleContent>
+                            <ChildContent>
+                                <Restrictions Model="_model" ViewMode="RiskComponentViewMode.OutsideStepper"/>
+                            </ChildContent>
+                        </MudExpansionPanel>
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <MudText>Additional Information</MudText>
+                            </TitleContent>
+                            <ChildContent>
+                                <AdditionalInformation Model="_model" ViewMode="RiskComponentViewMode.OutsideStepper"/>
+                            </ChildContent>
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+                </CascadingValue>
+            </MudForm>
+        </ChildContent>
+    </ErrorBoundary>
+
+    
 }
 else if (_notFound)
 {
