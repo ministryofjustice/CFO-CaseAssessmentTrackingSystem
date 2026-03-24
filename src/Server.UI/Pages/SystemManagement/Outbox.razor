@@ -200,7 +200,7 @@
         }
     }
 
-    private async Task<GridData<OutboxMessageDto>> ServerReload(GridState<OutboxMessageDto> state)
+    private async Task<GridData<OutboxMessageDto>> ServerReload(GridState<OutboxMessageDto> state, CancellationToken cancellationToken)
     {
         try
         {

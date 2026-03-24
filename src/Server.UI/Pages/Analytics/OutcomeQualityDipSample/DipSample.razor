@@ -145,7 +145,7 @@
                         @* Display warning if CSO & CPM disagree *@
 
                         <MudMenu ActivationEvent="MouseEvent.MouseOver" Disabled="context.Item.ComplianceAnswer.IsAnswer is false">
-                            <ActivatorContent>
+                            <ActivatorContent Context="menu">
                                 <DipSampleAnswerChip Answer="context.Item.ComplianceAnswer" />
                             </ActivatorContent>
                             <ChildContent>

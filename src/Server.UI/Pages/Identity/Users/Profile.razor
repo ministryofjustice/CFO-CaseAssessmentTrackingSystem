@@ -25,7 +25,7 @@
         }
         else
         {
-            <MudTabs Outlined="true" Position="Position.Top" Rounded="true" Border="true" Elevation="6" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6">
+            <MudTabs Outlined="true" Position="Position.Top" Rounded="true" Border="true" Elevation="6" ApplyEffectsToContainer="true" Class="mt-8" TabPanelsClass="pa-6">
                 <MudTabPanel Text="@L["Profile"]">
                     <MudForm Model="@Model" @ref="@form" Validation="@(Validator.ValidateValue(Model))" Style="display: flex; align-content: center;  align-items: center; flex-direction: column;">
                         <MudGrid Justify="Justify.Center" Style="max-width:600px;display:flex;">
@@ -182,7 +182,7 @@
         submitting = true;
         try
         {
-            await form!.Validate();
+            await form!.ValidateAsync();
             if (form.IsValid)
             {
                 var state = await AuthState;
@@ -205,7 +205,7 @@
         submitting = true;
         try
         {
-            await passwordForm!.Validate();
+            await passwordForm!.ValidateAsync();
             if (passwordForm!.IsValid)
             {
                 var user = await userManager.Users.FirstOrDefaultAsync (u => u.Id == Model!.UserId!);

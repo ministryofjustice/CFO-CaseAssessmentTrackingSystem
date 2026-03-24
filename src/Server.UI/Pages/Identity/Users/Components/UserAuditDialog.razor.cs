@@ -14,7 +14,7 @@ public partial class UserAuditDialog
     private bool _loading;
     private int _defaultPageSize = 15;
 
-    private async Task<GridData<IdentityAuditTrailDto>> ServerReload(GridState<IdentityAuditTrailDto> state)
+    private async Task<GridData<IdentityAuditTrailDto>> ServerReload(GridState<IdentityAuditTrailDto> state, CancellationToken cancellationToken)
     {
         try
         {

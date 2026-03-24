@@ -15,7 +15,7 @@ public partial class QA1List
     
     private ActivityQa1WithPagination.Query Query { get;  } = new();
 
-    private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state)
+    private async Task<GridData<ActivityQueueEntryDto>> ServerReload(GridState<ActivityQueueEntryDto> state, CancellationToken cancellationToken)
     {
         try
         {

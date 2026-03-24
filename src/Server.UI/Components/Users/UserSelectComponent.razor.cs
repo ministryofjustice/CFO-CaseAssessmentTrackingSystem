@@ -25,31 +25,4 @@ public partial class UserSelectComponent
         Value = value;
         await ValueChanged.InvokeAsync(value);
     }
-    private bool Search(ApplicationUserDto? user, string searchText)
-    {
-        if (user == null)
-        {
-            return true;
-        }
-
-        if (user.DisplayName.Contains(searchText, StringComparison.CurrentCultureIgnoreCase))
-        {
-            return true;
-        }
-
-        if(user is {  TenantName: not null, AssignedRoles: not null })
-        {
-            if (user.TenantName.Contains(searchText, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return true;
-            }
-
-            if (user.AssignedRoles.Any(r => r.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)))
-            {
-                return true;
-            }
-        }
-        
-        return false;
-    }
 }

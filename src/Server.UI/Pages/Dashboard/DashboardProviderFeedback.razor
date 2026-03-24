@@ -37,7 +37,7 @@
 </MudStack>
 
 <MudStack>
-        <MudTabs PanelClass="pa-6" ApplyEffectsToContainer="true" Outlined="true">
+        <MudTabs TabPanelsClass="pa-6" ApplyEffectsToContainer="true" Outlined="true">
             <MudTabPanel Text="Enrolments: Returns" Class="pa-3">
                 <EnrolmentsToProviderDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode" />
             </MudTabPanel>

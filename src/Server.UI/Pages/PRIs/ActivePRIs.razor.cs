@@ -36,7 +36,7 @@ public partial class ActivePRIs
         await base.OnInitializedAsync();
     }
 
-    private async Task<GridData<PRIPaginationDto>> ServerReload(GridState<PRIPaginationDto> state)
+    private async Task<GridData<PRIPaginationDto>> ServerReload(GridState<PRIPaginationDto> state, CancellationToken cancellationToken)
     {
         try
         {

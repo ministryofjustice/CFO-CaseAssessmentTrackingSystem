@@ -81,12 +81,13 @@
                         @if (_canImport)
                         {
                             <MudFileUpload T="IBrowserFile" FilesChanged="OnImportData" Accept=".xlsx" Style="margin-top:0px;">
-                                <ActivatorContent>
+                                <CustomContent>
                                     <MudButton HtmlTag="label"
                                                Size="Size.Small"
                                                Variant="Variant.Filled"
                                                Color="Color.Primary"
                                                Disabled="@_loading"
+                                               OnClick="@context.OpenFilePickerAsync"
                                                StartIcon="@Icons.Material.Filled.Upload">
                                         @if (_uploading)
                                         {
@@ -98,7 +99,7 @@
                                             @ConstantString.Import
                                         }
                                     </MudButton>
-                                </ActivatorContent>
+                                </CustomContent>
                             </MudFileUpload>
                         }
                     </MudHidden>
@@ -232,7 +233,7 @@
         _canExport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Export)).Succeeded;
     }
 
-    private async Task<GridData<ApplicationRoleDto>> ServerReload(GridState<ApplicationRoleDto> state)
+    private async Task<GridData<ApplicationRoleDto>> ServerReload(GridState<ApplicationRoleDto> state, CancellationToken cancellationToken)
     {
         try
         {

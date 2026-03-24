@@ -20,7 +20,7 @@ public partial class PersonalDetailsDialog
         {
             saving = true;
 
-            await form.Validate();
+            await form.ValidateAsync();
 
             if (form.IsValid is false)
             {

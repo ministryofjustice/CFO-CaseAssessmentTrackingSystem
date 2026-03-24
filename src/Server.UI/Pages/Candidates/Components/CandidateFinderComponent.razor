@@ -63,7 +63,7 @@
 
     public async Task Search()
     {
-        await _form!.Validate();
+        await _form!.ValidateAsync();
         if (_form.IsValid)
         {
             var result = await CandidateService.SearchAsync(Query!);

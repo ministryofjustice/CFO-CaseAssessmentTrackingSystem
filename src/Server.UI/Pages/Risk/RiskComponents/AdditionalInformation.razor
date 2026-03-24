@@ -8,43 +8,88 @@
 
 @if (Model is not null)
 {
-    <CatsMudStep Title="Additional Information">
+
+    @if(ViewMode == RiskComponentViewMode.Stepper)
+    {
+        <CatsMudStep Title="Additional Information">
+            <MudTextField @bind-Value="@Model.AdditionalInformation"
+                        For="@(() => Model.AdditionalInformation)"
+                        Lines="5"
+                        Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
+                        Placeholder="Use this area to provide any additional information (i.e. information that might support the Risk Overview rating, or relevant information that has not already been documented in this template)."
+                        MaxLength="@ValidationConstants.RiskLongText"
+                        Counter="@ValidationConstants.RiskLongText"
+                        Immediate="true">
+            </MudTextField>
+
+            <MudText Class="my-6">Please provide the details of the individual who completed the risk template</MudText>
+
+            <MudTextField @bind-Value="Model.ReferrerName"
+                        For="@(() => Model.ReferrerName)"
+                        Label="@Model.GetMemberDescription(x => x.ReferrerName)"
+                        Class="mt-4"
+                        MaxLength="@ValidationConstants.RiskReferrerName"
+                        Counter="@ValidationConstants.RiskReferrerName"
+                        Immediate="true">
+            </MudTextField>
+
+            <MudTextField @bind-Value="Model.ReferrerEmail"
+                        For="@(() => Model.ReferrerEmail)"
+                        Label="@Model.GetMemberDescription(x => x.ReferrerEmail)"
+                        Class="mt-4"
+                        MaxLength="@ValidationConstants.RiskEmail"
+                        Counter="@ValidationConstants.RiskEmail"
+                        Immediate="true">
+            </MudTextField>
+
+            <MudDatePicker @bind-Date="Model.ReferredOn"
+                        Label="@Model.GetMemberDescription(x => x.ReferredOn)"
+                        For="@(() => Model.ReferredOn)"
+                        MaxDate="DateTime.UtcNow.Date"
+                        Editable="true"
+                        Class="mt-4"
+                        PickerVariant="PickerVariant.Dialog"/>
+        </CatsMudStep>
+    }
+    else 
+    {
         <MudTextField @bind-Value="@Model.AdditionalInformation"
-                      For="@(() => Model.AdditionalInformation)"
-                      Lines="5"
-                      Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
-                      Placeholder="Use this area to provide any additional information (i.e. information that might support the Risk Overview rating, or relevant information that has not already been documented in this template)."
-                      MaxLength="@ValidationConstants.RiskLongText"
-                      Counter="@ValidationConstants.RiskLongText"
-                      Immediate="true">
-        </MudTextField>
+                        For="@(() => Model.AdditionalInformation)"
+                        Lines="5"
+                        Label="@Model.GetMemberDescription(x => x.AdditionalInformation)"
+                        Placeholder="Use this area to provide any additional information (i.e. information that might support the Risk Overview rating, or relevant information that has not already been documented in this template)."
+                        MaxLength="@ValidationConstants.RiskLongText"
+                        Counter="@ValidationConstants.RiskLongText"
+                        Immediate="true">
+            </MudTextField>
 
-        <MudText Class="my-6">Please provide the details of the individual who completed the risk template</MudText>
+            <MudText Class="my-6">Please provide the details of the individual who completed the risk template</MudText>
 
-        <MudTextField @bind-Value="Model.ReferrerName"
-                      For="@(() => Model.ReferrerName)"
-                      Label="@Model.GetMemberDescription(x => x.ReferrerName)"
-                      Class="mt-4"
-                      MaxLength="@ValidationConstants.RiskReferrerName"
-                      Counter="@ValidationConstants.RiskReferrerName"
-                      Immediate="true">
-        </MudTextField>
+            <MudTextField @bind-Value="Model.ReferrerName"
+                        For="@(() => Model.ReferrerName)"
+                        Label="@Model.GetMemberDescription(x => x.ReferrerName)"
+                        Class="mt-4"
+                        MaxLength="@ValidationConstants.RiskReferrerName"
+                        Counter="@ValidationConstants.RiskReferrerName"
+                        Immediate="true">
+            </MudTextField>
 
-        <MudTextField @bind-Value="Model.ReferrerEmail"
-                      For="@(() => Model.ReferrerEmail)"
-                      Label="@Model.GetMemberDescription(x => x.ReferrerEmail)"
-                      Class="mt-4"
-                      MaxLength="@ValidationConstants.RiskEmail"
-                      Counter="@ValidationConstants.RiskEmail"
-                      Immediate="true">
-        </MudTextField>
+            <MudTextField @bind-Value="Model.ReferrerEmail"
+                        For="@(() => Model.ReferrerEmail)"
+                        Label="@Model.GetMemberDescription(x => x.ReferrerEmail)"
+                        Class="mt-4"
+                        MaxLength="@ValidationConstants.RiskEmail"
+                        Counter="@ValidationConstants.RiskEmail"
+                        Immediate="true">
+            </MudTextField>
 
-        <MudDatePicker @bind-Date="Model.ReferredOn"
-                       Label="@Model.GetMemberDescription(x => x.ReferredOn)"
-                       For="@(() => Model.ReferredOn)"
-                       MaxDate="DateTime.UtcNow.Date"
-                       Editable="true"
-                       Class="mt-4"
-                       PickerVariant="PickerVariant.Dialog"/>
-    </CatsMudStep>
+            <MudDatePicker @bind-Date="Model.ReferredOn"
+                        Label="@Model.GetMemberDescription(x => x.ReferredOn)"
+                        For="@(() => Model.ReferredOn)"
+                        MaxDate="DateTime.UtcNow.Date"
+                        Editable="true"
+                        Class="mt-4"
+                        PickerVariant="PickerVariant.Dialog"/>
+    }
+
 }

@@ -36,7 +36,7 @@
                                              @bind-Value="Model.Location" @bind-Value:after="CheckParticipantBeenAtThisLocationOnDate"
                                              SearchFunc="@SearchLocations"
                                              Required="true" RequiredError="Location is required"
-                                             ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                                             ResetValueOnEmptyText="true" CoerceText="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
                                              AdornmentColor="Color.Primary" ToStringFunc="@(e => e == null ? null : e.Name)" />
                         </MudItem>
                     </MudGrid>
@@ -80,7 +80,7 @@
         {
             saving = true;
 
-            await form!.Validate();
+            await form!.ValidateAsync();
 
             if(form!.IsValid == false)
             {

@@ -35,7 +35,7 @@ public partial class SubmitFinalResponseComponent
 
     private async Task OnSubmit()
     {
-        await _form.Validate();
+        await _form.ValidateAsync();
 
         if (_form.IsValid)
         {

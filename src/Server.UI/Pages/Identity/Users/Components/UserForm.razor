@@ -77,7 +77,7 @@
             <MudGrid Class="mt-1">
                 <MudItem xs="12" sm="12" Class="py-0 my=0">
                     <MudTextField T="string" @bind-Value="CallReference" Label="@L["Call Reference No."]" Variant="Variant.Text" Required Validation="@(new Func<string, IEnumerable<string>>(ValidateCallReferenceNo))"></MudTextField>
-                    <MudTextField T="string" @bind-Value="Message" Label="@L["Notes"]" Lines="4" AutoGrow Variant="Variant.Text" Required Validation="@(new Func<string, IEnumerable<string>>(ValidateNotes))"></MudTextField>
+                    <MudTextField T="string" @bind-Value="Message" Label="@L["Notes"]" Lines="4" Sizing="InputSizing.Auto" Variant="Variant.Text" Required Validation="@(new Func<string, IEnumerable<string>>(ValidateNotes))"></MudTextField>
                 </MudItem>
             </MudGrid>
         </MudItem>
@@ -190,7 +190,7 @@
     {
         if (form is not null)
         {
-            await form.Validate();
+            await form.ValidateAsync();
             if (form.IsValid)
             {
                 Model.ProviderId = Model.TenantId;
@@ -201,7 +201,7 @@
                     CallReference = CallReference,
                     ApplicationUserId = Model.Id
                 });
-                await form.Validate();
+                await form.ValidateAsync();
                 
                 if (form.IsValid)
                 {

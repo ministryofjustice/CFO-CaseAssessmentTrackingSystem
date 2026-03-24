@@ -75,11 +75,12 @@
                                    For="() => Model.Document"
                                    MaximumFileCount="1" 
                                    Accept=".pdf">
-                        <ActivatorContent>
+                        <CustomContent>
                             <MudLoadingButton Loading="_uploading"
                                               Variant="Variant.Filled"
                                               Color="Color.Primary"
-                                              StartIcon="@Icons.Material.Filled.Upload">
+                                              StartIcon="@Icons.Material.Filled.Upload"
+                                              OnClick="@context.OpenFilePickerAsync">
                                 @if (_uploading)
                                 {
                                     @ConstantString.Uploading
@@ -89,7 +90,7 @@
                                     @ConstantString.Upload
                                 }
                             </MudLoadingButton>
-                        </ActivatorContent>
+                        </CustomContent>
                         <SelectedTemplate>
                             <br />
                             @if (context != null)
@@ -131,7 +132,7 @@
                 return true;
             }
 
-            await form!.Validate();
+            await form!.ValidateAsync();
 
             if (form.IsValid)
             {

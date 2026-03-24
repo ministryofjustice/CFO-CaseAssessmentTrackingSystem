@@ -18,13 +18,13 @@
             <MudCard Class="px-8 pt-4 pb-8">
                 <MudForm @ref="form" Model="_model" Validation="Validator.ValidateValue(_model)">
                     <CascadingValue Value="form">
-                        <LicenseConditions Model="_model" />
-                        <RiskOverview Model="_model" />
-                        <Mappa Model="_model" />
-                        <SpecificRisk Model="_model" />
-                        <Recommendations Model="_model" />
-                        <Restrictions Model="_model" />
-                        <AdditionalInformation Model="_model" />
+                        <LicenseConditions Model="_model" ViewMode="RiskComponentViewMode.Stepper" />
+                        <RiskOverview Model="_model" ViewMode="RiskComponentViewMode.Stepper"/>
+                        <Mappa Model="_model" ViewMode="RiskComponentViewMode.Stepper"/>
+                        <SpecificRisk Model="_model" ViewMode="RiskComponentViewMode.Stepper"/>
+                        <Recommendations Model="_model" ViewMode="RiskComponentViewMode.Stepper"/>
+                        <Restrictions Model="_model" ViewMode="RiskComponentViewMode.Stepper"/>
+                        <AdditionalInformation Model="_model" ViewMode="RiskComponentViewMode.Stepper"/>
                         <StatusResultStep Processing="@Processing" SubmissionSuccess="@SubmissionSuccess" SuccessText="Risk Submitted" FailureText="Risk failed to submit" Upci="@Upci" />
                     </CascadingValue>
                 </MudForm>
@@ -75,11 +75,11 @@
     {
         if(stepper.IsResultStep is false)
         {
-            form!.ResetValidation();
+            await form!.ResetValidationAsync();
             return;
         }
 
-        await form!.Validate();
+        await form!.ValidateAsync();
 
         if(form.IsValid)
         {
@@ -149,7 +149,7 @@
         {
             var validator = new RiskDto.Validator();
             var result = await validator.ValidateAsync(_model, partial.Strategy);
-            await form!.Validate();
+            await form!.ValidateAsync();
             isValid = result.IsValid;
         }
 

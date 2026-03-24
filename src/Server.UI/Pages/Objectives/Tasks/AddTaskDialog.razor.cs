@@ -24,7 +24,7 @@ public partial class AddTaskDialog
                 return;
             }
 
-            await _form.Validate();
+            await _form.ValidateAsync();
 
             if (_form.IsValid)
             {

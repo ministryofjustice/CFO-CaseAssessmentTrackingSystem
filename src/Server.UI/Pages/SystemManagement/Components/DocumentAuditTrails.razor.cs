@@ -27,7 +27,7 @@ public partial class DocumentAuditTrails(IMediator mediator)
         var state = await AuthState;
     }
 
-    private async Task<GridData<DocumentAuditTrailDto>> ServerReload(GridState<DocumentAuditTrailDto> state)
+    private async Task<GridData<DocumentAuditTrailDto>> ServerReload(GridState<DocumentAuditTrailDto> state, CancellationToken cancellationToken)
     {
         try
         {

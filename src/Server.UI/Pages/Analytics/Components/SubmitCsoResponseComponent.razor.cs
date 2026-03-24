@@ -19,7 +19,7 @@ public partial class SubmitCsoResponseComponent
 
     private async Task OnSubmit()
     {
-        await _form.Validate();
+        await _form.ValidateAsync();
 
         if (_form.IsValid)
         {

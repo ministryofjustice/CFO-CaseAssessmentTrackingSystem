@@ -23,7 +23,7 @@ public partial class AddLabelDialog
         try
         {
             _saving = true;
-            await _form!.Validate();
+            await _form!.ValidateAsync();
 
             if (_form!.IsValid == false)
             {

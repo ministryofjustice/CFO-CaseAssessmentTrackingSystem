@@ -113,11 +113,12 @@
                                    For="() => Model.Document"
                                    MaximumFileCount="1"
                                    Accept=".pdf">
-                        <ActivatorContent>
+                        <CustomContent>
                             <MudLoadingButton Loading="_uploading"
                                               Variant="Variant.Filled"
                                               Color="Color.Primary"
-                                              StartIcon="@Icons.Material.Filled.Upload">
+                                              StartIcon="@Icons.Material.Filled.Upload"
+                                              OnClick="@context.OpenFilePickerAsync">
                                 @if (Model.ActivityId is null)
                                 {
                                     @string.Format("{0} Template", _uploading ? ConstantString.Uploading : ConstantString.Upload)
@@ -127,7 +128,7 @@
                                     @string.Format("{0} Template", _uploading ? "Replacing" : "Replace")
                                 }
                             </MudLoadingButton>
-                        </ActivatorContent>
+                        </CustomContent>
                         <SelectedTemplate>
                             <br/>
                             @if (context is null)
