@@ -36,15 +36,7 @@ jobs:
     - name: Generate Version Tag
       id: version
       run: |
-        DATE_TAG="v$(date +'%Y.%m.%d')-build.${{ github.run_number }}"
-        BRANCH="${{ github.ref_name }}"
-
-        if [ "$BRANCH" = "main" ]; then
-          TAG_NAME="$DATE_TAG"
-        else
-          TAG_NAME="$DATE_TAG-dev"
-        fi
-
+        TAG_NAME="v$(date +'%Y.%m.%d')-build.${{ github.run_number }}"
         echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
         echo "Generated tag: $TAG_NAME"
 
@@ -67,7 +59,7 @@ jobs:
         files: |
           ${{ steps.version.outputs.tag }}.zip
         draft: false
-        prerelease: ${{ github.ref_name != 'main' }}
+        prerelease: false
         generate_release_notes: true
         fail_on_unmatched_files: true
         token: ${{ secrets.GITHUB_TOKEN }}
