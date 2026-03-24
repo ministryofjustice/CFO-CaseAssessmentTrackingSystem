@@ -6,7 +6,12 @@
              Class="mx-1"
              LockScroll="true"
              TransformOrigin="Origin.TopRight">
-                <ActivatorContent>        <MudIconButton Icon="@Icons.Material.Filled.PermIdentity"                       Style="color:white;" />    </ActivatorContent>   
+                <ActivatorContent>        
+                    <MudIconButton 
+                        Icon="@Icons.Material.Filled.PermIdentity"                       
+                        Style="color:white;"
+                        OnClick="@context.ToggleAsync"/>
+                </ActivatorContent>   
             <ChildContent>
             <div class="pb-4"
                  style="min-width: 260px;margin-bottom:0px!important">
