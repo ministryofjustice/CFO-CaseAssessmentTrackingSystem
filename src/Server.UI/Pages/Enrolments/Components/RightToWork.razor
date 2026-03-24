@@ -79,7 +79,8 @@
                             <MudLoadingButton Loading="_uploading"
                                               Variant="Variant.Filled"
                                               Color="Color.Primary"
-                                              StartIcon="@Icons.Material.Filled.Upload">
+                                              StartIcon="@Icons.Material.Filled.Upload"
+                                              OnClick="@context.OpenFilePickerAsync">
                                 @if (_uploading)
                                 {
                                     @ConstantString.Uploading

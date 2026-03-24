@@ -87,6 +87,7 @@
                                                Variant="Variant.Filled"
                                                Color="Color.Primary"
                                                Disabled="@_loading"
+                                               OnClick="@context.OpenFilePickerAsync"
                                                StartIcon="@Icons.Material.Filled.Upload">
                                         @if (_uploading)
                                         {

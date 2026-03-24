@@ -117,7 +117,8 @@
                             <MudLoadingButton Loading="_uploading"
                                               Variant="Variant.Filled"
                                               Color="Color.Primary"
-                                              StartIcon="@Icons.Material.Filled.Upload">
+                                              StartIcon="@Icons.Material.Filled.Upload"
+                                              OnClick="@context.OpenFilePickerAsync">
                                 @if (Model.ActivityId is null)
                                 {
                                     @string.Format("{0} Template", _uploading ? ConstantString.Uploading : ConstantString.Upload)
