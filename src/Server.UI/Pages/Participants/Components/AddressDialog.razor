@@ -1,4 +1,5 @@
-﻿@inherits CatsComponentBase
+﻿@using Cfo.Cats.Application.Features.Participants.DTOs
+@inherits CatsComponentBase
 
 <MudDialog>
     <DialogContent>
@@ -18,7 +19,6 @@
                                 For="() => Model.AddressDetails"
                                 ResetValueOnEmptyText="true" 
                                 CoerceText="true" 
-                                CoerceValue="true" 
                                 Adornment="Adornment.End" 
                                 AdornmentIcon="@Icons.Material.Filled.Search"
                                 AdornmentColor="Color.Primary" />
