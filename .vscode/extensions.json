@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "microsoft-aspire.aspire-vscode",
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.csdevkit",
+        "kreativ-software.csharpextensions",
+        "github.vscode-github-actions",
+        "vscode-icons-team.vscode-icons"
+    ]
+}
