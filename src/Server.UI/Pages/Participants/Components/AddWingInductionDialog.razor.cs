@@ -24,10 +24,7 @@ public partial class AddWingInductionDialog
 
     private bool hasParticpantBeenAtThisLocationOnThisDate;
 
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
+    private void Cancel() => MudDialog.Cancel();
 
     private async Task Submit()
     {
@@ -35,7 +32,7 @@ public partial class AddWingInductionDialog
         {
             saving = true;
 
-            await form!.Validate();
+            await form!.ValidateAsync();
 
             if (form!.IsValid == false)
             {
@@ -72,5 +69,13 @@ public partial class AddWingInductionDialog
             LocationId = Model.Location!.Id,
             DateAtLocation = Model.InductionDate
         });
+    }
+
+    private async Task<IEnumerable<LocationDto>> SearchLocations(string value, CancellationToken token)
+    {
+        if(string.IsNullOrEmpty(value)){
+            return new LocationDto[0];
+        }
+        return await Task.FromResult(Locations!.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)));
     }
 }
