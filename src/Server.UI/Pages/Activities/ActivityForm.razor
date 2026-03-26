@@ -46,7 +46,7 @@
                          Label="@Model.GetMemberDescription(x => x.Definition)"
                          For="() => Model.Definition!"
                          SearchFunc="@SearchActivities"
-                         ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                         ResetValueOnEmptyText="true" CoerceText="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
                          AdornmentColor="Color.Primary"
                          ToStringFunc="activity => activity?.Category.Name"
                          MaxItems="null">
