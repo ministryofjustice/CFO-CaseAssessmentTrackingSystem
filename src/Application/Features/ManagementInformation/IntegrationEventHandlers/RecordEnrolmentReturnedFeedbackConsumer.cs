@@ -103,15 +103,16 @@ public class RecordEnrolmentReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILo
         logger.LogInformation("Found latest record from {Queue} queue for ParticipantId: {ParticipantId}", latestRecord.Queue, context.ParticipantId);
 
         var contract = await (
-            from c in dbContext.Contracts
-            where latestRecord.TenantId.StartsWith(c.Tenant!.Id)
-            orderby c.Tenant!.Id.Length descending
+            from p in dbContext.Participants
+            join l in dbContext.Locations on p.EnrolmentLocation!.Id equals l.Id
+            join c in dbContext.Contracts on l.Contract!.Id equals c.Id
+            where p.Id == context.ParticipantId
             select c.Id
         ).FirstOrDefaultAsync();
 
         if (string.IsNullOrEmpty(contract))
         {
-            logger.LogWarning("Contract not found for TenantId: {TenantId}", latestRecord.TenantId);
+            logger.LogWarning("Contract not found for ParticipantId: {ParticipantId}", context.ParticipantId);
             return;
         }
 

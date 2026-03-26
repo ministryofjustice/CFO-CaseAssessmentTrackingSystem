@@ -28,7 +28,7 @@ public class RecordActivityReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILog
                 a.Id,
                 a.Type,
                 a.ParticipantId,
-                a.TenantId,
+                a.TookPlaceAtContract,
                 a.OwnerId
             })
             .FirstOrDefaultAsync();
@@ -128,7 +128,7 @@ public class RecordActivityReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILog
 
         var contract = await (
             from c in dbContext.Contracts
-            where latestRecord.TenantId.StartsWith(c.Tenant!.Id)
+            where c.Id == activity.TookPlaceAtContract.Id
             orderby c.Tenant!.Id.Length descending
             select c.Id
         ).FirstOrDefaultAsync();
