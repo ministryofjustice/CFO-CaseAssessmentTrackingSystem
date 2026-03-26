@@ -51,7 +51,19 @@ internal sealed class ActivityFeedbackEntityTypeConfiguration
 
         builder.Property(x => x.ReadAt)
             .IsRequired(false);
+        
+        builder.Property(x => x.ActivityType)
+            .IsRequired()
+            .HasMaxLength(50);
 
+        builder.Property(x => x.ActivityCategory)
+            .IsRequired()
+            .HasMaxLength(100);
+        
+        builder.Property(x => x.ActivityFeedbackReason)
+            .IsRequired()
+            .HasMaxLength(50);
+        
         // --------------------
         // SmartEnum mappings 
         // --------------------

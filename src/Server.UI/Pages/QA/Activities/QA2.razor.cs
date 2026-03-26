@@ -9,7 +9,10 @@ using IResult = Cfo.Cats.Application.Common.Interfaces.IResult;
 namespace Cfo.Cats.Server.UI.Pages.QA.Activities;
 
 public partial class QA2
-{
+{   
+    [Inject]
+    private IPicklistService PicklistService { get; set; } = null!;
+    
     private ActivityQaExternalMessageWarning? _warningMessage;
     private MudForm? _form;
     private ActivityQueueEntryDto? _queueEntry;

@@ -10,6 +10,9 @@ namespace Cfo.Cats.Server.UI.Pages.QA.Activities;
 
 public partial class Escalation 
 {
+    [Inject]
+    private IPicklistService PicklistService { get; set; } = default!;
+    
     private ActivityQaExternalMessageWarning? _warningMessage;
     private MudForm? _form;
     private ActivityQueueEntryDto? _queueEntry;

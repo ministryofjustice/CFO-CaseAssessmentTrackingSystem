@@ -91,8 +91,7 @@
 
                                 <MudGrid Class="py-4">
                                     <MudItem xs="12" md="9" xl="10">
-                                        <MudTextField @bind-Value="Command.Message" Label="Internal Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" />
-                                        <MudText Class="ml-2">Characters: @(Command.Message?.Length ?? 0) / 1000</MudText>
+                                        <MudTextField @bind-Value="Command.Message" Label="Internal Message" Lines="5" For="() => Command.Message" MaxLength="@ValidationConstants.NotesLength" Immediate="true" Counter="@ValidationConstants.NotesLength"/>
                                     </MudItem>
                                 </MudGrid>
                                 
@@ -100,10 +99,22 @@
                                     Anonymous internal feedback for Qa1 user
                                 </MudAlert>
                                 
-                                <MudGrid Class="py-4"> <MudItem xs="12" md="9" xl="10">
-                                        <MudTextField @bind-Value="Command.MessageToQa1" Label="Qa1 Feedback" Lines="5" For="() => Command.MessageToQa1" MaxLength="@ValidationConstants.NotesLength" Immediate="true"/>
-                                        <MudText Class="ml-2">Characters: @(Command.MessageToQa1?.Length ?? 0) / 1000</MudText>
-                                    </MudItem> 
+                                <MudGrid Class="py-4">
+                                    <MudItem xs="12" md="9" xl="10">
+                                        <MudTextField @bind-Value="Command.MessageToQa1" Label="@Command.GetMemberDescription(x => x.MessageToQa1)" Lines="5" For="() => Command.MessageToQa1" MaxLength="@ValidationConstants.NotesLength" Immediate="true" Counter="@ValidationConstants.NotesLength"/>
+                                    </MudItem>
+                                    <MudItem xs="12" md="9" xl="10">
+                                        <MudSelect @bind-Value="Command.ActivityFeedbackReason" 
+                                                   For="() => Command.ActivityFeedbackReason"
+                                                   Label="@Command.GetMemberDescription(x => x.ActivityFeedbackReason)">
+                                            @foreach (var activityFeedbackReason in PicklistService.DataSource
+                                                          .Where(c => c.Name == Picklist.QaFeedbackReason)
+                                                          .OrderBy(c => c.Text))
+                                            {
+                                                <MudSelectItem Value="@activityFeedbackReason.Value">@activityFeedbackReason.Text</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
                                 </MudGrid>
                                 
                                 @if (Command.Response == SubmitActivityQa2Response.Qa2Response.Accept)
@@ -133,8 +144,7 @@
                                     
                                     <MudGrid Class="py-4">
                                         <MudItem xs="12" md="9" xl="10">
-                                            <MudTextField @bind-Value="Command.MessageToProvider" Label="External Message" Lines="5" For="() => Command.MessageToProvider" MaxLength="@ValidationConstants.NotesLength" Immediate="true" />
-                                            <MudText Class="ml-2">Characters: @(Command.MessageToProvider?.Length ?? 0) / 1000</MudText>
+                                            <MudTextField @bind-Value="Command.MessageToProvider" Label="External Message" Lines="5" For="() => Command.MessageToProvider" MaxLength="@ValidationConstants.NotesLength" Immediate="true" Counter="@ValidationConstants.NotesLength" />
                                         </MudItem>
                                     </MudGrid>                                    
                                 }
@@ -166,8 +176,7 @@
                                     
                                     <MudGrid Class="py-4">
                                         <MudItem xs="12" md="9" xl="10">
-                                            <MudTextField @bind-Value="Command.MessageToProvider" Label="External Message" Lines="5" For="() => Command.MessageToProvider" MaxLength="@ValidationConstants.NotesLength" Immediate="true" />
-                                            <MudText Class="ml-2">Characters: @(Command.MessageToProvider?.Length ?? 0) / 1000</MudText>
+                                            <MudTextField @bind-Value="Command.MessageToProvider" Label="External Message" Lines="5" For="() => Command.MessageToProvider" MaxLength="@ValidationConstants.NotesLength" Immediate="true" Counter="@ValidationConstants.NotesLength"/>
                                         </MudItem>
                                     </MudGrid>
                                 }
