@@ -27,6 +27,7 @@ public class RecordActivityReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILog
             { 
                 a.Id,
                 a.Type,
+                a.Definition,
                 a.ParticipantId,
                 a.TookPlaceAtContract,
                 a.OwnerId
@@ -39,12 +40,10 @@ public class RecordActivityReturnedFeedbackConsumer(IUnitOfWork unitOfWork, ILog
             return;
         }
         
-        if(activity.Type != ActivityType.InterventionsAndServicesWraparoundSupport
-                && activity.Type != ActivityType.Employment 
-                && activity.Type != ActivityType.EducationAndTraining)
+        if (!activity.Definition.RequiresQa)
         {
-            logger.LogInformation("Skipping: ActivityType {ActivityType} is not Employment, EducationAndTraining or InterventionsAndServicesWraparoundSupport for ActivityId: {ActivityId}", 
-                activity.Type.Name, context.ActivityId);
+            logger.LogInformation("Skipping: ActivityDefinition {ActivityDefinition} does not require QA for ActivityId: {ActivityId}", 
+                activity.Definition.Name, context.ActivityId);
             return;            
         }
 
