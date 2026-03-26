@@ -1,5 +1,4 @@
 @using Cfo.Cats.Application.SecurityConstants
-@using MudBlazor.Extensions
 @using Toolbelt.Blazor.HotKeys2
 @inject IStringLocalizer<SharedResource> L
 @inject HotKeys HotKeys
@@ -9,7 +8,7 @@
     <DialogContent>
         <MudContainer>
             <MudFocusTrap>
-                <MudTextField @bind-Value="@search"
+                <MudTextField @bind-Value="@_search"
                 Class="mb-3"
                 Clearable="true" 
                 Placeholder="@L["Search..."]"
@@ -18,10 +17,10 @@
                 @onkeydown="HandleTextFieldKeyDown" />
                 <MudList T="string" ReadOnly="false"
                 Style="height: 300px; overflow-y: auto">
-                    @foreach (var (key, value) in pagesFiltered)
+                    @foreach (var (key, value) in _pagesFiltered)
                     {
                         <MudListItem T="string" OnClick="@(() => Navigation.NavigateTo(value))" @onkeypress="@(e => HandleListItemKeyDown(e, value))">
-                            <MudHighlighter HighlightedText="@search"
+                            <MudHighlighter HighlightedText="@_search"
                             Text="@key"/>
                         </MudListItem>
                     }
@@ -33,27 +32,27 @@
 
 @code
 {
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
     [Parameter]
-    public UserProfile? UserProfile { get; set; } = default!;
+    public UserProfile? UserProfile { get; set; }
 
-    private readonly Dictionary<string, string> pages = new();
-    private HotKeysContext? hotKeysContext;
-    private Dictionary<string, string> pagesFiltered = new();
-    private string search = string.Empty;
+    private readonly Dictionary<string, string> _pages = new();
+    private HotKeysContext? _hotKeysContext;
+    private Dictionary<string, string> _pagesFiltered = new();
+    private string _search = string.Empty;
 
     public void Dispose()
     {
-        hotKeysContext?.DisposeAsync();
+        _hotKeysContext?.DisposeAsync();
     }
 
     private void HandleTextFieldKeyDown(KeyboardEventArgs e)
     {
-        if (e.Key == "Enter" && pagesFiltered.Any())
+        if (e.Key == "Enter" && _pagesFiltered.Any())
         {
             // Assuming the first item should be navigated to on Enter
-            var firstPage = pagesFiltered.First().Value;
+            var firstPage = _pagesFiltered.First().Value;
             NavigateToPage(firstPage);
         }
     }
@@ -73,122 +72,117 @@
 
     protected override void OnInitialized()
     {
-        pages.Add("Home", "/");
-        pages.Add("Support Worker Dashboard", "/pages/dashboard/supportworker");
-        //pages.Add("Tenant Dashboard", "/pages/dashboard/tenant");
-        pages.Add("Participants", "/pages/participants");
-        pages.Add("New Enrolment", "/pages/candidates/search");
-        pages.Add("My Documents", "/pages/analytics/my-documents");
+        _pages.Add("Home", "/");
+        _pages.Add("Support Worker Dashboard", "/pages/dashboard/supportworker");
+       _pages.Add("Participants", "/pages/participants");
+        _pages.Add("New Enrolment", "/pages/candidates/search");
+        _pages.Add("My Documents", "/pages/analytics/my-documents");
 
         if (UserProfile is not null)
         {
-
             if (UserProfile.AssignedRoles.Any())
             {
-                pages.Add("Reassign", "/pages/participants/reassign");
-                pages.Add("Transfers", "/pages/participants/transfers");
-                pages.Add("Moved Participants", "/pages/participants/movedparticipants");
-                pages.Add("Active PRI's", "/pages/participants/pre-release-inventory");
+                _pages.Add("Reassign", "/pages/participants/reassign");
+                _pages.Add("Transfers", "/pages/participants/transfers");
+                _pages.Add("Moved Participants", "/pages/participants/movedparticipants");
+                _pages.Add("Active PRI's", "/pages/participants/pre-release-inventory");
             }
 
             string[] allowed = [RoleNames.QAFinance, RoleNames.SMT, RoleNames.SystemSupport];
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
-                pages.Add("Provider QA", "/pages/qa/enrolments/pqa");
+                _pages.Add("Provider QA", "/pages/qa/enrolments/pqa");
             }
 
             allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
-                pages.Add("First Pass", "/pages/qa/enrolments/qa1");
+                _pages.Add("First Pass", "/pages/qa/enrolments/qa1");
             }
 
-            allowed = [RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
+            allowed = [RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport, RoleNames.QAOfficer];
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
-                pages.Add("Second Pass", "/pages/qa/enrolments/qa2");    
-                pages.Add("Provider Feedback", "/pages/dashboard/providerfeedback");    
+                _pages.Add("Second Pass", "/pages/qa/enrolments/qa2");    
+                _pages.Add("Quality Assurance", "/pages/dashboard/providerfeedback");    
             }
 
             allowed = [RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
-                pages.Add("Queue Management", "/pages/qa/servicedesk/enrolments");    
+                _pages.Add("Queue Management", "/pages/qa/servicedesk/enrolments");    
             }
 
             allowed = [RoleNames.QAFinance, RoleNames.SMT, RoleNames.SystemSupport];
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
-                pages.Add("Activities Provider QA", "/pages/qa/activities/pqa");
+                _pages.Add("Activities Provider QA", "/pages/qa/activities/pqa");
             }
 
             allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
-                pages.Add("Activities First Pass", "/pages/qa/activities/qa1");
+                _pages.Add("Activities First Pass", "/pages/qa/activities/qa1");
             }
 
             allowed = [RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
-                pages.Add("Activities Second Pass", "/pages/qa/activities/qa2");
+                _pages.Add("Activities Second Pass", "/pages/qa/activities/qa2");
             }
 
             allowed = [RoleNames.Finance, RoleNames.QAFinance, RoleNames.SystemSupport, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT];
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
-                pages.Add("Payments", "/pages/finance/payments/");
-                pages.Add("Cumulatives", "/pages/analytics/cumulatives");
-                pages.Add("Outcome Quality Dip Sampling", "/pages/analytics/outcome-quality-dip-sampling");
+                _pages.Add("Payments", "/pages/finance/payments/");
+                _pages.Add("Cumulatives", "/pages/analytics/cumulatives");
+                _pages.Add("Outcome Quality Dip Sampling", "/pages/analytics/outcome-quality-dip-sampling");
             }
-
-
 
             allowed = [RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
-                pages.Add("Activities Queue Management", "/pages/qa/activities/activities");
+                _pages.Add("Activities Queue Management", "/pages/qa/activities/activities");
             }
 
             allowed = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT];           
             
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
-                pages.Add("Tenants", "/administration/tenants");
-                pages.Add("Users", "/identity/users");
-                pages.Add("Lookup Values", "/system/picklist");
-                pages.Add("Audit Trails", "/system/audittrails");
+                _pages.Add("Tenants", "/administration/tenants");
+                _pages.Add("Users", "/identity/users");
+                _pages.Add("Lookup Values", "/system/picklist");
+                _pages.Add("Audit Trails", "/system/audittrails");
             }
 
             allowed = RoleNames.ManageLabels;
 
             if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
             {
-                pages.Add("Labels", "/pages/labels");
+                _pages.Add("Labels", "/pages/labels");
             }
         }
         
-        pagesFiltered = pages;
+        _pagesFiltered = _pages;
 
-        hotKeysContext = HotKeys.CreateContext()
+        _hotKeysContext = HotKeys.CreateContext()
             .Add(Key.Escape, () => MudDialog.Close(), "Close command palette.");
     }
 
     private void SearchPages(string value)
     {
-        pagesFiltered = new Dictionary<string, string>();
+        _pagesFiltered = new Dictionary<string, string>();
 
         if (!string.IsNullOrWhiteSpace(value))
         {
-            pagesFiltered = pages
+            _pagesFiltered = _pages
                 .Where(x => x.Key
                     .Contains(value, StringComparison.InvariantCultureIgnoreCase))
                 .ToDictionary(x => x.Key, x => x.Value);
         }
         else
         {
-            pagesFiltered = pages;
+            _pagesFiltered = _pages;
         }
     }
 }
-

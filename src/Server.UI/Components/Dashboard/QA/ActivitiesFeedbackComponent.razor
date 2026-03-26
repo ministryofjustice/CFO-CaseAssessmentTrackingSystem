@@ -1,0 +1,173 @@
+@using Cfo.Cats.Application.Features.Dashboard.Queries
+@using Cfo.Cats.Application.SecurityConstants
+
+@inherits CatsComponent<GetActivitiesFeedback.ActivitiesFeedbackDto>
+
+@attribute [Authorize(Policy = SecurityPolicies.Internal)]
+
+@if (Loading)
+{
+    <MudLoading Text="Loading" />
+}
+
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Outlined" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@if (Data is not null && Data.ChartData.Any())
+{
+    if (VisualMode)
+    {
+            <ApexCharts.ApexChart  TItem="GetActivitiesFeedback.ActivitiesFeedbackChartData"
+                                  Title="Activities Feedback by Reason"
+                                  Options="Options"
+                                  Height="650" Width="@("100%")">
+                
+                @foreach (var series in SeriesByReason)
+                {
+                    <ApexCharts.ApexPointSeries
+                        TItem="GetActivitiesFeedback.ActivitiesFeedbackChartData"
+                        Items="@series.Items"
+                        SeriesType="ApexCharts.SeriesType.Bar"
+                        Name="@series.Reason"
+                        XValue="e => e.Recipient"
+                        YValue="e => e.Count"
+                        ShowDataLabels="true"/>
+                }
+
+            </ApexCharts.ApexChart>
+    }
+    else
+    {
+        <MudSwitch @bind-Value="ShowRead"
+                   T="bool"
+                   Color="Color.Primary">
+            Show Read
+        </MudSwitch>
+        
+        <MudTable Items="@Data.TabularData" Striped="true" Hover="true" RowsPerPage="10">
+
+            <HeaderContent>
+                <MudTh></MudTh>
+                <MudTh>Participant</MudTh>
+                <MudTh>Queue</MudTh>
+                <MudTh>Accepted</MudTh>
+                <MudTh>Outcome</MudTh>
+                <MudTh>Reason</MudTh>
+                <MudTh>Category</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Activity Processed Date</MudTh>
+                <MudTh>Feedback Date</MudTh>
+                <MudTh>Read</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd>
+                    <MudTooltip Text="Feedback">
+                        <MudIconButton
+                            Icon="@(context.ShowDetails
+                                      ? Icons.Material.Filled.ExpandLess
+                                      : Icons.Material.Filled.ExpandMore)"
+                            OnClick="@(() => context.ShowDetails = !context.ShowDetails)"/>
+                    </MudTooltip>
+                </MudTd>
+                <MudTd>
+                    <MudStack Spacing="0">
+                    <MudText>@($"{context.FirstName} {context.LastName}")</MudText>
+                        <MudLink Typo="Typo.body2" Href=@($"/pages/participants/{context.ParticipantId}")>
+                            @context.ParticipantId
+                        </MudLink>
+                    </MudStack>
+                </MudTd>
+                <MudTd>@context.Queue</MudTd>
+                <MudTd>@context.IsAccepted</MudTd>
+                <MudTd>@context.Outcome </MudTd>
+                <MudTd>@context.ActivityFeedbackReason</MudTd>
+                <MudTd>            
+                    <MudChip T="string" Icon="@Icons.Material.Rounded.Info" Size="Size.Small">
+                        @context.ActivityCategory
+                    </MudChip>
+                </MudTd>
+                
+                <MudTd>@context.ActivityType</MudTd>
+                <MudTd>@context.ActivityProcessedDate.ToShortDateString()</MudTd>
+                <MudTd>@context.Created.ToShortDateOrEmptyString()</MudTd>
+
+                <MudTd DataLabel="Read">
+                    @if (context.IsRead)
+                    {
+                        <MudTooltip Text="Read">
+                            <MudIcon Icon="@Icons.Material.Filled.MarkEmailRead"
+                                     Color="Color.Success" />
+                        </MudTooltip>
+                    }
+                    else
+                    {
+                        <MudTooltip Text="Unread">
+                            <MudIconButton Icon="@Icons.Material.Filled.MarkEmailUnread"
+                                           Color="Color.Warning" />
+                        </MudTooltip>
+                    }
+                </MudTd>
+            </RowTemplate>
+            <ChildRowContent>
+                @if (context.ShowDetails)
+                {
+                    <MudTr>
+                        <MudTd colspan="12">
+                            <MudList T="string" Dense="true">
+
+                                <MudListItem T="string"
+                                             Icon="@Icons.Material.Filled.Feedback"
+                                             Expanded="true">
+
+                                    <MudText Typo="Typo.body1">
+                                        Feedback
+                                    </MudText>
+
+                                    <MudCard Outlined="false" Elevation="6" Class="mt-2">
+
+                                        <MudCardContent>
+
+                                            <MudText Typo="Typo.body1">
+                                                @context.Message
+                                            </MudText>
+
+                                            <MudStack Row="true"
+                                                      Justify="Justify.FlexEnd"
+                                                      Class="mt-2">
+
+                                                @if (!context.IsRead)
+                                                {
+                                                    <MudButton Size="Size.Small"
+                                                               Color="Color.Primary"
+                                                               Variant="Variant.Filled"
+                                                               Disabled="@IsUpdating"
+                                                               OnClick="@(() => MarkAsRead(context))">
+                                                        Mark as Read
+                                                    </MudButton>
+                                                }
+                                            </MudStack>
+                                        </MudCardContent>
+                                    </MudCard>
+                                </MudListItem>
+                            </MudList>
+                        </MudTd>
+                    </MudTr>
+                }
+            </ChildRowContent>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new [] { 10, 20, 50 }" />
+            </PagerContent>
+        </MudTable>
+    }
+}
+else
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">
+        No data available
+    </MudText>
+}

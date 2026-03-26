@@ -13,15 +13,22 @@ public static class SubmitActivityQa2Response
         public required Guid ActivityQueueEntryId { get; init; }
 
         public Qa2Response? Response { get; set; }
+        
+        [Description("Feedback Type")]
         public FeedbackType? FeedbackType { get; set; }
 
         public string Message { get; set; } = null!;
 
+        [Description("Message to provider")]
         public string MessageToProvider { get; set; } = null!;
-        
-        public string MessageToQa1 { get; set; } = null!;
 
+        [Description("Feedback message to Qa1")]
+        public string? MessageToQa1 { get; set; } 
+        
         public UserProfile? CurrentUser { get; init; }
+        
+        [Description("Activity Feedback Reason")]
+        public string? ActivityFeedbackReason { get; set; }
     }
 
     public enum Qa2Response
@@ -89,8 +96,12 @@ public static class SubmitActivityQa2Response
                     request.MessageToQa1,
                     outcome,
                     FeedbackStage.Qa2,
+                    entry.Created!.Value,
                     request.CurrentUser!.UserId,
-                    entry.TenantId
+                    entry.TenantId,
+                    entry.Activity!.Category.Name,
+                    entry.Activity.Type.Name,
+                    request.ActivityFeedbackReason!
                 );
 
                 unitOfWork.DbContext.ActivityFeedbacks.Add(activityFeedback);
@@ -152,12 +163,23 @@ public static class SubmitActivityQa2Response
                     .Matches(ValidationConstants.Notes)
                     .WithMessage(string.Format(ValidationConstants.NotesMessage, "External Message"));
             });
+            
+            RuleFor(x => x.MessageToQa1)
+                .MaximumLength(ValidationConstants.NotesLength);
+            
+            When(x => !string.IsNullOrWhiteSpace(x.MessageToQa1), () =>
+            {
+                RuleFor(x => x.ActivityFeedbackReason)
+                    .NotEmpty()
+                    .WithMessage("You must select a feedback reason when providing a QA1 message");
+            });
         }
     }
 
     public class B_EntryMustExist : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
+        
         public B_EntryMustExist(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -227,6 +249,7 @@ public static class SubmitActivityQa2Response
     public class E_OwnerShouldNotBeApprover : AbstractValidator<Command>
     {
         private readonly IUnitOfWork _unitOfWork;
+        
         public E_OwnerShouldNotBeApprover(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;

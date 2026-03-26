@@ -20,16 +20,19 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
     public FeedbackOutcome Outcome { get; private set; }
     public FeedbackStage Stage { get; init; }
 
-    public DateTime ActivityProcessedDate { get; private set; }
+    public DateTime ActivityProcessedDate { get; init; }
 
     public bool IsRead { get; private set; }
     public DateTime? ReadAt { get; private set; }
     public string TenantId { get; protected init; }
     public ApplicationUser? CreatedByUser { get; private set; }
-
+    public required string ActivityCategory { get; init; }
+    public required string ActivityType { get; init; } 
+    public required string ActivityFeedbackReason { get; init; } 
+    
     public virtual Activity? Activity { get; private set; }
     public virtual Participant? Participant { get; protected init; }
-    public virtual Tenant? Tenant { get; set; }
+    public virtual Tenant? Tenant { get; init; }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private ActivityFeedback()
@@ -44,8 +47,12 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
         string message,
         FeedbackOutcome outcome,
         FeedbackStage stage,
+        DateTime activityProcessedDate,
         string createdBy,
-        string tenantId)
+        string tenantId,
+        string activityCategory,
+        string activityType,
+        string activityFeedbackReason)
     {
         var feedback = new ActivityFeedback
         {
@@ -56,11 +63,14 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
             Message = message,
             Outcome = outcome,
             Stage = stage,
-            ActivityProcessedDate = DateTime.UtcNow,
+            ActivityProcessedDate = activityProcessedDate,
             CreatedBy = createdBy,
             Created = DateTime.UtcNow,
             IsRead = false,
-            TenantId = tenantId
+            TenantId = tenantId,
+            ActivityCategory = activityCategory,
+            ActivityType = activityType,
+            ActivityFeedbackReason = activityFeedbackReason
         };
 
         feedback.AddDomainEvent(

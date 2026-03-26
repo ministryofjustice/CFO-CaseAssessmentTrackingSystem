@@ -1,8 +1,11 @@
 using Cfo.Cats.Application.Common.Security;
+using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Application.Features.Dashboard.Commands;
 using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Cfo.Cats.Infrastructure.Constants;
 using Cfo.Cats.Server.UI.Components.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Cfo.Cats.Server.UI.Pages.Dashboard;
 
@@ -20,14 +23,26 @@ public partial class DashboardProviderFeedback
     
     [CascadingParameter]
     public UserProfile CurrentUser { get; set; } = null!;
-
-    protected override void OnInitialized()
+    
+    [CascadingParameter] 
+    private Task<AuthenticationState> AuthState { get; set; } = null!;
+    
+    private bool _isQa2User;
+    
+    protected override async Task OnInitializedAsync()
     {
+        var state = await AuthState;
+
+        _isQa2User = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SeniorInternal)).Succeeded;
+     
+        SelectedTenantId = CurrentUser.TenantId;
+        SelectedDisplayName = CurrentUser.TenantName;
+        
+        // if the current user has access to select, don't set the selected Tenant.
         _showSelect = CurrentUser.AssignedRoles is { Length: > 0 };
         SelectedTenantId = CurrentUser.TenantId;
         SelectedDisplayName = CurrentUser.TenantName;
     }
-
     private async Task DisplayOptionsDialog()
 	{
         var parameters = new DialogParameters<SelectTenantDialog>

@@ -13,12 +13,21 @@ public static class SubmitActivityEscalationResponse
         public required Guid ActivityQueueEntryId { get; init; }
 
         public EscalationResponse? Response { get; set; }
+        
+        [Description("Feedback Type")]
         public FeedbackType? FeedbackType { get; set; }        
 
         public string Message { get; set; } = null!;
+        
+        [Description("Message to provider")]
         public string MessageToProvider { get; set; } = null!;
+        
+        [Description("Feedback message to Qa1")]
         public string MessageToQa1 { get; set; } = null!;
         public UserProfile? CurrentUser { get; init; }
+        
+        [Description("Activity Feedback Reason")]
+        public string ActivityFeedbackReason { get; set; } = null!;
     }
 
     public enum EscalationResponse
@@ -78,15 +87,30 @@ public static class SubmitActivityEscalationResponse
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 
+                var recipientDisplayName = await (
+                        from q in unitOfWork.DbContext.ActivityQa2Queue
+                        join u in unitOfWork.DbContext.Users
+                            on q.CreatedBy equals u.Id
+                        where q.ActivityId == entry.ActivityId
+                              && q.IsCompleted
+                        orderby q.LastModified descending
+                        select u.Id
+                    )
+                    .FirstOrDefaultAsync(cancellationToken);
+                
                 var activityFeedback = ActivityFeedback.Create(
                     entry.ActivityId,
                     entry.ParticipantId!,
-                    entry.CreatedBy!,
+                    recipientDisplayName!,
                     request.MessageToQa1,
                     outcome,
                     FeedbackStage.Escalation,
+                    entry.Created!.Value,
                     request.CurrentUser!.UserId,
-                    entry.TenantId
+                    entry.TenantId,
+                    entry.Activity!.Category.Name,
+                    entry.Activity.Type.Name,
+                    request.ActivityFeedbackReason
                 );
 
                 unitOfWork.DbContext.ActivityFeedbacks.Add(activityFeedback);
@@ -142,6 +166,16 @@ public static class SubmitActivityEscalationResponse
                     .WithMessage("External Message is required for Advisory or Accepted By Exception")
                     .Matches(ValidationConstants.Notes)
                     .WithMessage(string.Format(ValidationConstants.NotesMessage, "External Message"));
+            });
+            
+            RuleFor(x => x.MessageToQa1)
+                .MaximumLength(ValidationConstants.NotesLength);
+            
+            When(x => !string.IsNullOrWhiteSpace(x.MessageToQa1), () =>
+            {
+                RuleFor(x => x.ActivityFeedbackReason)
+                    .NotEmpty()
+                    .WithMessage("You must select a feedback reason when providing a QA1 message");
             });
         }
     }
