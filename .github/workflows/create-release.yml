@@ -36,7 +36,7 @@ jobs:
     - name: Generate Version Tag
       id: version
       run: |
-        TAG_NAME="v$(date +'%Y.%m.%d')-build.${{ github.run_number }}"
+        TAG_NAME="v$(date +'%Y.%m.%d').${{ github.run_number }}"
         echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
         echo "Generated tag: $TAG_NAME"
 
