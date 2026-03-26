@@ -32,7 +32,7 @@
                     @bind-Value="Model.JobTitle"
                     @bind-Value:after="OnJobTitleValueChange"
                     SearchFunc="@SearchJobTitles"
-                    ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                    ResetValueOnEmptyText="true" CoerceText="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
                     AdornmentColor="Color.Primary" MaxItems="null"/>
 
                 <MudTextField ReadOnly Underline="false" For="@(() => Model.JobTitleCode)" hidden />
