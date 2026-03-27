@@ -1,6 +1,7 @@
 using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Microsoft.AspNetCore.Components.Authorization;
 using ApexCharts;
+using Color = MudBlazor.Color;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard.QA;
 
@@ -74,7 +75,7 @@ public partial class ActivitiesFeedbackSeniorComponent
     private class ChartSeries
     {
         public string Reason { get; init; } = null!;
-        public List<GetActivitiesFeedback.ActivitiesFeedbackChartData> Items { get; set; } = new();
+        public List<GetActivitiesFeedback.ActivitiesFeedbackChartData> Items { get; init; } = [];
     }
 
     private ApexChartOptions<GetActivitiesFeedback.ActivitiesFeedbackChartData> Options
@@ -101,14 +102,14 @@ public partial class ActivitiesFeedbackSeniorComponent
                     }
                 }
             },
-            Yaxis = new List<YAxis>
-            {
-                new()
+            Yaxis =
+            [
+                new YAxis
                 {
                     Min = 0,
                     ForceNiceScale = true
                 }
-            },
+            ],
             Theme = new Theme
             {
                 Mode = IsDarkMode ? Mode.Dark : Mode.Light
@@ -126,8 +127,26 @@ public partial class ActivitiesFeedbackSeniorComponent
             {
                 return;
             }
+
             _showRead = value;
-            _ = RefreshAsync(); // <-- forces the query to reload
+            _ = RefreshAsync(); 
         }
+    }
+    
+    private static Color GetUnreadColour(DateTime? created, bool isRead)
+    {
+        if (isRead)
+        {
+            return Color.Success;
+        }
+
+        var isOlderThanTwoWeeks = created <= DateTime.Now.AddDays(-14);
+
+        if (isOlderThanTwoWeeks)
+        {
+            return Color.Error;
+        }
+
+        return Color.Warning;
     }
 }

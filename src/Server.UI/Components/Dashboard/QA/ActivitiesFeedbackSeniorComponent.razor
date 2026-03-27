@@ -21,7 +21,7 @@
     if (VisualMode)
     {
             <ApexCharts.ApexChart  TItem="GetActivitiesFeedback.ActivitiesFeedbackChartData"
-                                  Title="Activities Feedback by Reason"
+                                  Title="Team Feedback by Reason"
                                   Options="Options"
                                   Height="650" Width="@("100%")">
                 
@@ -99,20 +99,17 @@
                 <MudTd>@context.ActivityProcessedDate.ToShortDateString()</MudTd>
                 <MudTd>@context.Created.ToShortDateOrEmptyString()</MudTd>
                 <MudTd>                    
-                    @if (context.IsRead)
-                    {
-                        <MudTooltip Text="Read">
-                            <MudIcon Icon="@Icons.Material.Filled.MarkEmailRead"
-                                     Color="Color.Success"/>
-                        </MudTooltip>
-                    }
-                    else
-                    {
-                        <MudTooltip Text="Unread">
-                            <MudIconButton Icon="@Icons.Material.Filled.MarkEmailUnread"
-                                           Color="Color.Warning"/>
-                        </MudTooltip>
-                    }
+                    <MudTooltip Text="@(context.IsRead 
+                                          ? "Read" 
+                                          : context.Created <= DateTime.Now.AddDays(-14) 
+                                              ? "Unread (Overdue)" 
+                                              : "Unread")">
+                        <MudIconButton Icon="@(context.IsRead 
+                                                 ? Icons.Material.Filled.MarkEmailRead 
+                                                 : Icons.Material.Filled.MarkEmailUnread)"
+                                       Color="@GetUnreadColour(context.Created, context.IsRead)" 
+                                       OnClick="@(() => context.ShowDetails = !context.ShowDetails)"/>
+                    </MudTooltip>
                 </MudTd>
             </RowTemplate>
             <ChildRowContent>

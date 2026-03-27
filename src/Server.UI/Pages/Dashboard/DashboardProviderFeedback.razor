@@ -37,9 +37,9 @@
 </MudStack>
 
 <MudStack>
-    <MudTabs PanelClass="pa-6" ApplyEffectsToContainer="true" Outlined="true">
-        <MudTabPanel Text="Activity" Class="pa-0"> <!-- remove outer padding -->
-            <MudTabs Outlined="true" PanelClass="pa-0" Class="mt-0">
+    <MudTabs Class="pa-6" ApplyEffectsToContainer="true" Outlined="true">
+        <MudTabPanel Text="Activities" Class="pa-0">
+            <MudTabs Outlined="true" Class="pa-0 ma-0">
                 <MudTabPanel Text="Returns" Class="pa-2">
                     <ActivitiesToProviderDashboardComponent 
                         TenantId="@SelectedTenantId" 
@@ -76,8 +76,8 @@
             </MudTabs>
         </MudTabPanel>
 
-        <MudTabPanel Text="Returns" Class="pa-0"> <!-- remove outer padding -->
-            <MudTabs Outlined="true" PanelClass="pa-0" Class="mt-0">
+        <MudTabPanel Text="Enrolments" Class="pa-0"> 
+            <MudTabs Outlined="true" Class="pa-0 ma-0">
                 <MudTabPanel Text="Returns">
                     <EnrolmentsToProviderDashboardComponent 
                         TenantId="@SelectedTenantId" 
