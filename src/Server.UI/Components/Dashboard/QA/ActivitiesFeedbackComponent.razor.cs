@@ -2,6 +2,7 @@ using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Microsoft.AspNetCore.Components.Authorization;
 using ApexCharts;
 using Cfo.Cats.Application.Features.Activities.Commands;
+using Color = MudBlazor.Color;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard.QA;
 
@@ -156,7 +157,24 @@ public partial class ActivitiesFeedbackComponent
                 return;
             }
             _showRead = value;
-            _ = RefreshAsync(); // <-- forces the query to reload
+            _ = RefreshAsync(); 
         }
+    }
+    
+    private Color GetUnreadColour(DateTime? created, bool isRead)
+    {
+        if (isRead)
+        {
+            return Color.Success;
+        }
+
+        var isOlderThanTwoWeeks = created <= DateTime.Now.AddDays(-14);
+
+        if (isOlderThanTwoWeeks)
+        {
+            return Color.Error;
+        }
+
+        return Color.Warning;
     }
 }
