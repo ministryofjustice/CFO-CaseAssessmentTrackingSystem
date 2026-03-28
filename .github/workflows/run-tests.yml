@@ -2,38 +2,30 @@ name: .NET Core Unit Tests
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
+
+permissions:
+  contents: read  # required to checkout code
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      pull-requests: write
+      contents: read
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: '10.0.x'
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7
+        with:
+          dotnet-version: '10.0.x'
 
-    - name: Restore
-      run: dotnet restore ./
-
-    - name: Build
-      run: dotnet build ./cats.slnx --configuration Release --no-restore
-
-    - name: Test
-      run: dotnet test ./cats.slnx --configuration Release --no-build --no-restore --logger "trx;LogFileName=test-results.trx"
-    
-    - name: Publish Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      if: always()
-      with:
-        files: '**/test-results.trx'
-        check_name: '.NET Test Results'
-        comment_title: '🧪 Test Results'
+      - name: Cake Script
+        run: dotnet cake.cs --Target Test
