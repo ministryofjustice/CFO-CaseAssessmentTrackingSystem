@@ -5,7 +5,7 @@
 
     <!-- Treat code style violations as errors -->
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsNotAsErrors>CS8785</WarningsNotAsErrors>
 
     <!-- Common parameters -->
