@@ -24,10 +24,19 @@ public class RecordEnrolmentAdvisoryFeedbackConsumer(IUnitOfWork unitOfWork, ILo
         var qa2Record = await (
             from q in dbContext.EnrolmentQa2Queue
             from n in q.Notes
+            let history = dbContext.ParticipantEnrolmentHistories
+                .Where(h => h.ParticipantId == q.ParticipantId
+                    && h.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus.Value
+                    && h.Created < q.Created)
+                .OrderByDescending(h => h.Created)
+                .FirstOrDefault()
             where q.ParticipantId == context.ParticipantId 
                 && q.IsCompleted == true 
                 && q.IsAccepted == true
+                && n.IsExternal == true
                 && (n.FeedbackType! == FeedbackType.Advisory || n.FeedbackType! == FeedbackType.AcceptedByException)
+                && q.Id == EF.Property<Guid>(n, "EnrolmentQa2QueueEntryId")
+                && history != null
             orderby q.LastModified descending
             select new
             {
@@ -36,10 +45,10 @@ public class RecordEnrolmentAdvisoryFeedbackConsumer(IUnitOfWork unitOfWork, ILo
                 q.TenantId,
                 q.ParticipantId,
                 q.SupportWorkerId,
-                ProviderQaUserId = q.LastModifiedBy ?? string.Empty,
-                CfoUserId = q.OwnerId ?? string.Empty,
-                PqaSubmittedDate = q.LastModified ?? DateTime.UtcNow,
-                ActionDate = q.Created ?? DateTime.UtcNow,
+                ProviderQaUserId = history!.CreatedBy ?? string.Empty,
+                CfoUserId = n.CreatedBy ?? string.Empty,
+                PqaSubmittedDate = history!.Created ?? DateTime.UtcNow,
+                ActionDate = n.Created ?? DateTime.UtcNow,
                 n.Message,
                 FeedbackType = (int?)n.FeedbackType,
                 Queue = "QA2",
@@ -50,10 +59,19 @@ public class RecordEnrolmentAdvisoryFeedbackConsumer(IUnitOfWork unitOfWork, ILo
         var escRecord = await (
             from eq in dbContext.EnrolmentEscalationQueue
             from en in eq.Notes
+            let history = dbContext.ParticipantEnrolmentHistories
+                .Where(h => h.ParticipantId == eq.ParticipantId
+                    && h.EnrolmentStatus == EnrolmentStatus.SubmittedToAuthorityStatus.Value
+                    && h.Created < eq.Created)
+                .OrderByDescending(h => h.Created)
+                .FirstOrDefault()
             where eq.ParticipantId == context.ParticipantId 
                 && eq.IsCompleted == true 
                 && eq.IsAccepted == true
+                && en.IsExternal == true
                 && (en.FeedbackType! == FeedbackType.Advisory || en.FeedbackType! == FeedbackType.AcceptedByException)
+                && eq.Id == EF.Property<Guid>(en, "EnrolmentEscalationQueueEntryId")
+                && history != null
             orderby eq.LastModified descending
             select new
             {
@@ -62,10 +80,10 @@ public class RecordEnrolmentAdvisoryFeedbackConsumer(IUnitOfWork unitOfWork, ILo
                 eq.TenantId,
                 eq.ParticipantId,
                 eq.SupportWorkerId,
-                ProviderQaUserId = eq.LastModifiedBy ?? string.Empty,
-                CfoUserId = eq.CreatedBy ?? string.Empty,
-                PqaSubmittedDate = eq.LastModified ?? DateTime.UtcNow,
-                ActionDate = eq.Created ?? DateTime.UtcNow,
+                ProviderQaUserId = history!.CreatedBy ?? string.Empty,
+                CfoUserId = en.CreatedBy ?? string.Empty,
+                PqaSubmittedDate = history!.Created ?? DateTime.UtcNow,
+                ActionDate = en.Created ?? DateTime.UtcNow,
                 en.Message,
                 FeedbackType = (int?)en.FeedbackType,
                 Queue = "Escalation",
@@ -88,15 +106,16 @@ public class RecordEnrolmentAdvisoryFeedbackConsumer(IUnitOfWork unitOfWork, ILo
             latestRecord.Queue, context.ParticipantId, latestRecord.FeedbackType);
 
         var contract = await (
-            from c in dbContext.Contracts
-            where latestRecord.TenantId.StartsWith(c.Tenant!.Id)
-            orderby c.Tenant!.Id.Length descending
+            from p in dbContext.Participants
+            join l in dbContext.Locations on p.EnrolmentLocation!.Id equals l.Id
+            join c in dbContext.Contracts on l.Contract!.Id equals c.Id
+            where p.Id == context.ParticipantId
             select c.Id
         ).FirstOrDefaultAsync();
 
         if (string.IsNullOrEmpty(contract))
         {
-            logger.LogWarning("Contract not found for TenantId: {TenantId}", latestRecord.TenantId);
+            logger.LogWarning("Contract not found for ParticipantId: {ParticipantId}", context.ParticipantId);
             return;
         }
 
