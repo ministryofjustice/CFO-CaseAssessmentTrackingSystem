@@ -3,63 +3,51 @@ name: Create new release
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write   # required for pushing tags & publishing releases
+
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout current branch
-      uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
+      - name: Checkout current branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: '10.0.x'
+        with:
+          fetch-depth: 0
 
-    - name: Restore
-      run: dotnet restore ./cats.slnx
+      - name: Setup .NET
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7
+        with:
+          dotnet-version: '10.0.x'
 
-    - name: Build
-      run: dotnet build ./cats.slnx --configuration Release --no-restore
+      - name: Dotnet Cake Script
+        run: dotnet cake.cs --target Publish
 
-    - name: Test
-      run: dotnet test ./cats.slnx --configuration Release --no-build --no-restore
+      - name: Generate Version Tag
+        id: version
+        run: |
+          set -euo pipefail
+          TAG_NAME="v$(date +'%Y.%m.%d').${{ github.run_number }}"
+          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
 
-    - name: Publish UI
-      run: dotnet publish ./src/Server.UI/Server.UI.csproj --configuration Release --output ./artifacts/Server.UI --no-restore --no-build
+      - name: Create Build Artifacts Archive
+        run: zip -r "${{ steps.version.outputs.tag }}.zip" artifacts/
 
-    - name: Publish Migrations
-      run: dotnet publish ./src/DatabaseMigrator/DatabaseMigrator.csproj --configuration Release --output ./artifacts/DatabaseMigrator --no-restore --no-build
+      - name: Create Git Tag and Push
+        run: |
+          set -euo pipefail
+          git tag "${{ steps.version.outputs.tag }}" "${{ github.sha }}"
+          git push origin "${{ steps.version.outputs.tag }}"
 
-    - name: Generate Version Tag
-      id: version
-      run: |
-        TAG_NAME="v$(date +'%Y.%m.%d').${{ github.run_number }}"
-        echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
-        echo "Generated tag: $TAG_NAME"
-
-    - name: Create Build Artifacts Archive
-      run: |
-        zip -r ${{ steps.version.outputs.tag }}.zip artifacts/Server.UI artifacts/DatabaseMigrator
-
-    - name: Create Git Tag and Push
-      run: |
-        git tag ${{ steps.version.outputs.tag }} ${{ github.sha }}
-        git push origin ${{ steps.version.outputs.tag }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: ${{ steps.version.outputs.tag }}
-        name: Release ${{ steps.version.outputs.tag }}
-        files: |
-          ${{ steps.version.outputs.tag }}.zip
-        draft: false
-        prerelease: false
-        generate_release_notes: true
-        fail_on_unmatched_files: true
-        token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Release ${{ steps.version.outputs.tag }}
+          files: "${{ steps.version.outputs.tag }}.zip"
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          fail_on_unmatched_files: true
