@@ -40,137 +40,15 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
             // Stub user profile — handlers below do not use CurrentUser in their query body.
             var stubUser = new UserProfile { UserName = "system", Email = "system@system", UserId = context.UserId };
 
-            var sheets = new List<(string SheetName, byte[] Data)>();
-
-            if (request.IncludeEnrolmentReturns)
+            var sheets = new (string SheetName, byte[] Data)[]
             {
-                var query = new GetEnrolmentsToProvider.Query
-                {
-                    StartDate = request.StartDate,
-                    EndDate = request.EndDate,
-                    TenantId = request.TenantId,
-                    CurrentUser = stubUser
-                };
-                var data = await new GetEnrolmentsToProvider.Handler(unitOfWork).Handle(query, CancellationToken.None);
-                if (data is not { Succeeded: true })
-                {
-                    throw new Exception(data.ErrorMessage);
-                }
+                await BuildEnrolmentReturnsSheet(request, stubUser),
+                await BuildActivitiesReturnsSheet(request, stubUser),
+                await BuildEnrolmentAdvisoriesSheet(request, stubUser),
+                await BuildActivitiesAdvisoriesSheet(request, stubUser),
+            };
 
-                var sheet = await excelService.ExportAsync(data.Data!.TabularData,
-                    new Dictionary<string, Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object?>>
-                    {
-                        { "Contract",           r => r.ContractName },
-                        { "Queue",              r => r.Queue },
-                        { "Participant",        r => r.ParticipantId },
-                        { "Support Worker",     r => r.SupportWorker },
-                        { "Provider QA",        r => r.PqaUser },
-                        { "CFO User",           r => r.CfoUser },
-                        { "PQA Submitted Date", r => r.PqaSubmittedDate },
-                        { "Returned Date",      r => r.ReturnedDate },
-                        { "Advisory Notes",     r => r.Message },
-                    });
-                sheets.Add(("Enrolment Returns", sheet));
-            }
-
-            if (request.IncludeActivitiesReturns)
-            {
-                var query = new GetActivitiesToProvider.Query
-                {
-                    StartDate = request.StartDate,
-                    EndDate = request.EndDate,
-                    TenantId = request.TenantId,
-                    CurrentUser = stubUser
-                };
-                var data = await new GetActivitiesToProvider.Handler(unitOfWork).Handle(query, CancellationToken.None);
-                if (data is not { Succeeded: true })
-                {
-                    throw new Exception(data.ErrorMessage);
-                }
-
-                var sheet = await excelService.ExportAsync(data.Data!.TabularData,
-                    new Dictionary<string, Func<GetActivitiesToProvider.ActivitiesTabularData, object?>>
-                    {
-                        { "Contract",           r => r.ContractName },
-                        { "Queue",              r => r.Queue },
-                        { "Activity Type",      r => r.ActivityType?.Name },
-                        { "Participant",        r => r.ParticipantId },
-                        { "Support Worker",     r => r.SupportWorker },
-                        { "Provider QA",        r => r.PqaUser },
-                        { "CFO User",           r => r.CfoUser },
-                        { "PQA Submitted Date", r => r.PqaSubmittedDate },
-                        { "Returned Date",      r => r.ReturnedDate },
-                        { "Advisory Notes",     r => r.Message },
-                    });
-                sheets.Add(("Activities Returns", sheet));
-            }
-
-            if (request.IncludeEnrolmentAdvisories)
-            {
-                var query = new GetEnrolmentAdvisoriesToProvider.Query
-                {
-                    StartDate = request.StartDate,
-                    EndDate = request.EndDate,
-                    TenantId = request.TenantId,
-                    CurrentUser = stubUser
-                };
-                var data = await new GetEnrolmentAdvisoriesToProvider.Handler(unitOfWork).Handle(query, CancellationToken.None);
-                if (data is not { Succeeded: true })
-                {
-                    throw new Exception(data.ErrorMessage);
-                }
-
-                var sheet = await excelService.ExportAsync(data.Data!.TabularData,
-                    new Dictionary<string, Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object?>>
-                    {
-                        { "Contract",           r => r.ContractName },
-                        { "Queue",              r => r.Queue },
-                        { "Participant",        r => r.ParticipantId },
-                        { "Support Worker",     r => r.SupportWorker },
-                        { "Provider QA",        r => r.PqaUser },
-                        { "CFO User",           r => r.CfoUser },
-                        { "PQA Submitted Date", r => r.PqaSubmittedDate },
-                        { "Advisory Date",      r => r.AdvisoryDate },
-                        { "Feedback Type",      r => r.FeedbackType.HasValue ? ((FeedbackType)r.FeedbackType.Value).ToString() : null },
-                        { "Advisory Notes",     r => r.Message },
-                    });
-                sheets.Add(("Enrolment Advisories", sheet));
-            }
-
-            if (request.IncludeActivitiesAdvisories)
-            {
-                var query = new GetActivitiesAdvisoriesToProvider.Query
-                {
-                    StartDate = request.StartDate,
-                    EndDate = request.EndDate,
-                    TenantId = request.TenantId,
-                    CurrentUser = stubUser
-                };
-                var data = await new GetActivitiesAdvisoriesToProvider.Handler(unitOfWork).Handle(query, CancellationToken.None);
-                if (data is not { Succeeded: true })
-                {
-                    throw new Exception(data.ErrorMessage);
-                }
-
-                var sheet = await excelService.ExportAsync(data.Data!.TabularData,
-                    new Dictionary<string, Func<GetActivitiesAdvisoriesToProvider.ActivitiesAdvisoriesTabularData, object?>>
-                    {
-                        { "Contract",           r => r.ContractName },
-                        { "Queue",              r => r.Queue },
-                        { "Activity Type",      r => r.ActivityType?.Name },
-                        { "Participant",        r => r.ParticipantId },
-                        { "Support Worker",     r => r.SupportWorker },
-                        { "Provider QA",        r => r.PqaUser },
-                        { "CFO User",           r => r.CfoUser },
-                        { "PQA Submitted Date", r => r.PqaSubmittedDate },
-                        { "Advisory Date",      r => r.AdvisoryDate },
-                        { "Feedback Type",      r => r.FeedbackType.HasValue ? ((FeedbackType)r.FeedbackType.Value).ToString() : null },
-                        { "Advisory Notes",     r => r.Message },
-                    });
-                sheets.Add(("Activities Advisories", sheet));
-            }
-
-            var merged = await excelService.MergeSheetsAsync(sheets.ToArray());
+            var merged = await excelService.MergeSheetsAsync(sheets);
 
             var uploadRequest = new UploadRequest(document.Title!, UploadType.Document, merged);
             var result = await uploadService.UploadAsync($"MyDocuments/{context.UserId}", uploadRequest);
@@ -194,5 +72,137 @@ public class DocumentExportProviderFeedbackIntegrationEventConsumer(
             document.WithStatus(DocumentStatus.Error);
             await unitOfWork.CommitTransactionAsync();
         }
+    }
+
+    private async Task<(string SheetName, byte[] Data)> BuildEnrolmentReturnsSheet(
+        ExportProviderFeedback.ProviderFeedbackExportRequest request, UserProfile stubUser)
+    {
+        var query = new GetEnrolmentsToProvider.Query
+        {
+            StartDate = request.StartDate,
+            EndDate = request.EndDate,
+            TenantId = request.TenantId,
+            CurrentUser = stubUser
+        };
+        var data = await new GetEnrolmentsToProvider.Handler(unitOfWork).Handle(query, CancellationToken.None);
+        if (data is not { Succeeded: true })
+        {
+            throw new Exception(data.ErrorMessage);
+        }
+
+        var sheet = await excelService.ExportAsync(data.Data!.TabularData,
+            new Dictionary<string, Func<GetEnrolmentsToProvider.EnrolmentsTabularData, object?>>
+            {
+                { "Contract",           r => r.ContractName },
+                { "Queue",              r => r.Queue },
+                { "Participant",        r => r.ParticipantId },
+                { "Support Worker",     r => r.SupportWorker },
+                { "Provider QA",        r => r.PqaUser },
+                { "CFO User",           r => r.CfoUser },
+                { "PQA Submitted Date", r => r.PqaSubmittedDate },
+                { "Returned Date",      r => r.ReturnedDate },
+                { "Advisory Notes",     r => r.Message },
+            });
+        return ("Enrolment Returns", sheet);
+    }
+
+    private async Task<(string SheetName, byte[] Data)> BuildActivitiesReturnsSheet(
+        ExportProviderFeedback.ProviderFeedbackExportRequest request, UserProfile stubUser)
+    {
+        var query = new GetActivitiesToProvider.Query
+        {
+            StartDate = request.StartDate,
+            EndDate = request.EndDate,
+            TenantId = request.TenantId,
+            CurrentUser = stubUser
+        };
+        var data = await new GetActivitiesToProvider.Handler(unitOfWork).Handle(query, CancellationToken.None);
+        if (data is not { Succeeded: true })
+        {
+            throw new Exception(data.ErrorMessage);
+        }
+
+        var sheet = await excelService.ExportAsync(data.Data!.TabularData,
+            new Dictionary<string, Func<GetActivitiesToProvider.ActivitiesTabularData, object?>>
+            {
+                { "Contract",           r => r.ContractName },
+                { "Queue",              r => r.Queue },
+                { "Activity Type",      r => r.ActivityType?.Name },
+                { "Participant",        r => r.ParticipantId },
+                { "Support Worker",     r => r.SupportWorker },
+                { "Provider QA",        r => r.PqaUser },
+                { "CFO User",           r => r.CfoUser },
+                { "PQA Submitted Date", r => r.PqaSubmittedDate },
+                { "Returned Date",      r => r.ReturnedDate },
+                { "Advisory Notes",     r => r.Message },
+            });
+        return ("Activities Returns", sheet);
+    }
+
+    private async Task<(string SheetName, byte[] Data)> BuildEnrolmentAdvisoriesSheet(
+        ExportProviderFeedback.ProviderFeedbackExportRequest request, UserProfile stubUser)
+    {
+        var query = new GetEnrolmentAdvisoriesToProvider.Query
+        {
+            StartDate = request.StartDate,
+            EndDate = request.EndDate,
+            TenantId = request.TenantId,
+            CurrentUser = stubUser
+        };
+        var data = await new GetEnrolmentAdvisoriesToProvider.Handler(unitOfWork).Handle(query, CancellationToken.None);
+        if (data is not { Succeeded: true })
+        {
+            throw new Exception(data.ErrorMessage);
+        }
+
+        var sheet = await excelService.ExportAsync(data.Data!.TabularData,
+            new Dictionary<string, Func<GetEnrolmentAdvisoriesToProvider.EnrolmentAdvisoriesTabularData, object?>>
+            {
+                { "Contract",           r => r.ContractName },
+                { "Queue",              r => r.Queue },
+                { "Participant",        r => r.ParticipantId },
+                { "Support Worker",     r => r.SupportWorker },
+                { "Provider QA",        r => r.PqaUser },
+                { "CFO User",           r => r.CfoUser },
+                { "PQA Submitted Date", r => r.PqaSubmittedDate },
+                { "Advisory Date",      r => r.AdvisoryDate },
+                { "Feedback Type",      r => r.FeedbackType.HasValue ? ((FeedbackType)r.FeedbackType.Value).ToString() : null },
+                { "Advisory Notes",     r => r.Message },
+            });
+        return ("Enrolment Advisories", sheet);
+    }
+
+    private async Task<(string SheetName, byte[] Data)> BuildActivitiesAdvisoriesSheet(
+        ExportProviderFeedback.ProviderFeedbackExportRequest request, UserProfile stubUser)
+    {
+        var query = new GetActivitiesAdvisoriesToProvider.Query
+        {
+            StartDate = request.StartDate,
+            EndDate = request.EndDate,
+            TenantId = request.TenantId,
+            CurrentUser = stubUser
+        };
+        var data = await new GetActivitiesAdvisoriesToProvider.Handler(unitOfWork).Handle(query, CancellationToken.None);
+        if (data is not { Succeeded: true })
+        {
+            throw new Exception(data.ErrorMessage);
+        }
+
+        var sheet = await excelService.ExportAsync(data.Data!.TabularData,
+            new Dictionary<string, Func<GetActivitiesAdvisoriesToProvider.ActivitiesAdvisoriesTabularData, object?>>
+            {
+                { "Contract",           r => r.ContractName },
+                { "Queue",              r => r.Queue },
+                { "Activity Type",      r => r.ActivityType?.Name },
+                { "Participant",        r => r.ParticipantId },
+                { "Support Worker",     r => r.SupportWorker },
+                { "Provider QA",        r => r.PqaUser },
+                { "CFO User",           r => r.CfoUser },
+                { "PQA Submitted Date", r => r.PqaSubmittedDate },
+                { "Advisory Date",      r => r.AdvisoryDate },
+                { "Feedback Type",      r => r.FeedbackType.HasValue ? ((FeedbackType)r.FeedbackType.Value).ToString() : null },
+                { "Advisory Notes",     r => r.Message },
+            });
+        return ("Activities Advisories", sheet);
     }
 }

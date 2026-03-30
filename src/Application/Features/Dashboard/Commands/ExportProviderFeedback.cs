@@ -50,10 +50,6 @@ public static class ExportProviderFeedback
 
             RuleSet(ValidationConstants.RuleSet.MediatR, () =>
             {
-                RuleFor(c => c.Request)
-                    .Must(r => r.IncludeEnrolmentReturns || r.IncludeActivitiesReturns || r.IncludeEnrolmentAdvisories || r.IncludeActivitiesAdvisories)
-                    .WithMessage("At least one sheet must be selected for export.");
-
                 RuleFor(c => c)
                     .Must(WaitBeforeRequestingDocumentAgain)
                     .WithMessage($"You must wait {cooldown.Humanize()} between requesting documents.");
@@ -76,9 +72,5 @@ public static class ExportProviderFeedback
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
         public string? TenantId { get; set; }
-        public bool IncludeEnrolmentReturns { get; set; }
-        public bool IncludeActivitiesReturns { get; set; }
-        public bool IncludeEnrolmentAdvisories { get; set; }
-        public bool IncludeActivitiesAdvisories { get; set; }
     }
 }
