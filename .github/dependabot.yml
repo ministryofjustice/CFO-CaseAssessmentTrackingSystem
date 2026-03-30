@@ -3,23 +3,12 @@ version: 2
 updates:
   - package-ecosystem: "nuget"
     directory: "/"
-
-    # ───────────────────────────────────────────────
-    # Minimum release age (MoJ Security Baseline)
-    # Per update type:
-    #   patch → 3 days
-    #   minor → 7 days
-    #   major → 30 days
-    # ───────────────────────────────────────────────
-    cooldown:
-      patch-days: 3
-      minor-days: 7
-      major-days: 30
-
     schedule:
       interval: "weekly"
       day: "sunday"
       time: "04:00"
+    cooldown:
+      default-days: 7
 
     target-branch: "main"
 
