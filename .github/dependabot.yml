@@ -1,20 +1,39 @@
 version: 2
+
 updates:
   - package-ecosystem: "nuget"
     directory: "/"
+
+    # ───────────────────────────────────────────────
+    # Minimum release age (MoJ Security Baseline)
+    # Per update type:
+    #   patch → 3 days
+    #   minor → 7 days
+    #   major → 30 days
+    # ───────────────────────────────────────────────
+    cooldown:
+      patch-days: 3
+      minor-days: 7
+      major-days: 30
+
     schedule:
       interval: "weekly"
       day: "sunday"
       time: "04:00"
+
     target-branch: "main"
+
     commit-message:
       prefix: "deps"
+
     open-pull-requests-limit: 1
+
     ignore:
       - dependency-name: "AutoMapper"
       - dependency-name: "AutoMapper.*"
       - dependency-name: "MediatR"
       - dependency-name: "MediatR.*"
+
     groups:
       all-dependencies:
         patterns:
