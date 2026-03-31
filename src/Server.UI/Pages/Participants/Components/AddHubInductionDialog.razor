@@ -2,6 +2,7 @@
 @using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Application.Features.Participants.DTOs
 @using Cfo.Cats.Application.Features.Participants.Queries
+@using Cfo.Cats.Server.UI.Components.Locations
 @inherits CatsComponentBase
 
 @inject IValidationService Validator
@@ -32,12 +33,12 @@
                         </MudItem>
 
                         <MudItem xs="12">
-                            <MudAutocomplete T="LocationDto" Label="@Model.GetMemberDescription(x => x.Location)"
-                                             @bind-Value="Model.Location" @bind-Value:after="CheckParticipantBeenAtThisLocationOnDate"
-                                             SearchFunc="@SearchLocations"
-                                             Required="true" RequiredError="Location is required"
-                                             ResetValueOnEmptyText="true" CoerceText="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
-                                             AdornmentColor="Color.Primary" ToStringFunc="@(e => e == null ? null : e.Name)" />
+                            <LocationSelectComponent
+                                TenantId="@(Model!.CurrentUser!.TenantId!)"
+                                Value="@Model.Location"
+                                For="(() => Model.Location)"
+                                ValueChanged="OnLocationChanged"
+                                LocationFilter="@(l => l.LocationType.IsHub)" />
                         </MudItem>
                     </MudGrid>
                 </MudForm>

@@ -3,6 +3,7 @@
 @using Cfo.Cats.Application.Features.Delius.DTOs
 @using Cfo.Cats.Application.Features.Locations.DTOs
 @using DocumentFormat.OpenXml.Office2013.PowerPoint.Roaming
+@using System.Linq.Expressions
 
 @inject ILocationService LocationService
 
@@ -11,8 +12,11 @@
     ItemCollection="@_locations"
     Value="Value"
     ValueChanged="HandleValueChanged"
+    Label="@Label"
     Placeholder="Select a location"
     Required="false"
+    Disabled="@Disabled"
+    For="@For"
     Variant="Variant.Outlined"
     SearchBox="true"
     SearchBoxAutoFocus="true"
@@ -33,6 +37,18 @@
     [Parameter, EditorRequired]
     public EventCallback<LocationDto?> ValueChanged { get; set; }
 
+    [Parameter]
+    public Func<LocationDto, bool>? LocationFilter { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public Expression<Func<LocationDto?>>? For { get; set; }
+
     private LocationDto[] _locations = [];
 
     private async Task HandleValueChanged(LocationDto? locationDto)
@@ -44,9 +60,10 @@
     private string GetDisplayName(LocationDto? locationDto) => locationDto?.Name ?? string.Empty;
 
     protected override void OnInitialized()
-        => _locations = LocationService.GetVisibleLocations(TenantId)
-            .OrderBy(l =>l.Name)
-            .ToArray();
+    {
+        var locations = LocationService.GetVisibleLocations(TenantId).OrderBy(l => l.Name);
+        _locations = (LocationFilter is not null ? locations.Where(LocationFilter) : locations).ToArray();
+    }
 
     private bool Search(LocationDto? location, string searchText)
     {

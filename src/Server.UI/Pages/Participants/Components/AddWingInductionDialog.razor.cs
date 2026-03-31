@@ -14,10 +14,6 @@ public partial class AddWingInductionDialog
 
     [EditorRequired]
     [Parameter]
-    public LocationDto[]? Locations { get; set; }
-
-    [EditorRequired]
-    [Parameter]
     public AddWingInduction.Command? Model { get; set; }
 
     private bool saving;
@@ -70,12 +66,9 @@ public partial class AddWingInductionDialog
             DateAtLocation = Model.InductionDate
         });
     }
-
-    private async Task<IEnumerable<LocationDto>> SearchLocations(string value, CancellationToken token)
+    private async Task OnLocationChanged(LocationDto? location)
     {
-        if(string.IsNullOrEmpty(value)){
-            return new LocationDto[0];
-        }
-        return await Task.FromResult(Locations!.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)));
+        Model!.Location = location;
+        await CheckParticipantBeenAtThisLocationOnDate();
     }
 }

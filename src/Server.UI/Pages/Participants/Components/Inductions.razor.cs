@@ -24,10 +24,8 @@ public partial class Inductions
     public UserProfile? CurrentUser { get; set; }
 
     private HubInductionDto[]? HubInductions { get; set; }
-    private LocationDto[] HubLocations { get; set; } = [];
 
     public WingInductionDto[] WingInductions { get; set; } = [];
-    private LocationDto[] WingLocations { get; set; } = [];
 
     protected override async Task OnInitializedAsync() => await OnRefresh();
 
@@ -40,7 +38,6 @@ public partial class Inductions
                 ParticipantId = ParticipantId,
                 CurrentUser = CurrentUser
             } },
-            { x => x.Locations, this.HubLocations }
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
@@ -64,8 +61,7 @@ public partial class Inductions
             {
                 ParticipantId = ParticipantId,
                 CurrentUser = CurrentUser
-            } },
-            { x => x.Locations, this.WingLocations }
+            } }
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
@@ -208,7 +204,5 @@ public partial class Inductions
         }
         var locations = LocationService.GetVisibleLocations(CurrentUser?.TenantId ?? string.Empty)
             .ToArray();
-        HubLocations = locations.Where(x => x.LocationType.IsHub).ToArray();
-        WingLocations = locations.Where(x => x.LocationType == LocationType.Wing).ToArray();
     }
 }
