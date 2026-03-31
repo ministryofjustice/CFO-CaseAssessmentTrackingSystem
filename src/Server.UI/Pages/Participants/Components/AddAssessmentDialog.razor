@@ -2,6 +2,7 @@
 @using Cfo.Cats.Application.Features.Assessments.Commands
 @using Cfo.Cats.Application.Features.Locations.DTOs
 @using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Components.Locations
 @using Cfo.Cats.Server.UI.Pages.Activities.Components
 
 @inherits CatsComponentBase
@@ -16,16 +17,12 @@
             <MudForm @ref="form" Model="Model" Validation="@(Validator.ValidateValue(Model))">
                 <MudGrid>
                     <MudItem xs="12">
-                        <MudSelect @bind-Value="Model.Location"
-                                   Label="@Model.GetMemberDescription(x => x.Location)"
-                                   For="() => Model.Location"
-                                   Clearable="true"
-                                   ToStringFunc="location => location?.Name">
-                            @foreach (var location in locations)
-                            {
-                                <MudSelectItem Value="location">@location.Name</MudSelectItem>
-                            }
-                        </MudSelect>
+                        <LocationSelectComponent
+                            TenantId="@(CurrentUser.TenantId!)"
+                            Label="@Model.GetMemberDescription(x => x.Location)"
+                            Value="@Model.Location"
+                            ValueChanged="OnLocationChanged"
+                            For="() => Model.Location"/>
                     </MudItem>
                 </MudGrid>
             </MudForm>
@@ -88,6 +85,10 @@
         {
             saving = false;
         }
+    }
+    private async Task OnLocationChanged(LocationDto? location)
+    {
+        Model.Location = location;
     }
 
 }
