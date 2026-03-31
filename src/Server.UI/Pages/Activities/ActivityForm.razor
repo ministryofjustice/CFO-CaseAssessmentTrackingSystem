@@ -1,27 +1,22 @@
 @using Cfo.Cats.Application.Common.Interfaces.Locations
 @using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Components.Locations
 @using Cfo.Cats.Server.UI.Pages.Activities.Components
 
 @inherits CatsComponentBase
 
-@inject ILocationService Locations;
 @inject ICurrentUserService CurrentUser;
 
 <MudGrid>
     <MudItem xs="12">
-        <MudSelect @bind-Value="Model.Location"
-                   @bind-Value:after="LocationChanged"
-                   Label="@Model.GetMemberDescription(x => x.Location)"
-                   For="() => Model.Location"
-                   Clearable="true"
-                   ToStringFunc="location => location?.Name"
-                   Disabled="Model.CanChangeLocation is false">
-            @foreach (var location in _locations)
-            {
-                <MudSelectItem Value="location">@location.Name</MudSelectItem>
-            }
-        </MudSelect>
+        <LocationSelectComponent
+            TenantId="@(CurrentUser.TenantId!)"
+            Label="@Model.GetMemberDescription(x => x.Location)"
+            Value="@Model.Location"
+            ValueChanged="OnLocationChanged"
+            For="() => Model.Location"
+            Disabled="@(Model.CanChangeLocation is false)" />
     </MudItem>
     <MudItem xs="12">
         <MudChipSet @bind-SelectedValues="_filteredTypes"
