@@ -14,14 +14,9 @@ public partial class AddHubInductionDialog
 
     [EditorRequired]
     [Parameter]
-    public LocationDto[]? Locations { get; set; }
-
-    [EditorRequired]
-    [Parameter]
     public AddHubInduction.Command? Model { get; set; }
 
     private bool saving;
-
     private bool hasParticpantBeenAtThisLocationOnThisDate;
 
     private void Cancel() => MudDialog.Cancel();
@@ -71,12 +66,9 @@ public partial class AddHubInductionDialog
         });
     }
 
-    private async Task<IEnumerable<LocationDto>> SearchLocations(string value, CancellationToken token)
+    private async Task OnLocationChanged(LocationDto? location)
     {
-        if(string.IsNullOrEmpty(value))
-        {
-            return [];
-        }
-        return await Task.FromResult(Locations!.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)));
+        Model!.Location = location;
+        await CheckParticipantBeenAtThisLocationOnDate();
     }
 }
