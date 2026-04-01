@@ -1,8 +1,6 @@
-using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Queries;
-using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Pages.Activities;
@@ -13,7 +11,6 @@ namespace Cfo.Cats.Server.UI.Pages.Participants.Components.QAResults;
 
 public partial class QAActivitiesResults
 {
-    private IEnumerable<LocationDto> _locations = [];
     private PaginatedData<QAActivitiesResultsSummaryDto>? _activities;
     private bool _loading;
 
@@ -21,9 +18,6 @@ public partial class QAActivitiesResults
 
     [Parameter, EditorRequired]
     public bool JustMyParticipants { get; set; } = false;
-    
-    [Inject]
-    private ILocationService LocationService { get; set; } = default!;
         
     [CascadingParameter]
     public UserProfile CurrentUser { get; set; } = default!;
@@ -50,11 +44,6 @@ public partial class QAActivitiesResults
         try
         {
             _loading = true;
-            _activities = await GetNewMediator().Send(Model);
-            _locations = LocationService
-                .GetVisibleLocations(CurrentUser.TenantId!)
-                .ToList();
-
             await OnRefresh();
         }
         finally
@@ -86,8 +75,6 @@ public partial class QAActivitiesResults
         Model.CommencedEnd = range.End;
         return OnRefresh();
     }
-
-    private Task OnLocationChanged() => OnRefresh();
 
     private Task OnActivityTypesChanged(IReadOnlyCollection<ActivityType>? types)
     {
