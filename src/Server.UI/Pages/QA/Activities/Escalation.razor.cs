@@ -10,6 +10,9 @@ namespace Cfo.Cats.Server.UI.Pages.QA.Activities;
 
 public partial class Escalation 
 {
+    [Inject]
+    private IPicklistService PicklistService { get; set; } = default!;
+    
     private ActivityQaExternalMessageWarning? _warningMessage;
     private MudForm? _form;
     private ActivityQueueEntryDto? _queueEntry;
@@ -78,7 +81,6 @@ public partial class Escalation
 
         if (submit)
         {
-
             var result = await GetNewMediator().Send(Command);
 
             if (result.Succeeded)
@@ -106,22 +108,15 @@ public partial class Escalation
             }
         }
     }
+
     private void OnResponseChanged()
     {
-        if (Command.Response == SubmitActivityEscalationResponse.EscalationResponse.Accept)
-        {
-            Command.FeedbackType = null;
-            Command.MessageToProvider = string.Empty;
-        }
-        else if (Command.Response == SubmitActivityEscalationResponse.EscalationResponse.Return)
+        Command.FeedbackType = null;
+        Command.MessageToProvider = string.Empty;
+
+        if (Command.Response == SubmitActivityEscalationResponse.EscalationResponse.Return)
         {
             Command.FeedbackType = FeedbackType.Returned;
-            Command.MessageToProvider = string.Empty;
-        }
-        else if (Command.Response == SubmitActivityEscalationResponse.EscalationResponse.Comment)
-        {
-            Command.FeedbackType = null;
-            Command.MessageToProvider = string.Empty;
         }
     }
 

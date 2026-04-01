@@ -1,6 +1,7 @@
 ﻿using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Application.SecurityConstants;
+using Cfo.Cats.Domain.Entities.Activities;
 
 namespace Cfo.Cats.Application.Features.Activities.Commands;
 
@@ -9,15 +10,24 @@ public static class SubmitActivityEscalationResponse
     [RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
     public class Command : IRequest<Result>
     {
-        public required Guid ActivityQueueEntryId { get; set; }
+        public required Guid ActivityQueueEntryId { get; init; }
 
         public EscalationResponse? Response { get; set; }
+        
+        [Description("Feedback Type")]
         public FeedbackType? FeedbackType { get; set; }        
 
-        public string Message { get; set; } = default!;
-        public string MessageToProvider { get; set; } = default!;
-
-        public UserProfile? CurrentUser { get; set; }
+        public string Message { get; set; } = null!;
+        
+        [Description("Message to provider")]
+        public string MessageToProvider { get; set; } = null!;
+        
+        [Description("Feedback message to Qa1")]
+        public string MessageToQa1 { get; set; } = null!;
+        public UserProfile? CurrentUser { get; init; }
+        
+        [Description("Activity Feedback Reason")]
+        public string ActivityFeedbackReason { get; set; } = null!;
     }
 
     public enum EscalationResponse
@@ -33,17 +43,27 @@ public static class SubmitActivityEscalationResponse
         {
             var entry = await unitOfWork.DbContext.ActivityEscalationQueue
                 .Include(pqa => pqa.Participant)
+                .Include(x => x.Activity)
                 .FirstOrDefaultAsync(x => x.Id == request.ActivityQueueEntryId, cancellationToken: cancellationToken);
-
+               
             if (entry == null)
             {
-                return Result.Failure("Cannot find activity queue item");
+                return Result.Failure("Cannot find activity escalation queue item");
             }
 
-            entry.AddNote(request.Message, isExternal: false)
-                 .AddNote(request.MessageToProvider, isExternal: true, feedbackType: request.FeedbackType);
+            if (!string.IsNullOrWhiteSpace(request.Message))
+            {
+                entry.AddNote(request.Message, isExternal: false);
+            }
 
-            switch (request.Response)
+            if (!string.IsNullOrWhiteSpace(request.MessageToProvider))
+            {
+                entry.AddNote(request.MessageToProvider, isExternal: true, feedbackType: request.FeedbackType);
+            }
+            
+            var response = request.Response!.Value;
+
+            switch (response)
             {
                 case EscalationResponse.Accept:
                     entry.Accept();
@@ -57,6 +77,45 @@ public static class SubmitActivityEscalationResponse
                     throw new ArgumentOutOfRangeException();
             }
 
+            if (!string.IsNullOrWhiteSpace(request.MessageToQa1))
+            {
+                var outcome = response switch
+                {
+                    EscalationResponse.Accept => FeedbackOutcome.Approved,
+                    EscalationResponse.Return => FeedbackOutcome.Returned,
+                    EscalationResponse.Comment => FeedbackOutcome.EscalatedComment,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                
+                var recipientDisplayName = await (
+                        from q in unitOfWork.DbContext.ActivityQa2Queue
+                        join u in unitOfWork.DbContext.Users
+                            on q.CreatedBy equals u.Id
+                        where q.ActivityId == entry.ActivityId
+                              && q.IsCompleted
+                        orderby q.LastModified descending
+                        select u.Id
+                    )
+                    .FirstOrDefaultAsync(cancellationToken);
+                
+                var activityFeedback = ActivityFeedback.Create(
+                    entry.ActivityId,
+                    entry.ParticipantId!,
+                    recipientDisplayName!,
+                    request.MessageToQa1,
+                    outcome,
+                    FeedbackStage.Escalation,
+                    entry.Created!.Value,
+                    request.CurrentUser!.UserId,
+                    entry.TenantId,
+                    entry.Activity!.Category.Name,
+                    entry.Activity.Type.Name,
+                    request.ActivityFeedbackReason
+                );
+
+                unitOfWork.DbContext.ActivityFeedbacks.Add(activityFeedback);
+            }
+            
             return Result.Success();
         }
     }
@@ -107,6 +166,16 @@ public static class SubmitActivityEscalationResponse
                     .WithMessage("External Message is required for Advisory or Accepted By Exception")
                     .Matches(ValidationConstants.Notes)
                     .WithMessage(string.Format(ValidationConstants.NotesMessage, "External Message"));
+            });
+            
+            RuleFor(x => x.MessageToQa1)
+                .MaximumLength(ValidationConstants.NotesLength);
+            
+            When(x => !string.IsNullOrWhiteSpace(x.MessageToQa1), () =>
+            {
+                RuleFor(x => x.ActivityFeedbackReason)
+                    .NotEmpty()
+                    .WithMessage("You must select a feedback reason when providing a QA1 message");
             });
         }
     }

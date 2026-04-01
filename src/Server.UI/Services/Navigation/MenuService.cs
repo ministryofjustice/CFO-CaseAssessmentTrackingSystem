@@ -1,7 +1,6 @@
 using ActualLab.Api;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Server.UI.Models.NavigationMenu;
-using Cfo.Cats.Server.UI.Pages.Identity.Roles;
 
 namespace Cfo.Cats.Server.UI.Services.Navigation;
 
@@ -46,10 +45,10 @@ public class MenuService : IMenuService
 
                             new()
                             {
-                                Title = "Provider Feedback",
+                                Title = "Quality Assurance",
                                 Href = "/pages/dashboard/providerfeedback/",
                                 PageStatus = PageStatus.Wip,
-                                Roles = [RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QASupportManager, RoleNames.QAManager],
+                                Roles = [RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.QAOfficer],
                             }
                         ],
                     },
@@ -331,4 +330,3 @@ public class MenuService : IMenuService
             }
         ];
 }
-

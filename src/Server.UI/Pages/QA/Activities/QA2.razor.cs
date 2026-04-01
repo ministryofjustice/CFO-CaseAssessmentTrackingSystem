@@ -9,7 +9,10 @@ using IResult = Cfo.Cats.Application.Common.Interfaces.IResult;
 namespace Cfo.Cats.Server.UI.Pages.QA.Activities;
 
 public partial class QA2
-{
+{   
+    [Inject]
+    private IPicklistService PicklistService { get; set; } = null!;
+    
     private ActivityQaExternalMessageWarning? _warningMessage;
     private MudForm? _form;
     private ActivityQueueEntryDto? _queueEntry;
@@ -20,7 +23,7 @@ public partial class QA2
 
     protected SubmitActivityQa2Response.Command Command { get; set; } = null!;
 
-    protected async Task GetQueueItem()
+    private async Task GetQueueItem()
     {
         var command = new GrabActivityQa2Entry.Command
         {
@@ -85,24 +88,18 @@ public partial class QA2
             }
         }
     }
+
     private void OnResponseChanged()
     {
-        if (Command.Response == SubmitActivityQa2Response.Qa2Response.Accept)
-        {
-            Command.FeedbackType = null;
-            Command.MessageToProvider = string.Empty;
-        }
-        else if (Command.Response == SubmitActivityQa2Response.Qa2Response.Return)
+        Command.FeedbackType = null;
+        Command.MessageToProvider = string.Empty;
+
+        if (Command.Response == SubmitActivityQa2Response.Qa2Response.Return)
         {
             Command.FeedbackType = FeedbackType.Returned;
-            Command.MessageToProvider = string.Empty;
-        }
-        else if (Command.Response == SubmitActivityQa2Response.Qa2Response.Escalate)
-        {
-            Command.FeedbackType = null;
-            Command.MessageToProvider = string.Empty;
         }
     }
+
     private void ShowActionFailure(string title, IResult result) =>
         Snackbar.Add(
             RenderFailure(title, result),
