@@ -1,8 +1,7 @@
-﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
-@using Cfo.Cats.Application.Common.Validators
+﻿@using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Components.Locations
 
-@inject ILocationService Locations;
 @inject ICurrentUserService CurrentUser;
 @inject IValidationService Validator
 
@@ -35,16 +34,11 @@
                             Immediate="true">
             </MudTextField>
 
-            <MudSelect @bind-Value="Model.Location"
-                        Label="@Model.GetMemberDescription(x => x.Location)"
-                        For="() => Model.Location"
-                        Clearable="true"
-                        ToStringFunc="location => location?.Name">
-                @foreach (var location in _locations)
-                {
-                    <MudSelectItem Value="location">@location.Name</MudSelectItem>
-                }
-            </MudSelect>
+            <LocationSelectComponent
+                TenantId="@(CurrentUser.TenantId!)"
+                Label="@Model.GetMemberDescription(x => x.Location)"
+                @bind-Value="Model.Location"
+                For="() => Model.Location"/>
 
         </MudForm>
     </DialogContent>

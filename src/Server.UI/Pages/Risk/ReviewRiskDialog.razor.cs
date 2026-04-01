@@ -1,4 +1,3 @@
-using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.Participants.Commands;
 
 namespace Cfo.Cats.Server.UI.Pages.Risk;
@@ -12,17 +11,6 @@ public partial class ReviewRiskDialog
     [Parameter, EditorRequired] public required AddRisk.Command Model { get; set; }
 
     [Parameter] public bool AddReviewRequest { get; set; }
-
-    private IEnumerable<LocationDto> _locations = [];
-
-    protected override void OnInitialized()
-    {
-        _locations = Locations
-            .GetVisibleLocations(CurrentUser.TenantId!)
-            .ToList();
-
-        base.OnInitialized();
-    }
 
     private void Cancel() => MudDialog.Cancel();
 
