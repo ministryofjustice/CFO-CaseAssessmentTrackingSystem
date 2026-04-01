@@ -1,11 +1,10 @@
-﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
-@using Cfo.Cats.Application.Features.Activities.DTOs
+﻿@using Cfo.Cats.Application.Features.Activities.DTOs
+@using Cfo.Cats.Server.UI.Components.Locations
 @using Cfo.Cats.Domain.Common.Enums
 @using Humanizer
 
 @inherits CatsComponentBase
 
-@inject ILocationService Locations;
 @inject ICurrentUserService CurrentUser;
 
 <style>
@@ -42,15 +41,12 @@
                         MaxDate="DateTime.Today" />
                     </MudItem>
                     <MudItem xs="12">
-                        <MudSelect @bind-Value="Model.Location"
-                        @bind-Value:after="OnLocationChanged"
-                        Label="Location"
-                        Clearable="true">
-                            @foreach (var location in _locations)
-                            {
-                                <MudSelectItem Value="location">@location.Name</MudSelectItem>
-                            }
-                        </MudSelect>
+                        <LocationSelectComponent
+                            TenantId="@(CurrentUser.TenantId!)"
+                            Label="@Model.GetMemberDescription(x => x.Location)"
+                            @bind-Value="Model.Location"
+                            @bind-Value:after="OnRefresh"
+                            For="() => Model.Location"/>
                     </MudItem>
                     <MudItem xs="12">
                         <MudChipSet T="ActivityType"

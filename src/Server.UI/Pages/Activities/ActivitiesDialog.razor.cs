@@ -1,7 +1,6 @@
 using Cfo.Cats.Application.Features.Activities.Commands;
 using Cfo.Cats.Application.Features.Activities.DTOs;
 using Cfo.Cats.Application.Features.Activities.Queries;
-using Cfo.Cats.Application.Features.Locations.DTOs;
 using Cfo.Cats.Application.Features.PathwayPlans.DTOs;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Server.UI.Pages.Activities.Components;
@@ -10,7 +9,6 @@ namespace Cfo.Cats.Server.UI.Pages.Activities;
 
 public partial class ActivitiesDialog
 {
-    private IEnumerable<LocationDto> _locations = [];
     private PaginatedData<ActivitySummaryDto>? _activities;
 
     [Parameter, EditorRequired] public required ActivitiesWithPagination.Query Model { get; set; }
@@ -23,12 +21,7 @@ public partial class ActivitiesDialog
 
     protected override async Task OnInitializedAsync()
     {
-        _locations = Locations
-            .GetVisibleLocations(CurrentUser.TenantId!)
-            .ToList();
-
         await OnRefresh();
-
         await base.OnInitializedAsync();
     }
 
@@ -53,8 +46,6 @@ public partial class ActivitiesDialog
         Model.CommencedEnd = range.End;
         return OnRefresh();
     }
-
-    private Task OnLocationChanged() => OnRefresh();
 
     private Task OnActivityTypesChanged(IReadOnlyCollection<ActivityType>? types)
     {
