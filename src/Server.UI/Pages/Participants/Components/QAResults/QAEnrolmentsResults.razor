@@ -2,6 +2,7 @@
 @using Cfo.Cats.Domain.Common.Enums
 @using Cfo.Cats.Server.UI.Pages.Dashboard.Components
 @using Cfo.Cats.Application.Features.QualityAssurance.DTOs
+@using Cfo.Cats.Server.UI.Components.Locations
 @using Humanizer
 
 @inherits CatsComponent<PaginatedData<QAEnrolmentsResultsSummaryDto>>
@@ -41,15 +42,11 @@
                     <MudListSubheader>
                         <MudGrid>
                             <MudItem xs="12">
-                                <MudSelect @bind-Value="_selectedLocation"
-                                            @bind-Value:after="OnLocationChanged"
-                                            Label="Location"
-                                            Clearable="true">
-                                    @foreach (var location in _locations)
-                                    {
-                                        <MudSelectItem Value="location">@location.Name</MudSelectItem>
-                                    }
-                                </MudSelect>
+                                <LocationSelectComponent
+                                    TenantId="@(CurrentUser.TenantId!)"
+                                    @bind-Value="_selectedLocation"
+                                    @bind-Value:after="LoadDataAsync"
+                                    For="() => _selectedLocation"/>
                             </MudItem>
                             <MudItem xs="12">
                                  <MudCheckBox T="bool" ValueChanged="OnExcludeEnrolmentsNotInProgress" Label="Hide enrolments that don't require my attention" /> 
