@@ -1,11 +1,8 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Cfo.Cats.Application.Common.Interfaces.Locations;
+﻿using Cfo.Cats.Application.Common.Interfaces.Locations;
 using Cfo.Cats.Application.Features.Locations.DTOs;
-
 namespace Cfo.Cats.Infrastructure.Services.Locations;
 
-public class LocationService(IServiceScopeFactory scopeFactory, IMapper mapper, ILogger<LocationService> logger) 
+public class LocationService(IServiceScopeFactory scopeFactory, ILogger<LocationService> logger) 
     : ILocationService
 {
     
@@ -21,7 +18,7 @@ public class LocationService(IServiceScopeFactory scopeFactory, IMapper mapper, 
             var data = unitOfWork.DbContext
                 .Locations
                 .OrderBy(e => e.Name)
-                .ProjectTo<LocationDto>(mapper.ConfigurationProvider)
+                .Select(LocationMappings.ToDto)
                 .ToList();
 
             return data.AsReadOnly();
@@ -41,7 +38,7 @@ public class LocationService(IServiceScopeFactory scopeFactory, IMapper mapper, 
             .Locations
             .Where(l => l.Tenants.Any(t => t.Id.StartsWith(tenantId)))
             .OrderBy(e => e.Name)
-            .ProjectTo<LocationDto>(mapper.ConfigurationProvider)
+            .Select(LocationMappings.ToDto)
             .ToList();
 
         return data.AsReadOnly();
