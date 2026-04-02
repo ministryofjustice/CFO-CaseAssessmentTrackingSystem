@@ -10,6 +10,8 @@ public interface IExcelService
         string sheetName = "Sheet1"
     );
 
+    Task<byte[]> MergeSheetsAsync(params (string SheetName, byte[] Data)[] sheets);
+
     Task<IResult<IEnumerable<TEntity>>> ImportAsync<TEntity>(
         byte[] data,
         Dictionary<string, Func<DataRow, TEntity, object?>> mappers,

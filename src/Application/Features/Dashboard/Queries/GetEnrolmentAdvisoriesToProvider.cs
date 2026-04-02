@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
 
@@ -52,6 +51,7 @@ public static class GetEnrolmentAdvisoriesToProvider
                     PqaSubmittedDate = pfa.PqaSubmittedDate,
                     PqaUser = submittedByUser.DisplayName,
                     AdvisoryDate = pfa.ActionDate,
+                    FeedbackType = pfa.FeedbackType,
                     Message = (pfa.Message ?? "").Replace("\r", " ").Replace("\n", " ")
                 };
 
@@ -98,6 +98,7 @@ public static class GetEnrolmentAdvisoriesToProvider
         public string? CfoUser { get; set; }
         public DateTime? PqaSubmittedDate { get; set; }
         public DateTime? AdvisoryDate { get; set; }
+        public int? FeedbackType { get; set; }
         public string? Message { get; set; }
     }
     public record EnrolmentAdvisoriesChartData

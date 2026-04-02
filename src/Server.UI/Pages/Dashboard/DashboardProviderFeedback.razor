@@ -1,5 +1,6 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Components.Dashboard.QA
+@using Cfo.Cats.Infrastructure.Constants
 @inherits CatsComponentBase
 
 @page "/pages/dashboard/providerfeedback"
@@ -10,9 +11,6 @@
     <MudText Typo="Typo.h3">
         Provider Feedback Dashboard
     </MudText>
-    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">
-        This page is still under development and may produce inaccurate results.
-    </MudAlert>
     <MudStack Row="true" AlignItems="AlignItems.Center">
 
         <MudDateRangePicker @ref="_picker" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="@_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
@@ -33,6 +31,14 @@
                    Color="Color.Primary">
             Visual Mode
         </MudSwitch>
+        <MudLoadingButton Loading="@_downloading"
+                          Variant="Variant.Filled"
+                          Color="Color.Secondary"
+                          StartIcon="@Icons.Material.Filled.CloudDownload"
+                          Size="Size.Small"
+                          OnClick="OnExport">
+            @ConstantString.Export
+        </MudLoadingButton>
     </MudStack>
 </MudStack>
 

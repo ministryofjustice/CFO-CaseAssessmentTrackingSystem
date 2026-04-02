@@ -135,7 +135,12 @@
                     <MudTableSortLabel SortBy="new Func<GetActivitiesAdvisoriesToProvider.ActivitiesAdvisoriesTabularData, object>(x => x.AdvisoryDate!)">
                         Advisory Date
                     </MudTableSortLabel>
-                </MudTh>				
+                </MudTh>
+				<MudTh>
+                    <MudTableSortLabel SortBy="new Func<GetActivitiesAdvisoriesToProvider.ActivitiesAdvisoriesTabularData, object>(x => x.FeedbackType!)">
+                        Feedback Type
+                    </MudTableSortLabel>
+                </MudTh>                				
 				<MudTh>Advisory Notes</MudTh>		
 			</HeaderContent>
 			<RowTemplate>
@@ -148,6 +153,7 @@
 				<MudTd DataLabel="Cfo User">@context.CfoUser</MudTd>
 				<MudTd DataLabel="PQA Submitted Date">@context.PqaSubmittedDate</MudTd>
 				<MudTd DataLabel="Advisory Date">@context.AdvisoryDate</MudTd>
+				<MudTd DataLabel="Feedback Type">@(context.FeedbackType.HasValue ? ((FeedbackType)context.FeedbackType.Value).ToString() : string.Empty)</MudTd>                
 				<MudTd DataLabel="Message">@context.Message</MudTd>
 			</RowTemplate>
 			<PagerContent>
