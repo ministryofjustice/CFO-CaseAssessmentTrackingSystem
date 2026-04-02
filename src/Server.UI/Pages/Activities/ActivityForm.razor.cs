@@ -13,11 +13,9 @@ public partial class ActivityForm
     private MudAutocomplete<ActivityDefinition?> _activityDropdown = new();
     private readonly bool _uploading = false;
     private IReadOnlyCollection<ActivityType> _filteredTypes = [];
-    private IEnumerable<LocationDto> _locations = [];
     private bool _hasSelectedActivityAlreadyBeenAddedOnThisDate;
     private bool Disabled => Model.Location is null;
     private bool _hasParticipantBeenAtThisLocationOnThisDate = true;
-
     [Parameter, EditorRequired] public required AddActivity.Command Model { get; set; }
 
     [Parameter] public string ParticipantId { get; set; } = string.Empty;
@@ -25,17 +23,18 @@ public partial class ActivityForm
     protected override void OnInitialized()
     {
         SetActivities();
-
-        _locations = Locations
-            .GetVisibleLocations(CurrentUser.TenantId!)
-            .ToList();
-
         base.OnInitialized();
     }
 
     private void SetActivities() => _activities = Model.Location is null
         ? []
         : ActivityDefinition.GetActivitiesForLocation(Model.Location.LocationType);
+
+    private async Task OnLocationChanged(LocationDto? location)
+    {
+        Model.Location = location;
+        LocationChanged();
+    }
 
     private void LocationChanged()
     {

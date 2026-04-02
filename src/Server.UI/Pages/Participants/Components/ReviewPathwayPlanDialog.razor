@@ -1,10 +1,8 @@
-﻿@using Cfo.Cats.Application.Common.Interfaces.Locations
-@using Cfo.Cats.Application.Common.Validators
-@using Cfo.Cats.Application.Features.Locations.DTOs
+﻿@using Cfo.Cats.Application.Common.Validators
 @using Cfo.Cats.Application.Features.PathwayPlans.Commands
 @using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Components.Locations
 
-@inject ILocationService Locations;
 @inject ICurrentUserService CurrentUser;
 @inject IValidationService Validator
 
@@ -39,16 +37,11 @@
                                For="(() => Model.ReviewDate)"
                                ImmediateText="true" Editable="false" MaxDate="DateTime.Today.Date" MinDate="DateTime.Today.AddMonths(-3)" PickerVariant="PickerVariant.Dialog" />
             
-            <MudSelect @bind-Value="Model.Location"
-                        Label="@Model.GetMemberDescription(x => x.Location)"
-                        For="() => Model.Location"
-                        Clearable="true"
-                        ToStringFunc="location => location?.Name">
-                @foreach (var location in _locations)
-                {
-                    <MudSelectItem Value="location">@location.Name</MudSelectItem>
-                }
-            </MudSelect>
+            <LocationSelectComponent
+                TenantId="@(CurrentUser.TenantId!)"
+                Label="@Model.GetMemberDescription(x => x.Location)"
+                @bind-Value="Model.Location"
+                For="() => Model.Location"/>
 
         </MudForm>
     </DialogContent>
@@ -58,55 +51,3 @@
     </DialogActions>
 </MudDialog>
 
-@code {
-    bool _saving;
-    MudForm? _form;
-
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
-
-    [Parameter, EditorRequired]
-    public required ReviewPathwayPlan.Command Model { get; set; }
-    
-    IEnumerable<LocationDto> _locations = [];
-
-    protected override void OnInitialized()
-    {
-        _locations = Locations
-            .GetVisibleLocations(CurrentUser.TenantId!)
-            .ToList();
-
-        base.OnInitialized();
-    }
-    
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
-  
-    private async Task Submit()
-    {
-        try
-        {
-            _saving = true;
-
-            if (_form is null)
-            {
-                _saving = false;
-                return;
-            }
-
-            await _form.ValidateAsync();
-
-            if (_form.IsValid)
-            {
-                MudDialog.Close(DialogResult.Ok(true));
-            }
-
-        }
-        finally
-        {
-            _saving = false;
-        }
-    }
-    
-}

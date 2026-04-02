@@ -1,19 +1,21 @@
-using Cfo.Cats.Application.Features.Participants.Commands;
+using Cfo.Cats.Application.Features.PathwayPlans.Commands;
 
-namespace Cfo.Cats.Server.UI.Pages.Risk;
+namespace Cfo.Cats.Server.UI.Pages.Participants.Components;
 
-public partial class ReviewRiskDialog
+public partial class ReviewPathwayPlanDialog
 {
     private bool _saving;
     private MudForm? _form;
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
-    [Parameter, EditorRequired] public required AddRisk.Command Model { get; set; }
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
-    [Parameter] public bool AddReviewRequest { get; set; }
+    [Parameter, EditorRequired]
+    public required ReviewPathwayPlan.Command Model { get; set; }
 
-    private void Cancel() => MudDialog.Cancel();
-
+    private void Cancel() =>
+        MudDialog.Cancel();
+    
+    
     private async Task Submit()
     {
         try
@@ -32,6 +34,7 @@ public partial class ReviewRiskDialog
             {
                 MudDialog.Close(DialogResult.Ok(true));
             }
+
         }
         finally
         {
