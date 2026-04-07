@@ -1,3 +1,4 @@
+
 using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Microsoft.AspNetCore.Components.Authorization;
 using ApexCharts;
@@ -26,6 +27,8 @@ public partial class ActivitiesFeedbackComponent
  
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
 
+    private bool HasReadItems => Data?.TabularData?.Any(x => x.IsRead) ?? false;
+    
     protected override IRequest<Result<GetActivitiesFeedback.ActivitiesFeedbackDto>> CreateQuery()
         => new GetActivitiesFeedback.Query
         {
@@ -74,6 +77,22 @@ public partial class ActivitiesFeedbackComponent
                     };
                 }).ToList()
             }).ToList();
+        }
+    }
+    
+    
+    private IEnumerable<GetActivitiesFeedback.ActivitiesFeedbackTabularData> FilteredData
+    {
+        get
+        {
+            var data = Data?.TabularData ?? Array.Empty<GetActivitiesFeedback.ActivitiesFeedbackTabularData>();
+
+            if (ShowRead)
+            {
+                return data;
+            }
+
+            return data.Where(x => !x.IsRead);
         }
     }
     
@@ -135,6 +154,7 @@ public partial class ActivitiesFeedbackComponent
         if (result.Succeeded)
         {
             item.IsRead = true; // instant UI update
+            StateHasChanged();
             Snackbar.Add("Message read", Severity.Info);
         }
         else
@@ -157,7 +177,7 @@ public partial class ActivitiesFeedbackComponent
                 return;
             }
             _showRead = value;
-            _ = RefreshAsync(); 
+            StateHasChanged();
         }
     }
     

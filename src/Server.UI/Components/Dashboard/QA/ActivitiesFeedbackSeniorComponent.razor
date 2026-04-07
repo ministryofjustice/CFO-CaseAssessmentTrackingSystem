@@ -1,4 +1,4 @@
-@using Cfo.Cats.Application.Features.Dashboard.Queries
+ @using Cfo.Cats.Application.Features.Dashboard.Queries
 @using Cfo.Cats.Application.SecurityConstants
 
 @inherits CatsComponent<GetActivitiesFeedback.ActivitiesFeedbackDto>
@@ -43,11 +43,12 @@
     {
         <MudSwitch @bind-Value="ShowRead"
                    T="bool"
-                   Color="Color.Primary">
+                   Color="Color.Primary"
+                   Disabled="!HasReadItems">
             Show Read
         </MudSwitch>
         
-        <MudTable Items="@Data.TabularData" Striped="true" Hover="true" RowsPerPage="10">
+        <MudTable Items="@FilteredData" Striped="true" Hover="true" RowsPerPage="10">
 
             <HeaderContent>
                 <MudTh></MudTh>

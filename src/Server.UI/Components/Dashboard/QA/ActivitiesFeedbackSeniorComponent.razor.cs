@@ -20,6 +20,8 @@ public partial class ActivitiesFeedbackSeniorComponent
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = null!;
 
+    private bool HasReadItems => Data?.TabularData?.Any(x => x.IsRead) ?? false;
+    
     protected override IRequest<Result<GetActivitiesFeedback.ActivitiesFeedbackDto>>
         CreateQuery()
         => new GetActivitiesFeedback.Query
@@ -129,7 +131,7 @@ public partial class ActivitiesFeedbackSeniorComponent
             }
 
             _showRead = value;
-            _ = RefreshAsync(); 
+            StateHasChanged();
         }
     }
     
@@ -148,5 +150,20 @@ public partial class ActivitiesFeedbackSeniorComponent
         }
 
         return Color.Warning;
+    }
+    
+    private IEnumerable<GetActivitiesFeedback.ActivitiesFeedbackTabularData> FilteredData
+    {
+        get
+        {
+            var data = Data?.TabularData ?? Array.Empty<GetActivitiesFeedback.ActivitiesFeedbackTabularData>();
+
+            if (ShowRead)
+            {
+                return data;
+            }
+
+            return data.Where(x => !x.IsRead);
+        }
     }
 }
