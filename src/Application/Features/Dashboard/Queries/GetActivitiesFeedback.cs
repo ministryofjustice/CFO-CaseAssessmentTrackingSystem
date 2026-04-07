@@ -39,7 +39,7 @@ public static class GetActivitiesFeedback
                       && afb.ActivityProcessedDate < request.EndDate.AddDays(1).Date
                       && afb.TenantId.StartsWith(request.CurrentUser.TenantId!)
                       && (request.UserId == null || afb.RecipientUserId == request.UserId)
-                      && (request.ShowRead || !afb.IsRead)
+        
                 select new { afb, p, ru, cu };
 
             if (!string.IsNullOrWhiteSpace(request.TenantId))
