@@ -1,6 +1,5 @@
 using System.Reflection;
 using Cfo.Cats.Application.Outbox;
-using Cfo.Cats.Domain.Common.Contracts;
 using Cfo.Cats.Domain.Entities.Activities;
 using Cfo.Cats.Domain.Entities.Administration;
 using Cfo.Cats.Domain.Entities.Assessments;
@@ -8,11 +7,9 @@ using Cfo.Cats.Domain.Entities.Documents;
 using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Entities.Bios;
 using Cfo.Cats.Domain.Identity;
-using Cfo.Cats.Infrastructure.Persistence.Configurations.Enrolments;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Cfo.Cats.Domain.Entities.Inductions;
 using Cfo.Cats.Domain.Entities.Notifications;
-using Cfo.Cats.Infrastructure.Persistence.Configurations.ManagementInformation;
 using Cfo.Cats.Domain.Entities.ManagementInformation;
 using Cfo.Cats.Domain.Entities.PRIs;
 using Cfo.Cats.Domain.Labels;
@@ -135,6 +132,8 @@ public class ApplicationDbContext
     public DbSet<ProviderFeedbackEnrolment> ProviderFeedbackEnrolments => Set<ProviderFeedbackEnrolment>();
     public DbSet<ProviderFeedbackActivity> ProviderFeedbackActivities => Set<ProviderFeedbackActivity>(); 
     
+    public DbSet<EnrolmentFeedback> EnrolmentFeedbacks => Set<EnrolmentFeedback>(); 
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -146,4 +145,3 @@ public class ApplicationDbContext
         if (!optionsBuilder.IsConfigured) { }
     }
 }
-

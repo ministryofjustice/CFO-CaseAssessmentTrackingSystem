@@ -2400,6 +2400,90 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.ToTable("EscalationQueue", "Enrolment");
                 });
 
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.EnrolmentFeedback", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("EditorId")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("EnrolmentFeedbackReason")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("EnrolmentProcessedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("Outcome")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OwnerId")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("ParticipantId")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RecipientUserId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<int>("Stage")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("EditorId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("RecipientUserId", "IsRead");
+
+                    b.ToTable("EnrolmentFeedback", "Activities");
+                });
+
             modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.EnrolmentPqaQueueEntry", b =>
                 {
                     b.Property<Guid>("Id")
@@ -5170,6 +5254,52 @@ namespace Cfo.Cats.Infrastructure.Persistence.Migrations
                     b.Navigation("Participant");
 
                     b.Navigation("SupportWorker");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Cfo.Cats.Domain.Entities.Participants.EnrolmentFeedback", b =>
+                {
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Editor")
+                        .WithMany()
+                        .HasForeignKey("EditorId");
+
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Participants.Participant", "Participant")
+                        .WithMany()
+                        .HasForeignKey("ParticipantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Identity.ApplicationUser", "RecipientUser")
+                        .WithMany()
+                        .HasForeignKey("RecipientUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Cfo.Cats.Domain.Entities.Administration.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("Editor");
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("Participant");
+
+                    b.Navigation("RecipientUser");
 
                     b.Navigation("Tenant");
                 });

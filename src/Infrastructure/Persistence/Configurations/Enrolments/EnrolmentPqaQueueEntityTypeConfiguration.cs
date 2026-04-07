@@ -1,6 +1,5 @@
 using Cfo.Cats.Application.Common.Validators;
 using Cfo.Cats.Domain.Entities.Participants;
-using Cfo.Cats.Domain.ValueObjects;
 using Cfo.Cats.Infrastructure.Constants.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
