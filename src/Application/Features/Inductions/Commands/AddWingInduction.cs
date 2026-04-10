@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Inductions.Commands;
 
 public static class AddWingInduction
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
     {
         [Description("The current user")]

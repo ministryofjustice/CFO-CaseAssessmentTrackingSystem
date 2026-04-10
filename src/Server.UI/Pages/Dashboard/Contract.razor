@@ -1,0 +1,36 @@
+@page "/pages/dashboard/contract"
+@using Cfo.Cats.Domain.Common.Enums
+@using Cfo.Cats.Server.UI.Components.Dashboard
+
+@attribute [Authorize(Policy = SecurityPolicies.ContractData)]
+
+<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+    <MudText Typo="Typo.h3">
+        Contract Dashboard
+    </MudText>
+   
+    <MudSwitch @bind-Value="_visualMode"
+        T="bool"
+        ThumbIcon="@Icons.Material.Filled.StackedBarChart"
+        Color="Color.Primary">
+            Visual Mode
+    </MudSwitch>
+</MudStack>
+
+<MudStack>
+    <MudTabs TabPanelsClass="pa-1" ApplyEffectsToContainer="true" Outlined="true" Color="Color.Info">
+        <MudTabPanel Text="Risk Compliance" Icon="@Icons.Material.Filled.AssignmentTurnedIn" Class="pa-3">
+            <RiskCompliance VisualMode="@_visualMode" />
+        </MudTabPanel>
+        <MudTabPanel Text="Demographics" Icon="@Icons.Material.Filled.Groups" Disabled="true" Class="pa-3">
+
+        </MudTabPanel>
+        <MudTabPanel Text="Retention" Icon="@Icons.Material.Filled.Autorenew" Disabled="true" Class="pa-3">
+
+        </MudTabPanel>
+    </MudTabs>
+</MudStack>
+
+@code {
+    private bool _visualMode = true;
+}

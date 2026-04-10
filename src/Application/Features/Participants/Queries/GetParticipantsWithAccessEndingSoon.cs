@@ -5,7 +5,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetParticipantsWithAccessEndingSoon
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<IEnumerable<ParticipantWithAccessEndingSoonDto>>
     {
         /// <summary>

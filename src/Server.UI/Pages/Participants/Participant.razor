@@ -111,13 +111,11 @@
                             <CaseTimeline />
                         </MudTabPanel>
 
-                        @if (UserProfile.AssignedRoles.Any(r =>
-                                 r is RoleNames.SystemSupport or RoleNames.SMT or RoleNames.QAManager))
-                        {
+                        <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
                             <MudTabPanel Text="Audit">
                                 <ParticipantAudit Id="@Id" />
                             </MudTabPanel>
-                        }
+                        </AuthorizeView>
                     
                     </MudTabs>
                 }

@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 
 public static class ConfirmEnrolment
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
     {
         public required string ParticipantId { get; set; }

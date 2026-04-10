@@ -1,0 +1,118 @@
+@using Cfo.Cats.Application.Features.Compliance.DTOs
+@using ApexCharts
+
+@inherits CatsComponent<RiskComplianceSummaryDto[]>
+
+@if (Loading)
+{
+    <MudLoading Text="Loading" />
+}
+
+@if (ErrorMessage is not null)
+{
+    <MudAlert Variant="Variant.Filled" Severity="Severity.Error">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@if (Data is { Length: > 0 })
+{
+    @if (VisualMode)
+    {
+        <ApexCharts.ApexChart TItem="RiskComplianceSummaryDto" Options="Options" Height="650" Width="@("100%")">
+            <ApexCharts.ApexPointSeries TItem="RiskComplianceSummaryDto"
+                                        Items="Data"
+                                        Name="Licence End Date Completed"
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        XValue="@(e => e.Contract)"
+                                        YValue="@(e => e.LicenceEndDateCompleted)"
+                                        ShowDataLabels="true">
+            </ApexCharts.ApexPointSeries>
+            <ApexCharts.ApexPointSeries TItem="RiskComplianceSummaryDto"
+                                        Items="Data"
+                                        Name="Licence Conditions Completed"
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        XValue="@(e => e.Contract)"
+                                        YValue="@(e => e.LicenceConditionsCompleted)"
+                                        ShowDataLabels="true">
+            </ApexCharts.ApexPointSeries>
+            <ApexCharts.ApexPointSeries TItem="RiskComplianceSummaryDto"
+                                        Items="Data"
+                                        Name="Risk Set Within 4 Weeks"
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        XValue="@(e => e.Contract)"
+                                        YValue="@(e => e.RiskSetWithin4Weeks)"
+                                        ShowDataLabels="true">
+            </ApexCharts.ApexPointSeries>
+            <ApexCharts.ApexPointSeries TItem="RiskComplianceSummaryDto"
+                                        Items="Data"
+                                        Name="Probation Practitioner Details"
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        XValue="@(e => e.Contract)"
+                                        YValue="@(e => e.ProbationPractitionerDetailsDocumented)"
+                                        ShowDataLabels="true">
+            </ApexCharts.ApexPointSeries>
+            <ApexCharts.ApexPointSeries TItem="RiskComplianceSummaryDto"
+                                        Items="Data"
+                                        Name="All Risks Answered"
+                                        SeriesType="ApexCharts.SeriesType.Bar"
+                                        XValue="@(e => e.Contract)"
+                                        YValue="@(e => e.NoUnknownRiskSet)"
+                                        ShowDataLabels="true">
+            </ApexCharts.ApexPointSeries>
+        </ApexCharts.ApexChart>
+    }
+    else
+    {
+        <MudTable Items="Data"
+                  Hover="true"
+                  Striped="true">
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<RiskComplianceSummaryDto, object>(x => x.Contract)">
+                        Contract
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<RiskComplianceSummaryDto, object>(x => x.Total)">
+                        Total
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<RiskComplianceSummaryDto, object>(x => x.LicenceEndDateCompleted)">
+                        Licence End Date Completed
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<RiskComplianceSummaryDto, object>(x => x.LicenceConditionsCompleted)">
+                        Licence Conditions Completed
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<RiskComplianceSummaryDto, object>(x => x.RiskSetWithin4Weeks)">
+                        Risk Submitted Within 4 Weeks
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<RiskComplianceSummaryDto, object>(x => x.ProbationPractitionerDetailsDocumented)">
+                        Probation Practitioner Details
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<RiskComplianceSummaryDto, object>(x => x.NoUnknownRiskSet)">
+                        Risk Questions Answered
+                    </MudTableSortLabel>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Contract">@context.Contract</MudTd>
+                <MudTd DataLabel="Total">@context.Total</MudTd>
+                <MudTd DataLabel="End Date">@context.LicenceEndDateCompleted</MudTd>
+                <MudTd DataLabel="End Date">@context.LicenceConditionsCompleted</MudTd>
+                <MudTd DataLabel="4 Weeks">@context.RiskSetWithin4Weeks</MudTd>
+                <MudTd DataLabel="PP">@context.ProbationPractitionerDetailsDocumented</MudTd>
+                <MudTd DataLabel="Risk Answers">@context.NoUnknownRiskSet</MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+}

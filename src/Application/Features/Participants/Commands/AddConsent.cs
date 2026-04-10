@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 
 public static class AddConsent
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result<string>>
     {
         [Description("Participant Id")]

@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class ParticipantsInLicenceEndPeriodResultsWithPagination
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : ParticipantsInLicenceEndPeriodResultsAdvancedFilter, IRequest<Result<PaginatedData<ParticipantsInLicenceEndPeriodResultsSummaryDto>>>
     {
         public ParticipantsInLicenceEndPeriodResultsAdvancedSpecification Specification => new(this);

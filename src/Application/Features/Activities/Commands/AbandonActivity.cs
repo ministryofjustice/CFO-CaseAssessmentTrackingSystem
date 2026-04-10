@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Activities.Commands;
 
 public static class AbandonActivity
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
 
     public class Command : IRequest<Result>
     {

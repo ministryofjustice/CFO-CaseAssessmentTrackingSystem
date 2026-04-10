@@ -1,6 +1,7 @@
 #nullable enable
 using Cfo.Cats.Application.Common.Exceptions;
 using Cfo.Cats.Application.Features.Labels.Commands;
+using Cfo.Cats.Application.Features.Labels.Commands.EditLabel;
 using Cfo.Cats.Domain.Common.Enums;
 using Cfo.Cats.Domain.Common.Exceptions;
 using Cfo.Cats.Domain.Labels;

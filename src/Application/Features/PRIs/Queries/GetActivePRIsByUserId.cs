@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.PRIs.Queries;
 
 public static class GetActivePRIsByUserId
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
 
     public class Query : PRIAdvancedFilter, IRequest<PaginatedData<PRIPaginationDto>>
     {

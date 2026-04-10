@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.PathwayPlans.Commands;
 
 public static class EditPathwayPlanReview
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
     {
         public Guid ReviewId { get; init; }

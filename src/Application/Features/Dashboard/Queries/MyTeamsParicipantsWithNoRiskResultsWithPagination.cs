@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Dashboard.Queries;
 
 public static class MyTeamsParicipantsWithNoRiskResultsWithPagination
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : MyTeamsParticipantsWithNoRiskResultsAdvancedFilter, IRequest<Result<PaginatedData<MyTeamsParticipantsWithNoRiskDto>>>
     {
         public MyTeamsParticipantsWithNoRiskResultsAdvancedSpecification Specification => new(this);

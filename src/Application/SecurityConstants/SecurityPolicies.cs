@@ -2,17 +2,7 @@ namespace Cfo.Cats.Application.SecurityConstants;
 
 public static class SecurityPolicies
 {
-    /// <summary>
-    /// The user is permitted to export data from the system.
-    /// </summary>
-    public const string Export = nameof(Export);
-    
-    /// <summary>
-    /// The user is permitted to search for candidates.
-    /// </summary>
-    public const string CandidateSearch = nameof(CandidateSearch);
-
-    public const string Pqa= nameof(Pqa);
+    public const string Pqa = nameof(Pqa);
 
     public const string Qa1 = nameof(Qa1);
 
@@ -23,11 +13,6 @@ public static class SecurityPolicies
     public const string SeniorInternal = nameof(SeniorInternal);
     
     /// <summary>
-    /// The user is allowed to upload files.
-    /// </summary>
-    public const string DocumentUpload = nameof(DocumentUpload);
-    
-    /// <summary>
     /// Any authorized user is permitted to perform this action
     /// </summary>
     public const string AuthorizedUser = nameof(AuthorizedUser);
@@ -36,8 +21,6 @@ public static class SecurityPolicies
     /// The user is permitted to import data into the system.
     /// </summary>
     public const string Import = nameof(Import);
-
-    public const string Enrol = nameof(Enrol);
 
     /// <summary>
     /// 
@@ -50,11 +33,6 @@ public static class SecurityPolicies
     /// The used anywhere any user > support worker can do it
     /// </summary>
     public const string UserHasAdditionalRoles = nameof(UserHasAdditionalRoles);
-
-    /// <summary>
-    /// Used to allow users to view the audits
-    /// </summary>
-    public const string ViewAudit = nameof(ViewAudit);
 
     public const string SystemSupportFunctions = nameof(SystemSupportFunctions);
     
@@ -79,7 +57,15 @@ public static class SecurityPolicies
     public const string OutcomeQualityDipFinalise = nameof(OutcomeQualityDipFinalise);
 
     /// <summary>
-    /// Used to allow a user to manage labels.
+    /// The user is allowed to view contract level data (aggregates etc)
     /// </summary>
-    public const string ManageLabels = nameof(ManageLabels);
+    public const string ContractData = nameof(ContractData);
+
+    public const string Reassign = nameof(Reassign);
+    public const string Transfers = nameof(Transfers);
+    public const string Finance = nameof(Finance);
+
+    public const string ServiceDeskManagement = nameof(ServiceDeskManagement);
+
+    public const string UserManagement = nameof(UserManagement);
 }

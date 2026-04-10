@@ -230,7 +230,7 @@
         _canDelete = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
         _canManagePermissions = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SystemFunctionsWrite)).Succeeded;
         _canImport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Import)).Succeeded;
-        _canExport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Export)).Succeeded;
+        _canExport = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.SeniorInternal)).Succeeded;
     }
 
     private async Task<GridData<ApplicationRoleDto>> ServerReload(GridState<ApplicationRoleDto> state, CancellationToken cancellationToken)

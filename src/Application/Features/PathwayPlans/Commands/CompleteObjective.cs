@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.PathwayPlans.Commands;
 
 public static class CompleteObjective
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
     {
         [Description("Pathway Plan Id")]

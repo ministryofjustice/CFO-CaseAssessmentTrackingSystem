@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetParticipantsLatestEngagement
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : PaginationFilter, IRequest<Result<PaginatedData<ParticipantEngagementDto>>>
     {
         public required UserProfile CurrentUser { get; init; }

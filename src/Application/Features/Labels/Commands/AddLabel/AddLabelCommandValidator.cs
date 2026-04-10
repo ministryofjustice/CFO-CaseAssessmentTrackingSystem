@@ -1,4 +1,5 @@
 using Cfo.Cats.Application.Common.Validators;
+using Cfo.Cats.Application.Features.Labels.Commands.AddLabel;
 using Cfo.Cats.Domain.Labels;
 
 namespace Cfo.Cats.Application.Features.Labels.Commands;

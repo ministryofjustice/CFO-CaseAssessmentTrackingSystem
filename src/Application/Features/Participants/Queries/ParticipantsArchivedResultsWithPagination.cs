@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class ParticipantsArchivedResultsWithPagination
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : ParticipantsArchivedResultsAdvancedFilter, IRequest<Result<PaginatedData<ParticipantsArchivedResultsSummaryDto>>>
     {
         public ParticipantsArchivedResultsAdvancedSpecification Specification => new(this);

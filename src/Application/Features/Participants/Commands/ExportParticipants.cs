@@ -10,7 +10,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 
 public static class ExportParticipants
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
     {
         public required ParticipantsWithPagination.Query Query { get; set; }

@@ -81,4 +81,13 @@ BEGIN
         INSERT INTO [Identity].PasswordHistory ( [UserId], [PasswordHash], [CreatedAt] )
         SELECT [Id], [PasswordHash], SYSUTCDATETIME() FROM [Identity].[User]
         WHERE [PasswordHash] IS NOT NULL;
+
+        -- reset these users so that they are not locked out and have a recent login.
+        UPDATE 
+            [Identity].[User]
+        SET
+            LastLogin = DATEADD(DAY, -1, SYSUTCDATETIME()),
+            AccessFailedCount = 0,
+            LockoutEnd = NULL;
+        
     END

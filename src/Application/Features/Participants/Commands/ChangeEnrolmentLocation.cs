@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 
 public static class ChangeEnrolmentLocation
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
     {
         public string? ParticipantId { get; set; }

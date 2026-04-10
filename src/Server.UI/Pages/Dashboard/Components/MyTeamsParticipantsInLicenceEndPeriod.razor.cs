@@ -31,7 +31,7 @@ public partial class MyTeamsParticipantsInLicenceEndPeriod
     {
         var state = await AuthState;
 
-        _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.CandidateSearch)).Succeeded;
+        _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.AuthorizedUser)).Succeeded;
 
         await LoadDataAsync();
     }

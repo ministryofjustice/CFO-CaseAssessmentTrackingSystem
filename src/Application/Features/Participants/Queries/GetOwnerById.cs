@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetOwnerByParticipantId
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<Result<ApplicationUserDto>>
     {
         public required string ParticipantId { get; set; }

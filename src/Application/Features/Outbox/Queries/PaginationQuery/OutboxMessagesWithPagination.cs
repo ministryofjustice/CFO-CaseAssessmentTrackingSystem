@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Outbox.Queries.PaginationQuery;
 
 public static class OutboxMessagesWithPagination
 {
-    [RequestAuthorize(Roles = RoleNames.SystemSupport)]
+    [RequestAuthorize(Policy = SecurityPolicies.ServiceDeskManagement)]
     public class Query : OutboxMessageAdvancedFilter, IRequest<PaginatedData<OutboxMessageDto>>
     {
         public OutboxMessageAdvancedSpecification Specification => new(this);

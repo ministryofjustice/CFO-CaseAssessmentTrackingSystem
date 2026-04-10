@@ -19,7 +19,7 @@ namespace Cfo.Cats.Application.Features.Assessments.Commands;
 
 public static class BeginAssessment
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : ICacheInvalidatorRequest<Result<Guid>>
     {
         public required string ParticipantId { get; set; }

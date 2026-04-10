@@ -1,6 +1,7 @@
 using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.Features.Contracts.DTOs;
 using Cfo.Cats.Application.Features.Labels.Commands;
+using Cfo.Cats.Application.Features.Labels.Commands.AddLabel;
 using Cfo.Cats.Infrastructure.Constants;
 
 namespace Cfo.Cats.Server.UI.Components.Labels;

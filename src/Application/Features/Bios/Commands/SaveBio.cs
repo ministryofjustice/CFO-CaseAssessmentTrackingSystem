@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Bios.Commands;
 
 public static class SaveBio
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
     {
         public bool Submit { get; set; } = false;

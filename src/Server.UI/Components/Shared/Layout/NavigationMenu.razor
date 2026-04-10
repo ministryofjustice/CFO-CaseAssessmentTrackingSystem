@@ -1,6 +1,8 @@
-﻿@using Cfo.Cats.Server.UI.Models.NavigationMenu
+﻿@using Amazon.Runtime.Credentials.Internal
+@using Cfo.Cats.Server.UI.Models.NavigationMenu
+@using Cfo.Cats.Server.UI.Pages.Objectives.Tasks
 @using Cfo.Cats.Server.UI.Services.Navigation
-@inject IMenuService MenuService
+@inject IAsyncMenuService MenuService
 @inject IStringLocalizer<NavigationMenu> L
 
 <MudDrawer Breakpoint="Breakpoint.Md"
@@ -18,7 +20,7 @@
     </MudDrawerHeader>
 
     <MudNavMenu>
-        @foreach (var section in MenuSections.Where(x => x.Roles == null || x.Roles.Any(x => Roles.Contains(x))))
+        @foreach (var section in MenuSections)
         {
             @if (section is not null)
             {
@@ -34,12 +36,12 @@
 
                 @if (section.SectionItems is not null)
                 {
-                    @foreach (var sectionItem in section.SectionItems.Where(x => x.Roles == null || x.Roles.Any(x => Roles.Contains(x))))
+                    foreach (MenuSectionItemModel sectionItem in section.SectionItems)
                     {
                         @if (sectionItem is { IsParent: true, MenuItems: not null })
                         {
                             <MudNavGroup Icon="@sectionItem.Icon" Title="@L[sectionItem.Title]" Expanded="Expanded(sectionItem)">
-                                @foreach (var menuItem in sectionItem.MenuItems.Where(x => x.Roles == null || x.Roles.Any(x => Roles.Contains(x))))
+                                @foreach (var menuItem in sectionItem.MenuItems)
                                 {
                                     <MudNavLink Href="@(menuItem.Href)" Target="@(menuItem.Target)" Match="NavLinkMatch.All" Disabled="@(menuItem.PageStatus == PageStatus.ComingSoon)" >
                                         <div class="d-flex">
@@ -58,7 +60,7 @@
                         }
                         else
                         {
-                            <MudNavLink Href="@(sectionItem.Href)" Icon="@(sectionItem.Icon)" Target="@(sectionItem.Target)" Match="NavLinkMatch.All" Disabled="@(sectionItem.PageStatus == PageStatus.ComingSoon)">
+                            <MudNavLink Href="@(sectionItem.Href)" Icon="@(sectionItem.Icon)" Match="NavLinkMatch.All" Disabled="@(sectionItem.PageStatus == PageStatus.ComingSoon)">
                                 <div class="d-flex">
                                     @(L[sectionItem.Title])
                                     @if (sectionItem.PageStatus != PageStatus.Completed)
@@ -105,8 +107,15 @@
 
     [EditorRequired] [Parameter] public bool DrawerOpen { get; set; }
 
-    private IEnumerable<MenuSectionModel> MenuSections => MenuService.Features;
+    private IEnumerable<MenuSectionModel> MenuSections = [];
     [EditorRequired] [Parameter] public string[] Roles { get; set; } = Array.Empty<string>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthState;
+        MenuSections = await MenuService.GetFeaturesAsync(authState.User);
+    }
 
     private bool Expanded(MenuSectionItemModel menu)
     {
@@ -114,5 +123,4 @@
         return menu is { IsParent: true, MenuItems: not null } &&
                menu.MenuItems.Any(x => !string.IsNullOrEmpty(x.Href) && x.Href.Equals(href));
     }
-
 }

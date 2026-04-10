@@ -3,9 +3,9 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Labels;
 
-namespace Cfo.Cats.Application.Features.Labels.Commands;
+namespace Cfo.Cats.Application.Features.Labels.Commands.EditLabel;
 
-[RequestAuthorize(Policy = SecurityPolicies.ManageLabels)]
+[RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
 public class EditLabelCommand : IRequest<Result>
 {
     public required LabelId LabelId { get; set; }

@@ -7,7 +7,7 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Humanizer
 
-@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}")]
+@attribute [Authorize(SecurityPolicies.ServiceDeskManagement)]
 
 @inject IStringLocalizer<Outbox> L
 @inject IMediator Mediator
@@ -65,13 +65,17 @@
     <Columns>
         <TemplateColumn CellClass="width:60px;" Title="@ConstantString.Actions" Sortable="false">
             <CellTemplate>
-                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
-                         Dense="true"
-                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
-                    <MudMenuItem OnClick="@(() => Reschedule(context.Item))">
-                        Reschedule
-                    </MudMenuItem>
-                </MudMenu>
+                <AuthorizeView Policy="@SecurityPolicies.SystemSupportFunctions">
+                    <Authorized Context="auth">
+                        <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                                    Dense="true"
+                                    EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                            <MudMenuItem OnClick="@(() => Reschedule(context.Item))">
+                                Reschedule
+                            </MudMenuItem>
+                        </MudMenu>
+                    </Authorized>
+                </AuthorizeView>
             </CellTemplate>
         </TemplateColumn>
         <PropertyColumn Property="x => x.OccurredOnUtc" Title="@L[currentDto.GetMemberDescription(x => x.OccurredOnUtc)]">

@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.PathwayPlans.Commands;
 
 public static class ReviewPathwayPlan
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
     {
         public required Guid PathwayPlanId { get; init; }

@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetPersonalDetails
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<ParticipantPersonalDetailDto?>
     {
         public required string ParticipantId { get; set; }
