@@ -1,0 +1,4 @@
+CREATE SCHEMA [Induction]
+    AUTHORIZATION [dbo];
+GO
+

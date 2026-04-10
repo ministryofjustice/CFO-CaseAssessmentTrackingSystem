@@ -1,0 +1,4 @@
+CREATE SCHEMA [Outbox]
+    AUTHORIZATION [dbo];
+GO
+
