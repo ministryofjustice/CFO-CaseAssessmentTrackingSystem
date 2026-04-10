@@ -1,0 +1,4 @@
+CREATE SCHEMA [PRI]
+    AUTHORIZATION [dbo];
+GO
+

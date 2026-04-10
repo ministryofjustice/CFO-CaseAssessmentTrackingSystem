@@ -1,0 +1,4 @@
+CREATE SCHEMA [Payables]
+    AUTHORIZATION [dbo];
+GO
+

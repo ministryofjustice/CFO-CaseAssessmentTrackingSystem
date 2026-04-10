@@ -14,8 +14,4 @@
         </Content>
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Aspire\Cats.ServiceDefaults\Cats.ServiceDefaults.csproj" />
-      <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-    </ItemGroup>
 </Project>

@@ -28,7 +28,8 @@ CATS relies on the external data from Nomis and Delius. This is aggregate and ma
 * ASP.NET Core (Blazor)
 * C#
 * LINQ
-* Entity Framework
+* Entity Framework (runtime ORM)
+* SQL Project (database schema management)
 * SQL Server
 * HTML, CSS, Javascript
 * Dotnet Aspire
@@ -52,6 +53,16 @@ This has been developed on Windows 11 using Visual Studio 2022, Visual Studio Co
 The recommended way to run and debug these apps is using .NET Aspire.
 - **Using Visual Studio Code**: open the project and press `F5`, selecting the *Default Configuration*.
 - **Using Visual Studio or other IDEs**: From the debug configuration dropdown, select `Cats.AppHost` and start the application.
+
+On startup, Aspire automatically applies the SQL Project schema to the local SQL Server container before starting the application. The `DatabaseMigrator` project then runs to seed any required reference data. No manual migration steps are needed for local development.
+
+## Database schema
+
+The database schema is managed via a SQL Project at `src/Database/CatsDb/CatsDb.sqlproj` (using the `Microsoft.Build.Sql` SDK). Schema is defined as `.sql` files organised by SQL schema (e.g. `Activities/`, `Enrolment/`, `Identity/`).
+
+When running locally via Aspire, the `CatsSqlProj` resource deploys the SQL Project to the local SQL Server container automatically. EF Core is used as the runtime ORM only — it no longer manages migrations.
+
+> **Note:** The SQL Project deployment is skipped when publishing to Kubernetes (`WithSkipWhenDeployed()`). The schema must be applied to the target database separately before deploying a new release.
 
 ## Build automation with Cake
 

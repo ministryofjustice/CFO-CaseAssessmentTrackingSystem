@@ -1,0 +1,4 @@
+CREATE SCHEMA [Enrolment]
+    AUTHORIZATION [dbo];
+GO
+
