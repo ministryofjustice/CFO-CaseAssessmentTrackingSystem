@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.QualityAssurance.Queries;
 
 public static class GetEnrolmentQaNotes
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<Result<EnrolmentQaNoteDto[]>>
     {
         public string? ParticipantId { get; set; }

@@ -15,4 +15,6 @@ public static class ApplicationClaimTypes
     public const string Contract = nameof(Contract);
     public const string InternalStaff = nameof(InternalStaff);
     public const string DipSample = nameof(DipSample);
+
+    public const string ContractData = nameof(ContractData);
 }

@@ -3,7 +3,7 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Pages.SystemManagement.Components
 
-@attribute [Authorize(Roles = $"{RoleNames.SystemSupport}, {RoleNames.QAManager}")]
+@attribute [Authorize(Policy = SecurityPolicies.ServiceDeskManagement)]
 
 @inherits CatsComponentBase
 

@@ -1,4 +1,7 @@
 using Cfo.Cats.Application.Features.Labels.Commands;
+using Cfo.Cats.Application.Features.Labels.Commands.AddLabel;
+using Cfo.Cats.Application.Features.Labels.Commands.DeleteLabel;
+using Cfo.Cats.Application.Features.Labels.Commands.EditLabel;
 using Cfo.Cats.Application.Features.Labels.DTOs;
 using Cfo.Cats.Application.Features.Labels.Queries;
 using Cfo.Cats.Domain.Common.Enums;

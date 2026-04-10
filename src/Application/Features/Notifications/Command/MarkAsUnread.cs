@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Notifications.Command;
 
 public static class MarkAsUnread
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result<bool>>
     {
         public Guid[] NotificationsToMarkAsUnread { get; set; } = [];

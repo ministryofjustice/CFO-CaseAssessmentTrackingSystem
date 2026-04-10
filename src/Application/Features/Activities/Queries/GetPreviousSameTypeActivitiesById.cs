@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Activities.Queries;
 
 public static class GetPreviousSameTypeActivitiesById
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<List<ActivityQaDetailsDto>>
     {
         public required Guid? Id { get; set; }

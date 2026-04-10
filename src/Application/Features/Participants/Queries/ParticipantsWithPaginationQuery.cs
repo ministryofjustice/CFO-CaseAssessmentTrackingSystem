@@ -11,7 +11,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class ParticipantsWithPagination
 {
-    [RequestAuthorize(Policy = SecurityPolicies.CandidateSearch)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : PaginationFilter, IRequest<Result<PaginatedData<ParticipantPaginationDto>>>
     {
         /// <summary>

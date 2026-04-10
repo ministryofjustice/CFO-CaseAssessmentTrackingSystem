@@ -9,7 +9,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetCommunitySupportWorker
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<Result<PriCodeDto>>
     {
         public required string ParticipantId { get; set; }

@@ -12,28 +12,7 @@ internal static class PolicyExtensions
     /// <param name="options"></param>
     internal static void AddCatsPolicies(this AuthorizationOptions options)
     {
-        options.AddPolicy(SecurityPolicies.Export, policy => {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-            policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager);
-        });
-
-        options.AddPolicy(SecurityPolicies.CandidateSearch, policy => {
-            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-            policy.RequireAuthenticatedUser();
-        });
-
-        options.AddPolicy(SecurityPolicies.DocumentUpload, policy => {
-            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-            policy.RequireAuthenticatedUser();
-        });
-
         options.AddPolicy(SecurityPolicies.AuthorizedUser, policy => {
-            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-            policy.RequireAuthenticatedUser();
-        });
-
-        options.AddPolicy(SecurityPolicies.Enrol, policy => {
             policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
             policy.RequireAuthenticatedUser();
         });
@@ -60,21 +39,28 @@ internal static class PolicyExtensions
         {
             policy.RequireAuthenticatedUser();
             policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-            policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAFinance);
+            policy.RequireClaim(ApplicationClaimTypes.Permission, Permissions.PQA);
         });
 
         options.AddPolicy(SecurityPolicies.Qa1, policy =>
         {
             policy.RequireAuthenticatedUser();
             policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-            policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QAOfficer, RoleNames.QASupportManager);
+            policy.RequireClaim(ApplicationClaimTypes.Permission, Permissions.QA1);
+        });
+
+        options.AddPolicy(SecurityPolicies.UserManagement, policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireClaim(ApplicationClaimTypes.Permission, Permissions.UserManagement);
         });
 
         options.AddPolicy(SecurityPolicies.Qa2, policy =>
         {
             policy.RequireAuthenticatedUser();
             policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-            policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager, RoleNames.QASupportManager);
+            policy.RequireClaim(ApplicationClaimTypes.Permission, Permissions.QA2);
         });
 
         options.AddPolicy(SecurityPolicies.UserHasAdditionalRoles, policy =>
@@ -90,7 +76,7 @@ internal static class PolicyExtensions
         options.AddPolicy(SecurityPolicies.SeniorInternal, policy => {
             policy.RequireAuthenticatedUser();
             policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-            policy.RequireRole(RoleNames.SystemSupport, RoleNames.SMT, RoleNames.QAManager);
+            policy.RequireClaim(ApplicationClaimTypes.Permission, "Senior Internal");
         });
 
         options.AddPolicy(SecurityPolicies.Internal, policy =>
@@ -100,51 +86,73 @@ internal static class PolicyExtensions
             policy.RequireClaim(ApplicationClaimTypes.InternalStaff, "True");
         });
 
-        options.AddPolicy(SecurityPolicies.ViewAudit, policy => {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-            policy.RequireRole(RoleNames.SystemSupport,
-                RoleNames.SMT,
-                RoleNames.QAManager
-                );
-        });
-
         options.AddPolicy(SecurityPolicies.SystemSupportFunctions, policy =>
         {
             policy.RequireAuthenticatedUser();
             policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-            policy.RequireRole(RoleNames.SystemSupport,
-                RoleNames.SystemSupport,
-                RoleNames.SMT
-            );
+            policy.RequireRole(RoleNames.SystemSupport);
         });
 
         options.AddPolicy(SecurityPolicies.OutcomeQualityDipChecks, policy => {
             policy.RequireAuthenticatedUser();
-            policy.RequireRole(RoleNames.CSO, RoleNames.CPM, RoleNames.CMPSM, RoleNames.SMT, RoleNames.SystemSupport);
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireClaim(ApplicationClaimTypes.Permission , "Outcome Quality Dip Checks");
         });
 
         options.AddPolicy(SecurityPolicies.OutcomeQualityDipReview, policy => {
             policy.RequireAuthenticatedUser();
-            policy.RequireRole(RoleNames.CSO, RoleNames.SMT, RoleNames.SystemSupport);
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireClaim(ApplicationClaimTypes.Permission , "Outcome Quality Dip Review");
         });
 
         options.AddPolicy(SecurityPolicies.OutcomeQualityDipVerification, policy => {
             policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireClaim(ApplicationClaimTypes.Permission, "Outcome Quality Dip Verification");
             policy.RequireRole(RoleNames.CPM, RoleNames.SMT, RoleNames.SystemSupport);
         });
 
         options.AddPolicy(SecurityPolicies.OutcomeQualityDipFinalise, policy => {
             policy.RequireAuthenticatedUser();
-            policy.RequireRole(RoleNames.CMPSM, RoleNames.SMT, RoleNames.SystemSupport);
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireClaim(ApplicationClaimTypes.Permission, "Outcome Quality Dip Finalise");
         });
 
-        options.AddPolicy(SecurityPolicies.ManageLabels, policy =>
+        options.AddPolicy(SecurityPolicies.ContractData, policy =>
+        {
+           policy.RequireAuthenticatedUser();
+           policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+           policy.RequireClaim(ApplicationClaimTypes.Permission, "Contract Data"); 
+        });
+        
+        options.AddPolicy(SecurityPolicies.Reassign, policy =>
         {
             policy.RequireAuthenticatedUser();
             policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
-            policy.RequireRole(RoleNames.ManageLabels);
+            policy.RequireClaim(ApplicationClaimTypes.Permission, "Reassign");
         });
 
+        options.AddPolicy(SecurityPolicies.Transfers, policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireClaim(ApplicationClaimTypes.Permission, "Transfers");
+        });
+        
+        options.AddPolicy(SecurityPolicies.Finance, policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireClaim(ApplicationClaimTypes.Permission, "Finance");       
+        });
+
+        options.AddPolicy(SecurityPolicies.ServiceDeskManagement, policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ApplicationClaimTypes.AccountLocked, "False");
+            policy.RequireClaim(ApplicationClaimTypes.Permission, Permissions.ServiceDeskManagement);  
+
+        });
+        
     }
 }

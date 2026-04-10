@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.Activities.Queries;
 
 public static class GetActivityById
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<Activity?>
     {
         public required Guid Id { get; set; }

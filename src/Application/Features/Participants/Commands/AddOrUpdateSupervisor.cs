@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Participants.Commands;
 
 public class AddOrUpdateSupervisor
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
     {
         [Description("Participant Id")]

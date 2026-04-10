@@ -10,7 +10,7 @@ namespace Cfo.Cats.Application.Features.Assessments.Commands;
 
 public static class SaveAssessment
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : ICacheInvalidatorRequest<Result>
     {
         //TODO: cache individually

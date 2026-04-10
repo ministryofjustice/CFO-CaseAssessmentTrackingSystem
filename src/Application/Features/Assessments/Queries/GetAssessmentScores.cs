@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Assessments.Queries;
 
 public static class GetAssessmentScores
 {
-    [RequestAuthorize(Policy = SecurityPolicies.CandidateSearch)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<Result<IEnumerable<ParticipantAssessmentDto>>>
     {
         public required string ParticipantId { get; set; }

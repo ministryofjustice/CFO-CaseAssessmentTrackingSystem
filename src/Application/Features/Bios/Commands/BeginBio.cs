@@ -12,7 +12,7 @@ namespace Cfo.Cats.Application.Features.Bios.Commands;
 
 public static class BeginBio
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result<Guid>>
     {
         public required string ParticipantId { get; set; }

@@ -10,7 +10,7 @@ namespace Cfo.Cats.Application.Features.AuditTrails.Queries;
 
 public static class GetDocumentAuditTrailsWithPagination
 {
-    [RequestAuthorize(Policy = SecurityPolicies.ViewAudit)]
+    [RequestAuthorize(Policy = SecurityPolicies.ServiceDeskManagement)]
     public class Query : DocumentAuditTrailAdvancedFilter, ICacheableRequest<PaginatedData<DocumentAuditTrailDto>>
     {
         public DocumentAuditTrailAdvancedSpecification Specification => new(this);

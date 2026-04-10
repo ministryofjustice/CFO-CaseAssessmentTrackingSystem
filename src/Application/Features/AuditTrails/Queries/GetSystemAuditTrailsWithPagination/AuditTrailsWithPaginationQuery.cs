@@ -6,7 +6,7 @@ using Cfo.Cats.Application.SecurityConstants;
 
 namespace Cfo.Cats.Application.Features.AuditTrails.Queries.GetSystemAuditTrailsWithPagination;
 
-[RequestAuthorize(Policy = SecurityPolicies.ViewAudit)]
+[RequestAuthorize(Policy = SecurityPolicies.ServiceDeskManagement)]
 public class AuditTrailsWithPaginationQuery
     : SystemAuditTrailAdvancedFilter,
         ICacheableRequest<PaginatedData<AuditTrailDto>>

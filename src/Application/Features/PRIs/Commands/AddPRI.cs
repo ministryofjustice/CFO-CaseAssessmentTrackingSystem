@@ -10,7 +10,7 @@ namespace Cfo.Cats.Application.Features.PRIs.Commands;
 
 public static class AddPRI
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public record Command(string ParticipantId) : IRequest<Result>
     {
         public PriCodeDto Code { get; } = new() { ParticipantId = ParticipantId };

@@ -234,7 +234,7 @@
     {
         Title = L["Reassign Participant"];
         var state = await AuthState;
-        _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.CandidateSearch)).Succeeded;
+        _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.AuthorizedUser)).Succeeded;
         Locations = LocationService.GetVisibleLocations(UserProfile!.TenantId!).OrderByDescending(l => l.LocationType.IsCustody).ThenBy(l => l.Name).ToArray();
         ScopedServices.GetRequiredService<UserManager<ApplicationUser>>();        
     }

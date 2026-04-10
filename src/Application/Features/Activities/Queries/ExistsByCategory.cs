@@ -5,7 +5,7 @@ namespace Cfo.Cats.Application.Features.Activities.Queries;
 
 public static class ExistsByCategory
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<bool>
     {
         public required string ParticipantId { get; set; }

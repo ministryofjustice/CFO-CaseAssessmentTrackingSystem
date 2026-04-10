@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetParticipantById
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IAuditableRequest<ParticipantDto>
     {
         public required string Id { get; set; }

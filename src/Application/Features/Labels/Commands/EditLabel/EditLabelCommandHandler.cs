@@ -1,3 +1,4 @@
+using Cfo.Cats.Application.Features.Labels.Commands.EditLabel;
 using Cfo.Cats.Domain.Labels;
 
 namespace Cfo.Cats.Application.Features.Labels.Commands;

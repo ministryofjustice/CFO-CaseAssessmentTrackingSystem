@@ -3,9 +3,9 @@ using Cfo.Cats.Application.Common.Security;
 using Cfo.Cats.Application.SecurityConstants;
 using Cfo.Cats.Domain.Labels;
 
-namespace Cfo.Cats.Application.Features.Labels.Commands;
+namespace Cfo.Cats.Application.Features.Labels.Commands.AddLabel;
 
-[RequestAuthorize(Policy = SecurityPolicies.ManageLabels)]
+[RequestAuthorize(Policy = SecurityPolicies.SeniorInternal)]
 public class AddLabelCommand : IRequest<Result>
 {
     [Display(Name = "Name", Description = "The display name of the label. Must be unique within a contract")]

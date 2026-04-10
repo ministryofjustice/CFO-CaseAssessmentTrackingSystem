@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class CheckParticipantExistsById
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : ICacheableRequest<bool>
     {
         public required string Id { get; set; }

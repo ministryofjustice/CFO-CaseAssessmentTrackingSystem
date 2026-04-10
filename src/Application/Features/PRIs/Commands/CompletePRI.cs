@@ -6,7 +6,7 @@ namespace Cfo.Cats.Application.Features.PRIs.Commands;
 
 public static class CompletePRI
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
 
     public class Command : IRequest<Result>
     {

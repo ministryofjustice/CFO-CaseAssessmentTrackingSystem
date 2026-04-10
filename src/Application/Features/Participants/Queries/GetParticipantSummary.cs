@@ -8,7 +8,7 @@ namespace Cfo.Cats.Application.Features.Participants.Queries;
 
 public static class GetParticipantSummary
 {
-    [RequestAuthorize(Policy = SecurityPolicies.CandidateSearch)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IAuditableRequest<Result<ParticipantSummaryDto>>
     {
         public required string ParticipantId { get; set; } 

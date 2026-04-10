@@ -12,7 +12,7 @@ namespace Cfo.Cats.Application.Features.Activities.Commands;
 
 public static class AddActivity
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public record class Command(string ParticipantId) : IRequest<Result>
     {
         public Guid? ActivityId { get; set; }

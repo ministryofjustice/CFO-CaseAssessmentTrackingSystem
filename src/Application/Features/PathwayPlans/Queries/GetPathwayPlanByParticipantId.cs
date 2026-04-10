@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.PathwayPlans.Queries;
 
 public static class GetPathwayPlanByParticipantId
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<PathwayPlanDto?>
     {
         public required string ParticipantId {  get; set; }

@@ -12,7 +12,7 @@ public static class GetBio
     /// <summary>
     /// Returns a Bio for a Participant
     /// </summary>
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<Result<Bio>>
     {
         public required string ParticipantId { get; set; }

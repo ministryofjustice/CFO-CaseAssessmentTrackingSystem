@@ -70,8 +70,8 @@ public partial class Participants
     {
         Title = L["Participants"];
         var state = await AuthState;
-        _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.CandidateSearch)).Succeeded;
-        _canEnrol = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Enrol)).Succeeded;
+        _canSearch = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.AuthorizedUser)).Succeeded;
+        _canEnrol = (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.AuthorizedUser)).Succeeded;
 
         Enum.TryParse<ParticipantListView>(ListView, true, out var selectedListView);
 

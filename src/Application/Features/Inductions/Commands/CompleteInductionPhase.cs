@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Inductions.Commands;
 
 public static class CompleteInductionPhase
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Command : IRequest<Result>
     {
         public Guid WingInductionId { get; set; }

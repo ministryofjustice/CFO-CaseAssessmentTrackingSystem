@@ -7,7 +7,7 @@ namespace Cfo.Cats.Application.Features.Activities.Queries;
 
 public static class GetActivityQaNotes
 {
-    [RequestAuthorize(Policy = SecurityPolicies.Enrol)]
+    [RequestAuthorize(Policy = SecurityPolicies.AuthorizedUser)]
     public class Query : IRequest<Result<ActivityQaNoteDto[]>>
     {
         public Guid? ActivityId { get; set; }
