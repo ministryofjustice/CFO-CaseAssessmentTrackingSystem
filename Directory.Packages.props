@@ -6,19 +6,19 @@
     <NoWarn>NU1608</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="ActualLab.Fusion" Version="12.1.125" />
-    <PackageVersion Include="ActualLab.Fusion.Blazor" Version="12.1.125" />
-    <PackageVersion Include="ActualLab.Fusion.Ext.Services" Version="12.1.125" />
-    <PackageVersion Include="ActualLab.Generators" Version="12.1.125" />
+    <PackageVersion Include="ActualLab.Fusion" Version="12.2.4" />
+    <PackageVersion Include="ActualLab.Fusion.Blazor" Version="12.2.4" />
+    <PackageVersion Include="ActualLab.Fusion.Ext.Services" Version="12.2.4" />
+    <PackageVersion Include="ActualLab.Generators" Version="12.2.4" />
     <PackageVersion Include="Ardalis.SmartEnum" Version="8.2.0" />
     <PackageVersion Include="Ardalis.Specification" Version="9.3.1" />
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="9.3.1" />
     <PackageVersion Include="Aspire.Hosting.Kubernetes" Version="13.2.0-preview.1.26170.3" />
-    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.2.0" />
-    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.2.0" />
+    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.2.1" />
+    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.2.1" />
     <PackageVersion Include="AutoMapper" Version="14.0.0" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.26" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.19.1" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.20.3" />
     <PackageVersion Include="Blazor-Analytics" Version="4.0.0" />
     <PackageVersion Include="Blazor-ApexCharts" Version="6.1.0" />
     <PackageVersion Include="BlazorDownloadFile" Version="2.4.0.2" />
@@ -72,17 +72,17 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.1" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.15.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.0" />
-    <PackageVersion Include="Quartz" Version="3.16.1" />
-    <PackageVersion Include="Quartz.AspNetCore" Version="3.16.1" />
+    <PackageVersion Include="Quartz" Version="3.17.1" />
+    <PackageVersion Include="Quartz.AspNetCore" Version="3.17.1" />
     <PackageVersion Include="Rebus" Version="8.9.0" />
     <PackageVersion Include="Rebus.RabbitMq" Version="10.1.1" />
     <PackageVersion Include="Rebus.ServiceProvider" Version="10.7.2" />
     <PackageVersion Include="Scrutor" Version="7.0.0" />
-    <PackageVersion Include="Sentry" Version="6.2.0" />
-    <PackageVersion Include="Sentry.AspNetCore" Version="6.2.0" />
-    <PackageVersion Include="Sentry.EntityFramework" Version="6.2.0" />
+    <PackageVersion Include="Sentry" Version="6.3.0" />
+    <PackageVersion Include="Sentry.AspNetCore" Version="6.3.0" />
+    <PackageVersion Include="Sentry.EntityFramework" Version="6.3.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
-    <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.1" />
+    <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.2" />
     <PackageVersion Include="Toolbelt.Blazor.HotKeys2" Version="6.2.0" />
     <PackageVersion Include="ZiggyCreatures.FusionCache" Version="2.6.0" />
   </ItemGroup>
