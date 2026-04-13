@@ -67,3 +67,19 @@ ALTER TABLE [Participant].[Participant]
     ADD CONSTRAINT [PK_Participant] PRIMARY KEY CLUSTERED ([Id] ASC);
 GO
 
+--These lookups cannot be applied until after Production is updated.
+
+--ALTER TABLE [Participant].[Participant]
+--    ADD CONSTRAINT [FK_Participant_EnrolmentStatus] FOREIGN KEY ( [EnrolmentStatus] ) REFERENCES [Lookup].[EnrolmentStatus] ( [Value] );
+
+--GO
+
+--ALTER TABLE [Participant].[Participant]
+--    ADD CONSTRAINT [FK_Participant_ConsentStatus] FOREIGN KEY  ( [ConsentStatus] ) REFERENCES [Lookup].[ConsentStatus] ( [Value] );
+
+--GO
+
+--ALTER TABLE [Participant].[Participant]
+--    ADD CONSTRAINT [FK_Participant_RiskDueReason] FOREIGN KEY  ( [RiskDueReason] ) REFERENCES [Lookup].[RiskDueReason] ( [Value] );
+
+--GO

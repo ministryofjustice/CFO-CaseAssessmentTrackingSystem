@@ -1,0 +1,4 @@
+CREATE SCHEMA [Lookup]
+    AUTHORIZATION [dbo];
+GO
+

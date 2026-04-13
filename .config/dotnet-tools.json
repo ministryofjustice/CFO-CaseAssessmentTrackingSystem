@@ -15,6 +15,13 @@
         "aspire"
       ],
       "rollForward": false
+    },
+    "microsoft.sqlpackage": {
+      "version": "170.3.93",
+      "commands": [
+        "sqlpackage"
+      ],
+      "rollForward": false
     }
   }
 }
