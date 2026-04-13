@@ -38,6 +38,11 @@
     <Project Path="src/Aspire/Cats.AppHost/Cats.AppHost.csproj" />
     <Project Path="src/Aspire/Cats.ServiceDefaults/Cats.ServiceDefaults.csproj" />
   </Folder>
+  <Folder Name="/src/Database/">
+    <Project Path="src/Database/CatsDb/CatsDb.sqlproj">
+      <Platform Project="AnyCPU" />
+    </Project>
+  </Folder>
   <Folder Name="/test/">
     <Project Path="test/Application.UnitTests/Application.UnitTests.csproj" />
     <Project Path="test/ArchitectureTests/ArchitectureTests.csproj" />
