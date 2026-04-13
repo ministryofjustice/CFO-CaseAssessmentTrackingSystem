@@ -58,6 +58,13 @@ Task("Publish")
            NoRestore = true,
            OutputDirectory = "./artifacts/DatabaseMigrator",
         });
+
+        DotNetBuild("./src/Database/CatsDb/CatsDb.sqlproj", new DotNetBuildSettings()
+        {
+            Configuration = configuration,
+            OutputDirectory = "./artifacts/"
+        });
+
     });
 
 RunTarget(target); 
