@@ -5,10 +5,10 @@
 @attribute [Authorize(Policy = SecurityPolicies.ServiceDeskManagement)]
 
 <MudContainer Style="height: 100%; width: 100%; min-width: 480px" MaxWidth="MaxWidth.ExtraExtraLarge">
-        <MudText Typo="Typo.h5">
-        CFO Activities Queues
+        <MudText Typo="Typo.h5" Class="mb-3">
+            Activity Queues
         </MudText>
-        <MudTabs Elevation="1" Border="false" ApplyEffectsToContainer="true" TabPanelsClass="pa-6">
+        <MudTabs Elevation="2" Border="false" ApplyEffectsToContainer="true" TabPanelsClass="pa-2" Color="Color.Info">
             <MudTabPanel Text="First Pass">
                 <QA1List/>
             </MudTabPanel>

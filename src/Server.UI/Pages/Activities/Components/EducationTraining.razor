@@ -7,7 +7,7 @@
 
 @if (Model is not null)
 {
-    <MudForm Model="Model" Validation="Validator.ValidateValue(Model)">
+    <MudForm Model="Model" Validation="Validator.ValidateValue(Model)" ReadOnly="ReadOnly">
         <MudGrid>
             <MudItem xs="12">
                 <MudTextField Label="@Model.GetMemberDescription(x => x.CourseTitle)"
@@ -75,4 +75,7 @@
 
     [Parameter]
     public DateTime? MinCourseCommencedDate { get; set; }
+
+    [Parameter]
+    public bool ReadOnly { get; set; }
 }

@@ -505,7 +505,20 @@ FROM (VALUES (N'ReferralSource', N'CFO Evolution Provider', N'CFO Evolution Prov
              (N'SalaryFrequency', N'Per day', N'Per day', N'A salary frequency option'),
              (N'SalaryFrequency', N'Per week', N'Per week', N'A salary frequency option'),
              (N'SalaryFrequency', N'Per month', N'Per month', N'A salary frequency option'),
-             (N'SalaryFrequency', N'Per year', N'Per year', N'A salary frequency option')) v(Name, Value, Text, Description)
+             (N'SalaryFrequency', N'Per year', N'Per year', N'A salary frequency option'), 
+             
+             -- QA Feedback Reason
+             (N'QaFeedbackReason', N'Ineligible Claim', N'Ineligible Claim', N'A QA Feedback reason'),
+             (N'QaFeedbackReason', N'Incorrect / Missing Paperwork', N'Incorrect / Missing Paperwork', N'A QA Feedback reason'),
+             (N'QaFeedbackReason', N'Information incomplete', N'Information incomplete', N'A QA Feedback reason'),
+             (N'QaFeedbackReason', N'Information conflicts with CATS', N'Information conflicts with CATS', N'A QA Feedback reason'),
+             (N'QaFeedbackReason', N'Other', N'Other', N'A QA Feedback reason'),
+             (N'QaFeedbackReason', N'Positive Recognition', N'Positive Recognition', N'A QA Feedback reason')
+             
+             
+             
+             
+             ) v(Name, Value, Text, Description)
 WHERE NOT EXISTS (SELECT 1
                   FROM Configuration.KeyValue kv
                   WHERE kv.Name = v.Name

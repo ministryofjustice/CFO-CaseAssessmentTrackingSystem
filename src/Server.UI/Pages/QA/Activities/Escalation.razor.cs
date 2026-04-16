@@ -113,6 +113,7 @@ public partial class Escalation
     {
         Command.FeedbackType = null;
         Command.MessageToProvider = string.Empty;
+        Command.MessageToQa1 = string.Empty;
 
         if (Command.Response == SubmitActivityEscalationResponse.EscalationResponse.Return)
         {

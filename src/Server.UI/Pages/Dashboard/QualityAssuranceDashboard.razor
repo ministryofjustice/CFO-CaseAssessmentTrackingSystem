@@ -3,7 +3,7 @@
 @using Cfo.Cats.Infrastructure.Constants
 @inherits CatsComponentBase
 
-@page "/pages/dashboard/providerfeedback"
+@page "/pages/dashboard/qualityassurance"
 
 @attribute [Authorize(Policy = SecurityPolicies.Qa1)]
 
@@ -46,6 +46,7 @@
     <MudTabs Class="pa-6" ApplyEffectsToContainer="true" Outlined="true">
         <MudTabPanel Text="Activities" Class="pa-0">
             <MudTabs Outlined="true" Class="pa-0 ma-0">
+                <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
                 <MudTabPanel Text="Returns" Class="pa-2">
                     <ActivitiesToProviderDashboardComponent 
                         TenantId="@SelectedTenantId" 
@@ -60,6 +61,8 @@
                         @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" 
                         VisualMode="@_visualMode" />
                 </MudTabPanel>
+                </AuthorizeView>
+              
                 <MudTabPanel Text="My Feedback" Class="pa-2">
                     <ActivitiesFeedbackComponent 
                         TenantId="@SelectedTenantId" 
@@ -69,8 +72,7 @@
                         UserId="@CurrentUser.UserId" />
                 </MudTabPanel>
 
-                @if (_isQa2User)
-                {
+                <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
                     <MudTabPanel Text="Team Feedback" Class="pa-2">
                         <ActivitiesFeedbackSeniorComponent 
                             TenantId="@SelectedTenantId" 
@@ -78,32 +80,31 @@
                             @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" 
                             VisualMode="@_visualMode" />
                     </MudTabPanel>
-                }
+                </AuthorizeView>
+                
             </MudTabs>
         </MudTabPanel>
 
         <MudTabPanel Text="Enrolments" Class="pa-0"> 
-            <MudTabs Outlined="true" Class="pa-0 ma-0">
-                <MudTabPanel Text="Returns">
-                    <EnrolmentsToProviderDashboardComponent 
-                        TenantId="@SelectedTenantId" 
-                        DateRange="@_dateRange" 
-                        @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" 
-                        VisualMode="@_visualMode" />
-                </MudTabPanel>
-                <MudTabPanel Text="Advisories">
-                    <EnrolmentAdvisoriesToProviderDashboardComponent 
-                        TenantId="@SelectedTenantId" 
-                        DateRange="@_dateRange" 
-                        @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" 
-                        VisualMode="@_visualMode" />
-                </MudTabPanel>
-            </MudTabs>
+            <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
+                <MudTabs Outlined="true" Class="pa-0 ma-0">
+                    <MudTabPanel Text="Returns">
+                        <EnrolmentsToProviderDashboardComponent 
+                            TenantId="@SelectedTenantId" 
+                            DateRange="@_dateRange" 
+                            @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" 
+                            VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                    <MudTabPanel Text="Advisories">
+                        <EnrolmentAdvisoriesToProviderDashboardComponent 
+                            TenantId="@SelectedTenantId" 
+                            DateRange="@_dateRange" 
+                            @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" 
+                            VisualMode="@_visualMode" />
+                    </MudTabPanel>
+                </MudTabs>
+            </AuthorizeView>
+            
         </MudTabPanel>
-    
-        <MudTabPanel Text="Archived Cases by contract count" Class="pa-3">
-            <ArchivedCasesByContractAndReasonDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode"/>
-        </MudTabPanel>
-
     </MudTabs>
 </MudStack>

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Cfo.Cats.Server.UI.Pages.Dashboard;
 
-public partial class DashboardProviderFeedback
+public partial class QualityAssuranceDashboard
 {
     private MudDateRangePicker _picker = null!;
     private bool _showSelect;

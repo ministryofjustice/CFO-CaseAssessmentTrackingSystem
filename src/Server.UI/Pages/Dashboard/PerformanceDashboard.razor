@@ -1,0 +1,49 @@
+@page "/pages/dashboard/performance"
+@using Cfo.Cats.Server.UI.Components.Dashboard.QA
+
+@inherits CatsComponentBase
+
+@attribute [Authorize(Policy = SecurityPolicies.OutcomeQualityDipChecks)]
+
+<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+    <MudText Typo="Typo.h3">
+        Performance Management Dashboard
+    </MudText>
+    <MudStack Row="true" AlignItems="AlignItems.Center">
+        <MudDateRangePicker @ref="_picker" DateFormat="dd MMM yyyy" TitleDateFormat="MMMM dd" @bind-DateRange="@_dateRange" MaxDate="DateTime.Today" MinDate="@(new DateTime(2025, 1, 1))" Class="pa-2">
+            <PickerActions>
+                <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" OnClick="@(() => _picker.CloseAsync())">OK</MudButton>
+            </PickerActions>
+        </MudDateRangePicker>
+        @if (CurrentUser.AssignedRoles is not [])
+		{
+			<MudLink OnClick="@DisplayOptionsDialog" Disabled="@(CurrentUser.AssignedRoles is [])">
+				@SelectedDisplayName
+			</MudLink>
+		}        
+        <MudSwitch @bind-Value="_visualMode"
+                   T="bool"
+                   ThumbIcon="@Icons.Material.Filled.StackedBarChart"
+                   Color="Color.Primary">
+            Visual Mode
+        </MudSwitch>
+        @* <MudLoadingButton Loading="@_downloading"
+                          Variant="Variant.Filled"
+                          Color="Color.Secondary"
+                          StartIcon="@Icons.Material.Filled.CloudDownload"
+                          Size="Size.Small"
+                          OnClick="OnExport">
+            @ConstantString.Export
+        </MudLoadingButton> *@
+    </MudStack>
+</MudStack>
+
+<MudStack>
+    <MudTabs Class="pa-6" ApplyEffectsToContainer="true" Outlined="true">
+        <MudTabPanel Text="Archived Case Behaviour">
+            <ArchivedCasesByContractAndReasonDashboardComponent TenantId="@SelectedTenantId" DateRange="@_dateRange" @key="SelectedTenantId + (_dateRange.Start?.Ticks ?? 0) + (_dateRange.End?.Ticks ?? 0)" VisualMode="@_visualMode"/>
+        </MudTabPanel>
+    </MudTabs>
+</MudStack>
+

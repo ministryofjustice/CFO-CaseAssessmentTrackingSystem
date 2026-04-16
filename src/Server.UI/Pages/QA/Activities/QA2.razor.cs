@@ -93,6 +93,7 @@ public partial class QA2
     {
         Command.FeedbackType = null;
         Command.MessageToProvider = string.Empty;
+        Command.MessageToQa1 = string.Empty;
 
         if (Command.Response == SubmitActivityQa2Response.Qa2Response.Return)
         {
