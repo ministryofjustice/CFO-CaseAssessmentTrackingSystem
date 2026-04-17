@@ -76,8 +76,22 @@
         }
 
         StackTrace = Exception.StackTrace;
-        Logger.LogError(Exception, "{Message}. request url: {@url} {@UserName}", Message, Navigation.Uri, userName);
+        var requestPath = Uri.TryCreate(Navigation.Uri, UriKind.Absolute, out var currentUri)
+            ? currentUri.AbsolutePath
+            : Navigation.Uri;
+
+        Logger.LogError(
+            Exception,
+            "{Message}. request path: {RequestPath} {UserName}",
+            Message,
+            SanitizeForLog(requestPath),
+            SanitizeForLog(userName));
     }
 
     private void OnRefresh() => Navigation.NavigateTo(Navigation.Uri, true);
+
+    private static string SanitizeForLog(string? value)
+        => string.IsNullOrEmpty(value)
+            ? string.Empty
+            : value.Replace("\r", "\\r").Replace("\n", "\\n");
 }
