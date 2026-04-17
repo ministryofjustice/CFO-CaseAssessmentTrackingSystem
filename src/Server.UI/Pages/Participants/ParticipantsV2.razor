@@ -146,13 +146,22 @@
                             <MudText Typo="Typo.h5">@item.CurrentLocation.Name</MudText>
                         </MudStack>
                         <MudStack Row="true">
-                            <MudText Typo="Typo.body2">
-                                Enrolled at @item.EnrolmentLocation!.Name (@item.EnrolmentStatus.Name).
-                                @if (item.ConsentStatus == ConsentStatus.GrantedStatus)
+                                @if(item.EnrolmentLocation is not null)
                                 {
-                                    @($"Consent granted {item.ConsentGranted!.Value.ToShortDateString()}")
+                                    <MudText Typo="Typo.body2">
+                                        Enrolled at @item.EnrolmentLocation!.Name (@item.EnrolmentStatus.Name).
+                                        @if (item.ConsentStatus == ConsentStatus.GrantedStatus)
+                                        {
+                                            @($"Consent granted {item.ConsentGranted!.Value.ToShortDateString()}")
+                                        }
+                                    </MudText>
                                 }
-                            </MudText>
+                                else
+                                {
+                                    <MudText Typo="Typo.body2">
+                                        Not Enrolled
+                                    </MudText>
+                                }
                             <MudSpacer />
                             <MudText Typo="Typo.body2">
                                 Assigned to @item.Owner (@item.Tenant)
@@ -171,14 +180,12 @@
                             <MudSpacer />
                             @if (item.Labels.Length > 0)
                             {
-                                    
-                                
                                 @foreach (var l in item.Labels)
                                 {                
                                     <CatsChip Variant="l.Variant" Colour="l.Colour" Description="" Icon="l.AppIcon" Disabled="false"
                                               Label="@l.Name" ShowDelete="false" />
                                 }
-                                    
+      
                             }
                         </MudStack>
                     </MudStack>
@@ -190,10 +197,7 @@
                             StartIcon="@(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? Icons.Material.Filled.NotStarted : Icons.Material.Filled.AssignmentInd )"
                             OnClick="@(() => ViewParticipant(item))">
                             @(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? "Continue Enrolment" : "View")
-                            
                         </MudButton>
-                            
-                        
                     </MudStack>
                 </MudPaper>
             }
