@@ -64,7 +64,7 @@
                             <MudText Class="ml-2">Characters: @CharacterCount / 1000</MudText>
                         </MudForm>
                         <MudContainer Class="d-flex px-0 pt-8">
-                            <MudButton Color="Color.Primary" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudButton>
+                            <MudLoadingButton Color="Color.Primary" Loading="@_saving" OnClick="SubmitToQa" Variant="Variant.Filled">Submit</MudLoadingButton>
                         </MudContainer>
                     }
                     else
@@ -79,14 +79,17 @@
     </MudGrid>    
 }
 
-@code {
+@code 
+{
+
+    private bool _saving;
+
 	private int CharacterCount => Command.Message?.Length ?? 0;
 	private MudForm? _form;
 	private ActivityQueueEntryDto? _queueEntry;
 	private ActivityQaDetailsDto? _activityQaDetailsDto = null;
 
 	[Parameter] public Guid Id { get; set; }
-
 	[CascadingParameter] public UserProfile? UserProfile { get; set; }
 
 	private SubmitActivityPqaResponse.Command Command { get; set; } = default!;
@@ -126,11 +129,18 @@
 
 	protected async Task SubmitToQa()
 	{
-		await _form!.ValidateAsync();
+        try
+        {
+            _saving = true;
 
-		if (_form.IsValid)
-		{
-			var result = await GetNewMediator().Send(Command);
+            await _form!.ValidateAsync();
+
+            if(!_form.IsValid)
+            {
+                return;
+            }
+
+            var result = await GetNewMediator().Send(Command);
 
 			if (result.Succeeded)
 			{
@@ -155,7 +165,12 @@
 
 				ShowActionFailure(message, result);
 			}
-		}
+
+        }
+        finally
+        {
+            _saving = false;
+        }
 	}
 
     private void ShowActionFailure(string title, IResult result)
