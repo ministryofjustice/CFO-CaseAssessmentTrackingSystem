@@ -16,9 +16,13 @@ public class ParticipantPaginationDto
     
     [Description("Consent")]
     public ConsentStatus ConsentStatus { get; set; } = default!;
+
+    public string FirstName { get; set;} = default!;
+
+    public string LastName { get; set; } = default!;
     
     [Description("Participant")]
-    public string ParticipantName { get; set; } = default!;
+    public string ParticipantName => $"{FirstName} {LastName}";
     
     [Description("Location")]
     public LocationDto CurrentLocation { get; set; } = default!;

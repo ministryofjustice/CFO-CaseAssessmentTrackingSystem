@@ -13,7 +13,7 @@
 @using Cfo.Cats.Application.SecurityConstants
 @using Cfo.Cats.Server.UI.Components.Labels
 @using Cfo.Cats.Server.UI.Components.Locations
-@using CommunityToolkit.HighPerformance
+
 
 @inject IStringLocalizer<ParticipantsV2> L
 
@@ -51,17 +51,27 @@
         </MudStack>
 
         <!-- Additional filters row -->
-        <MudStack Row="true" Class="pt-4" Justify="Justify.FlexEnd">
+        <MudStack Row="true" Class="pt-4" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
 
             <MudPagination 
                 Selected="Query.PageNumber"
                 Count="@_totalPages"
                 MiddleCount="2"
                 BoundaryCount="1"
-                SelectedChanged="PageChanged">
+                SelectedChanged="PageChanged"
+                Size="Size.Small">
             </MudPagination>
 
+            <MudText>
+                @_totalItems records
+            </MudText>
+
+            <!-- Tabular Switch -->
+            <MudSwitch Label="Tabular" Value="@Tabular" Color="Color.Info" ValueChanged="@TabularChanged" T="bool?" />
+
             <MudSpacer />
+
+         
 
             <!-- Enrolment Status -->
             <MudMenu Size="Size.Small" Label="@Query.ListView.GetDescription()" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
@@ -117,7 +127,8 @@
 
             <MudMenu Size="Size.Small" Label="Sort By" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
                 <MudMenuItem Label="Id" OnClick="@(() => SortBy("Id"))"/>
-                <MudMenuItem Label="Participant" OnClick="@(() => SortBy("ParticipantName"))"/>
+                <MudMenuItem Label="First Name" OnClick="@(() => SortBy("FirstName"))"/>
+                <MudMenuItem Label="Last Name" OnClick="@(() => SortBy("LastName"))"></MudMenuItem>
                 <MudMenuItem Label="Assignee" OnClick="@(() => SortBy("Owner"))"/>
                 <MudMenuItem Label="Tenant" OnClick="@(() => SortBy("Tenant"))"/>
                 <MudMenuItem Label="Risk Due" OnClick="@(() => SortBy("RiskDue"))"/>
@@ -135,72 +146,102 @@
     @if (_data is { Length: > 0 })
     {
 
-        <MudStack class="mt-4">
-            @foreach (var item in _data)
-            {
-                <MudPaper Outlined="true" Class="pa-4">
-                    <MudStack>
-                        <MudStack Row="true" Justify="Justify.FlexEnd">
-                            <MudText Typo="Typo.h5">@item.Id @item.ParticipantName</MudText>
-                            <MudSpacer />
-                            <MudText Typo="Typo.h5">@item.CurrentLocation.Name</MudText>
-                        </MudStack>
-                        <MudStack Row="true">
-                                @if(item.EnrolmentLocation is not null)
+        @if(Tabular)
+        {
+            <MudTable T="ParticipantPaginationDto" Items="@_data" Hover="true" Striped="true" SelectOnRowClick="true" OnRowClick="@OnRowClick">
+                <HeaderContent>
+                    <MudTh>Id</MudTh>
+                    <MudTh>Participant</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Location</MudTh>
+                    <MudTh>Enrolled At</MudTh>
+                    <MudTh>Assignee</MudTh>
+                    <MudTh>Risk Due</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Id</MudTd>
+                    <MudTd>@context.ParticipantName</MudTd>
+                    <MudTd>@context.EnrolmentStatus.Name</MudTd>
+                    <MudTd>@context.CurrentLocation.Name</MudTd>
+                    <MudTd>@context.EnrolmentLocation?.Name</MudTd>
+                    <MudTd>@context.Owner</MudTd>
+                    <MudTd>
+                        @context.RiskDue.ToShortDateOrEmptyString()
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+        else
+        {
+            <MudStack class="mt-4">
+                @foreach (var item in _data)
+                {
+                    <MudPaper Outlined="true" Class="pa-4">
+                        <MudStack>
+                            <MudStack Row="true" Justify="Justify.FlexEnd">
+                                <MudText Typo="Typo.h5">@item.Id @item.ParticipantName</MudText>
+                                <MudSpacer />
+                                <MudText Typo="Typo.h5">@item.CurrentLocation.Name</MudText>
+                            </MudStack>
+                            <MudStack Row="true">
+                                    @if(item.EnrolmentLocation is not null)
+                                    {
+                                        <MudText Typo="Typo.body2">
+                                            Enrolled at @item.EnrolmentLocation!.Name (@item.EnrolmentStatus.Name).
+                                            @if (item.ConsentStatus == ConsentStatus.GrantedStatus)
+                                            {
+                                                @($"Consent granted {item.ConsentGranted!.Value.ToShortDateString()}")
+                                            }
+                                        </MudText>
+                                    }
+                                    else
+                                    {
+                                        <MudText Typo="Typo.body2">
+                                            Not Enrolled
+                                        </MudText>
+                                    }
+                                <MudSpacer />
+                                <MudText Typo="Typo.body2">
+                                    Assigned to @item.Owner (@item.Tenant)
+                                </MudText>
+                            </MudStack>
+                            <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+                                @if (item.RiskDue.HasValue)
                                 {
-                                    <MudText Typo="Typo.body2">
-                                        Enrolled at @item.EnrolmentLocation!.Name (@item.EnrolmentStatus.Name).
-                                        @if (item.ConsentStatus == ConsentStatus.GrantedStatus)
-                                        {
-                                            @($"Consent granted {item.ConsentGranted!.Value.ToShortDateString()}")
-                                        }
-                                    </MudText>
+                                    <MudChip Size="Size.Small"
+                                                T="string"
+                                                Color="@( item.RiskDue < DateTime.Today ? Color.Error : Color.Info )"
+                                                Variant="Variant.Outlined">
+                                        Risk Due @item.RiskDue.Value.ToShortDateString() @item.RiskDueReason
+                                    </MudChip>
                                 }
-                                else
+                                <MudSpacer />
+                                @if (item.Labels.Length > 0)
                                 {
-                                    <MudText Typo="Typo.body2">
-                                        Not Enrolled
-                                    </MudText>
+                                    @foreach (var l in item.Labels)
+                                    {                
+                                        <CatsChip Variant="l.Variant" Colour="l.Colour" Description="" Icon="l.AppIcon" Disabled="false"
+                                                    Label="@l.Name" ShowDelete="false" />
+                                    }
+
                                 }
-                            <MudSpacer />
-                            <MudText Typo="Typo.body2">
-                                Assigned to @item.Owner (@item.Tenant)
-                            </MudText>
+                            </MudStack>
                         </MudStack>
-                        <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
-                            @if (item.RiskDue.HasValue)
-                            {
-                                <MudChip Size="Size.Small"
-                                         T="string"
-                                         Color="@( item.RiskDue < DateTime.Today ? Color.Error : Color.Info )"
-                                         Variant="Variant.Outlined">
-                                    Risk Due @item.RiskDue.Value.ToShortDateString() @item.RiskDueReason
-                                </MudChip>
-                            }
-                            <MudSpacer />
-                            @if (item.Labels.Length > 0)
-                            {
-                                @foreach (var l in item.Labels)
-                                {                
-                                    <CatsChip Variant="l.Variant" Colour="l.Colour" Description="" Icon="l.AppIcon" Disabled="false"
-                                              Label="@l.Name" ShowDelete="false" />
-                                }
-      
-                            }
+                        <MudDivider Class="mt-4 mb-2" />
+                        <MudStack Row="true" Justify="Justify.FlexEnd" >
+                            <MudButton 
+                                Variant="Variant.Filled" 
+                                Color="Color.Primary" 
+                                StartIcon="@(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? Icons.Material.Filled.NotStarted : Icons.Material.Filled.AssignmentInd )"
+                                OnClick="@(() => ViewParticipant(item))">
+                                @(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? "Continue Enrolment" : "View")
+                            </MudButton>
                         </MudStack>
-                    </MudStack>
-                    <MudDivider Class="mt-4 mb-2" />
-                    <MudStack Row="true" Justify="Justify.FlexEnd" >
-                        <MudButton 
-                            Variant="Variant.Filled" 
-                            Color="Color.Primary" 
-                            StartIcon="@(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? Icons.Material.Filled.NotStarted : Icons.Material.Filled.AssignmentInd )"
-                            OnClick="@(() => ViewParticipant(item))">
-                            @(item.EnrolmentStatus == EnrolmentStatus.IdentifiedStatus ? "Continue Enrolment" : "View")
-                        </MudButton>
-                    </MudStack>
-                </MudPaper>
-            }
-        </MudStack>
+                    </MudPaper>
+                }
+            </MudStack>
+        }
+
+        
     }
 </MudContainer>

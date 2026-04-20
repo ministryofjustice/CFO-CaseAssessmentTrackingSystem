@@ -46,6 +46,9 @@ public partial class ParticipantsV2
 
     private IDictionary<Guid, LabelDto> _labels = null!;
     private int _totalPages = 0;
+    private int _totalItems = 0;
+
+    private bool Tabular { get; set; } = false;
 
     private bool _downloading = false;
 
@@ -56,10 +59,18 @@ public partial class ParticipantsV2
         JustMyCases = false,
         ListView = ParticipantListView.Default,
         PageNumber = 1,
-        PageSize = 10,
+        PageSize = 50,
         Keyword = null
 
     };
+
+    private void OnRowClick(TableRowClickEventArgs<ParticipantPaginationDto> args)
+    {
+        if(args?.Item is not null)
+        {
+            ViewParticipant(args.Item);
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,8 +93,6 @@ public partial class ParticipantsV2
 
         }
                     
-                        
-
         var cached = await SessionStorage.GetAsync();
 
         if (cached is { Succeeded: true, Data: { } sd })
@@ -98,6 +107,7 @@ public partial class ParticipantsV2
             Query.OwnerId = sd.OwnerId;
             Query.TenantId = sd.TenantId;
             Query.RiskDue = sd.RiskDue;
+            Tabular = sd.Tabular;
         }
 
         await OnRefresh();
@@ -106,6 +116,12 @@ public partial class ParticipantsV2
     private async Task LocationValueChanged(int? locationId)
     {
         Query.Locations = locationId == null ? [] : [locationId.Value];
+        await OnRefresh();
+    }
+
+    private async Task TabularChanged(bool? tabular)
+    {
+        Tabular = tabular.GetValueOrDefault();
         await OnRefresh();
     }
 
@@ -147,13 +163,15 @@ public partial class ParticipantsV2
         {
             _data = results.Data.Items.ToArray();
             _totalPages = results.Data.TotalPages;
+            _totalItems = results.Data.TotalItems;
         }
         else
         {
             _data = [];
             _totalPages = 0;
+            _totalItems = 0;
         }
-        await SessionStorage.SetAsync(ParticipantsSessionData.FromQuery(Query));
+        await SessionStorage.SetAsync(ParticipantsSessionData.FromQuery(Query, Tabular));
     }
 
     private async Task ShowSelectLocationDialog()
@@ -251,6 +269,7 @@ public partial class ParticipantsV2
         Query.PageNumber = 1;
         Query.Label = null;
         Query.OwnerId = null;
+        Tabular = false;
     }
     
     private void OnEnrol() => Navigation.NavigateTo("/pages/candidates/search");

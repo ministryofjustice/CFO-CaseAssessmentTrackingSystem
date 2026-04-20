@@ -159,7 +159,8 @@ public static class ParticipantsWithPagination
                             Id = p.EnrolmentLocation.Id,
                             ContractName = p.EnrolmentLocation.Contract!.Description
                         },
-                    ParticipantName = p.FirstName + " " + p.LastName,
+                    FirstName = p.FirstName,
+                    LastName = p.LastName,
                     RiskDue = p.RiskDue,
                     RiskDueReason = p.RiskDueReason!,
                     Tenant = p.Owner!.TenantName!,
@@ -185,7 +186,7 @@ public static class ParticipantsWithPagination
             var sortColumn = request.OrderBy.Trim().ToLowerInvariant() switch
             {
                 "id" => "Id",
-                "participantname" => "ParticipantName",
+                "firstname" => "FirstName",
                 "enrolmentstatus" => "EnrolmentStatus",
                 "consentstatus" => "ConsentStatus",
                 "currentlocation" => "CurrentLocation.Name",
@@ -193,6 +194,7 @@ public static class ParticipantsWithPagination
                 "owner" => "Owner",
                 "tenant" => "Tenant",
                 "riskdue" => "RiskDue",
+                "lastname" => "LastName",
                 _ => "Id"
             };
 
