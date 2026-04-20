@@ -37,15 +37,12 @@ public static class GetActivitiesAdvisoriesToProvider
                 from a in activityJoin.DefaultIfEmpty()
                 join submittedByUser in context.Users on pfa.ProviderQaUserId equals submittedByUser.Id into submittedByUserJoin
                 from submittedByUser in submittedByUserJoin.DefaultIfEmpty()
-
+                join con in context.Contracts on pfa.ContractId equals con.Id into contractJoin
+                from con in contractJoin.DefaultIfEmpty()
+                
                 select new ActivitiesAdvisoriesTabularData
                 {
-                    ContractName =
-                        (from con in context.Contracts
-                        where pfa.TenantId.StartsWith(con.Tenant!.Id)
-                        orderby con.Tenant!.Id.Length descending
-                        select con.Description)
-                        .FirstOrDefault(),
+                    ContractName = con.Description,
                     ParticipantId = pfa.ParticipantId,
                     Queue = pfa.Queue,
                     ActivityType = a.Type,

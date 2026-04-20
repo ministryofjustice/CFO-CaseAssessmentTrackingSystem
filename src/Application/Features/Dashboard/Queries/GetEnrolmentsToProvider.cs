@@ -21,34 +21,31 @@ public static class GetEnrolmentsToProvider
         {
             var context = unitOfWork.DbContext;
 
-            var query = from pfa in context.ProviderFeedbackEnrolments
-                where pfa.FeedbackType == ((int)FeedbackType.Returned)
-                    && pfa.ActionDate >= request.StartDate
-                    && pfa.ActionDate < request.EndDate.AddDays(1)
-                    && (!string.IsNullOrWhiteSpace(request.TenantId) ? pfa.TenantId.StartsWith(request.TenantId) : true)
-                join cfoUser in context.Users on pfa.CfoUserId equals cfoUser.Id into cfoUserJoin
+            var query = from pfe in context.ProviderFeedbackEnrolments
+                where pfe.FeedbackType == ((int)FeedbackType.Returned)
+                    && pfe.ActionDate >= request.StartDate
+                    && pfe.ActionDate < request.EndDate.AddDays(1)
+                    && (!string.IsNullOrWhiteSpace(request.TenantId) ? pfe.TenantId.StartsWith(request.TenantId) : true)
+                join cfoUser in context.Users on pfe.CfoUserId equals cfoUser.Id into cfoUserJoin
                 from cfoUser in cfoUserJoin.DefaultIfEmpty()
-                join sw in context.Users on pfa.SupportWorkerId equals sw.Id into swJoin
+                join sw in context.Users on pfe.SupportWorkerId equals sw.Id into swJoin
                 from sw in swJoin.DefaultIfEmpty()
-                join submittedByUser in context.Users on pfa.ProviderQaUserId equals submittedByUser.Id into submittedByUserJoin
+                join submittedByUser in context.Users on pfe.ProviderQaUserId equals submittedByUser.Id into submittedByUserJoin
                 from submittedByUser in submittedByUserJoin.DefaultIfEmpty()                
+                join con in context.Contracts on pfe.ContractId equals con.Id into contractJoin
+                from con in contractJoin.DefaultIfEmpty()
 
                 select new EnrolmentsTabularData
                 {
-                    ContractName =
-                        (from con in context.Contracts
-                        where pfa.TenantId.StartsWith(con.Tenant!.Id)
-                        orderby con.Tenant!.Id.Length descending
-                        select con.Description)
-                        .FirstOrDefault(),
-                    ParticipantId = pfa.ParticipantId,
-                    Queue = pfa.Queue,
+                    ContractName = con.Description,
+                    ParticipantId = pfe.ParticipantId,
+                    Queue = pfe.Queue,
                     SupportWorker = sw.DisplayName,
                     CfoUser = cfoUser.DisplayName,
-                    PqaSubmittedDate = pfa.PqaSubmittedDate,
+                    PqaSubmittedDate = pfe.PqaSubmittedDate,
                     PqaUser = submittedByUser.DisplayName,
-                    ReturnedDate = pfa.ActionDate,
-                    Message = (pfa.Message ?? "").Replace("\r", " ").Replace("\n", " ")
+                    ReturnedDate = pfe.ActionDate,
+                    Message = (pfe.Message ?? "").Replace("\r", " ").Replace("\n", " ")
                 };
 
             var result = await query.OrderBy(r => r.ReturnedDate)
