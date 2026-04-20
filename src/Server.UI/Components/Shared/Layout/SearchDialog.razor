@@ -1,5 +1,4 @@
 @using Cfo.Cats.Application.SecurityConstants
-@using MudBlazor.Extensions
 @using Toolbelt.Blazor.HotKeys2
 @inject IStringLocalizer<SharedResource> L
 @inject HotKeys HotKeys
@@ -9,7 +8,7 @@
     <DialogContent>
         <MudContainer>
             <MudFocusTrap>
-                <MudTextField @bind-Value="@search"
+                <MudTextField @bind-Value="@_search"
                 Class="mb-3"
                 Clearable="true" 
                 Placeholder="@L["Search..."]"
@@ -18,10 +17,10 @@
                 @onkeydown="HandleTextFieldKeyDown" />
                 <MudList T="string" ReadOnly="false"
                 Style="height: 300px; overflow-y: auto">
-                    @foreach (var (key, value) in pagesFiltered)
+                    @foreach (var (key, value) in _pagesFiltered)
                     {
                         <MudListItem T="string" OnClick="@(() => Navigation.NavigateTo(value))" @onkeypress="@(e => HandleListItemKeyDown(e, value))">
-                            <MudHighlighter HighlightedText="@search"
+                            <MudHighlighter HighlightedText="@_search"
                             Text="@key"/>
                         </MudListItem>
                     }
@@ -30,165 +29,4 @@
         </MudContainer>
     </DialogContent>
 </MudDialog>
-
-@code
-{
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
-
-    [Parameter]
-    public UserProfile? UserProfile { get; set; } = default!;
-
-    private readonly Dictionary<string, string> pages = new();
-    private HotKeysContext? hotKeysContext;
-    private Dictionary<string, string> pagesFiltered = new();
-    private string search = string.Empty;
-
-    public void Dispose()
-    {
-        hotKeysContext?.DisposeAsync();
-    }
-
-    private void HandleTextFieldKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter" && pagesFiltered.Any())
-        {
-            // Assuming the first item should be navigated to on Enter
-            var firstPage = pagesFiltered.First().Value;
-            NavigateToPage(firstPage);
-        }
-    }
-
-    private void HandleListItemKeyDown(KeyboardEventArgs e, string url)
-    {
-        if (e.Key == "Enter")
-        {
-            NavigateToPage(url);
-        }
-    }
-
-    private void NavigateToPage(string url)
-    {
-        Navigation.NavigateTo(url);
-    }
-
-    protected override void OnInitialized()
-    {
-        pages.Add("Home", "/");
-        pages.Add("Support Worker Dashboard", "/pages/dashboard/supportworker");
-        //pages.Add("Tenant Dashboard", "/pages/dashboard/tenant");
-        pages.Add("Participants", "/pages/participants");
-        pages.Add("New Enrolment", "/pages/candidates/search");
-        pages.Add("My Documents", "/pages/analytics/my-documents");
-
-        if (UserProfile is not null)
-        {
-
-            if (UserProfile.AssignedRoles.Any())
-            {
-                pages.Add("Reassign", "/pages/participants/reassign");
-                pages.Add("Transfers", "/pages/participants/transfers");
-                pages.Add("Moved Participants", "/pages/participants/movedparticipants");
-                pages.Add("Active PRI's", "/pages/participants/pre-release-inventory");
-            }
-
-            string[] allowed = [RoleNames.QAFinance, RoleNames.SMT, RoleNames.SystemSupport];
-            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
-            {
-                pages.Add("Provider QA", "/pages/qa/enrolments/pqa");
-            }
-
-            allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
-            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
-            {
-                pages.Add("First Pass", "/pages/qa/enrolments/qa1");
-            }
-
-            allowed = [RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
-            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
-            {
-                pages.Add("Second Pass", "/pages/qa/enrolments/qa2");    
-                pages.Add("Provider Feedback", "/pages/dashboard/providerfeedback");    
-            }
-
-            allowed = [RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
-            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
-            {
-                pages.Add("Queue Management", "/pages/qa/servicedesk/enrolments");    
-            }
-
-            allowed = [RoleNames.QAFinance, RoleNames.SMT, RoleNames.SystemSupport];
-            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
-            {
-                pages.Add("Activities Provider QA", "/pages/qa/activities/pqa");
-            }
-
-            allowed = [RoleNames.QAOfficer, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
-            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
-            {
-                pages.Add("Activities First Pass", "/pages/qa/activities/qa1");
-            }
-
-            allowed = [RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
-            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
-            {
-                pages.Add("Activities Second Pass", "/pages/qa/activities/qa2");
-            }
-
-            allowed = [RoleNames.Finance, RoleNames.QAFinance, RoleNames.SystemSupport, RoleNames.QASupportManager, RoleNames.QAManager, RoleNames.SMT];
-            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
-            {
-                pages.Add("Payments", "/pages/finance/payments/");
-                pages.Add("Cumulatives", "/pages/analytics/cumulatives");
-                pages.Add("Outcome Quality Dip Sampling", "/pages/analytics/outcome-quality-dip-sampling");
-            }
-
-
-
-            allowed = [RoleNames.QAManager, RoleNames.SMT, RoleNames.SystemSupport];
-            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
-            {
-                pages.Add("Activities Queue Management", "/pages/qa/activities/activities");
-            }
-
-            allowed = [RoleNames.SystemSupport, RoleNames.QAOfficer, RoleNames.QAManager, RoleNames.QASupportManager, RoleNames.SMT];           
-            
-            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
-            {
-                pages.Add("Tenants", "/administration/tenants");
-                pages.Add("Users", "/identity/users");
-                pages.Add("Lookup Values", "/system/picklist");
-                pages.Add("Audit Trails", "/system/audittrails");
-            }
-
-            allowed = RoleNames.ManageLabels;
-
-            if (UserProfile.AssignedRoles.Any(r => allowed.Contains(r)))
-            {
-                pages.Add("Labels", "/pages/labels");
-            }
-        }
-        
-        pagesFiltered = pages;
-
-        hotKeysContext = HotKeys.CreateContext()
-            .Add(Key.Escape, () => MudDialog.Close(), "Close command palette.");
-    }
-
-    private void SearchPages(string value)
-    {
-        pagesFiltered = new Dictionary<string, string>();
-
-        if (!string.IsNullOrWhiteSpace(value))
-        {
-            pagesFiltered = pages
-                .Where(x => x.Key
-                    .Contains(value, StringComparison.InvariantCultureIgnoreCase))
-                .ToDictionary(x => x.Key, x => x.Value);
-        }
-        else
-        {
-            pagesFiltered = pages;
-        }
-    }
-}
 

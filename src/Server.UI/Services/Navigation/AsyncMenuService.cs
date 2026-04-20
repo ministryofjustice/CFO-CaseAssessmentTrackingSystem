@@ -380,12 +380,21 @@ public class AsyncMenuService(IAuthorizationService authorizationService) : IAsy
             });
         }
 
-        if (await PassesPolicy(principal, SecurityPolicies.ServiceDeskManagement))
+        if (await PassesPolicy(principal, SecurityPolicies.Qa1))
         {
             dashboards.MenuItems.Add(new()
             {
-                Title = "Provider Feedback",
-                Href = "/pages/dashboard/providerfeedback/",
+                Title = "Quality Assurance",
+                Href = "/pages/dashboard/qualityassurance/",
+            });
+        }
+
+        if (await PassesPolicy(principal, SecurityPolicies.OutcomeQualityDipChecks))
+        {
+            dashboards.MenuItems.Add(new()
+            {
+                Title = "Performance",
+                Href = "/pages/dashboard/performance/",
             });
         }
 

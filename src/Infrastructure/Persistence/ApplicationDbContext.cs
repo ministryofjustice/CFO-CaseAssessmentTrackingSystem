@@ -135,6 +135,8 @@ public class ApplicationDbContext
     public DbSet<ProviderFeedbackEnrolment> ProviderFeedbackEnrolments => Set<ProviderFeedbackEnrolment>();
     public DbSet<ProviderFeedbackActivity> ProviderFeedbackActivities => Set<ProviderFeedbackActivity>(); 
     
+    public DbSet<ActivityFeedback> ActivityFeedbacks => Set<ActivityFeedback>(); 
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

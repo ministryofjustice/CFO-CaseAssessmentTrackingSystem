@@ -49,6 +49,21 @@
     </ToolBarContent>
     <Columns>
         <HierarchyColumn T="ActivityQueueEntryDto" />
+        <TemplateColumn Title="@ConstantString.Actions" Sortable="false">
+        <CellTemplate>
+            <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                        Dense="true"
+                        EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">                         
+                <MudMenuItem OnClick="@(() => ViewActivity(context.Item))">
+                    @ConstantString.View Activity
+                </MudMenuItem>
+                <MudMenuItem OnClick="@(() => ViewParticipant(context.Item))">
+                    @ConstantString.View Participant
+                </MudMenuItem>
+
+            </MudMenu>
+        </CellTemplate>
+        </TemplateColumn>
         <PropertyColumn Property="x => x.ParticipantName" Title="@L["Participant"]">
             <CellTemplate>
                 <div class="d-flex flex-column">
@@ -145,21 +160,6 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        <TemplateColumn Title="@ConstantString.Actions" Sortable="false">
-            <CellTemplate>
-                <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
-                         Dense="true"
-                         EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">                         
-                    <MudMenuItem OnClick="@(() => ViewActivity(context.Item))">
-                        @ConstantString.View Activity
-                    </MudMenuItem>
-                    <MudMenuItem OnClick="@(() => ViewParticipant(context.Item))">
-                        @ConstantString.View Participant
-                    </MudMenuItem>
-
-                </MudMenu>
-            </CellTemplate>
-        </TemplateColumn>
     </Columns>
     <ChildRowContent>
         <QaNotesDropdown ActivityId="@context.Item.ActivityId" />

@@ -99,6 +99,17 @@ BEGIN
     
     SET IDENTITY_INSERT [Activities].[PqaQueueNote] OFF
 
+    -- reset dates.
+    UPDATE q
+        SET Created = DATEADD(day, 1, a.Created),
+            LastModified = DATEADD(day, 1, a.Created)
+    FROM
+        [Activities].[ActivityPqaQueue] as q
+    INNER JOIN 
+        [Activities].[Activity] as a on q.ActivityId = a.Id;
+    
+
+
 END
 
 IF NOT EXISTS (SELECT TOP(1) Id FROM [Activities].[ActivityQa1Queue])
