@@ -16,7 +16,7 @@ public record ParticipantsSessionData
     {
     }
 
-    internal static ParticipantsSessionData FromQuery(ParticipantsWithPagination.Query query) 
+    internal static ParticipantsSessionData FromQuery(ParticipantsWithPagination.Query query, bool tabular) 
         => new()
         {
             Locations = query.Locations,
@@ -28,7 +28,8 @@ public record ParticipantsSessionData
             PageNumber = query.PageNumber,
             LabelId = query.Label,
             OwnerId = query.OwnerId,
-            RiskDue = query.RiskDue
+            RiskDue = query.RiskDue,
+            Tabular = tabular
         };
 
     public required int[] Locations { get; init; }
@@ -41,5 +42,7 @@ public record ParticipantsSessionData
     public required LabelId? LabelId { get; init; }
     public required string? OwnerId { get; init; } 
     public required DateTime? RiskDue { get; init; } 
+
+    public bool Tabular {get; init; }
     
 }
