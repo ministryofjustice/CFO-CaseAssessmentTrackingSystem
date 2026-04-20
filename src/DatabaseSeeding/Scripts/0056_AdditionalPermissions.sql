@@ -67,7 +67,7 @@ IF NOT EXISTS (SELECT Id FROM [Identity].[RoleClaim] WHERE ClaimType='Permission
 BEGIN
     INSERT INTO [Identity].[RoleClaim] ([Description], [Group], RoleId, ClaimType, ClaimValue)
     SELECT 'Contract Data', 'Permission', Id, 'Permission', 'Contract Data' FROM [Identity].[Role]
-    WHERE [Name] in ('System Support', 'SMT', 'CFO QA Manager')
+    WHERE [Name] in ('System Support')
 END
 
 IF NOT EXISTS (SELECT Id FROM [Identity].[RoleClaim] WHERE ClaimType='Permission' AND ClaimValue='Reassign')

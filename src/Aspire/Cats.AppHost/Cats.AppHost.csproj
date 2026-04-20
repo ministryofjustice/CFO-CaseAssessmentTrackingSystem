@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\DatabaseMigrator\DatabaseMigrator.csproj" />
+    <ProjectReference Include="..\..\DatabaseSeeding\DatabaseSeeding.csproj" />
     <ProjectReference Include="..\..\Server.UI\Server.UI.csproj" />
     <ProjectReference Include="..\..\Database\CatsDb\CatsDb.sqlproj" />
   </ItemGroup>

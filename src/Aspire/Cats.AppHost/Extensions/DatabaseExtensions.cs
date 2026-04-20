@@ -26,7 +26,7 @@ internal static class DatabaseExtensions
 
         if (seedData)
         {
-            builder.AddProject<DatabaseMigrator>("DatabaseMigrator")
+            builder.AddProject<DatabaseSeeding>("DatabaseSeeding")
                 .WithReference(catsDb)
                 .WaitForCompletion(catsDbSqlProj);
 

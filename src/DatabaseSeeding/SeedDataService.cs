@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace DatabaseMigrator;
+namespace DatabaseSeeding;
 
 public class SeedDataBackgroundService(
     ILogger<SeedDataBackgroundService> logger,
