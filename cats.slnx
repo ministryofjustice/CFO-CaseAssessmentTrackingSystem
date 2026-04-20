@@ -29,7 +29,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Application/Application.csproj" />
-    <Project Path="src/DatabaseMigrator/DatabaseMigrator.csproj" />
+    <Project Path="src/DatabaseSeeding/DatabaseSeeding.csproj" />
     <Project Path="src/Domain/Domain.csproj" />
     <Project Path="src/Infrastructure/Infrastructure.csproj" />
     <Project Path="src/Server.UI/Server.UI.csproj" />

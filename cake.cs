@@ -50,13 +50,13 @@ Task("Publish")
            OutputDirectory = "./artifacts/Server.UI",
         });
 
-        //publish the Database Migrator
-        DotNetPublish("./src/DatabaseMigrator/DatabaseMigrator.csproj", new DotNetPublishSettings()
+        //publish the Database Seeder
+        DotNetPublish("./src/DatabaseSeeding/DatabaseSeeding.csproj", new DotNetPublishSettings()
         {
            Configuration = configuration,
            NoBuild = true,
            NoRestore = true,
-           OutputDirectory = "./artifacts/DatabaseMigrator",
+           OutputDirectory = "./artifacts/DatabaseSeeding",
         });
 
         DotNetBuild("./src/Database/CatsDb/CatsDb.sqlproj", new DotNetBuildSettings()

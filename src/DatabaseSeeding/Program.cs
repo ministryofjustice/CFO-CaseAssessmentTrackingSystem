@@ -1,4 +1,4 @@
-﻿using DatabaseMigrator;
+﻿using DatabaseSeeding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
