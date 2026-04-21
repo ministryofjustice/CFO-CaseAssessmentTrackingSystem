@@ -86,10 +86,13 @@ public class RiskDto
     public DateTime? ReferredOn { get; set; }
     public string[] RegistrationDetails { get; init; } = [];
 
+    public DateOnly? DeactivatedInFeed { get; set; }
+
     private class Mapping : Profile
     {
         public Mapping() =>
             CreateMap<Risk, RiskDto>(MemberList.None)
+                .ForMember(dest => dest.DeactivatedInFeed, opt => opt.MapFrom(src => src.Participant!.DeactivatedInFeed))
                 .ForMember(dest => dest.RegistrationDetails, opt => opt.MapFrom((dest, src) =>
                 {
                     string? json;
@@ -273,8 +276,10 @@ public class RiskDto
                 .NotEmpty()
                 .When(x => x.NoLicenseEndDate is false)
                 .WithMessage("You must provide the license end date")
-                .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
-                .WithMessage(ValidationConstants.DateMustBeInFuture);
+                .GreaterThanOrEqualTo(x => x.DeactivatedInFeed.HasValue ? DateTime.UtcNow.Date.AddDays(-30) : DateTime.UtcNow.Date)
+                .WithMessage(x => x.DeactivatedInFeed.HasValue
+                    ? "Date must be no more than 30 days in the past."
+                    : ValidationConstants.DateMustBeInFuture);
 
             RuleFor(x => x.PSFRestrictions)
                 .NotEmpty()
