@@ -25,31 +25,24 @@ public static class GetActivitiesFeedback
         {
             var context = unitOfWork.DbContext;
 
-               var query =
+            var query =
                 from afb in context.ActivityFeedbacks.AsNoTracking()
 
                 join p in context.Participants on afb.ParticipantId equals p.Id
-                join ru in context.Users on afb.RecipientUserId equals ru.Id into ruJoin
+                join ru in context.Users on afb.OwnerId equals ru.Id into ruJoin
                 from ru in ruJoin.DefaultIfEmpty()
 
                 join cu in context.Users on afb.CreatedBy equals cu.Id into cuJoin
                 from cu in cuJoin.DefaultIfEmpty()
 
-                where afb.ActivityProcessedDate >= request.StartDate.Date
-                      && afb.ActivityProcessedDate < request.EndDate.AddDays(1).Date
-                      && afb.TenantId.StartsWith(request.CurrentUser.TenantId!)
-                      && (request.UserId == null || afb.RecipientUserId == request.UserId)
+                where afb.Created >= request.StartDate.Date
+                        && afb.Created < request.EndDate.AddDays(1).Date
+                        && (request.UserId == null || afb.OwnerId == request.UserId)
         
                 select new { afb, p, ru, cu };
 
-            if (!string.IsNullOrWhiteSpace(request.TenantId))
-            {
-                query = query.Where(x =>
-                    x.afb.TenantId.StartsWith(request.TenantId));
-            }
-
             var tabularData = await query
-                .OrderBy(x => x.afb.ActivityProcessedDate)
+                .OrderBy(x => x.afb.Qa1Date)
                 .Select(x => new ActivitiesFeedbackTabularData
                 {
                     Id = x.afb.Id,
@@ -63,7 +56,7 @@ public static class GetActivitiesFeedback
                     ActivityFeedbackReason = x.afb.ActivityFeedbackReason,
 
                     Queue = x.afb.Stage.Name ?? "Unknown",
-
+                    Qa1Outcome = x.afb.Qa1Outcome.Name,
                     Outcome = x.afb.Outcome.Name,
 
                     QaUser = x.cu != null
@@ -72,11 +65,8 @@ public static class GetActivitiesFeedback
 
                     Created = x.afb.Created, 
 
-                    ActivityProcessedDate = x.afb.ActivityProcessedDate,
-
-                    //LastModified = x.afb.LastModified ?? x.afb.Created,
-                    IsAccepted = x.afb.Outcome == FeedbackOutcome.Approved ? "Yes" : "No",
-                    
+                    ActivityProcessedDate = x.afb.Qa1Date,
+ 
                     IsRead = x.afb.IsRead,
                     Message = x.afb.Message
                 })
@@ -126,6 +116,7 @@ public static class GetActivitiesFeedback
 
         public required string Queue { get; init; }
         
+        public required string Qa1Outcome { get; init; }
         public required string Outcome { get; init; }
         public required string QaUser { get; init; }
        
@@ -133,7 +124,6 @@ public static class GetActivitiesFeedback
         public DateTime? Created { get; init; } 
         public DateTime ActivityProcessedDate { get; init; }
 
-        public required string IsAccepted { get; init; }
         public required string Message { get; init; }
         public required bool IsRead { get; set; }
     }

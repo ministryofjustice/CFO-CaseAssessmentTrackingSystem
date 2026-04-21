@@ -83,33 +83,32 @@ public static class SubmitActivityEscalationResponse
                 {
                     EscalationResponse.Accept => FeedbackOutcome.Approved,
                     EscalationResponse.Return => FeedbackOutcome.Returned,
-                    EscalationResponse.Comment => FeedbackOutcome.EscalatedComment,
-                    _ => throw new ArgumentOutOfRangeException()
+                    _ => throw new ArgumentOutOfRangeException($"Cannot generate feedback for {response}")
                 };
                 
-                var previous = await (
-                        from q in unitOfWork.DbContext.ActivityQa2Queue
-                        where q.ActivityId == entry.ActivityId
-                              && q.IsCompleted
-                        orderby q.LastModified descending
-                        select new
-                        {
-                            Qa1User = q.CreatedBy,
-                            q.Created
-                        }
-                    )
-                    .FirstAsync(cancellationToken);
+                // get most recent QA1 for this activity
+                var qa1 = await unitOfWork.DbContext
+                            .ActivityQa1Queue
+                            .Where(x => x.ActivityId == entry.ActivityId)
+                            .Where(x => x.IsCompleted)
+                            .OrderByDescending(x => x.LastModified)
+                            .Select(x =>
+                                new {
+                                    Qa1User = x.LastModifiedBy,
+                                    Qa1Submitted = x.LastModified,
+                                    x.IsAccepted
+                                })
+                            .FirstAsync(cancellationToken);
                 
                 var activityFeedback = ActivityFeedback.Create(
                     entry.ActivityId,
                     entry.ParticipantId!,
-                    previous.Qa1User!,
+                    qa1.Qa1User!,
                     request.MessageToQa1,
+                    qa1.IsAccepted ? FeedbackOutcome.Approved : FeedbackOutcome.Returned,
                     outcome,
                     FeedbackStage.Escalation,
-                    previous.Created!.Value,
-                    request.CurrentUser!.UserId,
-                    entry.TenantId,
+                    qa1.Qa1Submitted!.Value,
                     entry.Activity!.Category.Name,
                     entry.Activity.Type.Name,
                     request.ActivityFeedbackReason
