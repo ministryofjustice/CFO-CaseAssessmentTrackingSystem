@@ -87,25 +87,27 @@ public static class SubmitActivityEscalationResponse
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 
-                var recipientDisplayName = await (
+                var previous = await (
                         from q in unitOfWork.DbContext.ActivityQa2Queue
-                        join u in unitOfWork.DbContext.Users
-                            on q.CreatedBy equals u.Id
                         where q.ActivityId == entry.ActivityId
                               && q.IsCompleted
                         orderby q.LastModified descending
-                        select u.Id
+                        select new
+                        {
+                            Qa1User = q.CreatedBy,
+                            q.Created
+                        }
                     )
-                    .FirstOrDefaultAsync(cancellationToken);
+                    .FirstAsync(cancellationToken);
                 
                 var activityFeedback = ActivityFeedback.Create(
                     entry.ActivityId,
                     entry.ParticipantId!,
-                    recipientDisplayName!,
+                    previous.Qa1User!,
                     request.MessageToQa1,
                     outcome,
                     FeedbackStage.Escalation,
-                    entry.Created!.Value,
+                    previous.Created!.Value,
                     request.CurrentUser!.UserId,
                     entry.TenantId,
                     entry.Activity!.Category.Name,
