@@ -276,9 +276,9 @@ public class RiskDto
                 .NotEmpty()
                 .When(x => x.NoLicenseEndDate is false)
                 .WithMessage("You must provide the license end date")
-                .GreaterThanOrEqualTo(x => x.DeactivatedInFeed.HasValue ? DateTime.UtcNow.Date.AddDays(-30) : DateTime.UtcNow.Date)
+                .GreaterThanOrEqualTo(x => x.DeactivatedInFeed.HasValue ? x.DeactivatedInFeed.Value.AddDays(-30).ToDateTime(TimeOnly.MinValue) : DateTime.UtcNow.Date)
                 .WithMessage(x => x.DeactivatedInFeed.HasValue
-                    ? "Date must be no more than 30 days in the past."
+                    ? "License/Supervision End Date must be no more than 30 days before the participant's deactivation in feed date."
                     : ValidationConstants.DateMustBeInFuture);
 
             RuleFor(x => x.PSFRestrictions)

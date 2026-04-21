@@ -18,6 +18,6 @@ public partial class LicenseConditions
 
     private DateTime MinLicenseEndDate =>
         Model.DeactivatedInFeed.HasValue
-            ? DateTime.UtcNow.Date.AddDays(-30)
+            ? Model.DeactivatedInFeed.Value.AddDays(-30).ToDateTime(TimeOnly.MinValue)
             : DateTime.UtcNow.Date;
 }
