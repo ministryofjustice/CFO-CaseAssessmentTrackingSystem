@@ -31,14 +31,16 @@
                    Color="Color.Primary">
             Visual Mode
         </MudSwitch>
-        <MudLoadingButton Loading="@_downloading"
-                          Variant="Variant.Filled"
-                          Color="Color.Secondary"
-                          StartIcon="@Icons.Material.Filled.CloudDownload"
-                          Size="Size.Small"
-                          OnClick="OnExport">
-            @ConstantString.Export
-        </MudLoadingButton>
+        <AuthorizeView Policy="@SecurityPolicies.ServiceDeskManagement">
+            <MudLoadingButton Loading="@_downloading"
+                            Variant="Variant.Filled"
+                            Color="Color.Secondary"
+                            StartIcon="@Icons.Material.Filled.CloudDownload"
+                            Size="Size.Small"
+                            OnClick="OnExport">
+                @ConstantString.Export
+            </MudLoadingButton>
+        </AuthorizeView>
     </MudStack>
 </MudStack>
 
