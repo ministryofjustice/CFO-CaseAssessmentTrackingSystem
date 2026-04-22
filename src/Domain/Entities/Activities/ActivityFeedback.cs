@@ -1,39 +1,27 @@
 using Cfo.Cats.Domain.Common.Entities;
 using Cfo.Cats.Domain.Common.Enums;
-using Cfo.Cats.Domain.Entities.Administration;
-using Cfo.Cats.Domain.Entities.Participants;
 using Cfo.Cats.Domain.Events;
-using Cfo.Cats.Domain.Identity;
 
 namespace Cfo.Cats.Domain.Entities.Activities;
 
 public class ActivityFeedback : OwnerPropertyEntity<Guid>
 {
-    public Guid ActivityId { get; init; }
-    public string ParticipantId { get; init; }
+    public Guid ActivityId { get; private set; }
+    public string ParticipantId { get; private set; }
+    public string Message { get; private set; } 
 
-    public string RecipientUserId { get; init; }
-    public ApplicationUser? RecipientUser { get; init; }
+    public FeedbackOutcome Qa1Outcome { get; private set;}
 
-    public string Message { get; init; } = null!;
+    public DateTime Qa1Date { get;set; }
 
     public FeedbackOutcome Outcome { get; private set; }
-    public FeedbackStage Stage { get; init; }
-
-    public DateTime ActivityProcessedDate { get; init; }
-
+    public FeedbackStage Stage { get; private set; }
     public bool IsRead { get; private set; }
     public DateTime? ReadAt { get; private set; }
-    public string TenantId { get; protected init; }
-    public ApplicationUser? CreatedByUser { get; private set; }
     public required string ActivityCategory { get; init; }
     public required string ActivityType { get; init; } 
     public required string ActivityFeedbackReason { get; init; } 
     
-    public virtual Activity? Activity { get; private set; }
-    public virtual Participant? Participant { get; protected init; }
-    public virtual Tenant? Tenant { get; init; }
-
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private ActivityFeedback()
     {
@@ -43,13 +31,12 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
     public static ActivityFeedback Create(
         Guid activityId,
         string participantId,
-        string recipientUserId,
+        string qa1UserId,
         string message,
+        FeedbackOutcome qa1Outcome,
         FeedbackOutcome outcome,
         FeedbackStage stage,
-        DateTime activityProcessedDate,
-        string createdBy,
-        string tenantId,
+        DateTime qa1Date,
         string activityCategory,
         string activityType,
         string activityFeedbackReason)
@@ -59,18 +46,16 @@ public class ActivityFeedback : OwnerPropertyEntity<Guid>
             Id = Guid.CreateVersion7(),
             ActivityId = activityId,
             ParticipantId = participantId,
-            RecipientUserId = recipientUserId,
+            OwnerId = qa1UserId,
             Message = message,
             Outcome = outcome,
             Stage = stage,
-            ActivityProcessedDate = activityProcessedDate,
-            CreatedBy = createdBy,
-            Created = DateTime.UtcNow,
+            Qa1Date = qa1Date,
             IsRead = false,
-            TenantId = tenantId,
             ActivityCategory = activityCategory,
             ActivityType = activityType,
-            ActivityFeedbackReason = activityFeedbackReason
+            ActivityFeedbackReason = activityFeedbackReason,
+            Qa1Outcome = qa1Outcome
         };
 
         feedback.AddDomainEvent(

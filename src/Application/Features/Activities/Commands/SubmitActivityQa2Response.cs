@@ -85,20 +85,32 @@ public static class SubmitActivityQa2Response
                 {
                     Qa2Response.Accept => FeedbackOutcome.Approved,
                     Qa2Response.Return => FeedbackOutcome.Returned,
-                    Qa2Response.Escalate => FeedbackOutcome.Escalated,
-                    _ => throw new ArgumentOutOfRangeException()
+                    _ => throw new ArgumentOutOfRangeException($"Cannot generate feedback for {response}")
                 };
+
+                  // get most recent QA1 for this activity
+                var qa1 = await unitOfWork.DbContext
+                            .ActivityQa1Queue
+                            .Where(x => x.ActivityId == entry.ActivityId)
+                            .Where(x => x.IsCompleted)
+                            .OrderByDescending(x => x.LastModified)
+                            .Select(x =>
+                                new {
+                                    Qa1User = x.LastModifiedBy,
+                                    Qa1Submitted = x.LastModified,
+                                    x.IsAccepted
+                                })
+                            .FirstAsync(cancellationToken);
                 
                 var activityFeedback = ActivityFeedback.Create(
                     entry.ActivityId,
                     entry.ParticipantId!,
-                    entry.CreatedBy!,
+                    qa1.Qa1User!,
                     request.MessageToQa1,
+                    qa1.IsAccepted ? FeedbackOutcome.Approved : FeedbackOutcome.Returned,
                     outcome,
                     FeedbackStage.Qa2,
-                    entry.Created!.Value,
-                    request.CurrentUser!.UserId,
-                    entry.TenantId,
+                    qa1.Qa1Submitted!.Value,
                     entry.Activity!.Category.Name,
                     entry.Activity.Type.Name,
                     request.ActivityFeedbackReason!

@@ -13,7 +13,7 @@ internal sealed class ActivityFeedbackEntityTypeConfiguration
     {
         builder.ToTable(
             DatabaseConstants.Tables.ActivityFeedback,
-            DatabaseConstants.Schemas.Activities);
+            DatabaseConstants.Schemas.Mi);
 
         // --------------------
         // Key
@@ -35,7 +35,7 @@ internal sealed class ActivityFeedbackEntityTypeConfiguration
             .IsRequired()
             .HasMaxLength(DatabaseConstants.FieldLengths.ParticipantId);
 
-        builder.Property(x => x.RecipientUserId)
+        builder.Property(x => x.OwnerId)
             .IsRequired()
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
@@ -43,7 +43,7 @@ internal sealed class ActivityFeedbackEntityTypeConfiguration
             .IsRequired()
             .HasMaxLength(ValidationConstants.NotesLength);
 
-        builder.Property(x => x.ActivityProcessedDate)
+        builder.Property(x => x.Qa1Date)
             .IsRequired();
 
         builder.Property(x => x.IsRead)
@@ -68,6 +68,13 @@ internal sealed class ActivityFeedbackEntityTypeConfiguration
         // SmartEnum mappings 
         // --------------------
 
+        builder.Property(x => x.Qa1Outcome)
+            .IsRequired()
+            .HasConversion(
+                o => o.Value,
+                o => FeedbackOutcome.FromValue(0)
+            );
+
         builder.Property(x => x.Outcome)
             .IsRequired()
             .HasConversion(
@@ -80,39 +87,6 @@ internal sealed class ActivityFeedbackEntityTypeConfiguration
                 s => s.Value,
                 s => FeedbackStage.FromValue(s));
 
-        // --------------------
-        // Relationships
-        // --------------------
-
-        builder.HasOne(x => x.Activity)
-            .WithMany()
-            .HasForeignKey(x => x.ActivityId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(x => x.Participant)
-            .WithMany()
-            .HasForeignKey(x => x.ParticipantId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(x => x.RecipientUser)
-            .WithMany()
-            .HasForeignKey(x => x.RecipientUserId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(x => x.CreatedByUser)
-            .WithMany()
-            .HasForeignKey(x => x.CreatedBy)
-            .OnDelete(DeleteBehavior.Restrict);
-        
-        builder.HasOne(x => x.Tenant)
-            .WithMany()
-            .HasForeignKey(x => x.TenantId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.Property(x => x.TenantId)
-            .IsRequired()
-            .HasMaxLength(DatabaseConstants.FieldLengths.TenantId);
-        
         // --------------------
         // Owner / Editor 
         // --------------------
@@ -144,13 +118,5 @@ internal sealed class ActivityFeedbackEntityTypeConfiguration
         builder.Property(x => x.LastModifiedBy)
             .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
-        // --------------------
-        // Indexes 
-        // --------------------
-
-        builder.HasIndex(x => x.ActivityId);
-        builder.HasIndex(x => new { x.RecipientUserId, x.IsRead });
-        builder.HasIndex(x => new { x.ActivityId, x.Created });
-        builder.HasIndex(x => x.TenantId);
     }
 }
