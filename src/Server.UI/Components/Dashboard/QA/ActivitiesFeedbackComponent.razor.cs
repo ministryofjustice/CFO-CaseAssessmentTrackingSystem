@@ -3,6 +3,7 @@ using Cfo.Cats.Application.Features.Dashboard.Queries;
 using Microsoft.AspNetCore.Components.Authorization;
 using ApexCharts;
 using Cfo.Cats.Application.Features.Activities.Commands;
+using ChartType = ApexCharts.ChartType;
 using Color = MudBlazor.Color;
 
 namespace Cfo.Cats.Server.UI.Components.Dashboard.QA;
@@ -42,41 +43,21 @@ public partial class ActivitiesFeedbackComponent
             ShowRead = ShowRead
         };
 
-    private List<ChartSeries> SeriesByReason
+    private List<GetActivitiesFeedback.ActivitiesFeedbackChartData> PieDataByReason
     {
         get
         {
             var data = Data?.ChartData ?? Array.Empty<GetActivitiesFeedback.ActivitiesFeedbackChartData>();
 
-            var recipients = data
-                .Select(x => x.Recipient ?? "Unknown")
-                .Distinct()
-                .OrderBy(x => x)
-                .ToList();
-
-            var reasons = data
-                .Select(x => x.ActivityFeedbackReason ?? "Unknown")
-                .Distinct()
-                .OrderBy(x => x)
-                .ToList();
-
-            return reasons.Select(reason => new ChartSeries
+            return data
+                .GroupBy(x => x.ActivityFeedbackReason ?? "Unknown")
+                .OrderBy(g => g.Key)
+                .Select(g => new GetActivitiesFeedback.ActivitiesFeedbackChartData
             {
-                Reason = reason,
-                Items = recipients.Select(recipient =>
-                {
-                    var match = data.FirstOrDefault(x =>
-                        (x.Recipient ?? "Unknown") == recipient &&
-                        (x.ActivityFeedbackReason ?? "Unknown") == reason);
-
-                    return new GetActivitiesFeedback.ActivitiesFeedbackChartData
-                    {
-                        Recipient = recipient,
-                        ActivityFeedbackReason = reason,
-                        Count = match?.Count ?? 0
-                    };
-                }).ToList()
-            }).ToList();
+                ActivityFeedbackReason = g.Key,
+                Count = g.Sum(x => x.Count)
+            })
+            .ToList();
         }
     }
     
@@ -96,43 +77,12 @@ public partial class ActivitiesFeedbackComponent
         }
     }
     
-    private class ChartSeries
-    {
-        public string Reason { get; init; } = null!;
-        public List<GetActivitiesFeedback.ActivitiesFeedbackChartData> Items { get; set; } = new();
-    }
-    
     private ApexChartOptions<GetActivitiesFeedback.ActivitiesFeedbackChartData> Options
         => new()
         {
             Chart = new Chart
             {
-                Stacked = true
-            },
-            PlotOptions = new PlotOptions
-            {
-                Bar = new PlotOptionsBar
-                {
-                    DataLabels = new PlotOptionsBarDataLabels
-                    {
-                        Total = new BarTotalDataLabels
-                        {
-                            Style = new BarDataLabelsStyle
-                            {
-                                FontWeight = "800",
-                                Color = IsDarkMode ? "#FFFFFF" : "#000000"
-                            }
-                        }
-                    }
-                }
-            },
-            Yaxis = new List<YAxis>
-            {
-                new()
-                {
-                    Min = 0,
-                    ForceNiceScale = true
-                }
+                Type = ChartType.Pie
             },
             Theme = new Theme
             {
