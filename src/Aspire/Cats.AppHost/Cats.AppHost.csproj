@@ -1,22 +1,23 @@
 <Project Sdk="Aspire.AppHost.Sdk/13.2.0">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <IsAspireHost>true</IsAspireHost>
-    <UserSecretsId>438e0658-688c-449c-b0b7-c8940c972575</UserSecretsId>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <IsAspireHost>true</IsAspireHost>
+        <UserSecretsId>438e0658-688c-449c-b0b7-c8940c972575</UserSecretsId>
+        <NoWarn>$(NoWarn);ASPIRE004</NoWarn>
+    </PropertyGroup>
 
-  <ItemGroup>
-      <PackageReference Include="Aspire.Hosting.Kubernetes" />
-      <PackageReference Include="Aspire.Hosting.RabbitMQ" />
-      <PackageReference Include="Aspire.Hosting.SqlServer" />
-      <PackageReference Include="CommunityToolkit.Aspire.Hosting.SqlDatabaseProjects" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Aspire.Hosting.Kubernetes"/>
+        <PackageReference Include="Aspire.Hosting.RabbitMQ"/>
+        <PackageReference Include="Aspire.Hosting.SqlServer"/>
+        <PackageReference Include="CommunityToolkit.Aspire.Hosting.SqlDatabaseProjects"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\DatabaseSeeding\DatabaseSeeding.csproj" />
-    <ProjectReference Include="..\..\Server.UI\Server.UI.csproj" />
-    <ProjectReference Include="..\..\Database\CatsDb\CatsDb.sqlproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\DatabaseSeeding\DatabaseSeeding.csproj"/>
+        <ProjectReference Include="..\..\Server.UI\Server.UI.csproj"/>
+        <ProjectReference Include="..\..\Database\CatsDb\CatsDb.sqlproj"/>
+    </ItemGroup>
 
 </Project>

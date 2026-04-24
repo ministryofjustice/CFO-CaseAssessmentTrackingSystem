@@ -16,7 +16,7 @@ internal static class AppExtensions
     private static IResourceBuilder<ProjectResource> WithCatsDatabaseReference(this IResourceBuilder<ProjectResource> builder, CatsDatabaseResource database)
     {
         builder.WithReference(database.DatabaseResource)
-            .WaitForCompletion(database.SqlProjectResource);
+            .WaitForCompletion(database.SeedingProjectResource);
         return builder;
     }
 }

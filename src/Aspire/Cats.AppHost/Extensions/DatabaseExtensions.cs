@@ -14,8 +14,7 @@ internal static class DatabaseExtensions
 
     internal static CatsDatabaseResources AddCatsDatabases(
         this IDistributedApplicationBuilder builder,
-        IResourceBuilder<SqlServerServerResource> sqlServer,
-        bool seedData = false
+        IResourceBuilder<SqlServerServerResource> sqlServer
     )
     {
         var catsDb = sqlServer.AddDatabase("CatsDb");
@@ -24,25 +23,10 @@ internal static class DatabaseExtensions
                                 .WithReference(catsDb)
                                 .WithSkipWhenDeployed();
 
-        if (seedData)
-        {
-            builder.AddProject<DatabaseSeeding>("DatabaseSeeding")
-                .WithReference(catsDb)
-                .WaitForCompletion(catsDbSqlProj);
+        var seeding = builder.AddProject<DatabaseSeeding>("DatabaseSeeding")
+            .WithReference(catsDb)
+            .WaitForCompletion(catsDbSqlProj);
 
-        }
-
-        return new CatsDatabaseResources(new CatsDatabaseResource(catsDb, catsDbSqlProj));
+        return new CatsDatabaseResources(new CatsDatabaseResource(catsDb, catsDbSqlProj, seeding));
     }
-
-    
 }
-
-internal record CatsDatabaseResources(
-        CatsDatabaseResource CatsDb
-    );
-
-    internal record CatsDatabaseResource(
-        IResourceBuilder<SqlServerDatabaseResource> DatabaseResource,
-        IResourceBuilder<SqlProjectResource> SqlProjectResource
-    );
