@@ -6,7 +6,7 @@ var sqlPassword = builder.AddParameter("sqlPassword", secret: true);
 
 var sql = builder.AddCatsSqlServer(sqlPassword);
 
-var databases = builder.AddCatsDatabases(sql, seedData: true);
+var databases = builder.AddCatsDatabases(sql);
 
 var rabbit = builder.AddRabbitMQ("rabbit",
         port: 5672)
