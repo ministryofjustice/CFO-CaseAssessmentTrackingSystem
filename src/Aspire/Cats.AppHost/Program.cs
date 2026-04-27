@@ -8,11 +8,7 @@ var sql = builder.AddCatsSqlServer(sqlPassword);
 
 var databases = builder.AddCatsDatabases(sql);
 
-var rabbit = builder.AddRabbitMQ("rabbit",
-        port: 5672)
-    .WithDataVolume("cats-aspire-rabbit")
-    .WithLifetime(ContainerLifetime.Persistent)
-    .WithManagementPlugin(port: 15672);
+var rabbit = builder.AddMessageBroker();
 
 builder.AddCatsServices(
     rabbit, 
