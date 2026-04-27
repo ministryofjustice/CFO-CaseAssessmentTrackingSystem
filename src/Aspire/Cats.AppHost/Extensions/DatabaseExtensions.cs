@@ -10,8 +10,9 @@ internal static class DatabaseExtensions
             .WithDataVolume("cats-data")
             .WithLifetime(ContainerLifetime.Persistent)
             .WithEndpointProxySupport(false)
-            .WithImageTag("2022-latest");
-
+            // 2022-CU24-ubuntu-22.04
+            .WithImageSHA256("49b45a911dc535e9345fbfd7101a1bd8a1e190a5f29b877ef75387a061e5fcf0");
+    
     internal static CatsDatabaseResources AddCatsDatabases(
         this IDistributedApplicationBuilder builder,
         IResourceBuilder<SqlServerServerResource> sqlServer
