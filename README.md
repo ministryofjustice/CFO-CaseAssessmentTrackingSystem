@@ -20,7 +20,7 @@ HMPPS Creating Future Opportunities (CFO) utilise the Case Assessment and Tracki
 
 # Mechanism (How does it communicate with other systems? Frequency of data pull/push, reporting, events etc) 
 
-CATS relies on the external data from Nomis and Delius. This is aggregate and managed by the [CFO External Data Integration System](https://github.com/ministryofjustice/CFO-ExternalDataIntegrationSystem).
+CATS relies on the external data from Nomis and Delius. This is aggregated and managed by the [CFO External Data Integration System](https://github.com/ministryofjustice/CFO-ExternalDataIntegrationSystem).
 
 
 # Technology (What's the technology that drives the product? i.e. Azure, java script etc) 
