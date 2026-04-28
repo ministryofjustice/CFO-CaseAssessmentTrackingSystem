@@ -28,7 +28,7 @@
                 <MudDatePicker @bind-Date="Model.LicenseEnd"
                             Label="@Model.GetMemberDescription(x => x.LicenseEnd)"
                             For="@(() => Model.LicenseEnd)"
-                            MinDate="DateTime.UtcNow.Date"
+                            MinDate="MinLicenseEndDate"
                             Class="mt-4"
                             Editable="true"/>
             }
@@ -52,7 +52,7 @@
             <MudDatePicker @bind-Date="Model.LicenseEnd"
                         Label="@Model.GetMemberDescription(x => x.LicenseEnd)"
                         For="@(() => Model.LicenseEnd)"
-                        MinDate="DateTime.UtcNow.Date"
+                        MinDate="MinLicenseEndDate"
                         Class="mt-4"
                         Editable="true"/>
         }
