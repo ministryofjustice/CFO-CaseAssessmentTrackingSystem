@@ -33,7 +33,7 @@ public class ApplicationUserDto
 
     [Description("Default Role")] public string? DefaultRole => AssignedRoles?.FirstOrDefault();
 
-    [Description("Memorable Place")] public string MemorableDate { get; set; } = string.Empty;
+    [Description("Memorable Date")] public string MemorableDate { get; set; } = string.Empty;
 
     [Description("Memorable Place")] public string MemorablePlace { get; set; } = string.Empty;
 
