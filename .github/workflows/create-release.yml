@@ -52,6 +52,7 @@ jobs:
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           name: Release ${{ steps.version.outputs.tag }}
+          target_commitish: ${{ github.event.pull_request.merge_commit_sha }}
           files: "${{ steps.version.outputs.tag }}.zip"
           draft: false
           prerelease: false
