@@ -1,20 +1,26 @@
 name: Create new release
 
 on:
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
 
 permissions:
   contents: write   # required for pushing tags & publishing releases
 
 jobs:
   build-and-release:
+    if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout current branch
+      - name: Checkout merged commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
         with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
           fetch-depth: 0
 
       - name: Setup .NET
@@ -38,7 +44,7 @@ jobs:
       - name: Create Git Tag and Push
         run: |
           set -euo pipefail
-          git tag "${{ steps.version.outputs.tag }}" "${{ github.sha }}"
+          git tag "${{ steps.version.outputs.tag }}" "${{ github.event.pull_request.merge_commit_sha }}"
           git push origin "${{ steps.version.outputs.tag }}"
 
       - name: Create Release
