@@ -16,6 +16,9 @@ public partial class QaNotes
     [CascadingParameter] public UserProfile UserProfile { get; set; } = null!;
 
     [Parameter, EditorRequired] public string ParticipantId { get; set; } = null!;
+    
+    [Parameter]
+    public string? FirstPassUser { get; set; }
 
     //Hide CFO Users from providers on timeline
     private bool _hideUser = true;
@@ -25,24 +28,31 @@ public partial class QaNotes
 
     protected override async Task OnInitializedAsync()
     {
-        if (_notes is null)
+        if (ParticipantId == null)
         {
-            var state = await AuthState;
+            return;
+        }
 
-            bool includeInternalNotes =
-                (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
+        if (_notes is not null)
+        {
+            return;
+        }
 
-            var result = await GetNewMediator().Send(new GetEnrolmentQaNotes.Query()
-            {
-                ParticipantId = ParticipantId,
-                CurentUser = UserProfile,
-                IncludeInternalNotes = includeInternalNotes
-            });
+        var state = await AuthState;
 
-            if (result.Succeeded)
-            {
-                _notes = result.Data!.OrderBy(n => n.Created).ToArray();
-            }
+        bool includeInternalNotes =
+            (await AuthService.AuthorizeAsync(state.User, SecurityPolicies.Internal)).Succeeded;
+
+        var result = await GetNewMediator().Send(new GetEnrolmentQaNotes.Query()
+        {
+            ParticipantId = ParticipantId,
+            CurentUser = UserProfile,
+            IncludeInternalNotes = includeInternalNotes
+        });
+
+        if (result.Succeeded)
+        {
+            _notes = result.Data!.OrderBy(n => n.Created).ToArray();
         }
 
         if (UserProfile.AssignedRoles.Any(r => _allowed.Contains(r)))
