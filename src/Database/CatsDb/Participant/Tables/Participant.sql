@@ -22,6 +22,7 @@ CREATE TABLE [Participant].[Participant] (
     [RegistrationDetailsJson]        NVARCHAR (MAX)  NULL,
     [RiskDue]                        DATE            NULL,
     [Nationality]                    NVARCHAR (50)   NULL,
+    [Ethnicity]                      NVARCHAR (100)  NULL,
     [DateOfFirstConsent]             DATE            NULL,
     [LastSyncDate]                   DATETIME2 (7)   NULL,
     [BioDue]                         DATETIME2 (7)   NULL,
