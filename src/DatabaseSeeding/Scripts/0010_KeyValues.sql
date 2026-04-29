@@ -513,9 +513,15 @@ FROM (VALUES (N'ReferralSource', N'CFO Evolution Provider', N'CFO Evolution Prov
              (N'QaFeedbackReason', N'Information incomplete', N'Information incomplete', N'A QA Feedback reason'),
              (N'QaFeedbackReason', N'Information conflicts with CATS', N'Information conflicts with CATS', N'A QA Feedback reason'),
              (N'QaFeedbackReason', N'Other', N'Other', N'A QA Feedback reason'),
-             (N'QaFeedbackReason', N'Positive Recognition', N'Positive Recognition', N'A QA Feedback reason')
+             (N'QaFeedbackReason', N'Positive Recognition', N'Positive Recognition', N'A QA Feedback reason'),
              
-             
+             -- QA Return Reason
+             (N'QaReturnReason', N'Ineligible Claim', N'Ineligible Claim', N'A QA Return reason'),
+             (N'QaReturnReason', N'Incorrect / Missing Paperwork', N'Incorrect / Missing Paperwork', N'A QA Return reason'),
+             (N'QaReturnReason', N'Information incomplete', N'Information incomplete', N'A QA Return reason'),
+             (N'QaReturnReason', N'Information conflicts with CATS', N'Information conflicts with CATS', N'A QA Return reason'),
+             (N'QaReturnReason', N'Other', N'Other', N'A QA Return reason')
+        
              
              
              ) v(Name, Value, Text, Description)

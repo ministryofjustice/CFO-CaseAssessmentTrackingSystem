@@ -9,7 +9,8 @@ CREATE TABLE [Enrolment].[EscalationNote] (
     [TenantId]                        NVARCHAR (50)    NOT NULL,
     [EnrolmentEscalationQueueEntryId] UNIQUEIDENTIFIER NOT NULL,
     [IsExternal]                      BIT              DEFAULT (CONVERT([bit],(0))) NOT NULL,
-    [FeedbackType]                    INT              NULL
+    [FeedbackType]                    INT              NULL,
+    [ReturnReason]                    NVARCHAR (100)   NULL
 );
 GO
 

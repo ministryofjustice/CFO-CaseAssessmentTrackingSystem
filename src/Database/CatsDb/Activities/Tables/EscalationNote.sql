@@ -9,7 +9,8 @@ CREATE TABLE [Activities].[EscalationNote] (
     [LastModified]                   DATETIME2 (7)    NULL,
     [LastModifiedBy]                 NVARCHAR (36)    NULL,
     [TenantId]                       NVARCHAR (50)    NOT NULL,
-    [FeedbackType]                   INT              NULL
+    [FeedbackType]                   INT              NULL,
+    [ReturnReason]                   NVARCHAR (100)   NULL
 );
 GO
 

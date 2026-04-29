@@ -15,6 +15,7 @@ CREATE TABLE [Mi].[ProviderFeedbackActivity] (
     [ActionDate]       DATETIME2 (7)    NOT NULL,
     [Message]          NVARCHAR (1000)  NOT NULL,
     [FeedbackType]     INT              NULL,
+    [ReturnReason]     NVARCHAR (100)   NULL,
     [ActivityId]       NVARCHAR (36)    DEFAULT (N'') NOT NULL,
     [ActivityType]     INT              DEFAULT ((0)) NOT NULL
 );
