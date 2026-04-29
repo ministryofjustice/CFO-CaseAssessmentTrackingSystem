@@ -34,7 +34,8 @@ public class Participant : OwnerPropertyEntity<string>
         string? referralComments, 
         int locationId,
         string? nationality,
-        string? primaryRecordKeyAtCreation)
+        string? primaryRecordKeyAtCreation,
+        string? ethnicity)
     {
         Participant p = new()
         {
@@ -53,7 +54,8 @@ public class Participant : OwnerPropertyEntity<string>
             Nationality = nationality,
             RiskDueReason = RiskDueReason.NewEntry,
             PrimaryRecordKeyAtCreation = primaryRecordKeyAtCreation,
-            Created = DateTime.UtcNow
+            Created = DateTime.UtcNow,
+            Ethnicity = ethnicity
         };
 
         p.AddDomainEvent(new ParticipantCreatedDomainEvent(p, locationId));
@@ -72,6 +74,11 @@ public class Participant : OwnerPropertyEntity<string>
 
     public int? RiskDueInDays() => (RiskDue.HasValue ? (RiskDue!.Value.Date - DateTime.UtcNow.Date).Days:null);
     public string? Nationality { get; set; }
+
+    /// <summary>
+    /// The recorded ethnicity from the active record.
+    /// </summary>
+    public string? Ethnicity { get; set;}
 
     /// <summary>
     /// The date the participant was deactivated in the DMS feed, if applicable.
@@ -337,6 +344,16 @@ public class Participant : OwnerPropertyEntity<string>
             Nationality = nationality;
         }
 
+        return this;
+    }
+
+    public Participant UpdateEthnicity(string? ethnicity)
+    {
+        if(string.Equals(Ethnicity, ethnicity, StringComparison.OrdinalIgnoreCase) is false)
+        {
+            AddDomainEvent(new ParticipantEthnicityChangedDomainEvent(this, Ethnicity, ethnicity));
+            Ethnicity = ethnicity;
+        }
         return this;
     }
 

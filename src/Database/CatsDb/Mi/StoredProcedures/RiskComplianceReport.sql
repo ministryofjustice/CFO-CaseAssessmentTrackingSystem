@@ -25,7 +25,7 @@ BEGIN
         [RiskLevelAtEnrolment] NVARCHAR(20) NULL,
         [RiskSetWithin4Weeks] BIT NULL,
         [ProbationPractitionerDetailsDocumented] BIT NULL,
-        [NoUnknownRiskSet] BIT NULL,
+        [NoUnknownRiskSet] BIT NULL
     )
 
     INSERT INTO #Cohort (ParticipantId)
