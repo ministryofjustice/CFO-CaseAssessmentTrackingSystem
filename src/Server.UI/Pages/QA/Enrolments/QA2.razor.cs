@@ -14,6 +14,9 @@ namespace Cfo.Cats.Server.UI.Pages.QA.Enrolments;
 
 public partial class QA2
 {
+    [Inject]
+    private IPicklistService PicklistService { get; set; } = null!;
+    
     private QaExternalMessageWarning? _warningMessage;
     private MudForm? _form;
     private EnrolmentQueueEntryDto? _queueEntry;
@@ -145,16 +148,19 @@ public partial class QA2
         if (Command.Response == SubmitQa2Response.Qa2Response.Accept)
         {
             Command.FeedbackType = null;
+            Command.ReturnReason = null;
             Command.MessageToProvider = string.Empty;
         }
         else if (Command.Response == SubmitQa2Response.Qa2Response.Return)
         {
             Command.FeedbackType = FeedbackType.Returned;
+            Command.ReturnReason = null;
             Command.MessageToProvider = string.Empty;
         }
         else if (Command.Response == SubmitQa2Response.Qa2Response.Escalate)
         {
             Command.FeedbackType = null;
+            Command.ReturnReason = null;
             Command.MessageToProvider = string.Empty;
         }
     }    

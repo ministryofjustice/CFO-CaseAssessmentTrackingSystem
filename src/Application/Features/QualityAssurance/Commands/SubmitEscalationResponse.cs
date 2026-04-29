@@ -14,6 +14,8 @@ public static class SubmitEscalationResponse
         public EscalationResponse? Response { get; set; }
         public FeedbackType? FeedbackType { get; set; } 
 
+        public string? ReturnReason { get; set; }
+
         public string Message { get; set; } = default!;
         public string MessageToProvider { get; set; } = default!;
 
@@ -41,7 +43,7 @@ public static class SubmitEscalationResponse
             }
 
             entry.AddNote(request.Message, isExternal: false)
-                 .AddNote(request.MessageToProvider, isExternal: true, feedbackType: request.FeedbackType);
+                 .AddNote(request.MessageToProvider, isExternal: true, feedbackType: request.FeedbackType, returnReason: request.ReturnReason);
 
             switch (request.Response)
             {
@@ -98,6 +100,10 @@ public static class SubmitEscalationResponse
                 RuleFor(x => x.FeedbackType)
                     .Equal(FeedbackType.Returned)
                     .WithMessage("FeedbackType must be 'Returned' when returning");
+                
+                RuleFor(x => x.ReturnReason)
+                    .NotNull()
+                    .WithMessage("Return Reason is required when returning");
                 
                 RuleFor(x => x.MessageToProvider)
                     .NotEmpty()

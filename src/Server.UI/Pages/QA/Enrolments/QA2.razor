@@ -158,6 +158,22 @@
                                             </MudRadio>
                                         </MudRadioGroup>
                                     </MudItem>
+
+                                    <MudGrid Class="py-4">
+                                        <MudItem xs="12" md="9" xl="10">
+                                            <MudSelect @bind-Value="Command.ReturnReason" 
+                                                       For="() => Command.ReturnReason"
+                                                       Label="Return Reason"
+                                                       Required="true">
+                                                @foreach (var returnReason in PicklistService.DataSource
+                                                                .Where(c => c.Name == Picklist.QaReturnReason)
+                                                                .OrderBy(c => c.Text))
+                                                {
+                                                    <MudSelectItem Value="@returnReason.Value">@returnReason.Text</MudSelectItem>
+                                                }
+                                            </MudSelect>
+                                        </MudItem>
+                                    </MudGrid>
                                     
                                     <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
                                         This comment will be visible to PQA (and internal members of CFO staff)

@@ -51,6 +51,7 @@ public class EnrolmentQa1QueueEntityTypeConfiguration : IEntityTypeConfiguration
                 .HasMaxLength(DatabaseConstants.FieldLengths.GuidId);
 
             note.Ignore(x => x.FeedbackType);
+            note.Ignore(x => x.ReturnReason);
         });
         
         builder.Property(x => x.ParticipantId)
