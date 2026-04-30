@@ -43,7 +43,7 @@ public abstract class ActivityQueueEntry : OwnerPropertyEntity<Guid>
 
     public abstract ActivityQueueEntry Return();
 
-    public ActivityQueueEntry AddNote(string? message, bool isExternal = false, FeedbackType? feedbackType = null)
+    public ActivityQueueEntry AddNote(string? message, bool isExternal = false, FeedbackType? feedbackType = null, string? returnReason = null)
      {
          if (string.IsNullOrWhiteSpace(message) == false)
          {
@@ -52,7 +52,8 @@ public abstract class ActivityQueueEntry : OwnerPropertyEntity<Guid>
                  TenantId = TenantId,
                  Message = message,
                  IsExternal = isExternal,
-                 FeedbackType = feedbackType
+                 FeedbackType = feedbackType,
+                 ReturnReason = returnReason
              });
          }
          return this;
